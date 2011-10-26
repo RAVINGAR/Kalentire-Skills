@@ -24,8 +24,8 @@
     	<echo>Retreiving Libraries</echo>
             <mkdir dir="libs" />
             <echo>- Bukkit</echo>
-            <get src="http://ci.bukkit.org/job/dev-Bukkit/lastSuccessfulBuild/artifact/target/bukkit-0.0.1-SNAPSHOT.jar"
-            	dest="libs/bukkit.jar" verbose="false" usetimestamp="true" />
+            <get src="http://ci.bukkit.org/job/dev-CraftBukkit/lastSuccessfulBuild/artifact/target/craftbukkit-0.0.1-SNAPSHOT.jar"
+            	dest="libs/craftbukkit.jar" verbose="false" usetimestamp="true" />
     		<echo>- Heroes</echo>
     		<get src="http://ci.onarandombox.com/job/Heroes/lastSuccessfulBuild/artifact/build/Heroes.jar"
     			dest="libs/Heroes.jar" verbose="false" usetimestamp="true" />	
