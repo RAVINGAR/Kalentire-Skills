@@ -54,11 +54,11 @@
     </target>
 	
 	<target name="zip">
-		<copy dest="${dir.dist}/Heroes.jar" src="libs/Heroes.jar"/>
+		<copy todir="${dir.dist}" file="libs/Heroes.jar"/>
 		<zip destfile="${dir.dist}/Heroes.zip">
 			<fileset dir="${dir.dist}" includes="*.jar"/>
 		    <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
 		</zip>
-		<delete dir="${dir.dist.skills}" />
+		<delete dir="${dir.dist}/${ant.project.name}"/>
 	</target>
 </project>
