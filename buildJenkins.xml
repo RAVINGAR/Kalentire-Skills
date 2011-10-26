@@ -54,9 +54,9 @@
     </target>
 	
 	<target name="zip">
-		<copyfile dest="${dir.dist}/Heroes.jar" src="libs/Heroes.jar"/>
+		<copy dest="${dir.dist}/Heroes.jar" src="libs/Heroes.jar"/>
 		<zip destfile="${dir.dist}/Heroes.zip">
-			<fileset dir="${dir.dist}" includes="libs/Heroes.jar"/>
+			<fileset dir="${dir.dist}" includes="*.jar"/>
 		    <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
 		</zip>
 		<delete dir="${dir.dist.skills}" />
