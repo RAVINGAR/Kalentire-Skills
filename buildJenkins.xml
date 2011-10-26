@@ -1,4 +1,4 @@
-<project name="Heroes" default="jar-main" basedir=".">
+<project name="Heroes" default="build" basedir=".">
     <property environment="env"/>
 	
     <property name="dir.bin" value="bin" />
@@ -30,20 +30,9 @@
     		<get src="http://ci.onarandombox.com/job/Heroes/lastSuccessfulBuild/artifact/build/Heroes.jar"
     			dest="libs/Heroes.jar" verbose="false" usetimestamp="true" />	
         <javac srcdir="src" destdir="bin" classpathref="classpath" includeantruntime="false"/>
-        <antcall target="jar-main" />
+        <antcall target="jar-skills" />
     	<delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
     	<antcall target="zip" />
-    </target>
-
-    <target name="jar-main" depends="jar-skills">
-    	<copy file="src/plugin.yml" tofile="${dir.bin}/plugin.yml" />
-    	<copydir dest="${dir.bin}/defaults" src="src/defaults" />
-        <jar destfile="${dir.dist}/${ant.project.name}.jar" basedir="${dir.bin}" excludes="${dir.bin.skills}/*.class Heroes">
-            <manifest>
-                <attribute name="Class-Path" value="${dir.dist.skills}/" />
-            </manifest>
-        </jar>
-    	
     </target>
 
     <target name="jar-skills">
