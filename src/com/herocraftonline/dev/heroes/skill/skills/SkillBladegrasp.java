@@ -10,6 +10,8 @@ import org.bukkit.event.entity.EntityListener;
 import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
+import com.herocraftonline.dev.heroes.api.HeroesEventListener;
+import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
@@ -89,13 +91,13 @@ public class SkillBladegrasp extends ActiveSkill {
 
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener extends HeroesEventListener {
 
-        @Override
-        public void onEntityDamage(EntityDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
+		@Override
+		public void onWeaponDamage(WeaponDamageEvent event) {
+			Heroes.debug.startTask("HeroesSkillListener");
             // Ignore cancelled damage events & 0 damage events for Spam Control
-            if (event.getDamage() == 0 || event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) {
+            if (event.getDamage() == 0 || event.isCancelled()) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
@@ -111,13 +113,12 @@ public class SkillBladegrasp extends ActiveSkill {
 
                     event.setCancelled(true);
                     Messaging.send(player, parryText.replace("$1", player.getDisplayName()));
-                    EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-                    if (subEvent.getDamager() instanceof Player) {
-                        Messaging.send((Player) subEvent.getDamager(), parryText.replace("$1", player.getDisplayName()));
+                    if (event.getDamager() instanceof Player) {
+                        Messaging.send((Player) event.getDamager(), parryText.replace("$1", player.getDisplayName()));
                     }
                 }
             }
             Heroes.debug.stopTask("HeroesSkillListener");
-        }
+		}
     }
 }
