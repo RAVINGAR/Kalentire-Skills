@@ -8,6 +8,7 @@
 
     <path id="classpath">
 		<fileset dir="libs" includes="**/*.jar" />
+    	<fileset dir="../../Heroes/lastSuccessful/archive/build" includes="**/*.jar" />
     </path>
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -23,9 +24,6 @@
         <mkdir dir="${dir.bin}/${dir.dist.skills}" />
     	<echo>Retreiving Libraries</echo>
             <mkdir dir="libs" />
-            <echo>- Bukkit</echo>
-            <get src="http://ci.bukkit.org/job/dev-CraftBukkit/lastSuccessfulBuild/artifact/target/craftbukkit-0.0.1-SNAPSHOT.jar"
-            	dest="libs/craftbukkit.jar" verbose="false" usetimestamp="true" />
     		<echo>- Heroes</echo>
     		<get src="http://ci.onarandombox.com/job/Heroes/lastSuccessfulBuild/artifact/build/Heroes.jar"
     			dest="libs/Heroes.jar" verbose="false" usetimestamp="true" />	
