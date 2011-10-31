@@ -22,11 +22,6 @@
         <mkdir dir="${dir.dist}/${dir.dist.skills}" />
         <mkdir dir="${dir.bin}" />
         <mkdir dir="${dir.bin}/${dir.dist.skills}" />
-    	<echo>Retreiving Libraries</echo>
-            <mkdir dir="libs" />
-    		<echo>- Heroes</echo>
-    		<get src="http://ci.onarandombox.com/job/Heroes/lastSuccessfulBuild/artifact/build/Heroes.jar"
-    			dest="libs/Heroes.jar" verbose="false" usetimestamp="true" />	
         <javac srcdir="src" destdir="bin" classpathref="classpath" includeantruntime="false"/>
         <antcall target="jar-skills" />
     	<delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
