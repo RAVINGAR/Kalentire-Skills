@@ -9,8 +9,12 @@ import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.classes.HeroClass;
+import com.herocraftonline.dev.heroes.effects.Effect;
+import com.herocraftonline.dev.heroes.effects.EffectType;
+import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.effects.common.SlowEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -69,14 +73,32 @@ public class SkillImpale extends TargettedSkill {
         //Add the slow effect
         long duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
         int amplitude = getSetting(hero, "amplitude", 4, false);
-        SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, applyText, hero);
+        SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
         if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(sEffect);
+            ImpaleEffect iEffect = new ImpaleEffect(this, 300, sEffect);
+            plugin.getHeroManager().getHero((Player) target).addEffect(iEffect);
         } else if (target instanceof Creature) {
             plugin.getEffectManager().addCreatureEffect((Creature) target, sEffect);
         }
         
         broadcastExecuteText(hero, target);
         return true;
+    }
+    
+    public class ImpaleEffect extends ExpirableEffect {
+
+    	private final Effect effect;
+		public ImpaleEffect(Skill skill, long duration, Effect afterEffect) {
+			super(skill, "Impale", duration);
+			this.effect = afterEffect;
+			this.types.add(EffectType.HARMFUL);
+			this.types.add(EffectType.DISABLE);
+			this.types.add(EffectType.SLOW);
+			addMobEffect(2, (int) (duration / 1000) * 20, 20, false);
+		}
+		
+		public void remove(Hero hero) {
+			hero.addEffect(effect);
+		}
     }
 }
