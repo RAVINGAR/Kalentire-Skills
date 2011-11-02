@@ -18,6 +18,10 @@
     </taskdef>
 
     <target name="build">
+    	<delete file="libs/Heroes.jar"/>
+    	<echo>Retrieving Latest Bukkit</echo>
+    	<get src="http://ci.onarandombox.com/job/Heroes/lastSuccessfulBuild/artifact/build/Heroes.jar"
+    		dest="libs/Heroes.jar" verbose="false" usetimestamp="true" />
         <mkdir dir="${dir.dist}" />
         <mkdir dir="${dir.dist}/${dir.dist.skills}" />
         <mkdir dir="${dir.bin}" />
