@@ -62,6 +62,7 @@ public class SkillImpale extends TargettedSkill {
         Material item = player.getItemInHand().getType();
         if (!getSetting(hero, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't use impale with that weapon!");
+            return false;
         }
 
         HeroClass heroClass = hero.getHeroClass();
