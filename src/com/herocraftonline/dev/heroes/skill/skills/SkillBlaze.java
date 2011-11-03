@@ -28,7 +28,7 @@ public class SkillBlaze extends ActiveSkill {
     @Override
     public ConfigurationNode getDefaultConfig() {
         ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("fire-length", 3000);
+        node.setProperty(Setting.DURATION.node(), 30000);
         node.setProperty(Setting.RADIUS.node(), 5);
         return node;
     }
@@ -38,7 +38,7 @@ public class SkillBlaze extends ActiveSkill {
         Player player = hero.getPlayer();
         int range = getSetting(hero, Setting.RADIUS.node(), 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(range, range, range);
-        int fireTicks = getSetting(hero, "fire-length", 3000, false);
+        int fireTicks = getSetting(hero, Setting.DURATION.node(), 30000, false) / 50;
         boolean damaged = false;
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
