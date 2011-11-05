@@ -66,7 +66,6 @@ public class SkillForage extends ActiveSkill{
     public boolean use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
-        HeroClass heroClass = hero.getHeroClass();
         Biome biome = player.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ());
 
         double chance = 0;
@@ -80,7 +79,7 @@ public class SkillForage extends ActiveSkill{
         case TUNDRA :
         case ICE_DESERT :
             materialNames.addAll(getSetting(hero, "ice.items", new ArrayList<String>()));
-            chance = getSetting(hero, "ice.chance", .01, false) * hero.getLevel();
+            chance = getSetting(hero, "ice.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "ice.max-found", 3, false);
             break;
         case FOREST :
@@ -88,40 +87,40 @@ public class SkillForage extends ActiveSkill{
         case SEASONAL_FOREST :
         case EXTREME_HILLS :
             materialNames.addAll(getSetting(hero, "forest.items", Arrays.asList(new String[] {"APPLE", "MELON"})));
-            chance = getSetting(hero, "forest.chance", .01, false) * hero.getLevel();
+            chance = getSetting(hero, "forest.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "forest.max-found", 3, false);
             break;
         case SWAMPLAND :
             materialNames.addAll(getSetting(hero, "swamp.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE"})));
-            chance = getSetting(hero, "swamp.chance", .01, false) * hero.getLevel();
+            chance = getSetting(hero, "swamp.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "swamp.max-found", 4, false);
             break;
         case SAVANNA :
         case SHRUBLAND :
         case PLAINS :
             materialNames.addAll(getSetting(hero, "plains.items", Arrays.asList(new String[] {"WHEAT"})));
-            chance = getSetting(hero, "plains.chance", .01, false) * hero.getLevel();
+            chance = getSetting(hero, "plains.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "plains.max-found", 3, false);
             break;
         case DESERT :
             materialNames.addAll(getSetting(hero, "desert.items", Arrays.asList(new String[] {"CACTUS"})));
-            chance = getSetting(hero, "desert.chance", .005, false) * hero.getLevel();
+            chance = getSetting(hero, "desert.chance", .005, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "desert.max-found", 2, false);
             break;
         case OCEAN :
         case RIVER :
             materialNames.addAll(getSetting(hero, "water.items", Arrays.asList(new String[] {"RAW_FISH"})));
-            chance = getSetting(hero, "water.chance", .01, false) * hero.getLevel();
+            chance = getSetting(hero, "water.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "water.max-found", 3, false);
             break;
         case HELL :
             materialNames.addAll(getSetting(hero, "hell.items", Arrays.asList(new String[] {"ROTTEN_FLESH"})));
-            chance = getSetting(hero, "hell.chance", .005, false) * hero.getLevel();
+            chance = getSetting(hero, "hell.chance", .005, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "hell.max-found", 1, false);
             break;
         case SKY :
             materialNames.addAll(getSetting(hero, "sky.items", Arrays.asList(new String[] {"VINE"})));
-            chance = getSetting(hero, "sky.chance", .01, false) * hero.getLevel();
+            chance = getSetting(hero, "sky.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "sky.max-found", 3, false);
             break;
         }

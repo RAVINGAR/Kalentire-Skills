@@ -59,7 +59,7 @@ public class SkillConsume extends ActiveSkill {
                     throw new IllegalArgumentException("Invalid Configuration for Skill Consume: " + key + " has invalid amount defined");
 
                 int level = getSetting(hero, key + "." + Setting.LEVEL.node(), 1, true);
-                if (hero.getLevel() < level) {
+                if (hero.getLevel(this) < level) {
                     Messaging.send(player, "You must be level $1 before you can consume that item", level);
                     return false;
                 }

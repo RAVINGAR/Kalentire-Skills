@@ -29,7 +29,7 @@ public class SkillEndurance extends ActiveSkill {
         setIdentifiers("skill endurance");
         setTypes(SkillType.BUFF, SkillType.PHYSICAL);
 
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(), Priority.Normal);
+        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(this), Priority.Normal);
     }
 
     @Override
@@ -75,6 +75,12 @@ public class SkillEndurance extends ActiveSkill {
 
     public class SkillHeroListener extends HeroesEventListener {
 
+    	private Skill skill;
+    	
+    	SkillHeroListener(Skill skill) {
+    		this.skill = skill;
+    	}
+    	
         @Override
         public void onSkillDamage(SkillDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -86,7 +92,7 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel();
+                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel(skill);
                     int newDamage = (int) (event.getDamage() * (getSetting(hero, "incoming-multiplier", .9, true) - levelMult));
                     //Never go less than 1
                     if (newDamage == 0)
@@ -118,7 +124,7 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel();
+                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel(skill);
                     int newDamage = (int) (event.getDamage() * (getSetting(hero, "incoming-multiplier", .9, true) - levelMult));
                     //Always deal at least 1 damage
                     if (newDamage == 0)

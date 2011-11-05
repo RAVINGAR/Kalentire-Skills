@@ -68,7 +68,7 @@ public class SkillTransmuteOre extends ActiveSkill {
         }
         
         int level = getSetting(hero, itemName + "." + Setting.LEVEL.node(), 1, true);
-        if (hero.getLevel() < level) {
+        if (hero.getLevel(this) < level) {
             Messaging.send(player, "You must be level $1 to transmute that.", level);
             return false;
         }

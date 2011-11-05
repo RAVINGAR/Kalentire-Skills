@@ -106,7 +106,7 @@ public class SkillConstruct extends ActiveSkill {
         }
 
         int level = getSetting(hero, matName + "." + Setting.LEVEL.node(), 1, true);
-        if (level > hero.getLevel()) {
+        if (level > hero.getLevel(this)) {
             Messaging.send(player, "You must be level " + level + " to construct that item!");
             return false;
         }

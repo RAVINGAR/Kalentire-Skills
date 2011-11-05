@@ -34,7 +34,7 @@ public class SkillBladegrasp extends ActiveSkill {
 		setIdentifiers("skill bladegrasp", "skill bgrasp");
 		setTypes(SkillType.PHYSICAL, SkillType.BUFF);
 
-		registerEvent(Type.CUSTOM_EVENT, new SkillEntityListener(), Priority.Normal);
+		registerEvent(Type.CUSTOM_EVENT, new SkillEntityListener(this), Priority.Normal);
 	}
 
 	@Override
@@ -93,6 +93,12 @@ public class SkillBladegrasp extends ActiveSkill {
 
 	public class SkillEntityListener extends HeroesEventListener {
 
+		private Skill skill;
+		
+		SkillEntityListener(Skill skill) {
+			this.skill = skill;
+		}
+		
 		@Override
 		public void onWeaponDamage(WeaponDamageEvent event) {
 			Heroes.debug.startTask("HeroesSkillListener");
@@ -105,7 +111,7 @@ public class SkillBladegrasp extends ActiveSkill {
 			Player player = (Player) event.getEntity();
 			Hero hero = plugin.getHeroManager().getHero(player);
 			if (hero.hasEffect(getName())) {
-				double parryChance = getSetting(hero, "chance-per-level", .02, false) * hero.getLevel();
+				double parryChance = getSetting(hero, "chance-per-level", .02, false) * hero.getLevel(skill);
 				if (Util.rand.nextDouble() > parryChance)
 					return;
 
@@ -131,7 +137,7 @@ public class SkillBladegrasp extends ActiveSkill {
 			Player player = (Player) event.getEntity();
 			Hero hero = plugin.getHeroManager().getHero(player);
 			if (hero.hasEffect(getName())) {
-				double parryChance = getSetting(hero, "chance-per-level", .02, false) * hero.getLevel();
+				double parryChance = getSetting(hero, "chance-per-level", .02, false) * hero.getLevel(event.getSkill());
 				if (Util.rand.nextDouble() > parryChance)
 					return;
 

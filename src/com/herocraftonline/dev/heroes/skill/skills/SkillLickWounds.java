@@ -40,12 +40,12 @@ public class SkillLickWounds extends ActiveSkill {
         if (skill == null)
             return false;
 
-        if (!hero.hasSkill(skill) || skill.getSetting(hero, Setting.LEVEL.node(), 1, true) > hero.getLevel()) {
+        if (!hero.hasSkill(skill) || skill.getSetting(hero, Setting.LEVEL.node(), 1, true) > hero.getLevel(this)) {
             Messaging.send(player, "You don't have the proper skills to do that!");
             return false;
         }
         double healthPerLevel = skill.getSetting(hero, "health-per-level", .25, false);
-        int healthMax = skill.getSetting(hero, Setting.HEALTH.node(), 30, false) + (int) (healthPerLevel * hero.getLevel());
+        int healthMax = skill.getSetting(hero, Setting.HEALTH.node(), 30, false) + (int) (healthPerLevel * hero.getLevel(this));
         double healed = healthMax * getSetting(hero, "heal-amount", .25, false);
         boolean used = false;
         for (Creature creature : hero.getSummons()) {

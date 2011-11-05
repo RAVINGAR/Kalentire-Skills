@@ -29,7 +29,7 @@ public class SkillBerserk extends ActiveSkill {
         setIdentifiers("skill berserk");
         setTypes(SkillType.BUFF, SkillType.PHYSICAL);
 
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(), Priority.Normal);
+        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(this), Priority.Normal);
     }
 
     @Override
@@ -76,6 +76,12 @@ public class SkillBerserk extends ActiveSkill {
 
     public class SkillHeroListener extends HeroesEventListener {
 
+    	private Skill skill;
+    	
+    	SkillHeroListener(Skill skill) {
+    		this.skill = skill;
+    	}
+    	
         @Override
         public void onSkillDamage(SkillDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -94,7 +100,7 @@ public class SkillBerserk extends ActiveSkill {
             if (event.getDamager() instanceof Player && event.getSkill().isType(SkillType.PHYSICAL)) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getDamager());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel();
+                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel(skill);
                     int newDamage = (int) (event.getDamage() * (getSetting(hero, "outgoing-multiplier", 1.1, false) + levelMult));
                     event.setDamage(newDamage);
                 }
@@ -120,7 +126,7 @@ public class SkillBerserk extends ActiveSkill {
             if (event.getDamager() instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getDamager());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel();
+                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel(skill);
                     int newDamage = (int) (event.getDamage() * (getSetting(hero, "outgoing-multiplier", 1.1, false) + levelMult));
                     event.setDamage(newDamage);
                 }

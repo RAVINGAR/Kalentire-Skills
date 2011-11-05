@@ -31,7 +31,7 @@ public class SkillScan extends TargettedSkill {
         Player player = hero.getPlayer();
         if (target instanceof Player) {
             Hero tHero = plugin.getHeroManager().getHero((Player) target);
-            Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(), tHero.getHeroClass().getName(), (int) tHero.getHealth(), (int) tHero.getMaxHealth());
+            Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), (int) tHero.getHealth(), (int) tHero.getMaxHealth());
             return true;
         } else if (target instanceof Creature){
         	CreatureType cType = Util.getCreatureFromEntity(target);

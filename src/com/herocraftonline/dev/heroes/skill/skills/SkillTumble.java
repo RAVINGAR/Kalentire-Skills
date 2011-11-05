@@ -12,6 +12,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.PassiveSkill;
+import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 
 public class SkillTumble extends PassiveSkill {
@@ -22,7 +23,7 @@ public class SkillTumble extends PassiveSkill {
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.PHYSICAL, SkillType.BUFF);
         
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(), Priority.Low);
+        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Low);
     }
     
     @Override
@@ -35,6 +36,12 @@ public class SkillTumble extends PassiveSkill {
     
     public class SkillEntityListener extends EntityListener {
 
+    	private Skill skill;
+    	
+    	SkillEntityListener(Skill skill) {
+    		this.skill = skill;
+    	}
+    	
         @Override
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -47,7 +54,7 @@ public class SkillTumble extends PassiveSkill {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
-            int distance = (int) (getSetting(hero, "base-distance", 3, false) + (hero.getLevel() * getSetting(hero, "distance-per-level", .5, false)));
+            int distance = (int) (getSetting(hero, "base-distance", 3, false) + (hero.getLevel(skill) * getSetting(hero, "distance-per-level", .5, false)));
             int fallDistance = (event.getDamage() - 3) * 3;
             fallDistance -= distance;
             if (fallDistance <= 0)
