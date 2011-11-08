@@ -93,6 +93,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             this.types.add(EffectType.HARMFUL);
             this.types.add(EffectType.ICE);
             this.types.add(EffectType.ROOT);
+            this.types.add(EffectType.UNBREAKABLE);
         }
 
         @Override
