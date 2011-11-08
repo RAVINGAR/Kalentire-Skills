@@ -7,7 +7,6 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
-import com.herocraftonline.dev.heroes.classes.HeroClass;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
@@ -36,7 +35,6 @@ public class SkillForcePush extends TargettedSkill {
     @Override
     public boolean use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        HeroClass heroClass = hero.getHeroClass();
 
         int damage = getSetting(hero, Setting.DAMAGE.node(), 0, false);
         if (damage > 0) {

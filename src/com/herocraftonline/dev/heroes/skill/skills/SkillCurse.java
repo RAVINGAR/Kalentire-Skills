@@ -11,7 +11,6 @@ import org.bukkit.util.config.ConfigurationNode;
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
-import com.herocraftonline.dev.heroes.classes.HeroClass;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
@@ -62,7 +61,6 @@ public class SkillCurse extends TargettedSkill {
     public boolean use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        HeroClass heroClass = hero.getHeroClass();
         long duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
         double missChance = getSetting(hero, "miss-chance", .50, false);
         CurseEffect cEffect = new CurseEffect(this, duration, missChance);
