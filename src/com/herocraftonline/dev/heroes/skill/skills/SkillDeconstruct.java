@@ -23,7 +23,7 @@ public class SkillDeconstruct extends ActiveSkill {
 
     public SkillDeconstruct(Heroes plugin) {
         super(plugin, "Deconstruct");
-        setDescription("Deconstructs the object you are holding.");
+        setDescription("Deconstructs the object you are holding");
         setUsage("/skill deconstruct <list|info|item>");
         setArgumentRange(0, 2);
         setIdentifiers("skill deconstruct", "skill dstruct");

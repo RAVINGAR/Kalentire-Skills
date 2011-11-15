@@ -19,7 +19,7 @@ public class SkillCleave extends TargettedSkill {
 
     public SkillCleave(Heroes plugin) {
         super(plugin, "Cleave");
-        setDescription("Cleaves your target and nearby enemies.");
+        setDescription("Cleaves your target and nearby enemies");
         setUsage("/skill cleave <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill cleave");

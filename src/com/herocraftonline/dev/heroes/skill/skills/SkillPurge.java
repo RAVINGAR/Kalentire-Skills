@@ -40,7 +40,7 @@ public class SkillPurge extends TargettedSkill {
         Player player = hero.getPlayer();
         if (target instanceof Player && (hero.getParty() == null || !hero.getParty().isPartyMember((Player) target))) {
             if (!damageCheck(player, target)) {
-                Messaging.send(player, "Invalid target!");
+                Messaging.send(player, "Invalid Target!");
                 return false;
             }
         }

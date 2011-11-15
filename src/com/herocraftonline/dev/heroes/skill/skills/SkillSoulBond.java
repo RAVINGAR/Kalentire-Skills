@@ -27,7 +27,7 @@ public class SkillSoulBond extends TargettedSkill {
 
     public SkillSoulBond(Heroes plugin) {
         super(plugin, "SoulBond");
-        setDescription("You share your targets pain.");
+        setDescription("You share your targets pain");
         setUsage("/skill soulbond <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soulbond", "skill sbond");

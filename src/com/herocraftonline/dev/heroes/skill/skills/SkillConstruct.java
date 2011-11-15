@@ -24,7 +24,7 @@ public class SkillConstruct extends ActiveSkill {
 
     public SkillConstruct(Heroes plugin) {
         super(plugin, "Construct");
-        setDescription("Constructs an object from materials.");
+        setDescription("Constructs an object from materials");
         setUsage("/skill construct <item|list|info>");
         setArgumentRange(1, 2);
         setIdentifiers("skill construct");

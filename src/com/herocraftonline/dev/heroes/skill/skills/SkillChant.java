@@ -33,7 +33,7 @@ public class SkillChant extends TargettedSkill {
     public boolean use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (!(target instanceof Player)) {
-            Messaging.send(player, "Invalid target!");
+            Messaging.send(player, "Invalid Target!");
             return false;
         }
 

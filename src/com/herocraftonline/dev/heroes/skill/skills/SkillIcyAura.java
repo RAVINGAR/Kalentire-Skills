@@ -36,7 +36,7 @@ public class SkillIcyAura extends ActiveSkill {
 
     public SkillIcyAura(Heroes plugin) {
         super(plugin, "IcyAura");
-        setDescription("Triggers an aura of ice around you.");
+        setDescription("Triggers an aura of ice around you");
         setUsage("/skill icyaura");
         setArgumentRange(0, 0);
         setIdentifiers("skill icyaura");

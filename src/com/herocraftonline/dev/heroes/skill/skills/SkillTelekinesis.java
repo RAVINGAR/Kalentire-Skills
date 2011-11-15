@@ -22,7 +22,7 @@ public class SkillTelekinesis extends ActiveSkill {
 
     public SkillTelekinesis(Heroes plugin) {
         super(plugin, "Telekinesis");
-        setDescription("Activate levers, buttons and other interactable objects from afar!");
+        setDescription("Activate levers, buttons and other interactable objects from afar");
         setUsage("/skill telekinesis");
         setArgumentRange(0, 0);
         setIdentifiers("skill telekinesis");
@@ -60,7 +60,7 @@ public class SkillTelekinesis extends ActiveSkill {
             return true;
         }
 
-        Messaging.send(player, "You must target a lever or button");
+        Messaging.send(player, "You must target a lever or button!");
         return false;
     }
 

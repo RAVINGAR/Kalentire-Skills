@@ -36,7 +36,7 @@ public class SkillSilence extends TargettedSkill {
         Player player = hero.getPlayer();
 
         if (!(target instanceof Player)) {
-            Messaging.send(player, "Invalid target!");
+            Messaging.send(player, "Invalid Target!");
             return false;
         }
 

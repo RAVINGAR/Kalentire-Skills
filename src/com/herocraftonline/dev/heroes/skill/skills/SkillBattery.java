@@ -30,15 +30,13 @@ public class SkillBattery extends TargettedSkill {
 
     @Override
     public boolean use(Hero hero, LivingEntity target, String[] args) {
-        if (!(target instanceof Player))
+    	Player player = hero.getPlayer();
+        if (!(target instanceof Player) || player.equals(target)) {
+        	Messaging.send(player, "Invalid Target!");
             return false;
+        }
 
-        Hero tHero = plugin.getHeroManager().getHero((Player) target);
-        if (tHero == null)
-            return false;
-
-        if (tHero.equals(hero))
-            return false;
+        Hero tHero = plugin.getHeroManager().getHero((Player) target);	
 
         int transferAmount = getSetting(hero, "transfer-amount", 20, false);
         if (hero.getMana() > transferAmount) {

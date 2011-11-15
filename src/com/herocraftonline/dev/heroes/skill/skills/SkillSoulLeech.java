@@ -22,7 +22,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
     public SkillSoulLeech(Heroes plugin) {
         super(plugin, "SoulLeech");
-        setDescription("You slowly drain the life out of the player.");
+        setDescription("You slowly drain the life out of the player");
         setUsage("/skill soulleech <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soulleech", "skill sleech");

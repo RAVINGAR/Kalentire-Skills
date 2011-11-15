@@ -17,7 +17,7 @@ public class SkillGarrote extends TargettedSkill {
 
     public SkillGarrote(Heroes plugin) {
         super(plugin, "Garrote");
-        setDescription("Damages and silences the target for a short time.");
+        setDescription("Damages and silences the target for a short time");
         setUsage("/skill garrote <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill garrote");
