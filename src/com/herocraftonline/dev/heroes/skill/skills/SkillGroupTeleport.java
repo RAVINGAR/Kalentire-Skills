@@ -6,6 +6,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.util.Messaging;
 
 public class SkillGroupTeleport extends ActiveSkill {
 
@@ -19,15 +20,16 @@ public class SkillGroupTeleport extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
         if (hero.getParty() != null && hero.getParty().getMembers().size() != 1) {
-            Player player = hero.getPlayer();
             for (Hero partyMember : hero.getParty().getMembers()) {
                 partyMember.getPlayer().teleport(player);
             }
             broadcastExecuteText(hero);
-            return true;
+            return SkillResult.NORMAL;
         }
-        return false;
+        Messaging.send(player, "You must have a group to teleport your party members to you!");
+        return SkillResult.FAIL;
     }
 }

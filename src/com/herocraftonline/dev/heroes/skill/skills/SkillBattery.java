@@ -29,12 +29,10 @@ public class SkillBattery extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
     	Player player = hero.getPlayer();
-        if (!(target instanceof Player) || player.equals(target)) {
-        	Messaging.send(player, "Invalid Target!");
-            return false;
-        }
+        if (!(target instanceof Player) || player.equals(target))
+        	return SkillResult.INVALID_TARGET;
 
         Hero tHero = plugin.getHeroManager().getHero((Player) target);	
 
@@ -46,10 +44,10 @@ public class SkillBattery extends TargettedSkill {
             hero.setMana(hero.getMana() - transferAmount);
             tHero.setMana(tHero.getMana() + transferAmount);
             broadcastExecuteText(hero, target);
-            return true;
+            return SkillResult.NORMAL;
         } else {
             Messaging.send(hero.getPlayer(), "You need at least $1 mana to transfer.", transferAmount);
-            return false;
+            return SkillResult.FAIL;
         }
     }
 

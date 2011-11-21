@@ -8,7 +8,6 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
-import com.herocraftonline.dev.heroes.util.Messaging;
 
 public class SkillSyphon extends TargettedSkill {
 
@@ -30,12 +29,10 @@ public class SkillSyphon extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        if (!(target instanceof Player)) {
-            Messaging.send(player, "Your need a target!");
-            return false;
-        }
+        if (!(target instanceof Player))
+        	return SkillResult.INVALID_TARGET;
 
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
 
@@ -45,7 +42,7 @@ public class SkillSyphon extends TargettedSkill {
                 transferredHealth = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
                 player.sendMessage("Sorry, that's an incorrect health value!");
-                return false;
+                return SkillResult.FAIL;
             }
         }
         double playerHealth = hero.getHealth();
@@ -58,7 +55,7 @@ public class SkillSyphon extends TargettedSkill {
         targetHero.syncHealth();
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

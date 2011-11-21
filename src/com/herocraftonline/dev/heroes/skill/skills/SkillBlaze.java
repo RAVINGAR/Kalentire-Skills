@@ -34,7 +34,7 @@ public class SkillBlaze extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int range = getSetting(hero, Setting.RADIUS.node(), 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(range, range, range);
@@ -55,10 +55,10 @@ public class SkillBlaze extends ActiveSkill {
         
         if (!damaged) {
             Messaging.send(player, "No targets in range!");
-            return false;
+            return SkillResult.FAIL;
         }
         
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 }

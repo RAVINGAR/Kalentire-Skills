@@ -75,7 +75,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
         Block target = player.getTargetBlock((HashSet<Byte>) null, 100);
@@ -99,7 +99,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
         ((CraftWorld) player.getWorld()).getHandle().addEntity(fireball);
 
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class SkillEntityListener extends EntityListener {

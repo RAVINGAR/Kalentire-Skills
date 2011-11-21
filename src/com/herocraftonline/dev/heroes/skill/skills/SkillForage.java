@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
-import com.herocraftonline.dev.heroes.classes.HeroClass;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
@@ -63,7 +62,7 @@ public class SkillForage extends ActiveSkill{
     }
     
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
         Biome biome = player.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ());
@@ -136,7 +135,7 @@ public class SkillForage extends ActiveSkill{
         
         if (materials.isEmpty() || Util.rand.nextDouble() >= chance || maxFinds <= 0) {
             Messaging.send(player, "You found nothing while foraging.");
-            return false;
+            return SkillResult.NORMAL;
         } 
         
         int numItems = Util.rand.nextInt(maxFinds) + 1;
@@ -154,7 +153,6 @@ public class SkillForage extends ActiveSkill{
         }
         Util.syncInventory(player, plugin);
         broadcastExecuteText(hero);
-        return true; 
-        
+        return SkillResult.NORMAL; 
     }
 }

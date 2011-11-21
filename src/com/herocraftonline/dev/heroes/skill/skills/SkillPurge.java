@@ -36,13 +36,11 @@ public class SkillPurge extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player && (hero.getParty() == null || !hero.getParty().isPartyMember((Player) target))) {
-            if (!damageCheck(player, target)) {
-                Messaging.send(player, "Invalid Target!");
-                return false;
-            }
+            if (!damageCheck(player, target))
+            	return SkillResult.INVALID_TARGET;
         }
 
         int radius = getSetting(hero, Setting.RADIUS.node(), 10, false);
@@ -60,10 +58,10 @@ public class SkillPurge extends TargettedSkill {
 
         if (maxRemovals != removalsLeft) {
             broadcastExecuteText(hero);
-            return true;
+            return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "No valid targets in range.");
-            return false;
+            return SkillResult.FAIL;
         }
     }  
 

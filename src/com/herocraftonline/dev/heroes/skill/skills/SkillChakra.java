@@ -33,7 +33,7 @@ public class SkillChakra extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location castLoc = player.getLocation();
         int radius = getSetting(hero, Setting.RADIUS.node(), 7, false);
@@ -50,7 +50,7 @@ public class SkillChakra extends ActiveSkill {
             healDispel(hero, removals, healAmount);
         }
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     private void healDispel(Hero hero, int removals, int healAmount) {

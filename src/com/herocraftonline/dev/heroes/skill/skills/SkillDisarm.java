@@ -45,29 +45,27 @@ public class SkillDisarm extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        if (!(target instanceof Player)) {
-            Messaging.send(player, "You must target another player!");
-            return false;
-        }
+        if (!(target instanceof Player))
+        	return SkillResult.INVALID_TARGET;
 
         Hero tHero = plugin.getHeroManager().getHero((Player) target);
 
         if (!Util.isWeapon(tHero.getPlayer().getItemInHand().getType())) {
             Messaging.send(player, "You cannot disarm bare hands!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         if (tHero.hasEffectType(EffectType.DISARM)) {
             Messaging.send(player, "%target% is already disarmed.");
-            return false;
+            return SkillResult.FAIL;
         }
 
         int duration = getSetting(hero, Setting.DURATION.node(), 500, false);
         tHero.addEffect(new DisarmEffect(this, duration, applyText, expireText));
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 }

@@ -15,6 +15,7 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -52,13 +53,13 @@ public class SkillManaShield extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
         int duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
         hero.addEffect(new ManaShieldEffect(this, duration));
 
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class ManaShieldEffect extends ExpirableEffect {

@@ -22,43 +22,41 @@ public class SkillRevive extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Player target = plugin.getServer().getPlayer(args[0]);
 
-        if (target == null) {
-            player.sendMessage("Player not found.");
-            return false;
-        }
+        if (target == null)
+        	return SkillResult.INVALID_TARGET;
+        
 
-        Player targetPlayer = target;
-        String targetName = targetPlayer.getName();
+        String targetName = target.getName();
         if (!Util.deaths.containsKey(targetName)) {
             Messaging.send(player, "$1 has not died recently.", targetName);
-            return false;
+            return SkillResult.FAIL;
         }
 
         Location deathLoc = Util.deaths.get(targetName);
         Location playerLoc = player.getLocation();
         if (!playerLoc.getWorld().equals(deathLoc.getWorld()) || playerLoc.distance(deathLoc) > 50.0) {
             Messaging.send(player, "You are out of range.");
-            return false;
+            return SkillResult.FAIL;
         }
 
-        if (targetPlayer.isDead()) {
+        if (target.isDead()) {
             Messaging.send(player, "$1 is still dead.", targetName);
-            return false;
+            return SkillResult.FAIL;
         }
 
-        Hero targetHero = plugin.getHeroManager().getHero(targetPlayer);
+        Hero targetHero = plugin.getHeroManager().getHero(target);
         if (!hero.hasParty() || !hero.getParty().isPartyMember(targetHero)) {
             Messaging.send(player, "The person needs to be in your party to do that!");
-            return false;
+            return SkillResult.FAIL;
         }
 
-        targetPlayer.teleport(playerLoc);
+        target.teleport(playerLoc);
 
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 }

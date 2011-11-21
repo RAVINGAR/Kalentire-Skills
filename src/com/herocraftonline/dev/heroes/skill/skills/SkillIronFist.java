@@ -13,6 +13,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillIronFist extends ActiveSkill {
@@ -37,7 +38,7 @@ public class SkillIronFist extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
         int radius = getSetting(hero, Setting.RADIUS.node(), 5, false);
@@ -76,6 +77,6 @@ public class SkillIronFist extends ActiveSkill {
         }
 
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 }

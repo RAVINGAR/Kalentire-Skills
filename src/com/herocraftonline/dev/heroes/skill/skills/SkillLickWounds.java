@@ -10,6 +10,7 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -33,16 +34,16 @@ public class SkillLickWounds extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int rangeSquared = (int) Math.pow(getSetting(hero, Setting.RADIUS.node(), 10, false), 2);
         Skill skill = plugin.getSkillManager().getSkill("Wolf");
         if (skill == null)
-            return false;
+            return SkillResult.FAIL;
 
         if (!hero.hasSkill(skill) || skill.getSetting(hero, Setting.LEVEL.node(), 1, true) > hero.getLevel(this)) {
             Messaging.send(player, "You don't have the proper skills to do that!");
-            return false;
+            return SkillResult.FAIL;
         }
         double healthPerLevel = skill.getSetting(hero, "health-per-level", .25, false);
         int healthMax = skill.getSetting(hero, Setting.HEALTH.node(), 30, false) + (int) (healthPerLevel * hero.getLevel(this));
@@ -63,11 +64,11 @@ public class SkillLickWounds extends ActiveSkill {
 
         if (!used) {
             Messaging.send(player, "There are no nearby wolves to heal!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

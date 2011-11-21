@@ -61,9 +61,7 @@ public class SkillDeepFreeze extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
         FreezeEffect fEffect = new FreezeEffect(this, duration, hero);
 
@@ -71,13 +69,11 @@ public class SkillDeepFreeze extends TargettedSkill {
             plugin.getHeroManager().getHero((Player) target).addEffect(fEffect);
         } else if (target instanceof Creature) {
             plugin.getEffectManager().addCreatureEffect((Creature) target, fEffect);
-        } else {
-            Messaging.send(player, "Invalid target!");
-            return false;
-        }
+        } else
+        	return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class FreezeEffect extends PeriodicExpirableEffect {

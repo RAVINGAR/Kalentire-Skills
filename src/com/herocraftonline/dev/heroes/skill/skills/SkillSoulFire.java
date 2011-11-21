@@ -61,10 +61,10 @@ public class SkillSoulFire extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         int duration = getSetting(hero, Setting.DURATION.node(), 600000, false);
         hero.addEffect(new SoulFireEffect(this, duration));
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class SkillDamageListener extends EntityListener {

@@ -50,14 +50,14 @@ public class SkillEndurance extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         if (hero.hasEffect("Endurance")) {
             hero.removeEffect(hero.getEffect("Endurance"));
-            return false;
+            return SkillResult.REMOVED_EFFECT;
         }
         hero.addEffect(new EnduranceEffect(this));
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class EnduranceEffect extends FormEffect {

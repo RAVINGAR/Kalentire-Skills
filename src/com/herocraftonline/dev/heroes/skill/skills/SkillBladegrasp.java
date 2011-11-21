@@ -59,12 +59,12 @@ public class SkillBladegrasp extends ActiveSkill {
 	}
 
 	@Override
-	public boolean use(Hero hero, String[] args) {
+	public SkillResult use(Hero hero, String[] args) {
 		broadcastExecuteText(hero);
 		int duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
 		hero.addEffect(new BladegraspEffect(this, duration));
 
-		return true;
+		return SkillResult.NORMAL;
 	}
 
 	public class BladegraspEffect extends ExpirableEffect {

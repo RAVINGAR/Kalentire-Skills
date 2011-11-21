@@ -48,7 +48,7 @@ public class SkillDecay extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         long duration = getSetting(hero, Setting.DURATION.node(), 21000, false);
@@ -61,13 +61,11 @@ public class SkillDecay extends TargettedSkill {
         } else if (target instanceof Creature) {
             Creature creature = (Creature) target;
             plugin.getEffectManager().addCreatureEffect(creature, decayEffect);
-        } else {
-            Messaging.send(player, "Invalid target!");
-            return false;
-        }
+        } else
+        	return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class DecayEffect extends PeriodicDamageEffect {

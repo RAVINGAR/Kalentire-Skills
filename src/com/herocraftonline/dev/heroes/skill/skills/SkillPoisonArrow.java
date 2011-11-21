@@ -18,6 +18,7 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -58,12 +59,12 @@ public class SkillPoisonArrow extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         long duration = getSetting(hero, Setting.DURATION.node(), 600000, false);
         int numAttacks = getSetting(hero, "attacks", 1, false);
         hero.addEffect(new PoisonArrowBuff(this, duration, numAttacks));
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class ArrowPoison extends PeriodicDamageEffect {

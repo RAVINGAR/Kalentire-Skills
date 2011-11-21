@@ -34,17 +34,17 @@ public class SkillGarrote extends TargettedSkill {
     }
     
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         
         if (player.getItemInHand().getType() != Material.STRING) {
             Messaging.send(player, "You must have a piece of string to use garrote!");
-            return false;
+            return SkillResult.FAIL;
         }
         
         if (!hero.hasEffect("Sneak") && !hero.hasEffect("Invisible")) {
             Messaging.send(player, "You must be sneaking or invisible to garrote!");
-            return false;
+            return SkillResult.FAIL;
         }
         
         int damage = getSetting(hero, Setting.DAMAGE.node(), 4, false);
@@ -54,7 +54,7 @@ public class SkillGarrote extends TargettedSkill {
             plugin.getHeroManager().getHero((Player) target).addEffect(new SilenceEffect(this, duration));
         }
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

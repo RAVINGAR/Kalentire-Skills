@@ -31,13 +31,13 @@ public class SkillSummonArrow extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         World world = player.getWorld();
         ItemStack dropItem = new ItemStack(Material.ARROW, getSetting(hero, "amount", 1, false));
         world.dropItem(player.getLocation(), dropItem);
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

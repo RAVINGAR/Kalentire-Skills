@@ -49,7 +49,7 @@ public class SkillQuicken extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
         
         int duration = getSetting(hero, Setting.DURATION.node(), 300000, false);
@@ -60,7 +60,7 @@ public class SkillQuicken extends ActiveSkill {
         QuickenEffect qEffect = new QuickenEffect(this, duration, multiplier);
         if (!hero.hasParty()) {
             hero.addEffect(qEffect);
-            return true;
+            return SkillResult.NORMAL;
         }
         Player player = hero.getPlayer();
         int radius = getSetting(hero, Setting.RADIUS.node(), 15, false);
@@ -73,7 +73,7 @@ public class SkillQuicken extends ActiveSkill {
             
             tHero.addEffect(qEffect);
         }
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class QuickenEffect extends ExpirableEffect {

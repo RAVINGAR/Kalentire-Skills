@@ -52,7 +52,7 @@ public class SkillConstruct extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
         // List all items this hero can make with construct
@@ -64,15 +64,15 @@ public class SkillConstruct extends ActiveSkill {
 
         if (args[0].toLowerCase().equals("list")) {
             Messaging.send(player, "You can craft these items: " + itemSet.toString().replace("[", "").replace("]", ""));
-            return false;
+            return SkillResult.FAIL;
         } else if (args[0].toLowerCase().equals("info")) {
             // Usage Checks if the player passed in arguments
             if (args.length < 2) {
                 Messaging.send(player, "Proper usage is /skill construct info item");
-                return false;
+                return SkillResult.FAIL;
             } else if (!itemSet.contains(args[1])) {
                 Messaging.send(player, "You can't construct that item!");
-                return false;
+                return SkillResult.FAIL;
             } else {
                 // Iterate over the construct recipe and get all the items/amounts it turns into
                 Messaging.send(player, args[1] + " requires the following items to craft: ");
@@ -84,31 +84,31 @@ public class SkillConstruct extends ActiveSkill {
                     int amount = getSetting(hero, args[1] + "." + s, 1, false);
                     Messaging.send(player, s.toLowerCase().replace("_", " ") + ": " + amount);
                 }
-                return false;
+                return SkillResult.SKIP_POST_USAGE;
             }
         }
 
         if (player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.WORKBENCH && getSetting(hero, "require-workbench", true)) {
             Messaging.send(player, "You must have a workbench targetted to construct an item!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         if (player.getInventory().firstEmpty() == -1) {
             Messaging.send(player, "You need at least 1 free inventory spot to construct an item!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         String matName = args[0];
         if (!getSettingKeys(hero).contains(matName)) {
             Messaging.send(player, "Found Keys: " + getSettingKeys(hero).toString());
             Messaging.send(player, "You can't construct that item!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         int level = getSetting(hero, matName + "." + Setting.LEVEL.node(), 1, true);
         if (level > hero.getLevel(this)) {
             Messaging.send(player, "You must be level " + level + " to construct that item!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         Material mat = Material.matchMaterial(matName);
@@ -118,7 +118,7 @@ public class SkillConstruct extends ActiveSkill {
         List<String> returned = getSettingKeys(hero, matName);
         if (returned == null) {
             Messaging.send(player, "Unable to construct that item!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         List<ItemStack> items = new ArrayList<ItemStack>();
@@ -137,7 +137,7 @@ public class SkillConstruct extends ActiveSkill {
             ItemStack stack = new ItemStack(m, amount);
             if (!hasReagentCost(player, stack)) {
                 Messaging.send(player, "You don't have all the materials to construct that! Missing " + amount + " " + s);
-                return false;
+                return SkillResult.FAIL;
             }
             items.add(stack);
         }
@@ -160,7 +160,7 @@ public class SkillConstruct extends ActiveSkill {
         hero.gainExp(xp, ExperienceType.CRAFTING);
 
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), matName.toLowerCase().replace("_", " "));
-        return true;
+        return SkillResult.NORMAL;
     }
 
     private ItemStack[] normalizeItemStack(Material mat, int amount) {

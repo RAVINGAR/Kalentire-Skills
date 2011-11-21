@@ -31,16 +31,16 @@ public class SkillFarSight extends ActiveSkill {
     }
 
 	@Override
-	public boolean use(Hero hero, String[] args) {     
+	public SkillResult use(Hero hero, String[] args) {     
 		if (hero.hasEffect("Zoom")) {
 			hero.removeEffect(hero.getEffect("Zoom"));
-			return false;
+			return SkillResult.REMOVED_EFFECT;
 		}
 		
         int duration = getSetting(hero, Setting.DURATION.node(), 15000, false);
         ZoomEffect effect = new ZoomEffect(this, duration);
         hero.addEffect(effect);
-        return true;
+        return SkillResult.NORMAL;
 	}
 	
 	public class ZoomEffect extends ExpirableEffect {

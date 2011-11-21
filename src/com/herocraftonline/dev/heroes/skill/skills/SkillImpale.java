@@ -56,13 +56,13 @@ public class SkillImpale extends TargettedSkill {
     }
     
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         Material item = player.getItemInHand().getType();
         if (!getSetting(hero, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't use impale with that weapon!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         HeroClass heroClass = hero.getHeroClass();
@@ -83,7 +83,7 @@ public class SkillImpale extends TargettedSkill {
         }
         
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
     
     public class ImpaleEffect extends ExpirableEffect {

@@ -28,6 +28,7 @@ import com.herocraftonline.dev.heroes.effects.common.SummonEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -72,7 +73,7 @@ public class SkillSkeleton extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
         if (hero.getSummons().size() < getSetting(hero, "max-summons", 3, false)) {
@@ -83,11 +84,11 @@ public class SkillSkeleton extends ActiveSkill {
             plugin.getEffectManager().addCreatureEffect(skeleton, new SummonEffect(this, duration, hero, expireText));
             broadcastExecuteText(hero);
             Messaging.send(player, "You have succesfully summoned a skeleton to fight for you.");
-            return true;
+            return SkillResult.NORMAL;
         }
 
         Messaging.send(player, "You can't control anymore skeletons!");
-        return false;
+        return SkillResult.FAIL;
     }
 
     public class SummonEntityListener extends EntityListener {

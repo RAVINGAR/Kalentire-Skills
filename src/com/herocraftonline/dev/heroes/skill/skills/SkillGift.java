@@ -10,6 +10,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 
 public class SkillGift extends ActiveSkill{
@@ -40,7 +41,7 @@ public class SkillGift extends ActiveSkill{
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Player reciever = null;
         ItemStack item = null;
@@ -61,22 +62,22 @@ public class SkillGift extends ActiveSkill{
                 } catch (NumberFormatException e) {
                     Messaging.send(player, "That's not an amount!");
                     Messaging.send(player, getUsage());
-                    return false;
+                    return SkillResult.FAIL;
                 }
                 if (amount > maxAmount) {
                     Messaging.send(player, "You can only send up to $1 at a time", maxAmount);
-                    return false;
+                    return SkillResult.FAIL;
                 }
                 item.setAmount(amount);
             }
         } else {
             Messaging.send(player, getUsage());
-            return false;
+            return SkillResult.FAIL;
         }
         
         if(amount < item.getAmount()) {
             Messaging.send(player, "You aren't holding enough to send that amount!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         player.getInventory().removeItem(item);
@@ -88,9 +89,9 @@ public class SkillGift extends ActiveSkill{
             }
             Messaging.send(reciever, "Some items fall at your feet!");
         }
+        
         broadcastExecuteText(hero);
-
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

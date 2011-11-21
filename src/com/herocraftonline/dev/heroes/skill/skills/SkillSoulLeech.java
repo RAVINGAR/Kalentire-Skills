@@ -47,7 +47,7 @@ public class SkillSoulLeech extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         long duration = getSetting(hero, Setting.DURATION.node(), 10000, false);
@@ -61,13 +61,11 @@ public class SkillSoulLeech extends TargettedSkill {
         } else if (target instanceof Creature) {
             Creature creature = (Creature) target;
             plugin.getEffectManager().addCreatureEffect(creature, slEffect);
-        } else {
-            Messaging.send(player, "Invalid target!");
-            return false;
-        }
+        } else
+        	return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class SoulLeechEffect extends PeriodicDamageEffect {

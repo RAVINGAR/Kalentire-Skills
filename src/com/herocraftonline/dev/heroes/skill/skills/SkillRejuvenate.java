@@ -47,14 +47,14 @@ public class SkillRejuvenate extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player) {
             Hero targetHero = plugin.getHeroManager().getHero((Player) target);
 
             if (targetHero.getHealth() >= targetHero.getMaxHealth()) {
                 Messaging.send(player, "Target is already fully healed.");
-                return false;
+                return SkillResult.FAIL;
             }
 
             long period = getSetting(hero, Setting.PERIOD.node(), 3000, true);
@@ -62,11 +62,10 @@ public class SkillRejuvenate extends TargettedSkill {
             int tickHealth = getSetting(hero, "tick-heal", 1, false);
             RejuvenateEffect rEffect = new RejuvenateEffect(this, period, duration, tickHealth, player);
             targetHero.addEffect(rEffect);
-            return true;
+            return SkillResult.NORMAL;
         }
 
-        Messaging.send(player, "You must target a player!");
-        return false;
+        return SkillResult.INVALID_TARGET;
     }
 
     public class RejuvenateEffect extends PeriodicHealEffect {

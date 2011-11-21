@@ -9,6 +9,7 @@ import com.herocraftonline.dev.heroes.effects.common.SafeFallEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -34,19 +35,15 @@ public class SkillSafefallOther extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
-        if (!(target instanceof Player) || hero.getPlayer().equals(target)) {
-            Messaging.send(hero.getPlayer(), "Invalid target!");
-            return false;
-        }
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        if (!(target instanceof Player) || hero.getPlayer().equals(target))
+        	return SkillResult.INVALID_TARGET;
 
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
         broadcastExecuteText(hero, target);
         int duration = getSetting(hero, Setting.DURATION.node(), 10000, false);
         targetHero.addEffect(new SafeFallEffect(this, duration));
 
-        return true;
-
+        return SkillResult.NORMAL;
     }
-
 }

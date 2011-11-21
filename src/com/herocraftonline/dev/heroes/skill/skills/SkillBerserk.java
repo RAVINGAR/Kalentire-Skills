@@ -50,14 +50,14 @@ public class SkillBerserk extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         if (hero.hasEffect("Berserk")) {
             hero.removeEffect(hero.getEffect("Berserk"));
-            return false;
+            return SkillResult.REMOVED_EFFECT;
         }
         hero.addEffect(new BerserkEffect(this));
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class BerserkEffect extends FormEffect {

@@ -61,12 +61,12 @@ public class SkillAssassinsBlade extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         long duration = getSetting(hero, "buff-duration", 600000, false);
         int numAttacks = getSetting(hero, "attacks", 1, false);
         hero.addEffect(new AssassinBladeBuff(this, duration, numAttacks));
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class AssassinBladeBuff extends ExpirableEffect {

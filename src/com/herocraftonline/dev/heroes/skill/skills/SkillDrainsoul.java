@@ -29,7 +29,7 @@ public class SkillDrainsoul extends TargettedSkill {
 	}
 
 	@Override
-	public boolean use(Hero hero, LivingEntity target, String[] args) {
+	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		Player player = hero.getPlayer();
 
 		int absorbAmount = getSetting(hero, "absorb-amount", 4, false);
@@ -44,7 +44,7 @@ public class SkillDrainsoul extends TargettedSkill {
 		target.damage(absorbAmount, player);
 
 		broadcastExecuteText(hero, target);
-		return true;
+		return SkillResult.NORMAL;
 	}
 
 }

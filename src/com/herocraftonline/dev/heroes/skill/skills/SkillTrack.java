@@ -30,14 +30,12 @@ public class SkillTrack extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
         Player target = plugin.getServer().getPlayer(args[0]);
-        if (target == null) {
-            Messaging.send(player, "Target not found.");
-            return false;
-        }
+        if (target == null)
+        	return SkillResult.INVALID_TARGET;
 
         Location location = target.getLocation();
         int randomness = getSetting(hero, "randomness", 50, true);
@@ -48,7 +46,7 @@ public class SkillTrack extends ActiveSkill {
         Messaging.send(player, "Tracked $1: $2,$3,$4", target.getName(), x, y, z);
         player.setCompassTarget(location);
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

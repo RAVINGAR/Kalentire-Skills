@@ -52,10 +52,10 @@ public class SkillAbsorb extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
         hero.addEffect(new AbsorbEffect(this));
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class AbsorbEffect extends Effect {

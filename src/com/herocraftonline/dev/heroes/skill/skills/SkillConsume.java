@@ -12,6 +12,7 @@ import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -37,16 +38,16 @@ public class SkillConsume extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         if (hero.getMana() == 100) {
             Messaging.send(player, "Your mana is already full!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         List<String> keys = getSettingKeys(hero);
         if (keys == null || keys.isEmpty())
-            return false;
+            return SkillResult.FAIL;
 
         for (String key : keys) {
             if (key.toUpperCase().equals(args[0].toUpperCase())) {
@@ -61,14 +62,14 @@ public class SkillConsume extends ActiveSkill {
                 int level = getSetting(hero, key + "." + Setting.LEVEL.node(), 1, true);
                 if (hero.getLevel(this) < level) {
                     Messaging.send(player, "You must be level $1 before you can consume that item", level);
-                    return false;
+                    return SkillResult.FAIL;
                 }
 
                 ItemStack reagent = new ItemStack(mat, amount);
                 if (!hasReagentCost(player, reagent)) {
                     String reagentName = reagent.getType().name().toLowerCase().replace("_", " ");
                     Messaging.send(player, "Sorry, you need to have $1 $2 to use that skill!", reagent.getAmount(), reagentName);
-                    return false;
+                    return SkillResult.FAIL;
                 }
 
                 
@@ -76,7 +77,7 @@ public class SkillConsume extends ActiveSkill {
                 HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, mana, this);
                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                 if (hrmEvent.isCancelled())
-                    return false;
+                    return SkillResult.FAIL;
 
                 player.getInventory().removeItem(reagent);
                 hero.setMana(hrmEvent.getAmount() + hero.getMana());
@@ -87,11 +88,11 @@ public class SkillConsume extends ActiveSkill {
                 }
 
                 broadcastExecuteText(hero);
-                return true;
+                return SkillResult.NORMAL;
             }
         }
 
         Messaging.send(player, "You can't consume that item!");
-        return false;
+        return SkillResult.FAIL;
     }
 }

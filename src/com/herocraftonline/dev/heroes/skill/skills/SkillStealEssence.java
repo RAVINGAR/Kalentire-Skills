@@ -42,13 +42,11 @@ public class SkillStealEssence extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        if (!(target instanceof Player)) {
-            Messaging.send(player, "Invalid Target!");
-            return false;
-        }
+        if (!(target instanceof Player))
+        	return SkillResult.INVALID_TARGET;
 
         ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
         Hero tHero = getPlugin().getHeroManager().getHero((Player) target);
@@ -60,7 +58,7 @@ public class SkillStealEssence extends TargettedSkill {
 
         if (possibleEffects.isEmpty()) {
             Messaging.send(player, "That target has no effects to steal!");
-            return false;
+            return SkillResult.FAIL;
         }
 
         String stolenNames = "";
@@ -74,7 +72,7 @@ public class SkillStealEssence extends TargettedSkill {
         }
 
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), getName(), stolenNames, tHero.getPlayer().getDisplayName());
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

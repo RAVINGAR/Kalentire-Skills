@@ -50,7 +50,7 @@ public class SkillBite extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         // Damage the target
@@ -70,7 +70,7 @@ public class SkillBite extends TargettedSkill {
         }
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class BiteBleedEffect extends PeriodicDamageEffect {

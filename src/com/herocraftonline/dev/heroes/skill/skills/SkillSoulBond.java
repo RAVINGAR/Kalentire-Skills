@@ -53,17 +53,13 @@ public class SkillSoulBond extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        if (target.equals(player) || target instanceof Creature && !hero.getSummons().contains(target)) {
-            Messaging.send(player, "Invalid Target!");
-            return false;
-        }
+        if (target.equals(player) || target instanceof Creature && !hero.getSummons().contains(target)) 
+        	return SkillResult.INVALID_TARGET;
 
-        if (target instanceof Player && (!hero.hasParty() || !hero.getParty().isPartyMember(plugin.getHeroManager().getHero((Player) target)))) {
-            Messaging.send(player, "Invalid Target!");
-            return false;
-        }
+        if (target instanceof Player && (!hero.hasParty() || !hero.getParty().isPartyMember(plugin.getHeroManager().getHero((Player) target))))
+        	return SkillResult.INVALID_TARGET;
 
         // Remove the previous effect before applying a new one
         if (hero.hasEffect("SoulBond")) {
@@ -81,7 +77,7 @@ public class SkillSoulBond extends TargettedSkill {
         }
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class SkillHeroesListener extends HeroesEventListener {

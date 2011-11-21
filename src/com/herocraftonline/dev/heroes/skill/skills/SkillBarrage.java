@@ -27,7 +27,7 @@ public class SkillBarrage extends ActiveSkill {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         PlayerInventory inv = player.getInventory();
 
@@ -40,7 +40,7 @@ public class SkillBarrage extends ActiveSkill {
 
         if (numArrows == 0) {
             Messaging.send(player, "You have no arrows.");
-            return false;
+            return SkillResult.FAIL;
         }
 
         numArrows = numArrows > 24 ? 24 : numArrows;
@@ -71,6 +71,6 @@ public class SkillBarrage extends ActiveSkill {
             player.shootArrow().setVelocity(vel);
         }
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 }

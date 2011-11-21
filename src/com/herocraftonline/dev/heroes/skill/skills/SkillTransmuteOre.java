@@ -14,6 +14,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
@@ -46,13 +47,13 @@ public class SkillTransmuteOre extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         ItemStack item = player.getItemInHand();
         
         if (getSetting(hero, "require-furnace", false) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.FURNACE) {
             Messaging.send(player, "You must have a furnace targetted to transmute ores!");
-            return false;
+            return SkillResult.FAIL;
         }
         // List all items this hero can transmute
         Set<String> itemSet = new HashSet<String>(getSettingKeys(hero));
@@ -64,19 +65,19 @@ public class SkillTransmuteOre extends ActiveSkill {
         String itemName = item.getType().name();
         if (item == null || !itemSet.contains(itemName)) {
             Messaging.send(player, "You can't transmute that item!");
-            return false;
+            return SkillResult.FAIL;
         }
         
         int level = getSetting(hero, itemName + "." + Setting.LEVEL.node(), 1, true);
         if (hero.getLevel(this) < level) {
             Messaging.send(player, "You must be level $1 to transmute that.", level);
-            return false;
+            return SkillResult.FAIL;
         }
         
         int cost = getSetting(hero, itemName + "." + Setting.REAGENT_COST.node(), 1, true);
         if (item.getAmount() < cost) {
             Messaging.send(player, "You need to be holding $1 of $2 to transmute.", cost, itemName);
-            return false;
+            return SkillResult.FAIL;
         }
         
         Material finished = Material.matchMaterial(getSetting(hero, itemName + ".product", ""));
@@ -98,6 +99,6 @@ public class SkillTransmuteOre extends ActiveSkill {
             Messaging.send(player, "Items have been dropped at your feet!");
         }
         Util.syncInventory(player, plugin);
-        return true;
+        return SkillResult.NORMAL;
     }
 }

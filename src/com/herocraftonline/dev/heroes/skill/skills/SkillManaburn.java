@@ -29,12 +29,10 @@ public class SkillManaburn extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        if (!(target instanceof Player)) {
-            Messaging.send(player, "Invalid Target!");
-            return false;
-        }
+        if (!(target instanceof Player))
+        	return SkillResult.INVALID_TARGET;
 
         Hero tHero = plugin.getHeroManager().getHero((Player) target);
 
@@ -45,10 +43,10 @@ public class SkillManaburn extends TargettedSkill {
             }
             tHero.setMana(tHero.getMana() - transferamount);
             broadcastExecuteText(hero, target);
-            return true;
+            return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "Target does not have enough mana!");
-            return false;
+            return SkillResult.FAIL;
         }
     }
 

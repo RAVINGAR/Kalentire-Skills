@@ -30,13 +30,11 @@ public class SkillUnholyRitual extends TargettedSkill {
     }
     
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         
-        if (!hero.getSummons().contains(target)) {
-            Messaging.send(player, "Invalid Target!");
-            return false;
-        }
+        if (!hero.getSummons().contains(target))
+        	return SkillResult.INVALID_TARGET;
 
         addSpellTarget(target, hero);
         target.damage(target.getHealth(), player);
@@ -52,7 +50,7 @@ public class SkillUnholyRitual extends TargettedSkill {
         
         hero.setMana(hero.getMana() + mana);
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

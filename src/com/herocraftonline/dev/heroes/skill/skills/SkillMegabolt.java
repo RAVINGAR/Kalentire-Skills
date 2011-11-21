@@ -31,7 +31,7 @@ public class SkillMegabolt extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         int range = getSetting(hero, Setting.RADIUS.node(), 5, false);
@@ -56,7 +56,7 @@ public class SkillMegabolt extends TargettedSkill {
         }
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

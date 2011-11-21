@@ -12,6 +12,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.ActiveSkill.SkillResult;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
@@ -35,7 +36,7 @@ public class SkillOvergrowth extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int range = getSetting(hero, Setting.MAX_DISTANCE.node(), 15, false);
         if (player.getTargetBlock((HashSet<Byte>) null, range).getType() == Material.SAPLING) {
@@ -70,13 +71,13 @@ public class SkillOvergrowth extends ActiveSkill {
                 targetBlock.setType(sapling);
                 targetBlock.setData(data);
                 Messaging.send(player, "The spell fizzled!");
-                return false;
+                return SkillResult.FAIL;
             }
             broadcastExecuteText(hero);
-            return true;
+            return SkillResult.INVALID_TARGET;
         } else {
             Messaging.send(player, "Target is not a sapling!");
-            return false;
+            return SkillResult.FAIL;
         }
     }
 

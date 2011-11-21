@@ -63,7 +63,7 @@ public class SkillMortalWound extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         HeroClass heroClass = hero.getHeroClass();
 
@@ -86,7 +86,7 @@ public class SkillMortalWound extends TargettedSkill {
             plugin.getEffectManager().addCreatureEffect((Creature) target, mEffect);
         }
 
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class MortalWound extends PeriodicDamageEffect {

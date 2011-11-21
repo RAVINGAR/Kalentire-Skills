@@ -58,23 +58,20 @@ public class SkillCurse extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
         double missChance = getSetting(hero, "miss-chance", .50, false);
         CurseEffect cEffect = new CurseEffect(this, duration, missChance);
 
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(cEffect);
-            return true;
+            return SkillResult.NORMAL;
         } else if (target instanceof Creature) {
             plugin.getEffectManager().addCreatureEffect((Creature) target, cEffect);
-            return true;
+            return SkillResult.NORMAL;
         }
 
-        Messaging.send(player, "Invalid target!");
-        return false;
+        return SkillResult.INVALID_TARGET;
     }
 
     public class CurseEffect extends ExpirableEffect {

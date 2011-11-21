@@ -31,7 +31,7 @@ public class SkillForcePull extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         int damage = getSetting(hero, Setting.DAMAGE.node(), 0, false);
@@ -54,7 +54,7 @@ public class SkillForcePull extends TargettedSkill {
         target.setVelocity(new Vector(xDir, 1, zDir));
 
         broadcastExecuteText(hero, target);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

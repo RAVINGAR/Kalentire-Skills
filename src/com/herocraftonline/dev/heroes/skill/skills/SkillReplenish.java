@@ -28,12 +28,13 @@ public class SkillReplenish extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         int manaBonus = getSetting(hero, "mana-bonus", 100, false);
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
-        if (hrmEvent.isCancelled())
-            return false;
+        if (hrmEvent.isCancelled()) {
+            return SkillResult.FAIL;
+        }
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
         Messaging.send(hero.getPlayer(), "Your mana has been replenished!");
@@ -41,7 +42,7 @@ public class SkillReplenish extends ActiveSkill {
             Messaging.send(hero.getPlayer(), Messaging.createManaBar(100));
         }
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
 }

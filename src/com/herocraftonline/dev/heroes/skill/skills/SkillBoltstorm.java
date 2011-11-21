@@ -52,11 +52,11 @@ public class SkillBoltstorm extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         int period = getSetting(hero, Setting.PERIOD.node(), 1000, true);
         int duration = getSetting(hero, Setting.DURATION.node(), 10000, false);
         hero.addEffect(new BoltStormEffect(this, period, duration));
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class BoltStormEffect extends PeriodicExpirableEffect {

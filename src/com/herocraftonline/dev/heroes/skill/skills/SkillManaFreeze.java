@@ -15,7 +15,6 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
-import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillManaFreeze extends TargettedSkill {
@@ -51,19 +50,15 @@ public class SkillManaFreeze extends TargettedSkill {
     }
 
     @Override
-    public boolean use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-
-        if (!(target instanceof Player)) {
-            Messaging.send(player, "You must target another player!");
-            return false;
-        }
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        if (!(target instanceof Player))
+        	return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero, target);
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
         int duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
         targetHero.addEffect(new ManaFreezeEffect(this, duration));
-        return true;
+        return SkillResult.NORMAL;
 
     }
 

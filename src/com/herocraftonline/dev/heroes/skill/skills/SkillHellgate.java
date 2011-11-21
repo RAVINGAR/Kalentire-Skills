@@ -37,7 +37,7 @@ public class SkillHellgate extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
         String defaultWorld = getSetting(hero, "default-return", "world");
@@ -71,7 +71,7 @@ public class SkillHellgate extends ActiveSkill {
             // If world is still null then there is no world to teleport to
             if (world == null) {
                 Messaging.send(player, "No world to open a Hellgate into!");
-                return false;
+                return SkillResult.FAIL;
             }
 
             hero.addEffect(new HellgateEffect(this, player.getLocation()));
@@ -107,7 +107,7 @@ public class SkillHellgate extends ActiveSkill {
         }
 
         broadcastExecuteText(hero);
-        return true;
+        return SkillResult.NORMAL;
     }
 
     // Tracks the players original location for returning

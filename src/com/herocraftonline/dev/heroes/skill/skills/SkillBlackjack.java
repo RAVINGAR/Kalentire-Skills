@@ -55,11 +55,11 @@ public class SkillBlackjack extends ActiveSkill {
     }
 
     @Override
-    public boolean use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
         int duration = getSetting(hero, Setting.DURATION.node(), 20000, false);
         hero.addEffect(new BlackjackEffect(this, duration));
-        return true;
+        return SkillResult.NORMAL;
     }
 
     public class BlackjackEffect extends ExpirableEffect {
