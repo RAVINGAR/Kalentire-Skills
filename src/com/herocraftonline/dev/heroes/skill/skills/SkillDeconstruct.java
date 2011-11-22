@@ -11,6 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
+import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.classes.HeroClass.ExperienceType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
@@ -91,8 +93,7 @@ public class SkillDeconstruct extends ActiveSkill {
             } else if (items.contains(args[0])) {
                 item = new ItemStack(Material.matchMaterial(args[0]), 1);
                 if (!player.getInventory().contains(item.getType(), 1)) {
-                    Messaging.send(player, "You don't have any " + item.getType().name().toLowerCase().replace("_", " ") + " to deconstruct!");
-                    return SkillResult.FAIL;
+                    return new SkillResult(ResultType.MISSING_REAGENT, true, 1, item.getType().name().toLowerCase().replace("_", " "));
                 }
             }
             if (item == null) {
@@ -125,7 +126,7 @@ public class SkillDeconstruct extends ActiveSkill {
         int level = getSetting(hero, matName + "." + Setting.LEVEL.node(), 1, true);
         if (level > hero.getLevel(this)) {
             Messaging.send(player, "You must be level " + level + " to deconstruct that item!");
-            return SkillResult.FAIL;
+            return new SkillResult(ResultType.LOW_LEVEL, false);
         }
         double minDurability = 0;
         if (item.getType().getMaxDurability() > 16) {

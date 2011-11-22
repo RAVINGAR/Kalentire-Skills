@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
+import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.classes.HeroClass.ExperienceType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
@@ -100,7 +102,6 @@ public class SkillConstruct extends ActiveSkill {
 
         String matName = args[0];
         if (!getSettingKeys(hero).contains(matName)) {
-            Messaging.send(player, "Found Keys: " + getSettingKeys(hero).toString());
             Messaging.send(player, "You can't construct that item!");
             return SkillResult.FAIL;
         }
@@ -108,7 +109,7 @@ public class SkillConstruct extends ActiveSkill {
         int level = getSetting(hero, matName + "." + Setting.LEVEL.node(), 1, true);
         if (level > hero.getLevel(this)) {
             Messaging.send(player, "You must be level " + level + " to construct that item!");
-            return SkillResult.FAIL;
+            return new SkillResult(ResultType.LOW_LEVEL, false);
         }
 
         Material mat = Material.matchMaterial(matName);
@@ -136,8 +137,7 @@ public class SkillConstruct extends ActiveSkill {
 
             ItemStack stack = new ItemStack(m, amount);
             if (!hasReagentCost(player, stack)) {
-                Messaging.send(player, "You don't have all the materials to construct that! Missing " + amount + " " + s);
-                return SkillResult.FAIL;
+                return new SkillResult(ResultType.MISSING_REAGENT, true, amount, s);
             }
             items.add(stack);
         }
