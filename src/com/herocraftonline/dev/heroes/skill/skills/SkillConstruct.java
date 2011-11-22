@@ -66,7 +66,7 @@ public class SkillConstruct extends ActiveSkill {
 
         if (args[0].toLowerCase().equals("list")) {
             Messaging.send(player, "You can craft these items: " + itemSet.toString().replace("[", "").replace("]", ""));
-            return SkillResult.FAIL;
+            return SkillResult.SKIP_POST_USAGE;
         } else if (args[0].toLowerCase().equals("info")) {
             // Usage Checks if the player passed in arguments
             if (args.length < 2) {
@@ -74,7 +74,7 @@ public class SkillConstruct extends ActiveSkill {
                 return SkillResult.FAIL;
             } else if (!itemSet.contains(args[1])) {
                 Messaging.send(player, "You can't construct that item!");
-                return SkillResult.FAIL;
+                return SkillResult.INVALID_TARGET_NO_MSG;
             } else {
                 // Iterate over the construct recipe and get all the items/amounts it turns into
                 Messaging.send(player, args[1] + " requires the following items to craft: ");
@@ -103,7 +103,7 @@ public class SkillConstruct extends ActiveSkill {
         String matName = args[0];
         if (!getSettingKeys(hero).contains(matName)) {
             Messaging.send(player, "You can't construct that item!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int level = getSetting(hero, matName + "." + Setting.LEVEL.node(), 1, true);

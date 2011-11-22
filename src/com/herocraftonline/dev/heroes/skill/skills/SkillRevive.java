@@ -34,25 +34,25 @@ public class SkillRevive extends ActiveSkill {
         String targetName = target.getName();
         if (!Util.deaths.containsKey(targetName)) {
             Messaging.send(player, "$1 has not died recently.", targetName);
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         Location deathLoc = Util.deaths.get(targetName);
         Location playerLoc = player.getLocation();
         if (!playerLoc.getWorld().equals(deathLoc.getWorld()) || playerLoc.distance(deathLoc) > 50.0) {
             Messaging.send(player, "You are out of range.");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         if (target.isDead()) {
             Messaging.send(player, "$1 is still dead.", targetName);
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         Hero targetHero = plugin.getHeroManager().getHero(target);
         if (!hero.hasParty() || !hero.getParty().isPartyMember(targetHero)) {
             Messaging.send(player, "The person needs to be in your party to do that!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         target.teleport(playerLoc);

@@ -6,6 +6,7 @@ import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
@@ -48,7 +49,7 @@ public class SkillBattery extends TargettedSkill {
             return SkillResult.NORMAL;
         } else {
             Messaging.send(hero.getPlayer(), "You need at least $1 mana to transfer.", transferAmount);
-            return SkillResult.FAIL;
+            return new SkillResult(ResultType.LOW_MANA, false);
         }
     }
 

@@ -47,7 +47,7 @@ public class SkillManaburn extends TargettedSkill {
             return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "Target does not have enough mana!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }
 

@@ -67,7 +67,7 @@ public class SkillDeconstruct extends ActiveSkill {
         if (args.length > 0) {
             if (args[0].toLowerCase().equals("list")) {
                 Messaging.send(player, "You can deconstruct these items: " + items.toString().replace("[", "").replace("]", ""));
-                return SkillResult.FAIL;
+                return SkillResult.SKIP_POST_USAGE;
             } else if (args[0].toLowerCase().equals("info")) {
                 // Usage Checks if the player passed in arguments
                 if (args.length < 2) {
@@ -75,7 +75,7 @@ public class SkillDeconstruct extends ActiveSkill {
                     return SkillResult.FAIL;
                 } else if (!items.contains(args[1])) {
                     Messaging.send(player, "You can't deconstruct that item!");
-                    return SkillResult.FAIL;
+                    return SkillResult.INVALID_TARGET_NO_MSG;
                 } else {
                     // Iterate over the deconstruct recipe and get all the items/amounts it turns into
                     Messaging.send(player, args[1] + " deconstructs into the following items: ");
@@ -98,7 +98,7 @@ public class SkillDeconstruct extends ActiveSkill {
             }
             if (item == null) {
                 Messaging.send(player, "Invalid item to deconstruct, or bad command!");
-                return SkillResult.FAIL;
+                return SkillResult.INVALID_TARGET_NO_MSG;
             }
         } else {
             // if no args attempt to deconstruct item in hand
@@ -114,13 +114,13 @@ public class SkillDeconstruct extends ActiveSkill {
 
         if (item.getType() == Material.AIR) {
             Messaging.send(player, "You must be holding the item you wish to deconstruct!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         String matName = item.getType().name();
         if (!items.contains(matName)) {
             Messaging.send(player, "You can't deconstruct that item!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int level = getSetting(hero, matName + "." + Setting.LEVEL.node(), 1, true);

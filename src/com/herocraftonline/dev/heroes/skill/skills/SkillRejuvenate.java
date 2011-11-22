@@ -55,7 +55,7 @@ public class SkillRejuvenate extends TargettedSkill {
 
             if (targetHero.getHealth() >= targetHero.getMaxHealth()) {
                 Messaging.send(player, "Target is already fully healed.");
-                return SkillResult.FAIL;
+                return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
             long period = getSetting(hero, Setting.PERIOD.node(), 3000, true);

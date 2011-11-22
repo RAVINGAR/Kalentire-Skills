@@ -59,7 +59,7 @@ public class SkillStealEssence extends TargettedSkill {
 
         if (possibleEffects.isEmpty()) {
             Messaging.send(player, "That target has no effects to steal!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         String stolenNames = "";

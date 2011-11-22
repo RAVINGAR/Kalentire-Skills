@@ -10,6 +10,7 @@ import org.bukkit.util.config.ConfigurationNode;
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
@@ -42,7 +43,7 @@ public class SkillConsume extends ActiveSkill {
         Player player = hero.getPlayer();
         if (hero.getMana() == 100) {
             Messaging.send(player, "Your mana is already full!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         List<String> keys = getSettingKeys(hero);
@@ -61,15 +62,13 @@ public class SkillConsume extends ActiveSkill {
 
                 int level = getSetting(hero, key + "." + Setting.LEVEL.node(), 1, true);
                 if (hero.getLevel(this) < level) {
-                    Messaging.send(player, "You must be level $1 before you can consume that item", level);
-                    return SkillResult.FAIL;
+                    return new SkillResult(ResultType.LOW_LEVEL, true, level);
                 }
 
                 ItemStack reagent = new ItemStack(mat, amount);
                 if (!hasReagentCost(player, reagent)) {
                     String reagentName = reagent.getType().name().toLowerCase().replace("_", " ");
-                    Messaging.send(player, "Sorry, you need to have $1 $2 to use that skill!", reagent.getAmount(), reagentName);
-                    return SkillResult.FAIL;
+                    return new SkillResult(ResultType.MISSING_REAGENT, true, reagent.getAmount(), reagentName);
                 }
 
                 
@@ -77,7 +76,7 @@ public class SkillConsume extends ActiveSkill {
                 HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, mana, this);
                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                 if (hrmEvent.isCancelled())
-                    return SkillResult.FAIL;
+                    return SkillResult.CANCELLED;
 
                 player.getInventory().removeItem(reagent);
                 hero.setMana(hrmEvent.getAmount() + hero.getMana());

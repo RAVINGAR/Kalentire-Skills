@@ -31,7 +31,6 @@ public class SkillSyphon extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
         if (!(target instanceof Player))
         	return SkillResult.INVALID_TARGET;
 
@@ -42,8 +41,7 @@ public class SkillSyphon extends TargettedSkill {
             try {
                 transferredHealth = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
-                player.sendMessage("Sorry, that's an incorrect health value!");
-                return SkillResult.FAIL;
+            	throw new IllegalArgumentException("Invalid health value defined in Heroes skill - Syphon. FIX YOUR CONFIGURATION");
             }
         }
         double playerHealth = hero.getHealth();

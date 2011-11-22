@@ -56,7 +56,7 @@ public class SkillBlaze extends ActiveSkill {
         
         if (!damaged) {
             Messaging.send(player, "No targets in range!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
         
         broadcastExecuteText(hero);

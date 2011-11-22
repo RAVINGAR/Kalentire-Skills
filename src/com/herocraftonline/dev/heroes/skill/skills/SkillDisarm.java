@@ -61,7 +61,7 @@ public class SkillDisarm extends TargettedSkill {
 
         if (tHero.hasEffectType(EffectType.DISARM)) {
             Messaging.send(player, "%target% is already disarmed.");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int duration = getSetting(hero, Setting.DURATION.node(), 500, false);

@@ -38,7 +38,7 @@ public class SkillScan extends TargettedSkill {
         	CreatureType cType = Util.getCreatureFromEntity(target);
         	if (cType == null) {
         		Messaging.send(player, "Unknown creature type!");
-        		return SkillResult.FAIL;
+        		return SkillResult.INVALID_TARGET_NO_MSG;
         	}
             Integer maxHp = plugin.getDamageManager().getCreatureHealth(cType);
             Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getCreatureName((Creature) target), target.getHealth(), maxHp == null ? target.getHealth() : maxHp);

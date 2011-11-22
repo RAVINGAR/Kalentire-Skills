@@ -12,6 +12,7 @@ import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
@@ -65,19 +66,18 @@ public class SkillTransmuteOre extends ActiveSkill {
         String itemName = item.getType().name();
         if (item == null || !itemSet.contains(itemName)) {
             Messaging.send(player, "You can't transmute that item!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
         
         int level = getSetting(hero, itemName + "." + Setting.LEVEL.node(), 1, true);
         if (hero.getLevel(this) < level) {
-            Messaging.send(player, "You must be level $1 to transmute that.", level);
-            return SkillResult.FAIL;
+        	return new SkillResult(ResultType.LOW_LEVEL, true, level);
         }
         
         int cost = getSetting(hero, itemName + "." + Setting.REAGENT_COST.node(), 1, true);
         if (item.getAmount() < cost) {
             Messaging.send(player, "You need to be holding $1 of $2 to transmute.", cost, itemName);
-            return SkillResult.FAIL;
+            return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
         
         Material finished = Material.matchMaterial(getSetting(hero, itemName + ".product", ""));

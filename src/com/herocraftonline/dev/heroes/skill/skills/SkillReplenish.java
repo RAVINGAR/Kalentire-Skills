@@ -34,7 +34,7 @@ public class SkillReplenish extends ActiveSkill {
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (hrmEvent.isCancelled()) {
-            return SkillResult.FAIL;
+            return SkillResult.CANCELLED;
         }
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());

@@ -142,7 +142,7 @@ public class SkillWolf extends ActiveSkill {
             broadcast(player.getLocation(), "$1 has released their wolves into the wild", player.getDisplayName());
         }
 
-        return SkillResult.FAIL;
+        return SkillResult.SKIP_POST_USAGE;
     }
 
     private void setWolfSettings(Hero hero, Wolf wolf) {

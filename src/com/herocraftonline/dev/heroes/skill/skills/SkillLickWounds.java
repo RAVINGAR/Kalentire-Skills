@@ -64,7 +64,7 @@ public class SkillLickWounds extends ActiveSkill {
 
         if (!used) {
             Messaging.send(player, "There are no nearby wolves to heal!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         broadcastExecuteText(hero);

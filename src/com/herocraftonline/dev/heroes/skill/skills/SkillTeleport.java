@@ -37,7 +37,7 @@ public class SkillTeleport extends ActiveSkill {
 
         if (!hero.getParty().isPartyMember(plugin.getHeroManager().getHero(targetPlayer))) {
             Messaging.send(player, "Sorry, that player isn't in your party!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
         int level = hero.getLevel(this);
         Location loc1 = targetPlayer.getLocation().add(Util.rand.nextDouble() * (-50 + level - (50 - level)), 0, Util.rand.nextDouble() * (-50 + level - (50 - level)));

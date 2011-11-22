@@ -74,10 +74,10 @@ public class SkillOvergrowth extends ActiveSkill {
                 return SkillResult.FAIL;
             }
             broadcastExecuteText(hero);
-            return SkillResult.INVALID_TARGET;
+            return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "Target is not a sapling!");
-            return SkillResult.FAIL;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }
 
