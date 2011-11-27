@@ -49,15 +49,18 @@ public class SkillForage extends ActiveSkill{
         node.setProperty("desert.items", Arrays.asList(new String[] {"CACTUS", "SUGAR_CANE"}));
         node.setProperty("desert.chance", .005);
         node.setProperty("desert.max-found", 2);
-        node.setProperty("hell.items", Arrays.asList(new String[] {"ROTTEN_FLESH"}));
+        node.setProperty("hell.items", Arrays.asList(new String[] {"ROTTEN_FLESH" }));
         node.setProperty("hell.chance", .005);
         node.setProperty("hell.max-found", 1);
         node.setProperty("sky.items", Arrays.asList(new String[] {"VINE"}));
         node.setProperty("sky.chance", .01);
         node.setProperty("sky.max-found", 3);
-        node.setProperty("ice.items", new ArrayList<String>());
-        node.setProperty("ice.chance", 0.0D);
-        node.setProperty("ice.max-found", 0);
+        node.setProperty("ice.items", Arrays.asList(new String[] {"RAW_FISH"}));
+        node.setProperty("ice.chance", 0.005D);
+        node.setProperty("ice.max-found", 1);
+        node.setProperty("mushroom.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"}));
+        node.setProperty("mushroom.chance", 0.1);
+        node.setProperty("mushroom.max-found", 2);
         node.setProperty("default.items", new ArrayList<String>());
         return node;
     }
@@ -78,6 +81,10 @@ public class SkillForage extends ActiveSkill{
         case TAIGA :
         case TUNDRA :
         case ICE_DESERT :
+        case FROZEN_OCEAN :
+        case FROZEN_RIVER :
+        case ICE_PLAINS :
+        case ICE_MOUNTAINS :
             materialNames.addAll(getSetting(hero, "ice.items", new ArrayList<String>()));
             chance = getSetting(hero, "ice.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "ice.max-found", 3, false);
@@ -113,6 +120,11 @@ public class SkillForage extends ActiveSkill{
             chance = getSetting(hero, "water.chance", .01, false) * hero.getLevel(this);
             maxFinds = getSetting(hero, "water.max-found", 3, false);
             break;
+        case MUSHROOM_SHORE :
+        case MUSHROOM_ISLAND :
+        	materialNames.addAll(getSetting(hero, "mushroom.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"})));
+        	chance = getSetting(hero, "mushroom.chance", .01, false) * hero.getLevel(this);
+        	maxFinds = getSetting(hero, "mushroom.max-found", 2, false);
         case HELL :
             materialNames.addAll(getSetting(hero, "hell.items", Arrays.asList(new String[] {"ROTTEN_FLESH"})));
             chance = getSetting(hero, "hell.chance", .005, false) * hero.getLevel(this);
