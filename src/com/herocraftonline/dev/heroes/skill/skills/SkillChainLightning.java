@@ -97,6 +97,7 @@ public class SkillChainLightning extends TargettedSkill {
     }
 
     private boolean checkTarget(Entity previousTarget, Entity potentialTarget) {
+    	/*
         Vector directional = potentialTarget.getLocation().clone().subtract(previousTarget.getLocation()).toVector();
         try {
             BlockIterator iter = new BlockIterator(previousTarget.getWorld(), previousTarget.getLocation().toVector(), directional, 0, (int) directional.length());
@@ -107,6 +108,7 @@ public class SkillChainLightning extends TargettedSkill {
         } catch (IllegalStateException e) {
             return false;
         }
+        */
         return true;
     }
 
