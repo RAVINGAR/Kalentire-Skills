@@ -1,12 +1,12 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
@@ -27,10 +27,10 @@ public class SkillTumble extends PassiveSkill {
     }
     
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("distance-per-level", .5);
-        node.setProperty("base-distance", 3);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("distance-per-level", .5);
+        node.set("base-distance", 3);
         return node;
     }
     

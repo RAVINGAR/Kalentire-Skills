@@ -1,9 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -26,11 +26,11 @@ public class SkillGarrote extends TargettedSkill {
     }
     
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DAMAGE.node(), 4);
-        node.setProperty(Setting.DURATION.node(), 4000);
-        node.setProperty(Setting.MAX_DISTANCE.node(), 3);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DAMAGE.node(), 4);
+        node.set(Setting.DURATION.node(), 4000);
+        node.set(Setting.MAX_DISTANCE.node(), 3);
         return node;
     }
     

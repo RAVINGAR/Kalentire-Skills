@@ -1,6 +1,7 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -8,7 +9,6 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainHealthEvent;
@@ -43,16 +43,16 @@ public class SkillMortalWound extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("weapons", Util.swords);
-        node.setProperty(Setting.DURATION.node(), 12000);
-        node.setProperty(Setting.PERIOD.node(), 3000);
-        node.setProperty("heal-multiplier", .5);
-        node.setProperty("tick-damage", 1);
-        node.setProperty(Setting.MAX_DISTANCE.node(), 2);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% has been mortally wounded by %hero%!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target% has recovered from their mortal wound!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("weapons", Util.swords);
+        node.set(Setting.DURATION.node(), 12000);
+        node.set(Setting.PERIOD.node(), 3000);
+        node.set("heal-multiplier", .5);
+        node.set("tick-damage", 1);
+        node.set(Setting.MAX_DISTANCE.node(), 2);
+        node.set(Setting.APPLY_TEXT.node(), "%target% has been mortally wounded by %hero%!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from their mortal wound!");
         return node;
     }
 

@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -7,7 +8,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
@@ -28,10 +28,10 @@ public class SkillQuake extends PassiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("damage", 0.10);
-        node.setProperty("radius", 10);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("damage", 0.10);
+        node.set("radius", 10);
         return node;
     }
 

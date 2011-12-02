@@ -1,6 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-import org.bukkit.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -24,11 +24,11 @@ public class SkillInvuln extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 10000);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero% has become invulnerable!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% is once again vulnerable!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 10000);
+        node.set(Setting.APPLY_TEXT.node(), "%hero% has become invulnerable!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is once again vulnerable!");
         return node;
     }
 

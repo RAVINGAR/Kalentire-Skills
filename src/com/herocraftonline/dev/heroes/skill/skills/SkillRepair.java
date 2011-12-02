@@ -1,9 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -26,25 +26,25 @@ public class SkillRepair extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("wood-weapons", 1);
-        node.setProperty("stone-weapons", 1);
-        node.setProperty("iron-weapons", 1);
-        node.setProperty("gold-weapons", 1);
-        node.setProperty("diamond-weapons", 1);
-        node.setProperty("leather-armor", 1);
-        node.setProperty("iron-armor", 1);
-        node.setProperty("gold-armor", 1);
-        node.setProperty("diamond-armor", 1);
-        node.setProperty("wood-tools", 1);
-        node.setProperty("stone-tools", 1);
-        node.setProperty("iron-tools", 1);
-        node.setProperty("gold-tools", 1);
-        node.setProperty("diamond-tools", 1);
-        node.setProperty("fishing-rod", 1);
-        node.setProperty("shears", 1);
-        node.setProperty("flint-steel", 1);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("wood-weapons", 1);
+        node.set("stone-weapons", 1);
+        node.set("iron-weapons", 1);
+        node.set("gold-weapons", 1);
+        node.set("diamond-weapons", 1);
+        node.set("leather-armor", 1);
+        node.set("iron-armor", 1);
+        node.set("gold-armor", 1);
+        node.set("diamond-armor", 1);
+        node.set("wood-tools", 1);
+        node.set("stone-tools", 1);
+        node.set("iron-tools", 1);
+        node.set("gold-tools", 1);
+        node.set("diamond-tools", 1);
+        node.set("fishing-rod", 1);
+        node.set("shears", 1);
+        node.set("flint-steel", 1);
         return node;
     }
 

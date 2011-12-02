@@ -3,9 +3,9 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
@@ -29,12 +29,12 @@ public class SkillConsume extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
         String root = "BONE";
-        node.setProperty(root + "." + Setting.LEVEL.node(), 1);
-        node.setProperty(root + "." + Setting.MANA.node(), 20);
-        node.setProperty(root + "." + Setting.AMOUNT.node(), 1);
+        node.set(root + "." + Setting.LEVEL.node(), 1);
+        node.set(root + "." + Setting.MANA.node(), 20);
+        node.set(root + "." + Setting.AMOUNT.node(), 1);
         return node;
     }
 

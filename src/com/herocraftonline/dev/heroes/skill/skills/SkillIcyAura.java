@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -16,7 +17,6 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -47,15 +47,15 @@ public class SkillIcyAura extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 10000);
-        node.setProperty(Setting.PERIOD.node(), 2000);
-        node.setProperty("tick-damage", 1);
-        node.setProperty(Setting.RADIUS.node(), 10);
-        node.setProperty("amplitude", 2);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero% is emitting ice!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 10000);
+        node.set(Setting.PERIOD.node(), 2000);
+        node.set("tick-damage", 1);
+        node.set(Setting.RADIUS.node(), 10);
+        node.set("amplitude", 2);
+        node.set(Setting.APPLY_TEXT.node(), "%hero% is emitting ice!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!");
         return node;
     }
 

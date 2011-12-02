@@ -1,8 +1,8 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -27,12 +27,12 @@ public class SkillSlow extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("speed-multiplier", 2);
-        node.setProperty(Setting.DURATION.node(), 15000);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("speed-multiplier", 2);
+        node.set(Setting.DURATION.node(), 15000);
+        node.set(Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
         return node;
     }
 

@@ -2,13 +2,13 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -38,11 +38,11 @@ public class SkillSuperheat extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 20000);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero%'s pick has become superheated!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero%'s pick has cooled down!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 20000);
+        node.set(Setting.APPLY_TEXT.node(), "%hero%'s pick has become superheated!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s pick has cooled down!");
         return node;
     }
 

@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -8,7 +9,6 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -41,15 +41,15 @@ public class SkillSoulFire extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("weapons", Util.swords);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero%'s weapon is sheathed in flame!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero%'s weapon is no longer aflame!");
-        node.setProperty(Setting.DURATION.node(), 600000);
-        node.setProperty("ignite-chance", 0.20);
-        node.setProperty("ignite-duration", 5000);
-        node.setProperty("ignite-text", "%hero% has lit %target% on fire with soulfire!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("weapons", Util.swords);
+        node.set(Setting.APPLY_TEXT.node(), "%hero%'s weapon is sheathed in flame!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s weapon is no longer aflame!");
+        node.set(Setting.DURATION.node(), 600000);
+        node.set("ignite-chance", 0.20);
+        node.set("ignite-duration", 5000);
+        node.set("ignite-text", "%hero% has lit %target% on fire with soulfire!");
         return node;
     }
 

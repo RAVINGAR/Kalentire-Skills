@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.LivingEntity;
@@ -20,7 +21,6 @@ import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -57,12 +57,12 @@ public class SkillSkeleton extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("max-summons", 3);
-        node.setProperty(Setting.MAX_DISTANCE.node(), 5);
-        node.setProperty(Setting.DURATION.node(), 60000);
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "The skeleton returns to it's hellish domain.");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("max-summons", 3);
+        node.set(Setting.MAX_DISTANCE.node(), 5);
+        node.set(Setting.DURATION.node(), 60000);
+        node.set(Setting.EXPIRE_TEXT.node(), "The skeleton returns to it's hellish domain.");
         return node;
     }
 

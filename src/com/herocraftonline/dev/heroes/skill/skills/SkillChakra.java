@@ -1,8 +1,8 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -25,11 +25,11 @@ public class SkillChakra extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("heal_amount", 10);
-        node.setProperty(Setting.RADIUS.node(), 7);
-        node.setProperty("max-removals", -1);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("heal_amount", 10);
+        node.set(Setting.RADIUS.node(), 7);
+        node.set("max-removals", -1);
         return node;
     }
 

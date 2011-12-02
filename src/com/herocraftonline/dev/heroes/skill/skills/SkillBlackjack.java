@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -7,7 +8,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -38,13 +38,13 @@ public class SkillBlackjack extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero% prepared his blackjack!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!");
-        node.setProperty("stun-duration", 5000);
-        node.setProperty("stun-chance", 0.20);
-        node.setProperty(Setting.DURATION.node(), 20000);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.APPLY_TEXT.node(), "%hero% prepared his blackjack!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!");
+        node.set("stun-duration", 5000);
+        node.set("stun-chance", 0.20);
+        node.set(Setting.DURATION.node(), 20000);
         return node;
     }
 

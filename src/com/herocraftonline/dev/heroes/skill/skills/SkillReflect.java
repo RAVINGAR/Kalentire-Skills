@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -8,7 +9,6 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -37,12 +37,12 @@ public class SkillReflect extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 5000);
-        node.setProperty("reflected-amount", 0.5);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero% put up a reflective shield!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% lost his reflective shield!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 5000);
+        node.set("reflected-amount", 0.5);
+        node.set(Setting.APPLY_TEXT.node(), "%hero% put up a reflective shield!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his reflective shield!");
         return node;
     }
 

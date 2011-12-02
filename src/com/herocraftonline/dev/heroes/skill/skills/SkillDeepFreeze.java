@@ -1,6 +1,7 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -8,7 +9,6 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -42,14 +42,14 @@ public class SkillDeepFreeze extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 5000);
-        node.setProperty(Setting.DAMAGE.node(), 1);
-        node.setProperty("shatter-damage", 11);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% was frozen in place!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target% has thawed from their icy prison!");
-        node.setProperty("shatter-text", "%target%'s icy prison shattered from the intense heat!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 5000);
+        node.set(Setting.DAMAGE.node(), 1);
+        node.set("shatter-damage", 11);
+        node.set(Setting.APPLY_TEXT.node(), "%target% was frozen in place!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target% has thawed from their icy prison!");
+        node.set("shatter-text", "%target%'s icy prison shattered from the intense heat!");
         return node;
     }
 

@@ -1,9 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -39,14 +39,14 @@ public class SkillBladegrasp extends ActiveSkill {
 	}
 
 	@Override
-	public ConfigurationNode getDefaultConfig() {
-		ConfigurationNode node = super.getDefaultConfig();
-		node.setProperty(Setting.DURATION.node(), 5000);
-		node.setProperty(Setting.APPLY_TEXT.node(), "%hero% tightened his grip!");
-		node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
-		node.setProperty("parry-text", "%hero% parried an attack!");
-		node.setProperty("parry-skill-text", "%hero% has parried %target%'s %skill%.");
-		node.setProperty(Setting.CHANCE_LEVEL.node(), .02);
+	public ConfigurationSection getDefaultConfig() {
+		ConfigurationSection node = super.getDefaultConfig();
+		node.set(Setting.DURATION.node(), 5000);
+		node.set(Setting.APPLY_TEXT.node(), "%hero% tightened his grip!");
+		node.set(Setting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
+		node.set("parry-text", "%hero% parried an attack!");
+		node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
+		node.set(Setting.CHANCE_LEVEL.node(), .02);
 		return node;
 	}
 

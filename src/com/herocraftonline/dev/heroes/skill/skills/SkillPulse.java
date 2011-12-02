@@ -2,10 +2,10 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -26,10 +26,10 @@ public class SkillPulse extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DAMAGE.node(), 1);
-        node.setProperty(Setting.RADIUS.node(), 5);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DAMAGE.node(), 1);
+        node.set(Setting.RADIUS.node(), 5);
         return node;
     }
 

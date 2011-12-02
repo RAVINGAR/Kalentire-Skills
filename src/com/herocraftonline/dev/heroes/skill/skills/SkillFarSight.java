@@ -1,6 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-import org.bukkit.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -24,9 +24,9 @@ public class SkillFarSight extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 15000);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 15000);
         return node;
     }
 

@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -32,18 +32,18 @@ public class SkillTransmuteOre extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("COAL.product", "IRON_ORE");
-        node.setProperty("COAL." + Setting.REAGENT_COST.node(), 5);
-        node.setProperty("COAL." + Setting.LEVEL.node(), 1);
-        node.setProperty("IRON_ORE.product", "GOLD_ORE");
-        node.setProperty("IRON_ORE." + Setting.REAGENT_COST.node(), 3);
-        node.setProperty("IRON_ORE." + Setting.LEVEL.node(), 1);
-        node.setProperty("LAPIS_BLOCK.product", "DIAMOND");
-        node.setProperty("LAPIS_BLOCK." + Setting.REAGENT_COST.node(), 1);
-        node.setProperty("LAPIS_BLOCK." + Setting.LEVEL.node(), 1);
-        node.setProperty("require-furnace", false);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("COAL.product", "IRON_ORE");
+        node.set("COAL." + Setting.REAGENT_COST.node(), 5);
+        node.set("COAL." + Setting.LEVEL.node(), 1);
+        node.set("IRON_ORE.product", "GOLD_ORE");
+        node.set("IRON_ORE." + Setting.REAGENT_COST.node(), 3);
+        node.set("IRON_ORE." + Setting.LEVEL.node(), 1);
+        node.set("LAPIS_BLOCK.product", "DIAMOND");
+        node.set("LAPIS_BLOCK." + Setting.REAGENT_COST.node(), 1);
+        node.set("LAPIS_BLOCK." + Setting.LEVEL.node(), 1);
+        node.set("require-furnace", false);
         return node;
     }
 

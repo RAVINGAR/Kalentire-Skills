@@ -8,9 +8,9 @@ import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -32,36 +32,36 @@ public class SkillForage extends ActiveSkill{
     }
     
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("forest.items",  Arrays.asList(new String[] {"APPLE"}));
-        node.setProperty("forest.chance", .01);
-        node.setProperty("forest.max-found", 3);
-        node.setProperty("plains.items",  Arrays.asList(new String[] {"WHEAT", "MELON"}));
-        node.setProperty("plains.chance", .01);
-        node.setProperty("plains.max-found", 3);
-        node.setProperty("water.items",  Arrays.asList(new String[] {"RAW_FISH"}));
-        node.setProperty("water.chance", .01);
-        node.setProperty("water.max-found", 3);
-        node.setProperty("swamp.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE"}));
-        node.setProperty("swamp.chance", .01);
-        node.setProperty("swamp.max-found", 4);
-        node.setProperty("desert.items", Arrays.asList(new String[] {"CACTUS", "SUGAR_CANE"}));
-        node.setProperty("desert.chance", .005);
-        node.setProperty("desert.max-found", 2);
-        node.setProperty("hell.items", Arrays.asList(new String[] {"ROTTEN_FLESH" }));
-        node.setProperty("hell.chance", .005);
-        node.setProperty("hell.max-found", 1);
-        node.setProperty("sky.items", Arrays.asList(new String[] {"VINE"}));
-        node.setProperty("sky.chance", .01);
-        node.setProperty("sky.max-found", 3);
-        node.setProperty("ice.items", Arrays.asList(new String[] {"RAW_FISH"}));
-        node.setProperty("ice.chance", 0.005D);
-        node.setProperty("ice.max-found", 1);
-        node.setProperty("mushroom.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"}));
-        node.setProperty("mushroom.chance", 0.1);
-        node.setProperty("mushroom.max-found", 2);
-        node.setProperty("default.items", new ArrayList<String>());
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("forest.items",  Arrays.asList(new String[] {"APPLE"}));
+        node.set("forest.chance", .01);
+        node.set("forest.max-found", 3);
+        node.set("plains.items",  Arrays.asList(new String[] {"WHEAT", "MELON"}));
+        node.set("plains.chance", .01);
+        node.set("plains.max-found", 3);
+        node.set("water.items",  Arrays.asList(new String[] {"RAW_FISH"}));
+        node.set("water.chance", .01);
+        node.set("water.max-found", 3);
+        node.set("swamp.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE"}));
+        node.set("swamp.chance", .01);
+        node.set("swamp.max-found", 4);
+        node.set("desert.items", Arrays.asList(new String[] {"CACTUS", "SUGAR_CANE"}));
+        node.set("desert.chance", .005);
+        node.set("desert.max-found", 2);
+        node.set("hell.items", Arrays.asList(new String[] {"ROTTEN_FLESH" }));
+        node.set("hell.chance", .005);
+        node.set("hell.max-found", 1);
+        node.set("sky.items", Arrays.asList(new String[] {"VINE"}));
+        node.set("sky.chance", .01);
+        node.set("sky.max-found", 3);
+        node.set("ice.items", Arrays.asList(new String[] {"RAW_FISH"}));
+        node.set("ice.chance", 0.005D);
+        node.set("ice.max-found", 1);
+        node.set("mushroom.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"}));
+        node.set("mushroom.chance", 0.1);
+        node.set("mushroom.max-found", 2);
+        node.set("default.items", new ArrayList<String>());
         return node;
     }
     

@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Player;
@@ -12,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -43,11 +43,11 @@ public class SkillBecomeDeath extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 30000);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero% gains the features of a zombie!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% no longer appears as an undead!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 30000);
+        node.set(Setting.APPLY_TEXT.node(), "%hero% gains the features of a zombie!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% no longer appears as an undead!");
         return node;
     }
     

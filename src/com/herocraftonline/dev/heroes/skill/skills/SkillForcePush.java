@@ -1,10 +1,10 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -25,11 +25,11 @@ public class SkillForcePush extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("vertical-power", 1);
-        node.setProperty("horizontal-power", 1);
-        node.setProperty(Setting.DAMAGE.node(), 0);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("vertical-power", 1);
+        node.set("horizontal-power", 1);
+        node.set(Setting.DAMAGE.node(), 0);
         return node;
     }
 

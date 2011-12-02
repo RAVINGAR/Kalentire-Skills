@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -33,17 +33,17 @@ public class SkillDeconstruct extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
         String root = "IRON_AXE";
-        node.setProperty("require-workbench", true);
-        node.setProperty(root + "." + Setting.LEVEL.node(), 1);
-        node.setProperty(root + "." + Setting.EXP.node(), 0);
-        node.setProperty(root + ".min-durability", .5); // Minimum durability percentage the item must have to
+        node.set("require-workbench", true);
+        node.set(root + "." + Setting.LEVEL.node(), 1);
+        node.set(root + "." + Setting.EXP.node(), 0);
+        node.set(root + ".min-durability", .5); // Minimum durability percentage the item must have to
                                                         // deconstruct
-        node.setProperty(root + ".IRON_INGOT", 1);
-        node.setProperty(root + ".STICK", 1);
-        node.setProperty(Setting.USE_TEXT.node(), "%hero% has deconstructed a %item%");
+        node.set(root + ".IRON_INGOT", 1);
+        node.set(root + ".STICK", 1);
+        node.set(Setting.USE_TEXT.node(), "%hero% has deconstructed a %item%");
         return node;
     }
 

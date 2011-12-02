@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -9,7 +10,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -41,16 +41,16 @@ public class SkillAssassinsBlade extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("weapons", Util.swords);
-        node.setProperty("buff-duration", 600000); // 10 minutes in milliseconds
-        node.setProperty("poison-duration", 10000); // 10 seconds in milliseconds
-        node.setProperty(Setting.PERIOD.node(), 2000); // 2 seconds in milliseconds
-        node.setProperty("tick-damage", 2);
-        node.setProperty("attacks", 1); // How many attacks the buff lasts for.
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% is poisoned!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("weapons", Util.swords);
+        node.set("buff-duration", 600000); // 10 minutes in milliseconds
+        node.set("poison-duration", 10000); // 10 seconds in milliseconds
+        node.set(Setting.PERIOD.node(), 2000); // 2 seconds in milliseconds
+        node.set("tick-damage", 2);
+        node.set("attacks", 1); // How many attacks the buff lasts for.
+        node.set(Setting.APPLY_TEXT.node(), "%target% is poisoned!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!");
         return node;
     }
 

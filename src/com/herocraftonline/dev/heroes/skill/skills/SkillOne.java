@@ -1,7 +1,7 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -28,12 +28,12 @@ public class SkillOne extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("speed-multiplier", 2);
-        node.setProperty(Setting.DURATION.node(), 15000);
-        node.setProperty("apply-text", "%hero% gained a burst of speed!");
-        node.setProperty("expire-text", "%hero% returned to normal speed!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("speed-multiplier", 2);
+        node.set(Setting.DURATION.node(), 15000);
+        node.set("apply-text", "%hero% gained a burst of speed!");
+        node.set("expire-text", "%hero% returned to normal speed!");
         return node;
     }
 

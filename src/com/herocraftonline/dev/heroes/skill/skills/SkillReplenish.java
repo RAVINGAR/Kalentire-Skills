@@ -1,6 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-import org.bukkit.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
@@ -22,9 +22,9 @@ public class SkillReplenish extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("mana-bonus", 100);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("mana-bonus", 100);
         return node;
     }
 

@@ -1,8 +1,8 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainHealthEvent;
@@ -25,10 +25,10 @@ public class SkillPray extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("health", 10);
-        node.setProperty(Setting.MAX_DISTANCE.node(), 25);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("health", 10);
+        node.set(Setting.MAX_DISTANCE.node(), 25);
         return node;
     }
 

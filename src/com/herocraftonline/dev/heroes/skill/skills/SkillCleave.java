@@ -1,10 +1,10 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -28,12 +28,12 @@ public class SkillCleave extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("weapons", Util.axes);
-        node.setProperty(Setting.MAX_DISTANCE.node(), 2);
-        node.setProperty(Setting.RADIUS.node(), 3);
-        node.setProperty("damage-multiplier", 1);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("weapons", Util.axes);
+        node.set(Setting.MAX_DISTANCE.node(), 2);
+        node.set(Setting.RADIUS.node(), 3);
+        node.set("damage-multiplier", 1);
         return node;
     }
 

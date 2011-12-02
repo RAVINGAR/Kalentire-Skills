@@ -1,12 +1,12 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -36,12 +36,12 @@ public class SkillManaShield extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("mana-amount", 20);
-        node.setProperty(Setting.DURATION.node(), 20000);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%hero% was surrounded by a mana shield!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% lost his mana shield!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("mana-amount", 20);
+        node.set(Setting.DURATION.node(), 20000);
+        node.set(Setting.APPLY_TEXT.node(), "%hero% was surrounded by a mana shield!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his mana shield!");
         return node;
     }
 

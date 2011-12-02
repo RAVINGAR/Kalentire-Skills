@@ -5,8 +5,8 @@ import java.util.HashSet;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -29,9 +29,9 @@ public class SkillOvergrowth extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.MAX_DISTANCE.node(), 15);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.MAX_DISTANCE.node(), 15);
         return node;
     }
 

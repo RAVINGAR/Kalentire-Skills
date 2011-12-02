@@ -1,11 +1,11 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -38,12 +38,12 @@ public class SkillSoulBond extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 300000);
-        node.setProperty("damage-multiplier", .5);
-        node.setProperty(Setting.RADIUS.node(), 25);
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target%'s soul is no longer bound to %hero%!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 300000);
+        node.set("damage-multiplier", .5);
+        node.set(Setting.RADIUS.node(), 25);
+        node.set(Setting.EXPIRE_TEXT.node(), "%target%'s soul is no longer bound to %hero%!");
         return node;
     }
 

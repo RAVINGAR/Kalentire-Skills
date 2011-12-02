@@ -1,9 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -34,13 +34,13 @@ public class SkillEndurance extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("incoming-multiplier", .9);
-        node.setProperty("outgoing-multiplier", .9);
-        node.setProperty("multiplier-per-level", .005);
-        node.setProperty(Setting.USE_TEXT.node(), "%hero% shifts into a defensive form!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% has shifted out of their defensive form!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("incoming-multiplier", .9);
+        node.set("outgoing-multiplier", .9);
+        node.set("multiplier-per-level", .005);
+        node.set(Setting.USE_TEXT.node(), "%hero% shifts into a defensive form!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% has shifted out of their defensive form!");
         return node;
     }
 

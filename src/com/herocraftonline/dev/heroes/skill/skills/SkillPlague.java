@@ -1,10 +1,10 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -32,14 +32,14 @@ public class SkillPlague extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 21000);
-        node.setProperty(Setting.PERIOD.node(), 3000);
-        node.setProperty("tick-damage", 1);
-        node.setProperty(Setting.RADIUS.node(), 4);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% is infected with the plague!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target% is no longer infected with the plague!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 21000);
+        node.set(Setting.PERIOD.node(), 3000);
+        node.set("tick-damage", 1);
+        node.set(Setting.RADIUS.node(), 4);
+        node.set(Setting.APPLY_TEXT.node(), "%target% is infected with the plague!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer infected with the plague!");
         return node;
     }
 

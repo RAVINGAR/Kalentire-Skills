@@ -3,8 +3,8 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -28,11 +28,11 @@ public class SkillHellgate extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.RADIUS.node(), 10);
-        node.setProperty("hell-world", "world_nether");
-        node.setProperty("default-return", "world"); // default world the player return to if their location wasn't
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.RADIUS.node(), 10);
+        node.set("hell-world", "world_nether");
+        node.set("default-return", "world"); // default world the player return to if their location wasn't
                                                      // saved
         return node;
     }

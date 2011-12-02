@@ -1,10 +1,10 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -31,13 +31,13 @@ public class SkillQuicken extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("speed-multiplier", 2);
-        node.setProperty(Setting.DURATION.node(), 300000);
-        node.setProperty(Setting.RADIUS.node(), 15);
-        node.setProperty("apply-text", "%hero% gained a burst of speed!");
-        node.setProperty("expire-text", "%hero% returned to normal speed!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("speed-multiplier", 2);
+        node.set(Setting.DURATION.node(), 300000);
+        node.set(Setting.RADIUS.node(), 15);
+        node.set("apply-text", "%hero% gained a burst of speed!");
+        node.set("expire-text", "%hero% returned to normal speed!");
         return node;
     }
 

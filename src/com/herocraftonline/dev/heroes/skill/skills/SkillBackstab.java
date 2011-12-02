@@ -1,11 +1,11 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -32,14 +32,14 @@ public class SkillBackstab extends PassiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("weapons", Util.swords);
-        node.setProperty("attack-bonus", 1.5);
-        node.setProperty("attack-chance", .5);
-        node.setProperty("sneak-bonus", 2.0); // Alternative bonus if player is sneaking when doing the backstab
-        node.setProperty("sneak-chance", 1.0);
-        node.setProperty(Setting.USE_TEXT.node(), "%hero% backstabbed %target%!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("weapons", Util.swords);
+        node.set("attack-bonus", 1.5);
+        node.set("attack-chance", .5);
+        node.set("sneak-bonus", 2.0); // Alternative bonus if player is sneaking when doing the backstab
+        node.set("sneak-chance", 1.0);
+        node.set(Setting.USE_TEXT.node(), "%hero% backstabbed %target%!");
         return node;
     }
     

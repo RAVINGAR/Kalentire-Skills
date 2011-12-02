@@ -1,10 +1,10 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
@@ -35,11 +35,11 @@ public class SkillManaFreeze extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 5000);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% has stopped regenerating mana!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target% is once again regenerating mana!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 5000);
+        node.set(Setting.APPLY_TEXT.node(), "%target% has stopped regenerating mana!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target% is once again regenerating mana!");
         return node;
     }
 

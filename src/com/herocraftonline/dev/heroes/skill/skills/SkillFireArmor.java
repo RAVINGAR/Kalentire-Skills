@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,7 +13,6 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
@@ -38,12 +38,12 @@ public class SkillFireArmor extends PassiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("armors", defaultArmors);
-        node.setProperty("ignite-chance", 0.20);
-        node.setProperty("ignite-duration", 5000);
-        node.setProperty("ignite-text", "%hero% ignited %target% with firearmor!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("armors", defaultArmors);
+        node.set("ignite-chance", 0.20);
+        node.set("ignite-duration", 5000);
+        node.set("ignite-text", "%hero% ignited %target% with firearmor!");
         return node;
     }
 

@@ -9,6 +9,7 @@ import net.minecraft.server.Vec3D;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftFireball;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -20,7 +21,6 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -45,10 +45,10 @@ public class SkillExplosiveFireball extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DAMAGE.node(), 4);
-        node.setProperty("fire-ticks", 100);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DAMAGE.node(), 4);
+        node.set("fire-ticks", 100);
         return node;
     }
 

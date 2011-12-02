@@ -2,9 +2,9 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -28,10 +28,10 @@ public class SkillGift extends ActiveSkill{
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("max-amount", 64);
-        node.setProperty("send-text", "%hero% has sent you %amount% %item%");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("max-amount", 64);
+        node.set("send-text", "%hero% has sent you %amount% %item%");
         return node;
     }
 

@@ -1,11 +1,11 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -38,15 +38,15 @@ public class SkillImpale extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("weapons", Util.shovels);
-        node.setProperty(Setting.MAX_DISTANCE.node(), 6);
-        node.setProperty(Setting.DURATION.node(), 5000);
-        node.setProperty("amplitude", 4);
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%'s impale!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
-        node.setProperty("force", 3);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("weapons", Util.shovels);
+        node.set(Setting.MAX_DISTANCE.node(), 6);
+        node.set(Setting.DURATION.node(), 5000);
+        node.set("amplitude", 4);
+        node.set(Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%'s impale!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
+        node.set("force", 3);
         return node;
     }
     

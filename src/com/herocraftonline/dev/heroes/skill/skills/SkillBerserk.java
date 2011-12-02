@@ -1,9 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -34,13 +34,13 @@ public class SkillBerserk extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("incoming-multiplier", 1.1);
-        node.setProperty("outgoing-multiplier", 1.1);
-        node.setProperty("multiplier-per-level", .005);
-        node.setProperty(Setting.USE_TEXT.node(), "%hero% goes berserk!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% is no longer berserking!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("incoming-multiplier", 1.1);
+        node.set("outgoing-multiplier", 1.1);
+        node.set("multiplier-per-level", .005);
+        node.set(Setting.USE_TEXT.node(), "%hero% goes berserk!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer berserking!");
         return node;
     }
 

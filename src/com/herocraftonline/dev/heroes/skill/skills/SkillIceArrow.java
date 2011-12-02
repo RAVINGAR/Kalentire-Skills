@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
@@ -9,7 +10,6 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -40,15 +40,15 @@ public class SkillIceArrow extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty("slow-duration", 5000); // 5 seconds
-        node.setProperty("speed-multiplier", 2);
-        node.setProperty(Setting.DURATION.node(), 60000); // milliseconds
-        node.setProperty("attacks", 1); // How many attacks the buff lasts for.
-        node.setProperty(Setting.USE_TEXT.node(), "%hero% imbues their arrows with ice!");
-        node.setProperty(Setting.APPLY_TEXT.node(), "%target% is slowed by ice!");
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("slow-duration", 5000); // 5 seconds
+        node.set("speed-multiplier", 2);
+        node.set(Setting.DURATION.node(), 60000); // milliseconds
+        node.set("attacks", 1); // How many attacks the buff lasts for.
+        node.set(Setting.USE_TEXT.node(), "%hero% imbues their arrows with ice!");
+        node.set(Setting.APPLY_TEXT.node(), "%target% is slowed by ice!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!");
         return node;
     }
 

@@ -1,9 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainHealthEvent;
@@ -31,13 +31,13 @@ public class SkillSoulLeech extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DURATION.node(), 10000); // in milliseconds
-        node.setProperty(Setting.PERIOD.node(), 2000); // in milliseconds
-        node.setProperty("tick-damage", 1);
-        node.setProperty("heal-multiplier", 1);
-        node.setProperty(Setting.EXPIRE_TEXT.node(), "%hero% is no longer draining %target%'s soul!");
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 10000); // in milliseconds
+        node.set(Setting.PERIOD.node(), 2000); // in milliseconds
+        node.set("tick-damage", 1);
+        node.set("heal-multiplier", 1);
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer draining %target%'s soul!");
         return node;
     }
 

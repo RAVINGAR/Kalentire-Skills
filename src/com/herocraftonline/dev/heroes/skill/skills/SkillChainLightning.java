@@ -3,13 +3,11 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -21,7 +19,6 @@ import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Setting;
-import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillChainLightning extends TargettedSkill {
 
@@ -35,12 +32,12 @@ public class SkillChainLightning extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DAMAGE.node(), 6);
-        node.setProperty("bounce-damage", 3);
-        node.setProperty(Setting.RADIUS.node(), 7);
-        node.setProperty("max-bounces", 3);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DAMAGE.node(), 6);
+        node.set("bounce-damage", 3);
+        node.set(Setting.RADIUS.node(), 7);
+        node.set("max-bounces", 3);
         return node;
     }
 

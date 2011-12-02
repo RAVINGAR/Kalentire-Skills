@@ -3,11 +3,11 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.ConfigurationNode;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -28,12 +28,12 @@ public class SkillIronFist extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationNode getDefaultConfig() {
-        ConfigurationNode node = super.getDefaultConfig();
-        node.setProperty(Setting.DAMAGE.node(), 4);
-        node.setProperty(Setting.RADIUS.node(), 3);
-        node.setProperty("vertical-power", .25);
-        node.setProperty("horizontal-power", .5);
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DAMAGE.node(), 4);
+        node.set(Setting.RADIUS.node(), 3);
+        node.set("vertical-power", .25);
+        node.set("horizontal-power", .5);
         return node;
     }
 
