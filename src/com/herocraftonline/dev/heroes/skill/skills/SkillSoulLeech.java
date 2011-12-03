@@ -94,7 +94,7 @@ public class SkillSoulLeech extends TargettedSkill {
         public void remove(Creature creature) {
             super.remove(creature);
             healApplier();
-            broadcast(creature.getLocation(), expireText, applier.getDisplayName(), Messaging.getCreatureName(creature).toLowerCase());
+            broadcast(creature.getLocation(), expireText, applier.getDisplayName(), Messaging.getLivingEntityName(creature).toLowerCase());
         }
 
         @Override

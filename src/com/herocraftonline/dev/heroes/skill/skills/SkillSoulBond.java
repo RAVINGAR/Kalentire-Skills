@@ -233,7 +233,7 @@ public class SkillSoulBond extends TargettedSkill {
                 name = ((Player) target).getDisplayName();
                 plugin.getHeroManager().getHero((Player) target).removeEffect(bondEffect);
             } else {
-                name = Messaging.getCreatureName((Creature) target);
+                name = Messaging.getLivingEntityName((Creature) target);
                 plugin.getEffectManager().removeCreatureEffect((Creature) target, bondEffect);
             }
 

@@ -102,7 +102,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             y = location.getY();
             z = location.getZ();
 
-            broadcast(location, applyText, Messaging.getCreatureName(creature));
+            broadcast(location, applyText, Messaging.getLivingEntityName(creature));
         }
 
         @Override
@@ -127,7 +127,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             int damage = getSetting(applier, "shatter-damage", 7, false);
             addSpellTarget(creature, applier);
             creature.damage(damage, applier.getPlayer());
-            broadcast(creature.getLocation(), shatterText, Messaging.getCreatureName(creature));
+            broadcast(creature.getLocation(), shatterText, Messaging.getLivingEntityName(creature));
         }
         
         public void shatter(Hero hero) {
@@ -142,7 +142,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         @Override
         public void remove(Creature creature) {
             super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getCreatureName(creature));
+            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature));
         }
 
         @Override

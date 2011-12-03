@@ -101,7 +101,7 @@ public class SkillPlague extends TargettedSkill {
         @Override
         public void remove(Creature creature) {
             super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getCreatureName(creature).toLowerCase());
+            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase());
         }
 
         @Override

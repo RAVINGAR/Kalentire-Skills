@@ -115,7 +115,7 @@ public class SkillMortalWound extends TargettedSkill {
         @Override
         public void remove(Creature creature) {
             super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getCreatureName(creature).toLowerCase(), applier.getDisplayName());
+            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase(), applier.getDisplayName());
         }
 
         @Override

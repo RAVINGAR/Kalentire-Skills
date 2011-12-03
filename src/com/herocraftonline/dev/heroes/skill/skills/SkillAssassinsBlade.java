@@ -113,7 +113,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
         @Override
         public void apply(Creature creature) {
             super.apply(creature);
-            broadcast(creature.getLocation(), applyText, Messaging.getCreatureName(creature).toLowerCase());
+            broadcast(creature.getLocation(), applyText, Messaging.getLivingEntityName(creature).toLowerCase());
         }
 
         @Override
@@ -126,7 +126,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
         @Override
         public void remove(Creature creature) {
             super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getCreatureName(creature).toLowerCase());
+            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase());
         }
 
         @Override

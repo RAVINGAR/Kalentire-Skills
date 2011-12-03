@@ -117,7 +117,7 @@ public class SkillSoulFire extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 name = ((Player) event.getEntity()).getName();
             } else if (event.getEntity() instanceof Creature) {
-                name = Messaging.getCreatureName((Creature) event.getEntity());
+                name = Messaging.getLivingEntityName((Creature) event.getEntity());
             }
 
             broadcast(player.getLocation(), igniteText, player.getDisplayName(), name);
