@@ -5,10 +5,11 @@
     <property name="dir.dist" value="build" />
     <property name="dir.bin.skills" value="com/herocraftonline/dev/heroes/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
+	<property name="heroes" value="../../Heroes/lastSuccessful/archive/build" />
 
     <path id="classpath">
 		<fileset dir="libs" includes="**/*.jar" />
-    	<fileset dir="../../Heroes/lastSuccessful/archive/build" includes="**/*.jar" />
+    	<fileset dir="${heroes}" includes="**/*.jar" />
     </path>
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -48,7 +49,7 @@
     </target>
 	
 	<target name="zip">
-		<copy todir="${dir.dist}" file="libs/Heroes.jar"/>
+		<copy todir="${dir.dist}" file="${heroes}"/>
 		<zip destfile="${dir.dist}/Heroes.zip">
 			<fileset dir="${dir.dist}" includes="*.jar"/>
 		    <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
