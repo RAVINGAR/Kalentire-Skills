@@ -1,8 +1,8 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -111,9 +111,9 @@ public class SkillAssassinsBlade extends ActiveSkill {
         }
 
         @Override
-        public void apply(Creature creature) {
-            super.apply(creature);
-            broadcast(creature.getLocation(), applyText, Messaging.getLivingEntityName(creature).toLowerCase());
+        public void apply(LivingEntity lEntity) {
+            super.apply(lEntity);
+            broadcast(lEntity.getLocation(), applyText, Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override
@@ -124,9 +124,9 @@ public class SkillAssassinsBlade extends ActiveSkill {
         }
 
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase());
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
+            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override
@@ -154,7 +154,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
             }
             
             // If our target isn't a creature or player lets exit
-            if (!(event.getEntity() instanceof Creature) && !(event.getEntity() instanceof Player)) {
+            if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof Player)) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
@@ -179,12 +179,12 @@ public class SkillAssassinsBlade extends ActiveSkill {
                 int tickDamage = getSetting(hero, "tick-damage", 2, false);
                 AssassinsPoison apEffect = new AssassinsPoison(skill, period, duration, tickDamage, player);
                 Entity target = event.getEntity();
-                if (target instanceof Creature) {
-                    plugin.getEffectManager().addCreatureEffect((Creature) target, apEffect);
-                    checkBuff(hero);
-                } else if (event.getEntity() instanceof Player) {
+                if (event.getEntity() instanceof Player) {
                     Hero targetHero = plugin.getHeroManager().getHero((Player) target);
                     targetHero.addEffect(apEffect);
+                    checkBuff(hero);
+                } else if (target instanceof LivingEntity) {
+                    plugin.getEffectManager().addEntityEffect((LivingEntity) target, apEffect);
                     checkBuff(hero);
                 }
             }

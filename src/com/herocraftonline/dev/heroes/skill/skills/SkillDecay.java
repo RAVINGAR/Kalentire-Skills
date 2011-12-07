@@ -1,7 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -59,9 +58,8 @@ public class SkillDecay extends TargettedSkill {
 
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(decayEffect);
-        } else if (target instanceof Creature) {
-            Creature creature = (Creature) target;
-            plugin.getEffectManager().addCreatureEffect(creature, decayEffect);
+        } else if (target instanceof LivingEntity) {
+            plugin.getEffectManager().addEntityEffect(target, decayEffect);
         } else
         	return SkillResult.INVALID_TARGET;
 
@@ -78,9 +76,9 @@ public class SkillDecay extends TargettedSkill {
         }
 
         @Override
-        public void apply(Creature creature) {
-            super.apply(creature);
-            broadcast(creature.getLocation(), applyText, Messaging.getLivingEntityName(creature));
+        public void apply(LivingEntity lEntity) {
+            super.apply(lEntity);
+            broadcast(lEntity.getLocation(), applyText, Messaging.getLivingEntityName(lEntity));
         }
 
         @Override
@@ -91,9 +89,9 @@ public class SkillDecay extends TargettedSkill {
         }
 
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase());
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
+            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override

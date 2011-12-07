@@ -74,7 +74,7 @@ public class SkillSoulBond extends TargettedSkill {
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(sbEffect);
         } else {
-            plugin.getEffectManager().addCreatureEffect((Creature) target, sbEffect);
+            plugin.getEffectManager().addEntityEffect((Creature) target, sbEffect);
         }
 
         broadcastExecuteText(hero, target);
@@ -113,12 +113,12 @@ public class SkillSoulBond extends TargettedSkill {
                     event.setDamage(event.getDamage() - splitDamage);
                 }
             } else if (event.getEntity() instanceof Creature) {
-                if (!plugin.getEffectManager().creatureHasEffect((Creature) event.getEntity(), "SoulBonded")) {
+                if (!plugin.getEffectManager().entityHasEffect((Creature) event.getEntity(), "SoulBonded")) {
                     Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
-                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getCreatureEffect((Creature) event.getEntity(), "SoulBonded")).getApplier();
+                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getEntityEffect((Creature) event.getEntity(), "SoulBonded")).getApplier();
                 Hero hero = plugin.getHeroManager().getHero(applier);
 
                 // Distance check
@@ -167,12 +167,12 @@ public class SkillSoulBond extends TargettedSkill {
                     event.setDamage(event.getDamage() - splitDamage);
                 }
             } else if (event.getEntity() instanceof Creature) {
-                if (!plugin.getEffectManager().creatureHasEffect((Creature) event.getEntity(), "SoulBonded")) {
+                if (!plugin.getEffectManager().entityHasEffect((Creature) event.getEntity(), "SoulBonded")) {
                     Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
-                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getCreatureEffect((Creature) event.getEntity(), "SoulBonded")).getApplier();
+                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getEntityEffect((Creature) event.getEntity(), "SoulBonded")).getApplier();
                 Hero hero = plugin.getHeroManager().getHero(applier);
 
                 // Distance check
@@ -234,7 +234,7 @@ public class SkillSoulBond extends TargettedSkill {
                 plugin.getHeroManager().getHero((Player) target).removeEffect(bondEffect);
             } else {
                 name = Messaging.getLivingEntityName((Creature) target);
-                plugin.getEffectManager().removeCreatureEffect((Creature) target, bondEffect);
+                plugin.getEffectManager().removeEntityEffect((Creature) target, bondEffect);
             }
 
             broadcast(player.getLocation(), expireText, name, player.getDisplayName());

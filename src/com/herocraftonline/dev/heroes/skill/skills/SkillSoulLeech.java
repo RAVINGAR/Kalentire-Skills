@@ -1,7 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -59,11 +58,9 @@ public class SkillSoulLeech extends TargettedSkill {
 
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(slEffect);
-        } else if (target instanceof Creature) {
-            Creature creature = (Creature) target;
-            plugin.getEffectManager().addCreatureEffect(creature, slEffect);
-        } else
-        	return SkillResult.INVALID_TARGET;
+        } else 
+            plugin.getEffectManager().addEntityEffect(target, slEffect);
+
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
@@ -81,8 +78,8 @@ public class SkillSoulLeech extends TargettedSkill {
         }
 
         @Override
-        public void apply(Creature creature) {
-            super.apply(creature);
+        public void apply(LivingEntity lEntity) {
+            super.apply(lEntity);
         }
 
         @Override
@@ -91,10 +88,10 @@ public class SkillSoulLeech extends TargettedSkill {
         }
 
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
             healApplier();
-            broadcast(creature.getLocation(), expireText, applier.getDisplayName(), Messaging.getLivingEntityName(creature).toLowerCase());
+            broadcast(lEntity.getLocation(), expireText, applier.getDisplayName(), Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override
@@ -106,8 +103,8 @@ public class SkillSoulLeech extends TargettedSkill {
         }
 
         @Override
-        public void tick(Creature creature) {
-            super.tick(creature);
+        public void tick(LivingEntity lEntity) {
+            super.tick(lEntity);
             totalDamage += tickDamage;
         }
 

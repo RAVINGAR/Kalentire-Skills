@@ -175,7 +175,7 @@ public class SkillIcyAura extends ActiveSkill {
                     if (lEntity instanceof Player) {
                         plugin.getHeroManager().getHero((Player) lEntity).addEffect(sEffect);
                     } else if (lEntity instanceof Creature) {
-                        plugin.getEffectManager().addCreatureEffect((Creature) lEntity, sEffect);
+                        plugin.getEffectManager().addEntityEffect((Creature) lEntity, sEffect);
                     }
                 }
             }

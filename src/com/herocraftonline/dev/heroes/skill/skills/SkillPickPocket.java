@@ -82,7 +82,6 @@ public class SkillPickPocket extends TargettedSkill {
         // Never steal items in the hotbar - We consider these 'active' and in the players hand.
         int slot = Util.rand.nextInt(27) + 9;
         Set<String> disallowed = new HashSet<String>(getSetting(hero, "disallowed-items", new ArrayList<String>()));
-        // The Player always has a chance to simply fail due to the slot being empty
         if (items[slot] == null || items[slot].getType() == Material.AIR || disallowed.contains(items[slot].getType().name())) {
             Messaging.send(player, "You failed to steal anything from $1", tPlayer.getDisplayName());
             return SkillResult.FAIL;

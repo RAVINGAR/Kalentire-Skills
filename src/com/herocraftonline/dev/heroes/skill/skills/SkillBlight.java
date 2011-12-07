@@ -1,7 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -61,10 +60,8 @@ public class SkillBlight extends TargettedSkill {
 
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(bEffect);
-        } else if (target instanceof Creature) {
-            plugin.getEffectManager().addCreatureEffect((Creature) target, bEffect);
-        } else
-        	return SkillResult.INVALID_TARGET;
+        } else 
+            plugin.getEffectManager().addEntityEffect(target, bEffect);
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
@@ -80,8 +77,8 @@ public class SkillBlight extends TargettedSkill {
         }
 
         @Override
-        public void apply(Creature creature) {
-            super.apply(creature);
+        public void apply(LivingEntity lEntity) {
+            super.apply(lEntity);
         }
 
         @Override
@@ -92,9 +89,9 @@ public class SkillBlight extends TargettedSkill {
         }
 
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase());
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
+            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override
@@ -105,9 +102,9 @@ public class SkillBlight extends TargettedSkill {
         }
 
         @Override
-        public void tick(Creature creature) {
-            super.tick(creature);
-            damageNearby(creature);
+        public void tick(LivingEntity lEntity) {
+            super.tick(lEntity);
+            damageNearby(lEntity);
         }
 
         @Override
@@ -135,7 +132,7 @@ public class SkillBlight extends TargettedSkill {
                     if (plugin.getHeroManager().getHero((Player) target).hasEffect("Blight")) {
                         continue;
                     }
-                } else if (target instanceof Creature && plugin.getEffectManager().creatureHasEffect((Creature) target, "Blight")) {
+                } else if (target instanceof LivingEntity && plugin.getEffectManager().entityHasEffect((LivingEntity) target, "Blight")) {
                     continue;
                 } else {
                     // Skip this one if for some reason it's not a creature or player

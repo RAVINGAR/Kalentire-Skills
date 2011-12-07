@@ -1,7 +1,7 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 
@@ -49,15 +49,15 @@ public class SkillLickWounds extends ActiveSkill {
         int healthMax = skill.getSetting(hero, Setting.HEALTH.node(), 30, false) + (int) (healthPerLevel * hero.getLevel(this));
         double healed = healthMax * getSetting(hero, "heal-amount", .25, false);
         boolean used = false;
-        for (Creature creature : hero.getSummons()) {
-            if (!(creature instanceof Wolf) || creature.getLocation().distanceSquared(player.getLocation()) > rangeSquared) {
+        for (LivingEntity lEntity : hero.getSummons()) {
+            if (!(lEntity instanceof Wolf) || lEntity.getLocation().distanceSquared(player.getLocation()) > rangeSquared) {
                 continue;
             }
 
-            if (creature.getHealth() + healed > healthMax) {
-                creature.setHealth(healthMax);
+            if (lEntity.getHealth() + healed > healthMax) {
+                lEntity.setHealth(healthMax);
             } else {
-                creature.setHealth((int) (creature.getHealth() + healed));
+                lEntity.setHealth((int) (lEntity.getHealth() + healed));
             }
             used = true;
         }

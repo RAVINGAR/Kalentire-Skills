@@ -2,7 +2,6 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
@@ -68,10 +67,9 @@ public class SkillDeepFreeze extends TargettedSkill {
 
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(fEffect);
-        } else if (target instanceof Creature) {
-            plugin.getEffectManager().addCreatureEffect((Creature) target, fEffect);
         } else
-        	return SkillResult.INVALID_TARGET;
+            plugin.getEffectManager().addEntityEffect(target, fEffect);
+
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
@@ -94,15 +92,15 @@ public class SkillDeepFreeze extends TargettedSkill {
         }
 
         @Override
-        public void apply(Creature creature) {
-            super.apply(creature);
-            creature.setFireTicks(0);
-            Location location = creature.getLocation();
+        public void apply(LivingEntity lEntity) {
+            super.apply(lEntity);
+            lEntity.setFireTicks(0);
+            Location location = lEntity.getLocation();
             x = location.getX();
             y = location.getY();
             z = location.getZ();
 
-            broadcast(location, applyText, Messaging.getLivingEntityName(creature));
+            broadcast(location, applyText, Messaging.getLivingEntityName(lEntity));
         }
 
         @Override
@@ -122,12 +120,12 @@ public class SkillDeepFreeze extends TargettedSkill {
             return applier;
         }
         
-        public void shatter(Creature creature) {
-            super.remove(creature);
+        public void shatter(LivingEntity lEntity) {
+            super.remove(lEntity);
             int damage = getSetting(applier, "shatter-damage", 7, false);
-            addSpellTarget(creature, applier);
-            creature.damage(damage, applier.getPlayer());
-            broadcast(creature.getLocation(), shatterText, Messaging.getLivingEntityName(creature));
+            addSpellTarget(lEntity, applier);
+            lEntity.damage(damage, applier.getPlayer());
+            broadcast(lEntity.getLocation(), shatterText, Messaging.getLivingEntityName(lEntity));
         }
         
         public void shatter(Hero hero) {
@@ -140,9 +138,9 @@ public class SkillDeepFreeze extends TargettedSkill {
         }
         
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature));
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
+            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity));
         }
 
         @Override
@@ -153,17 +151,17 @@ public class SkillDeepFreeze extends TargettedSkill {
         }
 
         @Override
-        public void tick(Creature creature) {
-            super.tick(creature);
+        public void tick(LivingEntity lEntity) {
+            super.tick(lEntity);
             
-            Location location = creature.getLocation();
+            Location location = lEntity.getLocation();
             if (location.getX() != x || location.getY() != y || location.getZ() != z) {
                 location.setX(x);
                 location.setY(y);
                 location.setZ(z);
-                location.setYaw(creature.getLocation().getYaw());
-                location.setPitch(creature.getLocation().getPitch());
-                creature.teleport(location);
+                location.setYaw(lEntity.getLocation().getYaw());
+                location.setPitch(lEntity.getLocation().getPitch());
+                lEntity.teleport(location);
             }
         }
         
@@ -202,12 +200,12 @@ public class SkillDeepFreeze extends TargettedSkill {
                     fEffect.shatter(tHero);
                     tHero.manualRemoveEffect(fEffect);
                 }
-            } else if (event.getEntity() instanceof Creature) {
-                Creature creature = (Creature) event.getEntity();
-                if (plugin.getEffectManager().creatureHasEffect(creature, "Freeze")) {
-                    FreezeEffect fEffect = (FreezeEffect) plugin.getEffectManager().getCreatureEffect(creature, "Freeze");
-                    fEffect.shatter(creature);
-                    plugin.getEffectManager().manualRemoveCreatureEffect(creature, fEffect);
+            } else if (event.getEntity() instanceof LivingEntity) {
+                LivingEntity lEntity = (LivingEntity) event.getEntity();
+                if (plugin.getEffectManager().entityHasEffect(lEntity, "Freeze")) {
+                    FreezeEffect fEffect = (FreezeEffect) plugin.getEffectManager().getEntityEffect(lEntity, "Freeze");
+                    fEffect.shatter(lEntity);
+                    plugin.getEffectManager().manualRemoveEntityEffect(lEntity, fEffect);
                 }
             }
             Heroes.debug.stopTask("HeroesSkillListener");
@@ -232,12 +230,12 @@ public class SkillDeepFreeze extends TargettedSkill {
                     fEffect.shatter(tHero);
                     tHero.manualRemoveEffect(fEffect);
                 }
-            } else if (event.getEntity() instanceof Creature) {
-                Creature creature = (Creature) event.getEntity();
-                if (plugin.getEffectManager().creatureHasEffect(creature, "Freeze")) {
-                    FreezeEffect fEffect = (FreezeEffect) plugin.getEffectManager().getCreatureEffect(creature, "Freeze");
-                    fEffect.shatter(creature);
-                    plugin.getEffectManager().manualRemoveCreatureEffect(creature, fEffect);
+            } else if (event.getEntity() instanceof LivingEntity) {
+                LivingEntity lEntity = (LivingEntity) event.getEntity();
+                if (plugin.getEffectManager().entityHasEffect(lEntity, "Freeze")) {
+                    FreezeEffect fEffect = (FreezeEffect) plugin.getEffectManager().getEntityEffect(lEntity, "Freeze");
+                    fEffect.shatter(lEntity);
+                    plugin.getEffectManager().manualRemoveEntityEffect(lEntity, fEffect);
                 }
             }
             Heroes.debug.stopTask("HeroesSkillListener");

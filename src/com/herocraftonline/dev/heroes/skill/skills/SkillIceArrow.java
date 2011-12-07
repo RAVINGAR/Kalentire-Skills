@@ -126,7 +126,7 @@ public class SkillIceArrow extends ActiveSkill {
                     tHero.addEffect(iceSlowEffect);
                     broadcast(target.getLocation(), applyText, tHero.getPlayer().getDisplayName(), player.getDisplayName());
                 } else if (target instanceof Creature) {
-                    plugin.getEffectManager().addCreatureEffect((Creature) target, iceSlowEffect);
+                    plugin.getEffectManager().addEntityEffect((Creature) target, iceSlowEffect);
                     broadcast(target.getLocation(), applyText, Messaging.getLivingEntityName((Creature) target), player.getDisplayName());
                 }
                 checkBuff(hero);

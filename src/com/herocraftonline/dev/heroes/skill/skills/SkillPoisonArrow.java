@@ -3,6 +3,7 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -76,9 +77,9 @@ public class SkillPoisonArrow extends ActiveSkill {
         }
 
         @Override
-        public void apply(Creature creature) {
-            super.apply(creature);
-            broadcast(creature.getLocation(), applyText, Messaging.getLivingEntityName(creature).toLowerCase());
+        public void apply(LivingEntity lEntity) {
+            super.apply(lEntity);
+            broadcast(lEntity.getLocation(), applyText, Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override
@@ -89,9 +90,9 @@ public class SkillPoisonArrow extends ActiveSkill {
         }
 
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase());
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
+            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override
@@ -149,7 +150,7 @@ public class SkillPoisonArrow extends ActiveSkill {
                 ArrowPoison apEffect = new ArrowPoison(skill, period, duration, tickDamage, player);
 
                 if (event.getEntity() instanceof Creature) {
-                    plugin.getEffectManager().addCreatureEffect((Creature) event.getEntity(), apEffect);
+                    plugin.getEffectManager().addEntityEffect((Creature) event.getEntity(), apEffect);
                     checkBuff(hero);
                 } else if (event.getEntity() instanceof Player) {
                     Hero target = plugin.getHeroManager().getHero((Player) event.getEntity());

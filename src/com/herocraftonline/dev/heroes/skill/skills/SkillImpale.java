@@ -80,7 +80,7 @@ public class SkillImpale extends TargettedSkill {
             ImpaleEffect iEffect = new ImpaleEffect(this, 300, sEffect);
             plugin.getHeroManager().getHero((Player) target).addEffect(iEffect);
         } else if (target instanceof Creature) {
-            plugin.getEffectManager().addCreatureEffect((Creature) target, sEffect);
+            plugin.getEffectManager().addEntityEffect((Creature) target, sEffect);
         }
         
         broadcastExecuteText(hero, target);

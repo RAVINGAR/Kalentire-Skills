@@ -81,7 +81,7 @@ public class SkillSkeleton extends ActiveSkill {
             Location castLoc = player.getTargetBlock((HashSet<Byte>) null, distance).getLocation();
             Creature skeleton = (Creature) player.getWorld().spawnCreature(castLoc, CreatureType.SKELETON);
             long duration = getSetting(hero, Setting.DURATION.node(), 60000, false);
-            plugin.getEffectManager().addCreatureEffect(skeleton, new SummonEffect(this, duration, hero, expireText));
+            plugin.getEffectManager().addEntityEffect(skeleton, new SummonEffect(this, duration, hero, expireText));
             broadcastExecuteText(hero);
             Messaging.send(player, "You have succesfully summoned a skeleton to fight for you.");
             return SkillResult.NORMAL;
@@ -102,7 +102,7 @@ public class SkillSkeleton extends ActiveSkill {
             }
             Creature creature = (Creature) event.getEntity();
             // Don't allow summoned creatures to combust
-            if (plugin.getEffectManager().creatureHasEffect(creature, "Summon")) {
+            if (plugin.getEffectManager().entityHasEffect(creature, "Summon")) {
                 event.setCancelled(true);
             }
             Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
@@ -137,11 +137,11 @@ public class SkillSkeleton extends ActiveSkill {
                 }
 
                 // Loop through the hero's summons and set the target
-                for (Creature creature : hero.getSummons()) {
-                    if (!(creature instanceof Skeleton)) {
+                for (LivingEntity lEntity : hero.getSummons()) {
+                    if (!(lEntity instanceof Skeleton)) {
                         continue;
                     }
-                    creature.setTarget(damager);
+                    ((Skeleton) lEntity).setTarget(damager);
                 }
             } else if (event.getEntity() instanceof LivingEntity) {
                 // If a creature is being damaged, lets see if a player is dealing the damage to see if we need to make
@@ -165,11 +165,11 @@ public class SkillSkeleton extends ActiveSkill {
                     Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                     return;
                 }
-                for (Creature creature : hero.getSummons()) {
-                    if (!(creature instanceof Skeleton)) {
+                for (LivingEntity lEntity : hero.getSummons()) {
+                    if (!(lEntity instanceof Skeleton)) {
                         continue;
                     }
-                    creature.setTarget((LivingEntity) event.getEntity());
+                    ((Skeleton) lEntity).setTarget((LivingEntity) event.getEntity());
                 }
                 Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
             }
@@ -230,11 +230,11 @@ public class SkillSkeleton extends ActiveSkill {
                 Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                 return;
             }
-            for (Creature summon : hero.getSummons()) {
+            for (LivingEntity summon : hero.getSummons()) {
                 if (summon instanceof Skeleton) {
-                    Effect effect = plugin.getEffectManager().getCreatureEffect(summon, "Summon");
+                    Effect effect = plugin.getEffectManager().getEntityEffect(summon, "Summon");
                     if (effect != null) {
-                        plugin.getEffectManager().removeCreatureEffect(summon, effect);
+                        plugin.getEffectManager().removeEntityEffect(summon, effect);
                     } else {
                         summon.remove();
                     }

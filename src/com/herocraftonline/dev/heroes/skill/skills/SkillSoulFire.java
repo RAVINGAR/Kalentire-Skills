@@ -110,7 +110,7 @@ public class SkillSoulFire extends ActiveSkill {
             if (entity instanceof Player) {
                 plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, player));
             } else if (entity instanceof Creature) {
-                plugin.getEffectManager().addCreatureEffect((Creature) entity, new CombustEffect(skill, player));
+                plugin.getEffectManager().addEntityEffect((Creature) entity, new CombustEffect(skill, player));
             }
 
             String name = null;

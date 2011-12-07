@@ -1,7 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -61,11 +60,8 @@ public class SkillPlague extends TargettedSkill {
 
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(bEffect);
-        } else if (target instanceof Creature) {
-            Creature creature = (Creature) target;
-            plugin.getEffectManager().addCreatureEffect(creature, bEffect);
         } else
-        	return SkillResult.INVALID_TARGET;
+            plugin.getEffectManager().addEntityEffect(target, bEffect);
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
@@ -87,8 +83,8 @@ public class SkillPlague extends TargettedSkill {
         }
 
         @Override
-        public void apply(Creature creature) {
-            super.apply(creature);
+        public void apply(LivingEntity lEntity) {
+            super.apply(lEntity);
         }
 
         @Override
@@ -99,9 +95,9 @@ public class SkillPlague extends TargettedSkill {
         }
 
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
-            broadcast(creature.getLocation(), expireText, Messaging.getLivingEntityName(creature).toLowerCase());
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
+            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
         }
 
         @Override
@@ -112,9 +108,9 @@ public class SkillPlague extends TargettedSkill {
         }
 
         @Override
-        public void tick(Creature creature) {
-            super.tick(creature);
-            spreadToNearbyEntities(creature);
+        public void tick(LivingEntity lEntity) {
+            super.tick(lEntity);
+            spreadToNearbyEntities(lEntity);
         }
 
         @Override
@@ -149,15 +145,15 @@ public class SkillPlague extends TargettedSkill {
 
                     // Apply the effect to the hero creating a copy of the effect
                     tHero.addEffect(new PlagueEffect(this));
-                } else if (target instanceof Creature) {
-                    Creature creature = (Creature) target;
+                } else {
+                    LivingEntity le = (LivingEntity) target;
                     // Make sure the creature doesn't already have the effect
-                    if (plugin.getEffectManager().creatureHasEffect(creature, "Plague")) {
+                    if (plugin.getEffectManager().entityHasEffect(le, "Plague")) {
                         continue;
                     }
 
                     // Apply the effect to the creature, creating a copy of the effect
-                    plugin.getEffectManager().addCreatureEffect(creature, new PlagueEffect(this));
+                    plugin.getEffectManager().addEntityEffect(le, new PlagueEffect(this));
                 }
             }
         }

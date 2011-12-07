@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -77,8 +76,8 @@ public class SkillChainLightning extends TargettedSkill {
                         tHero.addEffect(new DelayedBolt(this, (maxBounce - bounces) * 200, hero, damage));
                         keepBouncing = true;
                         break;
-                    } else if (target instanceof Creature) {
-                        plugin.getEffectManager().addCreatureEffect((Creature) target, new DelayedBolt(this, (maxBounce - bounces) * 200, hero, damage));
+                    } else if (target instanceof LivingEntity) {
+                        plugin.getEffectManager().addEntityEffect(target, new DelayedBolt(this, (maxBounce - bounces) * 200, hero, damage));
                         keepBouncing = true;
                         break;
                     } else {
@@ -127,11 +126,11 @@ public class SkillChainLightning extends TargettedSkill {
         }
 
         @Override
-        public void remove(Creature creature) {
-            super.remove(creature);
-            addSpellTarget(creature, applier);
-            creature.damage(bounceDamage, applier.getPlayer());
-            creature.getWorld().strikeLightningEffect(creature.getLocation());
+        public void remove(LivingEntity lEntity) {
+            super.remove(lEntity);
+            addSpellTarget(lEntity, applier);
+            lEntity.damage(bounceDamage, applier.getPlayer());
+            lEntity.getWorld().strikeLightningEffect(lEntity.getLocation());
         }
 
         @Override
