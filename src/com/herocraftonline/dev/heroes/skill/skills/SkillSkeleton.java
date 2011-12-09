@@ -178,14 +178,14 @@ public class SkillSkeleton extends ActiveSkill {
         @Override
         public void onEntityDeath(EntityDeathEvent event) {
             Heroes.debug.startTask("HeroesSkillListener.Skeleton");
-            if (!(event.getEntity() instanceof Creature)) {
+            if (!(event.getEntity() instanceof Skeleton)) {
                 Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                 return;
             }
-            Creature defender = (Creature) event.getEntity();
+            Skeleton defender = (Skeleton) event.getEntity();
             Collection<Hero> heroes = plugin.getHeroManager().getHeroes();
             for (Hero hero : heroes) {
-                if (hero.getSummons().contains(defender) && defender instanceof Skeleton) {
+                if (hero.getSummons().contains(defender)) {
                     hero.getSummons().remove(defender);
                 }
             }

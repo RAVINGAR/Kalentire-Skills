@@ -2,7 +2,6 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
@@ -125,9 +124,9 @@ public class SkillIceArrow extends ActiveSkill {
                     Hero tHero = plugin.getHeroManager().getHero((Player) target);
                     tHero.addEffect(iceSlowEffect);
                     broadcast(target.getLocation(), applyText, tHero.getPlayer().getDisplayName(), player.getDisplayName());
-                } else if (target instanceof Creature) {
-                    plugin.getEffectManager().addEntityEffect((Creature) target, iceSlowEffect);
-                    broadcast(target.getLocation(), applyText, Messaging.getLivingEntityName((Creature) target), player.getDisplayName());
+                } else {
+                    plugin.getEffectManager().addEntityEffect(target, iceSlowEffect);
+                    broadcast(target.getLocation(), applyText, Messaging.getLivingEntityName(target), player.getDisplayName());
                 }
                 checkBuff(hero);
             }

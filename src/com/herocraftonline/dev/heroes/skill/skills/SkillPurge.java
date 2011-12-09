@@ -1,7 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -48,13 +47,17 @@ public class SkillPurge extends TargettedSkill {
         int removalsLeft = getSetting(hero, "max-removals", -1, true);
         int maxRemovals = removalsLeft;
         for (Entity e : target.getNearbyEntities(radius, radius, radius)) {
+            if (!(e instanceof LivingEntity))
+                continue;
+            
             if (removalsLeft == 0)
                 break;
-            if (e instanceof Creature)
-                removalsLeft = purge((Creature) e, removalsLeft, hero);
+            
             if (e instanceof Player) {
                 removalsLeft = purge(plugin.getHeroManager().getHero((Player) e), removalsLeft, hero);
-            }
+            } else
+                removalsLeft = purge((LivingEntity) e, removalsLeft, hero);
+
         }
 
         if (maxRemovals != removalsLeft) {
@@ -66,24 +69,24 @@ public class SkillPurge extends TargettedSkill {
         }
     }  
 
-    private int purge(Creature creature, int removalsLeft, Hero hero) {
+    private int purge(LivingEntity lEntity, int removalsLeft, Hero hero) {
         EffectManager effectManager = plugin.getEffectManager();
         //Return immediately if this creature has no effects
-        if (effectManager.getEntityEffects(creature) == null)
+        if (effectManager.getEntityEffects(lEntity) == null)
             return removalsLeft;
         
         boolean removeHarmful = false;
-        if (hero.getSummons().contains(creature))
+        if (hero.getSummons().contains(lEntity))
             removeHarmful = true;
         
-        for (Effect effect : effectManager.getEntityEffects(creature)) {
+        for (Effect effect : effectManager.getEntityEffects(lEntity)) {
             if (removalsLeft == 0) {
                 break;
             } else if (effect.isType(EffectType.HARMFUL) && effect.isType(EffectType.DISPELLABLE) && removeHarmful) {
-                effectManager.removeEntityEffect(creature, effect);
+                effectManager.removeEntityEffect(lEntity, effect);
                 removalsLeft--;
             } else if (effect.isType(EffectType.BENEFICIAL) && effect.isType(EffectType.DISPELLABLE) && !removeHarmful) {
-                effectManager.removeEntityEffect(creature, effect);
+                effectManager.removeEntityEffect(lEntity, effect);
                 removalsLeft--;
             }
         }

@@ -2,7 +2,6 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -79,9 +78,9 @@ public class SkillImpale extends TargettedSkill {
         if (target instanceof Player) {
             ImpaleEffect iEffect = new ImpaleEffect(this, 300, sEffect);
             plugin.getHeroManager().getHero((Player) target).addEffect(iEffect);
-        } else if (target instanceof Creature) {
-            plugin.getEffectManager().addEntityEffect((Creature) target, sEffect);
-        }
+        } else
+            plugin.getEffectManager().addEntityEffect(target, sEffect);
+        
         
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

@@ -1,8 +1,7 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -79,7 +78,7 @@ public class SkillSoulFire extends ActiveSkill {
         @Override
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) {
+            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
@@ -104,21 +103,21 @@ public class SkillSoulFire extends ActiveSkill {
             }
 
             int fireTicks = getSetting(hero, "ignite-duration", 5000, false) / 50;
-            Entity entity = event.getEntity();
-            entity.setFireTicks(fireTicks);
+            LivingEntity target = (LivingEntity) event.getEntity();
+            target.setFireTicks(fireTicks);
 
-            if (entity instanceof Player) {
-                plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, player));
-            } else if (entity instanceof Creature) {
-                plugin.getEffectManager().addEntityEffect((Creature) entity, new CombustEffect(skill, player));
-            }
+            if (target instanceof Player)
+                plugin.getHeroManager().getHero((Player) target).addEffect(new CombustEffect(skill, player));
+            else
+                plugin.getEffectManager().addEntityEffect(target, new CombustEffect(skill, player));
+            
 
             String name = null;
-            if (event.getEntity() instanceof Player) {
-                name = ((Player) event.getEntity()).getName();
-            } else if (event.getEntity() instanceof Creature) {
-                name = Messaging.getLivingEntityName((Creature) event.getEntity());
-            }
+            if (event.getEntity() instanceof Player)
+                name = ((Player) target).getName();
+            else
+                name = Messaging.getLivingEntityName(target);
+            
 
             broadcast(player.getLocation(), igniteText, player.getDisplayName(), name);
             Heroes.debug.stopTask("HeroesSkillListener");

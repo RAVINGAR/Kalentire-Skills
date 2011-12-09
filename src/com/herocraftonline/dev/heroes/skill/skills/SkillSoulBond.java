@@ -1,7 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
@@ -56,7 +55,7 @@ public class SkillSoulBond extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        if (target.equals(player) || target instanceof Creature && !hero.getSummons().contains(target)) 
+        if (target.equals(player) || !hero.getSummons().contains(target)) 
         	return SkillResult.INVALID_TARGET;
 
         if (target instanceof Player && (!hero.hasParty() || !hero.getParty().isPartyMember(plugin.getHeroManager().getHero((Player) target))))
@@ -74,7 +73,7 @@ public class SkillSoulBond extends TargettedSkill {
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(sbEffect);
         } else {
-            plugin.getEffectManager().addEntityEffect((Creature) target, sbEffect);
+            plugin.getEffectManager().addEntityEffect(target, sbEffect);
         }
 
         broadcastExecuteText(hero, target);
@@ -90,9 +89,10 @@ public class SkillSoulBond extends TargettedSkill {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
-
-            if (event.getEntity() instanceof Player) {
-                Hero tHero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            LivingEntity target = (LivingEntity) event.getEntity();
+            
+            if (target instanceof Player) {
+                Hero tHero = plugin.getHeroManager().getHero((Player) target);
 
                 // Make sure the target doesn't have both effects
                 if (tHero.hasEffect("SoulBonded") && !tHero.hasEffect("SoulBond")) {
@@ -102,7 +102,7 @@ public class SkillSoulBond extends TargettedSkill {
                     // Distance check
                     int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
                     int radiusSquared = radius * radius;
-                    if (applier.getLocation().distanceSquared(event.getEntity().getLocation()) > radiusSquared) {
+                    if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                         Heroes.debug.stopTask("HeroesSkillListener");
                         return;
                     }
@@ -112,19 +112,19 @@ public class SkillSoulBond extends TargettedSkill {
                     applier.damage(splitDamage, event.getDamager().getPlayer());
                     event.setDamage(event.getDamage() - splitDamage);
                 }
-            } else if (event.getEntity() instanceof Creature) {
-                if (!plugin.getEffectManager().entityHasEffect((Creature) event.getEntity(), "SoulBonded")) {
+            } else {
+                if (!plugin.getEffectManager().entityHasEffect(target, "SoulBonded")) {
                     Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
-                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getEntityEffect((Creature) event.getEntity(), "SoulBonded")).getApplier();
+                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getEntityEffect(target, "SoulBonded")).getApplier();
                 Hero hero = plugin.getHeroManager().getHero(applier);
 
                 // Distance check
                 int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
                 int radiusSquared = radius * radius;
-                if (applier.getLocation().distanceSquared(event.getEntity().getLocation()) > radiusSquared) {
+                if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                     Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
@@ -140,13 +140,15 @@ public class SkillSoulBond extends TargettedSkill {
         @Override
         public void onWeaponDamage(WeaponDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
-            if (event.isCancelled()) {
+            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity)) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
-
-            if (event.getEntity() instanceof Player) {
-                Hero tHero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            
+            LivingEntity target = (LivingEntity) event.getEntity();
+            
+            if (target instanceof Player) {
+                Hero tHero = plugin.getHeroManager().getHero((Player) target);
 
                 // Make sure the target doesn't have both effects
                 if (tHero.hasEffect("SoulBonded") && !tHero.hasEffect("SoulBond")) {
@@ -156,7 +158,7 @@ public class SkillSoulBond extends TargettedSkill {
                     // Distance check
                     int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
                     int radiusSquared = radius * radius;
-                    if (applier.getLocation().distanceSquared(event.getEntity().getLocation()) > radiusSquared) {
+                    if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                         Heroes.debug.stopTask("HeroesSkillListener");
                         return;
                     }
@@ -166,19 +168,19 @@ public class SkillSoulBond extends TargettedSkill {
                     applier.damage(splitDamage, event.getDamager());
                     event.setDamage(event.getDamage() - splitDamage);
                 }
-            } else if (event.getEntity() instanceof Creature) {
-                if (!plugin.getEffectManager().entityHasEffect((Creature) event.getEntity(), "SoulBonded")) {
+            } else {
+                if (!plugin.getEffectManager().entityHasEffect(target, "SoulBonded")) {
                     Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
-                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getEntityEffect((Creature) event.getEntity(), "SoulBonded")).getApplier();
+                Player applier = ((SoulBondedEffect) plugin.getEffectManager().getEntityEffect(target, "SoulBonded")).getApplier();
                 Hero hero = plugin.getHeroManager().getHero(applier);
 
                 // Distance check
                 int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
                 int radiusSquared = radius * radius;
-                if (applier.getLocation().distanceSquared(event.getEntity().getLocation()) > radiusSquared) {
+                if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                     Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
@@ -233,8 +235,8 @@ public class SkillSoulBond extends TargettedSkill {
                 name = ((Player) target).getDisplayName();
                 plugin.getHeroManager().getHero((Player) target).removeEffect(bondEffect);
             } else {
-                name = Messaging.getLivingEntityName((Creature) target);
-                plugin.getEffectManager().removeEntityEffect((Creature) target, bondEffect);
+                name = Messaging.getLivingEntityName(target);
+                plugin.getEffectManager().removeEntityEffect(target, bondEffect);
             }
 
             broadcast(player.getLocation(), expireText, name, player.getDisplayName());

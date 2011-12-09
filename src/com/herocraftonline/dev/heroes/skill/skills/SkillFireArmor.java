@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
@@ -92,9 +91,8 @@ public class SkillFireArmor extends PassiveSkill {
             String name = null;
             if (subEvent.getDamager() instanceof Player) {
                 name = ((Player) subEvent.getDamager()).getName();
-            } else if (subEvent.getDamager() instanceof Creature) {
-                Messaging.getLivingEntityName((Creature) subEvent.getDamager());
-            }
+            } else
+                Messaging.getLivingEntityName((LivingEntity) subEvent.getDamager());
 
             broadcast(player.getLocation(), igniteText, player.getDisplayName(), name);
             Heroes.debug.stopTask("HeroesSkillListener");

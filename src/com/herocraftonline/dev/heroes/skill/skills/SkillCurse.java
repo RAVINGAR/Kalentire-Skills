@@ -64,15 +64,12 @@ public class SkillCurse extends TargettedSkill {
         double missChance = getSetting(hero, "miss-chance", .50, false);
         CurseEffect cEffect = new CurseEffect(this, duration, missChance);
 
-        if (target instanceof Player) {
+        if (target instanceof Player)
             plugin.getHeroManager().getHero((Player) target).addEffect(cEffect);
-            return SkillResult.NORMAL;
-        } else if (target instanceof Creature) {
+        else
             plugin.getEffectManager().addEntityEffect((Creature) target, cEffect);
-            return SkillResult.NORMAL;
-        }
 
-        return SkillResult.INVALID_TARGET;
+        return SkillResult.NORMAL;
     }
 
     public class CurseEffect extends ExpirableEffect {

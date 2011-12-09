@@ -13,8 +13,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftFireball;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -133,8 +133,8 @@ public class SkillExplosiveFireball extends ActiveSkill {
                         entity.setFireTicks(getSetting(hero, "fire-ticks", 100, false));
                         if (entity instanceof Player) {
                             plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, shooter));
-                        } else if (entity instanceof Creature) {
-                            plugin.getEffectManager().addEntityEffect((Creature) entity, new CombustEffect(skill, shooter));
+                        } else if (entity instanceof LivingEntity) {
+                            plugin.getEffectManager().addEntityEffect((LivingEntity) entity, new CombustEffect(skill, shooter));
                         }
                         event.setDamage(damage);
                     }

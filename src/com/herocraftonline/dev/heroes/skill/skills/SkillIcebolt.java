@@ -122,9 +122,9 @@ public class SkillIcebolt extends ActiveSkill {
                 if (target instanceof Player) {
                     Hero tHero = plugin.getHeroManager().getHero((Player) target);
                     tHero.addEffect(iceSlowEffect);
-                } else if (target instanceof Creature) {
-                    plugin.getEffectManager().addEntityEffect((Creature) target, iceSlowEffect);
-                }
+                } else
+                    plugin.getEffectManager().addEntityEffect(target, iceSlowEffect);
+                
                 
                 addSpellTarget(event.getEntity(), hero);
                 event.setDamage(damage);

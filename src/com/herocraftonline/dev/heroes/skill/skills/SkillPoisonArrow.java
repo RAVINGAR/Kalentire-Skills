@@ -2,7 +2,6 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
@@ -123,12 +122,14 @@ public class SkillPoisonArrow extends ActiveSkill {
         @Override
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) {
+            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
+            LivingEntity target = (LivingEntity) event.getEntity();
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+            
             if (!(subEvent.getDamager() instanceof Arrow)) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
@@ -148,13 +149,13 @@ public class SkillPoisonArrow extends ActiveSkill {
                 long period = getSetting(hero, Setting.PERIOD.node(), 2000, true);
                 int tickDamage = getSetting(hero, "tick-damage", 2, false);
                 ArrowPoison apEffect = new ArrowPoison(skill, period, duration, tickDamage, player);
-
-                if (event.getEntity() instanceof Creature) {
-                    plugin.getEffectManager().addEntityEffect((Creature) event.getEntity(), apEffect);
+                
+                if (target instanceof Player) {
+                    Hero hTarget = plugin.getHeroManager().getHero((Player) target);
+                    hTarget.addEffect(apEffect);
                     checkBuff(hero);
-                } else if (event.getEntity() instanceof Player) {
-                    Hero target = plugin.getHeroManager().getHero((Player) event.getEntity());
-                    target.addEffect(apEffect);
+                } else {
+                    plugin.getEffectManager().addEntityEffect(target, apEffect);
                     checkBuff(hero);
                 }
             }

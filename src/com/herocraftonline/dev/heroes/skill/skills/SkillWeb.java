@@ -63,11 +63,10 @@ public class SkillWeb extends TargettedSkill {
         Player player = hero.getPlayer();
 
         String name = "";
-        if (target instanceof Player) {
+        if (target instanceof Player)
             name = ((Player) target).getDisplayName();
-        } else if (target instanceof Creature) {
+        else
             name = Messaging.getLivingEntityName((Creature) target).toLowerCase();
-        }
 
         broadcast(player.getLocation(), applyText, player.getDisplayName(), name);
         int duration = getSetting(hero, Setting.DURATION.node(), 5000, false);

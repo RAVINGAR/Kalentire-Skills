@@ -9,7 +9,6 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -174,9 +173,9 @@ public class SkillIcyAura extends ActiveSkill {
                     changeBlock(loc, hero);
                     if (lEntity instanceof Player) {
                         plugin.getHeroManager().getHero((Player) lEntity).addEffect(sEffect);
-                    } else if (lEntity instanceof Creature) {
-                        plugin.getEffectManager().addEntityEffect((Creature) lEntity, sEffect);
-                    }
+                    } else
+                        plugin.getEffectManager().addEntityEffect(lEntity, sEffect);
+                    
                 }
             }
 
