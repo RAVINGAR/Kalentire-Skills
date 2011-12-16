@@ -8,6 +8,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Util;
@@ -39,7 +40,7 @@ public class SkillTrack extends ActiveSkill {
         	return SkillResult.INVALID_TARGET;
 
         Location location = target.getLocation();
-        int randomness = getSetting(hero, "randomness", 50, true);
+        int randomness = SkillConfigManager.getUseSetting(hero, this, "randomness", 50, true);
         int x = location.getBlockX() + Util.rand.nextInt(randomness);
         int y = location.getBlockY() + Util.rand.nextInt(randomness / 10);
         int z = location.getBlockZ() + Util.rand.nextInt(randomness);

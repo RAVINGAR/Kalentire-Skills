@@ -11,6 +11,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -37,9 +38,9 @@ public class SkillBlaze extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int range = getSetting(hero, Setting.RADIUS.node(), 5, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(range, range, range);
-        int fireTicks = getSetting(hero, Setting.DURATION.node(), 30000, false) / 50;
+        int fireTicks = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false) / 50;
         boolean damaged = false;
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {

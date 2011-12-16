@@ -9,6 +9,7 @@ import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.effects.common.SafeFallEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -34,7 +35,7 @@ public class SkillSuperJump extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        float jumpMult = (float) getSetting(hero, "jump-force-multiplier", 1.0, false);
+        float jumpMult = (float) SkillConfigManager.getUseSetting(hero, this, "jump-force-multiplier", 1.0, false);
         float pitch = player.getEyeLocation().getPitch();
         int jumpForwards = 1;
         if (pitch > 45) {
@@ -47,7 +48,7 @@ public class SkillSuperJump extends ActiveSkill {
         Vector v = player.getVelocity().setY(1).add(player.getLocation().getDirection().setY(0).normalize().multiply(multiplier * jumpForwards));
         player.setVelocity(v);
         player.setFallDistance(-8f);
-        int duration = (int) getSetting(hero, Setting.DURATION.node(), 10000, false);
+        int duration = (int) SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false);
         hero.addEffect(new SafeFallEffect(this, duration));
         broadcastExecuteText(hero);
         

@@ -16,6 +16,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -33,7 +34,7 @@ public class SkillSoulBond extends TargettedSkill {
         setIdentifiers("skill soulbond", "skill sbond");
         setTypes(SkillType.SILENCABLE, SkillType.LIGHT, SkillType.BUFF);
 
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroesListener(), Priority.Highest);
+        registerEvent(Type.CUSTOM_EVENT, new SkillHeroesListener(this), Priority.Highest);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class SkillSoulBond extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target%'s soul is no longer bound to %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target%'s soul is no longer bound to %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
     }
 
     @Override
@@ -66,7 +67,7 @@ public class SkillSoulBond extends TargettedSkill {
             hero.removeEffect(hero.getEffect("SoulBond"));
         }
 
-        long duration = getSetting(hero, Setting.DURATION.node(), 300000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 300000, false);
         SoulBondedEffect sbEffect = new SoulBondedEffect(this, player);
         hero.addEffect(new SoulBondEffect(this, duration, target, sbEffect));
 
@@ -82,6 +83,12 @@ public class SkillSoulBond extends TargettedSkill {
 
     public class SkillHeroesListener extends HeroesEventListener {
 
+        private final Skill skill;
+        
+        public SkillHeroesListener(Skill skill) {
+            this.skill = skill;
+        }
+        
         @Override
         public void onSkillDamage(SkillDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -100,7 +107,7 @@ public class SkillSoulBond extends TargettedSkill {
                     Hero hero = plugin.getHeroManager().getHero(applier);
 
                     // Distance check
-                    int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
+                    int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                     int radiusSquared = radius * radius;
                     if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                         Heroes.debug.stopTask("HeroesSkillListener");
@@ -108,7 +115,7 @@ public class SkillSoulBond extends TargettedSkill {
                     }
 
                     // Split the damage
-                    int splitDamage = (int) (event.getDamage() * getSetting(hero, "damage-multiplier", .5, false));
+                    int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
                     applier.damage(splitDamage, event.getDamager().getPlayer());
                     event.setDamage(event.getDamage() - splitDamage);
                 }
@@ -122,7 +129,7 @@ public class SkillSoulBond extends TargettedSkill {
                 Hero hero = plugin.getHeroManager().getHero(applier);
 
                 // Distance check
-                int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
+                int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                 int radiusSquared = radius * radius;
                 if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                     Heroes.debug.stopTask("HeroesSkillListener");
@@ -130,7 +137,7 @@ public class SkillSoulBond extends TargettedSkill {
                 }
 
                 // Split the damage
-                int splitDamage = (int) (event.getDamage() * getSetting(hero, "damage-multiplier", .5, false));
+                int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
                 applier.damage(splitDamage, event.getDamager().getPlayer());
                 event.setDamage(event.getDamage() - splitDamage);
             }
@@ -156,7 +163,7 @@ public class SkillSoulBond extends TargettedSkill {
                     Hero hero = plugin.getHeroManager().getHero(applier);
 
                     // Distance check
-                    int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
+                    int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                     int radiusSquared = radius * radius;
                     if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                         Heroes.debug.stopTask("HeroesSkillListener");
@@ -164,7 +171,7 @@ public class SkillSoulBond extends TargettedSkill {
                     }
 
                     // Split the damage
-                    int splitDamage = (int) (event.getDamage() * getSetting(hero, "damage-multiplier", .5, false));
+                    int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
                     applier.damage(splitDamage, event.getDamager());
                     event.setDamage(event.getDamage() - splitDamage);
                 }
@@ -178,7 +185,7 @@ public class SkillSoulBond extends TargettedSkill {
                 Hero hero = plugin.getHeroManager().getHero(applier);
 
                 // Distance check
-                int radius = getSetting(hero, Setting.RADIUS.node(), 25, false);
+                int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                 int radiusSquared = radius * radius;
                 if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                     Heroes.debug.stopTask("HeroesSkillListener");
@@ -186,7 +193,7 @@ public class SkillSoulBond extends TargettedSkill {
                 }
 
                 // Split the damage
-                int splitDamage = (int) (event.getDamage() * getSetting(hero, "damage-multiplier", .5, false));
+                int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
                 applier.damage(splitDamage, event.getDamager());
                 event.setDamage(event.getDamage() - splitDamage);
             }

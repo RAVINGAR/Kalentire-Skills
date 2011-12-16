@@ -17,6 +17,8 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.PassiveSkill;
+import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Util;
@@ -33,7 +35,7 @@ public class SkillFireArmor extends PassiveSkill {
         setEffectTypes(EffectType.FIRE);
         defaultArmors.add(Material.GOLD_CHESTPLATE.name());
 
-        registerEvent(Type.ENTITY_DAMAGE, new SkillDamageListener(), Priority.Monitor);
+        registerEvent(Type.ENTITY_DAMAGE, new SkillDamageListener(this), Priority.Monitor);
     }
 
     @Override
@@ -49,11 +51,17 @@ public class SkillFireArmor extends PassiveSkill {
     @Override
     public void init() {
         super.init();
-        igniteText = getSetting(null, "ignite-text", "%hero% ignited %target% with firearmor!").replace("%hero%", "$1").replace("%target%", "$2");
+        igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% ignited %target% with firearmor!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public class SkillDamageListener extends EntityListener {
 
+        private final Skill skill;
+        
+        public SkillDamageListener(Skill skill) {
+            this.skill = skill;
+        }
+        
         @Override
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -65,7 +73,7 @@ public class SkillFireArmor extends PassiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getHeroManager().getHero(player);
 
-            if (!hero.hasEffect("FireArmor") || !getSetting(hero, "armors", defaultArmors).contains(player.getInventory().getChestplate().getType().name())) {
+            if (!hero.hasEffect("FireArmor") || !SkillConfigManager.getUseSetting(hero, skill, "armors", defaultArmors).contains(player.getInventory().getChestplate().getType().name())) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
@@ -78,14 +86,14 @@ public class SkillFireArmor extends PassiveSkill {
             }
 
             // Check our ignite chance
-            double chance = getSetting(hero, "ignite-chance", .2, false);
+            double chance = SkillConfigManager.getUseSetting(hero, skill, "ignite-chance", .2, false);
             if (Util.rand.nextDouble() >= chance) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
             // Set the damager on fire if it was successful
-            int fireTicks = getSetting(hero, "ignite-duration", 5000, false) / 50;
+            int fireTicks = SkillConfigManager.getUseSetting(hero, skill, "ignite-duration", 5000, false) / 50;
             subEvent.getDamager().setFireTicks(fireTicks);
 
             String name = null;

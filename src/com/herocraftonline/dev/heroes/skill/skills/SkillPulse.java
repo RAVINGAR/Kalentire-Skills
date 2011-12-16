@@ -11,6 +11,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -36,7 +37,7 @@ public class SkillPulse extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int radius = getSetting(hero, Setting.RADIUS.node(), 5, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
@@ -47,7 +48,7 @@ public class SkillPulse extends ActiveSkill {
             if (!damageCheck(player, target))
                 continue;
 
-            int damage = getSetting(hero, "damage", 1, false);
+            int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
             addSpellTarget(target, hero);
             target.damage(damage, player);
         }

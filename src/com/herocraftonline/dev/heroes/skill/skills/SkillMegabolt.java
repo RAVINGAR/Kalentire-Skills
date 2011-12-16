@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -35,8 +36,8 @@ public class SkillMegabolt extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int range = getSetting(hero, Setting.RADIUS.node(), 5, false);
-        int damage = getSetting(hero, Setting.DAMAGE.node(), 4, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
 
         // Damage the first target
         addSpellTarget(target, hero);

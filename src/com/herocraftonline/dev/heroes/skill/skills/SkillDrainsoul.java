@@ -8,6 +8,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainHealthEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 
@@ -33,7 +34,7 @@ public class SkillDrainsoul extends TargettedSkill {
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		Player player = hero.getPlayer();
 
-		int absorbAmount = getSetting(hero, "absorb-amount", 4, false);
+		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, "absorb-amount", 4, false);
 
 		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, absorbAmount, this);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);

@@ -10,6 +10,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.PeriodicHealEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -43,8 +44,8 @@ public class SkillRejuvenate extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% is rejuvenating health!").replace("%target%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% has stopped rejuvenating health!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is rejuvenating health!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has stopped rejuvenating health!").replace("%target%", "$1");
     }
 
     @Override
@@ -58,9 +59,9 @@ public class SkillRejuvenate extends TargettedSkill {
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
-            long period = getSetting(hero, Setting.PERIOD.node(), 3000, true);
-            long duration = getSetting(hero, Setting.DURATION.node(), 21000, false);
-            int tickHealth = getSetting(hero, "tick-heal", 1, false);
+            long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+            long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
+            int tickHealth = SkillConfigManager.getUseSetting(hero, this, "tick-heal", 1, false);
             RejuvenateEffect rEffect = new RejuvenateEffect(this, period, duration, tickHealth, player);
             targetHero.addEffect(rEffect);
             return SkillResult.NORMAL;

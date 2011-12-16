@@ -11,6 +11,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.PeriodicDamageEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -43,16 +44,16 @@ public class SkillSoulLeech extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero% looks healthier from draining %target%'s soul!").replace("%hero%", "$1").replace("%target%", "$2");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% looks healthier from draining %target%'s soul!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = getSetting(hero, Setting.DURATION.node(), 10000, false);
-        long period = getSetting(hero, Setting.PERIOD.node(), 2000, true);
-        int tickDamage = getSetting(hero, "tick-damage", 1, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
 
         SoulLeechEffect slEffect = new SoulLeechEffect(this, period, duration, tickDamage, player);
 
@@ -116,7 +117,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
         private void healApplier() {
             Hero hero = plugin.getHeroManager().getHero(applier);
-            int healAmount = totalDamage * getSetting(hero, "heal-multiplier", 1, false);
+            int healAmount = totalDamage * SkillConfigManager.getUseSetting(hero, skill, "heal-multiplier", 1, false);
 
             // Fire our heal event
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, skill);

@@ -13,7 +13,10 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.PassiveSkill;
+import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillQuake extends PassiveSkill {
 
@@ -24,7 +27,7 @@ public class SkillQuake extends PassiveSkill {
         setEffectTypes(EffectType.PHYSICAL, EffectType.BENEFICIAL);
         setTypes(SkillType.PHYSICAL);
 
-        registerEvent(Event.Type.ENTITY_DAMAGE, new SkillDamageListener(), Event.Priority.Highest);
+        registerEvent(Event.Type.ENTITY_DAMAGE, new SkillDamageListener(this), Event.Priority.Highest);
     }
 
     @Override
@@ -37,6 +40,12 @@ public class SkillQuake extends PassiveSkill {
 
     public class SkillDamageListener extends EntityListener {
 
+        private final Skill skill;
+        
+        public SkillDamageListener(Skill skill) {
+            this.skill = skill;
+        }
+        
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
             if (event.getCause() != DamageCause.FALL || !(event.getEntity() instanceof Player)) {
@@ -52,8 +61,8 @@ public class SkillQuake extends PassiveSkill {
                 return;
             }
 
-            double damage = event.getDamage() * getSetting(hero, "damage", 0.10, false);
-            int radius = getSetting(hero, "radius", 10, false);
+            double damage = event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 0.10, false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 10, false);
 
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 if (!(entity instanceof LivingEntity))

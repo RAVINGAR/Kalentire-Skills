@@ -1,3 +1,5 @@
+/*
+ * TODO: re-write me
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,6 +12,7 @@ import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -36,18 +39,17 @@ public class SkillLickWounds extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int rangeSquared = (int) Math.pow(getSetting(hero, Setting.RADIUS.node(), 10, false), 2);
+        int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false), 2);
         Skill skill = plugin.getSkillManager().getSkill("Wolf");
         if (skill == null)
             return SkillResult.FAIL;
 
-        if (!hero.hasSkill(skill) || skill.getSetting(hero, Setting.LEVEL.node(), 1, true) > hero.getLevel(this)) {
+        if (!hero.canUseSkill(skill) || SkillConfigManager.getUseSetting(hero, skill, Setting.LEVEL.node(), 1, true) > hero.getSkillLevel(this)) {
             Messaging.send(player, "You don't have the proper skills to do that!");
             return SkillResult.FAIL;
         }
-        double healthPerLevel = skill.getSetting(hero, "health-per-level", .25, false);
-        int healthMax = skill.getSetting(hero, Setting.HEALTH.node(), 30, false) + (int) (healthPerLevel * hero.getLevel(this));
-        double healed = healthMax * getSetting(hero, "heal-amount", .25, false);
+
+        double healed = SkillConfigManager.getUseSetting(hero, this, "heal-amount", .25, false);
         boolean used = false;
         for (LivingEntity lEntity : hero.getSummons()) {
             if (!(lEntity instanceof Wolf) || lEntity.getLocation().distanceSquared(player.getLocation()) > rangeSquared) {
@@ -72,3 +74,4 @@ public class SkillLickWounds extends ActiveSkill {
     }
 
 }
+*/

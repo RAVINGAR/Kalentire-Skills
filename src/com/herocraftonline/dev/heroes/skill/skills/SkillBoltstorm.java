@@ -15,6 +15,7 @@ import com.herocraftonline.dev.heroes.effects.PeriodicExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
@@ -48,14 +49,14 @@ public class SkillBoltstorm extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%hero% has summoned a boltstorm!").replace("%hero%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero%'s boltstorm has subsided!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% has summoned a boltstorm!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero%'s boltstorm has subsided!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int period = getSetting(hero, Setting.PERIOD.node(), 1000, true);
-        int duration = getSetting(hero, Setting.DURATION.node(), 10000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 1000, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         hero.addEffect(new BoltStormEffect(this, period, duration));
         return SkillResult.NORMAL;
     }
@@ -88,7 +89,7 @@ public class SkillBoltstorm extends ActiveSkill {
             super.tick(hero);
 
             Player player = hero.getPlayer();
-            int range = getSetting(hero, Setting.RADIUS.node(), 7, false);
+            int range = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 7, false);
 
             List<LivingEntity> targets = new ArrayList<LivingEntity>();
             for (Entity entity : player.getNearbyEntities(range, range, range)) {
@@ -114,7 +115,7 @@ public class SkillBoltstorm extends ActiveSkill {
             if (targets.isEmpty())
                 return;
 
-            int damage = getSetting(hero, Setting.DAMAGE.node(), 4, false);
+            int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
             LivingEntity target = targets.get(Util.rand.nextInt(targets.size()));
             addSpellTarget(target, hero);
 

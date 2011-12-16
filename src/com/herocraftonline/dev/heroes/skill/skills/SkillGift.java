@@ -11,6 +11,7 @@ import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 
@@ -38,7 +39,7 @@ public class SkillGift extends ActiveSkill{
     @Override
     public void init() {
         super.init();
-        sendText = getSetting(null, "send-text", "%hero% has sent you %amount% %item%").replace("%hero%", "$1").replace("%amount%", "$2").replace("%item%", "$3");
+        sendText = SkillConfigManager.getRaw(this, "send-text", "%hero% has sent you %amount% %item%").replace("%hero%", "$1").replace("%amount%", "$2").replace("%item%", "$3");
     }
 
     @Override
@@ -46,7 +47,7 @@ public class SkillGift extends ActiveSkill{
         Player player = hero.getPlayer();
         Player reciever = null;
         ItemStack item = null;
-        int maxAmount = getSetting(hero, "max-amount", 64, false);
+        int maxAmount = SkillConfigManager.getUseSetting(hero, this, "max-amount", 64, false);
         int amount = 0;
         if(args.length >= 1 && plugin.getServer().getPlayer(args[0]) != null) {
             reciever = plugin.getServer().getPlayer(args[0]);

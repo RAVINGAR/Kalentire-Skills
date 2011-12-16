@@ -11,6 +11,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.PeriodicDamageEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -45,17 +46,17 @@ public class SkillPlague extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% is infected with the plague!").replace("%target%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% is no longer infected with the plague!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is infected with the plague!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is no longer infected with the plague!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = getSetting(hero, Setting.DURATION.node(), 21000, false);
-        long period = getSetting(hero, Setting.PERIOD.node(), 3000, true);
-        int tickDamage = getSetting(hero, "tick-damage", 1, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         PlagueEffect bEffect = new PlagueEffect(this, duration, period, tickDamage, player);
 
         if (target instanceof Player) {
@@ -126,7 +127,7 @@ public class SkillPlague extends TargettedSkill {
          * @param lEntity
          */
         private void spreadToNearbyEntities(LivingEntity lEntity) {
-            int radius = getSetting(applyHero, Setting.RADIUS.node(), 4, false);
+            int radius = SkillConfigManager.getUseSetting(applyHero, skill, Setting.RADIUS.node(), 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
                 if (!(target instanceof LivingEntity) || target.equals(applier) || applyHero.getSummons().contains(target)) {
                     continue;

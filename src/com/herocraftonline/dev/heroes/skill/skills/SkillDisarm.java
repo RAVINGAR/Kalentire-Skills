@@ -9,6 +9,7 @@ import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.common.DisarmEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -41,8 +42,8 @@ public class SkillDisarm extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% has stopped regenerating mana!").replace("%target%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% is once again regenerating mana!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has stopped regenerating mana!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is once again regenerating mana!").replace("%target%", "$1");
     }
 
     @Override
@@ -64,7 +65,7 @@ public class SkillDisarm extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int duration = getSetting(hero, Setting.DURATION.node(), 500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 500, false);
         tHero.addEffect(new DisarmEffect(this, duration, applyText, expireText));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

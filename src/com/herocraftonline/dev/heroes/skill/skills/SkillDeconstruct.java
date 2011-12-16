@@ -1,7 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +15,7 @@ import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.classes.HeroClass.ExperienceType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -50,13 +50,13 @@ public class SkillDeconstruct extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        setUseText(getSetting(null, Setting.USE_TEXT.node(), "%hero% has deconstructed a %item%").replace("%hero%", "$1").replace("%item%", "$2"));
+        setUseText(SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%hero% has deconstructed a %item%").replace("%hero%", "$1").replace("%item%", "$2"));
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Set<String> items = new HashSet<String>(getSettingKeys(hero));
+        Set<String> items = new HashSet<String>(SkillConfigManager.getUseSettingKeys(hero, this));
         items.remove("require-workbench");
         for (Setting set : Setting.values()) {
             items.remove(set.node());
@@ -79,12 +79,12 @@ public class SkillDeconstruct extends ActiveSkill {
                 } else {
                     // Iterate over the deconstruct recipe and get all the items/amounts it turns into
                     Messaging.send(player, args[1] + " deconstructs into the following items: ");
-                    for (String s : getSettingKeys(hero, args[1])) {
+                    for (String s : SkillConfigManager.getUseSettingKeys(hero, this, args[1])) {
                         if (s.equals("min-durability") || s.equals(Setting.LEVEL.node()) || s.equals(Setting.EXP.node())) {
                             continue;
                         }
 
-                        int amount = getSetting(hero, args[1] + "." + s, 1, false);
+                        int amount = SkillConfigManager.getUseSetting(hero, this, args[1] + "." + s, 1, false);
                         Messaging.send(player, s.toLowerCase().replace("_", " ") + ": " + amount);
                     }
 
@@ -107,7 +107,7 @@ public class SkillDeconstruct extends ActiveSkill {
             slot = player.getInventory().getHeldItemSlot();
         }
 
-        if (getSetting(hero, "require-workbench", true) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.WORKBENCH) {
+        if (SkillConfigManager.getUseSetting(hero, this, "require-workbench", true) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.WORKBENCH) {
             Messaging.send(player, "You must have a workbench targetted to deconstruct an item!");
             return SkillResult.FAIL;
         }
@@ -123,14 +123,14 @@ public class SkillDeconstruct extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int level = getSetting(hero, matName + "." + Setting.LEVEL.node(), 1, true);
-        if (level > hero.getLevel(this)) {
+        int level = SkillConfigManager.getUseSetting(hero, this, matName + "." + Setting.LEVEL, 1, true);
+        if (level > hero.getSkillLevel(this)) {
             Messaging.send(player, "You must be level " + level + " to deconstruct that item!");
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
         double minDurability = 0;
         if (item.getType().getMaxDurability() > 16) {
-            minDurability = item.getType().getMaxDurability() * (1D - getSetting(hero, matName + ".min-durability", .5, true));
+            minDurability = item.getType().getMaxDurability() * (1D - SkillConfigManager.getUseSetting(hero, this, matName + ".min-durability", .5, true));
         }
 
         if (slot == -1) {
@@ -151,7 +151,7 @@ public class SkillDeconstruct extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        List<String> returned = getSettingKeys(hero, matName);
+        Set<String> returned = SkillConfigManager.getUseSettingKeys(hero, this, matName);
         if (returned == null) {
             Messaging.send(player, "Unable to deconstruct that item!");
             return SkillResult.FAIL;
@@ -165,7 +165,7 @@ public class SkillDeconstruct extends ActiveSkill {
             Material m = Material.matchMaterial(s);
             if (m == null)
                 throw new IllegalArgumentException("Error with skill " + getName() + ": bad item definition " + s);
-            int amount = getSetting(hero, matName + "." + s, 1, false);
+            int amount = SkillConfigManager.getUseSetting(hero, this, matName + "." + s, 1, false);
             if (amount < 1)
                 throw new IllegalArgumentException("Error with skill " + getName() + ": bad amount definition for " + s + ": " + amount);
 
@@ -188,7 +188,7 @@ public class SkillDeconstruct extends ActiveSkill {
         Util.syncInventory(player, plugin);
 
         // Grant the hero experience
-        int xp = getSetting(hero, matName + "." + Setting.EXP.node(), 0, false);
+        int xp = SkillConfigManager.getUseSetting(hero, this, matName + "." + Setting.EXP, 0, false);
         hero.gainExp(xp, ExperienceType.CRAFTING);
 
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), matName.toLowerCase().replace("_", " "));

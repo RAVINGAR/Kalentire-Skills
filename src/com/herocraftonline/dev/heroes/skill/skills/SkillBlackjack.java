@@ -17,6 +17,7 @@ import com.herocraftonline.dev.heroes.effects.common.StunEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
@@ -51,14 +52,14 @@ public class SkillBlackjack extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%hero% prepared his blackjack!").replace("%hero%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% prepared his blackjack!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% sheathed his blackjack!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        int duration = getSetting(hero, Setting.DURATION.node(), 20000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
         hero.addEffect(new BlackjackEffect(this, duration));
         return SkillResult.NORMAL;
     }
@@ -115,9 +116,9 @@ public class SkillBlackjack extends ActiveSkill {
                 }
                 Hero defendingHero = plugin.getHeroManager().getHero((Player) event.getEntity());
 
-                double chance = getSetting(attackingHero, "stun-chance", 0.20, false);
+                double chance = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-chance", 0.20, false);
                 if (Util.rand.nextDouble() < chance) {
-                    int duration = getSetting(attackingHero, "stun-duration", 5000, false);
+                    int duration = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-duration", 5000, false);
                     defendingHero.addEffect(new StunEffect(skill, duration));
                 }
             }

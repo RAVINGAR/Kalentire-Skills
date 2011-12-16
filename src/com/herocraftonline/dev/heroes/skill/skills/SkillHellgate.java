@@ -12,6 +12,7 @@ import com.herocraftonline.dev.heroes.effects.Effect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -41,8 +42,8 @@ public class SkillHellgate extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        String defaultWorld = getSetting(hero, "default-return", "world");
-        String hellWorld = getSetting(hero, "hell-world", "world_nether");
+        String defaultWorld = SkillConfigManager.getUseSetting(hero, this, "default-return", "world");
+        String hellWorld = SkillConfigManager.getUseSetting(hero, this, "hell-world", "world_nether");
         World world = null;
         Location teleportLocation = null;
         Location castLocation = player.getLocation();
@@ -80,7 +81,7 @@ public class SkillHellgate extends ActiveSkill {
         }
 
         if (hero.hasParty()) {
-            int rangeSquared = (int) Math.pow(getSetting(hero, Setting.RADIUS.node(), 10, false), 2);
+            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false), 2);
             for (Hero targetHero : hero.getParty().getMembers()) {
                 Player target = targetHero.getPlayer();
                 if (target.equals(player)) {

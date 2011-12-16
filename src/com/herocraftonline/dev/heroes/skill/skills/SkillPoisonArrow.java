@@ -18,6 +18,7 @@ import com.herocraftonline.dev.heroes.effects.common.ImbueEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -54,14 +55,14 @@ public class SkillPoisonArrow extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% is poisoned!").replace("%target%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        long duration = getSetting(hero, Setting.DURATION.node(), 600000, false);
-        int numAttacks = getSetting(hero, "attacks", 1, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
+        int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
         hero.addEffect(new PoisonArrowBuff(this, duration, numAttacks));
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
@@ -145,9 +146,9 @@ public class SkillPoisonArrow extends ActiveSkill {
             Hero hero = plugin.getHeroManager().getHero(player);
 
             if (hero.hasEffect("PoisonArrowBuff")) {
-                long duration = getSetting(hero, "poison-duration", 10000, false);
-                long period = getSetting(hero, Setting.PERIOD.node(), 2000, true);
-                int tickDamage = getSetting(hero, "tick-damage", 2, false);
+                long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
+                long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, true);
+                int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
                 ArrowPoison apEffect = new ArrowPoison(skill, period, duration, tickDamage, player);
                 
                 if (target instanceof Player) {

@@ -24,6 +24,7 @@ import com.herocraftonline.dev.heroes.effects.PeriodicExpirableEffect;
 import com.herocraftonline.dev.heroes.effects.common.SlowEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -61,18 +62,18 @@ public class SkillIcyAura extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%hero% is emitting ice!").replace("%hero%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%hero% is emitting ice!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        long duration = getSetting(hero, Setting.DURATION.node(), 10000, false);
-        long period = getSetting(hero, Setting.PERIOD.node(), 500, true);
-        int tickDamage = getSetting(hero, "tick-damage", 1, false);
-        int range = getSetting(hero, Setting.RADIUS.node(), 10, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD.node(), 500, true);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 10, false);
         hero.addEffect(new IcyAuraEffect(this, duration, period, tickDamage, range));
         return SkillResult.NORMAL;
     }
@@ -155,7 +156,7 @@ public class SkillIcyAura extends ActiveSkill {
             loc.setY(loc.getY() - 1);
             changeBlock(loc, hero);
             
-            int amplitude = skill.getSetting(hero, "amplitude", 2, false);
+            int amplitude = SkillConfigManager.getUseSetting(hero, skill, "amplitude", 2, false);
             SlowEffect sEffect = new SlowEffect(skill, this.getPeriod(), amplitude, true, null, null, hero);
             for (Entity entity : player.getNearbyEntities(range, range, range)) {
                 if (entity instanceof LivingEntity) {

@@ -8,6 +8,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -38,7 +39,7 @@ public class SkillBattery extends TargettedSkill {
 
         Hero tHero = plugin.getHeroManager().getHero((Player) target);	
 
-        int transferAmount = getSetting(hero, "transfer-amount", 20, false);
+        int transferAmount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
         if (hero.getMana() > transferAmount) {
             if (tHero.getMana() + transferAmount > 100) {
                 transferAmount = 100 - tHero.getMana();

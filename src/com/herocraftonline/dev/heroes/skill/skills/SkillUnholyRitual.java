@@ -8,6 +8,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 
@@ -38,7 +39,7 @@ public class SkillUnholyRitual extends TargettedSkill {
 
         addSpellTarget(target, hero);
         target.damage(target.getHealth(), player);
-        int mana = getSetting(hero, "mana-regen", 20, false);
+        int mana = SkillConfigManager.getUseSetting(hero, this, "mana-regen", 20, false);
         
         //Fire the Mana regen event
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, mana, this);

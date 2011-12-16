@@ -18,6 +18,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.PeriodicDamageEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -58,8 +59,8 @@ public class SkillMortalWound extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("$2", "%hero%");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% has recovered from their mortal wound!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("$2", "%hero%");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has recovered from their mortal wound!").replace("%target%", "$1");
     }
 
     @Override
@@ -68,17 +69,17 @@ public class SkillMortalWound extends TargettedSkill {
         HeroClass heroClass = hero.getHeroClass();
 
         Material item = player.getItemInHand().getType();
-        if (!getSetting(hero, "weapons", Util.swords).contains(item.name())) {
+        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't Mortal Strike with that weapon!");
         }
 
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
         target.damage(damage, player);
 
-        long duration = getSetting(hero, Setting.DURATION.node(), 12000, false);
-        long period = getSetting(hero, Setting.PERIOD.node(), 3000, true);
-        int tickDamage = getSetting(hero, "tick-damage", 1, false);
-        double healMultiplier = getSetting(hero, "heal-multiplier", 0.5, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 12000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
         MortalWound mEffect = new MortalWound(this, period, duration, tickDamage, player, healMultiplier);
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(mEffect);

@@ -15,6 +15,7 @@ import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.effects.common.SlowEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -51,8 +52,8 @@ public class SkillImpale extends TargettedSkill {
     
     @Override
     public void init() {
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%'s impale!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been slowed by %hero%'s impale!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
     }
     
     @Override
@@ -60,20 +61,20 @@ public class SkillImpale extends TargettedSkill {
         Player player = hero.getPlayer();
 
         Material item = player.getItemInHand().getType();
-        if (!getSetting(hero, "weapons", Util.swords).contains(item.name())) {
+        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't use impale with that weapon!");
             return SkillResult.FAIL;
         }
 
         HeroClass heroClass = hero.getHeroClass();
-        int force = getSetting(hero, "force", 3, false);
+        int force = SkillConfigManager.getUseSetting(hero, this, "force", 3, false);
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
         target.damage(damage, player);
         //Do a little knockup
         target.setVelocity(target.getVelocity().add(new Vector(0, force, 0)));
         //Add the slow effect
-        long duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
-        int amplitude = getSetting(hero, "amplitude", 4, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 4, false);
         SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
         if (target instanceof Player) {
             ImpaleEffect iEffect = new ImpaleEffect(this, 300, sEffect);

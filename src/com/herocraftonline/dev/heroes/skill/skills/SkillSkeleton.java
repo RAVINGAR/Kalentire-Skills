@@ -28,6 +28,7 @@ import com.herocraftonline.dev.heroes.effects.Effect;
 import com.herocraftonline.dev.heroes.effects.common.SummonEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -69,18 +70,18 @@ public class SkillSkeleton extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "The skeleton returns to it's hellish domain.");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "The skeleton returns to it's hellish domain.");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        if (hero.getSummons().size() < getSetting(hero, "max-summons", 3, false)) {
-            int distance = getSetting(hero, Setting.MAX_DISTANCE.node(), 5, false);
+        if (hero.getSummons().size() < SkillConfigManager.getUseSetting(hero, this, "max-summons", 3, false)) {
+            int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 5, false);
             Location castLoc = player.getTargetBlock((HashSet<Byte>) null, distance).getLocation();
             Creature skeleton = (Creature) player.getWorld().spawnCreature(castLoc, CreatureType.SKELETON);
-            long duration = getSetting(hero, Setting.DURATION.node(), 60000, false);
+            long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 60000, false);
             plugin.getEffectManager().addEntityEffect(skeleton, new SummonEffect(this, duration, hero, expireText));
             broadcastExecuteText(hero);
             Messaging.send(player, "You have succesfully summoned a skeleton to fight for you.");

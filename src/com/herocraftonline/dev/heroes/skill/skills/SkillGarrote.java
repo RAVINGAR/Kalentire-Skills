@@ -9,6 +9,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.effects.common.SilenceEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -48,10 +49,10 @@ public class SkillGarrote extends TargettedSkill {
             return SkillResult.FAIL;
         }
         
-        int damage = getSetting(hero, Setting.DAMAGE.node(), 4, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
         target.damage(damage, player);
         if (target instanceof Player) {
-            long duration = getSetting(hero, Setting.DURATION.node(), 4000, false);
+            long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 4000, false);
             plugin.getHeroManager().getHero((Player) target).addEffect(new SilenceEffect(this, duration));
         }
         broadcastExecuteText(hero, target);

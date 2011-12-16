@@ -12,6 +12,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -38,7 +39,7 @@ public class SkillOvergrowth extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int range = getSetting(hero, Setting.MAX_DISTANCE.node(), 15, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 15, false);
         if (player.getTargetBlock((HashSet<Byte>) null, range).getType() == Material.SAPLING) {
             Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, range);
             TreeType tType = null;

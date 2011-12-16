@@ -11,6 +11,7 @@ import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.effects.Effect;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -39,7 +40,7 @@ public class SkillStealEssence extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        this.setUseText(getSetting(null, Setting.APPLY_TEXT.node(), "%hero% used %skill% and stole %effect%from %target%!").replace("%hero%", "$1").replace("%skill%", "$2").replace("%effect%", "$3").replace("%target%", "$4"));
+        this.setUseText(SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% used %skill% and stole %effect%from %target%!").replace("%hero%", "$1").replace("%skill%", "$2").replace("%effect%", "$3").replace("%target%", "$4"));
     }
 
     @Override
@@ -50,7 +51,7 @@ public class SkillStealEssence extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
 
         ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
-        Hero tHero = getPlugin().getHeroManager().getHero((Player) target);
+        Hero tHero = plugin.getHeroManager().getHero((Player) target);
         for (Effect e : tHero.getEffects()) {
             if (e.isType(EffectType.BENEFICIAL) && e.isType(EffectType.DISPELLABLE)) {
                 possibleEffects.add(e);
@@ -63,7 +64,7 @@ public class SkillStealEssence extends TargettedSkill {
         }
 
         String stolenNames = "";
-        int numEffects = getSetting(hero, Setting.AMOUNT.node(), 3, false);
+        int numEffects = SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 3, false);
         for (int i = 0; i < numEffects && possibleEffects.size() > 0; i++) {
             Effect stolenEffect = possibleEffects.get(Util.rand.nextInt(possibleEffects.size()));
             tHero.removeEffect(stolenEffect);

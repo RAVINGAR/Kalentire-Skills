@@ -13,6 +13,8 @@ import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.PassiveSkill;
+import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
@@ -28,7 +30,7 @@ public class SkillBackstab extends PassiveSkill {
         setTypes(SkillType.PHYSICAL, SkillType.BUFF);
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroesListener(), Priority.Normal);
+        registerEvent(Type.CUSTOM_EVENT, new SkillHeroesListener(this), Priority.Normal);
     }
 
     @Override
@@ -46,11 +48,17 @@ public class SkillBackstab extends PassiveSkill {
     @Override
     public void init() {
         super.init();
-        useText = getSetting(null, Setting.USE_TEXT.node(), "%hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public class SkillHeroesListener extends HeroesEventListener {
 
+        private final Skill skill;
+        
+        public SkillHeroesListener(Skill skill) {
+            this.skill = skill;
+        }
+        
         @Override
         public void onWeaponDamage(WeaponDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -65,7 +73,7 @@ public class SkillBackstab extends PassiveSkill {
             if (hero.hasEffect(getName())) {
                 ItemStack item = player.getItemInHand();
                 
-                if (!getSetting(hero, "weapons", Util.swords).contains(item.getType().name())) {
+                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                     Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
@@ -75,10 +83,10 @@ public class SkillBackstab extends PassiveSkill {
                     return;
                 }
 
-                if (hero.hasEffect("Sneak") && Util.rand.nextDouble() < getSetting(hero, "sneak-chance", 1.0, false)) {
-                    event.setDamage((int) (event.getDamage() * getSetting(hero, "sneak-bonus", 2.0, false)));
-                } else if (Util.rand.nextDouble() < getSetting(hero, "attack-chance", .5, false)) {
-                    event.setDamage((int) (event.getDamage() * getSetting(hero, "attack-bonus", 1.5, false)));
+                if (hero.hasEffect("Sneak") && Util.rand.nextDouble() < SkillConfigManager.getUseSetting(hero, skill, "sneak-chance", 1.0, false)) {
+                    event.setDamage((int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "sneak-bonus", 2.0, false)));
+                } else if (Util.rand.nextDouble() < SkillConfigManager.getUseSetting(hero, skill, "attack-chance", .5, false)) {
+                    event.setDamage((int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "attack-bonus", 1.5, false)));
                 }
 
                 Entity target = event.getEntity();

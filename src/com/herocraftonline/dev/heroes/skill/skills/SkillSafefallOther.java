@@ -8,6 +8,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.effects.common.SafeFallEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -40,7 +41,7 @@ public class SkillSafefallOther extends TargettedSkill {
 
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
         broadcastExecuteText(hero, target);
-        int duration = getSetting(hero, Setting.DURATION.node(), 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         targetHero.addEffect(new SafeFallEffect(this, duration));
 
         return SkillResult.NORMAL;

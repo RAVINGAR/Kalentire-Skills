@@ -15,6 +15,7 @@ import com.herocraftonline.dev.heroes.effects.common.FormEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -47,7 +48,7 @@ public class SkillEndurance extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero% has shifted out of their defensive form!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% has shifted out of their defensive form!").replace("%hero%", "$1");
     }
 
     @Override
@@ -93,8 +94,8 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel(skill);
-                    int newDamage = (int) (event.getDamage() * (getSetting(hero, "incoming-multiplier", .9, true) - levelMult));
+                    double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
+                    int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", .9, true) - levelMult));
                     //Never go less than 1
                     if (newDamage == 0)
                         newDamage = 1;
@@ -105,7 +106,7 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getDamager() instanceof Player && event.getSkill().isType(SkillType.PHYSICAL)) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getDamager());
                 if (hero.hasEffect(getName())) {
-                    int newDamage = (int) (event.getDamage() * getSetting(hero, "outgoing-multiplier", .9, false));
+                    int newDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", .9, false));
                     if (newDamage == 0)
                         newDamage = 1;
                     event.setDamage(newDamage);
@@ -125,8 +126,8 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = getSetting(hero, "multiplier-per-level", .005, false) * hero.getLevel(skill);
-                    int newDamage = (int) (event.getDamage() * (getSetting(hero, "incoming-multiplier", .9, true) - levelMult));
+                    double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
+                    int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", .9, true) - levelMult));
                     //Always deal at least 1 damage
                     if (newDamage == 0)
                         newDamage = 1;
@@ -137,7 +138,7 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getDamager() instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) event.getDamager());
                 if (hero.hasEffect(getName())) {
-                    int newDamage = (int) (event.getDamage() * getSetting(hero, "outgoing-multiplier", .9, false));
+                    int newDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", .9, false));
                     if (newDamage == 0)
                         newDamage = 1;
                     event.setDamage(newDamage);

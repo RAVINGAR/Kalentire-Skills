@@ -16,6 +16,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -33,7 +34,7 @@ public class SkillAbsorb extends ActiveSkill {
         setIdentifiers("skill absorb");
         setTypes(SkillType.SILENCABLE, SkillType.BUFF, SkillType.MANA);
 
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(), Priority.Normal);
+        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Normal);
     }
 
     @Override
@@ -48,8 +49,8 @@ public class SkillAbsorb extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% is absorbing damage!").replace("%target%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "Absorb faded from %target%!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is absorbing damage!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "Absorb faded from %target%!").replace("%target%", "$1");
     }
 
     @Override
@@ -85,6 +86,11 @@ public class SkillAbsorb extends ActiveSkill {
 
     public class SkillEntityListener extends EntityListener {
 
+        private final Skill skill;
+        public SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+        
         @Override
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -98,7 +104,7 @@ public class SkillAbsorb extends ActiveSkill {
                 Player player = (Player) defender;
                 Hero hero = plugin.getHeroManager().getHero(player);
                 if (hero.hasEffect("Absorb")) {
-                    int absorbAmount = getSetting(hero, "mana-amount", 20, false);
+                    int absorbAmount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
                     event.setDamage((int) (event.getDamage() * 0.50));
                     int mana = hero.getMana();
                     if (mana + absorbAmount > 100) {

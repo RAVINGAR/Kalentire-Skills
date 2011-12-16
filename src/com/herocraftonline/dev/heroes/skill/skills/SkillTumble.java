@@ -13,6 +13,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.PassiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 
 public class SkillTumble extends PassiveSkill {
@@ -54,7 +55,7 @@ public class SkillTumble extends PassiveSkill {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
-            int distance = (int) (getSetting(hero, "base-distance", 3, false) + (hero.getLevel(skill) * getSetting(hero, "distance-per-level", .5, false)));
+            int distance = (int) (SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false) + (hero.getSkillLevel(skill) * SkillConfigManager.getUseSetting(hero, skill, "distance-per-level", .5, false)));
             int fallDistance = (event.getDamage() - 3) * 3;
             fallDistance -= distance;
             if (fallDistance <= 0)

@@ -9,6 +9,7 @@ import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -37,7 +38,7 @@ public class SkillFarSight extends ActiveSkill {
 			return SkillResult.REMOVED_EFFECT;
 		}
 		
-        int duration = getSetting(hero, Setting.DURATION.node(), 15000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 15000, false);
         ZoomEffect effect = new ZoomEffect(this, duration);
         hero.addEffect(effect);
         return SkillResult.NORMAL;

@@ -15,6 +15,7 @@ import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -32,7 +33,7 @@ public class SkillManaShield extends ActiveSkill {
         setIdentifiers("skill manashield", "skill mshield");
         setTypes(SkillType.BUFF, SkillType.SILENCABLE, SkillType.MANA);
 
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(), Priority.Normal);
+        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Normal);
     }
 
     @Override
@@ -48,15 +49,15 @@ public class SkillManaShield extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%hero% was surrounded by a mana shield!").replace("%hero%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero% lost his mana shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% was surrounded by a mana shield!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% lost his mana shield!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         hero.addEffect(new ManaShieldEffect(this, duration));
 
         return SkillResult.NORMAL;
@@ -88,6 +89,12 @@ public class SkillManaShield extends ActiveSkill {
 
     public class SkillEntityListener extends EntityListener {
 
+        private final Skill skill;
+        
+        public SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+        
         @Override
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
@@ -99,7 +106,7 @@ public class SkillManaShield extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getHeroManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                int absorbamount = getSetting(hero, "mana-amount", 20, false);
+                int absorbamount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
                 event.setDamage(event.getDamage() / 2);
                 int mana = hero.getMana();
                 if (mana < absorbamount) {

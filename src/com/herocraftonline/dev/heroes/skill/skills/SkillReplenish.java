@@ -7,6 +7,7 @@ import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 
@@ -30,7 +31,7 @@ public class SkillReplenish extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int manaBonus = getSetting(hero, "mana-bonus", 100, false);
+        int manaBonus = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 100, false);
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (hrmEvent.isCancelled()) {

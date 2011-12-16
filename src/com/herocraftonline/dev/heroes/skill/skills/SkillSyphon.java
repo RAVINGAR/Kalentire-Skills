@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 
@@ -36,7 +37,7 @@ public class SkillSyphon extends TargettedSkill {
 
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
 
-        double transferredHealth = getSetting(hero, "default-health", 4, false);
+        double transferredHealth = SkillConfigManager.getUseSetting(hero, this, "default-health", 4, false);
         if (args.length == 2) {
             try {
                 transferredHealth = Integer.parseInt(args[1]);
@@ -49,7 +50,7 @@ public class SkillSyphon extends TargettedSkill {
         hero.setHealth(playerHealth - transferredHealth);
         hero.syncHealth();
 
-        transferredHealth *= getSetting(hero, "multiplier", 1.0, false);
+        transferredHealth *= SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.0, false);
         targetHero.setHealth(targetHealth + transferredHealth);
         targetHero.syncHealth();
 

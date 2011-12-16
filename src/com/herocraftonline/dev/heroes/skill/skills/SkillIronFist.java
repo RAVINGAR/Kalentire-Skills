@@ -13,6 +13,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -41,7 +42,7 @@ public class SkillIronFist extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = getSetting(hero, Setting.RADIUS.node(), 5, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
@@ -58,7 +59,7 @@ public class SkillIronFist extends ActiveSkill {
             }
 
             // Damage the target
-            int damage = getSetting(hero, "damage", 1, false);
+            int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
             addSpellTarget(target, hero);
             target.damage(damage, player);
 
@@ -69,11 +70,11 @@ public class SkillIronFist extends ActiveSkill {
             double xDir =  targetLoc.getX() - playerLoc.getX();
             double zDir =  targetLoc.getZ() - playerLoc.getZ();
             double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-            double multiplier = this.getSetting(hero, "horizontal-power", .5, false);
+            double multiplier = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", .5, false);
             xDir = xDir / magnitude * multiplier;
             zDir = zDir / magnitude * multiplier;
             
-            target.setVelocity(new Vector(xDir, getSetting(hero, "vertical-power", .25, false), zDir));
+            target.setVelocity(new Vector(xDir, SkillConfigManager.getUseSetting(hero, this, "vertical-power", .25, false), zDir));
         }
 
         broadcastExecuteText(hero);

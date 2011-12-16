@@ -10,6 +10,7 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -35,7 +36,7 @@ public class SkillSummonArrow extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         World world = player.getWorld();
-        ItemStack dropItem = new ItemStack(Material.ARROW, getSetting(hero, "amount", 1, false));
+        ItemStack dropItem = new ItemStack(Material.ARROW, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
         world.dropItem(player.getLocation(), dropItem);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

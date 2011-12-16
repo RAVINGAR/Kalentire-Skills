@@ -39,7 +39,7 @@ public class SkillTeleport extends ActiveSkill {
             Messaging.send(player, "Sorry, that player isn't in your party!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        int level = hero.getLevel(this);
+        int level = hero.getSkillLevel(this);
         Location loc1 = targetPlayer.getLocation().add(Util.rand.nextDouble() * (-50 + level - (50 - level)), 0, Util.rand.nextDouble() * (-50 + level - (50 - level)));
         Double highestBlock = (double) targetPlayer.getWorld().getHighestBlockYAt(loc1);
         loc1.setY(highestBlock);

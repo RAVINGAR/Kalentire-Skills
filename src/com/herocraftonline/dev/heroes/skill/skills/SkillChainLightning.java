@@ -15,6 +15,7 @@ import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.hero.HeroManager;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -44,7 +45,7 @@ public class SkillChainLightning extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int damage = getSetting(hero, Setting.DAMAGE.node(), 6, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 6, false);
 
         // Damage the first target
         addSpellTarget(target, hero);
@@ -54,8 +55,8 @@ public class SkillChainLightning extends TargettedSkill {
         // Try to bounce
         Set<Entity> previousTargets = new HashSet<Entity>();
         previousTargets.add(target);
-        int range = getSetting(hero, Setting.RADIUS.node(), 7, false);
-        int bounces = getSetting(hero, "max-bounces", 3, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 7, false);
+        int bounces = SkillConfigManager.getUseSetting(hero, this, "max-bounces", 3, false);
         int maxBounce = bounces + 1;
         boolean keepBouncing = true;
         HeroManager heroManager = plugin.getHeroManager();

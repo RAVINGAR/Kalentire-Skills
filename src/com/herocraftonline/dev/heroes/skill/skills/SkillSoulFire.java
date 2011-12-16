@@ -17,6 +17,7 @@ import com.herocraftonline.dev.heroes.effects.common.CombustEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -55,14 +56,14 @@ public class SkillSoulFire extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%hero%'s weapon is sheathed in flame!").replace("%hero%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero%'s weapon is no longer aflame!").replace("%hero%", "$1");
-        igniteText = getSetting(null, "ignite-text", "%hero% has lit %target% on fire with soulfire!").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero%'s weapon is sheathed in flame!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero%'s weapon is no longer aflame!").replace("%hero%", "$1");
+        igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% has lit %target% on fire with soulfire!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int duration = getSetting(hero, Setting.DURATION.node(), 600000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         hero.addEffect(new SoulFireEffect(this, duration));
         return SkillResult.NORMAL;
     }
@@ -91,18 +92,18 @@ public class SkillSoulFire extends ActiveSkill {
 
             Player player = (Player) subEvent.getDamager();
             Hero hero = plugin.getHeroManager().getHero(player);
-            if (!getSetting(hero, "weapons", Util.swords).contains(player.getItemInHand().getType().name()) || !hero.hasEffect("SoulFire")) {
+            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(player.getItemInHand().getType().name()) || !hero.hasEffect("SoulFire")) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
-            double chance = getSetting(hero, "ignite-chance", .2, false);
+            double chance = SkillConfigManager.getUseSetting(hero, skill, "ignite-chance", .2, false);
             if (Util.rand.nextDouble() >= chance) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
-            int fireTicks = getSetting(hero, "ignite-duration", 5000, false) / 50;
+            int fireTicks = SkillConfigManager.getUseSetting(hero, skill, "ignite-duration", 5000, false) / 50;
             LivingEntity target = (LivingEntity) event.getEntity();
             target.setFireTicks(fireTicks);
 

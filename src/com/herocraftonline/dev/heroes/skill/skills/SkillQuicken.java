@@ -13,6 +13,7 @@ import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -44,16 +45,16 @@ public class SkillQuicken extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, "apply-text", "%hero% gained a burst of speed!").replace("%hero%", "$1");
-        expireText = getSetting(null, "expire-text", "%hero% returned to normal speed!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% gained a burst of speed!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% returned to normal speed!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
         
-        int duration = getSetting(hero, Setting.DURATION.node(), 300000, false);
-        int multiplier = getSetting(hero, "speed-multiplier", 2, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 300000, false);
+        int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
         }
@@ -63,7 +64,7 @@ public class SkillQuicken extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         Player player = hero.getPlayer();
-        int radius = getSetting(hero, Setting.RADIUS.node(), 15, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 15, false);
         int rSquared = radius * radius;
         Location loc = player.getLocation();
         //Apply the effect to all party members

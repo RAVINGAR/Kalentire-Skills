@@ -17,6 +17,7 @@ import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -49,15 +50,15 @@ public class SkillReflect extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%hero% put up a reflective shield!").replace("%hero%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%hero% lost his reflective shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(null, Setting.APPLY_TEXT, "%hero% put up a reflective shield!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(null, Setting.EXPIRE_TEXT, "%hero% lost his reflective shield!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = getSetting(hero, Setting.DURATION.node(), 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         hero.addEffect(new ReflectEffect(this, duration));
 
         return SkillResult.NORMAL;
@@ -119,7 +120,7 @@ public class SkillReflect extends ActiveSkill {
                         }
                     }
                     LivingEntity attEntity = (LivingEntity) attacker;
-                    int damage = (int) (event.getDamage() * getSetting(hero, "reflected-amount", 0.5, false));
+                    int damage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "reflected-amount", 0.5, false));
                     plugin.getDamageManager().addSpellTarget(attacker, hero, skill);
                     attEntity.damage(damage, defender);
                 }

@@ -10,6 +10,7 @@ import com.herocraftonline.dev.heroes.effects.Effect;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -37,10 +38,10 @@ public class SkillChakra extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location castLoc = player.getLocation();
-        int radius = getSetting(hero, Setting.RADIUS.node(), 7, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 7, false);
         int radiusSquared = radius * radius;
-        int healAmount = getSetting(hero, "heal-amount", 10, false);
-        int removals = getSetting(hero, "max-removals", -1, true);
+        int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
         if (hero.hasParty()) {
             for (Hero p : hero.getParty().getMembers()) {
                 if (castLoc.distanceSquared(p.getPlayer().getLocation()) <= radiusSquared) {

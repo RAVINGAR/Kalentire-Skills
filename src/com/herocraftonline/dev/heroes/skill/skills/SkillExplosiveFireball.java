@@ -28,6 +28,7 @@ import com.herocraftonline.dev.heroes.effects.common.CombustEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 
@@ -128,8 +129,8 @@ public class SkillExplosiveFireball extends ActiveSkill {
                         Entity entity = event.getEntity();
                         Player shooter = (Player) fireball.getShooter();
                         Hero hero = plugin.getHeroManager().getHero(shooter);
-                        int damage = getSetting(hero, Setting.DAMAGE.node(), 4, false);
-                        entity.setFireTicks(getSetting(hero, "fire-ticks", 100, false));
+                        int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
+                        entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
                         if (entity instanceof Player) {
                             addSpellTarget(entity, hero);
                             plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, shooter));

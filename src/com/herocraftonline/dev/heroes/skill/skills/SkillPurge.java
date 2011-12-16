@@ -11,6 +11,7 @@ import com.herocraftonline.dev.heroes.effects.Effect;
 import com.herocraftonline.dev.heroes.effects.EffectManager;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -43,8 +44,8 @@ public class SkillPurge extends TargettedSkill {
             	return SkillResult.INVALID_TARGET;
         }
 
-        int radius = getSetting(hero, Setting.RADIUS.node(), 10, false);
-        int removalsLeft = getSetting(hero, "max-removals", -1, true);
+        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false);
+        int removalsLeft = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
         int maxRemovals = removalsLeft;
         for (Entity e : target.getNearbyEntities(radius, radius, radius)) {
             if (!(e instanceof LivingEntity))

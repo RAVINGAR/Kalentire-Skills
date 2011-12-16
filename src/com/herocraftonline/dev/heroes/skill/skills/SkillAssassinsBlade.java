@@ -19,6 +19,7 @@ import com.herocraftonline.dev.heroes.effects.PeriodicDamageEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -57,14 +58,14 @@ public class SkillAssassinsBlade extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% is poisoned!").replace("%target%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        long duration = getSetting(hero, "buff-duration", 600000, false);
-        int numAttacks = getSetting(hero, "attacks", 1, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 600000, false);
+        int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
         hero.addEffect(new AssassinBladeBuff(this, duration, numAttacks));
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
@@ -168,15 +169,15 @@ public class SkillAssassinsBlade extends ActiveSkill {
             Player player = (Player) subEvent.getDamager();
             ItemStack item = player.getItemInHand();
             Hero hero = plugin.getHeroManager().getHero(player);
-            if (!getSetting(hero, "weapons", Util.swords).contains(item.getType().name())) {
+            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
             if (hero.hasEffect("PoisonBlade")) {
-                long duration = getSetting(hero, "poison-duration", 10000, false);
-                long period = getSetting(hero, Setting.PERIOD.node(), 2000, false);
-                int tickDamage = getSetting(hero, "tick-damage", 2, false);
+                long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
+                long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, false);
+                int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
                 AssassinsPoison apEffect = new AssassinsPoison(skill, period, duration, tickDamage, player);
                 Entity target = event.getEntity();
                 if (event.getEntity() instanceof Player) {

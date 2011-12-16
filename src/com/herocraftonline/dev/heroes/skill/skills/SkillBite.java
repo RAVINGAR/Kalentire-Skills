@@ -10,6 +10,7 @@ import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.PeriodicDamageEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.Skill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
@@ -45,8 +46,8 @@ public class SkillBite extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = getSetting(null, Setting.APPLY_TEXT.node(), "%target% is bleeding from a grievous wound!").replace("%target%", "$1");
-        expireText = getSetting(null, Setting.EXPIRE_TEXT.node(), "%target% has stopped bleeding!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is bleeding from a grievous wound!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has stopped bleeding!").replace("%target%", "$1");
     }
 
     @Override
@@ -54,14 +55,14 @@ public class SkillBite extends TargettedSkill {
         Player player = hero.getPlayer();
 
         // Damage the target
-        int damage = getSetting(hero, Setting.DAMAGE.node(), 10, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
         addSpellTarget(target, hero);
         target.damage(damage, player);
 
         // Apply our effect
-        long duration = getSetting(hero, Setting.DURATION.node(), 15000, false);
-        long period = getSetting(hero, Setting.PERIOD.node(), 3000, true);
-        int tickDamage = getSetting(hero, "tick-damage", 1, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 15000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         BiteBleedEffect bbEffect = new BiteBleedEffect(this, period, duration, tickDamage, player);
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(bbEffect);

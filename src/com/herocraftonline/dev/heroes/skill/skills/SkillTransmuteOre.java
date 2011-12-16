@@ -15,6 +15,7 @@ import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -52,12 +53,12 @@ public class SkillTransmuteOre extends ActiveSkill {
         Player player = hero.getPlayer();
         ItemStack item = player.getItemInHand();
         
-        if (getSetting(hero, "require-furnace", false) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.FURNACE) {
+        if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.FURNACE) {
             Messaging.send(player, "You must have a furnace targetted to transmute ores!");
             return SkillResult.FAIL;
         }
         // List all items this hero can transmute
-        Set<String> itemSet = new HashSet<String>(getSettingKeys(hero));
+        Set<String> itemSet = new HashSet<String>(SkillConfigManager.getUseSettingKeys(hero, this));
         itemSet.remove("require-furnace");
         for (Setting set : Setting.values()) {
             itemSet.remove(set.node());
@@ -69,18 +70,18 @@ public class SkillTransmuteOre extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         
-        int level = getSetting(hero, itemName + "." + Setting.LEVEL.node(), 1, true);
-        if (hero.getLevel(this) < level) {
+        int level = SkillConfigManager.getUseSetting(hero, this, itemName + "." + Setting.LEVEL, 1, true);
+        if (hero.getSkillLevel(this) < level) {
         	return new SkillResult(ResultType.LOW_LEVEL, true, level);
         }
         
-        int cost = getSetting(hero, itemName + "." + Setting.REAGENT_COST.node(), 1, true);
+        int cost = SkillConfigManager.getUseSetting(hero, this, itemName + "." + Setting.REAGENT_COST, 1, true);
         if (item.getAmount() < cost) {
             Messaging.send(player, "You need to be holding $1 of $2 to transmute.", cost, itemName);
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
         
-        Material finished = Material.matchMaterial(getSetting(hero, itemName + ".product", ""));
+        Material finished = Material.matchMaterial(SkillConfigManager.getUseSetting(hero, this, itemName + ".product", ""));
         if (finished == null) {
             throw new IllegalArgumentException("Invalid product material defined for TransmuteOre node: " + itemName);
         }

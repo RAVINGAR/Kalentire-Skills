@@ -9,6 +9,7 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -37,7 +38,7 @@ public class SkillForcePush extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int damage = getSetting(hero, Setting.DAMAGE.node(), 0, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
             target.damage(damage, player);
@@ -47,13 +48,13 @@ public class SkillForcePush extends TargettedSkill {
         Location targetLoc = target.getLocation();
         
         double distanceSquared = player.getLocation().distanceSquared(target.getLocation());
-        double maxDistance = getSetting(hero, Setting.MAX_DISTANCE.node(), 15, false);
+        double maxDistance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 15, false);
         double distAdjustment = 1.0 - distanceSquared / (maxDistance * maxDistance);
         double xDir = targetLoc.getX() - targetLoc.getX();
         double zDir = targetLoc.getZ() - playerLoc.getZ();
         double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-        double hPower = getSetting(hero, "horizontal-power", 1.0, false) * distAdjustment;
-        double vPower = getSetting(hero, "vertical-power", 1.0, false) * distAdjustment;
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.0, false) * distAdjustment;
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false) * distAdjustment;
         
         Vector v = new Vector(xDir / magnitude * hPower, vPower, zDir / magnitude * hPower);
         target.setVelocity(v);

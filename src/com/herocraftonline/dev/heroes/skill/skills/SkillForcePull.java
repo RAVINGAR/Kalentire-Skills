@@ -9,6 +9,7 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.hero.Hero;
+import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -35,7 +36,7 @@ public class SkillForcePull extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int damage = getSetting(hero, Setting.DAMAGE.node(), 0, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
             target.damage(damage, player);
