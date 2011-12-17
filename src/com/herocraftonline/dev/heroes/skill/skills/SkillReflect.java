@@ -50,8 +50,8 @@ public class SkillReflect extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(null, Setting.APPLY_TEXT, "%hero% put up a reflective shield!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(null, Setting.EXPIRE_TEXT, "%hero% lost his reflective shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% put up a reflective shield!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% lost his reflective shield!").replace("%hero%", "$1");
     }
 
     @Override
