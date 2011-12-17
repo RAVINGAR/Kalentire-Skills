@@ -1,17 +1,15 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
+import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
@@ -34,7 +32,7 @@ public class SkillReflect extends ActiveSkill {
         setIdentifiers("skill reflect");
         setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.BUFF);
 
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Normal);
+        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(this), Priority.Monitor);
     }
 
     @Override
@@ -88,42 +86,29 @@ public class SkillReflect extends ActiveSkill {
 
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillHeroListener extends HeroesEventListener {
 
         private final Skill skill;
 
-        public SkillEntityListener(Skill skill) {
+        public SkillHeroListener(Skill skill) {
             this.skill = skill;
         }
 
         @Override
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onWeaponDamage(WeaponDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) {
+            if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getDamager() instanceof LivingEntity)) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
-
-            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
-            Entity defender = edbe.getEntity();
-            Entity attacker = edbe.getDamager();
-            if (attacker instanceof LivingEntity && defender instanceof Player) {
-                Player defPlayer = (Player) defender;
-                Hero hero = plugin.getHeroManager().getHero(defPlayer);
-                if (hero.hasEffect("Reflect")) {
-                    if (attacker instanceof Player) {
-                        Player attPlayer = (Player) attacker;
-                        if (plugin.getHeroManager().getHero(attPlayer).hasEffect(getName())) {
-                            event.setCancelled(true);
-                            Heroes.debug.stopTask("HeroesSkillListener");
-                            return;
-                        }
-                    }
-                    LivingEntity attEntity = (LivingEntity) attacker;
-                    int damage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "reflected-amount", 0.5, false));
-                    plugin.getDamageManager().addSpellTarget(attacker, hero, skill);
-                    attEntity.damage(damage, defender);
-                }
+            
+            LivingEntity attacker = (LivingEntity) event.getDamager();
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getHeroManager().getHero(player);
+            if (hero.hasEffect("Reflect")) {
+                int damage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "reflected-amount", 0.5, false));
+                plugin.getDamageManager().addSpellTarget(attacker, hero, skill);
+                attacker.damage(damage, player);
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }

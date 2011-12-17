@@ -4,7 +4,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.Event.Priority;
+import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityListener;
@@ -27,7 +28,7 @@ public class SkillQuake extends PassiveSkill {
         setEffectTypes(EffectType.PHYSICAL, EffectType.BENEFICIAL);
         setTypes(SkillType.PHYSICAL);
 
-        registerEvent(Event.Type.ENTITY_DAMAGE, new SkillDamageListener(this), Event.Priority.Highest);
+        registerEvent(Type.ENTITY_DAMAGE, new SkillDamageListener(this), Priority.Monitor);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class SkillQuake extends PassiveSkill {
         
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
-            if (event.getCause() != DamageCause.FALL || !(event.getEntity() instanceof Player)) {
+            if (event.getCause() != DamageCause.FALL || !(event.getEntity() instanceof Player) || event.isCancelled()) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }

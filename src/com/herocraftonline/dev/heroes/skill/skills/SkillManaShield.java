@@ -5,11 +5,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
+import com.herocraftonline.dev.heroes.api.HeroesEventListener;
+import com.herocraftonline.dev.heroes.api.SkillDamageEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
@@ -33,7 +34,7 @@ public class SkillManaShield extends ActiveSkill {
         setIdentifiers("skill manashield", "skill mshield");
         setTypes(SkillType.BUFF, SkillType.SILENCABLE, SkillType.MANA);
 
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Normal);
+        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(this), Priority.High);
     }
 
     @Override
@@ -87,27 +88,43 @@ public class SkillManaShield extends ActiveSkill {
 
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillHeroListener extends HeroesEventListener {
 
         private final Skill skill;
         
-        public SkillEntityListener(Skill skill) {
+        public SkillHeroListener(Skill skill) {
             this.skill = skill;
         }
         
         @Override
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onSkillDamage(SkillDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
+            
+            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
+            Heroes.debug.stopTask("HeroesSkillListener");
+        }
 
-            Player player = (Player) event.getEntity();
+        @Override
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            Heroes.debug.startTask("HeroesSkillListener");
+            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
+                Heroes.debug.stopTask("HeroesSkillListener");
+                return;
+            }
+            
+            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
+            Heroes.debug.stopTask("HeroesSkillListener");
+        }
+
+        private int getAdjustment(Player player, int damage) {
             Hero hero = plugin.getHeroManager().getHero(player);
             if (hero.hasEffect(getName())) {
                 int absorbamount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
-                event.setDamage(event.getDamage() / 2);
+                damage = damage / 2;
                 int mana = hero.getMana();
                 if (mana < absorbamount) {
                     hero.removeEffect(hero.getEffect("ManaShield"));
@@ -119,7 +136,7 @@ public class SkillManaShield extends ActiveSkill {
                     }
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
+            return damage;
         }
     }
 }

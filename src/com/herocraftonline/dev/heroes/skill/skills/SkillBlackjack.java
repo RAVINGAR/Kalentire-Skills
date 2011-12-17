@@ -35,7 +35,7 @@ public class SkillBlackjack extends ActiveSkill {
         setIdentifiers("skill blackjack", "skill bjack");
         setTypes(SkillType.PHYSICAL, SkillType.BUFF);
 
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Highest);
+        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Monitor);
     }
 
     @Override
