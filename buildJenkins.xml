@@ -12,11 +12,7 @@
     	<fileset dir="${heroes}" includes="**/*.jar" />
     </path>
 
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-        <classpath>
-            <pathelement location="../tc-ant/ant-contrib-0.6.jar" />
-        </classpath>
-    </taskdef>
+    <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
     <target name="build">
     	<delete file="libs/Heroes.jar"/>
