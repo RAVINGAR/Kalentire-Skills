@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.dev.heroes.Heroes;
@@ -61,7 +62,7 @@ public class SkillIronFist extends ActiveSkill {
             // Damage the target
             int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
             addSpellTarget(target, hero);
-            target.damage(damage, player);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
             // Do our knockback
             Location playerLoc = player.getLocation();

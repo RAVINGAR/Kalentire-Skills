@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -42,7 +43,7 @@ public class SkillMegabolt extends TargettedSkill {
         // Damage the first target
         addSpellTarget(target, hero);
         target.getWorld().strikeLightningEffect(target.getLocation());
-        target.damage(damage, player);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         for (Entity entity : target.getNearbyEntities(range, range, range)) {
             if (entity instanceof LivingEntity && !entity.equals(player)) {
@@ -51,9 +52,10 @@ public class SkillMegabolt extends TargettedSkill {
                     continue;
                 }
 
-                addSpellTarget(entity, hero);
+                
                 entity.getWorld().strikeLightningEffect(entity.getLocation());
-                ((LivingEntity) entity).damage(damage, player);
+                addSpellTarget(entity, hero);
+                damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
             }
         }
 

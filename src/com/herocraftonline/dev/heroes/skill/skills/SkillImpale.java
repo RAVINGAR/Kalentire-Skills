@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.dev.heroes.Heroes;
@@ -69,7 +70,7 @@ public class SkillImpale extends TargettedSkill {
         HeroClass heroClass = hero.getHeroClass();
         int force = SkillConfigManager.getUseSetting(hero, this, "force", 3, false);
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
-        target.damage(damage, player);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         //Do a little knockup
         target.setVelocity(target.getVelocity().add(new Vector(0, force, 0)));
         //Add the slow effect

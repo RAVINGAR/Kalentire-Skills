@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -117,11 +118,10 @@ public class SkillBoltstorm extends ActiveSkill {
 
             int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
             LivingEntity target = targets.get(Util.rand.nextInt(targets.size()));
-            addSpellTarget(target, hero);
-
             target.getWorld().strikeLightningEffect(target.getLocation());
-            target.damage(damage, player);
-
+            
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }
     }
 }

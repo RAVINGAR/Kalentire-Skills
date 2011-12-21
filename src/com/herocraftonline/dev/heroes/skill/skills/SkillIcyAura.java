@@ -16,6 +16,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -168,7 +169,7 @@ public class SkillIcyAura extends ActiveSkill {
                     }
 
                     addSpellTarget(lEntity, hero);
-                    lEntity.damage(tickDamage, player);
+                    skill.damageEntity(lEntity, player, tickDamage, DamageCause.ENTITY_ATTACK);
                     loc = lEntity.getLocation().clone();
                     loc.setY(loc.getY() - 1);
                     changeBlock(loc, hero);

@@ -5,6 +5,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -116,7 +117,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                     // Split the damage
                     int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                    applier.damage(splitDamage, event.getDamager().getPlayer());
+                    skill.damageEntity(applier, event.getDamager().getPlayer(), splitDamage, DamageCause.ENTITY_ATTACK);
                     event.setDamage(event.getDamage() - splitDamage);
                 }
             } else {
@@ -138,7 +139,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                 // Split the damage
                 int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                applier.damage(splitDamage, event.getDamager().getPlayer());
+                skill.damageEntity(applier, event.getDamager().getPlayer(), splitDamage, DamageCause.ENTITY_ATTACK);
                 event.setDamage(event.getDamage() - splitDamage);
             }
             Heroes.debug.stopTask("HeroesSkillListener");
@@ -172,7 +173,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                     // Split the damage
                     int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                    applier.damage(splitDamage, event.getDamager());
+                    skill.damageEntity(applier, (LivingEntity) event.getDamager(), splitDamage, DamageCause.ENTITY_ATTACK);
                     event.setDamage(event.getDamage() - splitDamage);
                 }
             } else {
@@ -194,7 +195,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                 // Split the damage
                 int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                applier.damage(splitDamage, event.getDamager());
+                damageEntity(target, (LivingEntity) event.getDamager(), splitDamage, DamageCause.ENTITY_ATTACK);
                 event.setDamage(event.getDamage() - splitDamage);
             }
             Heroes.debug.stopTask("HeroesSkillListener");

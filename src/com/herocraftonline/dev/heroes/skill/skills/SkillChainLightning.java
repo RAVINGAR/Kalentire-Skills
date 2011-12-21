@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -48,9 +49,9 @@ public class SkillChainLightning extends TargettedSkill {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 6, false);
 
         // Damage the first target
-        addSpellTarget(target, hero);
         target.getWorld().strikeLightningEffect(target.getLocation());
-        target.damage(damage, player);
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         // Try to bounce
         Set<Entity> previousTargets = new HashSet<Entity>();

@@ -5,6 +5,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -108,7 +109,7 @@ public class SkillReflect extends ActiveSkill {
             if (hero.hasEffect("Reflect")) {
                 int damage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "reflected-amount", 0.5, false));
                 plugin.getDamageManager().addSpellTarget(attacker, hero, skill);
-                attacker.damage(damage, player);
+                skill.damageEntity(attacker, player, damage, DamageCause.ENTITY_ATTACK);
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }

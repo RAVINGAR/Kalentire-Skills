@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -50,7 +51,7 @@ public class SkillPulse extends ActiveSkill {
 
             int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
             addSpellTarget(target, hero);
-            target.damage(damage, player);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
