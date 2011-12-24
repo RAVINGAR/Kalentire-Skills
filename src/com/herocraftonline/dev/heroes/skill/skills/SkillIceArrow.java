@@ -136,6 +136,7 @@ public class SkillIceArrow extends ActiveSkill {
 
         private void checkBuff(Hero hero) {
             IceArrowBuff iaBuff = (IceArrowBuff) hero.getEffect("SlowArrowBuff");
+            iaBuff.useApplication();
             if (iaBuff.hasNoApplications()) {
                 hero.removeEffect(iaBuff);
             }
