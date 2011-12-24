@@ -165,6 +165,7 @@ public class SkillPoisonArrow extends ActiveSkill {
 
         private void checkBuff(Hero hero) {
             PoisonArrowBuff paBuff = (PoisonArrowBuff) hero.getEffect("PoisonArrowBuff");
+            paBuff.useApplication();
             if (paBuff.hasNoApplications())
                 hero.removeEffect(paBuff);
         }
