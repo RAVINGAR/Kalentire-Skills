@@ -45,11 +45,10 @@ public class SkillForcePull extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
         
-        double distance = player.getLocation().distanceSquared(target.getLocation());
         double xDir = playerLoc.getX() - targetLoc.getX();
         double zDir = playerLoc.getZ() - targetLoc.getZ();
         double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-        double multiplier = Math.sqrt(distance) / 8;
+        double multiplier = playerLoc.distanceSquared(targetLoc) / 8;
         xDir = xDir / magnitude * multiplier;
         zDir = zDir / magnitude * multiplier;
         
