@@ -39,6 +39,7 @@ public class SkillConsume extends ActiveSkill {
         return node;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
@@ -80,6 +81,7 @@ public class SkillConsume extends ActiveSkill {
                     return SkillResult.CANCELLED;
 
                 player.getInventory().removeItem(reagent);
+                player.updateInventory();
                 hero.setMana(hrmEvent.getAmount() + hero.getMana());
                 if (hero.isVerbose()) {
                     Messaging.send(player, Messaging.createManaBar(hero.getMana()));
