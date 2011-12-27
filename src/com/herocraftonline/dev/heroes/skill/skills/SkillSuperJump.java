@@ -23,35 +23,27 @@ public class SkillSuperJump extends ActiveSkill {
         setIdentifiers("skill superjump");
         setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL);
     }
-    
+
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DURATION.node(), 5000);
-        node.set("jump-force-multiplier", 1.0);
+        node.set("jump-force", 4.0);
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        float jumpMult = (float) SkillConfigManager.getUseSetting(hero, this, "jump-force-multiplier", 1.0, false);
-        float pitch = player.getEyeLocation().getPitch();
-        int jumpForwards = 1;
-        if (pitch > 45) {
-            jumpForwards = 1;
-        }
-        if (pitch > 0) {
-            pitch = -pitch;
-        }
-        float multiplier = ((90f + pitch) / 50f) * jumpMult;
-        Vector v = player.getVelocity().setY(1).add(player.getLocation().getDirection().setY(0).normalize().multiply(multiplier * jumpForwards));
+        float jumpForce = (float) SkillConfigManager.getUseSetting(hero, this, "jump-force", 1.0, false);
+        Vector v1 = new Vector(0, jumpForce, 0);
+        Vector v = player.getVelocity().add(v1);
         player.setVelocity(v);
         player.setFallDistance(-8f);
-        int duration = (int) SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false);
+        int duration = (int) SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 5000, false);
         hero.addEffect(new SafeFallEffect(this, duration));
         broadcastExecuteText(hero);
-        
+
         return SkillResult.NORMAL;
     }
 }
