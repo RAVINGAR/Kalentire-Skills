@@ -8,6 +8,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroesEventListener;
@@ -125,7 +126,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             super.remove(lEntity);
             int damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
             addSpellTarget(lEntity, applier);
-            lEntity.damage(damage, applier.getPlayer());
+            damageEntity(lEntity, applier.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
             broadcast(lEntity.getLocation(), shatterText, Messaging.getLivingEntityName(lEntity));
         }
         
@@ -134,7 +135,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             Player player = hero.getPlayer();
             int damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
             addSpellTarget(player, applier);
-            player.damage(damage, applier.getPlayer());
+            damageEntity(player, applier.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
             broadcast(player.getLocation(), shatterText, player.getDisplayName());
         }
         

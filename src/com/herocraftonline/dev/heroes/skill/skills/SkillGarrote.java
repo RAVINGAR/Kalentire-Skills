@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -50,7 +51,7 @@ public class SkillGarrote extends TargettedSkill {
         }
         
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-        target.damage(damage, player);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         if (target instanceof Player) {
             long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 4000, false);
             plugin.getHeroManager().getHero((Player) target).addEffect(new SilenceEffect(this, duration));

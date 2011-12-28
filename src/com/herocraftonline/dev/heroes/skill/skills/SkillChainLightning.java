@@ -131,7 +131,7 @@ public class SkillChainLightning extends TargettedSkill {
         public void remove(LivingEntity lEntity) {
             super.remove(lEntity);
             addSpellTarget(lEntity, applier);
-            lEntity.damage(bounceDamage, applier.getPlayer());
+            damageEntity(lEntity, applier.getPlayer(), bounceDamage, DamageCause.ENTITY_ATTACK);
             lEntity.getWorld().strikeLightningEffect(lEntity.getLocation());
         }
 
@@ -140,7 +140,7 @@ public class SkillChainLightning extends TargettedSkill {
             super.remove(hero);
             Player target = hero.getPlayer();
             addSpellTarget(target, applier);
-            target.damage(bounceDamage, applier.getPlayer());
+            damageEntity(target, applier.getPlayer(), bounceDamage, DamageCause.ENTITY_ATTACK);
             target.getWorld().strikeLightningEffect(target.getLocation());
         }
     }

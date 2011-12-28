@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -141,7 +142,7 @@ public class SkillBlight extends TargettedSkill {
                 }
 
                 addSpellTarget(target, applyHero);
-                lTarget.damage(tickDamage, applier);
+                skill.damageEntity((LivingEntity) target, applier.getPlayer(), tickDamage, DamageCause.ENTITY_ATTACK);
             }
         }
     }

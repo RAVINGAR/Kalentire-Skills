@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.dev.heroes.Heroes;
@@ -39,7 +40,7 @@ public class SkillForcePull extends TargettedSkill {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
-            target.damage(damage, player);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }        
         
         Location playerLoc = player.getLocation();

@@ -3,6 +3,7 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
@@ -38,7 +39,7 @@ public class SkillUnholyRitual extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
 
         addSpellTarget(target, hero);
-        target.damage(target.getHealth(), player);
+        damageEntity(target, player, target.getHealth(), DamageCause.ENTITY_ATTACK);
         int mana = SkillConfigManager.getUseSetting(hero, this, "mana-regen", 20, false);
         
         //Fire the Mana regen event

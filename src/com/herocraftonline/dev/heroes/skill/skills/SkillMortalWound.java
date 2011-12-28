@@ -6,6 +6,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
@@ -74,7 +75,7 @@ public class SkillMortalWound extends TargettedSkill {
         }
 
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
-        target.damage(damage, player);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 12000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);

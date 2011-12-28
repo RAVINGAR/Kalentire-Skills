@@ -3,6 +3,7 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainHealthEvent;
@@ -43,7 +44,7 @@ public class SkillDrainsoul extends TargettedSkill {
 			hero.syncHealth();
 		}
 		addSpellTarget(target, hero);
-		target.damage(absorbAmount, player);
+		damageEntity(target, player, absorbAmount, DamageCause.ENTITY_ATTACK);
 
 		broadcastExecuteText(hero, target);
 		return SkillResult.NORMAL;

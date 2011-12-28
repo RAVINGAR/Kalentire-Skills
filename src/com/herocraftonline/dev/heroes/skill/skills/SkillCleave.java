@@ -58,8 +58,7 @@ public class SkillCleave extends TargettedSkill {
             if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                 continue;
             }
-
-            ((LivingEntity) entity).damage(damage, player);
+            damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
         }
 
         broadcastExecuteText(hero, target);
