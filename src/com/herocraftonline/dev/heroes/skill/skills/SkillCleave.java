@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -51,7 +52,7 @@ public class SkillCleave extends TargettedSkill {
         HeroClass heroClass = hero.getHeroClass();
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1, false);
-        target.damage(damage, player);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 3, false);
         for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
             if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
