@@ -2,6 +2,7 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -52,6 +53,12 @@ public class SkillGift extends ActiveSkill{
         if(args.length >= 1 && plugin.getServer().getPlayer(args[0]) != null) {
             reciever = plugin.getServer().getPlayer(args[0]);
             item = player.getItemInHand().clone();
+            
+            if (item.getType() == Material.AIR) {
+                Messaging.send(player, "You need to have an item in your hotbar to send!");
+                return SkillResult.INVALID_TARGET_NO_MSG;
+            }
+            
             amount = item.getAmount();
             if (amount > maxAmount) {
                 item.setAmount(maxAmount);
