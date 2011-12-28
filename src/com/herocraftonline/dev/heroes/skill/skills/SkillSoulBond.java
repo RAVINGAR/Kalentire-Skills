@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -155,6 +156,12 @@ public class SkillSoulBond extends TargettedSkill {
             }
             
             LivingEntity target = (LivingEntity) event.getEntity();
+
+            LivingEntity damager = null;
+            if (event.getDamager() instanceof Projectile) {
+                damager = ((Projectile) event.getDamager()).getShooter();
+            } else
+                damager = (LivingEntity) event.getDamager();
             
             if (target instanceof Player) {
                 Hero tHero = plugin.getHeroManager().getHero((Player) target);
@@ -174,7 +181,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                     // Split the damage
                     int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                    skill.damageEntity(applier, (LivingEntity) event.getDamager(), splitDamage, DamageCause.ENTITY_ATTACK);
+                    skill.damageEntity(applier, damager, splitDamage, DamageCause.ENTITY_ATTACK);
                     event.setDamage(event.getDamage() - splitDamage);
                 }
             } else {
@@ -196,7 +203,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                 // Split the damage
                 int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                damageEntity(target, (LivingEntity) event.getDamager(), splitDamage, DamageCause.ENTITY_ATTACK);
+                damageEntity(target, damager, splitDamage, DamageCause.ENTITY_ATTACK);
                 event.setDamage(event.getDamage() - splitDamage);
             }
             Heroes.debug.stopTask("HeroesSkillListener");
