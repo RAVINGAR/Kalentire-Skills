@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,12 +12,12 @@ import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.dev.heroes.hero.Hero;
-import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
+import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
 
-public class SkillGift extends ActiveSkill{
+public class SkillGift extends TargettedSkill {
 
     private String sendText;
 
@@ -44,47 +45,49 @@ public class SkillGift extends ActiveSkill{
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        if (!(target instanceof Player)) {
+            return SkillResult.INVALID_TARGET;
+        }
+
         Player player = hero.getPlayer();
-        Player reciever = null;
-        ItemStack item = null;
-        int maxAmount = SkillConfigManager.getUseSetting(hero, this, "max-amount", 64, false);
-        int amount = 0;
-        if(args.length >= 1 && plugin.getServer().getPlayer(args[0]) != null) {
-            reciever = plugin.getServer().getPlayer(args[0]);
-            item = player.getItemInHand().clone();
-            
-            if (item.getType() == Material.AIR) {
-                Messaging.send(player, "You need to have an item in your hotbar to send!");
-                return SkillResult.INVALID_TARGET_NO_MSG;
-            }
-            
-            amount = item.getAmount();
-            if (amount > maxAmount) {
-                item.setAmount(maxAmount);
-                amount = maxAmount;
-            }
-            
-            if(args.length > 2) {
-                try {
-                    amount = Integer.parseInt(args[2]);
-                } catch (NumberFormatException e) {
-                    Messaging.send(player, "That's not an amount!");
-                    Messaging.send(player, getUsage());
-                    return SkillResult.FAIL;
-                }
-                if (amount > maxAmount) {
-                    Messaging.send(player, "You can only send up to $1 at a time", maxAmount);
-                    return SkillResult.FAIL;
-                }
-                item.setAmount(amount);
-            }
+        Player reciever = (Player) target;
+        ItemStack item = player.getItemInHand();
+        if (item == null || item.getType() == Material.AIR) {
+            Messaging.send(player, "You need to have an item in your hotbar to send!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
         } else {
-            Messaging.send(player, getUsage());
-            return SkillResult.FAIL;
+            item = item.clone();
         }
         
-        if(amount < item.getAmount()) {
+        int maxAmount = SkillConfigManager.getUseSetting(hero, this, "max-amount", 64, false);
+        int amount = 0;
+
+        amount = item.getAmount();
+        if (amount > maxAmount) {
+            item.setAmount(maxAmount);
+            amount = maxAmount;
+        }
+
+        if(args.length > 2) {
+            try {
+                amount = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                Messaging.send(player, "That's not an amount!");
+                Messaging.send(player, getUsage());
+                return SkillResult.FAIL;
+            }
+            if (amount > maxAmount) {
+                Messaging.send(player, "You can only send up to $1 at a time", maxAmount);
+                return SkillResult.FAIL;
+            }
+            item.setAmount(amount);
+            if (item.getAmount() > maxAmount)
+                item.setAmount(maxAmount);
+        }
+
+
+        if(player.getItemInHand().getAmount() < item.getAmount()) {
             Messaging.send(player, "You aren't holding enough to send that amount!");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
@@ -98,7 +101,7 @@ public class SkillGift extends ActiveSkill{
             }
             Messaging.send(reciever, "Some items fall at your feet!");
         }
-        
+
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
