@@ -1,10 +1,8 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-import java.util.HashSet;
 
 import net.minecraft.server.EntityFireball;
 import net.minecraft.server.EntityLiving;
-import net.minecraft.server.MathHelper;
 import net.minecraft.server.Vec3D;
 
 import org.bukkit.Location;
@@ -31,6 +29,7 @@ import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
+import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillExplosiveFireball extends ActiveSkill {
 
@@ -53,34 +52,11 @@ public class SkillExplosiveFireball extends ActiveSkill {
         return node;
     }
 
-    public Vec3D getLocation(Player player, float f) {
-        Location playerLoc = player.getLocation();
-        float rotationYaw = playerLoc.getYaw();
-        float rotationPitch = playerLoc.getPitch();
-        float prevRotationYaw = playerLoc.getYaw();
-        float prevRotationPitch = playerLoc.getPitch();
-        if (f == 1.0F) {
-            float f1 = MathHelper.cos(-rotationYaw * 0.01745329F - 3.141593F);
-            float f3 = MathHelper.sin(-rotationYaw * 0.01745329F - 3.141593F);
-            float f5 = -MathHelper.cos(-rotationPitch * 0.01745329F);
-            float f7 = MathHelper.sin(-rotationPitch * 0.01745329F);
-            return Vec3D.create(f3 * f5, f7, f1 * f5);
-        } else {
-            float f2 = prevRotationPitch + (rotationPitch - prevRotationPitch) * f;
-            float f4 = prevRotationYaw + (rotationYaw - prevRotationYaw) * f;
-            float f6 = MathHelper.cos(-f4 * 0.01745329F - 3.141593F);
-            float f8 = MathHelper.sin(-f4 * 0.01745329F - 3.141593F);
-            float f9 = -MathHelper.cos(-f2 * 0.01745329F);
-            float f10 = MathHelper.sin(-f2 * 0.01745329F);
-            return Vec3D.create(f8 * f9, f10, f6 * f9);
-        }
-    }
-
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        Block target = player.getTargetBlock((HashSet<Byte>) null, 100);
+        Block target = player.getTargetBlock(Util.transparentIds, 100);
         Location playerLoc = player.getLocation();
 
         double dx = target.getX() - playerLoc.getX();
@@ -93,7 +69,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
         EntityFireball fireball = new EntityFireball(((CraftWorld) player.getWorld()).getHandle(), playerEntity, dx, dy, dz);
         fireball.isIncendiary = false;
         double d8 = 4D;
-        Vec3D vec3d = getLocation(player, 1.0F);
+        Vec3D vec3d = Util.getLocation(player);
         fireball.locX = playerLoc.getX() + vec3d.a * d8;
         fireball.locY = playerLoc.getY() + (height / 2.0F) + 0.5D;
         fireball.locZ = playerLoc.getZ() + vec3d.c * d8;
