@@ -33,11 +33,11 @@ import com.herocraftonline.dev.heroes.util.Util;
 public class SkillFireballX extends ActiveSkill {
 
     public SkillFireballX(Heroes plugin) {
-        super(plugin, "Fireball");
+        super(plugin, "Fireballx");
         setDescription("Shoots a dangerous ball of fire");
-        setUsage("/skill fireball");
+        setUsage("/skill fireballx");
         setArgumentRange(0, 0);
-        setIdentifiers("skill fireball");
+        setIdentifiers("skill fireballx");
 
         setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
 
