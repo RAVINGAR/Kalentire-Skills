@@ -37,13 +37,16 @@ public class SkillChakra extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Location castLoc = player.getLocation();
+        Location castLoc = player.getLocation().clone();
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 7, false);
         int radiusSquared = radius * radius;
         int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
         if (hero.hasParty()) {
             for (Hero p : hero.getParty().getMembers()) {
+                if (!castLoc.getWorld().equals(p.getPlayer().getWorld())) {
+                    continue;
+                }
                 if (castLoc.distanceSquared(p.getPlayer().getLocation()) <= radiusSquared) {
                     healDispel(p, removals, healAmount);
                 }
