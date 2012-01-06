@@ -80,7 +80,7 @@ public class SkillCharge extends TargettedSkill {
                 player.setFallDistance(8f);
             }
         }, 1L);
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 
