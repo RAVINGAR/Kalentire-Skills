@@ -102,7 +102,7 @@ public class SkillGift extends TargettedSkill {
             Messaging.send(reciever, "Some items fall at your feet!");
         }
 
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 
