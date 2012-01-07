@@ -3,16 +3,16 @@ package com.herocraftonline.dev.heroes.skill.skills;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Priority;
+import org.bukkit.event.Event.Type;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
-import com.herocraftonline.dev.heroes.effects.EffectType;
-import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
+import com.herocraftonline.dev.heroes.effects.common.QuickenEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
-import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -29,6 +29,8 @@ public class SkillQuicken extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill quicken", "skill quick");
         setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE);
+        
+        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(), Priority.Monitor);
     }
 
     @Override
@@ -58,7 +60,7 @@ public class SkillQuicken extends ActiveSkill {
         if (multiplier > 20) {
             multiplier = 20;
         }
-        QuickenEffect qEffect = new QuickenEffect(this, duration, multiplier);
+        QuickenEffect qEffect = new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText);
         if (!hero.hasParty()) {
             hero.addEffect(qEffect);
             return SkillResult.NORMAL;
@@ -79,30 +81,6 @@ public class SkillQuicken extends ActiveSkill {
         }
         return SkillResult.NORMAL;
     }
-
-    public class QuickenEffect extends ExpirableEffect {
-
-        public QuickenEffect(Skill skill, long duration, int amplifier) {
-            super(skill, "Quicken", duration);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            addMobEffect(1, (int) (duration / 1000) * 20, amplifier, false);
-        }
-
-        @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
-        }
-    }
     
     public class SkillEntityListener extends EntityListener {
 
@@ -112,8 +90,8 @@ public class SkillQuicken extends ActiveSkill {
                 return;
             
             Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
-            if (hero.hasEffect("Quicken"))
-                hero.removeEffect(hero.getEffect("Quicken"));
+            if (hero.hasEffect(getName()))
+                hero.removeEffect(hero.getEffect(getName()));
         }
         
     }
