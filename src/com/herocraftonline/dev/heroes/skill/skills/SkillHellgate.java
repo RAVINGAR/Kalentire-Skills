@@ -46,7 +46,7 @@ public class SkillHellgate extends ActiveSkill {
         String hellWorld = SkillConfigManager.getUseSetting(hero, this, "hell-world", "world_nether");
         World world = null;
         Location teleportLocation = null;
-        Location castLocation = player.getLocation();
+        Location castLocation = player.getLocation().clone();
 
         if (hero.hasEffect("Hellgate")) {
             teleportLocation = ((HellgateEffect) hero.getEffect("Hellgate")).getLocation();
