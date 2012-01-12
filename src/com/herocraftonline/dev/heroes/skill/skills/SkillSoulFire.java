@@ -79,7 +79,7 @@ public class SkillSoulFire extends ActiveSkill {
         @Override
         public void onEntityDamage(EntityDamageEvent event) {
             Heroes.debug.startTask("HeroesSkillListener");
-            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
+            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent) || event.getDamage() == 0) {
                 Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
