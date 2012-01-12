@@ -17,7 +17,7 @@ public class SkillBattery extends TargettedSkill {
 
     public SkillBattery(Heroes plugin) {
         super(plugin, "Battery");
-        setDescription("Gives your target mana");
+        setDescription("You grant $1 of your mana to your target.");
         setUsage("/skill battery");
         setArgumentRange(0, 1);
         setTypes(SkillType.SILENCABLE, SkillType.MANA);
@@ -52,6 +52,12 @@ public class SkillBattery extends TargettedSkill {
             Messaging.send(hero.getPlayer(), "You need at least $1 mana to transfer.", transferAmount);
             return new SkillResult(ResultType.LOW_MANA, false);
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int amount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
+        return getDescription().replace("$1", amount + "");
     }
 
 }

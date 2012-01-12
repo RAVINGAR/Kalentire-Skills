@@ -22,7 +22,7 @@ public class SkillIronFist extends ActiveSkill {
 
     public SkillIronFist(Heroes plugin) {
         super(plugin, "IronFist");
-        setDescription("Damages and knocks back nearby enemies");
+        setDescription("Deals $1 damage and knocks back nearby enemies");
         setUsage("/skill ironfist");
         setArgumentRange(0, 0);
         setIdentifiers("skill ironfist", "skill ifist");
@@ -80,5 +80,11 @@ public class SkillIronFist extends ActiveSkill {
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

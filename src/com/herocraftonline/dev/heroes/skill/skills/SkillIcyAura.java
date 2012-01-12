@@ -38,7 +38,7 @@ public class SkillIcyAura extends ActiveSkill {
 
     public SkillIcyAura(Heroes plugin) {
         super(plugin, "IcyAura");
-        setDescription("Triggers an aura of ice around you");
+        setDescription("You emit an aura of ice damaging nearby enemies for $1 seconds.");
         setUsage("/skill icyaura");
         setArgumentRange(0, 0);
         setIdentifiers("skill icyaura");
@@ -193,5 +193,11 @@ public class SkillIcyAura extends ActiveSkill {
                 loc.getBlock().setType(Material.ICE);
             }
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

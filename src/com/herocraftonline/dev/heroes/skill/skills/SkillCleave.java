@@ -22,7 +22,7 @@ public class SkillCleave extends TargettedSkill {
 
     public SkillCleave(Heroes plugin) {
         super(plugin, "Cleave");
-        setDescription("Cleaves your target and nearby enemies");
+        setDescription("You cleave your target and nearby enemies for $1% weapon damage.");
         setUsage("/skill cleave <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill cleave");
@@ -35,7 +35,7 @@ public class SkillCleave extends TargettedSkill {
         node.set("weapons", Util.axes);
         node.set(Setting.MAX_DISTANCE.node(), 2);
         node.set(Setting.RADIUS.node(), 3);
-        node.set("damage-multiplier", 1);
+        node.set("damage-multiplier", 1.0);
         return node;
     }
 
@@ -51,7 +51,7 @@ public class SkillCleave extends TargettedSkill {
 
         HeroClass heroClass = hero.getHeroClass();
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
-        damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1, false);
+        damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 3, false);
         for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
@@ -63,5 +63,11 @@ public class SkillCleave extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double mult = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
+        return getDescription().replace("$1", mult * 100 + "");
     }
 }

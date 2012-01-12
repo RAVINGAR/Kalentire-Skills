@@ -42,7 +42,7 @@ public class SkillSkeleton extends ActiveSkill {
 
     public SkillSkeleton(Heroes plugin) {
         super(plugin, "Skeleton");
-        setDescription("Summons a skeleton to fight by your side");
+        setDescription("Summons a skeleton to fight by your side for $1 seconds.");
         setUsage("/skill skeleton");
         setArgumentRange(0, 0);
         setIdentifiers("skill skeleton");
@@ -243,5 +243,11 @@ public class SkillSkeleton extends ActiveSkill {
             }
             Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
         }
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

@@ -17,7 +17,7 @@ public class SkillSafefallOther extends TargettedSkill {
 
     public SkillSafefallOther(Heroes plugin) {
         super(plugin, "SafefallOther");
-        setDescription("Stops your target from taking fall damage for a short amount of time");
+        setDescription("Stops your target from taking fall damage for $1 seconds.");
         setUsage("/skill safefallother <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill safefallother");
@@ -45,5 +45,11 @@ public class SkillSafefallOther extends TargettedSkill {
         targetHero.addEffect(new SafeFallEffect(this, duration));
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

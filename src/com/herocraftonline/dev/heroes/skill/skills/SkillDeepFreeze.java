@@ -32,7 +32,7 @@ public class SkillDeepFreeze extends TargettedSkill {
 
     public SkillDeepFreeze(Heroes plugin) {
         super(plugin, "DeepFreeze");
-        setDescription("Freezes your target in place. If they take fire damage they will shatter");
+        setDescription("You freeze your target for $1 seconds and $2 ice damage. Burning the target will shatter the effect for $3 extra damage.");
         setUsage("/skill deepfreeze <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill deepfreeze", "skill dfreeze");
@@ -242,5 +242,13 @@ public class SkillDeepFreeze extends TargettedSkill {
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        int shatter = SkillConfigManager.getUseSetting(hero, this, "shatter-damage", 11, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "").replace("$3", shatter + "");
     }
 }

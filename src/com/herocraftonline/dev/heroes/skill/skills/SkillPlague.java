@@ -24,7 +24,7 @@ public class SkillPlague extends TargettedSkill {
 
     public SkillPlague(Heroes plugin) {
         super(plugin, "Plague");
-        setDescription("You infect your target with the plague!");
+        setDescription("You infect your target with the plague, dealing $1 damage over $2 seconds.!");
         setUsage("/skill plague <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill plague");
@@ -158,5 +158,13 @@ public class SkillPlague extends TargettedSkill {
                 }
             }
         }
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        double period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        return getDescription().replace("$1", damage * duration / period + "").replace("$2", duration / 1000 + "");
     }
 }

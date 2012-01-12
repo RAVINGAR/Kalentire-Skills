@@ -20,7 +20,7 @@ public class SkillGarrote extends TargettedSkill {
 
     public SkillGarrote(Heroes plugin) {
         super(plugin, "Garrote");
-        setDescription("Damages and silences the target for a short time");
+        setDescription("Deals $1 damage and silences the target for $2 seconds.");
         setUsage("/skill garrote <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill garrote");
@@ -58,6 +58,13 @@ public class SkillGarrote extends TargettedSkill {
         }
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 
 }

@@ -31,7 +31,7 @@ public class SkillSoulFire extends ActiveSkill {
 
     public SkillSoulFire(Heroes plugin) {
         super(plugin, "SoulFire");
-        setDescription("Gives your attacks a chance to ignite the opponent");
+        setDescription("Your attacks have a $1% chance to ignite their target.");
         setUsage("/skill soulfire");
         setArgumentRange(0, 0);
         setIdentifiers("skill soulfire");
@@ -147,5 +147,11 @@ public class SkillSoulFire extends ActiveSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, "ignite-chance", .2, false);
+        return getDescription().replace("$1", chance * 100 + "");
     }
 }

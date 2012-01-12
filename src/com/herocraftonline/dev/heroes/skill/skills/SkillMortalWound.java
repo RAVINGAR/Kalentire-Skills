@@ -33,7 +33,7 @@ public class SkillMortalWound extends TargettedSkill {
 
     public SkillMortalWound(Heroes plugin) {
         super(plugin, "MortalWound");
-        setDescription("Prevents the target from healing, and applies a minor bleed effect");
+        setDescription("You strike your target reducing healing by $1%, and causing them to bleed for $2 damage over $3 seconds.");
         setUsage("/skill mortalwound <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill mortalwound", "skill mwound");
@@ -162,5 +162,14 @@ public class SkillMortalWound extends TargettedSkill {
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        double heal = 1 - SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", .5, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        double period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        return getDescription().replace("$1", heal * 100 + "").replace("$2", damage * duration / period + "").replace("$3", duration / 1000 + "");
     }
 }

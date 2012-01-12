@@ -28,7 +28,7 @@ public class SkillManaShield extends ActiveSkill {
 
     public SkillManaShield(Heroes plugin) {
         super(plugin, "ManaShield");
-        setDescription("Uses your mana as a shield");
+        setDescription("Uses your mana as a shield for $1 seconds.");
         setUsage("/skill manashield");
         setArgumentRange(0, 0);
         setIdentifiers("skill manashield", "skill mshield");
@@ -138,5 +138,11 @@ public class SkillManaShield extends ActiveSkill {
             }
             return damage;
         }
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

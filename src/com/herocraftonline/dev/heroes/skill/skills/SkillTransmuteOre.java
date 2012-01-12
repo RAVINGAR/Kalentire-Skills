@@ -25,7 +25,7 @@ public class SkillTransmuteOre extends ActiveSkill {
 
     public SkillTransmuteOre(Heroes plugin) {
         super(plugin, "TransmuteOre");
-        setDescription("Transmutes ores into more valuable ones");
+        setDescription("You can transmute ores into more valuable ones.");
         setUsage("/skill transmuteore");
         setArgumentRange(0, 0);
         setIdentifiers("skill transmuteore", "skill xmuteore");
@@ -101,5 +101,10 @@ public class SkillTransmuteOre extends ActiveSkill {
         }
         Util.syncInventory(player, plugin);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

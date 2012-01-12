@@ -17,7 +17,7 @@ public class SkillUnholyRitual extends TargettedSkill {
 
     public SkillUnholyRitual(Heroes plugin) {
         super(plugin, "UnholyRitual");
-        setDescription("You sacrifice a summoned monster for mana");
+        setDescription("You sacrifice a summoned monster for $1 mana.");
         setUsage("/skill unholyritual");
         setArgumentRange(0, 0);
         setIdentifiers("skill unholyritual", "skill uritual");
@@ -53,6 +53,12 @@ public class SkillUnholyRitual extends TargettedSkill {
         hero.setMana(hero.getMana() + mana);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int mana = SkillConfigManager.getUseSetting(hero, this, "mana-regen", 20, false);
+        return getDescription().replace("$1", mana + "");
     }
 
 }

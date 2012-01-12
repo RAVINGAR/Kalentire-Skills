@@ -31,7 +31,7 @@ public class SkillSoulBond extends TargettedSkill {
 
     public SkillSoulBond(Heroes plugin) {
         super(plugin, "SoulBond");
-        setDescription("You share your targets pain");
+        setDescription("You split damage with your target.");
         setUsage("/skill soulbond <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soulbond", "skill sbond");
@@ -257,5 +257,10 @@ public class SkillSoulBond extends TargettedSkill {
 
             broadcast(player.getLocation(), expireText, name, player.getDisplayName());
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

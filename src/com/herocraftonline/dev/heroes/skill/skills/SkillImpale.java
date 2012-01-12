@@ -31,7 +31,7 @@ public class SkillImpale extends TargettedSkill {
     
     public SkillImpale(Heroes plugin) {
         super(plugin, "Impale");
-        setDescription("You attempt to impale your target on your weapon, tossing them up in the air momentarily.");
+        setDescription("You impale your target with your weapon, tossing them up in the air momentarily and slowing them for $1 seconds.");
         setUsage("/skill impale <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill impale");
@@ -103,5 +103,11 @@ public class SkillImpale extends TargettedSkill {
 		public void remove(Hero hero) {
 			hero.addEffect(effect);
 		}
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

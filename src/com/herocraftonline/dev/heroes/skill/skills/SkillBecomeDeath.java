@@ -32,7 +32,7 @@ public class SkillBecomeDeath extends ActiveSkill {
     
     public SkillBecomeDeath(Heroes plugin) {
         super(plugin, "BecomeDeath");
-        setDescription("You gain some of the features of an undead creature, and no longer need to breath air");
+        setDescription("For $1 seconds you look undead and wont be targeted by undead. You also no longer need to breath air.");
         setUsage("/skill becomedeath");
         setArgumentRange(0, 0);
         setIdentifiers("skill becomedeath", "bdeath");
@@ -146,6 +146,12 @@ public class SkillBecomeDeath extends ActiveSkill {
         private boolean isUndead(Entity entity) {
             return entity instanceof Zombie || entity instanceof Skeleton || entity instanceof Ghast;
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
     
 }

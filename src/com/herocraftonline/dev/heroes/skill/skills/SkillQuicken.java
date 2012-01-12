@@ -24,7 +24,7 @@ public class SkillQuicken extends ActiveSkill {
 
     public SkillQuicken(Heroes plugin) {
         super(plugin, "Quicken");
-        setDescription("Provides a movement speed boost until you get hit");
+        setDescription("You grant a movement speed boost to all nearby party members for $1 seconds.");
         setUsage("/skill quicken");
         setArgumentRange(0, 0);
         setIdentifiers("skill quicken", "skill quick");
@@ -93,6 +93,11 @@ public class SkillQuicken extends ActiveSkill {
             if (hero.hasEffect(getName()))
                 hero.removeEffect(hero.getEffect(getName()));
         }
-        
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

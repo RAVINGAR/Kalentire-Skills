@@ -30,7 +30,7 @@ public class SkillBladegrasp extends ActiveSkill {
 
 	public SkillBladegrasp(Heroes plugin) {
 		super(plugin, "Bladegrasp");
-		setDescription("Blocks incoming melee damage");
+		setDescription("You have a $1% chance to block incoming damage for $2 seconds.");
 		setUsage("/skill bladegrasp");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill bladegrasp", "skill bgrasp");
@@ -152,4 +152,14 @@ public class SkillBladegrasp extends ActiveSkill {
 			Heroes.debug.stopTask("HeroesSkillListener");
 		}
 	}
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        double chance = SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL, .02, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 1)
+            level = 1;
+        return getDescription().replace("$1", + chance * level * 100 + "").replace("$2", duration / 1000 + "");
+    }
 }

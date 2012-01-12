@@ -17,7 +17,7 @@ public class SkillTrack extends ActiveSkill {
 
     public SkillTrack(Heroes plugin) {
         super(plugin, "Track");
-        setDescription("Locates a player");
+        setDescription("You are able to track down another player's location.");
         setUsage("/skill track <player>");
         setArgumentRange(1, 1);
         setIdentifiers("skill track");
@@ -49,6 +49,11 @@ public class SkillTrack extends ActiveSkill {
         player.setCompassTarget(location);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
 }

@@ -34,7 +34,7 @@ public class SkillFireballX extends ActiveSkill {
 
     public SkillFireballX(Heroes plugin) {
         super(plugin, "Fireballx");
-        setDescription("Shoots a dangerous ball of fire");
+        setDescription("You shoot a dangerous ball of fire that deals $1 damage.");
         setUsage("/skill fireballx");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireballx");
@@ -126,5 +126,11 @@ public class SkillFireballX extends ActiveSkill {
 
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        return getDescription().replace("$1", damage + "");
     }
 }

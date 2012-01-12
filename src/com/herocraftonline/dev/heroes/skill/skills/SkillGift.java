@@ -23,7 +23,7 @@ public class SkillGift extends TargettedSkill {
 
     public SkillGift(Heroes plugin) {
         super(plugin, "Gift");
-        setDescription("Teleports an item to your target");
+        setDescription("You teleport an item to your target.");
         setUsage("/skill gift <player> [amount]");
         setArgumentRange(0, 3);
         setIdentifiers("skill gift");
@@ -104,6 +104,11 @@ public class SkillGift extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
 }

@@ -15,7 +15,7 @@ public class SkillReplenish extends ActiveSkill {
 
     public SkillReplenish(Heroes plugin) {
         super(plugin, "Replenish");
-        setDescription("Brings your mana back to full");
+        setDescription("You refill your mana back to full");
         setUsage("/skill replenish");
         setArgumentRange(0, 0);
         setIdentifiers("skill replenish");
@@ -45,6 +45,11 @@ public class SkillReplenish extends ActiveSkill {
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
 }

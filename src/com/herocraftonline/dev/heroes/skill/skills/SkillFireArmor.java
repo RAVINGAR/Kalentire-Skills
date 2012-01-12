@@ -30,7 +30,7 @@ public class SkillFireArmor extends PassiveSkill {
 
     public SkillFireArmor(Heroes plugin) {
         super(plugin, "FireArmor");
-        setDescription("Gives your armor a chance to ignite your attackers!");
+        setDescription("Your armor has a $1% chance to ignite your attackers!");
         setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.BUFF);
         setEffectTypes(EffectType.FIRE);
         defaultArmors.add(Material.GOLD_CHESTPLATE.name());
@@ -105,5 +105,11 @@ public class SkillFireArmor extends PassiveSkill {
             broadcast(player.getLocation(), igniteText, player.getDisplayName(), name);
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, "ignite-chance", .20, false);
+        return getDescription().replace("$1", chance * 100 + "");
     }
 }

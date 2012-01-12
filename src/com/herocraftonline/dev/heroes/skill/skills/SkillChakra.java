@@ -18,7 +18,7 @@ public class SkillChakra extends ActiveSkill {
 
     public SkillChakra(Heroes plugin) {
         super(plugin, "Chakra");
-        setDescription("Dispels and heals party members near you");
+        setDescription("You restore $1 health and dispel negative effects from all nearby party-members.");
         setUsage("/skill chakra");
         setArgumentRange(0, 0);
         setIdentifiers("skill chakra");
@@ -28,7 +28,7 @@ public class SkillChakra extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("heal_amount", 10);
+        node.set("heal-amount", 10);
         node.set(Setting.RADIUS.node(), 7);
         node.set("max-removals", -1);
         return node;
@@ -82,6 +82,12 @@ public class SkillChakra extends ActiveSkill {
                 }
             }
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+       int amount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
+        return getDescription().replace("$1", amount + "");
     }
 
 }

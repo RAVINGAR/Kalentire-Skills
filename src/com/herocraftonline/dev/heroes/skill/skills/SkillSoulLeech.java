@@ -23,7 +23,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
     public SkillSoulLeech(Heroes plugin) {
         super(plugin, "SoulLeech");
-        setDescription("You slowly drain the life out of the player");
+        setDescription("You drain $1 health from your target over $2 seconds, restoring $3 of your own health.");
         setUsage("/skill soulleech <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soulleech", "skill sleech");
@@ -36,7 +36,7 @@ public class SkillSoulLeech extends TargettedSkill {
         node.set(Setting.DURATION.node(), 10000); // in milliseconds
         node.set(Setting.PERIOD.node(), 2000); // in milliseconds
         node.set("tick-damage", 1);
-        node.set("heal-multiplier", 1);
+        node.set("heal-multiplier", 1.0);
         node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer draining %target%'s soul!");
         return node;
     }
@@ -117,7 +117,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
         private void healApplier() {
             Hero hero = plugin.getHeroManager().getHero(applier);
-            int healAmount = totalDamage * SkillConfigManager.getUseSetting(hero, skill, "heal-multiplier", 1, false);
+            int healAmount = (int) (totalDamage * SkillConfigManager.getUseSetting(hero, skill, "heal-multiplier", 1.0, false));
 
             // Fire our heal event
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, skill);
@@ -128,5 +128,16 @@ public class SkillSoulLeech extends TargettedSkill {
             hero.setHealth(hero.getHealth() + hrhEvent.getAmount());
             hero.syncHealth();
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        double mult = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 1.0, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        damage = damage * duration / period;
+        int healed = (int) (damage * mult);
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "").replace("$3", healed + "");
     }
 }

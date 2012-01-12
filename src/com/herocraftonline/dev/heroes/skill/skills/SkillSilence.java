@@ -17,7 +17,7 @@ public class SkillSilence extends TargettedSkill {
 
     public SkillSilence(Heroes plugin) {
         super(plugin, "Silence");
-        setDescription("Silences your target, making them unable to use some skills");
+        setDescription("Silences your target, making them unable to use skills for $1 seconds.");
         setUsage("/skill silence <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill silence");
@@ -42,5 +42,11 @@ public class SkillSilence extends TargettedSkill {
         plugin.getHeroManager().getHero((Player) target).addEffect(sEffect);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

@@ -25,7 +25,7 @@ public class SkillChainLightning extends TargettedSkill {
 
     public SkillChainLightning(Heroes plugin) {
         super(plugin, "ChainLightning");
-        setDescription("Calls down a bolt of lightning that bounces to other targets");
+        setDescription("You call down a bolt of lightning that bounces to nearby enemies.");
         setUsage("/skill chainl <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill chainlightning", "skill clightning", "skill chainl", "skill clight");
@@ -143,5 +143,10 @@ public class SkillChainLightning extends TargettedSkill {
             damageEntity(target, applier.getPlayer(), bounceDamage, DamageCause.ENTITY_ATTACK);
             target.getWorld().strikeLightningEffect(target.getLocation());
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

@@ -23,7 +23,7 @@ public class SkillRejuvenate extends TargettedSkill {
 
     public SkillRejuvenate(Heroes plugin) {
         super(plugin, "Rejuvenate");
-        setDescription("Heals the target over time");
+        setDescription("You restore $1 health to the target over $2 seconds.");
         setUsage("/skill rejuvenate <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill rejuvenate", "skill rejuv");
@@ -91,4 +91,14 @@ public class SkillRejuvenate extends TargettedSkill {
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
     }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int heal = SkillConfigManager.getUseSetting(hero, this, "tick-heal", 1, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        heal = heal * duration / period;
+        return getDescription().replace("$1", heal + "").replace("$2", duration / 1000 + "");
+    }
+    
 }

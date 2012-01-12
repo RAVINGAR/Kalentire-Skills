@@ -15,7 +15,7 @@ public class SkillRevive extends ActiveSkill {
 
     public SkillRevive(Heroes plugin) {
         super(plugin, "Revive");
-        setDescription("Teleports the target to their place of death");
+        setDescription("Revives your target, teleporting them to their place of death.");
         setUsage("/skill revive <target>");
         setArgumentRange(1, 1);
         setIdentifiers("skill revive");
@@ -59,5 +59,10 @@ public class SkillRevive extends ActiveSkill {
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

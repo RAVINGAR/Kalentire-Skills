@@ -17,7 +17,7 @@ public class SkillSummonfood extends ActiveSkill {
 
     public SkillSummonfood(Heroes plugin) {
         super(plugin, "Summonfood");
-        setDescription("Summons you food!");
+        setDescription("You summon $1.");
         setUsage("/skill summonfood");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonfood");
@@ -39,6 +39,13 @@ public class SkillSummonfood extends ActiveSkill {
         world.dropItem(player.getLocation(), dropItem);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        String name = SkillConfigManager.getUseSetting(hero, this, "food-type", "BREAD");
+        name = name.toLowerCase().replace("_", " ");
+        return getDescription().replace("$1", name);
     }
 
 }

@@ -12,12 +12,13 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
+import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillDrainsoul extends TargettedSkill {
 
 	public SkillDrainsoul(Heroes plugin) {
 		super(plugin, "Drainsoul");
-		setDescription("Absorb health from target");
+		setDescription("You drain $1 health from target, restoring your own for the same amount.");
 		setUsage("/skill drainsoul <target>");
 		setArgumentRange(0, 1);
 		setIdentifiers("skill drainsoul");
@@ -27,7 +28,7 @@ public class SkillDrainsoul extends TargettedSkill {
 	@Override
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set("absorb-amount", 4);
+		node.set(Setting.DAMAGE.node(), 4);
 		return node;
 	}
 
@@ -35,7 +36,7 @@ public class SkillDrainsoul extends TargettedSkill {
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		Player player = hero.getPlayer();
 
-		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, "absorb-amount", 4, false);
+		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
 
 		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, absorbAmount, this);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
@@ -49,5 +50,11 @@ public class SkillDrainsoul extends TargettedSkill {
 		broadcastExecuteText(hero, target);
 		return SkillResult.NORMAL;
 	}
+
+    @Override
+    public String getDescription(Hero hero) {
+        int amount = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        return getDescription().replace("$1", amount + "");
+    }
 
 }

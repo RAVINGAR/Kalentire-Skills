@@ -27,7 +27,7 @@ public class SkillReflect extends ActiveSkill {
 
     public SkillReflect(Heroes plugin) {
         super(plugin, "Reflect");
-        setDescription("Reflects all the damage done to you back to your target");
+        setDescription("You reflect $1% of all damage back to your attacker for $2 seconds.");
         setUsage("/skill reflect");
         setArgumentRange(0, 0);
         setIdentifiers("skill reflect");
@@ -113,5 +113,12 @@ public class SkillReflect extends ActiveSkill {
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double amount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", .5, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        return getDescription().replace("$1", amount * 100 + "").replace("$2", duration / 1000 + "");
     }
 }

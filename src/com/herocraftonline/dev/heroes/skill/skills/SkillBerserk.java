@@ -25,7 +25,7 @@ public class SkillBerserk extends ActiveSkill {
 
     public SkillBerserk(Heroes plugin) {
         super(plugin, "Berserk");
-        setDescription("You go berserk, dealing and taking more damage!");
+        setDescription("You go berserk, dealing $1% more damage but taking $2% more damage!");
         setUsage("/skill berserk");
         setArgumentRange(0, 0);
         setIdentifiers("skill berserk");
@@ -135,5 +135,17 @@ public class SkillBerserk extends ActiveSkill {
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double incom = SkillConfigManager.getUseSetting(hero, this, "incoming-multiplier", 1.1, true);
+        double out = SkillConfigManager.getUseSetting(hero, this, "outgoing-multiplier", 1.1, false);
+        double perlev = SkillConfigManager.getUseSetting(hero, this, "multiplier-per-level", .005, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 0)
+            level = 0;
+        out = (out + (level * perlev) - 1) * 100;
+        return getDescription().replace("$1", out + "").replace("$2", (incom - 1) * 100 + "");
     }
 }

@@ -18,7 +18,7 @@ public class SkillMegabolt extends TargettedSkill {
 
     public SkillMegabolt(Heroes plugin) {
         super(plugin, "Megabolt");
-        setDescription("Calls down multiple bolts of lightning centered on the target.");
+        setDescription("Calls down multiple bolts of lightning centered on the target that deal $1 damage.");
         setUsage("/skill mbolt <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill megabolt", "skill mbolt");
@@ -62,5 +62,10 @@ public class SkillMegabolt extends TargettedSkill {
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
-
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        return getDescription().replace("$1", damage + "");
+    }
 }

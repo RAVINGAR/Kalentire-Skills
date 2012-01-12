@@ -17,7 +17,7 @@ public class SkillFarSight extends ActiveSkill {
     
     public SkillFarSight(Heroes plugin) {
         super(plugin, "FarSight");
-        setDescription("Slows the target's movement speed & attack speed");
+        setDescription("You are able to look far into the distance, but your movement is slowed.");
         setUsage("/skill farsight");
         setArgumentRange(0, 1);
         setIdentifiers("skill farsight", "skill fsight");
@@ -53,4 +53,9 @@ public class SkillFarSight extends ActiveSkill {
 			addMobEffect(2, (int) (duration / 1000) * 20, 10, false);
 		}
 	}
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
+    }
 }

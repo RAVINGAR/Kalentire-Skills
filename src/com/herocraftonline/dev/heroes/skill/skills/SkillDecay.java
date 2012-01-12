@@ -23,7 +23,7 @@ public class SkillDecay extends TargettedSkill {
 
     public SkillDecay(Heroes plugin) {
         super(plugin, "Decay");
-        setDescription("Causes your target's flesh to decay rapidly");
+        setDescription("You disease your target dealing $1 dark damage over $2 seconds.");
         setUsage("/skill decay <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill decay");
@@ -101,5 +101,14 @@ public class SkillDecay extends TargettedSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        damage = damage * duration / period;
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

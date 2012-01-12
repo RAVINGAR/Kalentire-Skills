@@ -20,7 +20,7 @@ public class SkillTumble extends PassiveSkill {
 
     public SkillTumble(Heroes plugin) {
         super(plugin, "Tumble");
-        setDescription("You are able to fall from higher distances without taking damage!");
+        setDescription("You are able to fall $1 blocks without taking damage.");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.PHYSICAL, SkillType.BUFF);
         
@@ -65,5 +65,16 @@ public class SkillTumble extends PassiveSkill {
             
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int dist = SkillConfigManager.getUseSetting(hero, this, "base-distance", 3, false);
+        double distlev = SkillConfigManager.getUseSetting(hero, this, "distance-per-level", .5, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 0)
+            level = 0;
+        dist += (int) (distlev * level);
+        return getDescription().replace("$1", dist + "");
     }
 }

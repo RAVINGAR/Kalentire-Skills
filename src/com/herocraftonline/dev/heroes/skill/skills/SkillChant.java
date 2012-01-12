@@ -18,7 +18,7 @@ public class SkillChant extends TargettedSkill {
 
     public SkillChant(Heroes plugin) {
         super(plugin, "Chant");
-        setDescription("Heals the target");
+        setDescription("You restore $1 health to the target.");
         setUsage("/skill chant <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill chant");
@@ -63,5 +63,11 @@ public class SkillChant extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int amount = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
+        return getDescription().replace("$1", amount + "");
     }
 }

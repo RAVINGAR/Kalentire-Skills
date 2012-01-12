@@ -29,7 +29,7 @@ public class SkillSuperheat extends ActiveSkill {
 
     public SkillSuperheat(Heroes plugin) {
         super(plugin, "Superheat");
-        setDescription("Your pickaxe becomes superheated");
+        setDescription("Your pickaxe smelts ores as you mine them for $1 seconds.");
         setUsage("/skill superheat");
         setArgumentRange(0, 0);
         setIdentifiers("skill superheat");
@@ -40,11 +40,11 @@ public class SkillSuperheat extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 20000);
-        node.set(Setting.APPLY_TEXT.node(), "%hero%'s pick has become superheated!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s pick has cooled down!");
-        return node;
+        ConfigurationSection section = super.getDefaultConfig();
+        section.set(Setting.DURATION.node(), 20000);
+        section.set(Setting.APPLY_TEXT.node(), "%hero%'s pick has become superheated!");
+        section.set(Setting.EXPIRE_TEXT.node(), "%hero%'s pick has cooled down!");
+        return section;
     }
 
     @Override
@@ -128,6 +128,12 @@ public class SkillSuperheat extends ActiveSkill {
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 
 }

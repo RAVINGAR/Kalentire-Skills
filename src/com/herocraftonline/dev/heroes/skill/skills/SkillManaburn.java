@@ -16,7 +16,7 @@ public class SkillManaburn extends TargettedSkill {
 
     public SkillManaburn(Heroes plugin) {
         super(plugin, "Manaburn");
-        setDescription("Burns the targets mana");
+        setDescription("Removes $1 mana from the target and gives it to you.");
         setUsage("/skill manaburn");
         setArgumentRange(0, 1);
         setIdentifiers("skill manaburn", "skill mburn");
@@ -34,7 +34,7 @@ public class SkillManaburn extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (!(target instanceof Player))
-        	return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET;
 
         Hero tHero = plugin.getHeroManager().getHero((Player) target);
 
@@ -52,4 +52,9 @@ public class SkillManaburn extends TargettedSkill {
         }
     }
 
+    @Override
+    public String getDescription(Hero hero) {
+        int mana = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
+        return getDescription().replace("$1", mana + "");
+    }
 }

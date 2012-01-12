@@ -18,7 +18,7 @@ public class SkillSummonArrow extends ActiveSkill {
 
     public SkillSummonArrow(Heroes plugin) {
         super(plugin, "SummonArrow");
-        setDescription("Summons you some arrows!");
+        setDescription("You summon $1 arrows.");
         setUsage("/skill summonarrow");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonarrow");
@@ -28,7 +28,7 @@ public class SkillSummonArrow extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.AMOUNT.node(), 1);
+        node.set(Setting.AMOUNT.node(), 2);
         return node;
     }
 
@@ -36,10 +36,16 @@ public class SkillSummonArrow extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         World world = player.getWorld();
-        ItemStack dropItem = new ItemStack(Material.ARROW, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
+        ItemStack dropItem = new ItemStack(Material.ARROW, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
         world.dropItem(player.getLocation(), dropItem);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int amount = SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT, 2, false);
+        return getDescription().replace("$1", amount + "");
     }
 
 }

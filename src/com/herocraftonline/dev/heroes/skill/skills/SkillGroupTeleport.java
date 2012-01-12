@@ -13,7 +13,7 @@ public class SkillGroupTeleport extends ActiveSkill {
 
     public SkillGroupTeleport(Heroes plugin) {
         super(plugin, "GroupTeleport");
-        setDescription("Summons your group to your location");
+        setDescription("You summon your group to your location.");
         setUsage("/skill groupteleport");
         setArgumentRange(0, 0);
         setIdentifiers("skill groupteleport", "skill gteleport");
@@ -32,5 +32,10 @@ public class SkillGroupTeleport extends ActiveSkill {
         }
         Messaging.send(player, "You must have a group to teleport your party members to you!");
         return SkillResult.FAIL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

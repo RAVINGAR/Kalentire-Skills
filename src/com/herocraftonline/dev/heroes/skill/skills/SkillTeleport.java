@@ -15,7 +15,7 @@ public class SkillTeleport extends ActiveSkill {
 
     public SkillTeleport(Heroes plugin) {
         super(plugin, "Teleport");
-        setDescription("Teleports you (roughly) to your party member!");
+        setDescription("Teleports you somewhere close by to a party member.");
         setUsage("/skill teleport <player>");
         setArgumentRange(1, 1);
         setIdentifiers("skill teleport");
@@ -47,5 +47,10 @@ public class SkillTeleport extends ActiveSkill {
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

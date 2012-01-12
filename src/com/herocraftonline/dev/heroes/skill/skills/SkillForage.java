@@ -25,7 +25,7 @@ public class SkillForage extends ActiveSkill{
  
     public SkillForage(Heroes plugin) {
         super(plugin, "Forage");
-        setDescription("Forages for food.");
+        setDescription("You forage for food.");
         setUsage("/skill forage");
         setArgumentRange(0, 0);
         setIdentifiers("skill forage");
@@ -168,5 +168,10 @@ public class SkillForage extends ActiveSkill{
         Util.syncInventory(player, plugin);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL; 
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

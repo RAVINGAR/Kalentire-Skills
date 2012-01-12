@@ -20,7 +20,7 @@ public class SkillPulse extends ActiveSkill {
 
     public SkillPulse(Heroes plugin) {
         super(plugin, "Pulse");
-        setDescription("Damages everyone around you");
+        setDescription("You deal $1 force damage to all nearby enemies.");
         setUsage("/skill pulse");
         setArgumentRange(0, 0);
         setIdentifiers("skill pulse");
@@ -55,5 +55,11 @@ public class SkillPulse extends ActiveSkill {
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        return getDescription().replace("$1", damage + "");
     }
 }

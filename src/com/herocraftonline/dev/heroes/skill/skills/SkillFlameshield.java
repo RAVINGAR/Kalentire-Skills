@@ -21,7 +21,7 @@ public class SkillFlameshield extends ActiveSkill {
 
     public SkillFlameshield(Heroes plugin) {
         super(plugin, "Flameshield");
-        setDescription("Fire can't hurt you!");
+        setDescription("You become resistent to fire for $1 seconds.");
         setUsage("/skill flameshield");
         setArgumentRange(0, 0);
         setIdentifiers("skill flameshield", "skill fshield");
@@ -78,5 +78,11 @@ public class SkillFlameshield extends ActiveSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

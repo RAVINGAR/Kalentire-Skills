@@ -26,7 +26,7 @@ public class SkillWisdom extends ActiveSkill {
 
     public SkillWisdom(Heroes plugin) {
         super(plugin, "Wisdom");
-        setDescription("You party benefits from increased mana regeneration!");
+        setDescription("You party benefits from $1% increased mana regeneration.");
         setArgumentRange(0, 0);
         setUsage("/skill wisdom");
         setIdentifiers("skill wisdom");
@@ -47,7 +47,7 @@ public class SkillWisdom extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "Your feel a bit wiser!");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "You feel a bit wiser!");
         expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "You no longer feel as wise!");
     }
 
@@ -139,5 +139,11 @@ public class SkillWisdom extends ActiveSkill {
             Player player = hero.getPlayer();
             Messaging.send(player, expireText);
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double mult = SkillConfigManager.getUseSetting(hero, this, "regen-multiplier", 1.2, false);
+        return getDescription().replace("$1", (int) ((mult - 1) * 100) + "");
     }
 }

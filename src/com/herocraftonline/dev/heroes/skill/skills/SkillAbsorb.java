@@ -28,7 +28,7 @@ public class SkillAbsorb extends ActiveSkill {
 
     public SkillAbsorb(Heroes plugin) {
         super(plugin, "Absorb");
-        setDescription("Converts half the damage you take into mana");
+        setDescription("You absorb half the damage you take as mana.");
         setUsage("/skill absorb");
         setArgumentRange(0, 0);
         setIdentifiers("skill absorb");
@@ -130,5 +130,10 @@ public class SkillAbsorb extends ActiveSkill {
             }
             return damage;
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

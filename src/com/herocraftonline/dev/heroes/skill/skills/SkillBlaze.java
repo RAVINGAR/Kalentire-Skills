@@ -20,7 +20,7 @@ public class SkillBlaze extends ActiveSkill {
 
     public SkillBlaze(Heroes plugin) {
         super(plugin, "Blaze");
-        setDescription("Sets everyone around you on fire");
+        setDescription("You ignite all nearby enemies.");
         setUsage("/skill blaze");
         setArgumentRange(0, 0);
         setIdentifiers("skill blaze");
@@ -62,5 +62,10 @@ public class SkillBlaze extends ActiveSkill {
         
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

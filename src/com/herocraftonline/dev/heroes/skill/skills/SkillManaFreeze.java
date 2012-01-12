@@ -26,7 +26,7 @@ public class SkillManaFreeze extends TargettedSkill {
 
     public SkillManaFreeze(Heroes plugin) {
         super(plugin, "ManaFreeze");
-        setDescription("Stops your target regening mana");
+        setDescription("Prevents your target from regenerating mana for $1 seconds.");
         setUsage("/skill manafreeze");
         setArgumentRange(0, 1);
         setIdentifiers("skill manafreeze", "skill mfreeze");
@@ -101,5 +101,11 @@ public class SkillManaFreeze extends TargettedSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

@@ -22,7 +22,7 @@ public class SkillStealEssence extends TargettedSkill {
 
     public SkillStealEssence(Heroes plugin) {
         super(plugin, "StealEssence");
-        setDescription("Steals a beneficial effect from the target");
+        setDescription("You steal beneficial effects from your target.");
         setUsage("/skill stealessence");
         setArgumentRange(0, 1);
         setIdentifiers("skill stealessence", "skill sessence");
@@ -75,6 +75,11 @@ public class SkillStealEssence extends TargettedSkill {
 
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), getName(), stolenNames, tHero.getPlayer().getDisplayName());
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
 }

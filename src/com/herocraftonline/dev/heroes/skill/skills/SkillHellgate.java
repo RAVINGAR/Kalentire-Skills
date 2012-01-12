@@ -21,7 +21,7 @@ public class SkillHellgate extends ActiveSkill {
 
     public SkillHellgate(Heroes plugin) {
         super(plugin, "Hellgate");
-        setDescription("Teleports you and your nearby party to or from the nether");
+        setDescription("You teleport your party to or from the nether.");
         setUsage("/skill hellgate");
         setArgumentRange(0, 0);
         setIdentifiers("skill hellgate");
@@ -126,5 +126,10 @@ public class SkillHellgate extends ActiveSkill {
             return location;
         }
 
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

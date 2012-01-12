@@ -19,7 +19,7 @@ public class SkillForcePull extends TargettedSkill {
 
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
-        setDescription("Forces your target toward you");
+        setDescription("Forces your target toward you.");
         setUsage("/skill forcepull <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill forcepull", "skill fpull");
@@ -57,6 +57,11 @@ public class SkillForcePull extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
 }

@@ -24,7 +24,7 @@ public class SkillBite extends TargettedSkill {
 
     public SkillBite(Heroes plugin) {
         super(plugin, "Bite");
-        setDescription("Deals physical damage to the target");
+        setDescription("You bite the target for $1 damage and causing them to bleed for $2 damage over $3 seconds.");
         setUsage("/skill bite <target>");
         setArgumentRange(0, 1);
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
@@ -105,5 +105,15 @@ public class SkillBite extends TargettedSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 15000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        int td = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        td = td * duration / period;
+        return getDescription().replace("$1", damage + "").replace("$2", td + "").replace("$3", duration / 1000 + "");
     }
 }

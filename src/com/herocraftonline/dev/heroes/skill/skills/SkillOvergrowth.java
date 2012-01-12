@@ -22,7 +22,7 @@ public class SkillOvergrowth extends ActiveSkill {
 
     public SkillOvergrowth(Heroes plugin) {
         super(plugin, "Overgrowth");
-        setDescription("Turns a sapling into a full grown tree");
+        setDescription("You turn a sapling into a full grown tree.");
         setUsage("/skill overgrowth");
         setArgumentRange(0, 0);
         setIdentifiers("skill overgrowth", "skill ogrowth");
@@ -80,6 +80,11 @@ public class SkillOvergrowth extends ActiveSkill {
             Messaging.send(player, "Target is not a sapling!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
 }

@@ -23,7 +23,7 @@ public class SkillQuake extends PassiveSkill {
 
     public SkillQuake(Heroes plugin) {
         super(plugin, "Quake");
-        setDescription("You hit the ground with a thunderous roar!");
+        setDescription("You hit the ground with a thunderous roar dealing damage to nearby players!");
         setArgumentRange(0, 0);
         setEffectTypes(EffectType.PHYSICAL, EffectType.BENEFICIAL);
         setTypes(SkillType.PHYSICAL);
@@ -79,5 +79,10 @@ public class SkillQuake extends PassiveSkill {
 
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

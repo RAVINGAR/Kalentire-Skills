@@ -23,7 +23,7 @@ public class SkillDisarm extends TargettedSkill {
 
     public SkillDisarm(Heroes plugin) {
         super(plugin, "Disarm");
-        setDescription("Disarm your target");
+        setDescription("You disarm your target for $1 seconds.");
         setUsage("/skill disarm <target>");
         setArgumentRange(0, 1);
         setTypes(SkillType.PHYSICAL, SkillType.DEBUFF, SkillType.HARMFUL);
@@ -69,5 +69,11 @@ public class SkillDisarm extends TargettedSkill {
         tHero.addEffect(new DisarmEffect(this, duration, applyText, expireText));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 3000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

@@ -25,7 +25,7 @@ public class SkillEndurance extends ActiveSkill {
 
     public SkillEndurance(Heroes plugin) {
         super(plugin, "Endurance");
-        setDescription("You shift into a defensive form!");
+        setDescription("You take a defensive form, reducing damage taken by $1%, but reducing damage you deal by $2%.");
         setUsage("/skill endurance");
         setArgumentRange(0, 0);
         setIdentifiers("skill endurance");
@@ -146,5 +146,17 @@ public class SkillEndurance extends ActiveSkill {
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double out = 1 - SkillConfigManager.getUseSetting(hero, this, "outgoing-multiplier", .9, false);
+        double inc = 1 - SkillConfigManager.getUseSetting(hero, this, "incoming-multiplier", .9, false);
+        double perlev = SkillConfigManager.getUseSetting(hero, this, "multiplier-per-level", .005, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 0)
+            level = 0;
+        inc -= (perlev * level);
+        return getDescription().replace("$1", inc * 100 + "").replace("$2", out * 100 + "");
     }
 }

@@ -15,7 +15,7 @@ public class SkillSyphon extends TargettedSkill {
 
     public SkillSyphon(Heroes plugin) {
         super(plugin, "Syphon");
-        setDescription("Gives your health to the target");
+        setDescription("You grant your target some of your health.");
         setUsage("/skill syphon <target> <health>");
         setArgumentRange(0, 2);
         setIdentifiers("skill syphon");
@@ -56,6 +56,11 @@ public class SkillSyphon extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
 }

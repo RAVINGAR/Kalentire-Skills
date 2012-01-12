@@ -25,7 +25,7 @@ public class SkillBlight extends TargettedSkill {
 
     public SkillBlight(Heroes plugin) {
         super(plugin, "Blight");
-        setDescription("Causes your target's flesh to decay rapidly");
+        setDescription("You disease your target, dealing $1 dark damage over $2 seconds, enemies that get too close will also be damaged.");
         setUsage("/skill blight <target>");
         setArgumentRange(0, 1);
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
@@ -145,5 +145,14 @@ public class SkillBlight extends TargettedSkill {
                 skill.damageEntity((LivingEntity) target, applier.getPlayer(), tickDamage, DamageCause.ENTITY_ATTACK);
             }
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        damage = damage * duration / period;
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

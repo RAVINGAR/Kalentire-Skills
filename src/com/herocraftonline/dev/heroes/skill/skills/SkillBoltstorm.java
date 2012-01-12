@@ -28,7 +28,7 @@ public class SkillBoltstorm extends ActiveSkill {
 
     public SkillBoltstorm(Heroes plugin) {
         super(plugin, "Boltstorm");
-        setDescription("Calls bolts of lightning down upon nearby enemies.");
+        setDescription("You call bolts of lightning down upon nearby enemies for $1 seconds, each bolt will deal $2 damage.");
         setUsage("/skill boltstorm");
         setArgumentRange(0, 0);
         setIdentifiers("skill boltstorm");
@@ -123,5 +123,12 @@ public class SkillBoltstorm extends ActiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "");
     }
 }

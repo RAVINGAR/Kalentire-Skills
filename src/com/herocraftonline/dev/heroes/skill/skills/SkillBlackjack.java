@@ -29,7 +29,7 @@ public class SkillBlackjack extends ActiveSkill {
 
     public SkillBlackjack(Heroes plugin) {
         super(plugin, "Blackjack");
-        setDescription("Occasionally stuns your opponent");
+        setDescription("Your attacks have a $1% chance to stun your target.");
         setUsage("/skill blackjack");
         setArgumentRange(0, 0);
         setIdentifiers("skill blackjack", "skill bjack");
@@ -124,5 +124,11 @@ public class SkillBlackjack extends ActiveSkill {
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, "stun-chance", .20, false) * 100;
+        return getDescription().replace("$1", chance + "");
     }
 }

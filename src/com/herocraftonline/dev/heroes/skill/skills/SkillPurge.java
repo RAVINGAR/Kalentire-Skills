@@ -21,7 +21,7 @@ public class SkillPurge extends TargettedSkill {
 
     public SkillPurge(Heroes plugin) {
         super(plugin, "Purge");
-        setDescription("You purge effects near the targets location");
+        setDescription("You purge effects from anyone near your target.");
         setUsage("/skill purge");
         setArgumentRange(0, 0);
         setIdentifiers("skill purge");
@@ -111,5 +111,10 @@ public class SkillPurge extends TargettedSkill {
             }
         }
         return removalsLeft;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }

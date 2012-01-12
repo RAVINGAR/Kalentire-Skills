@@ -44,4 +44,9 @@ public class SkillScan extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
+    }
+
 }

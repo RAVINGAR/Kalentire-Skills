@@ -20,7 +20,7 @@ public class SkillBarrage extends ActiveSkill {
 
     public SkillBarrage(Heroes plugin) {
         super(plugin, "Barrage");
-        setDescription("Fire a Barrage of Arrows around you.");
+        setDescription("You fire a barrage of arrows in all directions.");
         setUsage("/skill barrage");
         setArgumentRange(0, 0);
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
@@ -74,5 +74,10 @@ public class SkillBarrage extends ActiveSkill {
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 }
