@@ -19,6 +19,7 @@ import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
+import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillReflect extends ActiveSkill {
 
@@ -119,6 +120,6 @@ public class SkillReflect extends ActiveSkill {
     public String getDescription(Hero hero) {
         double amount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", .5, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-        return getDescription().replace("$1", amount * 100 + "").replace("$2", duration / 1000 + "");
+        return getDescription().replace("$1", Util.stringDouble(amount * 100)).replace("$2", duration / 1000 + "");
     }
 }

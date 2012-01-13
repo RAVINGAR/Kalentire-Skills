@@ -129,6 +129,6 @@ public class SkillBlackjack extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double chance = SkillConfigManager.getUseSetting(hero, this, "stun-chance", .20, false) * 100;
-        return getDescription().replace("$1", chance + "");
+        return getDescription().replace("$1", Util.stringDouble(chance));
     }
 }

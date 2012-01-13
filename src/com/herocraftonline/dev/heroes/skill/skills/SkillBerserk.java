@@ -18,6 +18,7 @@ import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
+import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillBerserk extends ActiveSkill {
 
@@ -146,6 +147,6 @@ public class SkillBerserk extends ActiveSkill {
         if (level < 0)
             level = 0;
         out = (out + (level * perlev) - 1) * 100;
-        return getDescription().replace("$1", out + "").replace("$2", (incom - 1) * 100 + "");
+        return getDescription().replace("$1", Util.stringDouble(out)).replace("$2", Util.stringDouble((incom - 1) * 100));
     }
 }

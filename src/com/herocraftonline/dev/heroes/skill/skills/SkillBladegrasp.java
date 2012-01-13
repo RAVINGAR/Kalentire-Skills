@@ -160,6 +160,6 @@ public class SkillBladegrasp extends ActiveSkill {
         int level = hero.getSkillLevel(this);
         if (level < 1)
             level = 1;
-        return getDescription().replace("$1", + chance * level * 100 + "").replace("$2", duration / 1000 + "");
+        return getDescription().replace("$1", Util.stringDouble(chance * level * 100)).replace("$2", duration / 1000 + "");
     }
 }

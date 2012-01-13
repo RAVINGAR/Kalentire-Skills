@@ -18,6 +18,7 @@ import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
+import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillEndurance extends ActiveSkill {
 
@@ -157,6 +158,6 @@ public class SkillEndurance extends ActiveSkill {
         if (level < 0)
             level = 0;
         inc -= (perlev * level);
-        return getDescription().replace("$1", inc * 100 + "").replace("$2", out * 100 + "");
+        return getDescription().replace("$1", Util.stringDouble(inc * 100)).replace("$2", Util.stringDouble(out * 100));
     }
 }

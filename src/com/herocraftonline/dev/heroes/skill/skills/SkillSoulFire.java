@@ -152,6 +152,6 @@ public class SkillSoulFire extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double chance = SkillConfigManager.getUseSetting(hero, this, "ignite-chance", .2, false);
-        return getDescription().replace("$1", chance * 100 + "");
+        return getDescription().replace("$1", Util.stringDouble(chance * 100));
     }
 }
