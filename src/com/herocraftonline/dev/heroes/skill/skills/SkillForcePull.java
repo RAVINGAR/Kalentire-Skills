@@ -48,8 +48,8 @@ public class SkillForcePull extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
         
-        double xDir = playerLoc.getX() - targetLoc.getX();
-        double zDir = playerLoc.getZ() - targetLoc.getZ();
+        double xDir = (playerLoc.getX() - targetLoc.getX()) / 16;
+        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 16;
         Vector v = new Vector(xDir, 1, zDir);
         Heroes.log(Level.INFO, "Setting velocity to: " + v.toString());
         target.setVelocity(v);
