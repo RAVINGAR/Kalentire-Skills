@@ -29,7 +29,6 @@ public class SkillForcePush extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("vertical-power", 1);
         node.set("horizontal-power", 1);
         node.set(Setting.DAMAGE.node(), 0);
         return node;
@@ -44,20 +43,14 @@ public class SkillForcePush extends TargettedSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }
-        
+
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
-        
-        double distanceSquared = player.getLocation().distanceSquared(target.getLocation());
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 15, false);
-        double distAdjustment = 1.0 - distanceSquared / (maxDistance * maxDistance);
+
         double xDir = targetLoc.getX() - targetLoc.getX();
         double zDir = targetLoc.getZ() - playerLoc.getZ();
-        double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.0, false) * distAdjustment;
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false) * distAdjustment;
-        
-        Vector v = new Vector(xDir / magnitude * hPower, vPower, zDir / magnitude * hPower);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.0, false);
+        Vector v = new Vector(xDir, 0, zDir).normalize().multiply(hPower / 16).setY(.3);
         target.setVelocity(v);
 
         broadcastExecuteText(hero, target);
