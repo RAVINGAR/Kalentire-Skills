@@ -1,5 +1,7 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import java.util.logging.Level;
+
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -48,8 +50,9 @@ public class SkillForcePull extends TargettedSkill {
         
         double xDir = playerLoc.getX() - targetLoc.getX();
         double zDir = playerLoc.getZ() - targetLoc.getZ();
-        double yVel = Math.sqrt(xDir * xDir + zDir * zDir);
-        target.setVelocity(new Vector(xDir, yVel, zDir));
+        Vector v = new Vector(xDir, 1, zDir);
+        Heroes.log(Level.INFO, "Setting velocity to: " + v.toString());
+        target.setVelocity(v);
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
