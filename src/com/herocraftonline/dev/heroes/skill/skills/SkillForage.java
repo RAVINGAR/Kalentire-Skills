@@ -22,7 +22,7 @@ import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillForage extends ActiveSkill{
- 
+
     public SkillForage(Heroes plugin) {
         super(plugin, "Forage");
         setDescription("You forage for food.");
@@ -31,7 +31,7 @@ public class SkillForage extends ActiveSkill{
         setIdentifiers("skill forage");
         setTypes(SkillType.ITEM, SkillType.EARTH, SkillType.KNOWLEDGE);
     }
-    
+
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
@@ -65,7 +65,7 @@ public class SkillForage extends ActiveSkill{
         node.set("default.items", new ArrayList<String>());
         return node;
     }
-    
+
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
@@ -80,10 +80,11 @@ public class SkillForage extends ActiveSkill{
         default: 
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
         case TAIGA :
+        case TAIGA_HILLS :
         case TUNDRA :
-        case ICE_DESERT :
         case FROZEN_OCEAN :
         case FROZEN_RIVER :
+        case ICE_DESERT :
         case ICE_PLAINS :
         case ICE_MOUNTAINS :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
@@ -91,9 +92,11 @@ public class SkillForage extends ActiveSkill{
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "ice.max-found", 3, false);
             break;
         case FOREST :
+        case FOREST_HILLS :
         case RAINFOREST :
         case SEASONAL_FOREST :
         case EXTREME_HILLS :
+        case SMALL_MOUNTAINS :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "forest.items", Arrays.asList(new String[] {"APPLE", "MELON"})));
             chance = SkillConfigManager.getUseSetting(hero, this, "forest.chance", .01, false) * hero.getSkillLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "forest.max-found", 3, false);
@@ -111,21 +114,23 @@ public class SkillForage extends ActiveSkill{
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "plains.max-found", 3, false);
             break;
         case DESERT :
+        case DESERT_HILLS :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "desert.items", Arrays.asList(new String[] {"CACTUS"})));
             chance = SkillConfigManager.getUseSetting(hero, this, "desert.chance", .005, false) * hero.getSkillLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "desert.max-found", 2, false);
             break;
         case OCEAN :
         case RIVER :
+        case BEACH :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "water.items", Arrays.asList(new String[] {"RAW_FISH"})));
             chance = SkillConfigManager.getUseSetting(hero, this, "water.chance", .01, false) * hero.getSkillLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "water.max-found", 3, false);
             break;
         case MUSHROOM_SHORE :
         case MUSHROOM_ISLAND :
-        	materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "mushroom.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"})));
-        	chance = SkillConfigManager.getUseSetting(hero, this, "mushroom.chance", .01, false) * hero.getSkillLevel(this);
-        	maxFinds = SkillConfigManager.getUseSetting(hero, this, "mushroom.max-found", 2, false);
+            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "mushroom.items", Arrays.asList(new String[] {"RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"})));
+            chance = SkillConfigManager.getUseSetting(hero, this, "mushroom.chance", .01, false) * hero.getSkillLevel(this);
+            maxFinds = SkillConfigManager.getUseSetting(hero, this, "mushroom.max-found", 2, false);
         case HELL :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[] {"ROTTEN_FLESH"})));
             chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getSkillLevel(this);
@@ -137,7 +142,7 @@ public class SkillForage extends ActiveSkill{
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "sky.max-found", 3, false);
             break;
         }
-        
+
         List<Material> materials = new ArrayList<Material>();
         for (String name : materialNames) {
             try {
@@ -146,16 +151,16 @@ public class SkillForage extends ActiveSkill{
                 continue;
             }
         }
-        
+
         if (materials.isEmpty() || Util.rand.nextDouble() >= chance || maxFinds <= 0) {
             Messaging.send(player, "You found nothing while foraging.");
             return SkillResult.NORMAL;
         } 
-        
+
         int numItems = Util.rand.nextInt(maxFinds) + 1;
         for (int i = 0; i < numItems; i++) {
             ItemStack item = new ItemStack(materials.get(Util.rand.nextInt(materials.size())), 1);
-            
+
             Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(item);
             // Drop any leftovers we couldn't add to the players inventory
             if (!leftOvers.isEmpty()) {
