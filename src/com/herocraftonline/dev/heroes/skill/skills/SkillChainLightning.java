@@ -51,7 +51,7 @@ public class SkillChainLightning extends TargettedSkill {
         // Damage the first target
         target.getWorld().strikeLightningEffect(target.getLocation());
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
 
         // Try to bounce
         Set<Entity> previousTargets = new HashSet<Entity>();
@@ -131,7 +131,7 @@ public class SkillChainLightning extends TargettedSkill {
         public void remove(LivingEntity lEntity) {
             super.remove(lEntity);
             addSpellTarget(lEntity, applier);
-            damageEntity(lEntity, applier.getPlayer(), bounceDamage, DamageCause.ENTITY_ATTACK);
+            damageEntity(lEntity, applier.getPlayer(), bounceDamage, DamageCause.MAGIC);
             lEntity.getWorld().strikeLightningEffect(lEntity.getLocation());
         }
 
@@ -140,7 +140,7 @@ public class SkillChainLightning extends TargettedSkill {
             super.remove(hero);
             Player target = hero.getPlayer();
             addSpellTarget(target, applier);
-            damageEntity(target, applier.getPlayer(), bounceDamage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, applier.getPlayer(), bounceDamage, DamageCause.MAGIC);
             target.getWorld().strikeLightningEffect(target.getLocation());
         }
     }

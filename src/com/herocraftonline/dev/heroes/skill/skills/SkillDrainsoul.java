@@ -45,7 +45,7 @@ public class SkillDrainsoul extends TargettedSkill {
 			hero.syncHealth();
 		}
 		addSpellTarget(target, hero);
-		damageEntity(target, player, absorbAmount, DamageCause.ENTITY_ATTACK);
+		damageEntity(target, player, absorbAmount, DamageCause.MAGIC);
 
 		broadcastExecuteText(hero, target);
 		return SkillResult.NORMAL;

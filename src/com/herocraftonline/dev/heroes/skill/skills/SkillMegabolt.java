@@ -43,7 +43,7 @@ public class SkillMegabolt extends TargettedSkill {
         // Damage the first target
         addSpellTarget(target, hero);
         target.getWorld().strikeLightningEffect(target.getLocation());
-        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
 
         for (Entity entity : target.getNearbyEntities(range, range, range)) {
             if (entity instanceof LivingEntity && !entity.equals(player)) {
@@ -55,7 +55,7 @@ public class SkillMegabolt extends TargettedSkill {
                 
                 entity.getWorld().strikeLightningEffect(entity.getLocation());
                 addSpellTarget(entity, hero);
-                damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
+                damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
             }
         }
 

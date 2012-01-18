@@ -110,7 +110,7 @@ public class SkillReflect extends ActiveSkill {
             if (hero.hasEffect("Reflect")) {
                 int damage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "reflected-amount", 0.5, false));
                 plugin.getDamageManager().addSpellTarget(attacker, hero, skill);
-                skill.damageEntity(attacker, player, damage, DamageCause.ENTITY_ATTACK);
+                skill.damageEntity(attacker, player, damage, DamageCause.MAGIC);
             }
             Heroes.debug.stopTask("HeroesSkillListener");
         }

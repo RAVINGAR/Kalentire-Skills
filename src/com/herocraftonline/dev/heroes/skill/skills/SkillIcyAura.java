@@ -169,7 +169,7 @@ public class SkillIcyAura extends ActiveSkill {
                     }
 
                     addSpellTarget(lEntity, hero);
-                    skill.damageEntity(lEntity, player, tickDamage, DamageCause.ENTITY_ATTACK);
+                    skill.damageEntity(lEntity, player, tickDamage, DamageCause.MAGIC);
                     loc = lEntity.getLocation().clone();
                     loc.setY(loc.getY() - 1);
                     changeBlock(loc, hero);

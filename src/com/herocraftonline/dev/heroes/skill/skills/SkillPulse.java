@@ -51,7 +51,7 @@ public class SkillPulse extends ActiveSkill {
 
             int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

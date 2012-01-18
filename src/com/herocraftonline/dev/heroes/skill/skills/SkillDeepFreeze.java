@@ -65,14 +65,19 @@ public class SkillDeepFreeze extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        
+        //Deal the damage to the player
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
+        
+        // Add the effect to the entity
         FreezeEffect fEffect = new FreezeEffect(this, duration, hero);
-
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(fEffect);
         } else
             plugin.getEffectManager().addEntityEffect(target, fEffect);
 
-
+        
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -126,7 +131,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             super.remove(lEntity);
             int damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
             addSpellTarget(lEntity, applier);
-            damageEntity(lEntity, applier.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(lEntity, applier.getPlayer(), damage, DamageCause.MAGIC);
             broadcast(lEntity.getLocation(), shatterText, Messaging.getLivingEntityName(lEntity));
         }
         
@@ -135,7 +140,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             Player player = hero.getPlayer();
             int damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
             addSpellTarget(player, applier);
-            damageEntity(player, applier.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(player, applier.getPlayer(), damage, DamageCause.MAGIC);
             broadcast(player.getLocation(), shatterText, player.getDisplayName());
         }
         

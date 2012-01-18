@@ -39,7 +39,7 @@ public class SkillUnholyRitual extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
 
         addSpellTarget(target, hero);
-        damageEntity(target, player, target.getHealth(), DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, target.getHealth(), DamageCause.MAGIC);
         int mana = SkillConfigManager.getUseSetting(hero, this, "mana-regen", 20, false);
         
         //Fire the Mana regen event

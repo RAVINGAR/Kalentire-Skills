@@ -121,7 +121,7 @@ public class SkillBoltstorm extends ActiveSkill {
             target.getWorld().strikeLightningEffect(target.getLocation());
             
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
         }
     }
 
