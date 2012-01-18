@@ -46,8 +46,8 @@ public class SkillForcePull extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
         
-        double xDir = (playerLoc.getX() - targetLoc.getX()) / 16;
-        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 16;
+        double xDir = (playerLoc.getX() - targetLoc.getX()) / 12;
+        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 12;
         Vector v = new Vector(xDir, .3, zDir);
         target.setVelocity(v);
         broadcastExecuteText(hero, target);

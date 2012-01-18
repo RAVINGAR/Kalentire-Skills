@@ -63,8 +63,8 @@ public class SkillCharge extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
         
-        double xDir = (targetLoc.getX() - playerLoc.getX()) / 16;
-        double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 16;
+        double xDir = (targetLoc.getX() - playerLoc.getX()) / 12;
+        double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 12;
         Vector v = new Vector(xDir, .3, zDir);
         player.setVelocity(v);
 
