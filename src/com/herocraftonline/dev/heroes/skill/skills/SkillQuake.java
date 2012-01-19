@@ -1,14 +1,15 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
@@ -27,8 +28,7 @@ public class SkillQuake extends PassiveSkill {
         setArgumentRange(0, 0);
         setEffectTypes(EffectType.PHYSICAL, EffectType.BENEFICIAL);
         setTypes(SkillType.PHYSICAL);
-
-        registerEvent(Type.ENTITY_DAMAGE, new SkillDamageListener(this), Priority.Monitor);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class SkillQuake extends PassiveSkill {
         return node;
     }
 
-    public class SkillDamageListener extends EntityListener {
+    public class SkillDamageListener implements Listener {
 
         private final Skill skill;
         
@@ -47,10 +47,9 @@ public class SkillQuake extends PassiveSkill {
             this.skill = skill;
         }
         
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.getCause() != DamageCause.FALL || !(event.getEntity() instanceof Player) || event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -58,7 +57,6 @@ public class SkillQuake extends PassiveSkill {
             Hero hero = plugin.getHeroManager().getHero(player);
 
             if (!hero.hasEffect(getName())) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -76,8 +74,6 @@ public class SkillQuake extends PassiveSkill {
                 addSpellTarget(target, hero);
                 skill.damageEntity(target, player, (int) damage, DamageCause.ENTITY_ATTACK);
             }
-
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

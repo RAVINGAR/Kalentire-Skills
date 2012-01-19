@@ -1,11 +1,15 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -39,7 +43,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         setTypes(SkillType.ICE, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.DAMAGING, SkillType.HARMFUL);
 
         registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(), Priority.Monitor);
-        registerEvent(Type.ENTITY_COMBUST, new SkillEntityListener(), Priority.Monitor);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     @Override
@@ -189,13 +193,11 @@ public class SkillDeepFreeze extends TargettedSkill {
         }
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener implements Listener {
 
-        @Override
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityCombust(EntityCombustEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -215,7 +217,6 @@ public class SkillDeepFreeze extends TargettedSkill {
                     plugin.getEffectManager().manualRemoveEntityEffect(lEntity, fEffect);
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

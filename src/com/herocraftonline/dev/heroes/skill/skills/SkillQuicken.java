@@ -1,12 +1,13 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -29,8 +30,7 @@ public class SkillQuicken extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill quicken", "skill quick");
         setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE);
-        
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(), Priority.Monitor);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     @Override
@@ -82,16 +82,18 @@ public class SkillQuicken extends ActiveSkill {
         return SkillResult.NORMAL;
     }
     
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener implements Listener {
 
-        @Override
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof Player))
+            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
                 return;
+            }
             
             Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
-            if (hero.hasEffect(getName()))
+            if (hero.hasEffect(getName())) {
                 hero.removeEffect(hero.getEffect(getName()));
+            }
         }
     }
     

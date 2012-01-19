@@ -6,16 +6,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
@@ -43,8 +44,7 @@ public class SkillIcyAura extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill icyaura");
         setTypes(SkillType.BUFF, SkillType.SILENCABLE, SkillType.ICE);
-
-        registerEvent(Type.BLOCK_BREAK, new IcyAuraBlockListener(), Priority.Highest);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 
     @Override
@@ -93,13 +93,11 @@ public class SkillIcyAura extends ActiveSkill {
         allowedBlocks.add(Material.STATIONARY_WATER);
     }
 
-    public class IcyAuraBlockListener extends BlockListener {
+    public class SkillBlockListener implements Listener {
 
-        @Override
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onBlockBreak(BlockBreakEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -110,7 +108,6 @@ public class SkillIcyAura extends ActiveSkill {
                         event.setCancelled(true);
                     }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

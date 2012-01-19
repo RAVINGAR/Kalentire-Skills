@@ -1,13 +1,14 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -36,8 +37,7 @@ public class SkillSoulFire extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill soulfire");
         setTypes(SkillType.FIRE, SkillType.BUFF, SkillType.SILENCABLE);
-
-        registerEvent(Type.ENTITY_DAMAGE, new SkillDamageListener(this), Priority.Monitor);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class SkillSoulFire extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SkillDamageListener extends EntityListener {
+    public class SkillDamageListener implements Listener {
 
         private final Skill skill;
 
@@ -76,30 +76,25 @@ public class SkillSoulFire extends ActiveSkill {
             this.skill = skill;
         }
 
-        @Override
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent) || event.getDamage() == 0) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             if (!(subEvent.getDamager() instanceof Player)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
             Player player = (Player) subEvent.getDamager();
             Hero hero = plugin.getHeroManager().getHero(player);
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(player.getItemInHand().getType().name()) || !hero.hasEffect("SoulFire")) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
             double chance = SkillConfigManager.getUseSetting(hero, skill, "ignite-chance", .2, false);
             if (Util.rand.nextDouble() >= chance) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -107,11 +102,11 @@ public class SkillSoulFire extends ActiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
             target.setFireTicks(fireTicks);
 
-            if (target instanceof Player)
+            if (target instanceof Player) {
                 plugin.getHeroManager().getHero((Player) target).addEffect(new CombustEffect(skill, player));
-            else
+            } else {
                 plugin.getEffectManager().addEntityEffect(target, new CombustEffect(skill, player));
-            
+            }
 
             String name = null;
             if (event.getEntity() instanceof Player)
@@ -121,7 +116,6 @@ public class SkillSoulFire extends ActiveSkill {
             
 
             broadcast(player.getLocation(), igniteText, player.getDisplayName(), name);
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

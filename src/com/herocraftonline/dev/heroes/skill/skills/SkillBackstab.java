@@ -29,7 +29,7 @@ public class SkillBackstab extends PassiveSkill {
         setArgumentRange(0, 0);
         setTypes(SkillType.PHYSICAL, SkillType.BUFF);
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
-        
+
         registerEvent(Type.CUSTOM_EVENT, new SkillHeroesListener(this), Priority.Normal);
     }
 

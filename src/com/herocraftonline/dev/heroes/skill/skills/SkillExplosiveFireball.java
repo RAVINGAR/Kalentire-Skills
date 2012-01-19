@@ -5,6 +5,7 @@ import net.minecraft.server.EntityFireball;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.Vec3D;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,11 +15,11 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -40,8 +41,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill explosivefireball");
         setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
-
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Low);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener implements Listener {
 
         private final Skill skill;
 
@@ -88,11 +88,9 @@ public class SkillExplosiveFireball extends ActiveSkill {
             this.skill = skill;
         }
 
-        @Override
+        @EventHandler(priority = EventPriority.LOW)
         public void onEntityDamage(EntityDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -118,7 +116,6 @@ public class SkillExplosiveFireball extends ActiveSkill {
                     }
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

@@ -1,11 +1,15 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -40,7 +44,7 @@ public class SkillMortalWound extends TargettedSkill {
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.DEBUFF, SkillType.HARMFUL);
 
         registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(), Priority.Highest);
-        registerEvent(Type.ENTITY_REGAIN_HEALTH, new SkillEntityListener(), Priority.Highest);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     @Override
@@ -127,13 +131,11 @@ public class SkillMortalWound extends TargettedSkill {
         }
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener implements Listener {
 
-        @Override
+        @EventHandler(priority = EventPriority.LOWEST)
         public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -142,7 +144,6 @@ public class SkillMortalWound extends TargettedSkill {
                 MortalWound mEffect = (MortalWound) hero.getEffect("MortalWound");
                 event.setAmount((int) (event.getAmount() * mEffect.healMultiplier));
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

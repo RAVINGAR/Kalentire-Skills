@@ -1,12 +1,13 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.effects.EffectType;
@@ -23,8 +24,7 @@ public class SkillTumble extends PassiveSkill {
         setDescription("You are able to fall $1 blocks without taking damage.");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.PHYSICAL, SkillType.BUFF);
-        
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Low);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
     
     @Override
@@ -35,7 +35,7 @@ public class SkillTumble extends PassiveSkill {
         return node;
     }
     
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener implements Listener {
 
     	private Skill skill;
     	
@@ -43,27 +43,23 @@ public class SkillTumble extends PassiveSkill {
     		this.skill = skill;
     	}
     	
-        @Override
+    	@EventHandler(priority = EventPriority.LOW)
         public void onEntityDamage(EntityDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
             if (!hero.hasEffect("Tumble")) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             int distance = (int) (SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false) + (hero.getSkillLevel(skill) * SkillConfigManager.getUseSetting(hero, skill, "distance-per-level", .5, false)));
             int fallDistance = (event.getDamage() - 3) * 3;
             fallDistance -= distance;
-            if (fallDistance <= 0)
+            if (fallDistance <= 0) {
                 event.setCancelled(true);
-            else 
+            } else {
                 event.setDamage(3 + (fallDistance / 3));
-            
-            Heroes.debug.stopTask("HeroesSkillListener");
+            }
         }
     }
 

@@ -38,9 +38,7 @@ public class SkillFireballX extends ActiveSkill {
         setUsage("/skill fireballx");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireballx");
-
         setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
-
         registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Normal);
     }
 
