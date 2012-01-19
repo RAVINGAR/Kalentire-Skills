@@ -99,9 +99,10 @@ public class SkillFireArmor extends PassiveSkill {
             String name = null;
             if (subEvent.getDamager() instanceof Player) {
                 name = ((Player) subEvent.getDamager()).getName();
-            } else
-                Messaging.getLivingEntityName((LivingEntity) subEvent.getDamager());
-
+            } else {
+                name = Messaging.getLivingEntityName((LivingEntity) subEvent.getDamager());
+            }
+            
             broadcast(player.getLocation(), igniteText, player.getDisplayName(), name);
             Heroes.debug.stopTask("HeroesSkillListener");
         }
