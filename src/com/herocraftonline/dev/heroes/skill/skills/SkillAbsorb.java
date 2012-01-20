@@ -1,13 +1,14 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 import com.herocraftonline.dev.heroes.Heroes;
-import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillDamageEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
@@ -33,8 +34,7 @@ public class SkillAbsorb extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill absorb");
         setTypes(SkillType.SILENCABLE, SkillType.BUFF, SkillType.MANA);
-
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(this), Priority.Highest);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
     @Override
@@ -84,33 +84,27 @@ public class SkillAbsorb extends ActiveSkill {
 
     }
 
-    public class SkillHeroListener extends HeroesEventListener {
+    public class SkillHeroListener implements Listener {
 
         private final Skill skill;
         public SkillHeroListener(Skill skill) {
             this.skill = skill;
         }
         
-        @Override
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onSkillDamage(SkillDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
 
-        @Override
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
         
         private int getAdjustment(Player player, int damage) {

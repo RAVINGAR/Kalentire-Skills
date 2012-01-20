@@ -7,15 +7,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustEvent;
-import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
-import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillDamageEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.effects.EffectType;
@@ -41,8 +37,6 @@ public class SkillDeepFreeze extends TargettedSkill {
         setArgumentRange(0, 1);
         setIdentifiers("skill deepfreeze", "skill dfreeze");
         setTypes(SkillType.ICE, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.DAMAGING, SkillType.HARMFUL);
-
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(), Priority.Monitor);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
@@ -218,15 +212,10 @@ public class SkillDeepFreeze extends TargettedSkill {
                 }
             }
         }
-    }
-
-    public class SkillHeroListener extends HeroesEventListener {
-
-        @Override
+        
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onSkillDamage(SkillDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || event.getDamage() == 0 || !event.getSkill().isType(SkillType.FIRE)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -246,7 +235,6 @@ public class SkillDeepFreeze extends TargettedSkill {
                     plugin.getEffectManager().manualRemoveEntityEffect(lEntity, fEffect);
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

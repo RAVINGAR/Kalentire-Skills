@@ -1,14 +1,15 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
-import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
@@ -31,8 +32,7 @@ public class SkillManaFreeze extends TargettedSkill {
         setArgumentRange(0, 1);
         setIdentifiers("skill manafreeze", "skill mfreeze");
         setTypes(SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.MANA, SkillType.HARMFUL);
-
-        registerEvent(Type.CUSTOM_EVENT, new HeroListener(), Priority.Highest);
+        Bukkit.getServer().getPluginManager().registerEvents(new HeroListener(), plugin);
     }
 
     @Override
@@ -64,20 +64,17 @@ public class SkillManaFreeze extends TargettedSkill {
 
     }
 
-    public class HeroListener extends HeroesEventListener {
+    public class HeroListener implements Listener {
 
-        @Override
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onHeroRegainMana(HeroRegainManaEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
             if (event.getHero().hasEffect("ManaFreeze")) {
                 event.setCancelled(true);
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

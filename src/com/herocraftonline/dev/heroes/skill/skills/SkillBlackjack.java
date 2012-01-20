@@ -1,13 +1,14 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -34,8 +35,7 @@ public class SkillBlackjack extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill blackjack", "skill bjack");
         setTypes(SkillType.PHYSICAL, SkillType.BUFF);
-
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Monitor);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class SkillBlackjack extends ActiveSkill {
 
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener implements Listener {
 
         private final Skill skill;
 
@@ -95,23 +95,19 @@ public class SkillBlackjack extends ActiveSkill {
             this.skill = skill;
         }
 
-        @Override
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             if (event instanceof EntityDamageByEntityEvent) {
                 EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
                 if (subEvent.getCause() != DamageCause.ENTITY_ATTACK || !(subEvent.getDamager() instanceof Player)) {
-                    Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
                 Hero attackingHero = plugin.getHeroManager().getHero((Player) subEvent.getDamager());
                 if (!attackingHero.hasEffect("Blackjack")) {
-                    Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
                 Hero defendingHero = plugin.getHeroManager().getHero((Player) event.getEntity());
@@ -122,7 +118,6 @@ public class SkillBlackjack extends ActiveSkill {
                     defendingHero.addEffect(new StunEffect(skill, duration));
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

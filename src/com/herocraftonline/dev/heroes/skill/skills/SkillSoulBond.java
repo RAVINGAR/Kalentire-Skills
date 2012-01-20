@@ -1,16 +1,17 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
-import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillDamageEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
@@ -36,8 +37,7 @@ public class SkillSoulBond extends TargettedSkill {
         setArgumentRange(0, 1);
         setIdentifiers("skill soulbond", "skill sbond");
         setTypes(SkillType.SILENCABLE, SkillType.LIGHT, SkillType.BUFF);
-
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroesListener(this), Priority.Highest);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroesListener(this), plugin);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class SkillSoulBond extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SkillHeroesListener extends HeroesEventListener {
+    public class SkillHeroesListener implements Listener {
 
         private final Skill skill;
         
@@ -92,11 +92,9 @@ public class SkillSoulBond extends TargettedSkill {
             this.skill = skill;
         }
         
-        @Override
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onSkillDamage(SkillDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             LivingEntity target = (LivingEntity) event.getEntity();
@@ -113,7 +111,6 @@ public class SkillSoulBond extends TargettedSkill {
                     int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                     int radiusSquared = radius * radius;
                     if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
-                        Heroes.debug.stopTask("HeroesSkillListener");
                         return;
                     }
 
@@ -124,7 +121,7 @@ public class SkillSoulBond extends TargettedSkill {
                 }
             } else {
                 if (!plugin.getEffectManager().entityHasEffect(target, "SoulBonded")) {
-                    Heroes.debug.stopTask("HeroesSkillListener");
+  
                     return;
                 }
 
@@ -135,7 +132,6 @@ public class SkillSoulBond extends TargettedSkill {
                 int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                 int radiusSquared = radius * radius;
                 if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
-                    Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
@@ -147,11 +143,9 @@ public class SkillSoulBond extends TargettedSkill {
             Heroes.debug.stopTask("HeroesSkillListener");
         }
 
-        @Override
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             
@@ -175,7 +169,6 @@ public class SkillSoulBond extends TargettedSkill {
                     int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                     int radiusSquared = radius * radius;
                     if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
-                        Heroes.debug.stopTask("HeroesSkillListener");
                         return;
                     }
 
@@ -186,7 +179,6 @@ public class SkillSoulBond extends TargettedSkill {
                 }
             } else {
                 if (!plugin.getEffectManager().entityHasEffect(target, "SoulBonded")) {
-                    Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
@@ -197,7 +189,6 @@ public class SkillSoulBond extends TargettedSkill {
                 int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
                 int radiusSquared = radius * radius;
                 if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
-                    Heroes.debug.stopTask("HeroesSkillListener");
                     return;
                 }
 
@@ -206,7 +197,6 @@ public class SkillSoulBond extends TargettedSkill {
                 damageEntity(target, damager, splitDamage, DamageCause.MAGIC);
                 event.setDamage(event.getDamage() - splitDamage);
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

@@ -1,12 +1,12 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 import com.herocraftonline.dev.heroes.Heroes;
-import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillDamageEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
@@ -35,8 +35,7 @@ public class SkillBladegrasp extends ActiveSkill {
 		setArgumentRange(0, 0);
 		setIdentifiers("skill bladegrasp", "skill bgrasp");
 		setTypes(SkillType.PHYSICAL, SkillType.BUFF);
-
-		registerEvent(Type.CUSTOM_EVENT, new SkillEntityListener(this), Priority.Normal);
+		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 	}
 
 	@Override
@@ -93,7 +92,7 @@ public class SkillBladegrasp extends ActiveSkill {
 
 	}
 
-	public class SkillEntityListener extends HeroesEventListener {
+	public class SkillEntityListener implements Listener {
 
 		private Skill skill;
 		
@@ -101,12 +100,10 @@ public class SkillBladegrasp extends ActiveSkill {
 			this.skill = skill;
 		}
 		
-		@Override
+		@EventHandler()
 		public void onWeaponDamage(WeaponDamageEvent event) {
-			Heroes.debug.startTask("HeroesSkillListener");
 			// Ignore cancelled damage events & 0 damage events for Spam Control
 			if (event.getDamage() == 0 || event.isCancelled() || !(event.getEntity() instanceof Player)) {
-				Heroes.debug.stopTask("HeroesSkillListener");
 				return;
 			}
 
@@ -124,16 +121,12 @@ public class SkillBladegrasp extends ActiveSkill {
 					Messaging.send((Player) event.getDamager(), message);
 				}
 			}
-
-			Heroes.debug.stopTask("HeroesSkillListener");
 		}
 
-		@Override
+		@EventHandler()
 		public void onSkillDamage(SkillDamageEvent event) {
-			Heroes.debug.startTask("HeroesSkillListener");
 			// Ignore cancelled damage events & 0 damage events for Spam Control
 			if (event.getDamage() == 0 || event.isCancelled() || !event.getSkill().isType(SkillType.PHYSICAL) || !(event.getEntity() instanceof Player)) {
-				Heroes.debug.stopTask("HeroesSkillListener");
 				return;
 			}
 			Player player = (Player) event.getEntity();
@@ -149,7 +142,6 @@ public class SkillBladegrasp extends ActiveSkill {
 				Messaging.send(event.getDamager().getPlayer(), message);
 				
 			}
-			Heroes.debug.stopTask("HeroesSkillListener");
 		}
 	}
 

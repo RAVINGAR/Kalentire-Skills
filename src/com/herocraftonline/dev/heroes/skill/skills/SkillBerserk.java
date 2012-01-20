@@ -1,12 +1,12 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 import com.herocraftonline.dev.heroes.Heroes;
-import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillDamageEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.api.WeaponDamageEvent;
@@ -31,8 +31,7 @@ public class SkillBerserk extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill berserk");
         setTypes(SkillType.BUFF, SkillType.PHYSICAL);
-
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(this), Priority.Normal);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
     @Override
@@ -77,7 +76,7 @@ public class SkillBerserk extends ActiveSkill {
         }
     }
 
-    public class SkillHeroListener extends HeroesEventListener {
+    public class SkillHeroListener implements Listener {
 
     	private Skill skill;
     	
@@ -85,11 +84,9 @@ public class SkillBerserk extends ActiveSkill {
     		this.skill = skill;
     	}
     	
-        @Override
+    	@EventHandler()
         public void onSkillDamage(SkillDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             
@@ -108,14 +105,11 @@ public class SkillBerserk extends ActiveSkill {
                     event.setDamage(newDamage);
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
 
-        @Override
+    	@EventHandler()
         public void onWeaponDamage(WeaponDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -134,7 +128,6 @@ public class SkillBerserk extends ActiveSkill {
                     event.setDamage(newDamage);
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
 

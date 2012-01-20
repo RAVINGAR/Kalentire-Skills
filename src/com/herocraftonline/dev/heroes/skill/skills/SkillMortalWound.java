@@ -7,16 +7,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainHealthEvent;
-import com.herocraftonline.dev.heroes.api.HeroesEventListener;
 import com.herocraftonline.dev.heroes.api.SkillResult;
 import com.herocraftonline.dev.heroes.classes.HeroClass;
 import com.herocraftonline.dev.heroes.effects.EffectType;
@@ -42,8 +38,6 @@ public class SkillMortalWound extends TargettedSkill {
         setArgumentRange(0, 1);
         setIdentifiers("skill mortalwound", "skill mwound");
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.DEBUFF, SkillType.HARMFUL);
-
-        registerEvent(Type.CUSTOM_EVENT, new SkillHeroListener(), Priority.Highest);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
@@ -145,15 +139,10 @@ public class SkillMortalWound extends TargettedSkill {
                 event.setAmount((int) (event.getAmount() * mEffect.healMultiplier));
             }
         }
-    }
-
-    public class SkillHeroListener extends HeroesEventListener {
-
-        @Override
+        
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onHeroRegainHealth(HeroRegainHealthEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled()) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -161,7 +150,6 @@ public class SkillMortalWound extends TargettedSkill {
                 MortalWound mEffect = (MortalWound) event.getHero().getEffect("MortalWound");
                 event.setAmount((int) (event.getAmount() * mEffect.healMultiplier));
             }
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
     

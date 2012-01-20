@@ -4,6 +4,7 @@ import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntitySmallFireball;
 import net.minecraft.server.Vec3D;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,11 +14,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -39,7 +39,7 @@ public class SkillFireballX extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill fireballx");
         setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
-        registerEvent(Type.ENTITY_DAMAGE, new SkillEntityListener(this), Priority.Normal);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class SkillFireballX extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SkillEntityListener extends EntityListener {
+    public class SkillEntityListener implements Listener {
 
         private final Skill skill;
 
@@ -84,18 +84,15 @@ public class SkillFireballX extends ActiveSkill {
             this.skill = skill;
         }
 
-        @Override
+        @EventHandler()
         public void onEntityDamage(EntityDamageEvent event) {
-            Heroes.debug.startTask("HeroesSkillListener");
             if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
             
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
             if (!(projectile instanceof SmallFireball)) {
-                Heroes.debug.stopTask("HeroesSkillListener");
                 return;
             }
 
@@ -105,7 +102,6 @@ public class SkillFireballX extends ActiveSkill {
                 Hero hero = plugin.getHeroManager().getHero((Player) dmger);
 
                 if (!damageCheck((Player) dmger, entity)) {
-                    Heroes.debug.stopTask("HeroesSkillListener");
                     event.setCancelled(true);
                     return;
                 }
@@ -114,15 +110,14 @@ public class SkillFireballX extends ActiveSkill {
                 entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
                 if (entity instanceof Player) {
                     plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, (Player) dmger));
-                } else
+                } else {
                     plugin.getEffectManager().addEntityEffect(entity, new CombustEffect(skill, (Player) dmger));
+                }
                 
                 addSpellTarget(entity, hero);
                 int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
                 event.setDamage(damage);
             }
-
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
     }
     
