@@ -9,7 +9,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
-import com.herocraftonline.dev.heroes.classes.HeroClass;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
@@ -49,8 +48,7 @@ public class SkillCleave extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        HeroClass heroClass = hero.getHeroClass();
-        int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
+        int damage = plugin.getDamageManager().getItemDamage(item, player);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 3, false);
