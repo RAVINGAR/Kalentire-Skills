@@ -42,13 +42,13 @@ public class SkillForcePull extends TargettedSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }        
-        
+
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
-        
-        double xDir = (playerLoc.getX() - targetLoc.getX()) / 12;
-        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 12;
-        Vector v = new Vector(xDir, .3, zDir);
+
+        double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
+        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
+        Vector v = new Vector(xDir, .5, zDir);
         target.setVelocity(v);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
