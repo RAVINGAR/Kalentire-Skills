@@ -9,7 +9,6 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
-import com.herocraftonline.dev.heroes.classes.HeroClass;
 import com.herocraftonline.dev.heroes.effects.Effect;
 import com.herocraftonline.dev.heroes.effects.EffectType;
 import com.herocraftonline.dev.heroes.effects.ExpirableEffect;
@@ -66,10 +65,9 @@ public class SkillImpale extends TargettedSkill {
             Messaging.send(player, "You can't use impale with that weapon!");
             return SkillResult.FAIL;
         }
-
-        HeroClass heroClass = hero.getHeroClass();
+        
         int force = SkillConfigManager.getUseSetting(hero, this, "force", 3, false);
-        int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
+        int damage = plugin.getDamageManager().getItemDamage(item, player);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         //Do a little knockup
         target.setVelocity(target.getVelocity().add(new Vector(0, force, 0)));
