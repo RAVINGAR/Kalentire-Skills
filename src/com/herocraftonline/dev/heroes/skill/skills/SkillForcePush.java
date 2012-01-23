@@ -50,7 +50,7 @@ public class SkillForcePush extends TargettedSkill {
         double xDir = targetLoc.getX() - playerLoc.getX();
         double zDir = targetLoc.getZ() - playerLoc.getZ();
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 6.0, false);
-        Vector v = new Vector(xDir, 0, zDir).normalize().multiply(hPower / 3).setY(.3);
+        Vector v = new Vector(xDir, 0, zDir).normalize().multiply(hPower / 3).setY(.5);
         target.setVelocity(v);
 
         broadcastExecuteText(hero, target);
