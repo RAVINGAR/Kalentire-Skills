@@ -29,7 +29,7 @@ public class SkillForcePush extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("horizontal-power", 1);
+        node.set("power", 6);
         node.set(Setting.DAMAGE.node(), 0);
         return node;
     }
@@ -47,10 +47,10 @@ public class SkillForcePush extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        double xDir = targetLoc.getX() - targetLoc.getX();
+        double xDir = targetLoc.getX() - playerLoc.getX();
         double zDir = targetLoc.getZ() - playerLoc.getZ();
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.0, false);
-        Vector v = new Vector(xDir, 0, zDir).normalize().multiply(hPower / 12).setY(.3);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 6.0, false);
+        Vector v = new Vector(xDir, 0, zDir).normalize().multiply(hPower / 3).setY(.3);
         target.setVelocity(v);
 
         broadcastExecuteText(hero, target);
