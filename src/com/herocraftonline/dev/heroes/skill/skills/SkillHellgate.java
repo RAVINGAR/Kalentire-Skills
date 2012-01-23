@@ -51,6 +51,7 @@ public class SkillHellgate extends ActiveSkill {
         if (hero.hasEffect("Hellgate")) {
             teleportLocation = ((HellgateEffect) hero.getEffect("Hellgate")).getLocation();
             player.teleport(teleportLocation);
+            world = teleportLocation.getWorld();
             hero.removeEffect(hero.getEffect("Hellgate"));
         } else if (player.getWorld().getEnvironment() == Environment.NETHER) {
             // If the player doesn't have the Hellgate effect and is on nether - return them to spawn on the default
