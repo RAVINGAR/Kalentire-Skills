@@ -116,7 +116,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                     // Split the damage
                     int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                    skill.damageEntity(applier, event.getDamager().getPlayer(), splitDamage, DamageCause.MAGIC);
+                    Skill.damageEntity(applier, event.getDamager().getPlayer(), splitDamage, DamageCause.MAGIC);
                     event.setDamage(event.getDamage() - splitDamage);
                 }
             } else {
@@ -137,7 +137,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                 // Split the damage
                 int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                skill.damageEntity(applier, event.getDamager().getPlayer(), splitDamage, DamageCause.MAGIC);
+                Skill.damageEntity(applier, event.getDamager().getPlayer(), splitDamage, DamageCause.MAGIC);
                 event.setDamage(event.getDamage() - splitDamage);
             }
             Heroes.debug.stopTask("HeroesSkillListener");
@@ -174,7 +174,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                     // Split the damage
                     int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                    skill.damageEntity(applier, damager, splitDamage, DamageCause.MAGIC);
+                    Skill.damageEntity(applier, damager, splitDamage, DamageCause.MAGIC);
                     event.setDamage(event.getDamage() - splitDamage);
                 }
             } else {

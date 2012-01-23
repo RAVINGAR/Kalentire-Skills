@@ -142,7 +142,7 @@ public class SkillBlight extends TargettedSkill {
                 }
 
                 addSpellTarget(target, applyHero);
-                skill.damageEntity((LivingEntity) target, applier.getPlayer(), tickDamage, DamageCause.MAGIC);
+                Skill.damageEntity((LivingEntity) target, applier.getPlayer(), tickDamage, DamageCause.MAGIC);
             }
         }
     }

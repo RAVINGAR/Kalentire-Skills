@@ -72,7 +72,7 @@ public class SkillQuake extends PassiveSkill {
                     continue;
                 }
                 addSpellTarget(target, hero);
-                skill.damageEntity(target, player, (int) damage, DamageCause.ENTITY_ATTACK);
+                Skill.damageEntity(target, player, (int) damage, DamageCause.ENTITY_ATTACK);
             }
         }
     }

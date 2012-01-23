@@ -26,6 +26,7 @@ import com.herocraftonline.dev.heroes.effects.PeriodicExpirableEffect;
 import com.herocraftonline.dev.heroes.effects.common.SlowEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
+import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
@@ -166,7 +167,7 @@ public class SkillIcyAura extends ActiveSkill {
                     }
 
                     addSpellTarget(lEntity, hero);
-                    skill.damageEntity(lEntity, player, tickDamage, DamageCause.MAGIC);
+                    Skill.damageEntity(lEntity, player, tickDamage, DamageCause.MAGIC);
                     loc = lEntity.getLocation().clone();
                     loc.setY(loc.getY() - 1);
                     changeBlock(loc, hero);
