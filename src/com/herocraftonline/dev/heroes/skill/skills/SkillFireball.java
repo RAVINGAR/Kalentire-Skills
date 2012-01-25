@@ -84,8 +84,9 @@ public class SkillFireball extends ActiveSkill {
                 entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
                 if (entity instanceof Player) {
                     plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, (Player) dmger));
-                } else
+                } else {
                     plugin.getEffectManager().addEntityEffect(entity, new CombustEffect(skill, (Player) dmger));
+                }
 
                 addSpellTarget(entity, hero);
                 int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);

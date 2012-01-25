@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.SkillResult;
+import com.herocraftonline.dev.heroes.effects.common.CombustEffect;
 import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
@@ -47,19 +48,26 @@ public class SkillBlaze extends ActiveSkill {
                 continue;
             }
             LivingEntity lEntity = (LivingEntity) entity;
-            
-            if (!damageCheck(player, lEntity))
+
+            if (!damageCheck(player, lEntity)) {
                 continue;
-            
+            }
+
             damaged = true;
             lEntity.setFireTicks(fireTicks);
+
+            if (lEntity instanceof Player) {
+                plugin.getHeroManager().getHero((Player) lEntity).addEffect(new CombustEffect(this, player));
+            } else {
+                plugin.getEffectManager().addEntityEffect(lEntity, new CombustEffect(this, player));
+            }
         }
-        
+
         if (!damaged) {
             Messaging.send(player, "No targets in range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        
+
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
