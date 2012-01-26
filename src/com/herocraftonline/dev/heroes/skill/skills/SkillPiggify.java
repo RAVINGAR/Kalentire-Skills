@@ -60,8 +60,9 @@ public class SkillPiggify extends TargettedSkill {
         PigEffect pEffect = new PigEffect(this, duration, (Creature) creature);
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(pEffect);
-        } else
+        } else {
             plugin.getEffectManager().addEntityEffect(target, pEffect);
+        }
         
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
