@@ -36,21 +36,19 @@ public class SkillKick extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        if (!(target instanceof Player)) {
-        	return SkillResult.INVALID_TARGET;
-        }
-
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
         if (!damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK)) {
             return SkillResult.INVALID_TARGET;
         }
-        SilenceEffect sEffect = new SilenceEffect(this, duration);
-        plugin.getHeroManager().getHero((Player) target).addEffect(sEffect);
+        if (target instanceof Player) {
+            SilenceEffect sEffect = new SilenceEffect(this, duration);
+            plugin.getHeroManager().getHero((Player) target).addEffect(sEffect);
+        }
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
-    
+
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
