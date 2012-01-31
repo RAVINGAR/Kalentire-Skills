@@ -72,9 +72,9 @@ public class SkillDeepFreeze extends TargettedSkill {
         FreezeEffect fEffect = new FreezeEffect(this, duration, hero);
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(fEffect);
-        } else
+        } else {
             plugin.getEffectManager().addEntityEffect(target, fEffect);
-
+        }
         
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
