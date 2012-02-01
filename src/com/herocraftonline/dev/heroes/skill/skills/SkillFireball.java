@@ -2,7 +2,6 @@ package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -81,7 +80,7 @@ public class SkillFireball extends ActiveSkill {
                     return;
                 }
 
-                // Damage the player and ignite them.
+                // Ignite the player
                 entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
                 if (entity instanceof Player) {
                     plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, (Player) dmger));
@@ -89,11 +88,11 @@ public class SkillFireball extends ActiveSkill {
                     plugin.getEffectManager().addEntityEffect(entity, new CombustEffect(skill, (Player) dmger));
                 }
 
+                // Damage the player
                 addSpellTarget(entity, hero);
-                //Reset no damage ticks cause it's a spell
-                ((CraftLivingEntity) entity).setNoDamageTicks(0);
                 int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
-                event.setDamage(damage);
+                damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                event.setCancelled(true);
             }
         }
     }
