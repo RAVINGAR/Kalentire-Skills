@@ -19,11 +19,11 @@ import org.bukkit.entity.CreatureType;
 public class SkillSummonChicken extends ActiveSkill {
 
     public SkillSummonChicken(Heroes plugin) {
-        super(plugin, "Pig");
+        super(plugin, "Chicken");
         setDescription("100% chance to spawn 1 chicken, $1% for 2, and $2% for 3.");
         setUsage("/skill chicken");
         setArgumentRange(0, 0);
-        setIdentifiers("skill summonpig", "skill chicken");
+        setIdentifiers("skill summonchicken", "skill chicken");
         setTypes(SkillType.SUMMON, SkillType.SILENCABLE, SkillType.EARTH);
     }
 

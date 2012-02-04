@@ -21,11 +21,11 @@ import org.bukkit.entity.CreatureType;
 public class SkillSummonSheep extends ActiveSkill {
 
     public SkillSummonSheep(Heroes plugin) {
-        super(plugin, "Pig");
+        super(plugin, "Sheep");
         setDescription("100% chance to spawn 1 sheep, $1% for 2, and $2% for 3.");
         setUsage("/skill sheep");
         setArgumentRange(0, 0);
-        setIdentifiers("skill summonpig", "skill sheep");
+        setIdentifiers("skill summonsheep", "skill sheep");
         setTypes(SkillType.SUMMON, SkillType.SILENCABLE, SkillType.EARTH);
     }
 
