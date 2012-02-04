@@ -19,7 +19,7 @@ public class SkillPort extends ActiveSkill {
 
     public SkillPort(Heroes plugin) {
         super(plugin, "Port");
-        setDescription("You teleport yourself and nearby party members to the set location!");
+        setDescription("You teleport yourself and party members within $1 blocks to the set location!");
         setUsage("/skill port <location>");
         setArgumentRange(1, 1);
         setIdentifiers("skill port");
@@ -60,8 +60,8 @@ public class SkillPort extends ActiveSkill {
             if (hero.getSkillLevel(this) < levelRequirement) {
                 return new SkillResult(ResultType.LOW_LEVEL, true, levelRequirement);
             }
-
-            int range = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false), 2);
+            int radiusInc = (int) SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+            int range = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false) + radiusInc, 2);
             Location loc = new Location(world, Double.parseDouble(splitArg[1]), Double.parseDouble(splitArg[2]), Double.parseDouble(splitArg[3]));
             broadcastExecuteText(hero);
             if (!hero.hasParty()) {
@@ -82,12 +82,15 @@ public class SkillPort extends ActiveSkill {
             }
 
             return SkillResult.NORMAL;
-        } else
+        } else {
             return SkillResult.FAIL;
+        }
     }
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false);
+        radius += (int) SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        return getDescription().replace("$1", radius + "");
     }
 }
