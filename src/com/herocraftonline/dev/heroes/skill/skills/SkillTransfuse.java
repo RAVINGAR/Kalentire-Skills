@@ -17,7 +17,7 @@ public class SkillTransfuse extends ActiveSkill {
 
     public SkillTransfuse(Heroes plugin) {
         super(plugin, "Transfuse");
-        setDescription("Converts $1 health in $2 mana.");
+        setDescription("Converts $1 health to $2 mana.");
         setUsage("/skill transfuse");
         setArgumentRange(0, 0);
         setIdentifiers("skill transfuse");
