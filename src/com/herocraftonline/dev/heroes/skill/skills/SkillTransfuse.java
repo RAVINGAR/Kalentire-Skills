@@ -42,7 +42,7 @@ public class SkillTransfuse extends ActiveSkill {
             return SkillResult.LOW_HEALTH;
         }
         
-        if (hero.getMana() >= 100) {
+        if (hero.getMana() > 99) {
             Messaging.send(hero.getPlayer(), "You are already at full mana.");
             return SkillResult.FAIL;
         }
@@ -54,15 +54,16 @@ public class SkillTransfuse extends ActiveSkill {
         }
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
-        if (hero.isVerbose()) {
-            Messaging.send(hero.getPlayer(), Messaging.createManaBar(100));
-        }
 
         Player player = hero.getPlayer();
         addSpellTarget(player, hero);
         damageEntity(player, player, healthCost, EntityDamageEvent.DamageCause.MAGIC);
 
         broadcastExecuteText(hero);
+
+        if (hero.isVerbose()) {
+            Messaging.send(hero.getPlayer(), Messaging.createManaBar(100));
+        }
         return SkillResult.NORMAL;
     }
 
