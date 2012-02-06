@@ -41,9 +41,8 @@ public class SkillTransfuse extends ActiveSkill {
             Messaging.send(hero.getPlayer(), "You don't have enough health.");
             return SkillResult.LOW_HEALTH;
         }
-        
-        System.out.println(hero.getMana());
-        if (hero.getMana() > 99) {
+
+        if (hero.getMana() >= 100) {
             Messaging.send(hero.getPlayer(), "You are already at full mana.");
             return SkillResult.FAIL;
         }
@@ -63,7 +62,7 @@ public class SkillTransfuse extends ActiveSkill {
         broadcastExecuteText(hero);
 
         if (hero.isVerbose()) {
-            Messaging.send(hero.getPlayer(), Messaging.createManaBar(100));
+            Messaging.send(hero.getPlayer(), Messaging.createManaBar(hero.getMana()));
         }
         return SkillResult.NORMAL;
     }
