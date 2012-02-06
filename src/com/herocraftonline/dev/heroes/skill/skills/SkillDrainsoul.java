@@ -29,6 +29,7 @@ public class SkillDrainsoul extends TargettedSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 		node.set(Setting.DAMAGE.node(), 4);
+		node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
 		return node;
 	}
 
@@ -37,7 +38,8 @@ public class SkillDrainsoul extends TargettedSkill {
 		Player player = hero.getPlayer();
 
 		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-
+		absorbAmount += SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+		
 		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, absorbAmount, this);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
 		if (!hrEvent.isCancelled()) {
@@ -54,6 +56,7 @@ public class SkillDrainsoul extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int amount = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        amount += SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         return getDescription().replace("$1", amount + "");
     }
 
