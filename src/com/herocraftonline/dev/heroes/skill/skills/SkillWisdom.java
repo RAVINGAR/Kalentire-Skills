@@ -32,7 +32,7 @@ public class SkillWisdom extends ActiveSkill {
         setUsage("/skill wisdom");
         setIdentifiers("skill wisdom");
         setTypes(SkillType.BUFF, SkillType.MANA, SkillType.SILENCABLE);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 
     @Override
@@ -90,12 +90,6 @@ public class SkillWisdom extends ActiveSkill {
 
     public class SkillHeroListener implements Listener {
 
-        private final Skill skill;
-        
-        public SkillHeroListener(Skill skill) {
-            this.skill = skill;
-        }
-        
         @EventHandler()
         public void onHeroRegainMana(HeroRegainManaEvent event) {
             if (event.isCancelled()) {
@@ -103,7 +97,7 @@ public class SkillWisdom extends ActiveSkill {
             }
 
             if (event.getHero().hasEffect("Wisdom")) {
-                event.setAmount((int) (event.getAmount() * SkillConfigManager.getUseSetting(event.getHero(), skill, "regen-multiplier", 1.2, false)));
+                event.setAmount((int) (event.getAmount() * ((WisdomEffect) event.getHero().getEffect("Wisdom")).getManaMultiplier()));
             }
         }
     }
