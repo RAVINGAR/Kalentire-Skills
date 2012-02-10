@@ -60,7 +60,7 @@ public class SkillPray extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
 
-        targetHero.setHealth(targetHealth + hrhEvent.getAmount());
+        targetHero.setHealth(targetHero.getHealth() + hrhEvent.getAmount());
         targetHero.syncHealth();
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

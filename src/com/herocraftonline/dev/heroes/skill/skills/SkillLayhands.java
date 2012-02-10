@@ -29,7 +29,7 @@ public class SkillLayhands extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
-        double currentHealth = hero.getHealth();
+        double currentHealth = targetHero.getHealth();
         int healAmount = (int) Math.ceil(hero.getMaxHealth() - currentHealth);
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
@@ -37,7 +37,7 @@ public class SkillLayhands extends TargettedSkill {
             Messaging.send(hero.getPlayer(), "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.setHealth(currentHealth + hrhEvent.getAmount());
+        targetHero.setHealth(targetHero.getHealth() + hrhEvent.getAmount());
         targetHero.syncHealth();
 
         broadcastExecuteText(hero, target);
