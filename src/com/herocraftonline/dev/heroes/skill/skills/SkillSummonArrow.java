@@ -21,7 +21,7 @@ public class SkillSummonArrow extends ActiveSkill {
         setDescription("You summon $1 arrows.");
         setUsage("/skill summonarrow");
         setArgumentRange(0, 0);
-        setIdentifiers("skill summonarrow");
+        setIdentifiers("skill summonarrow", "skill sarrow");
         setTypes(SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE);
     }
 
