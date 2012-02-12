@@ -27,7 +27,7 @@ public class SkillSoulLeech extends TargettedSkill {
         setUsage("/skill soulleech <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soulleech", "skill sleech");
-        setTypes(SkillType.HEAL, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.DARK, SkillType.HARMFUL);
+        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.DARK, SkillType.HARMFUL);
     }
 
     @Override
