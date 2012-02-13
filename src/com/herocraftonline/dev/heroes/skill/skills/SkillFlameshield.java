@@ -26,7 +26,6 @@ public class SkillFlameshield extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill flameshield", "skill fshield");
         setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.BUFF);
-
     }
 
     @Override
