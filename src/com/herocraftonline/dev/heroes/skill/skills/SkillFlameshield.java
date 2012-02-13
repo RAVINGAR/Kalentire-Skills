@@ -63,6 +63,7 @@ public class SkillFlameshield extends ActiveSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.RESIST_FIRE);
+            this.addMobEffect(12, (int) ((duration * 20) / 1000), 1, false);
         }
 
         @Override
