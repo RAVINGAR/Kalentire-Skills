@@ -32,10 +32,8 @@ public class SkillSafefall extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
         hero.addEffect(new SafeFallEffect(this, duration));
-
         return SkillResult.NORMAL;
     }
 
