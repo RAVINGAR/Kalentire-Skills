@@ -25,7 +25,7 @@ public class SkillAlchemy extends PassiveSkill {
         setArgumentRange(0, 0);
         setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
         setEffectTypes(EffectType.BENEFICIAL);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillSpoutListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
     
     @Override
@@ -35,10 +35,10 @@ public class SkillAlchemy extends PassiveSkill {
         return section;
     }
     
-    public class SkillSpoutListener implements Listener {
+    public class SkillListener implements Listener {
         
         private final Skill skill;
-        public SkillSpoutListener(Skill skill) {
+        public SkillListener(Skill skill) {
             this.skill = skill;
         }
         
