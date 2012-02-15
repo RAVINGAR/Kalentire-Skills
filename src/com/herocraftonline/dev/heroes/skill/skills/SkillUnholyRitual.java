@@ -45,10 +45,11 @@ public class SkillUnholyRitual extends TargettedSkill {
         //Fire the Mana regen event
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, mana, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
-        if (hrmEvent.isCancelled())
+        if (hrmEvent.isCancelled()) {
         	mana = 0;
-        else
+        } else {
         	mana = hrmEvent.getAmount();
+        }
         
         hero.setMana(hero.getMana() + mana);
         broadcastExecuteText(hero, target);

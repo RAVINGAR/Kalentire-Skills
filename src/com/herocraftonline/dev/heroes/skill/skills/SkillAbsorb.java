@@ -113,12 +113,12 @@ public class SkillAbsorb extends ActiveSkill {
                 int absorbAmount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
                 damage = ((int) (damage * 0.50));
                 int mana = hero.getMana();
-                if (mana + absorbAmount > 100) {
+                if (mana + absorbAmount > hero.getMaxMana()) {
                     hero.removeEffect(hero.getEffect("Absorb"));
                 } else {
                     hero.setMana(mana + absorbAmount);
                     if (hero.isVerbose()) {
-                        Messaging.send(player, ChatColor.BLUE + "MANA " + Messaging.createManaBar(mana + absorbAmount));
+                        Messaging.send(player, ChatColor.BLUE + "MANA " + Messaging.createManaBar(mana + absorbAmount, hero.getMaxMana()));
                     }
                 }
             }

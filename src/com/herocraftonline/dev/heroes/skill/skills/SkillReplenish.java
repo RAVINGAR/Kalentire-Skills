@@ -41,7 +41,7 @@ public class SkillReplenish extends ActiveSkill {
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
         Messaging.send(hero.getPlayer(), "Your mana has been replenished!");
         if (hero.isVerbose()) {
-            Messaging.send(hero.getPlayer(), Messaging.createManaBar(100));
+            Messaging.send(hero.getPlayer(), Messaging.createManaBar(100, hero.getMaxMana()));
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

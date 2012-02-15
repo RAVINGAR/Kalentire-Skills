@@ -40,8 +40,8 @@ public class SkillManaburn extends TargettedSkill {
 
         int transferamount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
         if (tHero.getMana() > transferamount) {
-            if (hero.getMana() + transferamount > 100) {
-                transferamount = 100 - hero.getMana();
+            if (hero.getMana() + transferamount > hero.getMaxMana()) {
+                transferamount = hero.getMaxMana() - hero.getMana();
             }
             tHero.setMana(tHero.getMana() - transferamount);
             broadcastExecuteText(hero, target);

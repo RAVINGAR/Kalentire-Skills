@@ -126,7 +126,7 @@ public class SkillManaShield extends ActiveSkill {
                     mana -= absorbamount;
                     hero.setMana(mana);
                     if (mana != 100 && hero.isVerbose()) {
-                        Messaging.send(player, ChatColor.BLUE + "MANA " + Messaging.createManaBar(hero.getMana()));
+                        Messaging.send(player, ChatColor.BLUE + "MANA " + Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
                     }
                 }
             }

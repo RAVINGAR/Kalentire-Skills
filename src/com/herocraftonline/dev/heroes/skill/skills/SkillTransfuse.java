@@ -1,5 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
 import com.herocraftonline.dev.heroes.Heroes;
 import com.herocraftonline.dev.heroes.api.HeroRegainManaEvent;
 import com.herocraftonline.dev.heroes.api.SkillResult;
@@ -8,10 +12,6 @@ import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
-import com.herocraftonline.dev.heroes.util.Setting;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 public class SkillTransfuse extends ActiveSkill {
 
@@ -42,7 +42,7 @@ public class SkillTransfuse extends ActiveSkill {
             return SkillResult.LOW_HEALTH;
         }
 
-        if (hero.getMana() >= 100) {
+        if (hero.getMana() >= hero.getMaxMana()) {
             Messaging.send(hero.getPlayer(), "You are already at full mana.");
             return SkillResult.FAIL;
         }
@@ -62,7 +62,7 @@ public class SkillTransfuse extends ActiveSkill {
         broadcastExecuteText(hero);
 
         if (hero.isVerbose()) {
-            Messaging.send(hero.getPlayer(), Messaging.createManaBar(hero.getMana()));
+            Messaging.send(hero.getPlayer(), Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
         }
         return SkillResult.NORMAL;
     }

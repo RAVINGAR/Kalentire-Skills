@@ -41,8 +41,8 @@ public class SkillBattery extends TargettedSkill {
 
         int transferAmount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
         if (hero.getMana() > transferAmount) {
-            if (tHero.getMana() + transferAmount > 100) {
-                transferAmount = 100 - tHero.getMana();
+            if (tHero.getMana() + transferAmount > tHero.getMaxMana()) {
+                transferAmount = tHero.getMaxMana() - tHero.getMana();
             }
             hero.setMana(hero.getMana() - transferAmount);
             tHero.setMana(tHero.getMana() + transferAmount);

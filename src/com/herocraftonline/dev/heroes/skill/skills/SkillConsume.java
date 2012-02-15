@@ -84,7 +84,7 @@ public class SkillConsume extends ActiveSkill {
                 player.updateInventory();
                 hero.setMana(hrmEvent.getAmount() + hero.getMana());
                 if (hero.isVerbose()) {
-                    Messaging.send(player, Messaging.createManaBar(hero.getMana()));
+                    Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
                 } else {
                     Messaging.send(player, "You regain " + mana + " mana");
                 }
