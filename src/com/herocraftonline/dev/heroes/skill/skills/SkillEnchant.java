@@ -120,8 +120,9 @@ public class SkillEnchant extends PassiveSkill {
             int xpCost = 0;
             while (iter.hasNext()) {
                 Entry<Enchantment, Integer> entry = iter.next();
+                int enchLevel = entry.getValue();
                 int reqLevel = SkillConfigManager.getUseSetting(hero, skill, entry.getKey().getName(), 1, true);
-                if (level < reqLevel) {
+                if (entry.getKey().getStartLevel() > enchLevel || entry.getKey().getMaxLevel() < enchLevel || level < reqLevel || !entry.getKey().canEnchantItem(event.getItem())) {
                     iter.remove();
                 } else {
                     int val = entry.getValue();
