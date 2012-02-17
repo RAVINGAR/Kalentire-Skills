@@ -137,12 +137,15 @@ public class SkillIcyAura extends ActiveSkill {
         public void remove(Hero hero) {
             super.remove(hero);
             Player player = hero.getPlayer();
-            for (Entry<Location, Material> entry : changedBlocks.get(hero).entrySet()) {
-                entry.getKey().getBlock().setType(entry.getValue());
+            if (changedBlocks.get(hero) != null) {
+                for (Entry<Location, Material> entry : changedBlocks.get(hero).entrySet()) {
+                    entry.getKey().getBlock().setType(entry.getValue());
+                }
+
+                // CleanUp
+                changedBlocks.get(hero).clear();
+                changedBlocks.remove(hero);
             }
-            // CleanUp
-            changedBlocks.get(hero).clear();
-            changedBlocks.remove(hero);
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
@@ -154,7 +157,7 @@ public class SkillIcyAura extends ActiveSkill {
             Location loc = player.getLocation().clone();
             loc.setY(loc.getY() - 1);
             changeBlock(loc, hero);
-            
+
             int amplitude = SkillConfigManager.getUseSetting(hero, skill, "amplitude", 2, false);
             SlowEffect sEffect = new SlowEffect(skill, this.getPeriod(), amplitude, true, null, null, hero);
             for (Entity entity : player.getNearbyEntities(range, range, range)) {
@@ -175,7 +178,7 @@ public class SkillIcyAura extends ActiveSkill {
                         plugin.getHeroManager().getHero((Player) lEntity).addEffect(sEffect);
                     } else
                         plugin.getEffectManager().addEntityEffect(lEntity, sEffect);
-                    
+
                 }
             }
 
