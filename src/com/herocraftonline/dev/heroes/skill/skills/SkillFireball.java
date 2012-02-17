@@ -45,6 +45,7 @@ public class SkillFireball extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Snowball snowball = player.throwSnowball();
+        snowball.setVelocity(snowball.getVelocity().multiply(1.5));
         snowball.setFireTicks(1000);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
