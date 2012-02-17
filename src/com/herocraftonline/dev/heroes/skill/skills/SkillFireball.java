@@ -37,6 +37,8 @@ public class SkillFireball extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DAMAGE.node(), 4);
+        node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
+        node.set("velocity-multiplier", 1.5);
         node.set("fire-ticks", 100);
         return node;
     }
@@ -45,9 +47,10 @@ public class SkillFireball extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Snowball snowball = player.throwSnowball();
-        snowball.setVelocity(snowball.getVelocity().multiply(1.5));
+        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
+        snowball.setVelocity(snowball.getVelocity().multiply(mult));
         snowball.setFireTicks(1000);
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero); 
         return SkillResult.NORMAL;
     }
 
@@ -92,6 +95,7 @@ public class SkillFireball extends ActiveSkill {
                 // Damage the player
                 addSpellTarget(entity, hero);
                 int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
+                damage += (int) SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill);
                 damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 event.setCancelled(true);
             }
@@ -101,6 +105,7 @@ public class SkillFireball extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        damage += (int) SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         return getDescription().replace("$1", damage + "");
     }
 }
