@@ -26,7 +26,6 @@ import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
 import com.herocraftonline.dev.heroes.util.Setting;
-import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillEnchant extends PassiveSkill {
 
@@ -94,12 +93,6 @@ public class SkillEnchant extends PassiveSkill {
                 // if for some reason we don't have an enchanting class also cancel the event
                 event.setCancelled(true);
                 return;
-            }
-            int level = hero.getLevel(hc);
-            int minLevel = level / 3;
-            // this causes us to ignore the surrounding bookcases and just tell the client to generate numbers
-            for (int i = 0; i < event.getExpLevelCostsOffered().length; i++) {
-                event.getExpLevelCostsOffered()[i] = Util.rand.nextInt(level - minLevel) + minLevel + 1;
             }
         }
 
