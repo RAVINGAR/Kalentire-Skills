@@ -41,7 +41,7 @@ public class SkillBlink extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.MAX_DISTANCE.node(), 6);
-        node.set("restrict-ender-perls", true);
+        node.set("restrict-ender-pearl", true);
         return node;
     }
 
