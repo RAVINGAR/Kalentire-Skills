@@ -24,7 +24,7 @@ public class SkillEscapeArtist extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         boolean removed = false;
         for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
+            if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
                 removed = true;
                 hero.removeEffect(effect); 
             }
