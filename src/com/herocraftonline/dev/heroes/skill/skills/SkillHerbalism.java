@@ -100,7 +100,7 @@ public class SkillHerbalism extends PassiveSkill {
             if (mat != null) {
                 block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(mat, extraDrops));
             } else {
-                block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, (short) 0, block.getData()));
+                block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, block.getData()));
             }
         }
     }
