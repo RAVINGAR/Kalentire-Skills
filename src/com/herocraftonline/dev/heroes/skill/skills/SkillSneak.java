@@ -77,7 +77,14 @@ public class SkillSneak extends ActiveSkill {
             Player player = null;
             if (event.getEntity() instanceof Player) {
                 player = (Player) event.getEntity();
-            } else if (attackCancels && event instanceof EntityDamageByEntityEvent) {
+                Hero hero = plugin.getHeroManager().getHero(player);
+                if (hero.hasEffect("Sneak")) {
+                    player.setSneaking(false);
+                    hero.removeEffect(hero.getEffect("Sneak"));
+                }
+            } 
+            player = null;
+            if (attackCancels && event instanceof EntityDamageByEntityEvent) {
                 EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
                 if (subEvent.getDamager() instanceof Player) {
                     player = (Player) subEvent.getDamager();
@@ -86,18 +93,16 @@ public class SkillSneak extends ActiveSkill {
                         player = (Player) ((Projectile) subEvent.getDamager()).getShooter();
                     }
                 }
-            }
-            if (player == null) {
-                return;
-            }
-
-            Hero hero = plugin.getHeroManager().getHero(player);
-            if (hero.hasEffect("Sneak")) {
-                player.setSneaking(false);
-                hero.removeEffect(hero.getEffect("Sneak"));
+                if (player != null) {
+                    Hero hero = plugin.getHeroManager().getHero(player);
+                    if (hero.hasEffect("Sneak")) {
+                        player.setSneaking(false);
+                        hero.removeEffect(hero.getEffect("Sneak"));
+                    }
+                }
             }
         }
-        
+
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
             Hero hero = plugin.getHeroManager().getHero(event.getPlayer());
