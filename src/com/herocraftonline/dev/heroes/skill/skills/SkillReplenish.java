@@ -1,5 +1,6 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.dev.heroes.Heroes;
@@ -16,7 +17,7 @@ public class SkillReplenish extends ActiveSkill {
 
     public SkillReplenish(Heroes plugin) {
         super(plugin, "Replenish");
-        setDescription("You regain up to $1% of your mana.");
+        setDescription("You regain $1% ($2) of your mana.");
         setUsage("/skill replenish");
         setArgumentRange(0, 0);
         setIdentifiers("skill replenish");
@@ -54,7 +55,7 @@ public class SkillReplenish extends ActiveSkill {
     public String getDescription(Hero hero) {
         double percent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 1.0, false);
         percent += SkillConfigManager.getUseSetting(hero, this, "mana-bonus-per-level", 0.0, false) * hero.getSkillLevel(this);
-        return getDescription().replace("$1", Util.stringDouble(percent * 100));
+        int amount = (int) (hero.getMaxMana() * percent);
+        return getDescription().replace("$1", Util.stringDouble(percent * 100)).replace("$2", ChatColor.BLUE + "" + amount + ChatColor.WHITE);
     }
-
 }
