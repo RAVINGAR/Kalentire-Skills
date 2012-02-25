@@ -198,7 +198,6 @@ public class SkillSkeleton extends ActiveSkill {
             // Destroy any summoned creatures when the player exits
             Hero hero = plugin.getHeroManager().getHero(event.getPlayer());
             if (hero.getSummons().isEmpty()) {
-
                 return;
             }
             for (LivingEntity summon : hero.getSummons()) {
