@@ -1,5 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.MobEffectList;
+
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -34,6 +38,11 @@ public class SkillAntidote extends TargettedSkill {
                     cured = true;
                     targetHero.removeEffect(effect);
                 }
+            }
+            EntityPlayer tp = ((CraftPlayer) targetHero.getPlayer()).getHandle();
+            if (tp.hasEffect(MobEffectList.POISON)) {
+                tp.effects.remove(MobEffectList.POISON.id);
+                cured = true;
             }
             if (!cured) {
                 Messaging.send(player, "Your target is not poisoned!");

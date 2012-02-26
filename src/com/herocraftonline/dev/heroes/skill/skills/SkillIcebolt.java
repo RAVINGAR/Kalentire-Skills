@@ -107,7 +107,10 @@ public class SkillIcebolt extends ActiveSkill {
             Entity dmger = ((Snowball) subEvent.getDamager()).getShooter();
             if (dmger instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) dmger);
-
+                if (!damageCheck((Player) dmger, (LivingEntity) event.getEntity())) {
+                    event.setCancelled(true);
+                    return;
+                }
                 event.getEntity().setFireTicks(0);
                 int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 3, false);
                 
@@ -122,7 +125,7 @@ public class SkillIcebolt extends ActiveSkill {
                 } else {
                     plugin.getEffectManager().addEntityEffect(target, iceSlowEffect);
                 }
-                
+
                 addSpellTarget(event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 event.setCancelled(true);
