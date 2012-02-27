@@ -102,12 +102,10 @@ public class SkillFireArrow extends ActiveSkill {
             }
 
             LivingEntity entity = (LivingEntity) event.getEntity();
-            addSpellTarget(entity, hero);
             if (!damageCheck((Player) player, entity)) {
                 event.setCancelled(true);
                 return;
             }
-
             //Get the duration of the fire damage
             int fireTicks = SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false);
             //Light the target on fire
