@@ -249,6 +249,10 @@ public class SkillRepair extends ActiveSkill {
             Messaging.send(player, "You must be level $1 to repair $2", level, MaterialUtil.getFriendlyName(isType));
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
+        if (is.getDurability() == 0) {
+            Messaging.send(player, "That item is already at full durability!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
         ItemStack reagentStack = new ItemStack(reagent, getRepairCost(is));
         if (!hasReagentCost(player, reagentStack)) {
             return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
