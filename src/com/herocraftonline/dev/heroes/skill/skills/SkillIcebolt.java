@@ -1,6 +1,8 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import net.minecraft.server.MathHelper;
 
@@ -29,7 +31,14 @@ import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillIcebolt extends ActiveSkill {
 
-    private HashSet<Snowball> snowballs = new HashSet<Snowball>();
+    private Map<Snowball, Long> snowballs = new LinkedHashMap<Snowball, Long>(100) {
+        private static final long serialVersionUID = 4632858378318784263L;
+        @Override
+        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+            return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
+        }
+        
+    };
 
     private String applyText;
     private String expireText;
@@ -75,9 +84,9 @@ public class SkillIcebolt extends ActiveSkill {
         double motY = -MathHelper.sin(pitch);
         Vector velocity = new Vector(motX, motY, motZ);
 
-        Snowball snowball = player.throwSnowball();
+        Snowball snowball = player.launchProjectile(Snowball.class);
         snowball.setVelocity(velocity);
-        snowballs.add(snowball);
+        snowballs.put(snowball, System.currentTimeMillis());
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
@@ -98,7 +107,7 @@ public class SkillIcebolt extends ActiveSkill {
             }
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball) || !snowballs.contains(projectile)) {
+            if (!(projectile instanceof Snowball) || !snowballs.containsKey(projectile)) {
                 return;
             }
 
