@@ -11,8 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
@@ -78,7 +78,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         Vector spawnLoc = pLoc.add(direction);
         final World world = player.getWorld();
 
-        final LivingEntity sheep = world.spawnCreature(spawnLoc.toLocation(world), CreatureType.SHEEP);
+        final LivingEntity sheep = world.spawnCreature(spawnLoc.toLocation(world), EntityType.SHEEP);
         sheepMap.put(sheep.getEntityId(), player);
 
         EntityLiving cbSheep = ((CraftLivingEntity) sheep).getHandle();

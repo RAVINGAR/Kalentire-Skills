@@ -1,6 +1,10 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.dev.heroes.Heroes;
@@ -11,11 +15,6 @@ import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
-
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.CreatureType;
 
 public class SkillSummonCow extends ActiveSkill {
 
@@ -54,9 +53,9 @@ public class SkillSummonCow extends ActiveSkill {
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        CreatureType cType = wTargetBlock.getType() == Material.HUGE_MUSHROOM_1 || 
+        EntityType cType = wTargetBlock.getType() == Material.HUGE_MUSHROOM_1 || 
                 wTargetBlock.getType() == Material.HUGE_MUSHROOM_2 || 
-                wTargetBlock.getType() == Material.MYCEL ? CreatureType.MUSHROOM_COW : CreatureType.COW;
+                wTargetBlock.getType() == Material.MYCEL ? EntityType.MUSHROOM_COW : EntityType.COW;
         
         player.getWorld().spawnCreature(wTargetBlock.getLocation(), cType);
         double chance = Util.rand.nextDouble();

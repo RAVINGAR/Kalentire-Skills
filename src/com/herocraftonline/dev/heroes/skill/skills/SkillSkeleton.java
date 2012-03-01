@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
-import org.bukkit.entity.CreatureType;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -70,7 +70,7 @@ public class SkillSkeleton extends ActiveSkill {
         if (hero.getSummons().size() < SkillConfigManager.getUseSetting(hero, this, "max-summons", 3, false)) {
             int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 5, false);
             Location castLoc = player.getTargetBlock((HashSet<Byte>) null, distance).getLocation();
-            Creature skeleton = (Creature) player.getWorld().spawnCreature(castLoc, CreatureType.SKELETON);
+            Creature skeleton = (Creature) player.getWorld().spawnCreature(castLoc, EntityType.SKELETON);
             long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 60000, false);
             plugin.getEffectManager().addEntityEffect(skeleton, new SummonEffect(this, duration, hero, expireText));
             broadcastExecuteText(hero);

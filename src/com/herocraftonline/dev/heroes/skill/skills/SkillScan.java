@@ -1,6 +1,5 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -10,7 +9,6 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.skill.TargettedSkill;
 import com.herocraftonline.dev.heroes.util.Messaging;
-import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillScan extends TargettedSkill {
 
@@ -33,11 +31,6 @@ public class SkillScan extends TargettedSkill {
             Hero tHero = plugin.getHeroManager().getHero((Player) target);
             Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), (int) tHero.getHealth(), (int) tHero.getMaxHealth());
         } else {
-        	CreatureType cType = Util.getCreatureFromEntity(target);
-        	if (cType == null) {
-        		Messaging.send(player, "Unknown creature type!");
-        		return SkillResult.INVALID_TARGET_NO_MSG;
-        	}
             Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), plugin.getDamageManager().getEntityHealth(target), plugin.getDamageManager().getEntityMaxHealth(target));
         }
         

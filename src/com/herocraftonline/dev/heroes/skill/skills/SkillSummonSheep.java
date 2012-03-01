@@ -1,6 +1,10 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
 import org.bukkit.DyeColor;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 
@@ -12,11 +16,6 @@ import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
-
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.CreatureType;
 
 public class SkillSummonSheep extends ActiveSkill {
 
@@ -55,16 +54,16 @@ public class SkillSummonSheep extends ActiveSkill {
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        Sheep sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.SHEEP);
+        Sheep sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
         sheep.setColor(DyeColor.getByData((byte) Util.rand.nextInt(DyeColor.values().length)));
         double chance = Util.rand.nextDouble();
         if (chance <= chance3x) {
-            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.SHEEP);
+            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.rand.nextInt(DyeColor.values().length)));
-            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.SHEEP);
+            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.rand.nextInt(DyeColor.values().length)));
         } else if (chance <= chance2x) {
-            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.SHEEP);
+            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.rand.nextInt(DyeColor.values().length)));
         }
         broadcastExecuteText(hero);

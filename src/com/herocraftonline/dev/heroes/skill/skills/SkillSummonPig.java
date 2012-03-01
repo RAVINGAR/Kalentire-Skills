@@ -1,5 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.dev.heroes.Heroes;
@@ -10,11 +14,6 @@ import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
-
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.CreatureType;
 
 public class SkillSummonPig extends ActiveSkill {
 
@@ -53,13 +52,13 @@ public class SkillSummonPig extends ActiveSkill {
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.PIG);
+        player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.PIG);
         double chance = Util.rand.nextDouble();
         if (chance <= chance3x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.PIG);
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.PIG);
+            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.PIG);
+            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.PIG);
         } else if (chance <= chance2x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), CreatureType.PIG);
+            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.PIG);
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

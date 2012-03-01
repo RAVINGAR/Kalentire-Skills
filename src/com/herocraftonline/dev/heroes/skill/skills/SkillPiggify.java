@@ -7,8 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
-import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,9 +50,9 @@ public class SkillPiggify extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        CreatureType type = CreatureType.PIG;
+        EntityType type = EntityType.PIG;
         if (target.getLocation().getBlock().getType() == Material.WATER) {
-            type = CreatureType.SQUID;
+            type = EntityType.SQUID;
         }
 
         Entity creature = target.getWorld().spawnCreature(target.getLocation(), type);
@@ -60,9 +60,8 @@ public class SkillPiggify extends TargettedSkill {
         PigEffect pEffect = new PigEffect(this, duration, (Creature) creature);
         if (target instanceof Player) {
             plugin.getHeroManager().getHero((Player) target).addEffect(pEffect);
-        } else {
+        } else
             plugin.getEffectManager().addEntityEffect(target, pEffect);
-        }
         
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
