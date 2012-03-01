@@ -30,6 +30,7 @@ public class SkillPort extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.RADIUS.node(), 10);
+        node.set(Setting.NO_COMBAT_USE.node(), true);
         return node;
     }
 

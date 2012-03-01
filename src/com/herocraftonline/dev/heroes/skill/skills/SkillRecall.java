@@ -12,6 +12,7 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
+import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillRecall extends ActiveSkill {
 
@@ -22,6 +23,13 @@ public class SkillRecall extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill recall");
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORT);
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.NO_COMBAT_USE.node(), true);
+        return node;
     }
 
     @Override
