@@ -1,11 +1,14 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,6 +26,8 @@ import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillFireball extends ActiveSkill {
 
+    private Set<SmallFireball> fireballs = new HashSet<SmallFireball>();
+    
     public SkillFireball(Heroes plugin) {
         super(plugin, "Fireball");
         setDescription("You shoot a ball of fire that deals $1 damage and lights your target on fire");
@@ -46,10 +51,10 @@ public class SkillFireball extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Snowball snowball = player.throwSnowball();
+        SmallFireball fireball = player.launchProjectile(SmallFireball.class);
+        fireballs.add(fireball);
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        snowball.setVelocity(snowball.getVelocity().multiply(mult));
-        snowball.setFireTicks(1000);
+        fireball.setVelocity(fireball.getVelocity().multiply(mult));
         broadcastExecuteText(hero); 
         return SkillResult.NORMAL;
     }
@@ -70,12 +75,12 @@ public class SkillFireball extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball) || projectile.getFireTicks() < 1) {
+            if (!(projectile instanceof SmallFireball) || !fireballs.contains(projectile)) {
                 return;
             }
 
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((Snowball) projectile).getShooter();
+            Entity dmger = ((SmallFireball) projectile).getShooter();
             if (dmger instanceof Player) {
                 Hero hero = plugin.getHeroManager().getHero((Player) dmger);
 
