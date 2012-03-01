@@ -1,18 +1,9 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-
-import net.minecraft.server.EntityFireball;
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.Vec3D;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftFireball;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,7 +21,6 @@ import com.herocraftonline.dev.heroes.skill.Skill;
 import com.herocraftonline.dev.heroes.skill.SkillConfigManager;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Setting;
-import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillExplosiveFireball extends ActiveSkill {
 
@@ -55,27 +45,9 @@ public class SkillExplosiveFireball extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-
-        Block target = player.getTargetBlock(Util.transparentIds, 100);
-        Location playerLoc = player.getLocation();
-
-        double dx = target.getX() - playerLoc.getX();
-        double height = 1;
-        double dy = target.getY() + (height / 2.0F) - (playerLoc.getY() + (height / 2.0F));
-        double dz = target.getZ() - playerLoc.getZ();
-
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        EntityLiving playerEntity = craftPlayer.getHandle();
-        EntityFireball fireball = new EntityFireball(((CraftWorld) player.getWorld()).getHandle(), playerEntity, dx, dy, dz);
-        fireball.isIncendiary = false;
-        double d8 = 4D;
-        Vec3D vec3d = Util.getLocation(player);
-        fireball.locX = playerLoc.getX() + vec3d.a * d8;
-        fireball.locY = playerLoc.getY() + (height / 2.0F) + 0.5D;
-        fireball.locZ = playerLoc.getZ() + vec3d.c * d8;
-
-        ((CraftWorld) player.getWorld()).getHandle().addEntity(fireball);
-
+        
+        Fireball fireball = player.launchProjectile(Fireball.class);
+        fireball.setIsIncendiary(false);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
@@ -90,19 +62,22 @@ public class SkillExplosiveFireball extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.LOW)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled()) {
+            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
             if (event instanceof EntityDamageByEntityEvent) {
                 EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
                 Entity attacker = subEvent.getDamager();
-                if (attacker instanceof CraftFireball) {
-                    CraftFireball fireball = (CraftFireball) attacker;
+                if (attacker instanceof Fireball) {
+                    Fireball fireball = (Fireball) attacker;
                     if (fireball.getShooter() instanceof Player) {
                         Entity entity = event.getEntity();
                         Player shooter = (Player) fireball.getShooter();
                         Hero hero = plugin.getHeroManager().getHero(shooter);
+                        if (!damageCheck(shooter, (LivingEntity) entity)) {
+                            event.setCancelled(true);
+                        }
                         int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
                         entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
                         if (entity instanceof Player) {
