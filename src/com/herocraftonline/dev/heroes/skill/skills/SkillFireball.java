@@ -1,7 +1,8 @@
 package com.herocraftonline.dev.heroes.skill.skills;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,7 +27,14 @@ import com.herocraftonline.dev.heroes.util.Setting;
 
 public class SkillFireball extends ActiveSkill {
 
-    private Set<SmallFireball> fireballs = new HashSet<SmallFireball>();
+    private Map<SmallFireball, Long> fireballs = new LinkedHashMap<SmallFireball, Long>(100) {
+        private static final long serialVersionUID = 4329526013158603250L;
+        @Override
+        protected boolean removeEldestEntry(Entry<SmallFireball, Long> eldest) {
+            return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
+        }
+        
+    };
     
     public SkillFireball(Heroes plugin) {
         super(plugin, "Fireball");
@@ -52,7 +60,7 @@ public class SkillFireball extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         SmallFireball fireball = player.launchProjectile(SmallFireball.class);
-        fireballs.add(fireball);
+        fireballs.put(fireball, System.currentTimeMillis());
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         fireball.setVelocity(fireball.getVelocity().multiply(mult));
         broadcastExecuteText(hero); 
@@ -75,10 +83,10 @@ public class SkillFireball extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof SmallFireball) || !fireballs.contains(projectile)) {
+            if (!(projectile instanceof SmallFireball) || !fireballs.containsKey(projectile)) {
                 return;
             }
-
+            fireballs.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
             Entity dmger = ((SmallFireball) projectile).getShooter();
             if (dmger instanceof Player) {
