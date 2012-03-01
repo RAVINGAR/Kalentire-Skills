@@ -12,6 +12,7 @@ import com.herocraftonline.dev.heroes.hero.Hero;
 import com.herocraftonline.dev.heroes.skill.ActiveSkill;
 import com.herocraftonline.dev.heroes.skill.SkillType;
 import com.herocraftonline.dev.heroes.util.Messaging;
+import com.herocraftonline.dev.heroes.util.Setting;
 import com.herocraftonline.dev.heroes.util.Util;
 
 public class SkillMark extends ActiveSkill {
@@ -23,6 +24,13 @@ public class SkillMark extends ActiveSkill {
         setArgumentRange(0, 1);
         setIdentifiers("skill mark");
         setTypes(SkillType.TELEPORT);
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.NO_COMBAT_USE.node(), true);
+        return node;
     }
 
     @Override
@@ -103,7 +111,7 @@ public class SkillMark extends ActiveSkill {
             throw new IllegalArgumentException("Bad recall data.");
         }
         xyzyp[4] = temp;
-        
+
         return xyzyp;
     }
 
