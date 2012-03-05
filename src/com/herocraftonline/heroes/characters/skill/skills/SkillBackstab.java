@@ -1,0 +1,105 @@
+package com.herocraftonline.heroes.characters.skill.skills;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Setting;
+import com.herocraftonline.heroes.util.Util;
+
+public class SkillBackstab extends PassiveSkill {
+
+    private String useText;
+    
+    public SkillBackstab(Heroes plugin) {
+        super(plugin, "Backstab");
+        setDescription("You have a $1% chance to deal $2% damage when attacking from behind!");
+        setArgumentRange(0, 0);
+        setTypes(SkillType.PHYSICAL, SkillType.BUFF);
+        setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroesListener(this), plugin);
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("weapons", Util.swords);
+        node.set("attack-bonus", 1.5);
+        node.set("attack-chance", .5);
+        node.set("sneak-bonus", 2.0); // Alternative bonus if player is sneaking when doing the backstab
+        node.set("sneak-chance", 1.0);
+        node.set(Setting.USE_TEXT.node(), "%hero% backstabbed %target%!");
+        return node;
+    }
+    
+    @Override
+    public void init() {
+        super.init();
+        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+    }
+
+    public class SkillHeroesListener implements Listener {
+
+        private final Skill skill;
+        
+        public SkillHeroesListener(Skill skill) {
+            this.skill = skill;
+        }
+        
+        @EventHandler()
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (!(event.getDamager() instanceof Player)) {
+                return;
+            }
+            
+            Player player = (Player) event.getDamager();
+            Hero hero = plugin.getHeroManager().getHero(player);
+            
+            if (hero.hasEffect(getName())) {
+                ItemStack item = player.getItemInHand();
+                
+                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
+                    return;
+                }
+                
+                if (event.getEntity().getLocation().getDirection().dot(player.getLocation().getDirection()) <= 0) {
+                    return;
+                }
+
+                if (hero.hasEffect("Sneak") && Util.rand.nextDouble() < SkillConfigManager.getUseSetting(hero, skill, "sneak-chance", 1.0, false)) {
+                    event.setDamage((int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "sneak-bonus", 2.0, false)));
+                } else if (Util.rand.nextDouble() < SkillConfigManager.getUseSetting(hero, skill, "attack-chance", .5, false)) {
+                    event.setDamage((int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "attack-bonus", 1.5, false)));
+                }
+
+                Entity target = event.getEntity();
+                broadcastExecuteText(hero, target);
+            }
+        }
+    }
+    
+    private void broadcastExecuteText(Hero hero, Entity target) {
+        Player player = hero.getPlayer();
+        String targetName = target instanceof Player ? ((Player) target).getName() : target.getClass().getSimpleName().substring(5);
+        broadcast(player.getLocation(), useText, player.getDisplayName(), target == player ? "himself" : targetName);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, "attack-chance", .5, false);
+        double percent = SkillConfigManager.getUseSetting(hero, this, "attack-bonus", 1.5, false);
+        return getDescription().replace("$1", Util.stringDouble(chance * 100)).replace("$2", Util.stringDouble(percent * 100));
+    }
+}
