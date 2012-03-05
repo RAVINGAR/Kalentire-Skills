@@ -1,0 +1,93 @@
+package com.herocraftonline.heroes.skill.skills;
+
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.effects.Effect;
+import com.herocraftonline.heroes.effects.EffectType;
+import com.herocraftonline.heroes.hero.Hero;
+import com.herocraftonline.heroes.skill.ActiveSkill;
+import com.herocraftonline.heroes.skill.SkillConfigManager;
+import com.herocraftonline.heroes.skill.SkillType;
+import com.herocraftonline.heroes.util.Setting;
+
+public class SkillChakra extends ActiveSkill {
+
+    public SkillChakra(Heroes plugin) {
+        super(plugin, "Chakra");
+        setDescription("You restore $1 health and dispel negative effects from all nearby party-members.");
+        setUsage("/skill chakra");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill chakra");
+        setTypes(SkillType.SILENCABLE, SkillType.HEAL, SkillType.LIGHT);
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("heal-amount", 10);
+        node.set(Setting.RADIUS.node(), 7);
+        node.set("max-removals", -1);
+        return node;
+    }
+
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+        Location castLoc = player.getLocation().clone();
+        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 7, false);
+        int radiusSquared = radius * radius;
+        int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
+        if (hero.hasParty()) {
+            for (Hero p : hero.getParty().getMembers()) {
+                if (!castLoc.getWorld().equals(p.getPlayer().getWorld())) {
+                    continue;
+                }
+                if (castLoc.distanceSquared(p.getPlayer().getLocation()) <= radiusSquared) {
+                    healDispel(p, removals, healAmount);
+                }
+            }
+        } else {
+            healDispel(hero, removals, healAmount);
+        }
+        broadcastExecuteText(hero);
+        return SkillResult.NORMAL;
+    }
+
+    private void healDispel(Hero hero, int removals, int healAmount) {
+        if (hero.getHealth() < hero.getMaxHealth()) {
+            hero.setHealth(hero.getHealth() + healAmount);
+            hero.syncHealth();
+        }
+        if (removals == 0)
+            return;
+
+        if (hero.getPlayer().getFireTicks() > 0) {
+            removals--;
+            hero.getPlayer().setFireTicks(0);
+            if (removals == 0)
+                return;
+        }
+
+        for (Effect effect : hero.getEffects()) {
+            if (effect.isType(EffectType.HARMFUL)) {
+                hero.removeEffect(effect);
+                removals--;
+                if (removals == 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+       int amount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
+        return getDescription().replace("$1", amount + "");
+    }
+
+}

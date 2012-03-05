@@ -1,0 +1,129 @@
+package com.herocraftonline.heroes.skill.skills;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.effects.EffectType;
+import com.herocraftonline.heroes.effects.ExpirableEffect;
+import com.herocraftonline.heroes.effects.common.StunEffect;
+import com.herocraftonline.heroes.hero.Hero;
+import com.herocraftonline.heroes.skill.ActiveSkill;
+import com.herocraftonline.heroes.skill.Skill;
+import com.herocraftonline.heroes.skill.SkillConfigManager;
+import com.herocraftonline.heroes.skill.SkillType;
+import com.herocraftonline.heroes.util.Setting;
+import com.herocraftonline.heroes.util.Util;
+
+public class SkillBlackjack extends ActiveSkill {
+
+    private String applyText;
+    private String expireText;
+
+    public SkillBlackjack(Heroes plugin) {
+        super(plugin, "Blackjack");
+        setDescription("Your attacks have a $1% chance to stun your target.");
+        setUsage("/skill blackjack");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill blackjack", "skill bjack");
+        setTypes(SkillType.PHYSICAL, SkillType.BUFF);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.APPLY_TEXT.node(), "%hero% prepared his blackjack!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!");
+        node.set("stun-duration", 5000);
+        node.set("stun-chance", 0.20);
+        node.set(Setting.DURATION.node(), 20000);
+        return node;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% prepared his blackjack!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% sheathed his blackjack!").replace("%hero%", "$1");
+    }
+
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+        broadcastExecuteText(hero);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
+        hero.addEffect(new BlackjackEffect(this, duration));
+        return SkillResult.NORMAL;
+    }
+
+    public class BlackjackEffect extends ExpirableEffect {
+
+        public BlackjackEffect(Skill skill, long duration) {
+            super(skill, "Blackjack", duration);
+            this.types.add(EffectType.BENEFICIAL);
+        }
+
+        @Override
+        public void apply(Hero hero) {
+            super.apply(hero);
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), applyText, player.getDisplayName());
+        }
+
+        @Override
+        public void remove(Hero hero) {
+            super.remove(hero);
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), expireText, player.getDisplayName());
+        }
+
+    }
+
+    public class SkillEntityListener implements Listener {
+
+        private final Skill skill;
+
+        public SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
+                return;
+            }
+            if (event instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+                if (subEvent.getCause() != DamageCause.ENTITY_ATTACK || !(subEvent.getDamager() instanceof Player)) {
+                    return;
+                }
+
+                Hero attackingHero = plugin.getHeroManager().getHero((Player) subEvent.getDamager());
+                if (!attackingHero.hasEffect("Blackjack")) {
+                    return;
+                }
+                Hero defendingHero = plugin.getHeroManager().getHero((Player) event.getEntity());
+
+                double chance = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-chance", 0.20, false);
+                if (Util.rand.nextDouble() < chance) {
+                    int duration = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-duration", 5000, false);
+                    defendingHero.addEffect(new StunEffect(skill, duration));
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, "stun-chance", .20, false) * 100;
+        return getDescription().replace("$1", Util.stringDouble(chance));
+    }
+}
