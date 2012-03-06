@@ -40,7 +40,7 @@ public class SkillChant extends TargettedSkill {
 
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
-        double targetHealth = targetHero.getHealth();
+        int targetHealth = targetHero.getHealth();
 
         if (targetHealth >= targetHero.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {

@@ -37,7 +37,7 @@ public class SkillSyphon extends TargettedSkill {
 
         Hero targetHero = plugin.getHeroManager().getHero((Player) target);
 
-        double transferredHealth = SkillConfigManager.getUseSetting(hero, this, "default-health", 4, false);
+        int transferredHealth = SkillConfigManager.getUseSetting(hero, this, "default-health", 4, false);
         if (args.length == 2) {
             try {
                 transferredHealth = Integer.parseInt(args[1]);
@@ -45,8 +45,8 @@ public class SkillSyphon extends TargettedSkill {
             	throw new IllegalArgumentException("Invalid health value defined in Heroes skill - Syphon. FIX YOUR CONFIGURATION");
             }
         }
-        double playerHealth = hero.getHealth();
-        double targetHealth = targetHero.getHealth();
+        int playerHealth = hero.getHealth();
+        int targetHealth = targetHero.getHealth();
         hero.setHealth(playerHealth - transferredHealth);
         hero.syncHealth();
 
