@@ -97,8 +97,8 @@ public class SkillBerserk extends ActiveSkill {
                 }
             }
 
-            if (event.getDamager() instanceof Player && event.getSkill().isType(SkillType.PHYSICAL)) {
-                Hero hero = plugin.getHeroManager().getHero((Player) event.getDamager());
+            if (event.getSkill().isType(SkillType.PHYSICAL)) {
+                Hero hero = event.getDamager();
                 if (hero.hasEffect(getName())) {
                     double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
                     int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", 1.1, false) + levelMult));

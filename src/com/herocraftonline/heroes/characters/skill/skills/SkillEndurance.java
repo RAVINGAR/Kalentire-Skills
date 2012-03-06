@@ -101,12 +101,13 @@ public class SkillEndurance extends ActiveSkill {
                 }
             }
 
-            if (event.getDamager() instanceof Player && event.getSkill().isType(SkillType.PHYSICAL)) {
-                Hero hero = plugin.getHeroManager().getHero((Player) event.getDamager());
+            if (event.getSkill().isType(SkillType.PHYSICAL)) {
+                Hero hero =  event.getDamager();
                 if (hero.hasEffect(getName())) {
                     int newDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", .9, false));
-                    if (newDamage == 0)
+                    if (newDamage == 0) {
                         newDamage = 1;
+                    }
                     event.setDamage(newDamage);
                 }
             }
