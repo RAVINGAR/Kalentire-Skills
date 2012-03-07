@@ -69,7 +69,7 @@ public class SkillFireArmor extends PassiveSkill {
             }
 
             Player player = (Player) event.getEntity();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
 
             if (!hero.hasEffect("FireArmor") || !SkillConfigManager.getUseSetting(hero, skill, "armors", defaultArmors).contains(player.getInventory().getChestplate().getType().name())) {
                 return;

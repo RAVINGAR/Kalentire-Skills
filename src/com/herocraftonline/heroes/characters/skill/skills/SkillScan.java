@@ -28,10 +28,10 @@ public class SkillScan extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player) {
-            Hero tHero = plugin.getHeroManager().getHero((Player) target);
+            Hero tHero = plugin.getCharacterManager().getHero((Player) target);
             Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), (int) tHero.getHealth(), (int) tHero.getMaxHealth());
         } else {
-            Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), plugin.getDamageManager().getEntityHealth(target), plugin.getDamageManager().getEntityMaxHealth(target));
+            Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), plugin.getDamageManager().getHealth(target), plugin.getDamageManager().getMaxHealth(target));
         }
         
         return SkillResult.NORMAL;

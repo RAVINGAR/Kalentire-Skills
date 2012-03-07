@@ -14,7 +14,9 @@ import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
@@ -90,8 +92,8 @@ public class SkillAssassinsBlade extends ActiveSkill {
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Messaging.send(hero.getPlayer(), "Your blade is no longer poisoned!");
         }
 
@@ -113,27 +115,27 @@ public class SkillAssassinsBlade extends ActiveSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
-            broadcast(lEntity.getLocation(), applyText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -165,7 +167,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
 
             Player player = (Player) subEvent.getDamager();
             ItemStack item = player.getItemInHand();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                 return;
             }
@@ -176,12 +178,9 @@ public class SkillAssassinsBlade extends ActiveSkill {
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
                 AssassinsPoison apEffect = new AssassinsPoison(skill, period, duration, tickDamage, player);
                 Entity target = event.getEntity();
-                if (event.getEntity() instanceof Player) {
-                    Hero targetHero = plugin.getHeroManager().getHero((Player) target);
-                    targetHero.addEffect(apEffect);
-                    checkBuff(hero);
-                } else if (target instanceof LivingEntity) {
-                    plugin.getEffectManager().addEntityEffect((LivingEntity) target, apEffect);
+                if (event.getEntity() instanceof LivingEntity) {
+                    CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+                    character.addEffect(apEffect);
                     checkBuff(hero);
                 }
             }

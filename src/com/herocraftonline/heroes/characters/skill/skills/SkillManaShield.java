@@ -73,15 +73,15 @@ public class SkillManaShield extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -115,7 +115,7 @@ public class SkillManaShield extends ActiveSkill {
         }
 
         private int getAdjustment(Player player, int damage) {
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
                 int absorbamount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
                 damage = damage / 2;

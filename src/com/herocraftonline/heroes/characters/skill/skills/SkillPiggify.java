@@ -19,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -57,12 +58,7 @@ public class SkillPiggify extends TargettedSkill {
 
         Entity creature = target.getWorld().spawnCreature(target.getLocation(), type);
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        PigEffect pEffect = new PigEffect(this, duration, (Creature) creature);
-        if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(pEffect);
-        } else
-            plugin.getEffectManager().addEntityEffect(target, pEffect);
-        
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -80,30 +76,30 @@ public class SkillPiggify extends TargettedSkill {
         }
 
         @Override
-        public void apply(LivingEntity rider) {
-            super.apply(rider);
-            creature.setPassenger(rider);
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+            creature.setPassenger(monster.getEntity());
             creatures.add(creature);
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             creature.setPassenger(player);
             creatures.add(creature);
         }
 
         @Override
-        public void remove(LivingEntity rider) {
-            super.remove(rider);
+        public void removeFromMonster(Monster rider) {
+            super.removeFromMonster(rider);
             creatures.remove(creature);
             creature.remove();
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             creatures.remove(creature);
             creature.remove();
         }

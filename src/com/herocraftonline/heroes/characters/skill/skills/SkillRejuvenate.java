@@ -52,7 +52,7 @@ public class SkillRejuvenate extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player) {
-            Hero targetHero = plugin.getHeroManager().getHero((Player) target);
+            Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
             if (targetHero.getHealth() >= targetHero.getMaxHealth()) {
                 Messaging.send(player, "Target is already fully healed.");
@@ -78,15 +78,15 @@ public class SkillRejuvenate extends TargettedSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }

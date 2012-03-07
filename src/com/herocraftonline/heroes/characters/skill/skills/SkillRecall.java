@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillMark;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 

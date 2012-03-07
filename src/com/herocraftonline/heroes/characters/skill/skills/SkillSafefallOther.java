@@ -39,7 +39,7 @@ public class SkillSafefallOther extends TargettedSkill {
         if (!(target instanceof Player) || hero.getPlayer().equals(target))
         	return SkillResult.INVALID_TARGET;
 
-        Hero targetHero = plugin.getHeroManager().getHero((Player) target);
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         broadcastExecuteText(hero, target);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         targetHero.addEffect(new SafeFallEffect(this, duration));

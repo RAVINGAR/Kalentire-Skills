@@ -28,7 +28,7 @@ public class SkillLayhands extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        Hero targetHero = plugin.getHeroManager().getHero((Player) target);
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int healAmount = (int) Math.ceil(targetHero.getMaxHealth() - targetHero.getHealth());
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);

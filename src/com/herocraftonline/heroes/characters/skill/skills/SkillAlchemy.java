@@ -47,7 +47,7 @@ public class SkillAlchemy extends PassiveSkill {
             if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.BREWING_STAND) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero(event.getPlayer());
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (!hero.canUseSkill(skill)) {
                 event.setCancelled(true);
                 event.setUseInteractedBlock(Result.DENY);

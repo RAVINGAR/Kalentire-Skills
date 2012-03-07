@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -54,15 +55,7 @@ public class SkillSoulLeech extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-
-        SoulLeechEffect slEffect = new SoulLeechEffect(this, period, duration, tickDamage, player);
-
-        if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(slEffect);
-        } else 
-            plugin.getEffectManager().addEntityEffect(target, slEffect);
-
-
+        plugin.getCharacterManager().getCharacter(target).addEffect(new SoulLeechEffect(this, period, duration, tickDamage, player));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -79,44 +72,44 @@ public class SkillSoulLeech extends TargettedSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
             healApplier();
-            broadcast(lEntity.getLocation(), expireText, applier.getDisplayName(), Messaging.getLivingEntityName(lEntity).toLowerCase());
+            broadcast(monster.getEntity().getLocation(), expireText, applier.getDisplayName(), Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             healApplier();
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, applier.getDisplayName(), player.getDisplayName());
         }
 
         @Override
-        public void tick(LivingEntity lEntity) {
-            super.tick(lEntity);
+        public void tickMonster(Monster monster) {
+            super.tickMonster(monster);
             totalDamage += tickDamage;
         }
 
         @Override
-        public void tick(Hero hero) {
-            super.tick(hero);
+        public void tickHero(Hero hero) {
+            super.tickHero(hero);
             totalDamage += tickDamage;
         }
 
         private void healApplier() {
-            Hero hero = plugin.getHeroManager().getHero(applier);
+            Hero hero = plugin.getCharacterManager().getHero(applier);
             int healAmount = (int) (totalDamage * SkillConfigManager.getUseSetting(hero, skill, "heal-multiplier", 1.0, false));
 
             // Fire our heal event

@@ -90,7 +90,7 @@ public class SkillQuicken extends ActiveSkill {
                 return;
             }
             
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect(getName())) {
                 hero.removeEffect(hero.getEffect(getName()));
             }

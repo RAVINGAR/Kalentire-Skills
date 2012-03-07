@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -52,12 +53,7 @@ public class SkillPoison extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        PoisonSkillEffect pEffect = new PoisonSkillEffect(this, period, duration, tickDamage, player);
-        if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(pEffect);
-        } else 
-            plugin.getEffectManager().addEntityEffect(target, pEffect);
-
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PoisonSkillEffect(this, period, duration, tickDamage, player));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -71,24 +67,24 @@ public class SkillPoison extends TargettedSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }

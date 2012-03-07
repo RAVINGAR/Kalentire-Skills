@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectManager;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -55,10 +55,10 @@ public class SkillPurge extends TargettedSkill {
                 break;
             
             if (e instanceof Player) {
-                removalsLeft = purge(plugin.getHeroManager().getHero((Player) e), removalsLeft, hero);
-            } else
-                removalsLeft = purge((LivingEntity) e, removalsLeft, hero);
-
+                removalsLeft = purge(plugin.getCharacterManager().getHero((Player) e), removalsLeft, hero);
+            } else {
+                removalsLeft = purge(plugin.getCharacterManager().getMonster((LivingEntity) e), removalsLeft, hero);
+            }
         }
 
         if (maxRemovals != removalsLeft) {
@@ -70,24 +70,25 @@ public class SkillPurge extends TargettedSkill {
         }
     }  
 
-    private int purge(LivingEntity lEntity, int removalsLeft, Hero hero) {
-        EffectManager effectManager = plugin.getEffectManager();
+    private int purge(Monster monster, int removalsLeft, Hero hero) {
         //Return immediately if this creature has no effects
-        if (effectManager.getEntityEffects(lEntity) == null)
+        if (monster.getEffects().isEmpty()) {
             return removalsLeft;
+        }
         
         boolean removeHarmful = false;
-        if (hero.getSummons().contains(lEntity))
+        if (hero.getSummons().contains(monster)) {
             removeHarmful = true;
+        }
         
-        for (Effect effect : effectManager.getEntityEffects(lEntity)) {
+        for (Effect effect : monster.getEffects()) {
             if (removalsLeft == 0) {
                 break;
             } else if (effect.isType(EffectType.HARMFUL) && effect.isType(EffectType.DISPELLABLE) && removeHarmful) {
-                effectManager.removeEntityEffect(lEntity, effect);
+                monster.removeEffect(effect);
                 removalsLeft--;
             } else if (effect.isType(EffectType.BENEFICIAL) && effect.isType(EffectType.DISPELLABLE) && !removeHarmful) {
-                effectManager.removeEntityEffect(lEntity, effect);
+                monster.removeEffect(effect);
                 removalsLeft--;
             }
         }

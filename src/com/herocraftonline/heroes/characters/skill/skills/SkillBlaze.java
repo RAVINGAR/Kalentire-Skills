@@ -55,12 +55,7 @@ public class SkillBlaze extends ActiveSkill {
 
             damaged = true;
             lEntity.setFireTicks(fireTicks);
-
-            if (lEntity instanceof Player) {
-                plugin.getHeroManager().getHero((Player) lEntity).addEffect(new CombustEffect(this, player));
-            } else {
-                plugin.getEffectManager().addEntityEffect(lEntity, new CombustEffect(this, player));
-            }
+            plugin.getCharacterManager().getCharacter(lEntity).addEffect(new CombustEffect(this, player));
         }
 
         if (!damaged) {

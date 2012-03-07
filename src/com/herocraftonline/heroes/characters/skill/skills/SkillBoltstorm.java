@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -72,23 +73,21 @@ public class SkillBoltstorm extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
         @Override
-        public void tick(Hero hero) {
-            super.tick(hero);
-
+        public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
             int range = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 7, false);
 
@@ -123,6 +122,9 @@ public class SkillBoltstorm extends ActiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);
         }
+
+        @Override
+        public void tickMonster(Monster monster) { }
     }
 
     @Override

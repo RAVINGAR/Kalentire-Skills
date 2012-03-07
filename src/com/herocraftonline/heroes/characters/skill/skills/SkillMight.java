@@ -107,8 +107,8 @@ public class SkillMight extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             Messaging.send(player, applyText);
         }
@@ -118,8 +118,8 @@ public class SkillMight extends ActiveSkill {
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             Messaging.send(player, expireText);
         }
@@ -135,7 +135,7 @@ public class SkillMight extends ActiveSkill {
 
             if (event.getDamager() instanceof Player) {
                 Player player = (Player) event.getDamager();
-                Hero hero = plugin.getHeroManager().getHero(player);
+                Hero hero = plugin.getCharacterManager().getHero(player);
 
                 if (hero.hasEffect("Might")) {
                     double damageBonus = ((MightEffect) hero.getEffect("Might")).getDamageBonus();
@@ -144,7 +144,7 @@ public class SkillMight extends ActiveSkill {
             } else if (event.getDamager() instanceof Projectile) {
                 if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
                     Player player = (Player) ((Projectile) event.getDamager()).getShooter();
-                    Hero hero = plugin.getHeroManager().getHero(player);
+                    Hero hero = plugin.getCharacterManager().getHero(player);
 
                     if (hero.hasEffect("Might")) {
                         double damageBonus = ((MightEffect) hero.getEffect("Might")).getDamageBonus();

@@ -35,7 +35,7 @@ public class SkillTeleport extends ActiveSkill {
             return SkillResult.INVALID_TARGET;
         
 
-        if (!hero.getParty().isPartyMember(plugin.getHeroManager().getHero(targetPlayer))) {
+        if (!hero.getParty().isPartyMember(plugin.getCharacterManager().getHero(targetPlayer))) {
             Messaging.send(player, "Sorry, that player isn't in your party!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }

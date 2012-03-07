@@ -53,7 +53,7 @@ public class SkillDisarm extends TargettedSkill {
         if (!(target instanceof Player))
         	return SkillResult.INVALID_TARGET;
 
-        Hero tHero = plugin.getHeroManager().getHero((Player) target);
+        Hero tHero = plugin.getCharacterManager().getHero((Player) target);
 
         if (!Util.isWeapon(tHero.getPlayer().getItemInHand().getType())) {
             Messaging.send(player, "You cannot disarm bare hands!");

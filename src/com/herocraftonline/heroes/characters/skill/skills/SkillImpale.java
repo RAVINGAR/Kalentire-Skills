@@ -10,6 +10,7 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -75,13 +76,7 @@ public class SkillImpale extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 4, false);
         SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
-        if (target instanceof Player) {
-            ImpaleEffect iEffect = new ImpaleEffect(this, 300, sEffect);
-            plugin.getHeroManager().getHero((Player) target).addEffect(iEffect);
-        } else
-            plugin.getEffectManager().addEntityEffect(target, sEffect);
-        
-        
+        plugin.getCharacterManager().getCharacter(target).addEffect(new ImpaleEffect(this, 300, sEffect));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -98,8 +93,16 @@ public class SkillImpale extends TargettedSkill {
 			addMobEffect(2, (int) (duration / 1000) * 20, 20, false);
 		}
 		
-		public void remove(Hero hero) {
+		@Override
+		public void removeFromHero(Hero hero) {
+		    super.removeFromHero(hero);
 			hero.addEffect(effect);
+		}
+		
+		@Override
+		public void removeFromMonster(Monster monster) {
+		    super.removeFromMonster(monster);
+		    monster.addEffect(effect);
 		}
     }
     

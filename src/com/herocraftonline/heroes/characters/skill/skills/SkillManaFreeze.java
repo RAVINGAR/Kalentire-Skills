@@ -57,7 +57,7 @@ public class SkillManaFreeze extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero, target);
-        Hero targetHero = plugin.getHeroManager().getHero((Player) target);
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         targetHero.addEffect(new ManaFreezeEffect(this, duration));
         return SkillResult.NORMAL;
@@ -86,15 +86,15 @@ public class SkillManaFreeze extends TargettedSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }

@@ -90,7 +90,7 @@ public class SkillFireball extends ActiveSkill {
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
             Entity dmger = ((SmallFireball) projectile).getShooter();
             if (dmger instanceof Player) {
-                Hero hero = plugin.getHeroManager().getHero((Player) dmger);
+                Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
                 if (!damageCheck((Player) dmger, entity)) {
                     event.setCancelled(true);
@@ -99,11 +99,7 @@ public class SkillFireball extends ActiveSkill {
 
                 // Ignite the player
                 entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
-                if (entity instanceof Player) {
-                    plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, (Player) dmger));
-                } else {
-                    plugin.getEffectManager().addEntityEffect(entity, new CombustEffect(skill, (Player) dmger));
-                }
+                plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the player
                 addSpellTarget(entity, hero);

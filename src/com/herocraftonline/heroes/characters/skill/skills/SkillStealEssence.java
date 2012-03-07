@@ -51,7 +51,7 @@ public class SkillStealEssence extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
 
         ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
-        Hero tHero = plugin.getHeroManager().getHero((Player) target);
+        Hero tHero = plugin.getCharacterManager().getHero((Player) target);
         for (Effect e : tHero.getEffects()) {
             if (e.isType(EffectType.BENEFICIAL) && e.isType(EffectType.DISPELLABLE)) {
                 possibleEffects.add(e);

@@ -12,7 +12,9 @@ import org.bukkit.event.Listener;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -62,13 +64,7 @@ public class SkillCurse extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
-        CurseEffect cEffect = new CurseEffect(this, duration, missChance);
-
-        if (target instanceof Player)
-            plugin.getHeroManager().getHero((Player) target).addEffect(cEffect);
-        else
-            plugin.getEffectManager().addEntityEffect(target, cEffect);
-
+        plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, duration, missChance));
         return SkillResult.NORMAL;
 
     }
@@ -85,14 +81,14 @@ public class SkillCurse extends TargettedSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
-            broadcast(lEntity.getLocation(), applyText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
@@ -102,14 +98,14 @@ public class SkillCurse extends TargettedSkill {
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -123,40 +119,22 @@ public class SkillCurse extends TargettedSkill {
                 return;
             }
 
-            Hero hero = null;
-            LivingEntity lEntity = null;
+            CharacterTemplate character = null;
 
-            if (event.getDamager() instanceof Player) {
-                hero = plugin.getHeroManager().getHero((Player) event.getDamager());
-            } else if (event.getDamager() instanceof LivingEntity) {
-                lEntity = (LivingEntity) event.getDamager();
+            if (event.getDamager() instanceof LivingEntity) {
+                character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
             } else if (event.getDamager() instanceof Projectile) {
                 LivingEntity shooter = ((Projectile) event.getDamager()).getShooter();
                 if (shooter == null) {
                     return;
                 }
-                if (shooter instanceof Player) {
-                    hero = plugin.getHeroManager().getHero((Player) shooter);
-                } else if (shooter instanceof LivingEntity) {
-                    lEntity = (LivingEntity) shooter;
-                }
+                character = plugin.getCharacterManager().getCharacter((LivingEntity) shooter);
             }
-
-            if (hero != null) {
-                if (hero.hasEffect("Curse")) {
-                    CurseEffect cEffect = (CurseEffect) hero.getEffect("Curse");
-                    if (Util.rand.nextDouble() < cEffect.missChance) {
-                        event.setCancelled(true);
-                        broadcast(hero.getPlayer().getLocation(), missText, hero.getPlayer().getDisplayName());
-                    }
-                }
-            } else if (lEntity != null) {
-                if (plugin.getEffectManager().entityHasEffect(lEntity, "Curse")) {
-                    CurseEffect cEffect = (CurseEffect) plugin.getEffectManager().getEntityEffect(lEntity, "Curse");
-                    if (Util.rand.nextDouble() < cEffect.missChance) {
-                        event.setCancelled(true);
-                        broadcast(lEntity.getLocation(), missText, Messaging.getLivingEntityName(lEntity).toLowerCase());
-                    }
+            if (character != null && character.hasEffect("Curse")) {
+                CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
+                if (Util.rand.nextDouble() < cEffect.missChance) {
+                    event.setCancelled(true);
+                    broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
                 }
             }
         }

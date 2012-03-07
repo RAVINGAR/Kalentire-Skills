@@ -101,8 +101,8 @@ public class SkillWeb extends TargettedSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             changeBlock(loc, hero);
             Block block = loc.getBlock();
             changeBlock(block.getRelative(BlockFace.DOWN).getLocation(), hero);
@@ -124,8 +124,8 @@ public class SkillWeb extends TargettedSkill {
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             for (Location location : locations) {
                 location.getBlock().setType(Material.AIR);
                 changedBlocks.remove(location);

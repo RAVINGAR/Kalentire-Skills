@@ -48,12 +48,13 @@ public class SkillShield extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onWeaponDamage(WeaponDamageEvent event) {
+            Heroes.debug.startTask("HeroesSkillListener");
             if (event.getCause() != DamageCause.ENTITY_ATTACK || event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
                 return;
             }
 
             Player player = (Player) event.getEntity();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
                 double multiplier = 1;
                 if (player.getItemInHand().getType() == Material.IRON_DOOR) {

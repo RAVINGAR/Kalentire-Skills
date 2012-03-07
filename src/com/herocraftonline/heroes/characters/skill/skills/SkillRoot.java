@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -34,13 +33,7 @@ public class SkillRoot extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-        RootEffect rEffect = new RootEffect(this, duration);
-
-        if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(rEffect);
-        } else
-            plugin.getEffectManager().addEntityEffect(target, rEffect);
-
+        plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(this, duration));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

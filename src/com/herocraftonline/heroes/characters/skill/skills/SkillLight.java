@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -97,8 +98,8 @@ public class SkillLight extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player p = hero.getPlayer();
             broadcast(p.getLocation(), applyText, p.getDisplayName());
             Block thisBlock = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
@@ -111,8 +112,7 @@ public class SkillLight extends ActiveSkill {
         }
 
         @Override
-        public void tick(Hero hero) {
-            super.tick(hero);
+        public void tickHero(Hero hero) {
             Player p = hero.getPlayer();
             Block thisBlock = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
             if (thisBlock.getLocation().equals(lastLoc)) {
@@ -131,13 +131,16 @@ public class SkillLight extends ActiveSkill {
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player p = hero.getPlayer();
             broadcast(p.getLocation(), expireText, p.getDisplayName());
             if (lastLoc != null) {
                 p.sendBlockChange(lastLoc, lastMat, lastData);
             }
         }
+
+        @Override
+        public void tickMonster(Monster monster) { }
     }
 }

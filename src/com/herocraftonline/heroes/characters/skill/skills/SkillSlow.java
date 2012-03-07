@@ -55,7 +55,7 @@ public class SkillSlow extends TargettedSkill {
             multiplier = 20;
         }
         SlowEffect effect = new SlowEffect(this, duration, multiplier, true, applyText, expireText, hero);
-        plugin.getHeroManager().getHero((Player) target).addEffect(effect);
+        plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
         return SkillResult.NORMAL;
     }
 

@@ -53,7 +53,7 @@ public class SkillBowStrength extends PassiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect(getName())) {
                 double mult = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.4, false);
                 Projectile proj = (Projectile) event.getProjectile();

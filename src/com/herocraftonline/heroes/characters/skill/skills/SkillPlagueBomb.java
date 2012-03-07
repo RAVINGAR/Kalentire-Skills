@@ -106,7 +106,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         int id = sheep.getEntityId();
         if (sheepMap.containsKey(id)) {
             Player player = sheepMap.get(id);
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             int damage = 10;
             if (hero != null) {
                 damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);

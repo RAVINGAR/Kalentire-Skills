@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillWolf;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillWolf extends PassiveSkill {
@@ -47,7 +46,7 @@ public class SkillWolf extends PassiveSkill {
             }
 
             Player player = (Player) owner;
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.canUseSkill(skill.getName())) {
                 Messaging.send(player, "You can't tame wolves!");
                 event.setCancelled(true);

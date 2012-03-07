@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
@@ -79,12 +80,7 @@ public class SkillMortalWound extends TargettedSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
-        MortalWound mEffect = new MortalWound(this, period, duration, tickDamage, player, healMultiplier);
-        if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(mEffect);
-        } else
-            plugin.getEffectManager().addEntityEffect(target, mEffect);
-
+        plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
         return SkillResult.NORMAL;
     }
 
@@ -99,26 +95,26 @@ public class SkillMortalWound extends TargettedSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase(), applier.getDisplayName());
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
 
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
@@ -133,7 +129,7 @@ public class SkillMortalWound extends TargettedSkill {
                 return;
             }
 
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("MortalWound")) {
                 MortalWound mEffect = (MortalWound) hero.getEffect("MortalWound");
                 event.setAmount((int) (event.getAmount() * mEffect.healMultiplier));

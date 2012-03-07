@@ -43,7 +43,7 @@ public class SkillKick extends TargettedSkill {
         }
         if (target instanceof Player) {
             SilenceEffect sEffect = new SilenceEffect(this, duration);
-            plugin.getHeroManager().getHero((Player) target).addEffect(sEffect);
+            plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         }
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

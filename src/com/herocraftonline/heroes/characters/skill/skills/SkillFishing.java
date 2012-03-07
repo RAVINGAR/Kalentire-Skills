@@ -59,7 +59,7 @@ public class SkillFishing extends PassiveSkill {
             }
             CraftItem getCaught = (CraftItem) event.getCaught();
             double chance = Util.rand.nextDouble();
-            Hero hero = plugin.getHeroManager().getHero(event.getPlayer());
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             Player player = hero.getPlayer();
             if (chance < SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)){ //if the chance
 

@@ -7,10 +7,8 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
@@ -23,7 +21,7 @@ public class SkillSuperJump extends ActiveSkill {
         setUsage("/skill superjump");
         setArgumentRange(0, 0);
         setIdentifiers("skill superjump");
-        setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL, SkillType.STEALTHY);
+        setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL);
     }
 
     @Override
@@ -43,19 +41,10 @@ public class SkillSuperJump extends ActiveSkill {
         player.setVelocity(v);
         player.setFallDistance(-8f);
         int duration = (int) SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 5000, false);
-        hero.addEffect(new JumpEffect(this, duration));
+        hero.addEffect(new SafeFallEffect(this, duration));
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
-    }
-
-    public class JumpEffect extends SafeFallEffect {
-        public JumpEffect(Skill skill, int duration) {
-            super(skill, "Jump", duration);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.PHYSICAL);
-            this.addMobEffect(8, (duration / 1000) * 20, 5, false);
-        }
     }
 
     @Override

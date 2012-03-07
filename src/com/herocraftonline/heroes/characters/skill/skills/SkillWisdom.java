@@ -114,8 +114,8 @@ public class SkillWisdom extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             Messaging.send(player, applyText);
         }
@@ -125,8 +125,8 @@ public class SkillWisdom extends ActiveSkill {
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             Messaging.send(player, expireText);
         }

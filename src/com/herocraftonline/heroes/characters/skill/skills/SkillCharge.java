@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
@@ -94,7 +95,7 @@ public class SkillCharge extends TargettedSkill {
             }
 
             Player player = (Player) event.getEntity();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             chargingPlayers.remove(hero.getName());
             Heroes.log(Level.INFO, "Player landed!");
             event.setDamage(0);
@@ -119,7 +120,7 @@ public class SkillCharge extends TargettedSkill {
 
                 if (e instanceof Player) {
                     Player p = (Player) e;
-                    Hero tHero = plugin.getHeroManager().getHero(p);
+                    Hero tHero = plugin.getCharacterManager().getHero(p);
                     if (stunDuration > 0)
                         tHero.addEffect(new StunEffect(skill, stunDuration));
                     if (slowDuration > 0)
@@ -134,11 +135,12 @@ public class SkillCharge extends TargettedSkill {
                         Skill.damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
                     }
                 } else if (e instanceof LivingEntity) {
+                    Monster monster = plugin.getCharacterManager().getMonster((LivingEntity) e);
                     if (slowDuration > 0)
-                        plugin.getEffectManager().addEntityEffect(le, new SlowEffect(skill, slowDuration, 2, true, Messaging.getLivingEntityName(le) + " has been slowed by " + player.getDisplayName(),
+                        monster.addEffect(new SlowEffect(skill, slowDuration, 2, true, Messaging.getLivingEntityName(le) + " has been slowed by " + player.getDisplayName(),
                                 Messaging.getLivingEntityName(le) + " is no longer slowed by " + player.getDisplayName(), hero));
                     if (rootDuration > 0)
-                        plugin.getEffectManager().addEntityEffect(le, new RootEffect(skill, rootDuration));
+                       monster.addEffect(new RootEffect(skill, rootDuration));
                 }
 
                 if (damage > 0) {

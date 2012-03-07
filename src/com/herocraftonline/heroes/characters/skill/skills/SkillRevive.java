@@ -49,7 +49,7 @@ public class SkillRevive extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        Hero targetHero = plugin.getHeroManager().getHero(target);
+        Hero targetHero = plugin.getCharacterManager().getHero(target);
         if (!hero.hasParty() || !hero.getParty().isPartyMember(targetHero)) {
             Messaging.send(player, "The person needs to be in your party to do that!");
             return SkillResult.INVALID_TARGET_NO_MSG;

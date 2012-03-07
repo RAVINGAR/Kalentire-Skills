@@ -69,15 +69,15 @@ public class SkillAbsorb extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -108,7 +108,7 @@ public class SkillAbsorb extends ActiveSkill {
         }
         
         private int getAdjustment(Player player, int damage) {
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("Absorb")) {
                 int absorbAmount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
                 damage = ((int) (damage * 0.50));

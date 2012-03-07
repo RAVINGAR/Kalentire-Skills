@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.HeroManager;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -60,7 +60,6 @@ public class SkillChainLightning extends TargettedSkill {
         int bounces = SkillConfigManager.getUseSetting(hero, this, "max-bounces", 3, false);
         int maxBounce = bounces + 1;
         boolean keepBouncing = true;
-        HeroManager heroManager = plugin.getHeroManager();
         while (bounces > 0 && keepBouncing) {
             for (Entity entity : target.getNearbyEntities(range, range, range)) {
                 keepBouncing = false;
@@ -70,18 +69,9 @@ public class SkillChainLightning extends TargettedSkill {
                 
                 //  make sure the target has LoS
                 if (checkTarget(target, entity)) {
-                    if (target instanceof Player) {
-                        Hero tHero = heroManager.getHero((Player) target);
-                        tHero.addEffect(new DelayedBolt(this, (maxBounce - bounces) * 200, hero, damage));
-                        keepBouncing = true;
-                        break;
-                    } else if (target instanceof LivingEntity) {
-                        plugin.getEffectManager().addEntityEffect(target, new DelayedBolt(this, (maxBounce - bounces) * 200, hero, damage));
-                        keepBouncing = true;
-                        break;
-                    } else {
-                        continue;
-                    }
+                    plugin.getCharacterManager().getCharacter(target).addEffect(new DelayedBolt(this, (maxBounce - bounces) * 200, hero, damage));
+                    keepBouncing = true;
+                    break;
                 }
             }
 
@@ -125,16 +115,16 @@ public class SkillChainLightning extends TargettedSkill {
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            addSpellTarget(lEntity, applier);
-            damageEntity(lEntity, applier.getPlayer(), bounceDamage, DamageCause.MAGIC);
-            lEntity.getWorld().strikeLightningEffect(lEntity.getLocation());
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            addSpellTarget(monster.getEntity(), applier);
+            damageEntity(monster.getEntity(), applier.getPlayer(), bounceDamage, DamageCause.MAGIC);
+            monster.getEntity().getWorld().strikeLightningEffect(monster.getEntity().getLocation());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player target = hero.getPlayer();
             addSpellTarget(target, applier);
             damageEntity(target, applier.getPlayer(), bounceDamage, DamageCause.MAGIC);

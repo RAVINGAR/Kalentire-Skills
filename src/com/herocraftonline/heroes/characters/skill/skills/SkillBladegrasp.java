@@ -77,15 +77,15 @@ public class SkillBladegrasp extends ActiveSkill {
 		}
 
 		@Override
-		public void apply(Hero hero) {
-			super.apply(hero);
+		public void applyToHero(Hero hero) {
+			super.applyToHero(hero);
 			Player player = hero.getPlayer();
 			broadcast(player.getLocation(), applyText, player.getDisplayName());
 		}
 
 		@Override
-		public void remove(Hero hero) {
-			super.remove(hero);
+		public void removeFromHero(Hero hero) {
+			super.removeFromHero(hero);
 			Player player = hero.getPlayer();
 			broadcast(player.getLocation(), expireText, player.getDisplayName());
 		}
@@ -108,7 +108,7 @@ public class SkillBladegrasp extends ActiveSkill {
 			}
 
 			Player player = (Player) event.getEntity();
-			Hero hero = plugin.getHeroManager().getHero(player);
+			Hero hero = plugin.getCharacterManager().getHero(player);
 			if (hero.hasEffect(getName())) {
 				double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(skill);
 				if (Util.rand.nextDouble() > parryChance)
@@ -130,7 +130,7 @@ public class SkillBladegrasp extends ActiveSkill {
 				return;
 			}
 			Player player = (Player) event.getEntity();
-			Hero hero = plugin.getHeroManager().getHero(player);
+			Hero hero = plugin.getCharacterManager().getHero(player);
 			if (hero.hasEffect(getName())) {
 				double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
 				if (Util.rand.nextDouble() > parryChance)

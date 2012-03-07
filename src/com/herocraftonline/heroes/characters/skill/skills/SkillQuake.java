@@ -54,7 +54,7 @@ public class SkillQuake extends PassiveSkill {
             }
 
             Player player = (Player) event.getEntity();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
 
             if (!hero.hasEffect(getName())) {
                 return;

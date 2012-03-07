@@ -88,7 +88,7 @@ public class SkillSoulFire extends ActiveSkill {
             }
 
             Player player = (Player) subEvent.getDamager();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(player.getItemInHand().getType().name()) || !hero.hasEffect("SoulFire")) {
                 return;
             }
@@ -101,21 +101,8 @@ public class SkillSoulFire extends ActiveSkill {
             int fireTicks = SkillConfigManager.getUseSetting(hero, skill, "ignite-duration", 5000, false) / 50;
             LivingEntity target = (LivingEntity) event.getEntity();
             target.setFireTicks(fireTicks);
-
-            if (target instanceof Player) {
-                plugin.getHeroManager().getHero((Player) target).addEffect(new CombustEffect(skill, player));
-            } else {
-                plugin.getEffectManager().addEntityEffect(target, new CombustEffect(skill, player));
-            }
-
-            String name = null;
-            if (event.getEntity() instanceof Player)
-                name = ((Player) target).getName();
-            else
-                name = Messaging.getLivingEntityName(target);
-            
-
-            broadcast(player.getLocation(), igniteText, player.getDisplayName(), name);
+            plugin.getCharacterManager().getCharacter(target).addEffect(new CombustEffect(skill, player));
+            broadcast(player.getLocation(), igniteText, player.getDisplayName(), Messaging.getLivingEntityName(target));
         }
     }
 
@@ -129,15 +116,15 @@ public class SkillSoulFire extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }

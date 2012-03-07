@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.effects.common.ImbueEffect;
@@ -81,27 +82,27 @@ public class SkillPoisonArrow extends ActiveSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
-            broadcast(lEntity.getLocation(), applyText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -143,20 +144,13 @@ public class SkillPoisonArrow extends ActiveSkill {
             }
 
             Player player = (Player) arrow.getShooter();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
 
             if (hero.hasEffect("PoisonArrowBuff")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
                 long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, true);
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
-                ArrowPoison apEffect = new ArrowPoison(skill, period, duration, tickDamage, player);
-                
-                if (target instanceof Player) {
-                    Hero hTarget = plugin.getHeroManager().getHero((Player) target);
-                    hTarget.addEffect(apEffect);
-                } else {
-                    plugin.getEffectManager().addEntityEffect(target, apEffect);
-                }
+                plugin.getCharacterManager().getCharacter(target).addEffect(new ArrowPoison(skill, period, duration, tickDamage, player));
             }
         }
         
@@ -165,7 +159,7 @@ public class SkillPoisonArrow extends ActiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("PoisonArrowBuff")) {
                 int mana = SkillConfigManager.getUseSetting(hero, skill, "mana-per-shot", 1, true);
                 if (hero.getMana() < mana) {

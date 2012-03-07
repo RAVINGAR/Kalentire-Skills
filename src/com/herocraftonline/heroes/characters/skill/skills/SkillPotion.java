@@ -90,7 +90,7 @@ public class SkillPotion extends PassiveSkill {
             }
 
             Player player = event.getPlayer();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
 
             // see if the player can use potions at all
             if (!hero.canUseSkill(skill)) {

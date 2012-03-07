@@ -7,7 +7,9 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -57,19 +59,13 @@ public class SkillPlague extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        PlagueEffect bEffect = new PlagueEffect(this, duration, period, tickDamage, player);
-
-        if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(bEffect);
-        } else
-            plugin.getEffectManager().addEntityEffect(target, bEffect);
-
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, duration, period, tickDamage, player));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 
     public class PlagueEffect extends PeriodicDamageEffect {
-        
+
         public PlagueEffect(Skill skill, long duration, long period, int tickDamage, Player applier) {
             super(skill, "Plague", period, duration, tickDamage, applier);
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
@@ -84,39 +80,39 @@ public class SkillPlague extends TargettedSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity).toLowerCase());
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
         @Override
-        public void tick(LivingEntity lEntity) {
-            super.tick(lEntity);
-            spreadToNearbyEntities(lEntity);
+        public void tickMonster(Monster monster) {
+            super.tickMonster(monster);
+            spreadToNearbyEntities(monster.getEntity());
         }
 
         @Override
-        public void tick(Hero hero) {
-            super.tick(hero);
+        public void tickHero(Hero hero) {
+            super.tickHero(hero);
             spreadToNearbyEntities(hero.getPlayer());
         }
 
@@ -136,30 +132,16 @@ public class SkillPlague extends TargettedSkill {
                 if (!damageCheck(getApplier(), (LivingEntity) target)) {
                     continue;
                 }
-
-                if (target instanceof Player) {
-                    Hero tHero = plugin.getHeroManager().getHero((Player) target);
-                    // Ignore heroes that already have the plague effect
-                    if (tHero.hasEffect("Plague")) {
-                        continue;
-                    }
-
-                    // Apply the effect to the hero creating a copy of the effect
-                    tHero.addEffect(new PlagueEffect(this));
+                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+                if (character.hasEffect("Plague")) {
+                    continue;
                 } else {
-                    LivingEntity le = (LivingEntity) target;
-                    // Make sure the creature doesn't already have the effect
-                    if (plugin.getEffectManager().entityHasEffect(le, "Plague")) {
-                        continue;
-                    }
-
-                    // Apply the effect to the creature, creating a copy of the effect
-                    plugin.getEffectManager().addEntityEffect(le, new PlagueEffect(this));
+                    character.addEffect(new PlagueEffect(this));
                 }
             }
         }
     }
-    
+
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);

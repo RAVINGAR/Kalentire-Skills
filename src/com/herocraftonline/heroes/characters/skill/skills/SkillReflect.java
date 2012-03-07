@@ -73,15 +73,15 @@ public class SkillReflect extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -104,7 +104,7 @@ public class SkillReflect extends ActiveSkill {
             
             LivingEntity attacker = (LivingEntity) event.getDamager();
             Player player = (Player) event.getEntity();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("Reflect")) {
                 int damage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "reflected-amount", 0.5, false));
                 plugin.getDamageManager().addSpellTarget(attacker, hero, skill);

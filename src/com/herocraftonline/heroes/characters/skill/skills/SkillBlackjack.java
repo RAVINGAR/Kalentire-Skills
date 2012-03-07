@@ -72,15 +72,15 @@ public class SkillBlackjack extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -106,11 +106,11 @@ public class SkillBlackjack extends ActiveSkill {
                     return;
                 }
 
-                Hero attackingHero = plugin.getHeroManager().getHero((Player) subEvent.getDamager());
+                Hero attackingHero = plugin.getCharacterManager().getHero((Player) subEvent.getDamager());
                 if (!attackingHero.hasEffect("Blackjack")) {
                     return;
                 }
-                Hero defendingHero = plugin.getHeroManager().getHero((Player) event.getEntity());
+                Hero defendingHero = plugin.getCharacterManager().getHero((Player) event.getEntity());
 
                 double chance = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-chance", 0.20, false);
                 if (Util.rand.nextDouble() < chance) {

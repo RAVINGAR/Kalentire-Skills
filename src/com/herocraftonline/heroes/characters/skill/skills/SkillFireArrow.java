@@ -78,7 +78,7 @@ public class SkillFireArrow extends ActiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("FireArrowBuff")) {
                 event.getProjectile().setFireTicks(100);
             }
@@ -96,7 +96,7 @@ public class SkillFireArrow extends ActiveSkill {
             }
 
             Player player = (Player) ((Projectile) projectile).getShooter();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect("FireArrowBuff")) {
                 return;
             }
@@ -111,12 +111,7 @@ public class SkillFireArrow extends ActiveSkill {
             //Light the target on fire
             entity.setFireTicks(fireTicks);
             //Add our combust effect so we can track fire-tick damage
-            if (entity instanceof Player) {
-                Hero targetHero = plugin.getHeroManager().getHero((Player) entity);
-                targetHero.addEffect(new CombustEffect(skill, player));
-            } else {
-                plugin.getEffectManager().addEntityEffect(entity, new CombustEffect(skill, player));
-            }
+            plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, player));
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
@@ -124,7 +119,7 @@ public class SkillFireArrow extends ActiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("FireArrowBuff")) {
                 int mana = SkillConfigManager.getUseSetting(hero, skill, "mana-per-shot", 1, true);
                 if (hero.getMana() < mana) {

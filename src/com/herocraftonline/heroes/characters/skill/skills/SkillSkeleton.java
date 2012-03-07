@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -71,8 +72,9 @@ public class SkillSkeleton extends ActiveSkill {
             int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 5, false);
             Location castLoc = player.getTargetBlock((HashSet<Byte>) null, distance).getLocation();
             Creature skeleton = (Creature) player.getWorld().spawnCreature(castLoc, EntityType.SKELETON);
+            Monster monster = new Monster(plugin, skeleton);
             long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 60000, false);
-            plugin.getEffectManager().addEntityEffect(skeleton, new SummonEffect(this, duration, hero, expireText));
+            monster.addEffect(new SummonEffect(this, duration, hero, expireText));
             broadcastExecuteText(hero);
             Messaging.send(player, "You have succesfully summoned a skeleton to fight for you.");
             return SkillResult.NORMAL;
@@ -89,9 +91,7 @@ public class SkillSkeleton extends ActiveSkill {
             if (!(event.getEntity() instanceof Skeleton) || event.isCancelled()) {
                 return;
             }
-            Creature creature = (Creature) event.getEntity();
-            // Don't allow summoned creatures to combust
-            if (plugin.getEffectManager().entityHasEffect(creature, "Summon")) {
+            if (plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity()).hasEffect("Summon")) {
                 event.setCancelled(true);
             }
         }
@@ -102,7 +102,7 @@ public class SkillSkeleton extends ActiveSkill {
                 return;
             }
             if (event.getEntity() instanceof Player) {
-                Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+                Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 // If this hero has no summons then ignore the event
                 if (hero.getSummons().isEmpty()) {
                     return;
@@ -121,11 +121,11 @@ public class SkillSkeleton extends ActiveSkill {
                 }
 
                 // Loop through the hero's summons and set the target
-                for (LivingEntity lEntity : hero.getSummons()) {
-                    if (!(lEntity instanceof Skeleton)) {
+                for (Monster monster : hero.getSummons()) {
+                    if (!(monster.getEntity() instanceof Skeleton)) {
                         continue;
                     }
-                    ((Skeleton) lEntity).setTarget(damager);
+                    ((Skeleton) monster.getEntity()).setTarget(damager);
                 }
             } else if (event.getEntity() instanceof LivingEntity) {
                 // If a creature is being damaged, lets see if a player is dealing the damage to see if we need to make
@@ -143,15 +143,15 @@ public class SkillSkeleton extends ActiveSkill {
                 if (player == null) {
                     return;
                 }
-                Hero hero = plugin.getHeroManager().getHero(player);
+                Hero hero = plugin.getCharacterManager().getHero(player);
                 if (hero.getSummons().isEmpty()) {
                     return;
                 }
-                for (LivingEntity lEntity : hero.getSummons()) {
-                    if (!(lEntity instanceof Skeleton)) {
+                for (Monster monster : hero.getSummons()) {
+                    if (!(monster.getEntity() instanceof Skeleton)) {
                         continue;
                     }
-                    ((Skeleton) lEntity).setTarget((LivingEntity) event.getEntity());
+                    ((Skeleton) monster.getEntity()).setTarget((LivingEntity) event.getEntity());
                 }
             }
         }
@@ -162,7 +162,7 @@ public class SkillSkeleton extends ActiveSkill {
                 return;
             }
             Skeleton defender = (Skeleton) event.getEntity();
-            Collection<Hero> heroes = plugin.getHeroManager().getHeroes();
+            Collection<Hero> heroes = plugin.getCharacterManager().getHeroes();
             for (Hero hero : heroes) {
                 if (hero.getSummons().contains(defender)) {
                     hero.getSummons().remove(defender);
@@ -176,7 +176,7 @@ public class SkillSkeleton extends ActiveSkill {
                 return;
             }
             if (event.getTarget() instanceof Player) {
-                for (Hero hero : plugin.getHeroManager().getHeroes()) {
+                for (Hero hero : plugin.getCharacterManager().getHeroes()) {
                     if (hero.getSummons().contains(event.getEntity())) {
                         if (hero.getParty() != null) {
                             // Don't target party members either
@@ -196,17 +196,17 @@ public class SkillSkeleton extends ActiveSkill {
         @EventHandler(priority = EventPriority.LOWEST)
         public void onPlayerQuit(PlayerQuitEvent event) {
             // Destroy any summoned creatures when the player exits
-            Hero hero = plugin.getHeroManager().getHero(event.getPlayer());
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.getSummons().isEmpty()) {
                 return;
             }
-            for (LivingEntity summon : hero.getSummons()) {
-                if (summon instanceof Skeleton) {
-                    Effect effect = plugin.getEffectManager().getEntityEffect(summon, "Summon");
+            for (Monster summon : hero.getSummons()) {
+                if (summon.getEntity() instanceof Skeleton) {
+                    Effect effect = summon.getEffect("Summon");
                     if (effect != null) {
-                        plugin.getEffectManager().removeEntityEffect(summon, effect);
+                        summon.removeEffect(effect);
                     } else {
-                        summon.remove();
+                        summon.getEntity().remove();
                     }
                 }
             }

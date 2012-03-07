@@ -69,8 +69,8 @@ public class SkillEndurance extends ActiveSkill {
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             broadcast(hero.getPlayer().getLocation(), expireText, hero.getPlayer().getDisplayName());
         }
     }
@@ -90,7 +90,7 @@ public class SkillEndurance extends ActiveSkill {
             }
 
             if (event.getEntity() instanceof Player) {
-                Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+                Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
                     double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
                     int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", .9, true) - levelMult));
@@ -120,7 +120,7 @@ public class SkillEndurance extends ActiveSkill {
             }
 
             if (event.getEntity() instanceof Player) {
-                Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+                Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
                     double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
                     int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", .9, true) - levelMult));
@@ -132,7 +132,7 @@ public class SkillEndurance extends ActiveSkill {
             }
 
             if (event.getDamager() instanceof Player) {
-                Hero hero = plugin.getHeroManager().getHero((Player) event.getDamager());
+                Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
                 if (hero.hasEffect(getName())) {
                     int newDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", .9, false));
                     if (newDamage == 0)

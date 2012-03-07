@@ -14,7 +14,9 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -69,13 +71,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
         
         // Add the effect to the entity
-        FreezeEffect fEffect = new FreezeEffect(this, duration, hero);
-        if (target instanceof Player) {
-            plugin.getHeroManager().getHero((Player) target).addEffect(fEffect);
-        } else {
-            plugin.getEffectManager().addEntityEffect(target, fEffect);
-        }
-        
+        plugin.getCharacterManager().getCharacter(target).addEffect(new FreezeEffect(this, duration, hero));        
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -100,20 +96,20 @@ public class SkillDeepFreeze extends TargettedSkill {
         }
 
         @Override
-        public void apply(LivingEntity lEntity) {
-            super.apply(lEntity);
-            lEntity.setFireTicks(0);
-            Location location = lEntity.getLocation();
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+            monster.getEntity().setFireTicks(0);
+            Location location = monster.getEntity().getLocation();
             x = location.getX();
             y = location.getY();
             z = location.getZ();
 
-            broadcast(location, applyText, Messaging.getLivingEntityName(lEntity));
+            broadcast(location, applyText, Messaging.getLivingEntityName(monster));
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             player.setFireTicks(0);
             Location location = player.getLocation();
@@ -128,55 +124,48 @@ public class SkillDeepFreeze extends TargettedSkill {
             return applier;
         }
         
-        public void shatter(LivingEntity lEntity) {
-            super.remove(lEntity);
+        public void shatter(CharacterTemplate character) {
+            if(character instanceof Hero) {
+                super.removeFromHero((Hero) character);
+            } else if (character instanceof Monster) {
+                super.removeFromMonster((Monster) character);
+            }
+            LivingEntity lEntity = character.getEntity();
             int damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
             addSpellTarget(lEntity, applier);
             damageEntity(lEntity, applier.getPlayer(), damage, DamageCause.MAGIC);
             broadcast(lEntity.getLocation(), shatterText, Messaging.getLivingEntityName(lEntity));
         }
         
-        public void shatter(Hero hero) {
-            super.remove(hero);
-            Player player = hero.getPlayer();
-            int damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
-            addSpellTarget(player, applier);
-            damageEntity(player, applier.getPlayer(), damage, DamageCause.MAGIC);
-            broadcast(player.getLocation(), shatterText, player.getDisplayName());
-        }
-        
         @Override
-        public void remove(LivingEntity lEntity) {
-            super.remove(lEntity);
-            broadcast(lEntity.getLocation(), expireText, Messaging.getLivingEntityName(lEntity));
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
         @Override
-        public void tick(LivingEntity lEntity) {
-            super.tick(lEntity);
-            
-            Location location = lEntity.getLocation();
+        public void tickMonster(Monster monster) {
+            Location initial = monster.getEntity().getLocation();
+            Location location = initial;
             if (location.getX() != x || location.getY() != y || location.getZ() != z) {
                 location.setX(x);
                 location.setY(y);
                 location.setZ(z);
-                location.setYaw(lEntity.getLocation().getYaw());
-                location.setPitch(lEntity.getLocation().getPitch());
-                lEntity.teleport(location);
+                location.setYaw(initial.getYaw());
+                location.setPitch(initial.getPitch());
+                monster.getEntity().teleport(location);
             }
         }
         
         @Override
-        public void tick(Hero hero) {
-            super.tick(hero);
-
+        public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
             Location location = player.getLocation();
             if (location.getX() != x || location.getY() != y || location.getZ() != z) {
@@ -197,22 +186,11 @@ public class SkillDeepFreeze extends TargettedSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
-
-            if (event.getEntity() instanceof Player) {
-                Player player = (Player) event.getEntity();
-                Hero tHero = plugin.getHeroManager().getHero(player);
-                if (tHero.hasEffect("Freeze")) {
-                    FreezeEffect fEffect = (FreezeEffect) tHero.getEffect("Freeze");
-                    fEffect.shatter(tHero);
-                    tHero.manualRemoveEffect(fEffect);
-                }
-            } else if (event.getEntity() instanceof LivingEntity) {
-                LivingEntity lEntity = (LivingEntity) event.getEntity();
-                if (plugin.getEffectManager().entityHasEffect(lEntity, "Freeze")) {
-                    FreezeEffect fEffect = (FreezeEffect) plugin.getEffectManager().getEntityEffect(lEntity, "Freeze");
-                    fEffect.shatter(lEntity);
-                    plugin.getEffectManager().manualRemoveEntityEffect(lEntity, fEffect);
-                }
+            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            if (character.hasEffect("Freeze")) {
+                FreezeEffect fEffect = (FreezeEffect) character.getEffect("Freeze");
+                fEffect.shatter(character);
+                character.manualRemoveEffect(fEffect);
             }
         }
         
@@ -221,22 +199,11 @@ public class SkillDeepFreeze extends TargettedSkill {
             if (event.isCancelled() || event.getDamage() == 0 || !event.getSkill().isType(SkillType.FIRE)) {
                 return;
             }
-
-            if (event.getEntity() instanceof Player) {
-                Player player = (Player) event.getEntity();
-                Hero tHero = plugin.getHeroManager().getHero(player);
-                if (tHero.hasEffect("Freeze")) {
-                    FreezeEffect fEffect = (FreezeEffect) tHero.getEffect("Freeze");
-                    fEffect.shatter(tHero);
-                    tHero.manualRemoveEffect(fEffect);
-                }
-            } else if (event.getEntity() instanceof LivingEntity) {
-                LivingEntity lEntity = (LivingEntity) event.getEntity();
-                if (plugin.getEffectManager().entityHasEffect(lEntity, "Freeze")) {
-                    FreezeEffect fEffect = (FreezeEffect) plugin.getEffectManager().getEntityEffect(lEntity, "Freeze");
-                    fEffect.shatter(lEntity);
-                    plugin.getEffectManager().manualRemoveEntityEffect(lEntity, fEffect);
-                }
+            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            if (character.hasEffect("Freeze")) {
+                FreezeEffect fEffect = (FreezeEffect) character.getEffect("Freeze");
+                fEffect.shatter(character);
+                character.manualRemoveEffect(fEffect);
             }
         }
     }

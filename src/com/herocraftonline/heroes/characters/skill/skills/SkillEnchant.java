@@ -80,7 +80,7 @@ public class SkillEnchant extends PassiveSkill {
             if (event.isCancelled()) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero(event.getEnchanter());
+            Hero hero = plugin.getCharacterManager().getHero(event.getEnchanter());
             if (!hero.hasEffect(getName()) || !hero.hasExperienceType(ExperienceType.ENCHANTING)) {
                 // Don't offer enchants to players that don't meet the requirements
                 event.setCancelled(true);
@@ -99,7 +99,7 @@ public class SkillEnchant extends PassiveSkill {
         @EventHandler(priority = EventPriority.LOWEST)
         public void onEnchantItem(EnchantItemEvent event) {
             Player player = event.getEnchanter();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (event.isCancelled()) {
                 return;
             }

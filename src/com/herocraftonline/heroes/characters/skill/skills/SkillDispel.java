@@ -1,16 +1,16 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Set;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
@@ -40,13 +40,40 @@ public class SkillDispel extends TargettedSkill {
 
         boolean removed = false;
         int maxRemovals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 3, false);
-        if (target instanceof Player) {
-            Player targetPlayer = (Player) target;
-            // if player is targetting itself
-            if (targetPlayer.equals(player)) {
-                for (Effect effect : hero.getEffects()) {
-                    if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
-                        hero.removeEffect(effect);
+        // if player is targetting itself
+        if (target.equals(player)) {
+            for (Effect effect : hero.getEffects()) {
+                if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
+                    hero.removeEffect(effect);
+                    removed = true;
+                    maxRemovals--;
+                    if (maxRemovals == 0) {
+                        break;
+                    }
+                }
+            }
+        } else {
+            CharacterTemplate character = plugin.getCharacterManager().getCharacter(target);
+            boolean removeHarmful = false;
+            if (hero.hasParty() && character instanceof Hero) {
+                // If the target is a partymember lets make sure we only remove harmful effects
+                if (hero.getParty().isPartyMember((Hero) character)) {
+                    removeHarmful = true;
+                }
+            } else if (character.hasEffect("Summon")) {
+                removeHarmful = ((SummonEffect) character.getEffect("Summon")).getSummoner().equals(hero);
+            }
+            for (Effect effect : character.getEffects()) {
+                if (effect.isType(EffectType.DISPELLABLE)) {
+                    if (removeHarmful && effect.isType(EffectType.HARMFUL)) {
+                        character.removeEffect(effect);
+                        removed = true;
+                        maxRemovals--;
+                        if (maxRemovals == 0) {
+                            break;
+                        }
+                    } else if (!removeHarmful && effect.isType(EffectType.BENEFICIAL)) {
+                        character.removeEffect(effect);
                         removed = true;
                         maxRemovals--;
                         if (maxRemovals == 0) {
@@ -54,63 +81,8 @@ public class SkillDispel extends TargettedSkill {
                         }
                     }
                 }
-            } else {
-                Hero targetHero = plugin.getHeroManager().getHero(targetPlayer);
-                boolean removeHarmful = false;
-                if (hero.hasParty()) {
-                    // If the target is a partymember lets make sure we only remove harmful effects
-                    if (hero.getParty().isPartyMember(targetHero)) {
-                        removeHarmful = true;
-                    }
-                }
-                for (Effect effect : targetHero.getEffects()) {
-                    if (effect.isType(EffectType.DISPELLABLE)) {
-                        if (removeHarmful && effect.isType(EffectType.HARMFUL)) {
-                            targetHero.removeEffect(effect);
-                            removed = true;
-                            maxRemovals--;
-                            if (maxRemovals == 0) {
-                                break;
-                            }
-                        } else if (!removeHarmful && effect.isType(EffectType.BENEFICIAL)) {
-                            targetHero.removeEffect(effect);
-                            removed = true;
-                            maxRemovals--;
-                            if (maxRemovals == 0) {
-                                break;
-                            }
-                        }
-                    }
-                }
             }
-        } else {
-            Set<Effect> cEffects = plugin.getEffectManager().getEntityEffects(target);
-            if (cEffects != null) {
-                boolean removeHarmful = false;
-                if (hero.getSummons().contains(target)) {
-                    removeHarmful = true;
-                }
-                for (Effect effect : cEffects) {
-                    if (effect.isType(EffectType.DISPELLABLE)) {
-                        if (removeHarmful && effect.isType(EffectType.HARMFUL)) {
-                            plugin.getEffectManager().removeEntityEffect(target, effect);
-                            removed = true;
-                            maxRemovals--;
-                            if (maxRemovals == 0) {
-                                break;
-                            }
-                        } else if (!removeHarmful && effect.isType(EffectType.BENEFICIAL)) {
-                            plugin.getEffectManager().removeEntityEffect(target, effect);
-                            removed = true;
-                            maxRemovals--;
-                            if (maxRemovals == 0) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        } 
+        }
 
         if (removed) {
             broadcastExecuteText(hero, target);

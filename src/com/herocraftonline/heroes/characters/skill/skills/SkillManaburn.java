@@ -36,7 +36,7 @@ public class SkillManaburn extends TargettedSkill {
         if (!(target instanceof Player))
             return SkillResult.INVALID_TARGET;
 
-        Hero tHero = plugin.getHeroManager().getHero((Player) target);
+        Hero tHero = plugin.getCharacterManager().getHero((Player) target);
 
         int transferamount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
         if (tHero.getMana() > transferamount) {

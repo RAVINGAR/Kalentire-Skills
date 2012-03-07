@@ -80,8 +80,8 @@ public class SkillIceArrow extends ActiveSkill {
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -112,21 +112,15 @@ public class SkillIceArrow extends ActiveSkill {
             }
 
             Player player = (Player) arrow.getShooter();
-            Hero hero = plugin.getHeroManager().getHero(player);
+            Hero hero = plugin.getCharacterManager().getHero(player);
 
             if (hero.hasEffect("IceArrowBuff")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "duration", 5000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
                 SlowEffect iceSlowEffect = new SlowEffect(skill, duration, amplifier, false, applyText, "$1 is no longer slowed.", hero);
                 LivingEntity target = (LivingEntity) event.getEntity();
-                if (target instanceof Player) {
-                    Hero tHero = plugin.getHeroManager().getHero((Player) target);
-                    tHero.addEffect(iceSlowEffect);
-                    broadcast(target.getLocation(), applyText, tHero.getPlayer().getDisplayName(), player.getDisplayName());
-                } else {
-                    plugin.getEffectManager().addEntityEffect(target, iceSlowEffect);
-                    broadcast(target.getLocation(), applyText, Messaging.getLivingEntityName(target), player.getDisplayName());
-                }
+                plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
+                broadcast(target.getLocation(), applyText, Messaging.getLivingEntityName(target), player.getDisplayName());
             }
         }
 
@@ -135,7 +129,7 @@ public class SkillIceArrow extends ActiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("IceArrowBuff")) {
                 int mana = SkillConfigManager.getUseSetting(hero, skill, "mana-per-shot", 1, true);
                 if (hero.getMana() < mana) {

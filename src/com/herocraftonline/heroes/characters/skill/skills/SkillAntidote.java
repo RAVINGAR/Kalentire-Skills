@@ -31,7 +31,7 @@ public class SkillAntidote extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player) {
-            Hero targetHero = plugin.getHeroManager().getHero((Player) target);
+            Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
             boolean cured = false;
             for (Effect effect : targetHero.getEffects()) {
                 if (effect.isType(EffectType.POISON) && !effect.isType(EffectType.BENEFICIAL)) {

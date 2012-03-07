@@ -54,7 +54,7 @@ public class SkillGarrote extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         if (target instanceof Player) {
             long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 4000, false);
-            plugin.getHeroManager().getHero((Player) target).addEffect(new SilenceEffect(this, duration));
+            plugin.getCharacterManager().getHero((Player) target).addEffect(new SilenceEffect(this, duration));
         }
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

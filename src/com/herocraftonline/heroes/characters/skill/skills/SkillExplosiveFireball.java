@@ -74,19 +74,14 @@ public class SkillExplosiveFireball extends ActiveSkill {
                     if (fireball.getShooter() instanceof Player) {
                         Entity entity = event.getEntity();
                         Player shooter = (Player) fireball.getShooter();
-                        Hero hero = plugin.getHeroManager().getHero(shooter);
+                        Hero hero = plugin.getCharacterManager().getHero(shooter);
                         if (!damageCheck(shooter, (LivingEntity) entity)) {
                             event.setCancelled(true);
                         }
                         int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
                         entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
-                        if (entity instanceof Player) {
-                            addSpellTarget(entity, hero);
-                            plugin.getHeroManager().getHero((Player) entity).addEffect(new CombustEffect(skill, shooter));
-                        } else if (entity instanceof LivingEntity) {
-                            addSpellTarget(entity, hero);
-                            plugin.getEffectManager().addEntityEffect((LivingEntity) entity, new CombustEffect(skill, shooter));
-                        }
+                        if (entity instanceof LivingEntity)
+                        plugin.getCharacterManager().getCharacter((LivingEntity) entity).addEffect(new CombustEffect(skill, shooter));
                         event.setDamage(damage);
                     }
                 }

@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
@@ -127,15 +128,15 @@ public class SkillIcyAura extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             if (changedBlocks.get(hero) != null) {
                 for (Entry<Location, Material> entry : changedBlocks.get(hero).entrySet()) {
@@ -150,9 +151,7 @@ public class SkillIcyAura extends ActiveSkill {
         }
 
         @Override
-        public void tick(Hero hero) {
-            super.tick(hero);
-
+        public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
             Location loc = player.getLocation().clone();
             loc.setY(loc.getY() - 1);
@@ -174,14 +173,9 @@ public class SkillIcyAura extends ActiveSkill {
                     loc = lEntity.getLocation().clone();
                     loc.setY(loc.getY() - 1);
                     changeBlock(loc, hero);
-                    if (lEntity instanceof Player) {
-                        plugin.getHeroManager().getHero((Player) lEntity).addEffect(sEffect);
-                    } else
-                        plugin.getEffectManager().addEntityEffect(lEntity, sEffect);
-
+                    plugin.getCharacterManager().getCharacter(lEntity).addEffect(sEffect);
                 }
             }
-
         }
 
         private void changeBlock(Location loc, Hero hero) {
@@ -194,6 +188,9 @@ public class SkillIcyAura extends ActiveSkill {
                 loc.getBlock().setType(Material.ICE);
             }
         }
+
+        @Override
+        public void tickMonster(Monster monster) { }
     }
 
     @Override

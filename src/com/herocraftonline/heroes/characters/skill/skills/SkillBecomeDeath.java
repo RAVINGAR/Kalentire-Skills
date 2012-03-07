@@ -77,15 +77,15 @@ public class SkillBecomeDeath extends ActiveSkill {
         }
 
         @Override
-        public void apply(Hero hero) {
-            super.apply(hero);
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void remove(Hero hero) {
-            super.remove(hero);
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
@@ -104,7 +104,7 @@ public class SkillBecomeDeath extends ActiveSkill {
                 return;
             }
             
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getTarget());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getTarget());
             if (hero.hasEffect("Undead")) {
                 event.setCancelled(true);
             }
@@ -122,12 +122,12 @@ public class SkillBecomeDeath extends ActiveSkill {
             
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             if (subEvent.getDamager() instanceof Player) {
-                Hero hero = plugin.getHeroManager().getHero((Player) subEvent.getDamager());
+                Hero hero = plugin.getCharacterManager().getHero((Player) subEvent.getDamager());
                 if (hero.hasEffect("Undead"))
                     hero.removeEffect(hero.getEffect("Undead"));
             } else if (subEvent.getDamager() instanceof Projectile) {
                 if (((Projectile) subEvent.getDamager()).getShooter() instanceof Player) {
-                    Hero hero = plugin.getHeroManager().getHero((Player) ((Projectile) subEvent.getDamager()).getShooter());
+                    Hero hero = plugin.getCharacterManager().getHero((Player) ((Projectile) subEvent.getDamager()).getShooter());
                     if (hero.hasEffect("Undead"))
                         hero.removeEffect(hero.getEffect("Undead"));
                 }

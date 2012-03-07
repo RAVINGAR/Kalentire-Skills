@@ -41,7 +41,7 @@ public class SkillPort extends ActiveSkill {
         if (args[0].equalsIgnoreCase("list")) {
             for (String n : SkillConfigManager.getUseSettingKeys(hero, this, null)) {
                 String retrievedNode = SkillConfigManager.getUseSetting(hero, this, n, (String) null);
-                if (retrievedNode != null && retrievedNode.split(":").length == 5) {
+                if (retrievedNode != null) {
                     Messaging.send(player, "$1 - $2", n, retrievedNode);
                 }
             }

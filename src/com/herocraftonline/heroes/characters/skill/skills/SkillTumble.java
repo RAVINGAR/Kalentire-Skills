@@ -48,7 +48,7 @@ public class SkillTumble extends PassiveSkill {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
             }
-            Hero hero = plugin.getHeroManager().getHero((Player) event.getEntity());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (!hero.hasEffect("Tumble")) {
                 return;
             }
