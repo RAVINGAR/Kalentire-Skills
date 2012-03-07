@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
@@ -27,11 +28,12 @@ public class SkillScan extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        if (target instanceof Player) {
-            Hero tHero = plugin.getCharacterManager().getHero((Player) target);
-            Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), (int) tHero.getHealth(), (int) tHero.getMaxHealth());
+        CharacterTemplate character = plugin.getCharacterManager().getCharacter(target);
+        if (character instanceof Hero) {
+            Hero tHero = (Hero) character;
+            Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), tHero.getHealth(), tHero.getMaxHealth());
         } else {
-            Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), plugin.getDamageManager().getHealth(target), plugin.getDamageManager().getMaxHealth(target));
+            Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), character.getHealth(), character.getMaxHealth());
         }
         
         return SkillResult.NORMAL;
