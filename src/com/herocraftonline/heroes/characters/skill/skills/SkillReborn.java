@@ -77,7 +77,7 @@ public class SkillReborn extends PassiveSkill {
                             + (SkillConfigManager.getUseSetting(hero, skill, "health-increase", 0.0, false) * hero.getSkillLevel(skill));
                     int healthRegain = (int) (hero.getMaxHealth() * regainPercent);
                     HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, skill);
-                    if (hrh.isCancelled()) {
+                    if (hrh.isCancelled() || hrh.getAmount() == 0) {
                         return;
                     }
                     event.setDamage(0);
