@@ -101,8 +101,9 @@ public class SkillEndurance extends ActiveSkill {
                 }
             }
 
-            if (event.getSkill().isType(SkillType.PHYSICAL)) {
-                Hero hero =  event.getDamager();
+            //TODO: change to allow monsters
+            if (event.getSkill().isType(SkillType.PHYSICAL) && event.getDamager() instanceof Hero) {
+                Hero hero =  (Hero) event.getDamager();
                 if (hero.hasEffect(getName())) {
                     int newDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", .9, false));
                     if (newDamage == 0) {
@@ -125,18 +126,20 @@ public class SkillEndurance extends ActiveSkill {
                     double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
                     int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", .9, true) - levelMult));
                     //Always deal at least 1 damage
-                    if (newDamage == 0)
+                    if (newDamage == 0) {
                         newDamage = 1;
+                    }
                     event.setDamage(newDamage);
                 }
             }
 
-            if (event.getDamager() instanceof Player) {
-                Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
+            if (event.getDamager() instanceof Hero) {
+                Hero hero = (Hero) event.getDamager();
                 if (hero.hasEffect(getName())) {
                     int newDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", .9, false));
-                    if (newDamage == 0)
+                    if (newDamage == 0) {
                         newDamage = 1;
+                    }
                     event.setDamage(newDamage);
                 }
             }

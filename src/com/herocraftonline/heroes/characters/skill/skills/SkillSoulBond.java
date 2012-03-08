@@ -5,7 +5,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -109,7 +108,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                 // Split the damage
                 int splitDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                Skill.damageEntity(applier, event.getDamager().getPlayer(), splitDamage, DamageCause.MAGIC);
+                Skill.damageEntity(applier, event.getDamager().getEntity(), splitDamage, DamageCause.MAGIC);
                 event.setDamage(event.getDamage() - splitDamage);
             }
 
@@ -123,13 +122,7 @@ public class SkillSoulBond extends TargettedSkill {
             }
 
             LivingEntity target = (LivingEntity) event.getEntity();
-            LivingEntity damager = null;
-            if (event.getDamager() instanceof Projectile) {
-                damager = ((Projectile) event.getDamager()).getShooter();
-            } else {
-                damager = (LivingEntity) event.getDamager();
-            }
-
+            LivingEntity damager = event.getDamager().getEntity();
             CharacterTemplate character = plugin.getCharacterManager().getCharacter(target);
             // Make sure the target doesn't have both effects
             if (character.hasEffect("SoulBonded") && !character.hasEffect("SoulBond")) {

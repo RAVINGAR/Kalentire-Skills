@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -119,18 +118,8 @@ public class SkillCurse extends TargettedSkill {
                 return;
             }
 
-            CharacterTemplate character = null;
-
-            if (event.getDamager() instanceof LivingEntity) {
-                character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
-            } else if (event.getDamager() instanceof Projectile) {
-                LivingEntity shooter = ((Projectile) event.getDamager()).getShooter();
-                if (shooter == null) {
-                    return;
-                }
-                character = plugin.getCharacterManager().getCharacter((LivingEntity) shooter);
-            }
-            if (character != null && character.hasEffect("Curse")) {
+            CharacterTemplate character = event.getDamager();
+            if (character.hasEffect("Curse")) {
                 CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
                 if (Util.rand.nextDouble() < cEffect.missChance) {
                     event.setCancelled(true);

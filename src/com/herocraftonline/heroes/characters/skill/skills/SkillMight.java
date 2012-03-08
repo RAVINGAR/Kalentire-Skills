@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -12,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -133,25 +133,11 @@ public class SkillMight extends ActiveSkill {
                 return;
             }
 
-            if (event.getDamager() instanceof Player) {
-                Player player = (Player) event.getDamager();
-                Hero hero = plugin.getCharacterManager().getHero(player);
-
-                if (hero.hasEffect("Might")) {
-                    double damageBonus = ((MightEffect) hero.getEffect("Might")).getDamageBonus();
-                    event.setDamage((int) (event.getDamage() * damageBonus));
-                }
-            } else if (event.getDamager() instanceof Projectile) {
-                if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                    Player player = (Player) ((Projectile) event.getDamager()).getShooter();
-                    Hero hero = plugin.getCharacterManager().getHero(player);
-
-                    if (hero.hasEffect("Might")) {
-                        double damageBonus = ((MightEffect) hero.getEffect("Might")).getDamageBonus();
-                        event.setDamage((int) (event.getDamage() * damageBonus));
-                    }
-                }
-            }
+            CharacterTemplate character = event.getDamager();
+            if (character.hasEffect("Might")) {
+                double damageBonus = ((MightEffect) character.getEffect("Might")).damageBonus;
+                event.setDamage((int) (event.getDamage() * damageBonus));
+            }           
         }
     }
 

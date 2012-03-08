@@ -23,127 +23,132 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillBladegrasp extends ActiveSkill {
 
-	private String applyText;
-	private String expireText;
-	private String parryText;
-	private String parrySkillText;
+    private String applyText;
+    private String expireText;
+    private String parryText;
+    private String parrySkillText;
 
-	public SkillBladegrasp(Heroes plugin) {
-		super(plugin, "Bladegrasp");
-		setDescription("You have a $1% chance to block incoming damage for $2 seconds.");
-		setUsage("/skill bladegrasp");
-		setArgumentRange(0, 0);
-		setIdentifiers("skill bladegrasp", "skill bgrasp");
-		setTypes(SkillType.PHYSICAL, SkillType.BUFF);
-		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-	}
+    public SkillBladegrasp(Heroes plugin) {
+        super(plugin, "Bladegrasp");
+        setDescription("You have a $1% chance to block incoming damage for $2 seconds.");
+        setUsage("/skill bladegrasp");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill bladegrasp", "skill bgrasp");
+        setTypes(SkillType.PHYSICAL, SkillType.BUFF);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+    }
 
-	@Override
-	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
-		node.set(Setting.DURATION.node(), 5000);
-		node.set(Setting.APPLY_TEXT.node(), "%hero% tightened his grip!");
-		node.set(Setting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
-		node.set("parry-text", "%hero% parried an attack!");
-		node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
-		node.set(Setting.CHANCE_LEVEL.node(), .02);
-		return node;
-	}
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.DURATION.node(), 5000);
+        node.set(Setting.APPLY_TEXT.node(), "%hero% tightened his grip!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
+        node.set("parry-text", "%hero% parried an attack!");
+        node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
+        node.set(Setting.CHANCE_LEVEL.node(), .02);
+        return node;
+    }
 
-	@Override
-	public void init() {
-		super.init();
-		applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% tightened his grip!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% loosened his grip!").replace("%hero%", "$1");
-		parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!").replace("%hero%", "$1");
-		parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.").replace("$1","%hero$").replace("$2","%target%").replace("$3","%skill");
-	}
+    @Override
+    public void init() {
+        super.init();
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% tightened his grip!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% loosened his grip!").replace("%hero%", "$1");
+        parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!").replace("%hero%", "$1");
+        parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.").replace("$1","%hero$").replace("$2","%target%").replace("$3","%skill");
+    }
 
-	@Override
-	public SkillResult use(Hero hero, String[] args) {
-		broadcastExecuteText(hero);
-		int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-		hero.addEffect(new BladegraspEffect(this, duration));
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+        broadcastExecuteText(hero);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        hero.addEffect(new BladegraspEffect(this, duration));
 
-		return SkillResult.NORMAL;
-	}
+        return SkillResult.NORMAL;
+    }
 
-	public class BladegraspEffect extends ExpirableEffect {
+    public class BladegraspEffect extends ExpirableEffect {
 
-		public BladegraspEffect(Skill skill, long duration) {
-			super(skill, "Bladegrasp", duration);
-			this.types.add(EffectType.PHYSICAL);
-			this.types.add(EffectType.BENEFICIAL);
-		}
+        public BladegraspEffect(Skill skill, long duration) {
+            super(skill, "Bladegrasp", duration);
+            this.types.add(EffectType.PHYSICAL);
+            this.types.add(EffectType.BENEFICIAL);
+        }
 
-		@Override
-		public void applyToHero(Hero hero) {
-			super.applyToHero(hero);
-			Player player = hero.getPlayer();
-			broadcast(player.getLocation(), applyText, player.getDisplayName());
-		}
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), applyText, player.getDisplayName());
+        }
 
-		@Override
-		public void removeFromHero(Hero hero) {
-			super.removeFromHero(hero);
-			Player player = hero.getPlayer();
-			broadcast(player.getLocation(), expireText, player.getDisplayName());
-		}
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), expireText, player.getDisplayName());
+        }
 
-	}
+    }
 
-	public class SkillEntityListener implements Listener {
+    public class SkillEntityListener implements Listener {
 
-		private Skill skill;
-		
-		SkillEntityListener(Skill skill) {
-			this.skill = skill;
-		}
-		
-		@EventHandler()
-		public void onWeaponDamage(WeaponDamageEvent event) {
-			// Ignore cancelled damage events & 0 damage events for Spam Control
-			if (event.getDamage() == 0 || event.isCancelled() || !(event.getEntity() instanceof Player)) {
-				return;
-			}
+        private Skill skill;
 
-			Player player = (Player) event.getEntity();
-			Hero hero = plugin.getCharacterManager().getHero(player);
-			if (hero.hasEffect(getName())) {
-				double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(skill);
-				if (Util.rand.nextDouble() > parryChance)
-					return;
+        SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
 
-				event.setCancelled(true);
-				String message = Messaging.parameterizeMessage(parryText, player.getDisplayName());
-				Messaging.send(player, message);
-				if (event.getDamager() instanceof Player) {
-					Messaging.send((Player) event.getDamager(), message);
-				}
-			}
-		}
+        @EventHandler()
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            // Ignore cancelled damage events & 0 damage events for Spam Control
+            if (event.getDamage() == 0 || event.isCancelled() || !(event.getEntity() instanceof Player)) {
+                return;
+            }
 
-		@EventHandler()
-		public void onSkillDamage(SkillDamageEvent event) {
-			// Ignore cancelled damage events & 0 damage events for Spam Control
-			if (event.getDamage() == 0 || event.isCancelled() || !event.getSkill().isType(SkillType.PHYSICAL) || !(event.getEntity() instanceof Player)) {
-				return;
-			}
-			Player player = (Player) event.getEntity();
-			Hero hero = plugin.getCharacterManager().getHero(player);
-			if (hero.hasEffect(getName())) {
-				double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
-				if (Util.rand.nextDouble() > parryChance)
-					return;
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect(getName())) {
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(skill);
+                if (Util.rand.nextDouble() > parryChance) {
+                    return;
+                }
 
-				event.setCancelled(true);
-				String message = Messaging.parameterizeMessage(parrySkillText, player.getDisplayName(), event.getDamager().getPlayer().getDisplayName(), event.getSkill().getName());
-				Messaging.send(player, message);
-				Messaging.send(event.getDamager().getPlayer(), message);
-				
-			}
-		}
-	}
+                event.setCancelled(true);
+                String message = Messaging.parameterizeMessage(parryText, player.getDisplayName());
+                Messaging.send(player, message);
+                if (event.getDamager() instanceof Hero) {
+                    Messaging.send(((Hero) event.getDamager()).getPlayer(), message);
+                }
+            }
+        }
+
+        @EventHandler()
+        public void onSkillDamage(SkillDamageEvent event) {
+            // Ignore cancelled damage events & 0 damage events for Spam Control
+            //TODO: adjust to allow monsters
+            if (event.getDamage() == 0 || event.isCancelled() || !event.getSkill().isType(SkillType.PHYSICAL) || !(event.getEntity() instanceof Player)) {
+                return;
+            }
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect(getName())) {
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
+                if (Util.rand.nextDouble() > parryChance) {
+                    return;
+                }
+
+                event.setCancelled(true);
+                String message = Messaging.parameterizeMessage(parrySkillText, player.getDisplayName(), Messaging.getLivingEntityName(event.getDamager()), event.getSkill().getName());
+                Messaging.send(player, message);
+                if (event.getDamager() instanceof Hero) {
+                    Messaging.send(((Hero) event.getDamager()).getPlayer(), message);
+                }
+
+            }
+        }
+    }
 
     @Override
     public String getDescription(Hero hero) {

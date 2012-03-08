@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -59,17 +60,25 @@ public class SkillReflect extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-        hero.addEffect(new ReflectEffect(this, duration));
+        double reflectAmount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", 0.5, false);
+        hero.addEffect(new ReflectEffect(this, duration, reflectAmount));
 
         return SkillResult.NORMAL;
     }
 
     public class ReflectEffect extends ExpirableEffect {
 
-        public ReflectEffect(Skill skill, long duration) {
+        private final double reflectAmount;
+
+        public ReflectEffect(Skill skill, long duration, double reflectAmount) {
             super(skill, "Reflect", duration);
+            this.reflectAmount = reflectAmount;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
+        }
+
+        public double getReflectAmount() {
+            return reflectAmount;
         }
 
         @Override
@@ -98,17 +107,14 @@ public class SkillReflect extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getDamager() instanceof LivingEntity)) {
+            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
-            
-            LivingEntity attacker = (LivingEntity) event.getDamager();
-            Player player = (Player) event.getEntity();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (hero.hasEffect("Reflect")) {
-                int damage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "reflected-amount", 0.5, false));
-                plugin.getDamageManager().addSpellTarget(attacker, hero, skill);
-                Skill.damageEntity(attacker, player, damage, DamageCause.MAGIC);
+            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            if (character.hasEffect("Reflect")) {
+                int damage = (int) (event.getDamage() * ((ReflectEffect) character.getEffect("Reflect")).reflectAmount);
+                plugin.getDamageManager().addSpellTarget(event.getDamager().getEntity(), character, skill);
+                Skill.damageEntity(event.getDamager().getEntity(), character.getEntity(), damage, DamageCause.MAGIC);
             }
         }
     }
