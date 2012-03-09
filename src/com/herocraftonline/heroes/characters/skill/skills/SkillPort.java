@@ -84,7 +84,7 @@ public class SkillPort extends ActiveSkill {
 
             return SkillResult.NORMAL;
         } else {
-            Messaging.send(player, "No gate location named $1", args[0]);
+            Messaging.send(player, "No port location named $1", args[0]);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }
