@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -70,11 +71,10 @@ public class SkillFireArmor extends PassiveSkill {
 
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
-
-            if (!hero.hasEffect("FireArmor") || !SkillConfigManager.getUseSetting(hero, skill, "armors", defaultArmors).contains(player.getInventory().getChestplate().getType().name())) {
+            ItemStack chest = player.getInventory().getChestplate() ;
+            if (!hero.hasEffect("FireArmor") || chest == null || !SkillConfigManager.getUseSetting(hero, skill, "armors", defaultArmors).contains(chest.getType().name())) {
                 return;
             }
-
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             // Dont set Projectiles on fire
             if (!(subEvent.getDamager() instanceof LivingEntity)) {
