@@ -26,7 +26,7 @@ public class SkillSonicBoom extends ActiveSkill {
         setUsage("/skill sonicboom");
         setArgumentRange(0, 0);
         setIdentifiers("skill sonicboom");
-        setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL);
+        setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL, SkillType.INTERRUPT);
     }
     
     @Override
@@ -108,6 +108,9 @@ public class SkillSonicBoom extends ActiveSkill {
                 continue;
             }
             CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) e);
+            if (character instanceof Hero) {
+                ((Hero) character).cancelDelayedSkill();
+            }
             addSpellTarget(e, hero);
             damageEntity(character.getEntity(), player, damage, DamageCause.MAGIC);
             character.addEffect(new SilenceEffect(this, duration));

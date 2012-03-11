@@ -22,7 +22,7 @@ public class SkillKick extends TargettedSkill {
         setUsage("/skill kick <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill kick");
-        setTypes(SkillType.DEBUFF, SkillType.PHYSICAL, SkillType.HARMFUL);
+        setTypes(SkillType.DEBUFF, SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.INTERRUPT);
     }
 
     @Override

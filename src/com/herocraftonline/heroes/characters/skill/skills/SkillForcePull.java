@@ -23,7 +23,7 @@ public class SkillForcePull extends TargettedSkill {
         setUsage("/skill forcepull <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill forcepull", "skill fpull");
-        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class SkillSilence extends TargettedSkill {
         setUsage("/skill silence <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill silence");
-        setTypes(SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.INTERRUPT);
     }
 
     @Override

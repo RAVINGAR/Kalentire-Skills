@@ -38,7 +38,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         setUsage("/skill deepfreeze <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill deepfreeze", "skill dfreeze");
-        setTypes(SkillType.ICE, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ICE, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 

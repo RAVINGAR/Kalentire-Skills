@@ -18,7 +18,7 @@ public class SkillBlind extends TargettedSkill {
 
     private String applyText;
     private String expireText;
-    
+
     public SkillBlind(Heroes plugin) {
         super(plugin, "Blind");
         setDescription("You blind the target for $1 seconds.");
@@ -27,6 +27,7 @@ public class SkillBlind extends TargettedSkill {
         setIdentifiers("skill blind");
         setTypes(SkillType.SILENCABLE, SkillType.ILLUSION, SkillType.HARMFUL);
     }
+
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();

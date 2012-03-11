@@ -35,7 +35,7 @@ public class SkillImpale extends TargettedSkill {
         setUsage("/skill impale <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill impale");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.FORCE);
+        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.FORCE, SkillType.INTERRUPT);
     }
 
     @Override

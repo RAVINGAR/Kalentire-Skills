@@ -23,7 +23,7 @@ public class SkillForcePush extends TargettedSkill {
         setUsage("/skill forcepush <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill forcepush", "skill fpush");
-        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
     }
 
     @Override
