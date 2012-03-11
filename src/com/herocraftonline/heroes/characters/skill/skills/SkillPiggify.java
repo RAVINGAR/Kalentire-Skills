@@ -1,7 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -30,7 +31,7 @@ import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPiggify extends TargettedSkill {
 
-    private Set<Entity> creatures = new HashSet<Entity>();
+    private Map<Entity, CharacterTemplate> creatures = new HashMap<Entity, CharacterTemplate>();
 
     public SkillPiggify(Heroes plugin) {
         super(plugin, "Piggify");
@@ -79,7 +80,7 @@ public class SkillPiggify extends TargettedSkill {
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
             creature.setPassenger(monster.getEntity());
-            creatures.add(creature);
+            creatures.put(creature, monster);
         }
 
         @Override
@@ -87,7 +88,7 @@ public class SkillPiggify extends TargettedSkill {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
             creature.setPassenger(player);
-            creatures.add(creature);
+            creatures.put(creature, hero);
         }
 
         @Override
@@ -107,12 +108,21 @@ public class SkillPiggify extends TargettedSkill {
 
     public class SkillEntityListener implements Listener {
         
-        @EventHandler(priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !creatures.contains(event.getEntity())) {
+            if (event.isCancelled() || event.getDamage() == 0) {
                 return;
             }
-            event.setCancelled(true);
+            if (creatures.containsKey(event.getEntity())) {
+                event.setCancelled(true);
+                CharacterTemplate character = creatures.remove(event.getEntity());
+                character.removeEffect(character.getEffect("Piggify"));
+            } else if (event.getEntity() instanceof LivingEntity) {
+                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                if (character.hasEffect("Piggify")) {
+                    character.removeEffect(character.getEffect("Piggify"));
+                }
+            }
         }
     }
 
