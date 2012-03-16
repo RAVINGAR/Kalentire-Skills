@@ -49,10 +49,12 @@ public class SkillQuake extends PassiveSkill {
         
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.getCause() != DamageCause.FALL || !(event.getEntity() instanceof Player) || event.isCancelled()) {
+            if (event.getCause() != DamageCause.FALL || !(event.getEntity() instanceof Player) || event.isCancelled() || event.getDamage() == 0) {
                 return;
             }
-
+            if (event.getDamage() > ((LivingEntity) event.getEntity()).getHealth()) {
+                return;
+            }
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
