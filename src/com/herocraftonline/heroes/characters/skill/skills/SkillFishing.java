@@ -67,7 +67,7 @@ public class SkillFishing extends PassiveSkill {
                 if (hero.getLevel() >= leatherlvl && SkillConfigManager.getUseSetting(hero, skill, "enable-leather", false)){ //if fishing leather is enabled and have the level
 
                     if (getCaught != null){ //If not null
-                        switch(Util.rand.nextInt(7)){
+                        switch(Util.rand.nextInt(8)){
                         case 0: 
                             getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
                             Messaging.send(player, "You found leather boots!");
