@@ -50,7 +50,7 @@ public class SkillBackflip extends ActiveSkill {
         Player player = hero.getPlayer();
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && nobackflipMaterials.contains(mat)) || player.isInsideVehicle()) {
-            Messaging.send(player, "You can't backflip while mid-air or from inside a vehicle!");
+            Messaging.send(player, "You can't backflip while mid-air or from inside a vehicle.");
             return SkillResult.FAIL;
         }
         float pitch = player.getEyeLocation().getPitch();
