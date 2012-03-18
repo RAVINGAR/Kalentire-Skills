@@ -19,6 +19,7 @@ import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillBackflip extends ActiveSkill {
 
+	private static final Vector backwards = new Vector(-1, 1,-1);
     private static final Set<Material> nobackflipMaterials;
     static {
         nobackflipMaterials = new HashSet<Material>();
@@ -62,7 +63,7 @@ public class SkillBackflip extends ActiveSkill {
             pitch = -pitch;
         }
         float multiplier = (90f + pitch) / 50f;
-        Vector v = player.getVelocity().setY(1).add(player.getLocation().getDirection().setY(0).normalize().multiply(multiplier * backflipForwards)).multiply(-1);
+        Vector v = player.getVelocity().setY(1).add(player.getLocation().getDirection().setY(0).normalize().multiply(multiplier * backflipForwards)).multiply(backwards);
         player.setVelocity(v);
         player.setFallDistance(-8f);
         broadcastExecuteText(hero);
