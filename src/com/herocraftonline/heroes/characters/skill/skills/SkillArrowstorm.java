@@ -25,7 +25,7 @@ public class SkillArrowstorm extends ActiveSkill {
     
     public SkillArrowstorm(Heroes plugin) {
         super(plugin, "Arrowstorm");
-        setDescription("Shoots between $1-$2 arrows at a rate of $3-$4 per second. CD: $5s M: $6");
+        setDescription("You shoot between $1-$2 arrows at a rate of $3-$4 per second. CD: $5s M: $6");
         setUsage("/skill arrowstorm");
         setArgumentRange(0, 0);
         setIdentifiers(new String[]{"skill arrowstorm"});

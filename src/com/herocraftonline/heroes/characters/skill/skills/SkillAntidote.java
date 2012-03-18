@@ -20,7 +20,7 @@ public class SkillAntidote extends TargettedSkill {
 
     public SkillAntidote(Heroes plugin) {
         super(plugin, "Antidote");
-        setDescription("Cures your target of poisons");
+        setDescription("You cure your target of poisons");
         setUsage("/skill antidote <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill antidote");

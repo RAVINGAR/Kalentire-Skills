@@ -21,7 +21,7 @@ public class SkillBlaze extends ActiveSkill {
 
     public SkillBlaze(Heroes plugin) {
         super(plugin, "Blaze");
-        setDescription("You ignite all nearby enemies.");
+        setDescription("You ignite all nearby enemies on fire dealing $1 fire damage.");
         setUsage("/skill blaze");
         setArgumentRange(0, 0);
         setIdentifiers("skill blaze");
@@ -33,6 +33,8 @@ public class SkillBlaze extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DURATION.node(), 30000);
         node.set(Setting.RADIUS.node(), 5);
+        node.set(Setting.DAMAGE.node(), 4);
+        node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
         return node;
     }
 
@@ -67,8 +69,10 @@ public class SkillBlaze extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
+	@Override
+	public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        damage += (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
+        return getDescription().replace("$1", damage + "");
     }
 }

@@ -13,14 +13,14 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Setting;
 
-public class SkillBolt extends TargettedSkill {
+public class SkillBlitz extends TargettedSkill {
 
-    public SkillBolt(Heroes plugin) {
-        super(plugin, "Bolt");
-        setDescription("You call a bolt of lightning down on the target dealing $1 damage.");
-        setUsage("/skill bolt <target>");
+    public SkillBlitz(Heroes plugin) {
+        super(plugin, "Blitz");
+        setDescription("Your skills in ninjutsu cause $1 lightning damage to your target.");
+        setUsage("/skill blitz <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill bolt");
+        setIdentifiers("skill blitz");
         setTypes(SkillType.LIGHTNING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
     }
 
@@ -36,7 +36,7 @@ public class SkillBolt extends TargettedSkill {
         Player player = hero.getPlayer();
 
         target.getWorld().strikeLightningEffect(target.getLocation());
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 20, false);
         
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC);
@@ -47,7 +47,7 @@ public class SkillBolt extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 20, false);
         return getDescription().replace("$1", damage + "");
     }
 }
