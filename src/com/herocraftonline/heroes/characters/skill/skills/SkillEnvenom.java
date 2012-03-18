@@ -28,17 +28,17 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillAssassinsBlade extends ActiveSkill {
+public class SkillEnvenom extends ActiveSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillAssassinsBlade(Heroes plugin) {
-        super(plugin, "AssassinsBlade");
+    public SkillEnvenom(Heroes plugin) {
+        super(plugin, "Envenom");
         setDescription("You poison your blade which will deal an extra $1 damage every $2 seconds.");
-        setUsage("/skill ablade");
+        setUsage("/skill envenom");
         setArgumentRange(0, 0);
-        setIdentifiers("skill ablade", "skill assassinsblade");
+        setIdentifiers("skill ablade", "skill envenom");
         setTypes(SkillType.BUFF);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
@@ -68,16 +68,16 @@ public class SkillAssassinsBlade extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 600000, false);
         int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
-        hero.addEffect(new AssassinBladeBuff(this, duration, numAttacks));
+        hero.addEffect(new EnvenomBuff(this, duration, numAttacks));
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 
-    public class AssassinBladeBuff extends ExpirableEffect {
+    public class EnvenomBuff extends ExpirableEffect {
 
         private int applicationsLeft = 1;
 
-        public AssassinBladeBuff(Skill skill, long duration, int numAttacks) {
+        public EnvenomBuff(Skill skill, long duration, int numAttacks) {
             super(skill, "PoisonBlade", duration);
             this.applicationsLeft = numAttacks;
             this.types.add(EffectType.BENEFICIAL);
@@ -187,7 +187,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
         }
 
         private void checkBuff(Hero hero) {
-            AssassinBladeBuff abBuff = (AssassinBladeBuff) hero.getEffect("PoisonBlade");
+        	EnvenomBuff abBuff = (EnvenomBuff) hero.getEffect("Envenom");
             abBuff.applicationsLeft -= 1;
             if (abBuff.applicationsLeft < 1) {
                 hero.removeEffect(abBuff);
