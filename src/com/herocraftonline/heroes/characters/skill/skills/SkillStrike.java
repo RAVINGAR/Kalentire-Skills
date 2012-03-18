@@ -39,7 +39,7 @@ public class SkillStrike extends TargettedSkill {
         node.set(Setting.MAX_DISTANCE.node(), 2);
         node.set(Setting.DURATION.node(), 15000);
         node.set(Setting.PERIOD.node(), 3000);
-        node.set("tick-damage", 1);
+        node.set(Setting.DAMAGE_TICK.node(), 1);
         node.set(Setting.APPLY_TEXT.node(), "%target% is bleeding from a grievous wound!");
         node.set(Setting.EXPIRE_TEXT.node(), "%target% has stopped bleeding!");
         return node;
@@ -64,7 +64,7 @@ public class SkillStrike extends TargettedSkill {
         // Apply our effect
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 15000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_TICK, 1, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new strikeBleedEffect(this, period, duration, tickDamage, player));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
@@ -108,7 +108,7 @@ public class SkillStrike extends TargettedSkill {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 15000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
-        int td = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        int td = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_TICK, 1, false);
         td = td * duration / period;
         return getDescription().replace("$1", damage + "").replace("$2", td + "").replace("$3", duration / 1000 + "");
     }
