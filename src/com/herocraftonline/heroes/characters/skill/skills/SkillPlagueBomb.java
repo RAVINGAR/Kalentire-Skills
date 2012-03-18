@@ -33,7 +33,7 @@ public class SkillPlagueBomb extends ActiveSkill {
     private Map<Integer, Player> sheepMap = new HashMap<Integer, Player>();
 
     private class SkillListener implements Listener {
-        @EventHandler
+		@EventHandler
         public void onEntityDamage(EntityDamageEvent event) {
             Entity entity = event.getEntity();
 
