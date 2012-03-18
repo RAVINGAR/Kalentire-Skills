@@ -18,18 +18,18 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
-public class SkillBite extends TargettedSkill {
+public class SkillStrike extends TargettedSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillBite(Heroes plugin) {
-        super(plugin, "Bite");
-        setDescription("You bite the target for $1 damage and causing them to bleed for $2 damage over $3 seconds.");
-        setUsage("/skill bite <target>");
+    public SkillStrike(Heroes plugin) {
+        super(plugin, "Strike");
+        setDescription("You violently strike the target for $1 damage and causing them to bleed for $2 damage over $3 seconds.");
+        setUsage("/skill strike <target>");
         setArgumentRange(0, 1);
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
-        setIdentifiers("skill bite");
+        setIdentifiers("skill strike");
     }
 
     @Override
@@ -65,15 +65,15 @@ public class SkillBite extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 15000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new BiteBleedEffect(this, period, duration, tickDamage, player));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new strikeBleedEffect(this, period, duration, tickDamage, player));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 
-    public class BiteBleedEffect extends PeriodicDamageEffect {
+    public class strikeBleedEffect extends PeriodicDamageEffect {
 
-        public BiteBleedEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
-            super(skill, "BiteBleed", period, duration, tickDamage, applier);
+        public strikeBleedEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
+            super(skill, "strikeBleed", period, duration, tickDamage, applier);
             this.types.add(EffectType.BLEED);
         }
 
