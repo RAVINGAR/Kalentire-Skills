@@ -66,8 +66,9 @@ public class SkillQuake extends PassiveSkill {
             int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 10, false);
 
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-                if (!(entity instanceof LivingEntity))
+                if (!(entity instanceof LivingEntity)) {
                     continue;
+                }
 
                 LivingEntity target = (LivingEntity) entity;
                 if (!damageCheck(player, target)) {

@@ -33,7 +33,6 @@ public class SkillFireball extends ActiveSkill {
         protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
-        
     };
     
     public SkillFireball(Heroes plugin) {
