@@ -36,7 +36,7 @@ public class SkillFirewave extends ActiveSkill {
         Map<Integer, ? extends ItemStack> arrowSlots = inv.all(Material.ARROW);
 
         int numArrows = 0;
-        for (Map.Entry<Integer, ? extends ItemStack> entry : arroSlots.entrySet()) {
+        for (Map.Entry<Integer, ? extends ItemStack> entry : arrowSlots.entrySet()) {
             numArrows += entry.getValue().getAmount();
         }
 
