@@ -75,7 +75,7 @@ public class SkillEnvenom extends ActiveSkill {
 
     public class EnvenomBuff extends ExpirableEffect {
 
-        private int applicationsLeft = 1;
+        protected int applicationsLeft = 1;
 
         public EnvenomBuff(Skill skill, long duration, int numAttacks) {
             super(skill, "PoisonBlade", duration);
