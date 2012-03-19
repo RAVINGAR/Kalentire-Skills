@@ -78,7 +78,7 @@ public class SkillEnvenom extends ActiveSkill {
         protected int applicationsLeft = 1;
 
         public EnvenomBuff(Skill skill, long duration, int numAttacks) {
-            super(skill, "PoisonBlade", duration);
+            super(skill, "Envenom", duration);
             this.applicationsLeft = numAttacks;
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.POISON);
@@ -172,7 +172,7 @@ public class SkillEnvenom extends ActiveSkill {
                 return;
             }
 
-            if (hero.hasEffect("PoisonBlade")) {
+            if (hero.hasEffect("Envenom")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
                 long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, false);
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
