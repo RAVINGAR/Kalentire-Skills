@@ -86,6 +86,7 @@ public class SkillIcebolt extends ActiveSkill {
 
         Snowball snowball = player.launchProjectile(Snowball.class);
         snowball.setVelocity(velocity);
+        snowball.setShooter(player);
         snowballs.put(snowball, System.currentTimeMillis());
 
         broadcastExecuteText(hero);
