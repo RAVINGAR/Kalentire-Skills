@@ -65,8 +65,9 @@ public class SkillWeb extends TargettedSkill {
         String name = "";
         if (target instanceof Player) {
             name = ((Player) target).getDisplayName();
-        } else
+        } else {
             name = Messaging.getLivingEntityName(target).toLowerCase();
+        }
 
         broadcast(player.getLocation(), applyText, player.getDisplayName(), name);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
@@ -135,11 +136,15 @@ public class SkillWeb extends TargettedSkill {
 
         private void changeBlock(Location location, Hero hero) {
             Block block = location.getBlock();
-
-            if (block.getType() == Material.WATER || block.getType() == Material.LAVA || block.getType() == Material.SNOW || block.getType() == Material.AIR) {
+            switch (block.getType()) {
+            case WATER:
+            case LAVA:
+            case SNOW:
+            case AIR:
                 changedBlocks.add(location);
                 locations.add(location);
                 location.getBlock().setType(Material.WEB);
+            default:
             }
         }
 
