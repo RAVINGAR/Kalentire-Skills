@@ -63,6 +63,7 @@ public class SkillFireball extends ActiveSkill {
         fireballs.put(fireball, System.currentTimeMillis());
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         fireball.setVelocity(fireball.getVelocity().multiply(mult));
+        fireball.setShooter(player);
         broadcastExecuteText(hero); 
         return SkillResult.NORMAL;
     }

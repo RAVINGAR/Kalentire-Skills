@@ -11,9 +11,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
@@ -114,6 +116,14 @@ public class SkillPiggify extends TargettedSkill {
                 return;
             }
             if (creatures.containsKey(event.getEntity())) {
+                if (event instanceof EntityDamageByEntityEvent) {
+                    EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+                    if (subEvent.getDamager().equals(event.getEntity().getPassenger())) {
+                        return;
+                    } else if (subEvent.getDamager() instanceof Projectile && ((Projectile) subEvent.getDamager()).getShooter().equals(event.getEntity().getPassenger())) {
+                            return;
+                    }
+                }
                 event.setCancelled(true);
                 CharacterTemplate character = creatures.remove(event.getEntity());
                 character.removeEffect(character.getEffect("Piggify"));
