@@ -17,7 +17,7 @@ public class SkillFireblast extends TargettedSkill {
 
     public SkillFireblast(Heroes plugin) {
         super(plugin, "Fireblast");
-        setDescription("You blast the target for $1 fire damage.");
+        setDescription("You blast the target for $1 fire damage!");
         setUsage("/skill fireblast");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireblast");
