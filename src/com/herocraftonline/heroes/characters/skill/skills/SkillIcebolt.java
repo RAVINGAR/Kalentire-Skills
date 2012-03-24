@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -93,23 +92,15 @@ public class SkillIcebolt extends ActiveSkill {
             }
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball)) {
+            if (!(projectile instanceof Snowball) || !snowballs.containsKey(projectile)) {
                 return;
             }
-            Heroes.log(Level.INFO, "Detected a snowball!");
-            if (!snowballs.containsKey(projectile)) {
-                Heroes.log(Level.INFO, "Snowball detected wasn't an Icebolt!");
-                return;
-            }
-            Heroes.log(Level.INFO, "Detected icebolt!");
             snowballs.remove(projectile);
             
             Entity dmger = ((Snowball) subEvent.getDamager()).getShooter();
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
-                Heroes.log(Level.INFO, "Fired by: " + hero.getPlayer().getName());
                 if (!damageCheck((Player) dmger, (LivingEntity) event.getEntity())) {
-                    Heroes.log(Level.INFO, "Icebolt was unable to deal damage, something cancelled the damage check!");
                     event.setCancelled(true);
                     return;
                 }
@@ -123,7 +114,6 @@ public class SkillIcebolt extends ActiveSkill {
                 LivingEntity target = (LivingEntity) event.getEntity();
                 plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
                 addSpellTarget(event.getEntity(), hero);
-                Heroes.log(Level.INFO, "Icebolt dealing damage to target now!");
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 event.setCancelled(true);
             }
