@@ -4,10 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.server.MathHelper;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -74,21 +70,10 @@ public class SkillIcebolt extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Location location = player.getEyeLocation();
-
-        float pitch = location.getPitch() / 180.0F * 3.1415927F;
-        float yaw = location.getYaw() / 180.0F * 3.1415927F;
-
-        double motX = -MathHelper.sin(yaw) * MathHelper.cos(pitch);
-        double motZ = MathHelper.cos(yaw) * MathHelper.cos(pitch);
-        double motY = -MathHelper.sin(pitch);
-        Vector velocity = new Vector(motX, motY, motZ);
 
         Snowball snowball = player.launchProjectile(Snowball.class);
-        snowball.setVelocity(velocity);
         snowball.setShooter(player);
         snowballs.put(snowball, System.currentTimeMillis());
-
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
