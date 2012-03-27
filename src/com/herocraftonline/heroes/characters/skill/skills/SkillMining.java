@@ -114,7 +114,7 @@ public class SkillMining extends PassiveSkill {
             } else if (y < 60) {
                 return Material.IRON_ORE;
             } else {
-                return Material.COAL_ORE;
+                return Material.COAL;
             }
         }
     }
