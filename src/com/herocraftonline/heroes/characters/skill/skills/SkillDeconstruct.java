@@ -1,9 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -28,7 +31,7 @@ public class SkillDeconstruct extends ActiveSkill {
         setDescription("Deconstructs the object you are holding");
         setUsage("/skill deconstruct <list|info|item>");
         setArgumentRange(0, 2);
-        setIdentifiers("skill deconstruct", "skill dstruct");
+        setIdentifiers("skill deconstruct", "skill dstruct", "skill decon");
         setTypes(SkillType.ITEM, SkillType.KNOWLEDGE);
     }
 
@@ -64,15 +67,40 @@ public class SkillDeconstruct extends ActiveSkill {
 
         ItemStack item = null;
         if (args.length > 0) {
+
             if (args[0].toLowerCase().equals("list")) {
-                Messaging.send(player, "You can deconstruct these items: " + items.toString().replace("[", "").replace("]", ""));
+                List<String> itemList = new ArrayList<String>(items);
+                int totalPages = itemList.size() / 10;
+                if (totalPages % 10 == 0) {
+                    totalPages++;
+                }
+                int page = 0;
+                if (args.length > 1) {
+                    try {
+                        page = Integer.parseInt(args[1]);
+                        if (page > totalPages || page < 0) {
+                            page = 0;
+                        }
+                    } catch (NumberFormatException e) {}
+                }
+                int start = page * 10;
+                int end = (page + 1) * 10;
+                if (end > itemList.size()) {
+                    end = itemList.size();
+                }
+                Messaging.send(player, ChatColor.DARK_AQUA + "You can deconstruct these items at the level listed: ");
+                for (; start < end; start++) {
+                    String name = itemList.get(start);
+                    Messaging.send(player, ChatColor.GOLD + name + ChatColor.GRAY + " - " + ChatColor.AQUA + SkillConfigManager.getUseSetting(hero, this, name + "." + Setting.LEVEL.node(), 1, true));
+                }
+                
                 return SkillResult.SKIP_POST_USAGE;
             } else if (args[0].toLowerCase().equals("info")) {
                 // Usage Checks if the player passed in arguments
                 if (args.length < 2) {
                     Messaging.send(player, "Proper usage is /skill deconstruct info item");
                     return SkillResult.FAIL;
-                } else if (!items.contains(args[1])) {
+                } else if (!items.contains(args[1].toUpperCase())) {
                     Messaging.send(player, "You can't deconstruct that item!");
                     return SkillResult.INVALID_TARGET_NO_MSG;
                 } else {
@@ -89,8 +117,8 @@ public class SkillDeconstruct extends ActiveSkill {
 
                     return SkillResult.SKIP_POST_USAGE;
                 }
-            } else if (items.contains(args[0])) {
-                item = new ItemStack(Material.matchMaterial(args[0]), 1);
+            } else if (items.contains(args[0].toUpperCase())) {
+                item = new ItemStack(Material.matchMaterial(args[0].toUpperCase()), 1);
                 if (!player.getInventory().contains(item.getType(), 1)) {
                     return new SkillResult(ResultType.MISSING_REAGENT, true, 1, item.getType().name().toLowerCase().replace("_", " "));
                 }
@@ -118,7 +146,7 @@ public class SkillDeconstruct extends ActiveSkill {
 
         String matName = item.getType().name();
         if (!items.contains(matName)) {
-            Messaging.send(player, "You can't deconstruct that item!");
+            Messaging.send(player, "You don't know how to deconstruct " + matName);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
