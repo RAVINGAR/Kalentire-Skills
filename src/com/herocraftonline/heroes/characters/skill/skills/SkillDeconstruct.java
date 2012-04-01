@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -165,9 +166,9 @@ public class SkillDeconstruct extends ActiveSkill {
             for (int i = 0; i < contents.length; i++) {
                 if (contents[i].getType() != item.getType()) {
                     continue;
-                } else if (contents[i].getType().getMaxDurability() > 16 && contents[i].getDurability() > minDurability) {
+                } else if (contents[i].getType().getMaxDurability() > 0 && contents[i].getDurability() > minDurability) {
                     continue;
-                } else if (contents[i].getType().getMaxDurability() > 16 && slot != -1 && contents[i].getDurability() <= player.getInventory().getContents()[slot].getDurability()) {
+                } else if (contents[i].getType().getMaxDurability() > 0 && slot != -1 && contents[i].getDurability() <= player.getInventory().getContents()[slot].getDurability()) {
                     continue;
                 }
                 slot = i;
@@ -179,8 +180,8 @@ public class SkillDeconstruct extends ActiveSkill {
         }
 
         Set<String> returned = SkillConfigManager.getUseSettingKeys(hero, this, matName);
-        if (returned == null) {
-            Messaging.send(player, "Unable to deconstruct that item!");
+        if (returned == null || returned.isEmpty()) {
+            Messaging.send(player, "There was an error attempting to deconstruct that item!");
             return SkillResult.FAIL;
         }
 
@@ -190,11 +191,13 @@ public class SkillDeconstruct extends ActiveSkill {
             }
 
             Material m = Material.matchMaterial(s);
-            if (m == null)
+            if (m == null) {
                 throw new IllegalArgumentException("Error with skill " + getName() + ": bad item definition " + s);
+            }
             int amount = SkillConfigManager.getUseSetting(hero, this, matName + "." + s, 1, false);
-            if (amount < 1)
+            if (amount < 1) {
                 throw new IllegalArgumentException("Error with skill " + getName() + ": bad amount definition for " + s + ": " + amount);
+            }
 
             ItemStack stack = new ItemStack(m, amount);
             Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(stack);
