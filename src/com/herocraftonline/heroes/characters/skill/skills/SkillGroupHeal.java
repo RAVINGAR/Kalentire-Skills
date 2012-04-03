@@ -40,7 +40,7 @@ public class SkillGroupHeal extends ActiveSkill {
         int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 2, false);
         if (hero.getParty() == null) {
             // Heal just the caster if he's not in a party
-            HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, this);
+            HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, this, hero);
             plugin.getServer().getPluginManager().callEvent(hrhEvent);
             if (hrhEvent.isCancelled()) {
                 Messaging.send(player, "Unable to heal the target at this time!");
@@ -57,7 +57,7 @@ public class SkillGroupHeal extends ActiveSkill {
                     continue;
                 }
                 if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
-                    HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healAmount, this);
+                    HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healAmount, this, hero);
                     plugin.getServer().getPluginManager().callEvent(hrhEvent);
                     if (hrhEvent.isCancelled()) {
                         Messaging.send(player, "Unable to heal the target at this time!");

@@ -113,10 +113,11 @@ public class SkillSoulLeech extends TargettedSkill {
             int healAmount = (int) (totalDamage * SkillConfigManager.getUseSetting(hero, skill, "heal-multiplier", 1.0, false));
 
             // Fire our heal event
-            HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, skill);
+            HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, skill, hero);
             plugin.getServer().getPluginManager().callEvent(hrhEvent);
-            if (hrhEvent.isCancelled())
+            if (hrhEvent.isCancelled()) {
                 return;
+            }
 
             hero.setHealth(hero.getHealth() + hrhEvent.getAmount());
             hero.syncHealth();

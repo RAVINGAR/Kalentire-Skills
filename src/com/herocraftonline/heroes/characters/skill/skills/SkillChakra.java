@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -48,34 +49,37 @@ public class SkillChakra extends ActiveSkill {
                     continue;
                 }
                 if (castLoc.distanceSquared(p.getPlayer().getLocation()) <= radiusSquared) {
-                    healDispel(p, removals, healAmount);
+                    healDispel(p, removals, healAmount, hero);
                 }
             }
         } else {
-            healDispel(hero, removals, healAmount);
+            healDispel(hero, removals, healAmount, hero);
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 
-    private void healDispel(Hero hero, int removals, int healAmount) {
-        if (hero.getHealth() < hero.getMaxHealth()) {
-            hero.setHealth(hero.getHealth() + healAmount);
-            hero.syncHealth();
+    private void healDispel(Hero targetHero, int removals, int healAmount, Hero hero) {
+        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
+        if (!hrhEvent.isCancelled()) {
+            if (targetHero.getHealth() < targetHero.getMaxHealth()) {
+                targetHero.setHealth(targetHero.getHealth() + hrhEvent.getAmount());
+                targetHero.syncHealth();
+            }
         }
         if (removals == 0)
             return;
 
-        if (hero.getPlayer().getFireTicks() > 0) {
+        if (targetHero.getPlayer().getFireTicks() > 0) {
             removals--;
-            hero.getPlayer().setFireTicks(0);
+            targetHero.getPlayer().setFireTicks(0);
             if (removals == 0)
                 return;
         }
 
-        for (Effect effect : hero.getEffects()) {
+        for (Effect effect : targetHero.getEffects()) {
             if (effect.isType(EffectType.HARMFUL)) {
-                hero.removeEffect(effect);
+                targetHero.removeEffect(effect);
                 removals--;
                 if (removals == 0) {
                     break;
@@ -86,7 +90,7 @@ public class SkillChakra extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-       int amount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
         return getDescription().replace("$1", amount + "");
     }
 
