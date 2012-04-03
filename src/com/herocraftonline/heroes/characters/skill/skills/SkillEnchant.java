@@ -145,7 +145,7 @@ public class SkillEnchant extends PassiveSkill {
                     Messaging.send(player, "You don't have enough experience to enchant that item!");
                     event.setCancelled(true);
                 }
-                hero.gainExp(-xpCost, ExperienceType.ENCHANTING);
+                hero.gainExp(-xpCost, ExperienceType.ENCHANTING, player.getLocation());
             }
         }
     }

@@ -96,7 +96,7 @@ public class SkillDespair extends ActiveSkill {
             if (hero.hasParty()) {
                 hero.getParty().gainExp(exp * hit, ExperienceType.SKILL, player.getLocation());
             } else {
-                hero.gainExp(exp * hit, ExperienceType.SKILL);
+                hero.gainExp(exp * hit, ExperienceType.SKILL, player.getLocation());
             }
         }
         broadcastExecuteText(hero);

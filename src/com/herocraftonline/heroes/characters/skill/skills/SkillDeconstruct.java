@@ -5,10 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -94,7 +95,7 @@ public class SkillDeconstruct extends ActiveSkill {
                     String name = itemList.get(start);
                     Messaging.send(player, ChatColor.GOLD + name + ChatColor.GRAY + " - " + ChatColor.AQUA + SkillConfigManager.getUseSetting(hero, this, name + "." + Setting.LEVEL.node(), 1, true));
                 }
-                
+
                 return SkillResult.SKIP_POST_USAGE;
             } else if (args[0].toLowerCase().equals("info")) {
                 // Usage Checks if the player passed in arguments
@@ -134,8 +135,9 @@ public class SkillDeconstruct extends ActiveSkill {
             item.setAmount(1);
             slot = player.getInventory().getHeldItemSlot();
         }
-
-        if (SkillConfigManager.getUseSetting(hero, this, "require-workbench", true) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.WORKBENCH) {
+        Block block = player.getTargetBlock((HashSet<Byte>) null, 3);
+        Location expLoc = block.getLocation();
+        if (SkillConfigManager.getUseSetting(hero, this, "require-workbench", true) && block.getType() != Material.WORKBENCH) {
             Messaging.send(player, "You must have a workbench targetted to deconstruct an item!");
             return SkillResult.FAIL;
         }
@@ -219,7 +221,7 @@ public class SkillDeconstruct extends ActiveSkill {
 
         // Grant the hero experience
         int xp = SkillConfigManager.getUseSetting(hero, this, matName + "." + Setting.EXP, 0, false);
-        hero.gainExp(xp, ExperienceType.CRAFTING);
+        hero.gainExp(xp, ExperienceType.CRAFTING, expLoc);
 
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), matName.toLowerCase().replace("_", " "));
         return SkillResult.NORMAL;
