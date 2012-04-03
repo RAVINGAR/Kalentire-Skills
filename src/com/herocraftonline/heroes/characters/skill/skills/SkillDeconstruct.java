@@ -131,7 +131,12 @@ public class SkillDeconstruct extends ActiveSkill {
             }
         } else {
             // if no args attempt to deconstruct item in hand
-            item = player.getItemInHand().clone();
+            item = player.getItemInHand();
+            if (item == null) {
+                Messaging.send(player, "Invalid item to deconstruct, or bad command!");
+                return SkillResult.INVALID_TARGET_NO_MSG;
+            }
+            item = item.clone();
             item.setAmount(1);
             slot = player.getInventory().getHeldItemSlot();
         }
