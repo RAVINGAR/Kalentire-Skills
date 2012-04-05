@@ -40,10 +40,11 @@ public class SkillOvergrowth extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int range = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 15, false);
-        if (player.getTargetBlock((HashSet<Byte>) null, range).getType() == Material.SAPLING) {
-            Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, range);
-            TreeType tType = null;
-
+        Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, range);
+        Material mat = targetBlock.getType();
+        TreeType tType = null;
+        if (mat == Material.SAPLING) {
+            tType = null;
             switch (targetBlock.getData()) {
                 case 0x0:
                     if (Util.rand.nextInt(2) == 0) {
@@ -67,21 +68,25 @@ public class SkillOvergrowth extends ActiveSkill {
                     break;
                 default:
                     tType = TreeType.TREE;
-            }
-            Material sapling = targetBlock.getType();
-            byte data = targetBlock.getData();
-            targetBlock.setType(Material.AIR);
-            if (!player.getWorld().generateTree(targetBlock.getLocation(), tType)) {
-                targetBlock.setTypeIdAndData(sapling.getId(), data, false);
-                Messaging.send(player, "The spell fizzled!");
-                return SkillResult.FAIL;
-            }
-            broadcastExecuteText(hero);
-            return SkillResult.NORMAL;
+            };
+        } else if (mat == Material.RED_MUSHROOM) {
+            tType = TreeType.RED_MUSHROOM;
+        } else if (mat == Material.BROWN_MUSHROOM) {
+            tType = TreeType.BROWN_MUSHROOM;
         } else {
             Messaging.send(player, "Target is not a sapling!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+        byte data = targetBlock.getData();
+        targetBlock.setType(Material.AIR);
+        if (!player.getWorld().generateTree(targetBlock.getLocation(), tType)) {
+            targetBlock.setTypeIdAndData(mat.getId(), data, false);
+            Messaging.send(player, "The spell fizzled!");
+            return SkillResult.FAIL;
+        }
+        broadcastExecuteText(hero);
+        return SkillResult.NORMAL;
+        
     }
 
     @Override
