@@ -31,6 +31,7 @@ public class SkillPort extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.RADIUS.node(), 10);
         node.set(Setting.NO_COMBAT_USE.node(), true);
+        node.set("cross-world", false);
         return node;
     }
 
@@ -56,8 +57,10 @@ public class SkillPort extends ActiveSkill {
             if (world == null) {
                 Messaging.send(player, "That teleport location no longer exists!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
+            } else if (!world.equals(player.getWorld()) && !SkillConfigManager.getUseSetting(hero, this, "cross-world", false)) {
+                Messaging.send(player, "You can't port to a location in another world!");
+                return SkillResult.INVALID_TARGET_NO_MSG;
             }
-
             if (hero.getSkillLevel(this) < levelRequirement) {
                 return new SkillResult(ResultType.LOW_LEVEL, true, levelRequirement);
             }
