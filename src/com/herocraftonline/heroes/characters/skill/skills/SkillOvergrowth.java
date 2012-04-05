@@ -62,6 +62,9 @@ public class SkillOvergrowth extends ActiveSkill {
                 case 0x2:
                     tType = TreeType.BIRCH;
                     break;
+                case 0x3:
+                    tType = TreeType.JUNGLE;
+                    break;
                 default:
                     tType = TreeType.TREE;
             }
