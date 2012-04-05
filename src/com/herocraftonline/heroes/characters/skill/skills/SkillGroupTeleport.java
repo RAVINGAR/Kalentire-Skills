@@ -25,6 +25,9 @@ public class SkillGroupTeleport extends ActiveSkill {
         Player player = hero.getPlayer();
         if (hero.getParty() != null && hero.getParty().getMembers().size() != 1) {
             for (Hero partyMember : hero.getParty().getMembers()) {
+                if (!partyMember.getPlayer().getWorld().equals(player.getWorld())) {
+                    continue;
+                }
                 partyMember.getPlayer().teleport(player);
             }
             broadcastExecuteText(hero);
