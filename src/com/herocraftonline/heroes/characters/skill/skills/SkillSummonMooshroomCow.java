@@ -21,9 +21,9 @@ public class SkillSummonMooshroomCow extends ActiveSkill {
     public SkillSummonMooshroomCow(Heroes plugin) {
         super(plugin, "SummonMooshroomCow");
         setDescription("100% chance to spawn 1 mooshroom cow, $2% for 2, and $3% for 3.");
-        setUsage("/skill mooshroomcow");
+        setUsage("/skill mushroomcow");
         setArgumentRange(0, 0);
-        setIdentifiers("skill mooshroom", "skill mushroomcow", "skill mcow");
+        setIdentifiers("skill mushroomc", "skill mushroomcow", "skill mcow");
         setTypes(SkillType.KNOWLEDGE, SkillType.SUMMON, SkillType.SILENCABLE);
     }
 
