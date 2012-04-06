@@ -1,5 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,8 +42,15 @@ public class SkillPort extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        List<String> keys = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, null));
+        // Strip non-world keys
+        for (Setting setting : Setting.values()) {
+            keys.remove(setting.node());
+        }
+        keys.remove("cross-world");
+
         if (args[0].equalsIgnoreCase("list")) {
-            for (String n : SkillConfigManager.getUseSettingKeys(hero, this, null)) {
+            for (String n : keys) {
                 String retrievedNode = SkillConfigManager.getUseSetting(hero, this, n, (String) null);
                 if (retrievedNode != null) {
                     Messaging.send(player, "$1 - $2", n, retrievedNode);
@@ -78,7 +88,7 @@ public class SkillPort extends ActiveSkill {
                 if (!castLocation.getWorld().equals(player.getWorld())) {
                     continue;
                 }
-                
+
                 double distance = castLocation.distanceSquared(pHero.getPlayer().getLocation());
                 if (distance <= range) {
                     pHero.getPlayer().teleport(loc);
