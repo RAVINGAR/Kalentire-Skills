@@ -17,7 +17,7 @@ public class SkillBolt extends TargettedSkill {
 
     public SkillBolt(Heroes plugin) {
         super(plugin, "Bolt");
-        setDescription("You call a bolt of lightning down on the target dealing $1 damage.");
+        setDescription("Calls a bolt of lightning down on the target dealing $1 damage.");
         setUsage("/skill bolt <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bolt");
@@ -28,6 +28,7 @@ public class SkillBolt extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DAMAGE.node(), 4);
+        node.set(Setting.DAMAGE_INCREASE.node(), 0);
         return node;
     }
 
@@ -37,7 +38,7 @@ public class SkillBolt extends TargettedSkill {
 
         target.getWorld().strikeLightningEffect(target.getLocation());
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-        
+        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
@@ -48,6 +49,7 @@ public class SkillBolt extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         return getDescription().replace("$1", damage + "");
     }
 }

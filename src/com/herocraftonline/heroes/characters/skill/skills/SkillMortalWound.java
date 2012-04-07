@@ -123,9 +123,9 @@ public class SkillMortalWound extends TargettedSkill {
 
     public class SkillEntityListener implements Listener {
 
-        @EventHandler(priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
+            if (!(event.getEntity() instanceof Player)) {
                 return;
             }
 
@@ -136,12 +136,8 @@ public class SkillMortalWound extends TargettedSkill {
             }
         }
         
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onHeroRegainHealth(HeroRegainHealthEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
-
             if (event.getHero().hasEffect("MortalWound")) {
                 MortalWound mEffect = (MortalWound) event.getHero().getEffect("MortalWound");
                 event.setAmount((int) (event.getAmount() * mEffect.healMultiplier));

@@ -36,8 +36,8 @@ public class SkillDespair extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         long duration = (long) (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false) + (SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0.0, false) * hero.getSkillLevel(this))) / 1000;
-        int damage = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 0, false) + (SkillConfigManager.getUseSetting(hero, this, "damage-increase", 0.0, false) * hero.getSkillLevel(this)));
-        int radius = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false) + (SkillConfigManager.getUseSetting(hero, this, "radius-increase", 0.0, false) * hero.getSkillLevel(this)));
+        int damage = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 0, false) + (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this)));
+        int radius = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false) + (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this)));
         String description = getDescription().replace("$1", radius + "").replace("$2", duration + "").replace("$3", damage + "");
         return description;
     }
@@ -46,28 +46,28 @@ public class SkillDespair extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.RADIUS.node(), 10);
-        node.set("radius-increase", 0);
+        node.set(Setting.RADIUS_INCREASE.node(), 0);
         node.set(Setting.DURATION.node(), 10000);
         node.set("duration-increase", 0);
         node.set(Setting.DAMAGE.node(), 0);
-        node.set("damage-increase", 0);
+        node.set(Setting.DAMAGE_INCREASE.node(), 0);
         node.set("exp-per-blinded-player", 0);
-        node.set("apply-text", "%hero% has blinded %target% with %skill%!");
-        node.set("expire-text", "%hero% has recovered their sight!");
+        node.set(Setting.APPLY_TEXT.node(), "%hero% has blinded %target% with %skill%!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% has recovered their sight!");
         return node;
     }
     
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, "apply-text", "%hero% has blinded %target% with %skill%!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
-        expireText = SkillConfigManager.getRaw(this, "expire-text", "%hero% has recovered their sight!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% has blinded %target% with %skill%!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% has recovered their sight!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 10, false);
-        radius += SkillConfigManager.getUseSetting(hero, this, "radius-increase", 0.0, false) * hero.getSkillLevel(this);
+        radius += SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false);
         duration += SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Player player = hero.getPlayer();
@@ -96,7 +96,7 @@ public class SkillDespair extends ActiveSkill {
             if (hero.hasParty()) {
                 hero.getParty().gainExp(exp * hit, ExperienceType.SKILL, player.getLocation());
             } else {
-                hero.gainExp(exp * hit, ExperienceType.SKILL, player.getLocation());
+                hero.gainExp(exp * hit, ExperienceType.SKILL, hero.getViewingLocation(1.0));
             }
         }
         broadcastExecuteText(hero);

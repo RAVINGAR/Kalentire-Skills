@@ -36,7 +36,8 @@ public class SkillBleed extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DURATION.node(), 10000);
         node.set(Setting.PERIOD.node(), 2000);
-        node.set("tick-damage", 1);
+        node.set(Setting.DAMAGE_TICK.node(), 1);
+        node.set(Setting.DAMAGE_INCREASE.node(), 0);
         node.set(Setting.APPLY_TEXT.node(), "%target% is bleeding!");
         node.set(Setting.EXPIRE_TEXT.node(), "%target% has stopped bleeding!");
         return node;
@@ -58,7 +59,8 @@ public class SkillBleed extends TargettedSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_TICK, 1, false);
+        tickDamage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         BleedSkillEffect bEffect = new BleedSkillEffect(this, duration, period, tickDamage, player);
         plugin.getCharacterManager().getCharacter(target).addEffect(bEffect);
         broadcastExecuteText(hero, target);
@@ -103,6 +105,7 @@ public class SkillBleed extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         damage = damage * duration / period;
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }

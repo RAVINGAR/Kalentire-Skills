@@ -31,6 +31,7 @@ public class SkillBandage extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
         section.set(Setting.HEALTH.node(), 5);
+        section.set(Setting.HEALTH_INCREASE.node(), 0);
         section.set(Setting.MAX_DISTANCE.node(), 5);
         section.set(Setting.REAGENT.node(), 339);
         section.set(Setting.REAGENT_COST.node(), 1);
@@ -46,6 +47,7 @@ public class SkillBandage extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
+        hpPlus += (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
         int targetHealth = targetHero.getHealth();
 
         if (targetHealth >= targetHero.getMaxHealth()) {
@@ -81,6 +83,7 @@ public class SkillBandage extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double amount = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
+        amount += (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
         return getDescription().replace("$1", amount + "");
     }
 }
