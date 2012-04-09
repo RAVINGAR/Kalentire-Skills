@@ -94,7 +94,7 @@ public class SkillSoulFire extends ActiveSkill {
             }
 
             double chance = SkillConfigManager.getUseSetting(hero, skill, "ignite-chance", .2, false);
-            if (Util.rand.nextDouble() >= chance) {
+            if (Util.nextRand() >= chance) {
                 return;
             }
 

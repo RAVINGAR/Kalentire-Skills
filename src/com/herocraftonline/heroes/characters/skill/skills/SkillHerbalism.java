@@ -88,12 +88,12 @@ public class SkillHerbalism extends PassiveSkill {
             }
 
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (!hero.hasEffect("Herbalism") || Util.rand.nextDouble() >= SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)) {
+            if (!hero.hasEffect("Herbalism") || Util.nextRand() >= SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)) {
                 return;
             }
 
             if (extraDrops != 0) {
-                extraDrops = Util.rand.nextInt(extraDrops) + 1;
+                extraDrops = Util.nextInt(extraDrops) + 1;
             } else {
                 extraDrops = 1;
             }

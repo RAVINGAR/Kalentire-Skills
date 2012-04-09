@@ -113,7 +113,7 @@ public class SkillBlackjack extends ActiveSkill {
                 Hero defendingHero = plugin.getCharacterManager().getHero((Player) event.getEntity());
 
                 double chance = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-chance", 0.20, false);
-                if (Util.rand.nextDouble() < chance) {
+                if (Util.nextRand() < chance) {
                     int duration = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-duration", 5000, false);
                     defendingHero.addEffect(new StunEffect(skill, duration));
                 }

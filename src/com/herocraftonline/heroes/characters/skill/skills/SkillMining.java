@@ -85,7 +85,7 @@ public class SkillMining extends PassiveSkill {
                 return;
             }
 
-            double chance = Util.rand.nextDouble();
+            double chance = Util.nextRand();
 
             if (isStone && chance <= SkillConfigManager.getUseSetting(hero, skill, "chance-from-stone", .0005, false) * hero.getSkillLevel(skill)) {
                 block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(getMatFromHeight(block), 1));

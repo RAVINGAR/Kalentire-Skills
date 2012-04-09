@@ -76,9 +76,9 @@ public class SkillBackstab extends PassiveSkill {
                     return;
                 }
 
-                if (hero.hasEffect("Sneak") && Util.rand.nextDouble() < SkillConfigManager.getUseSetting(hero, skill, "sneak-chance", 1.0, false)) {
+                if (hero.hasEffect("Sneak") && Util.nextRand() < SkillConfigManager.getUseSetting(hero, skill, "sneak-chance", 1.0, false)) {
                     event.setDamage((int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "sneak-bonus", 2.0, false)));
-                } else if (Util.rand.nextDouble() < SkillConfigManager.getUseSetting(hero, skill, "attack-chance", .5, false)) {
+                } else if (Util.nextRand() < SkillConfigManager.getUseSetting(hero, skill, "attack-chance", .5, false)) {
                     event.setDamage((int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "attack-bonus", 1.5, false)));
                 }
 

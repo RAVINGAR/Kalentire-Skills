@@ -121,7 +121,7 @@ public class SkillCurse extends TargettedSkill {
             CharacterTemplate character = event.getDamager();
             if (character.hasEffect("Curse")) {
                 CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
-                if (Util.rand.nextDouble() < cEffect.missChance) {
+                if (Util.nextRand() < cEffect.missChance) {
                     event.setCancelled(true);
                     broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
                 }

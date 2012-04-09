@@ -69,8 +69,8 @@ public class SkillPickPocket extends TargettedSkill {
 
         double chance = SkillConfigManager.getUseSetting(hero, this, "base-chance", 0.1, false) + (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL, 0.02, false) * hero.getSkillLevel(this));
 
-        if (Util.rand.nextDouble() >= chance) {
-            if (Util.rand.nextDouble() >= chance) {
+        if (Util.nextRand() >= chance) {
+            if (Util.nextRand() >= chance) {
                 broadcast(player.getLocation(), failMessage, player.getDisplayName(), tPlayer.getDisplayName());
             }
             Messaging.send(player, "You failed to steal anything from $1", tPlayer.getDisplayName());
@@ -80,7 +80,7 @@ public class SkillPickPocket extends TargettedSkill {
         Inventory tInventory = tPlayer.getInventory();
         ItemStack[] items = tInventory.getContents();
         // Never steal items in the hotbar - We consider these 'active' and in the players hand.
-        int slot = Util.rand.nextInt(27) + 9;
+        int slot = Util.nextInt(27) + 9;
         Set<String> disallowed = new HashSet<String>(SkillConfigManager.getUseSetting(hero, this, "disallowed-items", new ArrayList<String>()));
         if (items[slot] == null || items[slot].getType() == Material.AIR || disallowed.contains(items[slot].getType().name())) {
             Messaging.send(player, "You failed to steal anything from $1", tPlayer.getDisplayName());
@@ -93,7 +93,7 @@ public class SkillPickPocket extends TargettedSkill {
             if (stealAmount > maxSteal)
                 stealAmount = maxSteal;
 
-            stealAmount = Util.rand.nextInt(stealAmount) + 1;
+            stealAmount = Util.nextInt(stealAmount) + 1;
         }
         
         if (stealAmount == items[slot].getAmount())

@@ -58,7 +58,7 @@ public class SkillFishing extends PassiveSkill {
                 return;
             }
             CraftItem getCaught = (CraftItem) event.getCaught();
-            double chance = Util.rand.nextDouble();
+            double chance = Util.nextRand();
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             Player player = hero.getPlayer();
             if (chance < SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)){ //if the chance
@@ -67,7 +67,7 @@ public class SkillFishing extends PassiveSkill {
                 if (hero.getLevel() >= leatherlvl && SkillConfigManager.getUseSetting(hero, skill, "enable-leather", false)){ //if fishing leather is enabled and have the level
 
                     if (getCaught != null){ //If not null
-                        switch(Util.rand.nextInt(8)){
+                        switch(Util.nextInt(8)){
                         case 0: 
                             getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
                             Messaging.send(player, "You found leather boots!");
@@ -109,7 +109,7 @@ public class SkillFishing extends PassiveSkill {
                         }
                     }
                 } else {
-                    switch(Util.rand.nextInt(2)){
+                    switch(Util.nextInt(2)){
                     case 0: 
                         getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
                         Messaging.send(player, "You found 2 Fishes!");

@@ -111,7 +111,7 @@ public class SkillBladegrasp extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
                 double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(skill);
-                if (Util.rand.nextDouble() > parryChance) {
+                if (Util.nextRand() > parryChance) {
                     return;
                 }
 
@@ -135,7 +135,7 @@ public class SkillBladegrasp extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
                 double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
-                if (Util.rand.nextDouble() > parryChance) {
+                if (Util.nextRand() > parryChance) {
                     return;
                 }
 

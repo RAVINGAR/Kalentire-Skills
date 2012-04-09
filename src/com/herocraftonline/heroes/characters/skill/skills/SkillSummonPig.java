@@ -53,7 +53,7 @@ public class SkillSummonPig extends ActiveSkill {
         int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
         player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.PIG);
-        double chance = Util.rand.nextDouble();
+        double chance = Util.nextRand();
         if (chance <= chance3x) {
             player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.PIG);
             player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.PIG);

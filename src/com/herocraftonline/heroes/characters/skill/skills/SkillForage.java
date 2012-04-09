@@ -152,14 +152,14 @@ public class SkillForage extends ActiveSkill{
             }
         }
 
-        if (materials.isEmpty() || Util.rand.nextDouble() >= chance || maxFinds <= 0) {
+        if (materials.isEmpty() || Util.nextRand() >= chance || maxFinds <= 0) {
             Messaging.send(player, "You found nothing while foraging.");
             return SkillResult.NORMAL;
         } 
 
-        int numItems = Util.rand.nextInt(maxFinds) + 1;
+        int numItems = Util.nextInt(maxFinds) + 1;
         for (int i = 0; i < numItems; i++) {
-            ItemStack item = new ItemStack(materials.get(Util.rand.nextInt(materials.size())), 1);
+            ItemStack item = new ItemStack(materials.get(Util.nextInt(materials.size())), 1);
 
             Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(item);
             // Drop any leftovers we couldn't add to the players inventory

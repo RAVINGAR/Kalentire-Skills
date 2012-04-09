@@ -47,14 +47,14 @@ public class SkillOvergrowth extends ActiveSkill {
             tType = null;
             switch (targetBlock.getData()) {
                 case 0x0:
-                    if (Util.rand.nextInt(2) == 0) {
+                    if (Util.nextInt(2) == 0) {
                         tType = TreeType.TREE;
                     } else {
                         tType = TreeType.BIG_TREE;
                     }
                     break;
                 case 0x1:
-                    if (Util.rand.nextInt(2) == 0) {
+                    if (Util.nextInt(2) == 0) {
                         tType = TreeType.REDWOOD;
                     } else {
                         tType = TreeType.TALL_REDWOOD;

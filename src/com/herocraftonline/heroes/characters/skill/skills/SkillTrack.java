@@ -41,9 +41,9 @@ public class SkillTrack extends ActiveSkill {
 
         Location location = target.getLocation();
         int randomness = SkillConfigManager.getUseSetting(hero, this, "randomness", 50, true);
-        int x = location.getBlockX() + Util.rand.nextInt(randomness);
-        int y = location.getBlockY() + Util.rand.nextInt(randomness / 10);
-        int z = location.getBlockZ() + Util.rand.nextInt(randomness);
+        int x = location.getBlockX() + Util.nextInt(randomness);
+        int y = location.getBlockY() + Util.nextInt(randomness / 10);
+        int z = location.getBlockZ() + Util.nextInt(randomness);
 
         Messaging.send(player, "Tracked $1: $2,$3,$4", target.getName(), x, y, z);
         player.setCompassTarget(location);

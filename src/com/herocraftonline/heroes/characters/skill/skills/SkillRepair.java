@@ -261,7 +261,7 @@ public class SkillRepair extends ActiveSkill {
         if(!is.getEnchantments().isEmpty()) {
             double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
             unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getSkillLevel(this);
-            if (Util.rand.nextDouble() <= unchant) {
+            if (Util.nextRand() <= unchant) {
                 for (Enchantment enchant : new ArrayList<Enchantment>(is.getEnchantments().keySet())) {
                     is.removeEnchantment(enchant);
                 }
