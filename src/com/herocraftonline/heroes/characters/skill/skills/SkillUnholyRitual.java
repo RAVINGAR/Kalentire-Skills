@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
@@ -33,10 +34,15 @@ public class SkillUnholyRitual extends TargettedSkill {
     
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        if (target instanceof Player) {
+            return SkillResult.INVALID_TARGET;
+        }
         Player player = hero.getPlayer();
         
-        if (!hero.getSummons().contains(target))
+        Monster monster = plugin.getCharacterManager().getMonster(target);
+        if (!hero.getSummons().contains(monster)) {
         	return SkillResult.INVALID_TARGET;
+        }
 
         addSpellTarget(target, hero);
         damageEntity(target, player, target.getHealth(), DamageCause.MAGIC);
@@ -61,5 +67,4 @@ public class SkillUnholyRitual extends TargettedSkill {
         int mana = SkillConfigManager.getUseSetting(hero, this, "mana-regen", 20, false);
         return getDescription().replace("$1", mana + "");
     }
-
 }
