@@ -73,6 +73,7 @@ public class SkillBecomeDeath extends ActiveSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DARK);
+            this.types.add(EffectType.MAGIC);
             this.types.add(EffectType.WATER_BREATHING);
         }
 

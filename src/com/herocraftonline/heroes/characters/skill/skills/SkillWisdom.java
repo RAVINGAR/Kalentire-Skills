@@ -111,6 +111,7 @@ public class SkillWisdom extends ActiveSkill {
             this.manaMultiplier = manaMultiplier;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

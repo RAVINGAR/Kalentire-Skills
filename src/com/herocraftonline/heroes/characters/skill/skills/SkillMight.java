@@ -104,6 +104,7 @@ public class SkillMight extends ActiveSkill {
             this.damageBonus = damageBonus;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

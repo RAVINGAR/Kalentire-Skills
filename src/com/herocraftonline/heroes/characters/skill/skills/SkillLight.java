@@ -95,6 +95,7 @@ public class SkillLight extends ActiveSkill {
             super(skill, "Light", period, duration);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.LIGHT);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

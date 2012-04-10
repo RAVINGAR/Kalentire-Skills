@@ -107,6 +107,7 @@ public class SkillSuperheat extends ActiveSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.FIRE);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

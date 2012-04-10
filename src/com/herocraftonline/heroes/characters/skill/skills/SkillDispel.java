@@ -43,7 +43,7 @@ public class SkillDispel extends TargettedSkill {
         // if player is targetting itself
         if (target.equals(player)) {
             for (Effect effect : hero.getEffects()) {
-                if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL) && effect.isType(EffectType.MAGIC)) {
                     hero.removeEffect(effect);
                     removed = true;
                     maxRemovals--;
@@ -64,7 +64,7 @@ public class SkillDispel extends TargettedSkill {
                 removeHarmful = ((SummonEffect) character.getEffect("Summon")).getSummoner().equals(hero);
             }
             for (Effect effect : character.getEffects()) {
-                if (effect.isType(EffectType.DISPELLABLE)) {
+                if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.MAGIC)) {
                     if (removeHarmful && effect.isType(EffectType.HARMFUL)) {
                         character.removeEffect(effect);
                         removed = true;

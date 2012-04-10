@@ -26,7 +26,7 @@ public class SkillDespair extends ActiveSkill {
 
     public SkillDespair(Heroes plugin) {
         super(plugin, "Despair");
-        setDescription("Blinds all enemies within $1 blocks for $2 seconds and deals $3 magic damage.");
+        setDescription("Blinds all enemies within $1 blocks for $2 seconds and deals $3 dark damage.");
         setUsage("/skill despair");
         setArgumentRange(0, 1);
         setIdentifiers("skill despair");

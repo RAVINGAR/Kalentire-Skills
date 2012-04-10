@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -55,6 +56,7 @@ public class SkillSlow extends TargettedSkill {
             multiplier = 20;
         }
         SlowEffect effect = new SlowEffect(this, duration, multiplier, true, applyText, expireText, hero);
+        effect.types.add(EffectType.MAGIC);
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
         return SkillResult.NORMAL;
     }

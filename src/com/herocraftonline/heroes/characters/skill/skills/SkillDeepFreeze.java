@@ -89,6 +89,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             this.types.add(EffectType.HARMFUL);
             this.types.add(EffectType.ICE);
             this.types.add(EffectType.ROOT);
+            this.types.add(EffectType.MAGIC);
             this.types.add(EffectType.UNBREAKABLE);
             int effectDuration = (int) duration / 1000 * 20;
             this.addMobEffect(2, effectDuration, 5, false);

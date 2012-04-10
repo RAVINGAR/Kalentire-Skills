@@ -169,6 +169,7 @@ public class SkillSoulBond extends TargettedSkill {
             this.bondEffect = bondEffect;
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.MAGIC);
         }
 
         public LivingEntity getTarget() {

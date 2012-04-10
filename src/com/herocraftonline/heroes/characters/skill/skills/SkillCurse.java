@@ -77,6 +77,7 @@ public class SkillCurse extends TargettedSkill {
             this.missChance = missChance;
             this.types.add(EffectType.HARMFUL);
             this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override
