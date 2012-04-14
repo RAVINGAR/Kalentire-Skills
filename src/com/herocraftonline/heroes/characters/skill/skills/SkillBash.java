@@ -35,6 +35,7 @@ public class SkillBash extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
         damage += SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        this.addSpellTarget(target, hero);
         if (!damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK)) {
             return SkillResult.INVALID_TARGET;
         }
