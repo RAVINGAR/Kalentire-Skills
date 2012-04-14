@@ -43,7 +43,7 @@ public class SkillConsume extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        if (hero.getMana() == 100) {
+        if (hero.getMana() >= hero.getMaxMana()) {
             Messaging.send(player, "Your mana is already full!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
