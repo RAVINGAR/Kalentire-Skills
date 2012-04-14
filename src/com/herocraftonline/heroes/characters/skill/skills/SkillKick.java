@@ -38,6 +38,7 @@ public class SkillKick extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        addSpellTarget(target, hero);
         if (!damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK)) {
             return SkillResult.INVALID_TARGET;
         }
