@@ -33,7 +33,7 @@ public class SkillBecomeDeath extends ActiveSkill {
     
     public SkillBecomeDeath(Heroes plugin) {
         super(plugin, "BecomeDeath");
-        setDescription("For $1 seconds you look undead and wont be targeted by undead. You also no longer need to breath air.");
+        setDescription("For $1 seconds you look undead. You no longer need to breath air.");
         setUsage("/skill becomedeath");
         setArgumentRange(0, 0);
         setIdentifiers("skill becomedeath", "bdeath");

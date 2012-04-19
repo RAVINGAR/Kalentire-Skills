@@ -34,7 +34,7 @@ public class SkillDeconstruct extends ActiveSkill {
         setUsage("/skill deconstruct <list|info|item>");
         setArgumentRange(0, 2);
         setIdentifiers("skill deconstruct", "skill dstruct", "skill decon");
-        setTypes(SkillType.ITEM, SkillType.KNOWLEDGE);
+        setTypes(SkillType.ITEM, SkillType.KNOWLEDGE, SkillType.UNBINDABLE);
     }
 
     @Override

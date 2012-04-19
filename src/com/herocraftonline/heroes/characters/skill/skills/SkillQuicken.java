@@ -71,11 +71,13 @@ public class SkillQuicken extends ActiveSkill {
         Location loc = player.getLocation();
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {
-            if (!tHero.getPlayer().getWorld().equals(player.getWorld()))
+            if (!tHero.getPlayer().getWorld().equals(player.getWorld())) {
                 continue;
+            }
             
-            if (loc.distanceSquared(tHero.getPlayer().getLocation()) > rSquared)
+            if (loc.distanceSquared(tHero.getPlayer().getLocation()) > rSquared) {
                 continue;
+            }
             
             tHero.addEffect(qEffect);
         }
