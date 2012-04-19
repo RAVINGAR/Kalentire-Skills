@@ -76,9 +76,7 @@ public class SkillPotion extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.useItemInHand() == Event.Result.DENY ||
-                    !event.hasItem() ||
-                    !(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+            if (event.useItemInHand() == Event.Result.DENY || !event.hasItem() || !(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
                 return;
             }
 
@@ -130,7 +128,7 @@ public class SkillPotion extends PassiveSkill {
             long time = System.currentTimeMillis();
             ConfigurationSection config = hero.getSkillSettings(skill);
             if (config != null) {
-                long readyTime = config.getLong("cooldown." + potionType, 0);
+                long readyTime = hero.getCooldown(potionType);
                 if (time < readyTime) {
                     int secRemaining = (int) Math.ceil((readyTime - time) / 1000.0);
                     Messaging.send(player, "You can't use this potion for $1s!", secRemaining);
@@ -141,7 +139,7 @@ public class SkillPotion extends PassiveSkill {
 
             // potion is okay to use, so trigger a cooldown
             long cooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown." + potionName, 10 * 60000, true);
-            hero.setSkillSetting(skill, "cooldown." + potionType, time + cooldown);
+            hero.setCooldown(potionType, time + cooldown);
         }
     }
 
