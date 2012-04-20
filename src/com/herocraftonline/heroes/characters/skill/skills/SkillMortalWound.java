@@ -71,6 +71,7 @@ public class SkillMortalWound extends TargettedSkill {
         Material item = player.getItemInHand().getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't Mortal Strike with that weapon!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
