@@ -74,6 +74,7 @@ public class SkillMortalWound extends TargettedSkill {
         }
 
         int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
+        addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 12000, false);
