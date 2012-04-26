@@ -144,6 +144,6 @@ public class SkillIceArrow extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, false);
-        return getDescription().replace("$3", mana + "");
+        return getDescription().replace("$1", mana + "");
     }
 }
