@@ -100,7 +100,7 @@ public class SkillEmpathy extends TargettedSkill {
         double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getSkillLevel(this)));
         damageMod = damageMod > 0 ? damageMod : 0;
-        int damage = (int) (hero.getMaxHealth() - hero.getHealth());
+        int damage = (int) ((hero.getMaxHealth() - hero.getHealth()) * damageMod);
         if (maxDamage != 0 && damage > maxDamage) {
             damage = maxDamage;
         }
@@ -115,7 +115,6 @@ public class SkillEmpathy extends TargettedSkill {
                 plugin.getCharacterManager().getHero((Player) target).addEffect(new SlowEffect(this, slowDuration, 2, false, "", "", hero));
             }
         }
-        damage = (int) Math.round(damage * damageMod);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         //target.damage(damage, player);
         broadcastExecuteText(hero, target);
