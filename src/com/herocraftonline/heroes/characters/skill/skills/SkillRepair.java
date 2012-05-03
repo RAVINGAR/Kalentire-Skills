@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.MaterialUtil;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Material;
@@ -20,6 +21,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class SkillRepair extends ActiveSkill {
+    
+    String useText = null;
+    
     public SkillRepair(Heroes plugin) {
         super(plugin, "Repair");
         setDescription("You are able to repair tools and armor. There is a $1% chance the item will be disenchanted.");
@@ -28,10 +32,15 @@ public class SkillRepair extends ActiveSkill {
         setIdentifiers("skill repair");
         setTypes(SkillType.ITEM, SkillType.PHYSICAL, SkillType.KNOWLEDGE);
     }
-
+    @Override
+    public void init() {
+        super.init();
+        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%hero% repaired a %item%%ench%").replace("%hero%", "$1").replace("%item%", "$2").replace("%ench%", "$3");
+    }
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.USE_TEXT.node(), "%hero% repaired a %item%%ench%");
         node.set("wood-weapons", 1);
         node.set("stone-weapons", 1);
         node.set("iron-weapons", 1);
@@ -258,20 +267,23 @@ public class SkillRepair extends ActiveSkill {
         if (!hasReagentCost(player, reagentStack)) {
             return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
         }
-        if(!is.getEnchantments().isEmpty()) {
+        
+        boolean lost = false;
+        boolean enchanted = !is.getEnchantments().isEmpty();
+        if(enchanted) {
             double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
             unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getSkillLevel(this);
             if (Util.nextRand() <= unchant) {
                 for (Enchantment enchant : new ArrayList<Enchantment>(is.getEnchantments().keySet())) {
                     is.removeEnchantment(enchant);
                 }
-                Messaging.send(player, "Your item has lost it's power!");
+                lost = true;
             }
         }
         is.setDurability((short) 0);
         player.getInventory().removeItem(reagentStack);
         Util.syncInventory(player, plugin);
-        broadcastExecuteText(hero);
+        broadcast(player.getLocation(), SkillConfigManager.getUseSetting(hero, this, useText, "%1 repaired a %2%3"), player.getDisplayName(), is.getType().name().toLowerCase().replace("_", " "), !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
         return SkillResult.NORMAL;
     }
 
