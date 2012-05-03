@@ -283,7 +283,7 @@ public class SkillRepair extends ActiveSkill {
         is.setDurability((short) 0);
         player.getInventory().removeItem(reagentStack);
         Util.syncInventory(player, plugin);
-        broadcast(player.getLocation(), SkillConfigManager.getUseSetting(hero, this, useText, "%1 repaired a %2%3"), player.getDisplayName(), is.getType().name().toLowerCase().replace("_", " "), !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
+        broadcast(player.getLocation(), useText, player.getDisplayName(), is.getType().name().toLowerCase().replace("_", " "), !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
         return SkillResult.NORMAL;
     }
 
