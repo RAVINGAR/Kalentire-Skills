@@ -18,12 +18,13 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Setting;
 
 public class SkillExcavate extends ActiveSkill {
-    
+
     private String applyText;
     private String expireText;
-    
+
     public SkillExcavate(Heroes plugin) {
         super(plugin, "Excavate");
         setDescription("You gain a increased digging speed, and instant breaking of dirt for $1 seconds.");
@@ -37,7 +38,8 @@ public class SkillExcavate extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 2);
-        node.set("duration-per-level", 100);
+        node.set(Setting.DURATION.node(), 0);
+        node.set(Setting.DURATION_INCREASE.node(), 100);
         node.set("apply-text", "%hero% begins excavating!");
         node.set("expire-text", "%hero% is no longer excavating!");
         return node;
@@ -49,12 +51,12 @@ public class SkillExcavate extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, "apply-text", "%hero% begins excavating!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, "expire-text", "%hero% is no longer excavating!").replace("%hero%", "$1");
     }
-    
+
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, "duration-per-level", 100, false) * hero.getSkillLevel(this);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 0, false);
+        duration += (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 100, false) * hero.getSkillLevel(this));
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
@@ -63,7 +65,7 @@ public class SkillExcavate extends ActiveSkill {
 
         return SkillResult.NORMAL;
     }
-    
+
     public class ExcavateEffect extends ExpirableEffect {
 
         public ExcavateEffect(Skill skill, long duration, int amplifier) {
@@ -87,24 +89,24 @@ public class SkillExcavate extends ActiveSkill {
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
     }
-    
+
     public class SkillBlockListener implements Listener {
-        
+
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onBlockDamage(BlockDamageEvent event) {
             if (event.isCancelled() || !isExcavatable(event.getBlock().getType())) {
                 return;
             }
-            
+
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (!hero.hasEffect("Excavate"))
                 return;
-            
+
             //Since this block is excavatable, and the hero has the effect - lets instabreak it
             event.setInstaBreak(true);
         }
     }
-    
+
     private boolean isExcavatable(Material m) {
         switch (m) {
         case DIRT:
@@ -122,12 +124,11 @@ public class SkillExcavate extends ActiveSkill {
             return false;
         }
     }
+
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, "duration-per-level", 100, false);
-        int level = hero.getSkillLevel(this);
-        if (level < 1)
-            level = 1;
-        return getDescription().replace("$1", duration * level / 1000 + "");
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 0, false);
+        duration += (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 100, false) * hero.getSkillLevel(this));
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 }
