@@ -1,8 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -11,11 +14,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -59,8 +57,6 @@ public class SkillCamouflage extends ActiveSkill {
         setIdentifiers("skill camouflage", "skill camo");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
         setTypes(SkillType.ILLUSION, SkillType.BUFF, SkillType.COUNTER, SkillType.STEALTHY);
-
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
         moveChecker = new CamoMoveChecker(this);
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);
     }
@@ -125,43 +121,14 @@ public class SkillCamouflage extends ActiveSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 4);
-        hero.addEffect(new CamoEffect(this, duration, applyText, expireText));
+        hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
         moveChecker.addHero(hero);
         return SkillResult.NORMAL;
     }
 
-    public class CamoEffect extends InvisibleEffect {
-
-        private final String applyText, expireText;
-
-        public CamoEffect(Skill skill, long duration, String applyText, String expireText) {
-            super(skill, duration, "", "");
-            this.applyText = applyText;
-            this.expireText = expireText;
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-
-            Messaging.send(player, applyText);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-
-            Messaging.send(player, expireText);
-        }
-
-    }
-
     public class CamoMoveChecker implements Runnable{
 
-        private List<Hero> heroes = new java.util.ArrayList<Hero>();
-        private Map<Hero, Location> oldLocations = new java.util.HashMap<Hero, Location>();
+        private Map<Hero, Location> oldLocations = new HashMap<Hero, Location>();
         private Skill skill;
 
         CamoMoveChecker(Skill skill) {
@@ -170,24 +137,19 @@ public class SkillCamouflage extends ActiveSkill {
 
         @Override
         public void run() {	
-            if(heroes.size() == 0)
-                return;
-            List<Hero> toCheck = new java.util.ArrayList<Hero>();
-            toCheck.addAll(heroes);
-
-            for(Hero hero : toCheck) {
+        	Iterator<Entry<Hero, Location>> heroes = oldLocations.entrySet().iterator();
+            for(Entry<Hero, Location> entry = null; heroes.hasNext(); entry = heroes.next()) {
+            	Hero hero = entry.getKey();
+            	Location oldLoc = entry.getValue();
                 if(!hero.hasEffect("Invisible")) {
-                    heroes.remove(hero);
-                    oldLocations.remove(hero);
+                    heroes.remove();
                     continue;
                 }
+                
                 Location newLoc = hero.getPlayer().getLocation();
-                Location oldLoc = oldLocations.get(hero);
-
                 if(newLoc.distance(oldLoc) > 1) {
                     hero.removeEffect(hero.getEffect("Invisible"));
-                    heroes.remove(hero);
-                    oldLocations.remove(hero);
+                    heroes.remove();
                     continue;
                 }
                 double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", 1D, false);
@@ -195,8 +157,7 @@ public class SkillCamouflage extends ActiveSkill {
                 for(Entity entity : nearEntities) {
                     if(entity instanceof Player) {
                         hero.removeEffect(hero.getEffect("Invisible"));
-                        heroes.remove(hero);
-                        oldLocations.remove(hero);
+                        heroes.remove();
                         break;
                     }
                 }
@@ -206,42 +167,7 @@ public class SkillCamouflage extends ActiveSkill {
         public void addHero(Hero hero) {
             if(!hero.hasEffect("Invisible"))
                 return;
-            heroes.add(hero);
             oldLocations.put(hero, hero.getPlayer().getLocation());
-        }
-    }
-
-    public class SkillEventListener implements Listener {
-        @EventHandler
-        public void onDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0) {
-                return;
-            }
-            Player player = null;
-            if (event.getEntity() instanceof Player) {
-                player = (Player) event.getEntity();
-                Hero hero = plugin.getCharacterManager().getHero(player);
-                if (hero.hasEffect("Invisible")) {
-                    hero.removeEffect(hero.getEffect("Invisible"));
-                }
-            } 
-            player = null;
-            if (event instanceof EntityDamageByEntityEvent) {
-                EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-                if (subEvent.getDamager() instanceof Player) {
-                    player = (Player) subEvent.getDamager();
-                } else if (subEvent.getDamager() instanceof Projectile) {
-                    if (((Projectile) subEvent.getDamager()).getShooter() instanceof Player) {
-                        player = (Player) ((Projectile) subEvent.getDamager()).getShooter();
-                    }
-                }
-                if (player != null) {
-                    Hero hero = plugin.getCharacterManager().getHero(player);
-                    if (hero.hasEffect("Invisible")) {
-                        hero.removeEffect(hero.getEffect("Invisible"));
-                    }
-                }
-            }
         }
     }
 
