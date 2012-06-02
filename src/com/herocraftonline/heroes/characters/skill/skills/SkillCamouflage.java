@@ -136,11 +136,12 @@ public class SkillCamouflage extends ActiveSkill {
         }
 
         @Override
-        public void run() {	
-        	Iterator<Entry<Hero, Location>> heroes = oldLocations.entrySet().iterator();
-            for(Entry<Hero, Location> entry = null; heroes.hasNext(); entry = heroes.next()) {
-            	Hero hero = entry.getKey();
-            	Location oldLoc = entry.getValue();
+        public void run() {
+            Iterator<Entry<Hero, Location>> heroes = oldLocations.entrySet().iterator();
+            while(heroes.hasNext()) {
+                Entry<Hero, Location> entry = heroes.next();
+                Hero hero = entry.getKey();
+                Location oldLoc = entry.getValue();
                 if(!hero.hasEffect("Invisible")) {
                     heroes.remove();
                     continue;
