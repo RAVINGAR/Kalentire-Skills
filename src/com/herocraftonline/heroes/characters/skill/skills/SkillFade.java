@@ -52,6 +52,7 @@ public class SkillFade extends ActiveSkill {
         node.set("fail-text", "It's too bright to fade");
         node.set("detection-range", 1D);
         node.set("max-light-level", 8);
+        node.set("max-move-distance", 1D);
         return node;
     }
 
@@ -103,7 +104,7 @@ public class SkillFade extends ActiveSkill {
                     continue;
                 }
                 Location newLoc = hero.getPlayer().getLocation();
-                if(newLoc.distance(oldLoc) > 1) {
+                if(newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1D, false)) {
                     hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
