@@ -69,6 +69,7 @@ public class SkillCamouflage extends ActiveSkill {
         node.set(Setting.EXPIRE_TEXT.node(), "You come back into view");
         node.set("fail-text", "The surrounding terrain isn't natural enough");
         node.set("detection-range", 1D);
+        node.set("max-move-distance", 1D);
         return node;
     }
 
@@ -148,7 +149,7 @@ public class SkillCamouflage extends ActiveSkill {
                 }
                 
                 Location newLoc = hero.getPlayer().getLocation();
-                if(newLoc.distance(oldLoc) > 1) {
+                if(newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1D, false)) {
                     hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
