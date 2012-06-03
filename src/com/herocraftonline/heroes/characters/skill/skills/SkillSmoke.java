@@ -33,16 +33,16 @@ public class SkillSmoke extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DURATION.node(), 20000);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% vanished in a cloud of smoke!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% reappeared!");
+        node.set(Setting.APPLY_TEXT.node(), "You vanish in a cloud of smoke!");
+        node.set(Setting.EXPIRE_TEXT.node(), "You reappeared!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% vanished in a cloud of smoke!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% reappeard!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "You vanish in a cloud of smoke!");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "You reappeared!");
     }
 
     @Override
