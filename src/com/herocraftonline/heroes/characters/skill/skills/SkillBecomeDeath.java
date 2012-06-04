@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -33,10 +34,10 @@ public class SkillBecomeDeath extends ActiveSkill {
     
     public SkillBecomeDeath(Heroes plugin) {
         super(plugin, "BecomeDeath");
-        setDescription("For $1 seconds you look undead. You no longer need to breath air.");
+        setDescription("For $1 seconds you look undead. You no longer need to breath air, and are immune to poison.");
         setUsage("/skill becomedeath");
         setArgumentRange(0, 0);
-        setIdentifiers("skill becomedeath", "bdeath");
+        setIdentifiers("skill becomedeath", "skill bdeath");
         setTypes(SkillType.SILENCABLE, SkillType.BUFF, SkillType.DARK);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
@@ -62,6 +63,12 @@ public class SkillBecomeDeath extends ActiveSkill {
         broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
         hero.addEffect(new UndeadEffect(this, duration));
+        for (Effect e : hero.getEffects()) {
+            if (e.isType(EffectType.POISON) && e.isType(EffectType.HARMFUL)) {
+                e.remove(hero);
+            }
+        }
+        
         return SkillResult.NORMAL;
     }
     
@@ -74,6 +81,7 @@ public class SkillBecomeDeath extends ActiveSkill {
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DARK);
             this.types.add(EffectType.MAGIC);
+            this.types.add(EffectType.RESIST_POISON);
             this.types.add(EffectType.WATER_BREATHING);
         }
 
