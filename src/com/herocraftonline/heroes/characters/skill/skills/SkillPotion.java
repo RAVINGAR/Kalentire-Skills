@@ -76,7 +76,7 @@ public class SkillPotion extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.useItemInHand() == Event.Result.DENY || !event.hasItem() || !(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+            if (event.useItemInHand() == Event.Result.DENY || !event.hasItem()) {
                 return;
             }
 
