@@ -40,7 +40,7 @@ public class SkillPotion extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
         section.set(Setting.LEVEL.node(), 1);
-
+        section.set(Setting.NO_COMBAT_USE.node(), false);
         for (String potion : regularPotions.values()) {
             section.set("allow." + potion, false);
             section.set("cooldown." + potion, 10 * 60000);
@@ -91,7 +91,7 @@ public class SkillPotion extends PassiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             // see if the player can use potions at all
-            if (!hero.canUseSkill(skill)) {
+            if (!hero.canUseSkill(skill) || (hero.isInCombat() && SkillConfigManager.getUseSetting(hero, skill, Setting.NO_COMBAT_USE, false))) {
                 Messaging.send(player, "You can't use this potion!");
                 event.setUseItemInHand(Event.Result.DENY);
                 return;
