@@ -123,7 +123,7 @@ public class SkillHarmshield extends ActiveSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false) / 1000;
         float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.1D, false);
         damageReduction *= 100F;
         damageReduction = 100F - damageReduction;
