@@ -1,0 +1,131 @@
+package com.herocraftonline.heroes.characters.skill.skills;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Setting;
+
+public class SkillHarmshield extends ActiveSkill {
+	
+	
+	private String applyText;
+    private String expireText;
+
+    public SkillHarmshield(Heroes plugin) {
+        super(plugin, "HarmShield");
+        setDescription("Shields you from harm, reducing damage by $1% for $2 seconds");
+        setUsage("/skill harmshield");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill harmshield");
+        setTypes(SkillType.BUFF, SkillType.SILENCABLE);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set("absorb-amount", 90D);
+        node.set(Setting.DURATION.node(), 10000);
+        node.set(Setting.APPLY_TEXT.node(), "%hero% is shielded from harm!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his harm shield!");
+        return node;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% is shielded from harm!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% lost his harm shield!").replace("%hero%", "$1");
+    }
+
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+        broadcastExecuteText(hero);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        hero.addEffect(new HarmShieldEffect(this, duration));
+
+        return SkillResult.NORMAL;
+    }
+
+    public class HarmShieldEffect extends ExpirableEffect {
+
+        public HarmShieldEffect(Skill skill, long duration) {
+            super(skill, "HarmShield", duration);
+            this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.BENEFICIAL);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), applyText, player.getDisplayName());
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), expireText, player.getDisplayName());
+        }
+
+    }
+
+    public class SkillHeroListener implements Listener {
+
+        private final Skill skill;
+        
+        public SkillHeroListener(Skill skill) {
+            this.skill = skill;
+        }
+        
+        @EventHandler(priority = EventPriority.HIGH)
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
+                return;
+            }
+            
+            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
+        }
+
+        @EventHandler(priority = EventPriority.HIGH)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
+                return;
+            }
+            
+            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
+        }
+
+        private int getAdjustment(Player player, int damage) {
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect("HarmShield"))
+                damage *= SkillConfigManager.getUseSetting(hero, skill, "absorb-amount", 90D, false);
+            return damage;
+        }
+    }
+    
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "absorb-amount", 90D, false);
+        return getDescription().replace("$1", damageReduction + "").replace("$2", duration + "");
+    }
+    
+}
