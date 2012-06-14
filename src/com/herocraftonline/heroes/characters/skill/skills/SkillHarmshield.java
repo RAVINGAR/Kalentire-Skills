@@ -39,7 +39,7 @@ public class SkillHarmshield extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("absorb-amount", 90D);
+        node.set("damage-multiplier", 0.1D);
         node.set(Setting.DURATION.node(), 10000);
         node.set(Setting.APPLY_TEXT.node(), "%hero% is shielded from harm!");
         node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his harm shield!");
@@ -116,7 +116,7 @@ public class SkillHarmshield extends ActiveSkill {
         private int getAdjustment(Player player, int damage) {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("HarmShield"))
-                damage *= SkillConfigManager.getUseSetting(hero, skill, "absorb-amount", 90D, false);
+                damage *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 0.1D, false);
             return damage;
         }
     }
@@ -124,7 +124,9 @@ public class SkillHarmshield extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "absorb-amount", 90D, false);
+        float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.1D, false);
+        damageReduction *= 100F;
+        damageReduction = 100F - damageReduction;
         return getDescription().replace("$1", damageReduction + "").replace("$2", duration + "");
     }
     
