@@ -57,14 +57,17 @@ public class SkillMassPiggify extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+    	Player player = hero.getPlayer();
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         boolean didHit = false;
         for (Entity entity : entities) {
             if(!(entity instanceof LivingEntity))
                     continue;
-            didHit = true;
             LivingEntity target = (LivingEntity)entity;
+            if (!damageCheck(player, target))
+                continue;
+            didHit = true;
             EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
             
             Entity creature = target.getWorld().spawnCreature(target.getLocation(), type);
@@ -72,7 +75,7 @@ public class SkillMassPiggify extends ActiveSkill {
             plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
         }
         if(!didHit) {
-            Messaging.send(hero.getPlayer(), "No valid targets within range!");
+            Messaging.send(player, "No valid targets within range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         broadcastExecuteText(hero);
