@@ -54,10 +54,7 @@ public class SkillPiggify extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        EntityType type = EntityType.PIG;
-        if (target.getLocation().getBlock().getType() == Material.WATER) {
-            type = EntityType.SQUID;
-        }
+    	EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) ? EntityType.SQUID : EntityType.PIG);
 
         Entity creature = target.getWorld().spawnCreature(target.getLocation(), type);
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
