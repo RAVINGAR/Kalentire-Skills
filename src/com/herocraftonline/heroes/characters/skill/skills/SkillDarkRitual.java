@@ -11,14 +11,14 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillTransfuse extends ActiveSkill {
+public class SkillDarkRitual extends ActiveSkill {
 
-    public SkillTransfuse(Heroes plugin) {
-        super(plugin, "Transfuse");
+    public SkillDarkRitual(Heroes plugin) {
+        super(plugin, "DarkRitual");
         setDescription("Converts $1 health to $2 mana.");
-        setUsage("/skill transfuse");
+        setUsage("/skill darkritual");
         setArgumentRange(0, 0);
-        setIdentifiers("skill transfuse");
+        setIdentifiers("skill darkritual");
         setTypes(SkillType.MANA, SkillType.DARK);
     }
 
