@@ -26,7 +26,7 @@ public class SkillTerror extends TargettedSkill {
         setUsage("/skill terror");
         setArgumentRange(0, 0);
         setIdentifiers("skill terror");
-        setTypes(SkillType.DARK, SkillType.DEBUFF, SkillType.ILLUSION, SkillType.MOVEMENT);
+        setTypes(SkillType.DARK, SkillType.DEBUFF, SkillType.ILLUSION, SkillType.MOVEMENT, SkillType.HARMFUL);
 	}
 	
 	@Override
@@ -51,8 +51,6 @@ public class SkillTerror extends TargettedSkill {
 	@Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		if(!(target instanceof Player))
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		if(target.equals(hero.getPlayer()))
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
 		int zoomAmount = SkillConfigManager.getUseSetting(hero, this, "zoom-multiplier", 5, false);
