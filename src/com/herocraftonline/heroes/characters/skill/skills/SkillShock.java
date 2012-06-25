@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -60,19 +61,21 @@ public class SkillShock extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
         
-        plugin.getCharacterManager().getCharacter(target).addEffect(new SparkEffect(this, period, duration, damage, range, player));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new ShockEffect(this, period, duration, damage, range, player));
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
     
-    public class SparkEffect extends PeriodicDamageEffect {
+    public class ShockEffect extends PeriodicDamageEffect {
         
         private final int range;
         
-        public SparkEffect(Skill skill, long period, long duration, int tickDamage, int range, Player applier) {
+        public ShockEffect(Skill skill, long period, long duration, int tickDamage, int range, Player applier) {
             super(skill, "Shock", period, duration, tickDamage, applier);
             this.range = range;
+            this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.LIGHTNING);
         }
         
         @Override

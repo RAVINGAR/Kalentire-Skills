@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,7 +12,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillEviscerate extends TargettedSkill {
 
@@ -35,6 +38,11 @@ public class SkillEviscerate extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
+        Material item = player.getItemInHand().getType();
+        if(!Util.swords.contains(item.name())) {
+            Messaging.send(player, "You can't use eviscerate with that weapon!");
+            return SkillResult.FAIL;
+        }
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 25, false);
         damage += (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
         addSpellTarget(target, hero);
