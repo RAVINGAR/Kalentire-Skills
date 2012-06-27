@@ -88,7 +88,12 @@ public class SkillPort extends ActiveSkill {
                 if (!castLocation.getWorld().equals(player.getWorld())) {
                     continue;
                 }
-
+                // Always teleport the caster
+                if (pHero.equals(hero)) {
+                    pHero.getPlayer().teleport(loc);
+                    continue;
+                }
+                //Distance check the rest of the party
                 double distance = castLocation.distanceSquared(pHero.getPlayer().getLocation());
                 if (distance <= range) {
                     pHero.getPlayer().teleport(loc);
