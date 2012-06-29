@@ -65,7 +65,7 @@ public class SkillBecomeDeath extends ActiveSkill {
         hero.addEffect(new UndeadEffect(this, duration));
         for (Effect e : hero.getEffects()) {
             if (e.isType(EffectType.POISON) && e.isType(EffectType.HARMFUL)) {
-                e.remove(hero);
+                hero.removeEffect(e);
             }
         }
         
