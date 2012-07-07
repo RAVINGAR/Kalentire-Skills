@@ -28,7 +28,7 @@ public class SkillGuardianAngel extends ActiveSkill {
                 (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this));
         double duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 12000, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 0, false) * hero.getSkillLevel(this));
-        String description = getDescription().replace("$1", radius + "").replace("$2", duration + "");
+        String description = getDescription().replace("$1", radius + "").replace("$2", (int) (duration / 1000) + "");
         
         //COOLDOWN
         int cooldown = (SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN, 0, false)
