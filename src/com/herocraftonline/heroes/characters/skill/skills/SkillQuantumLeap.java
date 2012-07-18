@@ -12,42 +12,36 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class SkillQuantumLeap extends TargettedSkill
-{
-  public SkillQuantumLeap(Heroes plugin)
-  {
-    super(plugin, "QuantumLeap");
-    setDescription("Through quantum physics, change places with your target.");
-    setUsage("/skill quantumleap <target>");
-    setArgumentRange(0, 1);
-    setIdentifiers(new String[] { 
-      "skill quantumleap" });
+public class SkillQuantumLeap extends TargettedSkill {
 
-    setTypes(new SkillType[] { 
-      SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT });
-  }
+	public SkillQuantumLeap(Heroes plugin){
+		super(plugin, "QuantumLeap");
+		setDescription("Through quantum physics, change places with your target.");
+		setUsage("/skill quantumleap <target>");
+		setArgumentRange(0, 1);
+		setIdentifiers("skill quantumleap");
 
-  public ConfigurationSection getDefaultConfig()
-  {
-    ConfigurationSection node = super.getDefaultConfig();
-    node.set(Setting.DAMAGE.node(), Integer.valueOf(4));
-    return node;
-  }
+		setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT);
+	}
 
-  public SkillResult use(Hero hero, LivingEntity target, String[] args)
-  {
-    Player player = hero.getPlayer();
-    Location tlocation = target.getLocation();
-    Location plocation = player.getLocation();
-    player.teleport(tlocation);
-    target.teleport(plocation);
-    broadcastExecuteText(hero, target);
-    return SkillResult.NORMAL;
-  }
+	public ConfigurationSection getDefaultConfig() {
+		ConfigurationSection node = super.getDefaultConfig();
+		node.set(Setting.DAMAGE.node(), 4);
+		return node;
+	}
 
-  public String getDescription(Hero hero)
-  {
-    int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-    return getDescription().replace("$1", damage + "");
-  }
+	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+		Player player = hero.getPlayer();
+		Location tlocation = target.getLocation();
+		Location plocation = player.getLocation();
+		player.teleport(tlocation);
+		target.teleport(plocation);
+		broadcastExecuteText(hero, target);
+		return SkillResult.NORMAL;
+	}
+
+	public String getDescription(Hero hero) {
+		int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+		return getDescription().replace("$1", damage + "");
+	}
 }
