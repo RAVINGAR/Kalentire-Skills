@@ -22,7 +22,7 @@ public class SkillVoidsong extends ActiveSkill {
 
     public SkillVoidsong(Heroes plugin) {
         super(plugin, "Voidsong");
-        setDescription("You creat a void dealing $3 magic damage and silencing everyone within $1 blocks for $2 seconds.");
+        setDescription("You create a void dealing $3 magic damage and silencing everyone within $1 blocks for $2 seconds.");
         setUsage("/skill voidsong");
         setArgumentRange(0, 0);
         setIdentifiers("skill voidsong");
