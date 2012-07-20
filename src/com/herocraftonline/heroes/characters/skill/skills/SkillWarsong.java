@@ -62,10 +62,10 @@ public class SkillWarsong extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
 
-        MightEffect mEffect = new MightEffect(this, duration, damageBonus);
+        WarsongEffect mEffect = new WarsongEffect(this, duration, damageBonus);
         if (!hero.hasParty()) {
-            if (hero.hasEffect("Might")) {
-                if (((MightEffect) hero.getEffect("Might")).getDamageBonus() > mEffect.getDamageBonus()) {
+            if (hero.hasEffect("Warsong")) {
+                if (((WarsongEffect) hero.getEffect("Warsong")).getDamageBonus() > mEffect.getDamageBonus()) {
                     Messaging.send(player, "You have a more powerful effect already!");
                 }
             }
@@ -82,8 +82,8 @@ public class SkillWarsong extends ActiveSkill {
                 if (pPlayer.getLocation().distanceSquared(loc) > rangeSquared) {
                     continue;
                 }
-                if (pHero.hasEffect("Might")) {
-                    if (((MightEffect) pHero.getEffect("Might")).getDamageBonus() > mEffect.getDamageBonus()) {
+                if (pHero.hasEffect("Warsong")) {
+                    if (((WarsongEffect) pHero.getEffect("Warsong")).getDamageBonus() > mEffect.getDamageBonus()) {
                         continue;
                     }
                 }
@@ -95,12 +95,12 @@ public class SkillWarsong extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class MightEffect extends ExpirableEffect {
+    public class WarsongEffect extends ExpirableEffect {
 
         private final double damageBonus;
 
-        public MightEffect(Skill skill, long duration, double damageBonus) {
-            super(skill, "Might", duration);
+        public WarsongEffect(Skill skill, long duration, double damageBonus) {
+            super(skill, "Warsong", duration);
             this.damageBonus = damageBonus;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
@@ -135,8 +135,8 @@ public class SkillWarsong extends ActiveSkill {
             }
 
             CharacterTemplate character = event.getDamager();
-            if (character.hasEffect("Might")) {
-                double damageBonus = ((MightEffect) character.getEffect("Might")).damageBonus;
+            if (character.hasEffect("Warsong")) {
+                double damageBonus = ((WarsongEffect) character.getEffect("Warsong")).damageBonus;
                 event.setDamage((int) (event.getDamage() * damageBonus));
             }           
         }
