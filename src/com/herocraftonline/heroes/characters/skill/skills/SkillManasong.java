@@ -106,7 +106,7 @@ public class SkillManasong extends ActiveSkill {
 
         private final double manaMultiplier;
 
-        public ManasongEffect(Skill Manasong, long duration, double manaMultiplier) {
+        public ManasongEffect(Skill skill, long duration, double manaMultiplier) {
             super(skill, "Manasong", duration);
             this.manaMultiplier = manaMultiplier;
             this.types.add(EffectType.DISPELLABLE);
