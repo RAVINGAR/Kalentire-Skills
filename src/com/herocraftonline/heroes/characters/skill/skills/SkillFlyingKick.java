@@ -19,7 +19,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
     private String useText;
 
-    public SkillKick(Heroes plugin) {
+    public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
         setDescription("Kicks your target upward");
         setUsage("/skill flyingkick <target>");
