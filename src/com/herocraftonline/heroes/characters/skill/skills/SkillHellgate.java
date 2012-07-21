@@ -78,7 +78,8 @@ public class SkillHellgate extends ActiveSkill {
             }
 
             hero.addEffect(new HellgateEffect(this, player.getLocation()));
-            player.teleport(world.getSpawnLocation());
+            teleportLocation = world.getSpawnLocation();
+            player.teleport(teleportLocation);
         }
 
         if (hero.hasParty()) {
@@ -86,9 +87,6 @@ public class SkillHellgate extends ActiveSkill {
             for (Hero targetHero : hero.getParty().getMembers()) {
                 Player target = targetHero.getPlayer();
                 if (target.equals(player)) {
-                    continue;
-                }
-                if (!castLocation.getWorld().equals(target.getWorld())) {
                     continue;
                 }
                 if (castLocation.distanceSquared(target.getLocation()) > rangeSquared) {
@@ -100,7 +98,7 @@ public class SkillHellgate extends ActiveSkill {
                     target.teleport(hEffect.getLocation());
                     targetHero.removeEffect(hEffect);
                 } else {
-                    target.teleport(world.getSpawnLocation());
+                    target.teleport(teleportLocation);
                     // If we teleported to a hell-world lets add the effect
                     if (world.getEnvironment() == Environment.NETHER) {
                         targetHero.addEffect(new HellgateEffect(this, target.getLocation()));
