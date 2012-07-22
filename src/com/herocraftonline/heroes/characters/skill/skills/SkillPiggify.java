@@ -107,21 +107,19 @@ public class SkillPiggify extends TargettedSkill {
 
     public class SkillEntityListener implements Listener {
         
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0) {
-                return;
-            }
             if (creatures.containsKey(event.getEntity())) {
                 if (event instanceof EntityDamageByEntityEvent) {
                     EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
                     if (subEvent.getDamager().equals(event.getEntity().getPassenger())) {
+                        event.setCancelled(true);
                         return;
                     } else if (subEvent.getDamager() instanceof Projectile && ((Projectile) subEvent.getDamager()).getShooter().equals(event.getEntity().getPassenger())) {
-                            return;
+                        event.setCancelled(true);    
+                        return;
                     }
                 }
-                event.setCancelled(true);
                 CharacterTemplate character = creatures.remove(event.getEntity());
                 character.removeEffect(character.getEffect("Piggify"));
             } else if (event.getEntity() instanceof LivingEntity) {
