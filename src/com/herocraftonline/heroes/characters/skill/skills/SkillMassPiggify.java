@@ -62,11 +62,13 @@ public class SkillMassPiggify extends ActiveSkill {
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         boolean didHit = false;
         for (Entity entity : entities) {
-            if(!(entity instanceof LivingEntity))
+            if(!(entity instanceof LivingEntity)) {
                     continue;
+            }
             LivingEntity target = (LivingEntity)entity;
-            if (!damageCheck(player, target))
+            if (!damageCheck(player, target)) {
                 continue;
+            }
             didHit = true;
             EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
             
@@ -126,7 +128,7 @@ public class SkillMassPiggify extends ActiveSkill {
     
     public class SkillEntityListener implements Listener {
         
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(priority = EventPriority.LOWEST)
         public void onEntityDamage(EntityDamageEvent event) {
             if (event.isCancelled() || event.getDamage() == 0) {
                 return;
@@ -135,12 +137,13 @@ public class SkillMassPiggify extends ActiveSkill {
                 if (event instanceof EntityDamageByEntityEvent) {
                     EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
                     if (subEvent.getDamager().equals(event.getEntity().getPassenger())) {
+                        event.setCancelled(true);
                         return;
                     } else if (subEvent.getDamager() instanceof Projectile && ((Projectile) subEvent.getDamager()).getShooter().equals(event.getEntity().getPassenger())) {
-                            return;
+                        event.setCancelled(true);
+                        return;
                     }
                 }
-                event.setCancelled(true);
                 CharacterTemplate character = creatures.remove(event.getEntity());
                 character.removeEffect(character.getEffect("MassPiggify"));
             } else if (event.getEntity() instanceof LivingEntity) {
