@@ -28,7 +28,7 @@ public class SkillSummonPickaxe extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.AMOUNT.node(), 1);
+        node.set(Setting.AMOUNT.node(), 2);
         return node;
     }
 
