@@ -70,7 +70,7 @@ public class SkillBlink extends ActiveSkill {
         // Check to make sure we aren't blinking through walls
         while (iter.hasNext()) {
             b = iter.next();
-            if ((Util.transparentBlocks.contains(b.getType()) && Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) && Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
+            if (!(Util.transparentBlocks.contains(b.getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
                 prev = b;
             } else {
                 break;
