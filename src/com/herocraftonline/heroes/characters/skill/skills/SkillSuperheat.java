@@ -70,31 +70,33 @@ public class SkillSuperheat extends ActiveSkill {
             if (event.isCancelled()) {
                 return;
             }
-            
+
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect("Superheat")) {
                 Block block = event.getBlock();
                 switch (block.getType()) {
-                    case IRON_ORE:
-                        event.setCancelled(true);
-                        block.setType(Material.AIR);
-                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.IRON_INGOT, 1));
-                        break;
-                    case GOLD_ORE:
-                        event.setCancelled(true);
-                        block.setType(Material.AIR);
-                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
-                        break;
-                    case SAND:
-                        event.setCancelled(true);
-                        block.setType(Material.AIR);
-                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GLASS, 1));
-                        break;
-                    case COBBLESTONE:
-                        event.setCancelled(true);
-                        block.setType(Material.AIR);
-                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.STONE, 1));
-                        break;
+                case IRON_ORE:
+                    event.setCancelled(true);
+                    block.setType(Material.AIR);
+                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.IRON_INGOT, 1));
+                    break;
+                case GOLD_ORE:
+                    event.setCancelled(true);
+                    block.setType(Material.AIR);
+                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
+                    break;
+                case SAND:
+                    event.setCancelled(true);
+                    block.setType(Material.AIR);
+                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GLASS, 1));
+                    break;
+                case COBBLESTONE:
+                    event.setCancelled(true);
+                    block.setType(Material.AIR);
+                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.STONE, 1));
+                    break;
+                default:
+
                 }
             }
         }

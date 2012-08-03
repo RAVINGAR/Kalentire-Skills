@@ -93,13 +93,13 @@ public class SkillSummonMooshroomCow extends ActiveSkill {
         double chance2x = SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false);
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false);
         Block wTargetBlock = player.getTargetBlock(null, 20).getRelative(BlockFace.UP);
-        player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
+        player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
         double chance = Util.nextRand();
         if (chance <= chance3x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
         } else if (chance <= chance2x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

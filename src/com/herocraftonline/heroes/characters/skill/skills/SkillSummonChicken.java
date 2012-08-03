@@ -52,13 +52,13 @@ public class SkillSummonChicken extends ActiveSkill {
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.CHICKEN);
+        player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
         double chance = Util.nextRand();
         if (chance <= chance3x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.CHICKEN);
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.CHICKEN);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
         } else if (chance <= chance2x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.CHICKEN);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

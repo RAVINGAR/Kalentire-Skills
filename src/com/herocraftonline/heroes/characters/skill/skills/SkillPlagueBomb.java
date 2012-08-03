@@ -78,7 +78,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         Vector spawnLoc = pLoc.add(direction);
         final World world = player.getWorld();
 
-        final LivingEntity sheep = world.spawnCreature(spawnLoc.toLocation(world), EntityType.SHEEP);
+        final LivingEntity sheep = (LivingEntity) world.spawnEntity(spawnLoc.toLocation(world), EntityType.SHEEP);
         sheepMap.put(sheep.getEntityId(), player);
 
         EntityLiving cbSheep = ((CraftLivingEntity) sheep).getHandle();

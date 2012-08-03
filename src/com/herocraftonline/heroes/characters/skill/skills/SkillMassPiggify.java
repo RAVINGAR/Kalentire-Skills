@@ -72,7 +72,7 @@ public class SkillMassPiggify extends ActiveSkill {
             didHit = true;
             EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
             
-            Entity creature = target.getWorld().spawnCreature(target.getLocation(), type);
+            Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
             long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
             plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
         }

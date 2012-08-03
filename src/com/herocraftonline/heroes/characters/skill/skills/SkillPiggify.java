@@ -56,7 +56,7 @@ public class SkillPiggify extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
     	EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
 
-        Entity creature = target.getWorld().spawnCreature(target.getLocation(), type);
+        Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
         broadcastExecuteText(hero, target);

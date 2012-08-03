@@ -57,13 +57,13 @@ public class SkillSummonCow extends ActiveSkill {
                 wTargetBlock.getType() == Material.HUGE_MUSHROOM_2 || 
                 wTargetBlock.getType() == Material.MYCEL ? EntityType.MUSHROOM_COW : EntityType.COW;
         
-        player.getWorld().spawnCreature(wTargetBlock.getLocation(), cType);
+        player.getWorld().spawnEntity(wTargetBlock.getLocation(), cType);
         double chance = Util.nextRand();
         if (chance <= chance3x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), cType);
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), cType);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), cType);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), cType);
         } else if (chance <= chance2x) {
-            player.getWorld().spawnCreature(wTargetBlock.getLocation(), cType);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), cType);
         }
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

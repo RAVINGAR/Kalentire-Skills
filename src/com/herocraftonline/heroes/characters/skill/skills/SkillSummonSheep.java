@@ -54,16 +54,16 @@ public class SkillSummonSheep extends ActiveSkill {
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        Sheep sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
+        Sheep sheep = (Sheep) player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.SHEEP);
         sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
         double chance = Util.nextRand();
         if (chance <= chance3x) {
-            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
+            sheep = (Sheep) player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
-            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
+            sheep = (Sheep) player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
         } else if (chance <= chance2x) {
-            sheep = (Sheep) player.getWorld().spawnCreature(wTargetBlock.getLocation(), EntityType.SHEEP);
+            sheep = (Sheep) player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
         }
         broadcastExecuteText(hero);

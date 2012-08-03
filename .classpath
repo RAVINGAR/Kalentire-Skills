@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Heroes"/>
 	<classpathentry kind="lib" path="libs/spoutplugin.jar"/>
-	<classpathentry kind="lib" path="libs/craftbukkit-1.2.3.jar"/>
+	<classpathentry kind="lib" path="libs/craftbukkit-1.2.5-R5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
