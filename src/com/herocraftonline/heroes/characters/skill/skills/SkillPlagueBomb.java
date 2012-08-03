@@ -89,7 +89,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         sheep.setVelocity(direction.multiply(velocity).add(new Vector(0, 0.15, 0)));
 
         int fuse = SkillConfigManager.getUseSetting(hero, this, "fuse-time", 5000, true);
-        final int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
+        //final int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
