@@ -12,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -54,10 +53,7 @@ public class SkillBlink extends ActiveSkill {
             Messaging.send(player, "The void prevents you from blinking!");
             return SkillResult.FAIL;
         }
-        //Max distance to teleport the caster
         int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 6, false);
-        
-        // Setup variables for checking blocks
         Block prev = null;
         Block b;
         BlockIterator iter = null;
@@ -67,25 +63,22 @@ public class SkillBlink extends ActiveSkill {
             Messaging.send(player, "There was an error getting your blink location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        // Check to make sure we aren't blinking through walls
         while (iter.hasNext()) {
             b = iter.next();
-            if (!(Util.transparentBlocks.contains(b.getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
+            if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
                 prev = b;
             } else {
                 break;
             }
         }
-        // If we found a blink location, lets do it.
         if (prev != null) {
-            Location teleport = prev.getLocation().clone().add(new Vector(.5, 0, .5));
+            Location teleport = prev.getLocation().clone();
             // Set the blink location yaw/pitch to that of the player
             teleport.setPitch(player.getLocation().getPitch());
             teleport.setYaw(player.getLocation().getYaw());
             player.teleport(teleport);
             return SkillResult.NORMAL;
         } else {
-        	//Otherwise fail!
             Messaging.send(player, "No location to blink to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
