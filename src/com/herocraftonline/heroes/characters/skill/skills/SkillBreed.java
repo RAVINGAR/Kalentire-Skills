@@ -19,11 +19,11 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillVillagerTrade extends PassiveSkill {
+public class SkillBreed extends PassiveSkill {
 
-    public SkillVillagerTrade(Heroes plugin) {
-        super(plugin, "VillagerTrade");
-        setDescription("You have gained the ability to communicate with Villagers.");
+    public SkillBreed(Heroes plugin) {
+        super(plugin, "Breed");
+        setDescription("You have gained the ability to breed animals.");
         setEffectTypes(EffectType.BENEFICIAL);
         setTypes(SkillType.KNOWLEDGE, SkillType.BUFF);
         Bukkit.getPluginManager().registerEvents(new SkillListener(this), plugin);
@@ -49,11 +49,11 @@ public class SkillVillagerTrade extends PassiveSkill {
     	public void onPlayerVillagerBuy(PlayerInteractEntityEvent event) {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-    		if(event.getRightClicked().getType() == EntityType.VILLAGER) {
-    			if (hero.canUseSkill("VillagerTrade")) {
+    		if(event.getRightClicked().getType() == EntityType.COW) {
+    			if (hero.canUseSkill("Breed")) {
     				event.setCancelled(false);
     			} else {
-    				player.sendMessage(ChatColor.DARK_GRAY + "The villager cannot understand you!");
+    				player.sendMessage(ChatColor.DARK_GRAY + "You are unable to breed animals!");
     				event.setCancelled(true);
     			}
     		}
