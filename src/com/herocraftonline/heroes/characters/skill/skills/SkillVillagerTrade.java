@@ -50,7 +50,7 @@ public class SkillVillagerTrade extends PassiveSkill {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
     		if(event.getRightClicked().getType() == EntityType.VILLAGER) {
-    			if (!hero.canUseSkill("VillagerTrade")) {
+    			if (hero.canUseSkill("VillagerTrade")) {
     				event.setCancelled(false);
     			} else {
     				player.sendMessage(ChatColor.DARK_RED + "The villager cannot understand you!");
