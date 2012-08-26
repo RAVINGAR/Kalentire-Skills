@@ -7,6 +7,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.herocraftonline.heroes.Heroes;
@@ -44,7 +45,7 @@ public class SkillAlchemy extends PassiveSkill {
         
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.BREWING_STAND) {
+            if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.BREWING_STAND || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                 return;
             }
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
