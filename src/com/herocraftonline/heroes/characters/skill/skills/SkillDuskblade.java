@@ -4,7 +4,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
@@ -17,11 +16,11 @@ import com.herocraftonline.heroes.util.Setting;
 public class SkillDuskblade extends TargettedSkill {
 
 	public SkillDuskblade(Heroes plugin) {
-		super(plugin, "Drainsoul");
-		setDescription("You drain $1 health from target, restoring $2 of your own health.");
-		setUsage("/skill drainsoul <target>");
+		super(plugin, "Duskblade");
+		setDescription("Your blade drains $1 health from target, restoring $2 of your own health.");
+		setUsage("/skill duskblade <target>");
 		setArgumentRange(0, 1);
-		setIdentifiers("skill drainsoul");
+		setIdentifiers("skill duskblade");
 		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
 	}
 
@@ -61,5 +60,6 @@ public class SkillDuskblade extends TargettedSkill {
         double mult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", .5, false);
         return getDescription().replace("$1", amount + "").replace("$2", (int) (mult * amount) + "");
     }
-
+    
 }
+
