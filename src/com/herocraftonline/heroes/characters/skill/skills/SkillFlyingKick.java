@@ -68,7 +68,7 @@ public class SkillFlyingKick extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%player%: This is SPARTAAAA!!!").replace("%player%", "$1");
+        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%player%: This is HEROCRAFTT!!!").replace("%player%", "$1");
     }
 
     @Override
