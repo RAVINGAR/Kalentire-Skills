@@ -5,11 +5,11 @@
     <property name="dir.dist" value="build" />
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
-	<property name="heroes" value="../../Heroes/lastSuccessful/archive/build" />
+	<property name="heroes" value="../../Heroes/workspace/bin" />
 
     <path id="classpath">
 		<fileset dir="libs" includes="**/*.jar" />
-    	<fileset dir="${heroes}" includes="**/*.jar" />
+    	<fileset dir="${heroes}" includes="**/*.class" />
     </path>
 
     <taskdef resource="net/sf/antcontrib/antlib.xml" />
