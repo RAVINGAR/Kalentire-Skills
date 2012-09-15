@@ -70,7 +70,7 @@ public class SkillIceblade extends TargettedSkill {
         int force = SkillConfigManager.getUseSetting(hero, this, "force", 0, false);
         int damage = plugin.getDamageManager().getItemDamage(item, player);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
-        //Do a little knockup
+        //Do a little knock-up
         target.setVelocity(target.getVelocity().add(new Vector(0, force, 0)));
         //Add the slow effect
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
@@ -88,6 +88,7 @@ public class SkillIceblade extends TargettedSkill {
 			super(skill, "Iceblade", duration);
 			this.effect = afterEffect;
 			this.types.add(EffectType.HARMFUL);
+			this.types.add(EffectType.ICE);
 			this.types.add(EffectType.DISABLE);
 			this.types.add(EffectType.SLOW);
 			addMobEffect(2, (int) (duration / 1000) * 20, 20, false);
