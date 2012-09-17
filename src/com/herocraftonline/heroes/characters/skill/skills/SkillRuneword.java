@@ -6,11 +6,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.CharacterDamageEvent;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -101,10 +100,11 @@ public class SkillRuneword extends TargettedSkill {
 
     public class SkillHeroListener implements Listener {
     	
-        @EventHandler()
-        public void onSkillDamage(CharacterDamageEvent event) {
-           if(!event.getCause().equals(DamageCause.MAGIC))
-        	   return;
+        @EventHandler
+        public void onSkillDamage(SkillDamageEvent event) {
+        	Skill eventSkill = event.getSkill();
+        	if(eventSkill.isType(SkillType.PHYSICAL) || !eventSkill.isType(SkillType.DAMAGING))
+        		return;
             CharacterTemplate character = SkillRuneword.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (character.hasEffect("Runeword")) {
                 double damageBonus = ((RunewordEffect) character.getEffect("Runeword")).damageBonus;
