@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillRuneword extends TargettedSkill {
@@ -51,8 +50,8 @@ public class SkillRuneword extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been cursed by a Runeword!").replace("%target%", "$!");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "The Runeword's curse fades from %target%!").replace("%target%", "$!");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been cursed by a Runeword!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "The Runeword's curse fades from %target%!").replace("%target%", "$1");
     }
     
     @Override
@@ -85,7 +84,7 @@ public class SkillRuneword extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            Messaging.send(player, applyText, player.getName());
+            this.broadcast(player.getLocation(), applyText, player.getName());
         }
 
         public double getDamageBonus() {
@@ -96,18 +95,16 @@ public class SkillRuneword extends TargettedSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            Messaging.send(player, expireText, player.getName());
+            this.broadcast(player.getLocation(), expireText, player.getName());
         }
     }
 
     public class SkillHeroListener implements Listener {
-
+    	
         @EventHandler()
-        public void onMagicDamage(CharacterDamageEvent event) {
-            if (event.getCause() != DamageCause.MAGIC) {
-                return;
-            }
-
+        public void onSkillDamage(CharacterDamageEvent event) {
+           if(!event.getCause().equals(DamageCause.MAGIC))
+        	   return;
             CharacterTemplate character = SkillRuneword.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (character.hasEffect("Runeword")) {
                 double damageBonus = ((RunewordEffect) character.getEffect("Runeword")).damageBonus;
