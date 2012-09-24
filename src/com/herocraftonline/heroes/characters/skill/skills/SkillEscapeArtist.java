@@ -46,6 +46,8 @@ public class SkillEscapeArtist extends ActiveSkill {
         if (removed) {
         	int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 15000, false);
             int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
+            if(multiplier > 20)
+            	multiplier = 20;
             hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, "$1 gained a burst of speed!", "$1 returned to normal speed!"));
             broadcastExecuteText(hero);
             return SkillResult.NORMAL;
