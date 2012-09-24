@@ -27,7 +27,7 @@ public class SkillRuneword extends TargettedSkill {
 
     public SkillRuneword(Heroes plugin) {
         super(plugin, "Runeword");
-        setDescription("Your target $1% more magic damage!");
+        setDescription("Your target takes $1% more magic damage!");
         setArgumentRange(0, 0);
         setUsage("/skill runeword");
         setIdentifiers("skill runeword");
@@ -116,6 +116,6 @@ public class SkillRuneword extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double bonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
-        return getDescription().replace("$1", (int)(bonus - 1D) + "");
+        return getDescription().replace("$1", (int)((bonus - 1D) * 100D) + "");
     }
 }
