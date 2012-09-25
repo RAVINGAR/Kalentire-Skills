@@ -58,12 +58,12 @@ public class SkillReckoning extends ActiveSkill {
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
-            hasHit = true;
             LivingEntity target = (LivingEntity) entity;
             CharacterTemplate character = plugin.getCharacterManager().getCharacter(target);
 
             if (!damageCheck(player, target))
                 continue;
+            hasHit = true;
             Location targetLoc = target.getLocation();
 
             addSpellTarget(target, hero);
