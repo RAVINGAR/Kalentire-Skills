@@ -78,8 +78,8 @@ public class SkillReckoning extends ActiveSkill {
             
             character.addEffect(new SlowEffect(this, duration, slowAmount	, false, "", "", hero));
             
-            double xDir = targetLoc.getX() - playerLoc.getX();
-            double zDir = targetLoc.getZ() - playerLoc.getZ();
+            double xDir = (targetLoc.getX() - playerLoc.getX()) / 3D;
+            double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 3D;
             Vector v = new Vector(xDir, 0, zDir).multiply(0.5).setY(0.5);
             target.setVelocity(v);
         }
