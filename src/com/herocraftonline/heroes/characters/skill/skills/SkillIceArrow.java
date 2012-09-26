@@ -22,13 +22,13 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillIceArrow extends ActiveSkill {
 
     private String slowApplyText;
     private String expireText;
-    private String slowExpireText;
 
     public SkillIceArrow(Heroes plugin) {
         super(plugin, "IceArrow");
@@ -49,7 +49,6 @@ public class SkillIceArrow extends ActiveSkill {
         node.set(Setting.USE_TEXT.node(), "%hero% imbues their arrows with ice!");
         node.set(Setting.APPLY_TEXT.node(), "%target% is slowed by ice!");
         node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!");
-        node.set("slow-expire-message", "%target% is no longer slowed by ice!");
         return node;
     }
 
@@ -59,7 +58,6 @@ public class SkillIceArrow extends ActiveSkill {
         setUseText("%hero% imbues their arrows with ice!".replace("%hero%", "$1"));
         slowApplyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% is slowed by ice!").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!").replace("%hero%", "$1");
-        slowExpireText = SkillConfigManager.getRaw(this, "slow-expire-message", "%target% is no longer slowed by ice!").replace("%target%", "$1");
     }
 
     @Override
@@ -119,9 +117,10 @@ public class SkillIceArrow extends ActiveSkill {
             if (hero.hasEffect("IceArrowBuff")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, Setting.DURATION, 5000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
-                SlowEffect iceSlowEffect = new SlowEffect(skill, duration, amplifier, false, slowApplyText, slowExpireText, hero);
+                SlowEffect iceSlowEffect = new SlowEffect(skill, duration, amplifier, false, "", "", hero);
                 LivingEntity target = (LivingEntity) event.getEntity();
                 plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
+                broadcast(target.getLocation(), slowApplyText, Messaging.getLivingEntityName(target));
             }
         }
 
