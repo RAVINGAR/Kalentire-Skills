@@ -116,6 +116,6 @@ public class SkillRuneword extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double bonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
-        return getDescription().replace("$1", Integer.toString((int)Math.ceil((bonus - 1D) * 100D)));
+        return getDescription().replace("$1", Math.round((bonus - 1D) * 100D) + "");
     }
 }
