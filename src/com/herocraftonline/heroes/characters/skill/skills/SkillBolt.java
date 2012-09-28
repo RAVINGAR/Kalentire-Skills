@@ -38,7 +38,7 @@ public class SkillBolt extends TargettedSkill {
 
         target.getWorld().strikeLightningEffect(target.getLocation());
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
+        damage += (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
@@ -49,7 +49,7 @@ public class SkillBolt extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
+        damage += (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         return getDescription().replace("$1", damage + "");
     }
 }
