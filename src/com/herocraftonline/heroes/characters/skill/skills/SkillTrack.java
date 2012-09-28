@@ -38,6 +38,10 @@ public class SkillTrack extends ActiveSkill {
         Player target = plugin.getServer().getPlayer(args[0]);
         if (target == null)
         	return SkillResult.INVALID_TARGET;
+        if(!target.getWorld().equals(player.getWorld())) {
+        	Messaging.send(player, "$1 is in world: $2", target.getName(), target.getWorld().getName());
+        	return SkillResult.NORMAL;
+        }
 
         Location location = target.getLocation();
         int randomness = SkillConfigManager.getUseSetting(hero, this, "randomness", 50, true);
