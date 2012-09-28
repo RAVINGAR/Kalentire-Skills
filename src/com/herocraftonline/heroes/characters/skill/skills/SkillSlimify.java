@@ -4,7 +4,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.ExperienceChangeEvent;
 import com.herocraftonline.heroes.api.events.HeroKillCharacterEvent;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -26,13 +25,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitScheduler;
 
 public class SkillSlimify extends TargettedSkill
   implements Listener
 {
-  public final Set<Slime> skillSlimes = new HashSet();
+  public final Set<Slime> skillSlimes = new HashSet<Slime>();
   private long skillSlimeKillTick;
 
   public SkillSlimify(Heroes plugin)
@@ -115,7 +112,7 @@ public class SkillSlimify extends TargettedSkill
     }
 
     int amount = getAmountFor(hero);
-    List spawnedSlimes = new ArrayList();
+    List<Slime> spawnedSlimes = new ArrayList<Slime>();
 
     Location targetLoc = target.getLocation();
     for (int i = 0; i < amount; i++)
@@ -144,7 +141,7 @@ public class SkillSlimify extends TargettedSkill
 
     this.skillSlimes.addAll(spawnedSlimes);
     int despawnDelayTicks = getDespawnDelayFor(hero) / 50;
-    Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new DespawnSlimesTask(), despawnDelayTicks);
+    Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new DespawnSlimesTask(spawnedSlimes), despawnDelayTicks);
 
     broadcastExecuteText(hero, target);
     return SkillResult.NORMAL;
@@ -176,7 +173,7 @@ public class SkillSlimify extends TargettedSkill
   @EventHandler(priority=EventPriority.NORMAL)
   public void onExperienceChange(ExperienceChangeEvent event)
   {
-    if ((event.getSource() == HeroClass.ExperienceType.KILLING) && (this.skillSlimeKillTick == getFirstWorldTime()))
+    if ((event.getSource() == ExperienceType.KILLING) && (this.skillSlimeKillTick == getFirstWorldTime()))
       event.setCancelled(true);
   }
 
@@ -189,7 +186,7 @@ public class SkillSlimify extends TargettedSkill
   {
     private final List<Slime> slimes;
 
-    public DespawnSlimesTask() {
+    public DespawnSlimesTask(List<Slime> slimes) {
       this.slimes = slimes;
     }
 
