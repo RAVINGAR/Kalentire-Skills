@@ -50,7 +50,8 @@ public class SkillToxicblade extends ActiveSkill {
         node.set("buff-duration", 600000); // 10 minutes in milliseconds
         node.set("poison-duration", 10000); // 10 seconds in milliseconds
         node.set(Setting.PERIOD.node(), 2000); // 2 seconds in milliseconds
-        node.set("tick-damage", 2);
+        node.set(Setting.DAMAGE_TICK.node(), 2);
+        node.set(Setting.DAMAGE_INCREASE.node(), 0);
         node.set("attacks", 1); // How many attacks the buff lasts for.
         node.set(Setting.APPLY_TEXT.node(), "%target% has become toxic!");
         node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from the toxicity!");
@@ -176,6 +177,7 @@ public class SkillToxicblade extends ActiveSkill {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
                 long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, false);
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
+                tickDamage += (SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
                 ToxicbladePoison apEffect = new ToxicbladePoison(skill, period, duration, tickDamage, player);
                 Entity target = event.getEntity();
                 if (event.getEntity() instanceof LivingEntity) {
@@ -198,6 +200,7 @@ public class SkillToxicblade extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 2, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
         String s = getDescription().replace("$1", damage + "").replace("$2", seconds + "");
         return s;

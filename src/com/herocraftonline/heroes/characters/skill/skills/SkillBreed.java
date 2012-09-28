@@ -2,8 +2,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,7 +50,7 @@ public class SkillBreed extends PassiveSkill {
     	public void onPlayerVillagerBuy(PlayerInteractEntityEvent event) {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-    		if(event.getRightClicked().getType() == EntityType.COW) {
+    		if(event.getRightClicked() instanceof Animals && player.getItemInHand().getType() != Material.SHEARS) {
     			if (hero.canUseSkill("Breed")) {
     				event.setCancelled(false);
     			} else {
