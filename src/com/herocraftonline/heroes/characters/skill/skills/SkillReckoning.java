@@ -37,7 +37,7 @@ public class SkillReckoning extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DAMAGE.node(), 50);
         node.set(Setting.RADIUS.node(), 5);
-        node.set(Setting.DURATION.node(), 10000); //10 second duration
+        node.set(Setting.DURATION.node(), 4000); //4 second duration
         node.set("slow-amount", 2);
         return node;
     }
@@ -95,7 +95,7 @@ public class SkillReckoning extends ActiveSkill {
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 
 }
