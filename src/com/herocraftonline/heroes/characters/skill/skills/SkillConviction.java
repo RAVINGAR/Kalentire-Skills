@@ -64,7 +64,7 @@ public class SkillConviction extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.75, false);
 
-        ConvictionEffect effect = new ConvictionEffect(this, duration, damageModifier);
+        ConvictionEffect effect = new ConvictionEffect(this, duration, damageModifier, applyText, expireText);
         if (!hero.hasParty()) {
         	if (hero.hasEffect("Conviction")) {
                 if (((ConvictionEffect) hero.getEffect("Conviction")).getDamageModifier() < effect.getDamageModifier()) {
@@ -98,16 +98,20 @@ public class SkillConviction extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class ConvictionEffect extends ExpirableEffect {
+    public static class ConvictionEffect extends ExpirableEffect {
 
-        private final double damageModifier;
+        private double damageModifier;
+        private String applyText;
+        private String expireText;
 
-        public ConvictionEffect(Skill skill, long duration, double damageModifier) {
+        public ConvictionEffect(Skill skill, long duration, double damageModifier, String applyText, String expireText) {
             super(skill, "Conviction", duration);
             this.damageModifier = damageModifier;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.MAGIC);
+            this.applyText = applyText;
+            this.expireText = expireText;
         }
 
         @Override
