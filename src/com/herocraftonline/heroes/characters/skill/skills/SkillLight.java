@@ -49,6 +49,7 @@ public class SkillLight extends ActiveSkill {
 
     public SkillLight(Heroes plugin) {
         super(plugin, "Light");
+        setDescription("You glow brightly, illuminating blocks around you.");
         setArgumentRange(0, 0);
         setTypes(SkillType.BUFF, SkillType.LIGHT, SkillType.SILENCABLE);
         setUsage("/skill light");
