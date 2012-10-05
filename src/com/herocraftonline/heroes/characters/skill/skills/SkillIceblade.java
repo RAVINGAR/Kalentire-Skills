@@ -65,7 +65,6 @@ public class SkillIceblade extends TargettedSkill {
             return SkillResult.FAIL;
         }
         
-        int force = SkillConfigManager.getUseSetting(hero, this, "force", 0, false);
         int damage = plugin.getDamageManager().getItemDamage(item, player);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
