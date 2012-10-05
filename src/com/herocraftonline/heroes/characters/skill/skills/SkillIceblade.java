@@ -39,13 +39,12 @@ public class SkillIceblade extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("weapons", Util.shovels);
+        node.set("weapons", Util.swords);
         node.set(Setting.MAX_DISTANCE.node(), 6);
         node.set(Setting.DURATION.node(), 5000);
-        node.set("amplitude", 4);
+        node.set("amplitude", 2);
         node.set(Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%'s iceblade!");
         node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
-        node.set("force", 3);
         return node;
     }
     
