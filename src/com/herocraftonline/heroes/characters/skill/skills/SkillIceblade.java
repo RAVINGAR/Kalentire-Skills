@@ -69,6 +69,7 @@ public class SkillIceblade extends TargettedSkill {
         
         int force = SkillConfigManager.getUseSetting(hero, this, "force", 0, false);
         int damage = plugin.getDamageManager().getItemDamage(item, player);
+        plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         //Do a little knock-up
         target.setVelocity(target.getVelocity().add(new Vector(0, force, 0)));
