@@ -142,7 +142,7 @@ public class SkillConviction extends ActiveSkill {
             }
 
             CharacterTemplate character = SkillConviction.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            if (event.getDamager().hasEffect("Conviction")) {
+            if (character.hasEffect("Conviction")) {
                 double damageModifier = ((ConvictionEffect) character.getEffect("Conviction")).damageModifier;
                 event.setDamage((int) (event.getDamage() * damageModifier));
             }           
