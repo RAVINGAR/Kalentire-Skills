@@ -31,7 +31,7 @@ public class SkillRuneword extends TargettedSkill {
         setArgumentRange(0, 0);
         setUsage("/skill runeword");
         setIdentifiers("skill runeword");
-		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.HARMFUL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 
@@ -55,15 +55,10 @@ public class SkillRuneword extends TargettedSkill {
     
     @Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-    	Player player = hero.getPlayer();
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
         RunewordEffect effect = new RunewordEffect(this, duration, damageBonus);
-        if(Skill.damageCheck(player, target)) {
-        	plugin.getCharacterManager().getCharacter(target).addEffect(effect);
-        } else {
-        	return SkillResult.INVALID_TARGET;
-        }
+        plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 		return SkillResult.NORMAL;
 	}
 
@@ -75,7 +70,7 @@ public class SkillRuneword extends TargettedSkill {
             super(skill, "Runeword", duration);
             this.damageBonus = damageBonus;
             this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
+            this.types.add(EffectType.HARMFUL);
             this.types.add(EffectType.MAGIC);
         }
 
