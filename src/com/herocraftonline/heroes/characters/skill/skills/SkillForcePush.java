@@ -19,7 +19,7 @@ public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
-        setDescription("Forces your target way from you.");
+        setDescription("Forces your target away from you.");
         setUsage("/skill forcepush <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill forcepush", "skill fpush");
