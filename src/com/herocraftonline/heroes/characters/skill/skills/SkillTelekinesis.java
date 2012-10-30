@@ -53,7 +53,7 @@ public class SkillTelekinesis extends ActiveSkill {
         if (block.getType() == Material.LEVER || block.getType() == Material.STONE_BUTTON) {
             EntityHuman eH = ((CraftPlayer) player).getHandle();
             // Can't adjust levers/Buttons through CB
-            net.minecraft.server.Block.byId[block.getTypeId()].interact(((CraftWorld) block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), eH);
+            // net.minecraft.server.Block.byId[block.getTypeId()].interact(((CraftWorld) block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), eH);
             // In Case Bukkit eaver fixes blockState changes on levers:
             // Lever lever = (Lever) block.getState().getData();
             // lever.setPowered(!lever.isPowered());
