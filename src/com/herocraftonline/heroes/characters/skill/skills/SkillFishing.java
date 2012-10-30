@@ -100,7 +100,7 @@ public class SkillFishing extends PassiveSkill {
                             break;
                         case 6: 
                             getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                            Messaging.send(player, "You found 2 Fishes!");
+                            Messaging.send(player, "You found 2 Fish!");
                             break;
                         case 7: 
                             getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
