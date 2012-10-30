@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Fireball;
+import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -27,10 +27,10 @@ import com.herocraftonline.heroes.util.Setting;
 
 public class SkillFireballx extends ActiveSkill {
 
-    private Map<Fireball, Long> fireballs = new LinkedHashMap<Fireball, Long>(100) {
+    private Map<WitherSkull, Long> fireballs = new LinkedHashMap<WitherSkull, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
         @Override
-        protected boolean removeEldestEntry(Entry<Fireball, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<WitherSkull, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -58,7 +58,7 @@ public class SkillFireballx extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Fireball fireball = player.launchProjectile(Fireball.class);
+        WitherSkull fireball = player.launchProjectile(WitherSkull.class);
         fireball.setFireTicks(100);
         fireballs.put(fireball, System.currentTimeMillis());
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
@@ -84,12 +84,12 @@ public class SkillFireballx extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Fireball) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof WitherSkull) || !fireballs.containsKey(projectile)) {
                 return;
             }
             fireballs.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((Fireball) projectile).getShooter();
+            Entity dmger = ((WitherSkull) projectile).getShooter();
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
