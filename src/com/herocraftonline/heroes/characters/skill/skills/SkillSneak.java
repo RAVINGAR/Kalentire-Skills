@@ -28,7 +28,7 @@ public class SkillSneak extends ActiveSkill {
 
     public SkillSneak(Heroes plugin) {
         super(plugin, "Sneak");
-        setDescription("You crouch into the shadows.");
+        setDescription("You can sneak at full movement speed!");
         setUsage("/skill stealth");
         setArgumentRange(0, 0);
         setIdentifiers("skill sneak");

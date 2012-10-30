@@ -81,10 +81,8 @@ public class SkillForage extends ActiveSkill{
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
         case TAIGA :
         case TAIGA_HILLS :
-        case TUNDRA :
         case FROZEN_OCEAN :
         case FROZEN_RIVER :
-        case ICE_DESERT :
         case ICE_PLAINS :
         case ICE_MOUNTAINS :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
@@ -93,8 +91,6 @@ public class SkillForage extends ActiveSkill{
             break;
         case FOREST :
         case FOREST_HILLS :
-        case RAINFOREST :
-        case SEASONAL_FOREST :
         case EXTREME_HILLS :
         case SMALL_MOUNTAINS :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "forest.items", Arrays.asList(new String[] {"APPLE", "MELON"})));
@@ -106,8 +102,6 @@ public class SkillForage extends ActiveSkill{
             chance = SkillConfigManager.getUseSetting(hero, this, "swamp.chance", .01, false) * hero.getSkillLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "swamp.max-found", 4, false);
             break;
-        case SAVANNA :
-        case SHRUBLAND :
         case PLAINS :
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "plains.items", Arrays.asList(new String[] {"WHEAT"})));
             chance = SkillConfigManager.getUseSetting(hero, this, "plains.chance", .01, false) * hero.getSkillLevel(this);
