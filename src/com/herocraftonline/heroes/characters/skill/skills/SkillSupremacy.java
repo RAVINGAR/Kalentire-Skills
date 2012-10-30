@@ -63,10 +63,10 @@ public class SkillSupremacy extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
 
-        SupremacyEffect effect = new SupremacyEffect(this, duration, damageBonus);
+        MightEffect effect = new MightEffect(this, duration, damageBonus);
         if (!hero.hasParty()) {
-        	if (hero.hasEffect("Supremacy")) {
-                if (((SupremacyEffect) hero.getEffect("Supremacy")).getDamageBonus() > effect.getDamageBonus()) {
+        	if (hero.hasEffect("Might")) {
+                if (((MightEffect) hero.getEffect("Might")).getDamageBonus() > effect.getDamageBonus()) {
                     Messaging.send(hero.getPlayer(), "You have a more powerful effect already!");
                 } else {
                 	hero.addEffect(effect);
@@ -84,8 +84,8 @@ public class SkillSupremacy extends ActiveSkill {
                 if (pPlayer.getLocation().distanceSquared(loc) > rangeSquared) {
                     continue;
                 }
-                if (pHero.hasEffect("Supremacy")) {
-                    if (((SupremacyEffect) pHero.getEffect("Supremacy")).getDamageBonus() > effect.getDamageBonus()) {
+                if (pHero.hasEffect("Might")) {
+                    if (((MightEffect) pHero.getEffect("Might")).getDamageBonus() > effect.getDamageBonus()) {
                         continue;
                     }
                 }
@@ -97,11 +97,11 @@ public class SkillSupremacy extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SupremacyEffect extends ExpirableEffect {
+    public class MightEffect extends ExpirableEffect {
 
         private final double damageBonus;
 
-        public SupremacyEffect(Skill skill, long duration, double damageBonus) {
+        public MightEffect(Skill skill, long duration, double damageBonus) {
             super(skill, "Supremacy", duration);
             this.damageBonus = damageBonus;
             this.types.add(EffectType.DISPELLABLE);
@@ -137,8 +137,8 @@ public class SkillSupremacy extends ActiveSkill {
             }
 
             CharacterTemplate character = event.getDamager();
-            if (event.getDamager().hasEffect("Supremacy")) {
-                double damageBonus = ((SupremacyEffect) character.getEffect("Supremacy")).damageBonus;
+            if (event.getDamager().hasEffect("Might")) {
+                double damageBonus = ((MightEffect) character.getEffect("Might")).damageBonus;
                 event.setDamage((int) (event.getDamage() * damageBonus));
             }           
         }
@@ -147,8 +147,8 @@ public class SkillSupremacy extends ActiveSkill {
         public void onSkillDamage(SkillDamageEvent event) {
         	
         	CharacterTemplate character = event.getDamager();
-        	if(character.hasEffect("Supremacy")) {
-        		double damageBonus = ((SupremacyEffect) character.getEffect("Supremacy")).damageBonus;
+        	if(character.hasEffect("Might")) {
+        		double damageBonus = ((MightEffect) character.getEffect("Might")).damageBonus;
         		event.setDamage((int)(event.getDamage() * damageBonus));
         	}
         }
