@@ -41,7 +41,7 @@ public class SkillChaosOrb extends ActiveSkill {
         setUsage("/skill chaosorb");
         setArgumentRange(0, 0);
         setIdentifiers("skill chaosorb");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
