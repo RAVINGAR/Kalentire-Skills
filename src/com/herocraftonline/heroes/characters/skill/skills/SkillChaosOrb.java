@@ -11,9 +11,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -52,6 +55,7 @@ public class SkillChaosOrb extends ActiveSkill {
         node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
         node.set("velocity-multiplier", 0.2);
         node.set("fire-ticks", 100);
+        node.set("restrict-ender-pearl", true);
         return node;
     }
 
@@ -111,7 +115,26 @@ public class SkillChaosOrb extends ActiveSkill {
             }
         }
     }
+    
+    public class SkillPlayerListener implements Listener {
 
+        private final Skill skill;
+        
+        public SkillPlayerListener(Skill skill) {
+            this.skill = skill;
+        }
+        
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onPlayerTeleport(PlayerTeleportEvent event) {
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+            if (!SkillConfigManager.getUseSetting(hero, skill, "restrict-ender-pearl", true)) {
+                return;
+            } else if (hero.getSkillLevel(skill) < 1 && event.getCause() == TeleportCause.ENDER_PEARL) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
