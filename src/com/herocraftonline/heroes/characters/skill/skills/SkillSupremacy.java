@@ -137,7 +137,7 @@ public class SkillSupremacy extends ActiveSkill {
             }
 
             CharacterTemplate character = event.getDamager();
-            if (event.getDamager().hasEffect("Might")) {
+            if (event.getDamager().hasEffect("Might") && character.getEffect("Might") instanceof MightEffect) {
                 double damageBonus = ((MightEffect) character.getEffect("Might")).damageBonus;
                 event.setDamage((int) (event.getDamage() * damageBonus));
             }           
