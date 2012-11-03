@@ -65,15 +65,15 @@ public class SkillStrike extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 15000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_TICK, 1, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new strikeBleedEffect(this, period, duration, tickDamage, player));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new StrikeBleedEffect(this, period, duration, tickDamage, player));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 
-    public class strikeBleedEffect extends PeriodicDamageEffect {
+    public class StrikeBleedEffect extends PeriodicDamageEffect {
 
-        public strikeBleedEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
-            super(skill, "strikeBleed", period, duration, tickDamage, applier);
+        public StrikeBleedEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
+            super(skill, "StrikeBleed", period, duration, tickDamage, applier);
             this.types.add(EffectType.BLEED);
         }
 
