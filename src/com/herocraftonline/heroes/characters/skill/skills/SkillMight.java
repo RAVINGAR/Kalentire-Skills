@@ -135,7 +135,7 @@ public class SkillMight extends ActiveSkill {
             }
 
             CharacterTemplate character = event.getDamager();
-            if (character.hasEffect("Might") && character.getEffect("Might") instanceof MightEffect) {
+            if (character.hasEffect("Might")) {
                 double damageBonus = ((MightEffect) character.getEffect("Might")).damageBonus;
                 event.setDamage((int) (event.getDamage() * damageBonus));
             }           
