@@ -56,7 +56,6 @@ public class SkillSummonChicken extends ActiveSkill {
         double chance = Util.nextRand();
         if (chance <= chance3x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
-            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
         }
