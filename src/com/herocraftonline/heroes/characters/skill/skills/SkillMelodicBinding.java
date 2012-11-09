@@ -45,7 +45,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         setUsage("/skill melodicbinding");
         setArgumentRange(0, 0);
         setIdentifiers("skill melodicbinding");
-        setTypes(SkillType.HARMFUL, SkillType.SILENCABLE, SkillType.MOVEMENT);
+        setTypes(SkillType.HARMFUL, SkillType.SILENCABLE, SkillType.DEBUFF);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 
