@@ -25,7 +25,7 @@ public class SkillConstrict extends TargettedSkill {
         setUsage("/skill constrict");
         setArgumentRange(0, 1);
         setIdentifiers("skill constrict");
-        setTypes(SkillType.DEBUFF, SkillType.MOVEMENT, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DEBUFF, SkillType.MOVEMENT, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DAMAGING);
     }
 
     @Override
