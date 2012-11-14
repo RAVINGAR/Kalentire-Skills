@@ -7,11 +7,8 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +29,8 @@ public class SkillExchange extends ActiveSkill
   }
 
   private static String boldGold(String string) {
-    return ChatColor.BOLD + ChatColor.GOLD + string + ChatColor.RESET + ChatColor.GRAY;
+    StringBuffer sb = new StringBuffer().append(ChatColor.BOLD).append(ChatColor.GOLD).append(string).append(ChatColor.RESET).append(ChatColor.GRAY);
+    return sb.toString();
   }
 
   private double calculateCoins(Hero hero) {
@@ -51,8 +49,8 @@ public class SkillExchange extends ActiveSkill
     int amount;
     if (args.length > 0)
       try {
-        int amount = Integer.parseInt(args[0]);
-        if ((amount >= 1) && (amount <= 64)) break label75; throw new NumberFormatException();
+        amount = Integer.parseInt(args[0]);
+        if ((amount < 1) || (amount > 64)) throw new NumberFormatException();
       } catch (NumberFormatException ex) {
         player.sendMessage(ChatColor.GRAY + "If you provide an argument, it must be a postive integer less than 65");
         return SkillResult.FAIL;
@@ -60,7 +58,7 @@ public class SkillExchange extends ActiveSkill
     else {
       amount = 1;
     }
-    label75: double cost = calculateCoins(hero) * amount;
+    double cost = calculateCoins(hero) * amount;
     String cost_string = Heroes.econ.format(cost);
     if ((Heroes.econ.has(player.getName(), cost)) && (Heroes.econ.withdrawPlayer(player.getName(), cost).transactionSuccess())) {
       player.sendMessage(ChatColor.GRAY + "You bought " + boldGold(new StringBuilder(String.valueOf(amount)).append(" ingots").toString()) + " for " + boldGold(cost_string) + "!");

@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -57,7 +56,8 @@ public class SkillMonetize extends ActiveSkill
 
   private static String boldGold(String string)
   {
-    return ChatColor.BOLD + ChatColor.GOLD + string + ChatColor.RESET + ChatColor.GRAY;
+    StringBuffer sb = new StringBuffer().append(ChatColor.BOLD).append(ChatColor.GOLD).append(string).append(ChatColor.RESET).append(ChatColor.GRAY);
+    return sb.toString();
   }
 
   public String getDescription(Hero hero)

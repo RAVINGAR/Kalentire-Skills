@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -10,12 +9,10 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import net.minecraft.server.EntityPotion;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
@@ -27,15 +24,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.util.Vector;
 
 public class SkillAmpul extends ActiveSkill
 {
-  private Map<ThrownPotion, Long> potions = new LinkedHashMap(89)
+  private Map<ThrownPotion, Long> potions = new LinkedHashMap<ThrownPotion, Long>(89)
   {
     private static final long serialVersionUID = -8018803104297802046L;
 
+    @Override
     protected boolean removeEldestEntry(Map.Entry<ThrownPotion, Long> eldest) {
       return (size() > 50) || (((Long)eldest.getValue()).longValue() + 10000L <= System.currentTimeMillis());
     }
@@ -120,7 +116,6 @@ public class SkillAmpul extends ActiveSkill
         casterHero = SkillAmpul.this.plugin.getCharacterManager().getHero((Player)shooter);
       else
         return;
-      Hero casterHero;
       for (LivingEntity affected : event.getAffectedEntities()) {
         if ((affected instanceof Player)) {
           Hero affectedHero = SkillAmpul.this.plugin.getCharacterManager().getHero((Player)affected);
