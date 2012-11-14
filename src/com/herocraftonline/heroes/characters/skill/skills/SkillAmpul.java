@@ -1,15 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
+/* I, Roadkill909, the author of this class, PotionListener, allow anyone to use, modify, 
+* distribute, or relicense this source file or this file in compiled form without restriction */
+
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import net.minecraft.server.EntityPotion;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -24,118 +23,135 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
+import com.herocraftonline.heroes.Heroes;
+import static com.herocraftonline.heroes.api.SkillResult.*;
 
-public class SkillAmpul extends ActiveSkill
-{
-  private Map<ThrownPotion, Long> potions = new LinkedHashMap<ThrownPotion, Long>(89)
-  {
-    private static final long serialVersionUID = -8018803104297802046L;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.*;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Setting;
 
-    @Override
-    protected boolean removeEldestEntry(Map.Entry<ThrownPotion, Long> eldest) {
-      return (size() > 50) || (((Long)eldest.getValue()).longValue() + 10000L <= System.currentTimeMillis());
-    }
-  };
+import static com.herocraftonline.heroes.characters.skill.SkillType.*;
+import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
 
-  public SkillAmpul(Heroes plugin)
-  {
-    super(plugin, "Ampul");
-    setDescription("You throw a health vial that heals nearby party members for a maximum of $1.  Can also be used on a single player by providing a name");
-    setUsage("/skill ampul [player name]");
-    setIdentifiers(new String[] { "skill ampul" });
-    setArgumentRange(0, 1);
-    setTypes(new SkillType[] { SkillType.HEAL, SkillType.LIGHT, SkillType.MANA, SkillType.SILENCABLE, SkillType.ITEM });
-    plugin.getServer().getPluginManager().registerEvents(new PotionListener(), plugin);
-  }
+public class SkillAmpul extends ActiveSkill{
+	private Map<ThrownPotion, Long> potions = new LinkedHashMap<ThrownPotion, Long>(89) {//Didn't know this handy trick, so I reused it.
+		private static final long serialVersionUID = -8018803104297802046L;
 
-  public String getDescription(Hero hero)
-  {
-    return getDescription().replaceAll("$1", getMaxHeal(hero) + " hp");
-  }
-
-  private int getMaxHeal(Hero hero) {
-    return SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT, 150, false);
-  }
-
-  public SkillResult use(Hero casterHero, String[] args)
-  {
-    Player casterPlayer = casterHero.getPlayer();
-
-    if (args.length > 0) {
-      Player targetPlayer = Bukkit.getPlayer(args[0]);
-
-      if ((targetPlayer == null) || (!targetPlayer.isOnline())) return SkillResult.INVALID_TARGET;
-
-      Location targetLocation = targetPlayer.getLocation();
-
-      if ((casterPlayer.getLocation().getWorld() != targetLocation.getWorld()) || 
-        (casterPlayer.getLocation().distance(targetLocation) > SkillConfigManager.getUseSetting(casterHero, this, Setting.MAX_DISTANCE, 10, false))) {
-        casterHero.getPlayer().sendMessage("Target is out of range!");
-        return SkillResult.FAIL;
-      }
-
-      targetLocation.getWorld().playEffect(targetLocation, Effect.POTION_BREAK, 8197);
-
-      broadcast(casterPlayer.getLocation(), "$1 used an ampul on $2", new Object[] { casterPlayer.getDisplayName(), targetPlayer.getDisplayName() });
-      Hero targetHero = this.plugin.getCharacterManager().getHero(targetPlayer);
-      targetHero.setHealth(targetHero.getHealth() + getMaxHeal(casterHero));
-      targetHero.syncHealth();
-      return SkillResult.NORMAL;
-    }
-
-    broadcastExecuteText(casterHero);
-
-    net.minecraft.server.World world = ((CraftWorld)casterPlayer.getWorld()).getHandle();
-    EntityPotion entityPotion = new EntityPotion(world, ((CraftLivingEntity)casterPlayer).getHandle(), 8197);
-    world.addEntity(entityPotion);
-
-    ThrownPotion thrownPotion = new CraftThrownPotion(world.getServer(), entityPotion);
-    thrownPotion.setVelocity(thrownPotion.getVelocity().multiply(2));
-
-    this.potions.put(thrownPotion, Long.valueOf(System.currentTimeMillis()));
-    return SkillResult.NORMAL;
-  }
-
-  public ConfigurationSection getDefaultConfig()
-  {
-    ConfigurationSection node = super.getDefaultConfig();
-    node.set(Setting.HEALTH.node(), Integer.valueOf(250));
-    node.set(Setting.MAX_DISTANCE.node(), Integer.valueOf(10));
-    return node;
-  }
-  public class PotionListener implements Listener {
-    public PotionListener() {
-    }
-
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=false)
-    public void onPotionSplash(PotionSplashEvent event) {
-      if (SkillAmpul.this.potions.remove(event.getPotion()) != null) return;
-      LivingEntity shooter = event.getPotion().getShooter();
-      Hero casterHero;
-      if ((shooter != null) && ((shooter instanceof Player)))
-        casterHero = SkillAmpul.this.plugin.getCharacterManager().getHero((Player)shooter);
-      else
-        return;
-      for (LivingEntity affected : event.getAffectedEntities()) {
-        if ((affected instanceof Player)) {
-          Hero affectedHero = SkillAmpul.this.plugin.getCharacterManager().getHero((Player)affected);
-
-          if (isFriendlyPlayer(casterHero, affectedHero)) {
-            affectedHero.setHealth(affectedHero.getHealth() + (int)(SkillAmpul.this.getMaxHeal(casterHero) * event.getIntensity(affected)));
-            affectedHero.syncHealth();
-          }
-
+		@Override
+        protected boolean removeEldestEntry(Entry<ThrownPotion, Long> eldest) {
+            return (size() > 50 || eldest.getValue() + 10000 <= System.currentTimeMillis());
         }
+    };
+	
+	public SkillAmpul(Heroes plugin) {
+		super(plugin, "Ampul");
+		setDescription("You throw a health vial that heals nearby party members for a maximum of $1.  Can also be used on a single player by providing a name");
+		setUsage("/skill ampul [player name]");
+		setIdentifiers("skill ampul");
+		setArgumentRange(0, 1);
+		setTypes(HEAL,LIGHT,MANA,SILENCABLE,ITEM);
+		plugin.getServer().getPluginManager().registerEvents(new PotionListener(), plugin);
+	}
 
-        event.setIntensity(affected, 0.0D);
-      }
-      event.setCancelled(true);
-    }
+	@Override
+	public String getDescription(Hero hero) {
+		return getDescription().replaceAll("$1", getMaxHeal(hero)+" hp");
+	}
 
-    private boolean isFriendlyPlayer(Hero hero, Hero affected)
-    {
-      if (hero.getPlayer() == affected.getPlayer()) return true;
-      return (hero.getParty() != null) && (hero.getParty() == affected.getParty());
+	private int getMaxHeal(Hero hero){
+		return getUseSetting(hero, this, Setting.AMOUNT, 150, false);
+	}
+	
+	@Override
+	public SkillResult use(Hero casterHero, String[] args) {
+		final Player casterPlayer = casterHero.getPlayer();
+		
+		if(args.length>0){
+			final Player targetPlayer = Bukkit.getPlayer(args[0]);
+			
+			//Ignores not present or offline players
+			if(targetPlayer==null||!targetPlayer.isOnline())return INVALID_TARGET;
+			
+			final Location targetLocation = targetPlayer.getLocation();
+			
+			//ignores out of range players
+			if(casterPlayer.getLocation().getWorld()!=targetLocation.getWorld()
+						||casterPlayer.getLocation().distance(targetLocation)>getUseSetting(casterHero, this, Setting.MAX_DISTANCE, 10,false)){
+				casterHero.getPlayer().sendMessage("Target is out of range!");
+				return FAIL;
+			}
+		
+			targetLocation.getWorld().playEffect(targetLocation, Effect.POTION_BREAK, 8197);
+			//heals the target
+			broadcast(casterPlayer.getLocation(),"$1 used an ampul on $2", casterPlayer.getDisplayName(),targetPlayer.getDisplayName());
+			final Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
+			targetHero.setHealth(targetHero.getHealth()+getMaxHeal(casterHero));
+			targetHero.syncHealth();
+			return NORMAL;
+			
+			
+		}else{
+			broadcastExecuteText(casterHero);
+			//creates and throws a potion from the player
+			net.minecraft.server.World world = ((CraftWorld) casterPlayer.getWorld()).getHandle();
+		    EntityPotion entityPotion = new EntityPotion(world, ((CraftLivingEntity) casterPlayer).getHandle(), 8197);
+		    world.addEntity(entityPotion);
+		    
+		    //converts it to bukkit
+		    final ThrownPotion thrownPotion = new CraftThrownPotion(world.getServer(),entityPotion);
+		    thrownPotion.setVelocity(thrownPotion.getVelocity().multiply(2)); //OPTIONAL Makes the potion fly twice as fast 
+		    
+		    //adds it to the Potionmanager
+		    potions.put(thrownPotion,System.currentTimeMillis());
+			return NORMAL;
+		}
+	}
+	
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.HEALTH.node(), 250);
+        node.set(Setting.MAX_DISTANCE.node(),10);
+        return node;
     }
-  }
+	
+	//Used to listen for potion splash events
+	public class PotionListener implements Listener{
+		
+		@EventHandler(priority=EventPriority.LOWEST,ignoreCancelled=false)
+		public void onPotionSplash(PotionSplashEvent event){
+			if(potions.remove(event.getPotion())!=null)return;
+			final LivingEntity shooter = event.getPotion().getShooter();
+			final Hero casterHero;
+			if(shooter!=null&&shooter instanceof Player){//checks if the potion thrower is a hero
+				casterHero=plugin.getCharacterManager().getHero((Player) shooter);
+			}else{
+				return;
+			}
+			
+			for(LivingEntity affected:event.getAffectedEntities()){
+				if(affected instanceof Player){
+					final Hero affectedHero = plugin.getCharacterManager().getHero((Player) affected);
+					
+					//heals friendly players for the right amount
+					if(isFriendlyPlayer(casterHero,affectedHero)){
+						affectedHero.setHealth(affectedHero.getHealth()+ (int) (getMaxHeal(casterHero)*event.getIntensity(affected)));
+						affectedHero.syncHealth();
+					}
+				}
+				//entities are removed from map, 
+				//just in case some devs are careless and don't ignore cancelled events
+				//which may heal the player twice
+				event.setIntensity(affected,0);
+			}
+			event.setCancelled(true);
+		}
+		
+		//Checks to see if the heroes are in the same party or the same person
+		private boolean isFriendlyPlayer(Hero hero,Hero affected){
+			if(hero.getPlayer()==affected.getPlayer())return true;
+			return hero.getParty()!=null&&hero.getParty()==affected.getParty();
+		}
+	}
 }
