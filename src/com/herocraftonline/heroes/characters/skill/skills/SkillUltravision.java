@@ -18,8 +18,8 @@ public class SkillUltravision extends ActiveSkill {
 
     public SkillUltravision(Heroes plugin) {
         super(plugin, "Ultravision");
-        setDescription("You are able to see at night for $1 seconds.");
-        setUsage("/skill gills");
+        setDescription("You gain enhanced vision at night for $1 seconds.");
+        setUsage("/skill ultravision");
         setArgumentRange(0, 0);
         setIdentifiers("skill ultravision");
         setTypes(SkillType.SILENCABLE, SkillType.BUFF);
