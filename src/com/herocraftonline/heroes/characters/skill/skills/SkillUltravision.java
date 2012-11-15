@@ -28,7 +28,7 @@ public class SkillUltravision extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 30000);
+        node.set(Setting.DURATION.node(), 180000);
         node.set(Setting.APPLY_TEXT.node(), "%hero% gains Ultravision!");
         node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost Ultravision!");
         return node;
@@ -43,7 +43,7 @@ public class SkillUltravision extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 180000, false);
         hero.addEffect(new NightvisionEffect(this, duration, applyText, expireText));
         return SkillResult.NORMAL;
     }
