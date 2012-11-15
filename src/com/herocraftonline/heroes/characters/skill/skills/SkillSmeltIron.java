@@ -62,7 +62,7 @@ public class SkillSmeltIron extends ActiveSkill{
 				amount++;
 				player.sendMessage(ChatColor.GRAY+"You got an extra ingot from the smelting process!");
 			}
-			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.IRON_ORE,amount));
+			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.IRON_INGOT,amount));
 			return SkillResult.NORMAL;
 		}else{
 			player.sendMessage(ChatColor.GRAY+"You do not have any iron ore to smelt!");

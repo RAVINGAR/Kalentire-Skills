@@ -19,7 +19,7 @@ public class SkillSmeltGold extends ActiveSkill{
 	
 	public SkillSmeltGold(Heroes plugin) {
 		super(plugin, "SmeltGold");
-		setDescription("You can turn gold ore into a gold ingot with a $1 percent chance of getting an extra nugget");
+		setDescription("You can turn gold ore into a gold ingot with a $1 percent chance of getting an extra ingot");
 		setUsage("/skill smeltgold");
 		setIdentifiers("skill smeltgold");
 		setArgumentRange(0, 0);
@@ -27,8 +27,8 @@ public class SkillSmeltGold extends ActiveSkill{
 	}
 	
 	private double calculateChance(Hero hero){
-		return getUseSetting(hero, this, base, 10, false)
-					+getUseSetting(hero,this,gain,0.25,false)*hero.getLevel(hero.getSecondClass());
+		return getUseSetting(hero, this, base, 5, false)
+					+getUseSetting(hero,this,gain,0.2,false)*hero.getLevel(hero.getSecondClass());
 	}
 	
 	@Override
@@ -62,7 +62,7 @@ public class SkillSmeltGold extends ActiveSkill{
 				amount++;
 				player.sendMessage(ChatColor.GRAY+"You got an extra ingot from the smelting process!");
 			}
-			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_NUGGET,amount));
+			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT,amount));
 			return SkillResult.NORMAL;
 		}else{
 			player.sendMessage(ChatColor.GRAY+"You do not have any gold ore to smelt!");
