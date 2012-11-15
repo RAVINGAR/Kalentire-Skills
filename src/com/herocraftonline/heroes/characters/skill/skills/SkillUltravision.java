@@ -5,7 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.WaterBreatheEffect;;
+import com.herocraftonline.heroes.characters.effects.common.NightvisionEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -44,7 +44,7 @@ public class SkillUltravision extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
-        hero.addEffect(new WaterBreatheEffect(this, duration, applyText, expireText));
+        hero.addEffect(new NightvisionEffect(this, duration, applyText, expireText));
         return SkillResult.NORMAL;
     }
 
