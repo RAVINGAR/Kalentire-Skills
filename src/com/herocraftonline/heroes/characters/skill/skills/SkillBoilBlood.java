@@ -72,6 +72,7 @@ public class SkillBoilBlood extends TargettedSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DARK);
             this.finishDamage = finishDamage;
+            addMobEffect(20, (int) (duration / 1000) * 20, 127, false);
         }
         
         @Override
