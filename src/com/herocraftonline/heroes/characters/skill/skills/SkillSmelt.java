@@ -62,7 +62,7 @@ public class SkillSmelt extends ActiveSkill{
 				amount++;
 				player.sendMessage(ChatColor.GRAY+"You got an extra ingot from the smelting process!");
 			}
-			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT,amount));
+			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_NUGGET,amount));
 			return SkillResult.NORMAL;
 		}else{
 			player.sendMessage(ChatColor.GRAY+"You do not have any gold ore to smelt!");
