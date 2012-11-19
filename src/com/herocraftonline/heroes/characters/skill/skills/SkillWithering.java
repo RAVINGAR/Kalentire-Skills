@@ -24,51 +24,51 @@ public class SkillWithering extends TargettedSkill {
     private String expireText;
 
     public SkillWithering(Heroes plugin) {
-        super(plugin, "BoilBlood");
-        setDescription("You boil your target's blood, dealing $1 damage over $2 seconds and $3 damage when the target loses the effect");
-        setUsage("/skill boilblood <target>");
+        super(plugin, "Withering");
+        setDescription("You wither your target in darkness, hindering movement and causing confusion for $1 damage over $2 seconds and $3 damage as a finisher");
+        setUsage("/skill withering <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill boilblood");
+        setIdentifiers("skill withering");
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
     }
     
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 21000);
-        node.set(Setting.PERIOD.node(), 3000);
+        node.set(Setting.DURATION.node(), 6000);
+        node.set(Setting.PERIOD.node(), 2000);
         node.set("tick-damage", 2);
         node.set("finish-damage", 20);
-        node.set(Setting.APPLY_TEXT.node(), "%target%'s blood has begun to boil");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target%'s blood is no longer boiling");
+        node.set(Setting.APPLY_TEXT.node(), "%target%'s begins to wither away!");
+        node.set(Setting.EXPIRE_TEXT.node(), "%target%'s is no longer withered!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target%'s blood has begun to boil").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target%'s blood is no longer boiling").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target%'s begins to wither away!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target%'s is no longer withered!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 6000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
-        int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 20, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new BoilBloodEffect(this, duration, period, tickDamage, finishDamage, player));
+        int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new WitheringEffect(this, duration, period, tickDamage, finishDamage, player));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
     
-    public class BoilBloodEffect extends PeriodicDamageEffect {
+    public class WitheringEffect extends PeriodicDamageEffect {
         
         private int finishDamage;
         
-        public BoilBloodEffect(Skill skill, long duration, long period, int tickDamage, int finishDamage, Player applier) {
-            super(skill, "BoilBlood", period, duration, tickDamage, applier);
+        public WitheringEffect(Skill skill, long duration, long period, int tickDamage, int finishDamage, Player applier) {
+            super(skill, "Withering", period, duration, tickDamage, applier);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DARK);
             this.finishDamage = finishDamage;
@@ -112,10 +112,10 @@ public class SkillWithering extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 6000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
-        int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 20, false);
+        int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
         
         tickDamage *= duration / period;
         return getDescription().replace("$1", tickDamage + "").replace("$2", duration / 1000 + "").replace("$3", finishDamage + "");
