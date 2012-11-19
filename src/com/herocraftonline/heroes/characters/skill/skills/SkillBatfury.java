@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,17 +28,17 @@ import java.util.Set;
 
 public class SkillBatfury extends TargettedSkill implements Listener {
 
-    public final Set<Slime> skillSlimes = new HashSet<Slime>();
+    public final Set<Bat> skillBats = new HashSet<Bat>();
 
-    private long skillSlimeKillTick;
+    private long skillBatKillTick;
 
     public SkillBatfury(Heroes plugin) {
         super(plugin, "Batfury");
-        setDescription("Your target is surrounded $1 by tiny slimes. $2% chance to spawn big and $3% to spawn small slime instead of every tiny. " +
-                "Slimes despawns after $4s.");
-        setUsage("/skill slime <target>");
+        setDescription("Your target is surrounded $1 by bats. " +
+                "Bats despawn after $4s.");
+        setUsage("/skill batfury <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill slime", "skill batfury");
+        setIdentifiers("skill bats", "skill batfury");
         setTypes(SkillType.SUMMON, SkillType.SILENCABLE, SkillType.KNOWLEDGE, SkillType.HARMFUL);
 
         Bukkit.getPluginManager().registerEvents(this, this.plugin);
@@ -95,7 +96,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
     }
 
     public int getAmountFor(Hero hero) {
-        return SkillConfigManager.getUseSetting(hero, this, "slime-amount", 4, false);
+        return SkillConfigManager.getUseSetting(hero, this, "bat-amount", 4, false);
     }
 
     public int getDespawnDelayFor(Hero hero) {
@@ -110,7 +111,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         }
 
         int amount = getAmountFor(hero);
-        List<Slime> spawnedSlimes = new ArrayList<Slime>();
+        List<Bat> spawnedBats = new ArrayList<Bat>();
 
         Location targetLoc = target.getLocation();
         for (int i = 0; i < amount; i++) {
@@ -127,15 +128,15 @@ public class SkillBatfury extends TargettedSkill implements Listener {
             double r = 0.5 * size;
             Location curSpawnLoc = targetLoc.clone().add(r * Math.cos(2 * Math.PI / (double) amount * i), 0,
                     r * Math.sin(2 * Math.PI / (double) amount * i));
-            Slime slime = curSpawnLoc.getWorld().spawn(curSpawnLoc, Slime.class);
-            slime.setSize(size);
+            Bat bat = curSpawnLoc.getWorld().spawn(curSpawnLoc, Bat.class);
+            bat.setSize(size);
 
-            spawnedSlimes.add(slime);
+            spawnedBats.add(bat);
         }
 
-        skillSlimes.addAll(spawnedSlimes);
+        skillBats.addAll(spawnedBats);
         int despawnDelayTicks = getDespawnDelayFor(hero) / 50;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DespawnSlimesTask(spawnedSlimes), despawnDelayTicks);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DespawnBatsTask(spawnedBats), despawnDelayTicks);
 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
@@ -144,12 +145,12 @@ public class SkillBatfury extends TargettedSkill implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity living = event.getEntity();
-        if (living instanceof Slime) {
-            Slime slime = (Slime) living;
-            if (skillSlimes.contains(slime)) {
+        if (living instanceof Bat) {
+            Bat bat = (Bat) living;
+            if (skillBats.contains(bat)) {
                 event.setDroppedExp(0);
                 event.getDrops().clear();
-                slime.remove();
+                bat.remove();
             }
         }
     }
@@ -157,17 +158,17 @@ public class SkillBatfury extends TargettedSkill implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onHeroKillCharacter(HeroKillCharacterEvent event) {
         LivingEntity living = event.getDefender().getEntity();
-        if (living instanceof Slime) {
-            Slime slime = (Slime) living;
-            if (skillSlimes.contains(slime)) {
-                skillSlimeKillTick = getFirstWorldTime();
+        if (living instanceof Bat) {
+            Bat bat = (Bat) living;
+            if (skillBats.contains(bat)) {
+                skillBatKillTick = getFirstWorldTime();
             }
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onExperienceChange(ExperienceChangeEvent event) {
-        if (event.getSource() == HeroClass.ExperienceType.KILLING && skillSlimeKillTick == getFirstWorldTime()) {
+        if (event.getSource() == HeroClass.ExperienceType.KILLING && skillBatKillTick == getFirstWorldTime()) {
             event.setCancelled(true);
         }
     }
@@ -176,19 +177,19 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         return Bukkit.getWorlds().get(0).getFullTime();
     }
 
-    private class DespawnSlimesTask implements Runnable {
+    private class DespawnBatsTask implements Runnable {
 
-        private final List<Slime> slimes;
+        private final List<Bat> bats;
 
-        public DespawnSlimesTask(List<Slime> slimes) {
-            this.slimes = slimes;
+        public DespawnBatsTask(List<Bat> bats) {
+            this.bats = bats;
         }
 
         @Override
         public void run() {
-            skillSlimes.removeAll(slimes);
-            for (Slime slime : slimes) {
-                slime.remove();
+            skillBats.removeAll(bats);
+            for (Bat bat : bats) {
+                bat.remove();
             }
         }
     }
