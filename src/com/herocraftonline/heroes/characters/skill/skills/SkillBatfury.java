@@ -45,12 +45,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
     }
 
     public String getDescription(Hero hero) {
-        int chanceBig = Math.min((int) (100.0 * getChanceFor(hero, "big")), 100);
-        int chanceSmall = Math.min((int) (100.0 * getChanceFor(hero, "small")), 100);
-
         StringBuilder descr = new StringBuilder(getDescription().replace("$1", String.valueOf(getAmountFor(hero)))
-                .replace("$2", String.valueOf(chanceBig))
-                .replace("$3", String.valueOf(chanceSmall))
                 .replace("$4", Util.stringDouble(getDespawnDelayFor(hero) / 1000.0)));
 
         double cdSec = SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN, 30000, false) / 1000.0;
@@ -78,15 +73,12 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
-        defaultConfig.set(Setting.REAGENT.node(), 341);
-        defaultConfig.set(Setting.REAGENT_COST.node(), 5);
         defaultConfig.set(Setting.MAX_DISTANCE.node(), 25);
-        defaultConfig.set(Setting.MAX_DISTANCE_INCREASE.node(), 0.35);
-        defaultConfig.set(Setting.COOLDOWN.node(), 30000);
+        defaultConfig.set(Setting.COOLDOWN.node(), 10000);
         defaultConfig.set(Setting.MANA.node(), 30);
-        defaultConfig.set("bat-amount", 4);
+        defaultConfig.set("bat-amount", 10);
         defaultConfig.set("base-despawn-delay", 5000);
-        defaultConfig.set("per-level-despawn-delay", 100);
+        defaultConfig.set("per-level-despawn-delay", 50);
         return defaultConfig;
     }
 
