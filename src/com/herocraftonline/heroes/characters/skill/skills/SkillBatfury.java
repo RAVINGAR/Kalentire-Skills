@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//TODO: add in following AI so the skill is more stressful to the victim 
+//https://github.com/DMarby/Pets/blob/master/src/main/java/se/DMarby/Pets/EntityBatPet.java
+//possible AI source from Pets
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.ExperienceChangeEvent;
