@@ -129,7 +129,6 @@ public class SkillBatfury extends TargettedSkill implements Listener {
             Location curSpawnLoc = targetLoc.clone().add(r * Math.cos(2 * Math.PI / (double) amount * i), 0,
                     r * Math.sin(2 * Math.PI / (double) amount * i));
             Bat bat = curSpawnLoc.getWorld().spawn(curSpawnLoc, Bat.class);
-            bat.setSize(size);
 
             spawnedBats.add(bat);
         }
