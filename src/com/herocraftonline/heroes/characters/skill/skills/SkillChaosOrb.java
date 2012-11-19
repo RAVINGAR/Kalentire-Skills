@@ -30,7 +30,7 @@ import com.herocraftonline.heroes.util.Setting;
 
 public class SkillChaosOrb extends ActiveSkill {
 
-    private Map<EnderPearl, Long> fireballs = new LinkedHashMap<EnderPearl, Long>(100) {
+    private Map<EnderPearl, Long> pearls = new LinkedHashMap<EnderPearl, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
         @Override
         protected boolean removeEldestEntry(Entry<EnderPearl, Long> eldest) {
@@ -62,12 +62,12 @@ public class SkillChaosOrb extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        EnderPearl fireball = player.launchProjectile(EnderPearl.class);
-        fireball.setFireTicks(100);
-        fireballs.put(fireball, System.currentTimeMillis());
+        EnderPearl pearl = player.launchProjectile(EnderPearl.class);
+        pearl.setFireTicks(100);
+        pearls.put(pearl, System.currentTimeMillis());
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        fireball.setVelocity(fireball.getVelocity().multiply(mult));
-        fireball.setShooter(player);
+        pearl.setVelocity(pearl.getVelocity().multiply(mult));
+        pearl.setShooter(player);
         broadcastExecuteText(hero); 
         return SkillResult.NORMAL;
     }
@@ -88,10 +88,10 @@ public class SkillChaosOrb extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof EnderPearl) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof EnderPearl) || !pearls.containsKey(projectile)) {
                 return;
             }
-            fireballs.remove(projectile);
+            pearls.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
             Entity dmger = ((EnderPearl) projectile).getShooter();
             if (dmger instanceof Player) {
