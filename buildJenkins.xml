@@ -6,9 +6,11 @@
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
 	<property name="heroes" value="../../Heroes/workspace/build" />
+	<property name="heroeslibs" value="../../Heroes/workspace/libs" />
 
     <path id="classpath">
     	<fileset dir="${heroes}" includes="**/*.jar" />
+    	<fileset dir="${heroeslibs}" includes="**/*.jar" />
     	<fileset dir="../../Vault/lastSuccessful/archive" includes="**/*.jar" />
     </path>
 
