@@ -18,12 +18,12 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
-public class SkillBoilBlood extends TargettedSkill {
+public class SkillWithering extends TargettedSkill {
     
     private String applyText;
     private String expireText;
 
-    public SkillBoilBlood(Heroes plugin) {
+    public SkillWithering(Heroes plugin) {
         super(plugin, "BoilBlood");
         setDescription("You boil your target's blood, dealing $1 damage over $2 seconds and $3 damage when the target loses the effect");
         setUsage("/skill boilblood <target>");
@@ -72,6 +72,7 @@ public class SkillBoilBlood extends TargettedSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DARK);
             this.finishDamage = finishDamage;
+            addMobEffect(20, (int) (duration / 1000) * 20, 127, false);
         }
         
         @Override
