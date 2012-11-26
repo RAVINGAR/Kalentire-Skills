@@ -30,8 +30,6 @@ public class SkillBreed extends PassiveSkill {
         Bukkit.getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
     
-   
-    
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
