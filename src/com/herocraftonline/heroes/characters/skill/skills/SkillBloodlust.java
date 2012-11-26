@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
-import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -68,7 +67,7 @@ public class SkillBloodlust extends ActiveSkill
 
     public BloodlustEffect(Skill skill, long duration, String applyText, String expireText)
     {
-      super("Bloodlust", duration);
+      super(skill, "Bloodlust", duration);
       this.applyText = applyText;
       this.expireText = expireText;
       this.types.add(EffectType.DISPELLABLE);
