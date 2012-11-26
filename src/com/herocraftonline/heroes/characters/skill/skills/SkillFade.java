@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -74,8 +73,7 @@ public class SkillFade extends ActiveSkill {
         }
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
         
-        for(int i = 0; i < 3; i++)
-            player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
+        player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 4);
         hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
         
@@ -104,7 +102,7 @@ public class SkillFade extends ActiveSkill {
                     continue;
                 }
                 Location newLoc = hero.getPlayer().getLocation();
-                if(newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1D, false)) {
+                if(newLoc.getWorld() != oldLoc.getWorld() || newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1D, false)) {
                     hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
@@ -116,8 +114,7 @@ public class SkillFade extends ActiveSkill {
                     continue;
                 }
                 double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", 1D, false);
-                List<Entity> nearEntities = hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange);
-                for(Entity entity : nearEntities) {
+                for(Entity entity : hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange)) {
                     if(entity instanceof Player) {
                         hero.removeEffect(hero.getEffect("Invisible"));
                         heroes.remove();
