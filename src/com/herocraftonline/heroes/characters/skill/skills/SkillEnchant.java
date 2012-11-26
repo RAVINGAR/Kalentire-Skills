@@ -98,13 +98,10 @@ public class SkillEnchant extends PassiveSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onEnchantItem(EnchantItemEvent event) {
             Player player = event.getEnchanter();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (event.isCancelled()) {
-                return;
-            }
 
             HeroClass enchanter = hero.getEnchantingClass();
             hero.setSyncPrimary(enchanter.equals(hero.getHeroClass()));
