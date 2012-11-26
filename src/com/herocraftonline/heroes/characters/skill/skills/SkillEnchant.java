@@ -81,8 +81,9 @@ public class SkillEnchant extends PassiveSkill {
                 return;
             }
             Hero hero = plugin.getCharacterManager().getHero(event.getEnchanter());
-            if (!hero.hasEffect(getName()) || !hero.hasExperienceType(ExperienceType.ENCHANTING)) {
+            if (!hero.hasEffect(getName())) {
                 // Don't offer enchants to players that don't meet the requirements
+                Messaging.send(hero.getPlayer(), "You aren't an enchanter!");
                 event.setCancelled(true);
                 return;
             }
@@ -91,6 +92,7 @@ public class SkillEnchant extends PassiveSkill {
                 hero.syncExperience(hc);
             } else {
                 // if for some reason we don't have an enchanting class also cancel the event
+                Messaging.send(hero.getPlayer(), "You aren't an enchanter!");
                 event.setCancelled(true);
                 return;
             }
