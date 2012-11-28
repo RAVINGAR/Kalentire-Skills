@@ -24,7 +24,7 @@ public class SkillBleed extends TargettedSkill {
 
     public SkillBleed(Heroes plugin) {
         super(plugin, "Bleed");
-        setDescription("You cause your target to bleed, dealing $1 damage over $1 seconds.");
+        setDescription("You cause your target to bleed, dealing $1 damage over $2 seconds.");
         setUsage("/skill bleed <target>");
         setArgumentRange(0, 1);
         setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);

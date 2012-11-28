@@ -24,7 +24,7 @@ public class SkillDisgrace extends TargettedSkill {
 
     public SkillDisgrace(Heroes plugin) {
         super(plugin, "Disgrace");
-        setDescription("You disgrace your target, causing them to bleed, dealing $1 damage over $1 seconds.");
+        setDescription("You disgrace your target, causing them to bleed, dealing $1 damage over $2 seconds.");
         setUsage("/skill disgrace <target>");
         setArgumentRange(0, 1);
         setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
