@@ -81,7 +81,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         defaultConfig.set(Setting.MAX_DISTANCE.node(), 25);
         defaultConfig.set(Setting.COOLDOWN.node(), 10000);
         defaultConfig.set(Setting.MANA.node(), 30);
-        defaultConfig.set("bat-amount", 10);
+        defaultConfig.set("bat-amount", 30);
         defaultConfig.set("base-despawn-delay", 5000);
         defaultConfig.set("per-level-despawn-delay", 50);
         return defaultConfig;
@@ -112,27 +112,14 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 
         Location targetLoc = target.getLocation();
         for (int i = 0; i < amount; i++) {
-            int size;
-            double roll = Util.nextRand();
-            if (roll < getChanceFor(hero, "big")) {
-                size = 4;
-            } else if (roll < getChanceFor(hero, "small")) {
-                size = 2;
-            } else {
-                size = 1;
-            }
-
-            double r = 0.5 * size;
-            Location curSpawnLoc = targetLoc.clone().add(r * Math.cos(2 * Math.PI / (double) amount * i), 0,
-                    r * Math.sin(2 * Math.PI / (double) amount * i));
-            Bat bat = curSpawnLoc.getWorld().spawn(curSpawnLoc, Bat.class);
+            
+            Bat bat = targetLoc.getWorld().spawn(targetLoc, Bat.class);
 
             spawnedBats.add(bat);
         }
 		
         skillBats.addAll(spawnedBats);
         int despawnDelay = getDespawnDelayFor(hero);
-        //Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DespawnBatsTask(spawnedBats), despawnDelayTicks);
 		Timer timer = new Timer();
 		timer.schedule(new BatFlightTimer(spawnedBats, target,despawnDelay), 0, 125);
         broadcastExecuteText(hero, target);
@@ -223,22 +210,4 @@ public class SkillBatfury extends TargettedSkill implements Listener {
     private long getFirstWorldTime() {
         return Bukkit.getWorlds().get(0).getFullTime();
     }
-
-    /* Replaced in timer.
-	private class DespawnBatsTask implements Runnable {
-
-        private final List<Bat> bats;
-
-        public DespawnBatsTask(List<Bat> bats) {
-            this.bats = bats;
-        }
-
-        @Override
-        public void run() {
-            skillBats.removeAll(bats);
-            for (Bat bat : bats) {
-                bat.remove();
-            }
-        }
-    }*/
 }
