@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,16 +28,18 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SkillBatfury extends TargettedSkill implements Listener {
 
     public final Set<Bat> skillBats = new HashSet<Bat>();
-
+	
     private long skillBatKillTick;
 
     public SkillBatfury(Heroes plugin) {
         super(plugin, "Batfury");
-        setDescription("Your target is surrounded $1 by bats. " +
+        setDescription("Your target is surrounded by a fury of bats. " +
                 "Bats despawn after $4s.");
         setUsage("/skill batfury <target>");
         setArgumentRange(0, 1);
@@ -78,7 +81,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         defaultConfig.set(Setting.MAX_DISTANCE.node(), 25);
         defaultConfig.set(Setting.COOLDOWN.node(), 10000);
         defaultConfig.set(Setting.MANA.node(), 30);
-        defaultConfig.set("bat-amount", 10);
+        defaultConfig.set("bat-amount", 30);
         defaultConfig.set("base-despawn-delay", 5000);
         defaultConfig.set("per-level-despawn-delay", 50);
         return defaultConfig;
@@ -109,28 +112,16 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 
         Location targetLoc = target.getLocation();
         for (int i = 0; i < amount; i++) {
-            int size;
-            double roll = Util.nextRand();
-            if (roll < getChanceFor(hero, "big")) {
-                size = 4;
-            } else if (roll < getChanceFor(hero, "small")) {
-                size = 2;
-            } else {
-                size = 1;
-            }
-
-            double r = 0.5 * size;
-            Location curSpawnLoc = targetLoc.clone().add(r * Math.cos(2 * Math.PI / (double) amount * i), 0,
-                    r * Math.sin(2 * Math.PI / (double) amount * i));
-            Bat bat = curSpawnLoc.getWorld().spawn(curSpawnLoc, Bat.class);
+            
+            Bat bat = targetLoc.getWorld().spawn(targetLoc, Bat.class);
 
             spawnedBats.add(bat);
         }
-
+		
         skillBats.addAll(spawnedBats);
-        int despawnDelayTicks = getDespawnDelayFor(hero) / 50;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DespawnBatsTask(spawnedBats), despawnDelayTicks);
-
+        int despawnDelay = getDespawnDelayFor(hero);
+		Timer timer = new Timer();
+		timer.schedule(new BatFlightTimer(spawnedBats, target,despawnDelay), 0, 125);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -165,25 +156,58 @@ public class SkillBatfury extends TargettedSkill implements Listener {
             event.setCancelled(true);
         }
     }
-
+	
+	
+	/**
+	**
+		Timer for setting bats in front of face.
+		Note this can be set to swarm target instead.
+	**
+	*/
+	public class BatFlightTimer extends TimerTask{
+			
+			private final List<Bat> bats;
+			private final LivingEntity target;
+			private int despawnDelay, expires;
+			
+			double x,y,z;
+			double angle = 0;
+			
+			public BatFlightTimer(List<Bat> bats, LivingEntity target, int despawnDelay) {
+	            this.bats = bats;
+				this.target = target;
+				this.despawnDelay = despawnDelay/125;
+	        }
+			
+			public void run() {
+				
+				expires++;
+				
+				if(expires >= despawnDelay){
+					for (Bat bat : bats) {
+						bat.remove();
+					}
+					this.cancel();
+				}
+				
+				for (Bat bat : bats) {
+					angle = Math.random() * 360;
+					
+					x = (target.getLocation().getX() + (0.5 * Math.sin(angle)));
+					z = (target.getLocation().getZ() + (1.5 * Math.sin(angle)));
+					y = (target.getLocation().getY() + (1 * Math.cos(angle)));
+					
+					/* This can be use to swarm around target. Adjust x,z radius accordingly. I use 1.5 for tha radius
+					((CraftEntity) bat).getHandle().setPosition(x, target.getLocation().getY() + (Math.random()*3), z);
+					*/
+					
+					/* This places bats in front of target's face all the time.*/
+					((CraftEntity) bat).getHandle().setPosition((target.getLocation().getDirection().getX()*1) + x, (target.getLocation().getY()*1)+(Math.random()*3),(target.getLocation().getDirection().getZ()*1)+z);
+				}
+			}	
+		}
+		
     private long getFirstWorldTime() {
         return Bukkit.getWorlds().get(0).getFullTime();
-    }
-
-    private class DespawnBatsTask implements Runnable {
-
-        private final List<Bat> bats;
-
-        public DespawnBatsTask(List<Bat> bats) {
-            this.bats = bats;
-        }
-
-        @Override
-        public void run() {
-            skillBats.removeAll(bats);
-            for (Bat bat : bats) {
-                bat.remove();
-            }
-        }
     }
 }

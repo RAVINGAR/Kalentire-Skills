@@ -17,18 +17,18 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
-public class SkillBleed extends TargettedSkill {
+public class SkillDisgrace extends TargettedSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillBleed(Heroes plugin) {
-        super(plugin, "Bleed");
-        setDescription("You cause your target to bleed, dealing $1 damage over $2 seconds.");
-        setUsage("/skill bleed <target>");
+    public SkillDisgrace(Heroes plugin) {
+        super(plugin, "Disgrace");
+        setDescription("You disgrace your target, causing them to bleed, dealing $1 damage over $2 seconds.");
+        setUsage("/skill disgrace <target>");
         setArgumentRange(0, 1);
         setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
-        setIdentifiers("skill bleed");
+        setIdentifiers("skill disgrace");
     }
 
     @Override
@@ -38,16 +38,16 @@ public class SkillBleed extends TargettedSkill {
         node.set(Setting.PERIOD.node(), 2000);
         node.set(Setting.DAMAGE_TICK.node(), 1);
         node.set(Setting.DAMAGE_INCREASE.node(), 0);
-        node.set(Setting.APPLY_TEXT.node(), "%target% is bleeding!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has stopped bleeding!");
+        node.set(Setting.APPLY_TEXT.node(), "%target% is bleeding with disgrace!");
+        node.set(Setting.EXPIRE_TEXT.node(), "");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% is bleeding!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%target% has stopped bleeding!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% is bleeding with disgrace!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "").replace("%target%", "$1");
     }
 
     @Override
@@ -70,7 +70,7 @@ public class SkillBleed extends TargettedSkill {
     public class BleedSkillEffect extends PeriodicDamageEffect {
 
         public BleedSkillEffect(Skill skill, long duration, long period, int tickDamage, Player applier) {
-            super(skill, "Bleed", period, duration, tickDamage, applier);
+            super(skill, "Disgrace", period, duration, tickDamage, applier);
             this.types.add(EffectType.BLEED);
         }
 

@@ -175,7 +175,7 @@ public class SkillEnvenom extends ActiveSkill {
             if (hero.hasEffect("Envenom")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
                 long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, false);
-                int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
+                int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 19, false);
                 AssassinsPoison apEffect = new AssassinsPoison(skill, period, duration, tickDamage, player);
                 Entity target = event.getEntity();
                 if (event.getEntity() instanceof LivingEntity) {
@@ -197,7 +197,7 @@ public class SkillEnvenom extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 2, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 19, false);
         double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
         String s = getDescription().replace("$1", damage + "").replace("$2", seconds + "");
         return s;
