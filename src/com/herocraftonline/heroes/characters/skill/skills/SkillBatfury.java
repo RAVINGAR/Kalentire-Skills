@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 //TODO: add in following AI so the skill is more stressful to the victim 
 //https://github.com/DMarby/Pets/blob/master/src/main/java/se/DMarby/Pets/EntityBatPet.java
@@ -39,8 +40,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 
     public SkillBatfury(Heroes plugin) {
         super(plugin, "Batfury");
-        setDescription("Your target is surrounded by a fury of bats. " +
-                "Bats despawn after $4s.");
+        setDescription("Your target is surrounded by a fury of bats. Bats despawn after $4s.");
         setUsage("/skill batfury <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bats", "skill batfury");
@@ -158,12 +158,12 @@ public class SkillBatfury extends TargettedSkill implements Listener {
     }
 	
 	
-	/**
-	**
-		Timer for setting bats in front of face.
+	//
+	//
+	//	Timer for setting bats in front of face.
 		Note this can be set to swarm target instead.
-	**
-	*/
+	//
+	//
 	public class BatFlightTimer extends TimerTask{
 			
 			private final List<Bat> bats;
@@ -197,11 +197,11 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 					z = (target.getLocation().getZ() + (1.5 * Math.sin(angle)));
 					y = (target.getLocation().getY() + (1 * Math.cos(angle)));
 					
-					/* This can be use to swarm around target. Adjust x,z radius accordingly. I use 1.5 for tha radius
-					((CraftEntity) bat).getHandle().setPosition(x, target.getLocation().getY() + (Math.random()*3), z);
-					*/
+					// This can be use to swarm around target. Adjust x,z radius accordingly. I use 1.5 for tha radius
+					//((CraftEntity) bat).getHandle().setPosition(x, target.getLocation().getY() + (Math.random()*3), z);
+					//
 					
-					/* This places bats in front of target's face all the time.*/
+					// This places bats in front of target's face all the time.
 					((CraftEntity) bat).getHandle().setPosition((target.getLocation().getDirection().getX()*1) + x, (target.getLocation().getY()*1)+(Math.random()*3),(target.getLocation().getDirection().getZ()*1)+z);
 				}
 			}	
@@ -211,3 +211,5 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         return Bukkit.getWorlds().get(0).getFullTime();
     }
 }
+
+*/
