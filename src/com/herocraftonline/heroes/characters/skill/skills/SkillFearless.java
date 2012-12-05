@@ -66,7 +66,7 @@ public class SkillFearless extends ActiveSkill {
         public FearlessEffect(Skill skill) {
             super(skill, "Fearless");
             types.add(EffectType.PHYSICAL);
-            addMobEffect(5, (int) (1000) * 20, 127, false);
+            //TODO Fix this so its just the particles//addMobEffect(5, (int) (1000) * 20, 127, false);
         }
 
         @Override
