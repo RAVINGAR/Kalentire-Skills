@@ -132,7 +132,7 @@ public class SkillDeconstruct extends ActiveSkill {
         } else {
             // if no args attempt to deconstruct item in hand
             item = player.getItemInHand();
-            if (item == null) {
+            if (item == null || item.getType() == Material.AIR) {
                 Messaging.send(player, "Invalid item to deconstruct, or bad command!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }

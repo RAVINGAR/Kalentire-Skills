@@ -5,6 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Heroes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Vault"/>
 	<classpathentry kind="lib" path="/Heroes/libs/spoutplugin.jar"/>
-	<classpathentry kind="lib" path="/Heroes/libs/craftbukkit-1.4.5-R0.1.jar"/>
+	<classpathentry kind="lib" path="/Heroes/libs/craftbukkit-1.4.5-R0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
