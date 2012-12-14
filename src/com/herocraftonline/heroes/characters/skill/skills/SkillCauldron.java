@@ -42,7 +42,7 @@ public class SkillCauldron extends PassiveSkill {
 	public ArrayList<Integer> CauldronRecipesLevel = new ArrayList<Integer>();
 	private File CauldronConfigFile;
 	private FileConfiguration CauldronConfig;
-	Heroes Hplugin;
+	Heroes plugin;
 	
     public SkillCauldron(Heroes plugin) {
         super(plugin, "Cauldron");
@@ -51,7 +51,7 @@ public class SkillCauldron extends PassiveSkill {
         setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
         setEffectTypes(EffectType.BENEFICIAL);
         loadCauldronRecipes();
-        Hplugin = plugin;
+        this.plugin = plugin;
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
@@ -64,7 +64,7 @@ public class SkillCauldron extends PassiveSkill {
     
     public void loadCauldronConfig() {
 	    if (CauldronConfigFile == null) {
-	    CauldronConfigFile = new File(Hplugin.getDataFolder(), "CauldronConfig.yml");
+	    CauldronConfigFile = new File(plugin.getDataFolder(), "CauldronConfig.yml");
 	    }
 	    
 	    CauldronConfig = YamlConfiguration.loadConfiguration(CauldronConfigFile);
@@ -78,7 +78,7 @@ public class SkillCauldron extends PassiveSkill {
 	}
     
     public void loadCauldronRecipes(){
-		Server server = Hplugin.getServer();
+		Server server = plugin.getServer();
 		if (ShapelessCauldronRecipes.size() > 0){
 			this.ShapelessCauldronRecipes.clear();
 		}
@@ -162,7 +162,7 @@ public class SkillCauldron extends PassiveSkill {
 					for(int v = 0; v < event.getViewers().size(); v++){
 						if (event.getViewers().get(v) == player.get(i)){
 							
-							Hero hero = heroes.getCharacterManager().getHero(player.get(i));
+							Hero hero = plugin.getCharacterManager().getHero(player.get(i));
 							int sLevel = hero.getSecondClass() == null ? 0 : hero.getLevel(hero.getSecondClass());
 							
 							if(usingCauldronbench.get(i) == false){
