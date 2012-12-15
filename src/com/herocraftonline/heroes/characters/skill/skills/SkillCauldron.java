@@ -59,6 +59,7 @@ public class SkillCauldron extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
         section.set(Setting.LEVEL.node(), 1);
+        section.set(Setting.LEVEL.node(), 1);
         return section;
     }
     
@@ -158,7 +159,6 @@ public class SkillCauldron extends PassiveSkill {
 				return;
 			}
 			
-			ItemStack item = new ItemStack(event.getRecipe().getResult());
 				for(int i = 0; i < player.size(); i++){
 					for(int v = 0; v < event.getViewers().size(); v++){
 						if (event.getViewers().get(v) == player.get(i)){
@@ -168,7 +168,7 @@ public class SkillCauldron extends PassiveSkill {
 							
 							if(usingCauldronbench.get(i) == false){
 								for (int j=0; j<ShapelessCauldronRecipes.size(); j++){
-									if (item.getTypeId() != ShapelessCauldronRecipes.get(j).getResult().getTypeId()){
+									if (event.getRecipe().getResult().getTypeId() != ShapelessCauldronRecipes.get(j).getResult().getTypeId()){
 										bCanMake.set(i, true);
 										
 									}else{
@@ -180,7 +180,7 @@ public class SkillCauldron extends PassiveSkill {
 							
 							if(usingCauldronbench.get(i) == true){
 								for (int j=0; j<ShapelessCauldronRecipes.size(); j++){
-									if (item.getTypeId() == ShapelessCauldronRecipes.get(j).getResult().getTypeId() && CauldronRecipesLevel.get(j) >= sLevel){
+									if (event.getRecipe().getResult().getTypeId() == ShapelessCauldronRecipes.get(j).getResult().getTypeId() && CauldronRecipesLevel.get(j) >= sLevel){
 										bCanMake.set(i, true);
 						        		break;
 									}else{
@@ -190,10 +190,10 @@ public class SkillCauldron extends PassiveSkill {
 								}
 							}
 						}	
+					if (!bCanMake.get(i) && event.getViewers().get(v) == player.get(i)){
+						event.getInventory().setResult(new ItemStack(Material.AIR));
 					}
-					if (!bCanMake.get(i)){
-					 	event.getInventory().setResult(new ItemStack(Material.AIR));
-			        }
+				}
 			}
 		}
         
