@@ -81,6 +81,7 @@ public class SkillCauldron extends PassiveSkill {
 		Server server = plugin.getServer();
 		if (ShapelessCauldronRecipes.size() > 0){
 			this.ShapelessCauldronRecipes.clear();
+			this.CauldronRecipesLevel.clear();
 		}
 		
 			for(int i =0; i<getCauldronConfig().getInt("CauldronRecipes.size"); i++){
@@ -114,7 +115,7 @@ public class SkillCauldron extends PassiveSkill {
         //Is player clicking cauldron or workbench? Can they use a cauldron? Adds player(s) to iterators, and assign booleans.
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.CAULDRON || event.getClickedBlock().getType() != Material.WORKBENCH || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                 return;
             }
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
