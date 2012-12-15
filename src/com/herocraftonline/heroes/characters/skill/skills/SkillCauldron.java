@@ -52,13 +52,12 @@ public class SkillCauldron extends PassiveSkill {
         setEffectTypes(EffectType.BENEFICIAL);
         this.plugin = plugin;
         loadCauldronRecipes();
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this, plugin), plugin);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        section.set(Setting.LEVEL.node(), 1);
         section.set(Setting.LEVEL.node(), 1);
         return section;
     }
@@ -109,7 +108,7 @@ public class SkillCauldron extends PassiveSkill {
 		private final ArrayList<Boolean> usingCauldronbench = new ArrayList<Boolean>();
 		private final ArrayList<Boolean> bCanMake = new ArrayList<Boolean>();
 		
-        public SkillListener(Skill skill) {
+        public SkillListener(Skill skill, Heroes plugin) {
             this.skill = skill;
         }
         
@@ -164,7 +163,7 @@ public class SkillCauldron extends PassiveSkill {
 						if (event.getViewers().get(v) == player.get(i)){
 							
 							Hero hero = plugin.getCharacterManager().getHero(player.get(i));
-							int sLevel = hero.getSecondClass() == null ? 0 : hero.getLevel(hero.getSecondClass());
+							int sLevel = hero.getLevel(hero.getSecondClass());
 							
 							if(usingCauldronbench.get(i) == false){
 								for (int j=0; j<ShapelessCauldronRecipes.size(); j++){
@@ -182,16 +181,16 @@ public class SkillCauldron extends PassiveSkill {
 								for (int j=0; j<ShapelessCauldronRecipes.size(); j++){
 									if (event.getRecipe().getResult().getTypeId() == ShapelessCauldronRecipes.get(j).getResult().getTypeId() && CauldronRecipesLevel.get(j) >= sLevel){
 										bCanMake.set(i, true);
-						        		break;
 									}else{
 										bCanMake.set(i, false);
-										
+										break;										
 									}
 								}
 							}
 						}	
 					if (!bCanMake.get(i) && event.getViewers().get(v) == player.get(i)){
 						event.getInventory().setResult(new ItemStack(Material.AIR));
+						break;
 					}
 				}
 			}
