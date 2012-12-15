@@ -181,9 +181,9 @@ public class SkillCauldron extends PassiveSkill {
 								for (int j=0; j<ShapelessCauldronRecipes.size(); j++){
 									if (event.getRecipe().getResult().getTypeId() == ShapelessCauldronRecipes.get(j).getResult().getTypeId() && CauldronRecipesLevel.get(j) >= sLevel){
 										bCanMake.set(i, true);
+										break;										
 									}else{
 										bCanMake.set(i, false);
-										break;										
 									}
 								}
 							}
