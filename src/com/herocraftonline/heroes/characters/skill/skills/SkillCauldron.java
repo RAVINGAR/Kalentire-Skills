@@ -50,8 +50,8 @@ public class SkillCauldron extends PassiveSkill {
         setArgumentRange(0, 0);
         setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
         setEffectTypes(EffectType.BENEFICIAL);
-        loadCauldronRecipes();
         this.plugin = plugin;
+        loadCauldronRecipes();
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
