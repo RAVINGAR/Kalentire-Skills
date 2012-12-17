@@ -38,7 +38,7 @@ public class SkillDecimation extends ActiveSkill {
 
 	public SkillDecimation(Heroes plugin) {
 		super(plugin, "Decimation");
-		setDescription("You throw a wave of fire that deals $1 fire damage in all directions.");
+		setDescription("You let lose Withering Skulls that deals $1 dark damage in all directions.");
 		setUsage("/skill decimation");
 		setArgumentRange(0, 0);
 		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
