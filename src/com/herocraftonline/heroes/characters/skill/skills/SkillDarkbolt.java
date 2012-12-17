@@ -36,7 +36,7 @@ public class SkillDarkbolt extends ActiveSkill {
     
     public SkillDarkbolt(Heroes plugin) {
         super(plugin, "Darkbolt");
-        setDescription("You shoot a ball of fire that deals $1 damage and lights your target on fire");
+        setDescription("You shoot a skull of doom that deals $1 damage!");
         setUsage("/skill darkbolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkbolt");
@@ -96,8 +96,6 @@ public class SkillDarkbolt extends ActiveSkill {
                 }
 
                 // Ignite the player
-             //   entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
-             //   plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the player
                 addSpellTarget(entity, hero);
