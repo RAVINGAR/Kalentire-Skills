@@ -11,9 +11,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -53,6 +55,20 @@ public class SkillFirebolt extends ActiveSkill {
         return node;
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onProjectileHit(ProjectileHitEvent event) {
+    	if(!(event.getEntity() instanceof SmallFireball)) {
+    		return;
+    	}
+    	SmallFireball fireball = (SmallFireball)event.getEntity();
+    	if(!fireballs.containsKey(fireball)) {
+    		return;
+    	}
+    	fireballs.remove(fireball);
+    	fireball.setIsIncendiary(false);
+    	fireball.setFireTicks(0);
+    }
+  
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
