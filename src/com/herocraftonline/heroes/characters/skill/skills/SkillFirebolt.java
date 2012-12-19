@@ -15,7 +15,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -27,14 +26,13 @@ import com.herocraftonline.heroes.util.Setting;
 
 public class SkillFirebolt extends ActiveSkill {
 
-
 	private Map<LargeFireball, FireballData> fireballs = new LinkedHashMap<LargeFireball, FireballData>(100) {
        private static final long serialVersionUID = 4329526013158603250L;
    };
    private class FireballData {
    	long creationtime;
    	Player player;
-   	FireballData(long creationtime, Player player) {
+   FireballData(long creationtime, Player player) {
    		this.creationtime = creationtime;
    		this.player = player;
    	}
