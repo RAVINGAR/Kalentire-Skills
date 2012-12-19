@@ -62,6 +62,7 @@ public class SkillFirebolt extends ActiveSkill {
         fireball.setVelocity(fireball.getVelocity().multiply(mult));
         fireball.setShooter(player);
         broadcastExecuteText(hero); 
+        fireball.setFireTicks(0);
         return SkillResult.NORMAL;
     }
 
