@@ -54,20 +54,6 @@ public class SkillFirebolt extends ActiveSkill {
         node.set("velocity-multiplier", 1.5);
         return node;
     }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onProjectileHit(ProjectileHitEvent event) {
-    	if(!(event.getEntity() instanceof SmallFireball)) {
-    		return;
-    	}
-    	SmallFireball fireball = (SmallFireball)event.getEntity();
-    	if(!fireballs.containsKey(fireball)) {
-    		return;
-    	}
-    	fireballs.remove(fireball);
-    	fireball.setIsIncendiary(false);
-    	fireball.setFireTicks(0);
-    }
   
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -77,8 +63,8 @@ public class SkillFirebolt extends ActiveSkill {
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         fireball.setVelocity(fireball.getVelocity().multiply(mult));
         fireball.setShooter(player);
-        broadcastExecuteText(hero); 
-        fireball.setFireTicks(0);
+        broadcastExecuteText(hero);
+    	fireball.setIsIncendiary(false);
         return SkillResult.NORMAL;
     }
 
