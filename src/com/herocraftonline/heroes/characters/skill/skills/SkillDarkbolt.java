@@ -26,9 +26,8 @@ import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDarkbolt extends ActiveSkill {
 
-    private Map<WitherSkull, Long> skulls = new LinkedHashMap<WitherSkull, Long>(100) {
-        private static final long serialVersionUID = 842097204945866103L;
-
+    private Map<WitherSkull, Long> fireballs = new LinkedHashMap<WitherSkull, Long>(100) {
+        private static final long serialVersionUID = 4329526013158603250L;
         @Override
         protected boolean removeEldestEntry(Entry<WitherSkull, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
@@ -57,11 +56,11 @@ public class SkillDarkbolt extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        WitherSkull skullProj = player.launchProjectile(WitherSkull.class);
-        skulls.put(skullProj, System.currentTimeMillis());
+        WitherSkull fireball = player.launchProjectile(WitherSkull.class);
+        fireballs.put(fireball, System.currentTimeMillis());
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        skullProj.setVelocity(skullProj.getVelocity().multiply(mult));
-        skullProj.setShooter(player);
+        fireball.setVelocity(fireball.getVelocity().multiply(mult));
+        fireball.setShooter(player);
         broadcastExecuteText(hero); 
         return SkillResult.NORMAL;
     }
@@ -74,20 +73,20 @@ public class SkillDarkbolt extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(ignoreCancelled = true)
+        @EventHandler()
         public void onEntityDamage(EntityDamageEvent event) {
-            if (!(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
+            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof WitherSkull) || !skulls.containsKey(projectile)) {
+            Entity fireball = subEvent.getDamager();
+            if (!(fireball instanceof WitherSkull) || !fireballs.containsKey(fireball)) {
                 return;
             }
-            skulls.remove(projectile);
+            fireballs.remove(fireball);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((WitherSkull) projectile).getShooter();
+            Entity dmger = ((WitherSkull) fireball).getShooter();
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
@@ -96,7 +95,6 @@ public class SkillDarkbolt extends ActiveSkill {
                     return;
                 }
 
-                // Damage the player
                 addSpellTarget(entity, hero);
                 int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
                 damage += (int) (SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill));

@@ -15,7 +15,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -25,8 +24,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
-public class SkillFireball extends ActiveSkill {
-
+public class SkillFirebolt extends ActiveSkill {
 
 	private Map<LargeFireball, FireballData> fireballs = new LinkedHashMap<LargeFireball, FireballData>(100) {
        private static final long serialVersionUID = 4329526013158603250L;
@@ -34,18 +32,18 @@ public class SkillFireball extends ActiveSkill {
    private class FireballData {
    	long creationtime;
    	Player player;
-   	FireballData(long creationtime, Player player) {
+   FireballData(long creationtime, Player player) {
    		this.creationtime = creationtime;
    		this.player = player;
    	}
    }
    
-   public SkillFireball(Heroes plugin) {
-       super(plugin, "Fireball");
+   public SkillFirebolt(Heroes plugin) {
+       super(plugin, "Firebolt");
        setDescription("You shoot a fireball that deals $1 damage!");
-       setUsage("/skill fireball");
+       setUsage("/skill firebolt");
        setArgumentRange(0, 0);
-       setIdentifiers("skill fireball");
+       setIdentifiers("skill firebolt");
        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
    }
@@ -105,6 +103,7 @@ public class SkillFireball extends ActiveSkill {
            damage += (int) (SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill));
            damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
        }
+       
        @EventHandler(priority = EventPriority.LOWEST)
        public void onGhastProjectileHit(EntityExplodeEvent event) {
        	if(event.isCancelled() || !(event.getEntity() instanceof LargeFireball)) {
