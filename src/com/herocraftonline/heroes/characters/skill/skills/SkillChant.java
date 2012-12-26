@@ -28,15 +28,16 @@ public class SkillChant extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("health", 5);
+        node.set(Setting.HEALTH.node(), 5);
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        if (!(target instanceof Player))
+        if (!(target instanceof Player)) {
         	return SkillResult.INVALID_TARGET;
+        }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);

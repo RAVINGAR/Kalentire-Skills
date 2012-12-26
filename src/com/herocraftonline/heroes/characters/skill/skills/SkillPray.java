@@ -42,12 +42,11 @@ public class SkillPray extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 10, false);
-        double targetHealth = targetHero.getHealth();
+        int targetHealth = targetHero.getHealth();
 
         if (targetHealth >= targetHero.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
-
             } else {
                 Messaging.send(player, "Target is already fully healed.");
             }
