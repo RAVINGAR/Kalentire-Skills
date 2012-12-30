@@ -128,6 +128,10 @@ public class SkillEnchant extends PassiveSkill {
                     xpCost +=  Math.max(event.getExpLevelCost() * ((double) val / maxVal), 1);
                 }
             }
+            if (event.getEnchantsToAdd().isEmpty()) {
+                event.setCancelled(true);
+                return;
+            }
             event.setExpLevelCost(0);
             ItemStack reagent = getReagentCost(hero);
             if (!hasReagentCost(player, reagent)) {
