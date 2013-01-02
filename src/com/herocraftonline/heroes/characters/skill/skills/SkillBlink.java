@@ -6,11 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.util.BlockIterator;
 
 import com.herocraftonline.heroes.Heroes;
@@ -92,20 +88,9 @@ public class SkillBlink extends ActiveSkill {
     
     public class SkillPlayerListener implements Listener {
 
-        private final Skill skill;
-        
         public SkillPlayerListener(Skill skill) {
-            this.skill = skill;
         }
         
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-        public void onPlayerTeleport(PlayerTeleportEvent event) {
-            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (!SkillConfigManager.getUseSetting(hero, skill, "restrict-ender-pearl", true)) {
-                return;
-            } else if (hero.getSkillLevel(skill) < 1 && event.getCause() == TeleportCause.ENDER_PEARL) {
-                event.setCancelled(true);
-            }
-        }
+        //@EventListener = EnderPearlRestriction - http://pastie.org/private/ccfetpbkwi1n9bczgxregg
     }
 }
