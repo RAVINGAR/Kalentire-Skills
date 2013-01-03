@@ -28,7 +28,7 @@ import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDoomwave extends ActiveSkill {
 
-    private Map<EnderPearl, Long> fireballs = new LinkedHashMap<EnderPearl, Long>(100) {
+    private Map<EnderPearl, Long> pearls = new LinkedHashMap<EnderPearl, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
         @Override
         protected boolean removeEldestEntry(Entry<EnderPearl, Long> eldest) {
@@ -38,10 +38,10 @@ public class SkillDoomwave extends ActiveSkill {
 
 	public SkillDoomwave(Heroes plugin) {
 		super(plugin, "Doomwave");
-		setDescription("You throw a wave of fire that deals $1 fire damage in all directions.");
+		setDescription("You hurl a wave of pearls that deals $1 damage in all directions.");
 		setUsage("/skill doomwave");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
 		setIdentifiers("skill doomwave");
 		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 	}
@@ -49,8 +49,8 @@ public class SkillDoomwave extends ActiveSkill {
 	@Override
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set("fireballs", 8);
-		node.set("fireballs-per-level", .2);
+		node.set("pearls", 8);
+		node.set("pearls-per-level", .2);
         node.set(Setting.DAMAGE.node(), 4);
         node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
 		return node;
@@ -59,17 +59,16 @@ public class SkillDoomwave extends ActiveSkill {
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
-		int numFireballs = SkillConfigManager.getUseSetting(hero, this, "fireballs", 8, false);
-		numFireballs += (SkillConfigManager.getUseSetting(hero, this, "fireballs-per-level", .2, false) * hero.getSkillLevel(this));
+		int numPearls = SkillConfigManager.getUseSetting(hero, this, "pearls", 8, false);
+		numPearls += (SkillConfigManager.getUseSetting(hero, this, "pearls-per-level", .2, false) * hero.getSkillLevel(this));
 
-		double diff = 2 * Math.PI / numFireballs;
+		double diff = 2 * Math.PI / numPearls;
 		long time = System.currentTimeMillis(); //<- red = variable type
 		for (double a = 0; a < 2 * Math.PI; a += diff) {
 			Vector vel = new Vector(Math.cos(a), 0, Math.sin(a));
 			EnderPearl pearl = player.launchProjectile(EnderPearl.class);
 			pearl.setVelocity(vel);
-			fireballs.put(pearl, time);
-			pearl.setFireTicks(100);
+			pearls.put(pearl, time);
 		}
 		broadcastExecuteText(hero);
 		return SkillResult.NORMAL;
@@ -98,10 +97,10 @@ public class SkillDoomwave extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof EnderPearl) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof EnderPearl) || !pearls.containsKey(projectile)) {
                 return;
             }
-            fireballs.remove(projectile);
+            pearls.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
             Entity dmger = ((EnderPearl) projectile).getShooter();
             if (dmger instanceof Player) {
