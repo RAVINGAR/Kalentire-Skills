@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//http://pastie.org/private/oz5iqyfjto1vgoova1qn2g (original source)
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -110,10 +111,20 @@ public class SkillFirewave extends ActiveSkill {
                 if (!damageCheck((Player) dmger, entity)) {
                     event.setCancelled(true);
                     return;
+                    //CharacterTemplate cm = plugin.getCharacterManager().getCharacter(entity);
+                    //cm.hasEffect/cm.addEffect
+                }
+                
+                // Check if entity is immune to further firewave hits
+                if(plugin.getCharacterManager().getCharacter(entity).hasEffect("FireWaveAntiMultiEffect")) {
+                	//cm.hasEffect/cm.addEffect
+                    event.setCancelled(true);
+                    return;
                 }
 
                 // Ignite the player
                 entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
+                //cm.hasEffect/cm.addEffect
                 plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the player
@@ -122,6 +133,10 @@ public class SkillFirewave extends ActiveSkill {
                 damage += (int) (SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill));
                 damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 event.setCancelled(true);
+
+                //Adds an Effect to Prevent Multihit
+                //cm.hasEffect/cm.addEffect
+                plugin.getCharacterManager().getCharacter(entity).addEffect(new ExpirableEffect(skill, "FireWaveAntiMultiEffect", 500));
             }
         }
     }
