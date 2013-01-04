@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+// orig http://pastie.org/private/mnxkn0ywnrrkrt4xackruq
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -127,7 +127,6 @@ public class SkillFireball extends ActiveSkill {
        	}
        	fireballs.remove(fireball);
        	fireball.setIsIncendiary(false);
-       	fireball.setFireTicks(0);
        }
    }
 
