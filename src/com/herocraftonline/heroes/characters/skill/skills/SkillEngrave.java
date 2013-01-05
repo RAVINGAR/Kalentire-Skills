@@ -45,7 +45,6 @@ public class SkillEngrave extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.CHANCE.node(), 1.0);
         node.set(Setting.CHANCE_LEVEL.node(), 0.0);
-        node.set("hst-chance", 0.0);
         mats.add(Material.WOOD_AXE);
         mats.add(Material.WOOD_HOE);
         mats.add(Material.WOOD_PICKAXE);
@@ -110,13 +109,14 @@ public class SkillEngrave extends ActiveSkill {
         for(Material mat : mats){
             if(is.getType().equals(mat)){
                 double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 1.0, false) +
-                        (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
+                        (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this)));
                 chance = chance > 0 ? chance : 0;
                 if(Math.random()<=chance){
                     String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy
                     ItemMeta im = is.getItemMeta();
                     im.setDisplayName(str);
                     is.setItemMeta(im);
+                    broadcastExecuteText(hero);
                     return SkillResult.NORMAL;
                 }
                 else return SkillResult.FAIL;
