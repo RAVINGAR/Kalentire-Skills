@@ -11,9 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
-
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -22,7 +20,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class SkillEngrave extends ActiveSkill {
 
-    public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
     private HashSet<Material> mats = new HashSet<Material>();
 
     public SkillEngrave(Heroes plugin) {
@@ -38,7 +35,6 @@ public class SkillEngrave extends ActiveSkill {
     public String getDescription(Hero hero) {
         double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
-        if(hst != null) chance += (SkillConfigManager.getUseSetting(hero, this, "hst-chance", 0.0, false) * (hst.getSkillLevel(hero, this) - 1) * 100);
         chance = chance > 0 ? chance : 0;
         String description = getDescription().replace("$1", chance + "%");
         return description;
@@ -115,7 +111,6 @@ public class SkillEngrave extends ActiveSkill {
             if(is.getType().equals(mat)){
                 double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 1.0, false) +
                         (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
-                if(hst != null) chance += (SkillConfigManager.getUseSetting(hero, this, "hst-chance", 0.0, false) * (hst.getSkillLevel(hero, this) - 1) * 100);
                 chance = chance > 0 ? chance : 0;
                 if(Math.random()<=chance){
                     String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy
