@@ -1,0 +1,133 @@
+package com.herocraftonline.heroes.characters.skill.skills;
+
+import java.util.HashSet;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Setting;
+
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class SkillEngrave extends ActiveSkill {
+
+    public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
+    private HashSet<Material> mats = new HashSet<Material>();
+
+    public SkillEngrave(Heroes plugin) {
+        super(plugin, "Engrave");
+        setDescription("$1 of chance of renaming the item in your hand with a custom text.");
+        setUsage("/skill Engrave <Text>");
+        setArgumentRange(1, 99);
+        setIdentifiers(new String[]{"skill Engrave"});
+        setTypes(SkillType.ITEM, SkillType.UNBINDABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 1.0, false) +
+                (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
+        if(hst != null) chance += (SkillConfigManager.getUseSetting(hero, this, "hst-chance", 0.0, false) * (hst.getSkillLevel(hero, this) - 1) * 100);
+        chance = chance > 0 ? chance : 0;
+        String description = getDescription().replace("$1", chance + "%");
+        return description;
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+        node.set(Setting.CHANCE.node(), 1.0);
+        node.set(Setting.CHANCE_LEVEL.node(), 0.0);
+        node.set("hst-chance", 0.0);
+        mats.add(Material.WOOD_AXE);
+        mats.add(Material.WOOD_HOE);
+        mats.add(Material.WOOD_PICKAXE);
+        mats.add(Material.WOOD_SPADE);
+        mats.add(Material.WOOD_SWORD);
+        mats.add(Material.STONE_AXE);
+        mats.add(Material.STONE_HOE);
+        mats.add(Material.STONE_PICKAXE);
+        mats.add(Material.STONE_SPADE);
+        mats.add(Material.STONE_SWORD);
+        mats.add(Material.IRON_AXE);
+        mats.add(Material.IRON_HOE);
+        mats.add(Material.IRON_PICKAXE);
+        mats.add(Material.IRON_SPADE);
+        mats.add(Material.IRON_SWORD);
+        mats.add(Material.GOLD_AXE);
+        mats.add(Material.GOLD_HOE);
+        mats.add(Material.GOLD_PICKAXE);
+        mats.add(Material.GOLD_SPADE);
+        mats.add(Material.GOLD_SWORD);
+        mats.add(Material.DIAMOND_AXE);
+        mats.add(Material.DIAMOND_HOE);
+        mats.add(Material.DIAMOND_PICKAXE);
+        mats.add(Material.DIAMOND_SPADE);
+        mats.add(Material.DIAMOND_SWORD);
+        mats.add(Material.LEATHER_HELMET);
+        mats.add(Material.LEATHER_CHESTPLATE);
+        mats.add(Material.LEATHER_LEGGINGS);
+        mats.add(Material.LEATHER_BOOTS);
+        mats.add(Material.IRON_HELMET);
+        mats.add(Material.IRON_CHESTPLATE);
+        mats.add(Material.IRON_LEGGINGS);
+        mats.add(Material.IRON_BOOTS);
+        mats.add(Material.GOLD_HELMET);
+        mats.add(Material.GOLD_CHESTPLATE);
+        mats.add(Material.GOLD_LEGGINGS);
+        mats.add(Material.GOLD_BOOTS);
+        mats.add(Material.DIAMOND_HELMET);
+        mats.add(Material.DIAMOND_CHESTPLATE);
+        mats.add(Material.DIAMOND_LEGGINGS);
+        mats.add(Material.DIAMOND_BOOTS);
+        mats.add(Material.BOW);
+        mats.add(Material.FISHING_ROD);
+        mats.add(Material.SHEARS);
+        return node;
+    }
+
+    @Override
+    public SkillResult use(Hero hero, String[] text) {
+        Player player = hero.getPlayer();
+        if(text.length == 0){
+            Messaging.send(player, "/skill engrave <Text>");
+            return SkillResult.CANCELLED;
+        }
+
+        if(player.getItemInHand() == null){
+            Messaging.send(player, "You must be holding an item in order to use this skill.");
+            return SkillResult.CANCELLED;
+        }
+        ItemStack is = player.getItemInHand();
+
+        for(Material mat : mats){
+            if(is.getType().equals(mat)){
+                double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 1.0, false) +
+                        (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
+                if(hst != null) chance += (SkillConfigManager.getUseSetting(hero, this, "hst-chance", 0.0, false) * (hst.getSkillLevel(hero, this) - 1) * 100);
+                chance = chance > 0 ? chance : 0;
+                if(Math.random()<=chance){
+                    String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy
+                    ItemMeta im = is.getItemMeta();
+                    im.setDisplayName(str);
+                    is.setItemMeta(im);
+                    return SkillResult.NORMAL;
+                }
+                else return SkillResult.FAIL;
+            }
+        }
+        Messaging.send(player, "You must be holding a tool or an armor in order to use this skill.");
+        return SkillResult.CANCELLED;
+    }
+}
