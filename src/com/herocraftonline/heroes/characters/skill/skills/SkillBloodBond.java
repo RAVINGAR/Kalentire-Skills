@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
@@ -142,6 +143,32 @@ public class SkillBloodBond extends ActiveSkill {
         @EventHandler
         public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
             if((!(event.isCancelled()))&&(event.getCause().equals(DamageCause.MAGIC))&&(event.getDamager() instanceof Player)){
+                Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
+                if(hero.hasEffect("BloodBond")&&(hero.hasParty())){
+                    int percent = (int) (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
+                            (SkillConfigManager.getUseSetting(hero, this.skill, "percent-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
+                    percent = percent > 0 ? percent : 0;
+                    int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS.node(), 15.0, false) +
+                            (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
+                    radius = radius > 1 ? radius : 1;
+                    int amount = (int) (event.getDamage()*percent);
+                    for(Hero member : hero.getParty().getMembers()){
+                        if(member.getPlayer().getLocation().distance(hero.getPlayer().getLocation()) <= radius){
+                            if(member.getHealth() + amount < member.getMaxHealth()){
+                                member.setHealth(member.getHealth()+amount);
+                            }else{
+                                member.setHealth(member.getMaxHealth());
+                            }
+                            member.syncHealth();
+                        }
+                    }
+                }
+            }
+        }
+
+        @EventHandler
+        public void onSkillDamage(SkillDamageEvent event){
+            if((!(event.isCancelled()))&&(event.getDamager() instanceof Player)){
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
                 if(hero.hasEffect("BloodBond")&&(hero.hasParty())){
                     int percent = (int) (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
