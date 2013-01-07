@@ -15,7 +15,7 @@ public class SkillEnergize extends ActiveSkill{
 
     public SkillEnergize(Heroes plugin) {
         super(plugin, "Energize");
-        setDescription("Resplenishes $1 points of your stamina.");
+        setDescription("Replenishes $1 points of your stamina.");
         setUsage("/skill energize");
         setArgumentRange(0, 0);
         setIdentifiers(new String[]{"skill Energize"});
@@ -31,7 +31,7 @@ public class SkillEnergize extends ActiveSkill{
         int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 20.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "amount-increase", 0.0, false) * hero.getSkillLevel(this)));
         amount = amount > 0 ? amount : 0;
-        description.replace("$1", amount + "");
+        description.replace("$1", amount + "stamina");
 
         //COOLDOWN
         int cooldown = (SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN.node(), 0, false)

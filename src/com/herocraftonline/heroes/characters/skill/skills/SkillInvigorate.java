@@ -104,7 +104,7 @@ public class SkillInvigorate extends TargettedSkill{
         }else{
             target.setFoodLevel(20);
         }
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 }
