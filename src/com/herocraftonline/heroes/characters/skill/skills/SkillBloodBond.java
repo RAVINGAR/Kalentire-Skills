@@ -36,8 +36,8 @@ public class SkillBloodBond extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int percent = (int) (SkillConfigManager.getUseSetting(hero, this, "percent", 0.05, false) +
-                (SkillConfigManager.getUseSetting(hero, this, "percent-increase", 0.0, false) * hero.getSkillLevel(this))) * 100;
+        int percent = (int) ((SkillConfigManager.getUseSetting(hero, this, "percent", 0.05, false) +
+                (SkillConfigManager.getUseSetting(hero, this, "percent-increase", 0.0, false) * hero.getSkillLevel(this))) * 100);
         percent = percent > 0 ? percent : 0;
         int radius = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 15.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
@@ -145,7 +145,7 @@ public class SkillBloodBond extends ActiveSkill {
             if((!(event.isCancelled()))&&(event.getCause().equals(DamageCause.MAGIC))&&(event.getDamager() instanceof Player)){
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
                 if(hero.hasEffect("BloodBond")&&(hero.hasParty())){
-                    int percent = (int) (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
+                    double percent = (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, "percent-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
                     percent = percent > 0 ? percent : 0;
                     int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS.node(), 15.0, false) +
@@ -171,7 +171,7 @@ public class SkillBloodBond extends ActiveSkill {
             if((!(event.isCancelled()))&&(event.getDamager() instanceof Player)){
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
                 if(hero.hasEffect("BloodBond")&&(hero.hasParty())){
-                    int percent = (int) (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
+                    double percent = (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, "percent-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
                     percent = percent > 0 ? percent : 0;
                     int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS.node(), 15.0, false) +
