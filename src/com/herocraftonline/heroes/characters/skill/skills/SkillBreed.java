@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -49,14 +50,26 @@ public class SkillBreed extends PassiveSkill {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
     		if(event.getRightClicked() instanceof Animals && player.getItemInHand().getType() != Material.SHEARS) {
-    			if (hero.canUseSkill("Breed")) {
-    				event.setCancelled(false);
-    			} else {
-    				player.sendMessage(ChatColor.DARK_GRAY + "You are unable to breed animals!");
-    				event.setCancelled(true);
-    			}
-    		}
+                if (isWolfTamingAttempt(event) && hero.canUseSkill("Wolf")) {
+                    event.setCancelled(false);
+                } else if (hero.canUseSkill("Breed")) {
+                    event.setCancelled(false);
+                } else {
+                    player.sendMessage(ChatColor.DARK_GRAY + "You are unable to breed animals!");
+                    event.setCancelled(true);
+                }
+            }
     	}
+    }
+
+    private boolean isWolfTamingAttempt(PlayerInteractEntityEvent event) {
+        boolean isWolfTamingAttempt = false;
+
+        if (event.getRightClicked() instanceof Wolf) {
+            isWolfTamingAttempt = event.getPlayer().getItemInHand().getType() == Material.BONE;
+        }
+
+        return isWolfTamingAttempt;
     }
 
     @Override
