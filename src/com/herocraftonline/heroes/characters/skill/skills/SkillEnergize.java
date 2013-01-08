@@ -25,13 +25,12 @@ public class SkillEnergize extends ActiveSkill{
 
     @Override
     public String getDescription(Hero hero) {
-        String description = getDescription();
 
         //DAMAGE
         int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 20.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "amount-increase", 0.0, false) * hero.getSkillLevel(this)));
         amount = amount > 0 ? amount : 0;
-        description.replace("$1", amount + "stamina");
+        String description = getDescription().replace("$1", amount + "");
 
         //COOLDOWN
         int cooldown = (SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN.node(), 0, false)
