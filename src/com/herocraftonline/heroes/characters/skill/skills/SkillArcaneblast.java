@@ -46,12 +46,13 @@ public class SkillArcaneblast extends TargettedSkill {
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
         addSpellTarget(target, hero);
         int n = 5; //Replace me with config values for number of fireworks spawned
-		for(int i = 0;i<n;i++)
+
         damageEntity(target, player, damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);
-		Firework firework = (Firework) event.getHero().getPlayer().getWorld().spawnEntity(loc, EntityType.FIREWORK);
-		FireworkMeta meta = firework.setFireworkMeta();
+		Firework firework = (Firework) target.getWorld().spawnEntity(target.getLocation(), EntityType.FIREWORK);
+		FireworkMeta meta = firework.getFireworkMeta();
 		meta.addEffect(FireworkEffect.builder().flicker(false).trail(true).with(Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.WHITE).build());
+		
         return SkillResult.NORMAL;
     }
 
