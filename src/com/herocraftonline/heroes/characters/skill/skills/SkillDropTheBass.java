@@ -18,7 +18,7 @@ public class SkillDropTheBass extends ActiveSkill {
         setDescription("Stops your close group members from taking fall damage for $1 seconds.");
         setUsage("/skill dropthebass");
         setArgumentRange(0, 0);
-        setIdentifiers("skill eaglesong");
+        setIdentifiers("skill dropthebass");
         setTypes(SkillType.MOVEMENT, SkillType.BUFF, SkillType.SILENCABLE);
 
     }
