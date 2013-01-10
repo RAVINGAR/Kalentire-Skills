@@ -47,7 +47,7 @@ public class SkillArcaneblast extends TargettedSkill
     addSpellTarget(target, hero);
     int n = 5;
 
-    damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+    damageEntity(target, player, damage, DamageCause.MAGIC);
     broadcastExecuteText(hero, target);
     Firework firework = (Firework)target.getWorld().spawnEntity(target.getLocation(), EntityType.FIREWORK);
     FireworkMeta meta = firework.getFireworkMeta();
