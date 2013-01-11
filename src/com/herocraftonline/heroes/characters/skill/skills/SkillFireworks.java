@@ -105,7 +105,7 @@ public class SkillFireworks extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 		node.set("numberFireworks", Integer.valueOf(5));
-		node.set(Setting.COOLDOWN.node(), Integer.valueOf(180000));
+		node.set(Setting.COOLDOWN.node(), Integer.valueOf(0));
 		return node;
 	}
 
