@@ -19,7 +19,7 @@ public class SkillBalance extends ActiveSkill {
 
 	public SkillBalance(Heroes plugin) {
 		super(plugin, "Balance");
-		setDescription("On use, equalizes the percent max health of everyone in the party within a $1 block radius.");
+		setDescription("On use, balances the percent max health of everyone in the party within a $1 block radius.");
 		setUsage("/skill balance");
 		setIdentifiers("skill balance");
 		setArgumentRange(0,0);
@@ -37,30 +37,38 @@ public class SkillBalance extends ActiveSkill {
 		Iterator<Hero> partyMembers = heroParty.getMembers().iterator();
 		Vector v = h.getPlayer().getLocation().toVector();
 		int range = SkillConfigManager.getUseSetting(h, this, "maxrange", 0, false);
-                range *= range;
 		boolean skipRangeCheck = (range == 0);						//0 for no maximum range
 		while(partyMembers.hasNext()) {
 			Hero h2 = partyMembers.next();
 			if(skipRangeCheck || h2.getPlayer().getLocation().toVector().distanceSquared(v) < range) {
 				maxHealthTotal += h2.getMaxHealth();
+				h.getPlayer().sendMessage("Added to maxHealth: " + h2.getName());
 				currentHealthTotal += h2.getHealth();
+				h.getPlayer().sendMessage("Added to currentHealth: " + h2.getName());
+				h.getPlayer().sendMessage("Current currentHealth/MaxHealth " + currentHealthTotal + "/" + maxHealthTotal);
+
 			}
 			continue;
 		}
 		if(maxHealthTotal == h.getMaxHealth()) {
-			h.getPlayer().sendMessage("There is noone in range to equalize with!");
+			h.getPlayer().sendMessage("There is noone in range to balance with!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
+		h.getPlayer().sendMessage("Max Party Health Value " + maxHealthTotal);
+		h.getPlayer().sendMessage("Current Party Health Value " + currentHealthTotal);
+		
 		double healthMultiplier = currentHealthTotal/maxHealthTotal;
+		h.getPlayer().sendMessage("Multiplier " + healthMultiplier);
 		Iterator<Hero> applyHealthIterator = heroParty.getMembers().iterator();
 		while(applyHealthIterator.hasNext()) {
 			Hero applyHero = applyHealthIterator.next();
 			if(skipRangeCheck || applyHero.getPlayer().getLocation().toVector().distanceSquared(v) < range) {
 				applyHero.setHealth((int) (applyHero.getMaxHealth()*healthMultiplier));
+				applyHero.syncHealth();
 				if(applyHero.getName() == h.getName()) {
 					h.getPlayer().sendMessage(ChatColor.GRAY + "You used Balance!");
 				} else {
-					applyHero.getPlayer().sendMessage(ChatColor.GRAY + h.getName() + " equalized your health with that of your party!");
+					applyHero.getPlayer().sendMessage(ChatColor.GRAY + h.getName() + " balanced your health with that of your party!");
 				}
 			}
 		}
