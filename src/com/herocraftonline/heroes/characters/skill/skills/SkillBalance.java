@@ -43,7 +43,6 @@ public class SkillBalance extends ActiveSkill {
 			if(skipRangeCheck || h2.getPlayer().getLocation().toVector().distanceSquared(v) < range) {
 				maxHealthTotal += h2.getMaxHealth();
 				currentHealthTotal += h2.getHealth();
-
 			}
 			continue;
 		}
@@ -51,11 +50,8 @@ public class SkillBalance extends ActiveSkill {
 			h.getPlayer().sendMessage("There is noone in range to balance with!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
-		h.getPlayer().sendMessage("Max Party Health Value " + maxHealthTotal);
-		h.getPlayer().sendMessage("Current Party Health Value " + currentHealthTotal);
 		
 		double healthMultiplier = currentHealthTotal*Math.pow(maxHealthTotal, -1);
-		h.getPlayer().sendMessage("Multiplier " + healthMultiplier);
 		Iterator<Hero> applyHealthIterator = heroParty.getMembers().iterator();
 		while(applyHealthIterator.hasNext()) {
 			Hero applyHero = applyHealthIterator.next();
