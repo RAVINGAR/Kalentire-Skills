@@ -40,7 +40,7 @@ public class SkillDuskblade extends TargettedSkill {
 		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
 		absorbAmount += SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
 		double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", .5, false);
-		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (absorbAmount * healMult), this);
+		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (absorbAmount * healMult), this, hero);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
 		if (!hrEvent.isCancelled()) {
 			hero.setHealth(hero.getHealth() + hrEvent.getAmount());

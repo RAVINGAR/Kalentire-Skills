@@ -34,13 +34,14 @@ public class SkillDisenchant extends ActiveSkill {
             Messaging.send(player, "You must have an item to disenchant!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        List<Enchantment> enchants = new ArrayList<Enchantment>(item.getEnchantments().keySet());
+        List<Enchantment> enchants = new ArrayList<Enchantment>(item.getItemMeta().getEnchants().keySet());
         if (enchants.isEmpty()) {
             Messaging.send(player, "That item has no enchantments!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        for (Enchantment enchant : enchants) {
-            item.removeEnchantment(enchant);
+        
+        for (Enchantment enchant : item.getItemMeta().getEnchants().keySet()) {
+            item.getItemMeta().removeEnchant(enchant);
         }
         player.updateInventory();
         broadcastExecuteText(hero);
