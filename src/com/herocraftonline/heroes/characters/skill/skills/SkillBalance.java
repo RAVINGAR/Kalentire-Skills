@@ -42,10 +42,7 @@ public class SkillBalance extends ActiveSkill {
 			Hero h2 = partyMembers.next();
 			if(skipRangeCheck || h2.getPlayer().getLocation().toVector().distanceSquared(v) < range) {
 				maxHealthTotal += h2.getMaxHealth();
-				h.getPlayer().sendMessage("Added to maxHealth: " + h2.getName());
 				currentHealthTotal += h2.getHealth();
-				h.getPlayer().sendMessage("Added to currentHealth: " + h2.getName());
-				h.getPlayer().sendMessage("Current currentHealth/MaxHealth " + currentHealthTotal + "/" + maxHealthTotal);
 
 			}
 			continue;
