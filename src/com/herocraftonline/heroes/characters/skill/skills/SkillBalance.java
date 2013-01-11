@@ -57,7 +57,7 @@ public class SkillBalance extends ActiveSkill {
 		h.getPlayer().sendMessage("Max Party Health Value " + maxHealthTotal);
 		h.getPlayer().sendMessage("Current Party Health Value " + currentHealthTotal);
 		
-		double healthMultiplier = currentHealthTotal/maxHealthTotal;
+		double healthMultiplier = currentHealthTotal*Math.pow(maxHealthTotal, -1);
 		h.getPlayer().sendMessage("Multiplier " + healthMultiplier);
 		Iterator<Hero> applyHealthIterator = heroParty.getMembers().iterator();
 		while(applyHealthIterator.hasNext()) {
