@@ -66,6 +66,7 @@ public class SkillAbsorb extends ActiveSkill {
             super(skill, "Absorb");
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

@@ -70,6 +70,7 @@ public class SkillManaShield extends ActiveSkill {
             super(skill, "ManaShield", duration);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

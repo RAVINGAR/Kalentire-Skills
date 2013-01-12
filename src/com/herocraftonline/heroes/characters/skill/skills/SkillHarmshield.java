@@ -69,6 +69,7 @@ public class SkillHarmshield extends ActiveSkill {
             super(skill, "HarmShield", duration);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

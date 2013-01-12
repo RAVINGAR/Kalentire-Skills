@@ -99,6 +99,7 @@ public class SkillBloodBond extends ActiveSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.HEAL);
+            this.types.add(EffectType.MAGIC);
         }
 
         @Override

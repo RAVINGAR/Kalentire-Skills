@@ -69,6 +69,7 @@ public class SkillBoltstorm extends ActiveSkill {
             super(skill, "Boltstorm", period, duration);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.MAGIC);
             this.types.add(EffectType.LIGHTNING);
         }
 

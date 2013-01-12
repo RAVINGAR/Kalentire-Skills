@@ -112,6 +112,7 @@ public class SkillDespair extends ActiveSkill {
             this.addMobEffect(15, (int) ((duration / 1000) * 20), 3, false);
             this.types.add(EffectType.HARMFUL);
             this.types.add(EffectType.DARK);
+            this.types.add(EffectType.BLIND);
         }
         
         @Override
