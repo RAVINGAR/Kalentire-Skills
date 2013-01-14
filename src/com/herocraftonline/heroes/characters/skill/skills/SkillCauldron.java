@@ -141,7 +141,7 @@ public class SkillCauldron extends PassiveSkill {
 					Block plankblock = loc.getBlock().getRelative(BlockFace.DOWN);
 					Cauldron cauldron = (org.bukkit.material.Cauldron) event.getClickedBlock().getState().getData();
 					
-					if(cauldron.isFull() && fireblock.getType() == Material.FIRE && plankblock.getType() == Material.WOOD && event.getPlayer().hasPermission("cauldronbench.user.alchemist")){
+					if(cauldron.isFull() && fireblock.getType() == Material.FIRE && plankblock.getType() == Material.LOG && event.getPlayer().hasPermission("cauldronbench.user.alchemist")){
 						player.add(event.getPlayer());
 						usingCauldronbench.add(player.size()-1, true);
 						bCanMake.add(player.size()-1, false);
