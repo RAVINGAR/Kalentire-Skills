@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-//http://pastie.org/private/sialhknmfmlh8pumkhxq old src
-//TODO: Shape recipes. Result collection for shift clicks. Fix config format. Stream line code, and arrange to a Heroes format. 
+//http://pastie.org/private/sialhknmfmlh8pumkhxq
 import java.io.File;
 import java.util.ArrayList;
 
