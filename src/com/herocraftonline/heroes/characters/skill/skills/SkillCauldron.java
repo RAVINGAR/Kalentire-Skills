@@ -167,7 +167,7 @@ public class SkillCauldron extends PassiveSkill {
 							
 							if(usingCauldronbench.get(i) == false){
 								for (int j=0; j<ShapelessCauldronRecipes.size(); j++){
-									if (event.getRecipe().getResult().getTypeId() != ShapelessCauldronRecipes.get(j).getResult().getTypeId()){
+									if (event.getRecipe() != ShapelessCauldronRecipes.get(j)){
 										bCanMake.set(i, true);
 										
 									}else{
@@ -179,7 +179,7 @@ public class SkillCauldron extends PassiveSkill {
 							
 							if(usingCauldronbench.get(i) == true){
 								for (int j=0; j<ShapelessCauldronRecipes.size(); j++){
-									if (event.getRecipe().getResult().getTypeId() == ShapelessCauldronRecipes.get(j).getResult().getTypeId() && CauldronRecipesLevel.get(j) >= sLevel){
+									if (event.getRecipe() == ShapelessCauldronRecipes.get(j) && CauldronRecipesLevel.get(j) >= sLevel){
 										bCanMake.set(i, true);
 										break;										
 									}else{
