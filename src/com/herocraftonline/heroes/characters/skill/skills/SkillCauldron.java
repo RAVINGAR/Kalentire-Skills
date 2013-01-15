@@ -26,9 +26,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Cauldron;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -78,7 +76,7 @@ public class SkillCauldron extends PassiveSkill {
 		return CauldronConfig;
 	}
 
-	public void loadCauldronRecipes(){
+	public void loadCauldronRecipes() {
 		Server server = plugin.getServer();
 		if (ShapedCauldronRecipes.size() > 0){
 			this.ShapedCauldronRecipes.clear();
@@ -98,7 +96,7 @@ public class SkillCauldron extends PassiveSkill {
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				//If ID is 0, replace with space
 				if(id == 0) {
-					top.replace(j + "", "") ;
+					top.replace(j + "", " ") ;
 				}
 			}
 			
@@ -106,7 +104,7 @@ public class SkillCauldron extends PassiveSkill {
 			for(int j=3; j<6; j++){
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				if(id == 0) {
-					mid.replace(j + "", "") ;
+					mid.replace(j + "", " "	) ;
 				}
 			}
 			
@@ -114,7 +112,7 @@ public class SkillCauldron extends PassiveSkill {
 			for(int j=6; j<9; j++){
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				if(id == 0) {
-					bot.replace(j + "", "") ;
+					bot.replace(j + "", " ") ;
 				}
 			}
 			
@@ -125,7 +123,7 @@ public class SkillCauldron extends PassiveSkill {
 			}
 			this.ShapedCauldronRecipes.add(shapedRecipe);
 			
-			CauldronRecipesLevel.add(getCauldronConfig().getInt("CauldronRecipes."+i+".results.Level"));
+			CauldronRecipesLevel.add(config.getInt("CauldronRecipes."+i+".results.Level"));
 			server.addRecipe(ShapedCauldronRecipes.get(ShapedCauldronRecipes.size() -1));
 
 		}
@@ -189,7 +187,7 @@ public class SkillCauldron extends PassiveSkill {
 		//Grabs items in crafting view. Is the player using a workbench or cauldronbench? Is the recipe suitable to be made in work area? Is Player high enough level to make recipe?
 		@EventHandler
 		public void openCauldronevent(PrepareItemCraftEvent event){
-			if(event.getInventory().getType() != InventoryType.WORKBENCH){
+			if(event.getInventory().getType() != InventoryType.WORKBENCH) {
 				return;
 			}
 
