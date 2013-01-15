@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 //TODO: Shape recipes. Result collection for shift clicks. Fix config format. Stream line code, and arrange to a Heroes format. 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,6 +35,7 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillCauldron extends PassiveSkill {
 
@@ -86,9 +88,9 @@ public class SkillCauldron extends PassiveSkill {
 		for(int i =0; i<getCauldronConfig().getInt("CauldronRecipes.size"); i++){
 			ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(getCauldronConfig().getInt("CauldronRecipes."+i+".results.TypeId"),getCauldronConfig().getInt("CauldronRecipes."+i+".results.result-amount"),(short)getCauldronConfig().getInt("CauldronRecipes."+i+".results.materialData")));
 			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
-			String top = "012";			//3 Spaces->3 slots
-			String mid = "345";
-			String bot = "678";
+			String top = "ABC";			//3 Spaces->3 slots
+			String mid = "DEF";
+			String bot = "GHI";
 			FileConfiguration config = getCauldronConfig();
 			
 			//Determine what is top
@@ -96,7 +98,7 @@ public class SkillCauldron extends PassiveSkill {
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				//If ID is 0, replace with space
 				if(id == 0) {
-					top.replace(j + "", " ") ;
+					top.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 			
@@ -104,7 +106,7 @@ public class SkillCauldron extends PassiveSkill {
 			for(int j=3; j<6; j++){
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				if(id == 0) {
-					mid.replace(j + "", " "	) ;
+					mid.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 			
@@ -112,15 +114,19 @@ public class SkillCauldron extends PassiveSkill {
 			for(int j=6; j<9; j++){
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				if(id == 0) {
-					bot.replace(j + "", " ") ;
+					bot.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 			
-			//Set our shaped recipe to have this space.
+			//Set our shaped recipe to have this shape.
 			shapedRecipe.shape(top,mid,bot);
 			for(int j=0; j<9; j++) {
-				if(!(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId") == 0)) {
-					shapedRecipe.setIngredient((char) j, Material.getMaterial(getCauldronConfig().getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
+				//Error handling if configuration requirements not met
+				if(!(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId",0) == 0)) {
+					shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(getCauldronConfig().getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
+				}
+				if(config.isConfigurationSection("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")) {
+					Bukkit.getServer().getLogger().log(Level.WARNING, "An invalid configuration path was detected for CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId: Please recheck your configuration");
 				}
 			}
 			this.ShapedCauldronRecipes.add(shapedRecipe);
@@ -131,7 +137,20 @@ public class SkillCauldron extends PassiveSkill {
 		}
 
 	}
-
+	public char convertInttoChar(int i) {
+		switch(i) {
+		case 0: return 'A';
+		case 1: return 'B';
+		case 2: return 'C';
+		case 3: return 'D';
+		case 4: return 'E';
+		case 5: return 'F';
+		case 6: return 'G';
+		case 7: return 'H';
+		case 8: return 'I';
+		default: return 'J';
+		}
+	}
 	public static void openCauldron(Player player) {
 		player.openWorkbench(null, true);
 	}
