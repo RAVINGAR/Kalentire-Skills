@@ -119,9 +119,7 @@ public class SkillCauldron extends PassiveSkill {
 			//Set our shaped recipe to have this space.
 			shapedRecipe.shape(top,mid,bot);
 			for(int j=0; j<9; j++) {
-				if(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId") == 0) {
-					continue;
-				} else {
+				if(!(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId") == 0)) {
 					shapedRecipe.setIngredient((char) j, Material.getMaterial(getCauldronConfig().getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
 				}
 			}
