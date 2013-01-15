@@ -25,6 +25,9 @@ import org.bukkit.World;
 
 public class SkillArcaneblast extends TargettedSkill
 {
+  // silly kainzo, tricks are for kids.
+  public FireworkEffectPlayer fplayer = new FireworkEffectPlayer();
+
   public SkillArcaneblast(Heroes plugin)
   {
     super(plugin, "Arcaneblast");
@@ -52,11 +55,9 @@ public class SkillArcaneblast extends TargettedSkill
 
     damageEntity(target, player, damage, DamageCause.MAGIC);
     broadcastExecuteText(hero, target);
-    Firework firework = (Firework)target.getWorld().spawnEntity(target.getLocation(), EntityType.FIREWORK);
-    FireworkMeta meta = firework.getFireworkMeta();
-    meta.addEffect(FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.WHITE).build());
-    meta.setPower(0);
-    firework.setFireworkMeta(meta);
+    
+    // this is our funky shit
+    fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.WHITE).build());
     return SkillResult.NORMAL;
   }
 
