@@ -10,16 +10,12 @@ import com.herocraftonline.heroes.util.Setting;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.meta.FireworkMeta;
 import java.lang.reflect.Method;
-import org.bukkit.FireworkEffect;
-import org.bukkit.entity.Firework;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.Location;
 import org.bukkit.World;
 
