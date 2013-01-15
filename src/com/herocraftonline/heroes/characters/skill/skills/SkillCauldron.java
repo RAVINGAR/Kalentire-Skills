@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-//http://pastie.org/private/sialhknmfmlh8pumkhxq
+//TODO: Shape recipes. Result collection for shift clicks. Fix config format. Stream line code, and arrange to a Heroes format. 
 import java.io.File;
 import java.util.ArrayList;
 
@@ -119,7 +119,11 @@ public class SkillCauldron extends PassiveSkill {
 			//Set our shaped recipe to have this space.
 			shapedRecipe.shape(top,mid,bot);
 			for(int j=0; j<9; j++) {
-				shapedRecipe.setIngredient((char) j, Material.getMaterial(getCauldronConfig().getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
+				if(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId") == 0) {
+					continue;
+				} else {
+					shapedRecipe.setIngredient((char) j, Material.getMaterial(getCauldronConfig().getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
+				}
 			}
 			this.ShapedCauldronRecipes.add(shapedRecipe);
 			
