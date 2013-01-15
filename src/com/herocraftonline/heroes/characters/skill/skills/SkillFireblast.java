@@ -162,7 +162,7 @@ public class SkillFireblast extends TargettedSkill
        * @param method
        * @return Method (or null)
        */
-      //      private static Method getMethod(Class<?> cl, String method) {
+
       private static Method getMethod(Class<?> cl, String method) {
           for(Method m : cl.getMethods()) {
               if(m.getName().equals(method)) {
