@@ -57,7 +57,15 @@ public class SkillArcaneblast extends TargettedSkill
     broadcastExecuteText(hero, target);
     
     // this is our funky shit
-    fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.WHITE).build());
+    try {
+		fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.WHITE).build());
+	} catch (IllegalArgumentException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     return SkillResult.NORMAL;
   }
 
