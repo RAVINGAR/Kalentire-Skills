@@ -31,7 +31,7 @@ public class SkillFireblast extends TargettedSkill
     setUsage("/skill fireblast");
     setArgumentRange(0, 0);
     setIdentifiers(new String[] { "skill fireblast" });
-    setTypes(new SkillType[] { SkillType.DAMAGING, SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HARMFUL });
+    setTypes(new SkillType[] { SkillType.DAMAGING, SkillType.FIRE, SkillType.SILENCABLE, SkillType.HARMFUL });
   }
 
   public ConfigurationSection getDefaultConfig()
@@ -54,7 +54,7 @@ public class SkillFireblast extends TargettedSkill
     
     // this is our funky shit
     try {
-		fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.RED).withFade(Color.PURPLE).build());
+		fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.RED).withFade(Color.ORANGE).build());
 	} catch (IllegalArgumentException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
