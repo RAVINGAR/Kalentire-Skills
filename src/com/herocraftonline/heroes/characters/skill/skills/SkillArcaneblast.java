@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillArcaneblast extends TargettedSkill {
-    // silly kainzo, tricks are for kids.
+    // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
 
     public SkillArcaneblast(Heroes plugin) {
@@ -42,14 +42,12 @@ public class SkillArcaneblast extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);
 
-        // this is our funky shit
+        // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.SILVER).withFade(Color.WHITE).build());
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return SkillResult.NORMAL;
