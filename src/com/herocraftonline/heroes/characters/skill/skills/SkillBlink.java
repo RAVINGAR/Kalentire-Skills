@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -69,6 +70,7 @@ public class SkillBlink extends ActiveSkill {
         }
         if (prev != null) {
             Location teleport = prev.getLocation().clone();
+            teleport.add(new Vector(.5, .5, .5));
             // Set the blink location yaw/pitch to that of the player
             teleport.setPitch(player.getLocation().getPitch());
             teleport.setYaw(player.getLocation().getYaw());
