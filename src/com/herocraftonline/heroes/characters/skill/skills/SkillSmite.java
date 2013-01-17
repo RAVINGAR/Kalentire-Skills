@@ -32,7 +32,7 @@ public class SkillSmite extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 10);
+        node.set(Setting.DAMAGE.node(), 90);
         return node;
     }
 
