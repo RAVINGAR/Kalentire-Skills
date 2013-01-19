@@ -147,7 +147,7 @@ public class SkillCauldron extends PassiveSkill {
 			for(int j=0; j<9; j++) {
 				//Error handling if configuration requirements not met
 				if(!(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId",0) == 0)) {
-					shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(getCauldronConfig().getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
+					shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
 				}
 			}
 			server.addRecipe(shapedRecipe);
@@ -261,7 +261,7 @@ public class SkillCauldron extends PassiveSkill {
 							for (int j=0; j<ShapedCauldronRecipes.size(); j++){
 								ShapedRecipe shapedRecipe = ShapedCauldronRecipes.get(j);
 
-								if (compareRecipes(shapedRecipe, recipe) && CauldronRecipesLevel.get(j) >= sLevel){
+								if (compareRecipes(shapedRecipe, recipe) && CauldronRecipesLevel.get(j) <= sLevel){
 									bCanMake.set(i, true);
 									break;										
 								}else{
