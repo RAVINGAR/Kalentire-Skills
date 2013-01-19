@@ -218,7 +218,7 @@ public class SkillCauldron extends PassiveSkill {
 					//I DO question the usage of a plankblock: obviously it is up to you but....planks burn out REALLY fast (in fact sometimes I didn't even have enough time to right click the cauldron heh)
 					//Removed the permission check: it was adding .05-.1 sec delay (believe it or not this is huge ok?)
 					//every time someone crafted something and served an redundant purpose considering we already checked for 
-					if(cauldron.isFull() && fireblock.getType() == Material.FIRE && plankblock.getType() == Material.WOOD){
+					if(cauldron.isFull() && fireblock.getType() == Material.FIRE && plankblock.getType() == Material.LOG){
 						player.add(event.getPlayer());
 						usingCauldronbench.add(player.size()-1, true);
 						bCanMake.add(player.size()-1, false);
