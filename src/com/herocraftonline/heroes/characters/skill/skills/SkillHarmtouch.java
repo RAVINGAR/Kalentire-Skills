@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,9 +13,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillHarmtouch extends TargettedSkill {
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
 
     public SkillHarmtouch(Heroes plugin) {
         super(plugin, "Harmtouch");
@@ -38,6 +43,15 @@ public class SkillHarmtouch extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);
+
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.GRAY).withFade(Color.BLACK).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 
