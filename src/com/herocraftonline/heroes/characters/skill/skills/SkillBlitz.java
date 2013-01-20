@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,10 +13,13 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBlitz extends TargettedSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
+    
     public SkillBlitz(Heroes plugin) {
         super(plugin, "Blitz");
         setDescription("Your skills in ninjutsu cause $1 lightning damage to your target.");
@@ -42,6 +47,14 @@ public class SkillBlitz extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         broadcastExecuteText(hero, target);
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.GRAY).withFade(Color.SILVER).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 
