@@ -46,7 +46,7 @@ public class SkillHarmtouch extends TargettedSkill {
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.BLACK).withFade(Color.PURPLE).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLACK).withFade(Color.PURPLE).build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
