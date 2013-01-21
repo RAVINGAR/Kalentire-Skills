@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,10 +13,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDuskblade extends TargettedSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
 	public SkillDuskblade(Heroes plugin) {
 		super(plugin, "Duskblade");
 		setDescription("Your blade drains $1 health from target, restoring $2 of your own health.");
@@ -50,8 +54,16 @@ public class SkillDuskblade extends TargettedSkill {
 		damageEntity(target, player, absorbAmount, DamageCause.MAGIC);
 
 		broadcastExecuteText(hero, target);
-		return SkillResult.NORMAL;
-	}
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.PURPLE).withFade(Color.FUCHSIA).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return SkillResult.NORMAL;
+    }
 
     @Override
     public String getDescription(Hero hero) {
