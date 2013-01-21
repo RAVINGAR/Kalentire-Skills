@@ -2,6 +2,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -14,11 +16,13 @@ import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBlaze extends ActiveSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillBlaze(Heroes plugin) {
         super(plugin, "Blaze");
         setDescription("You ignite all nearby enemies on fire dealing $1 fire damage.");
@@ -57,6 +61,14 @@ public class SkillBlaze extends ActiveSkill {
 
             damaged = true;
             lEntity.setFireTicks(fireTicks);
+            // this is our fireworks shit
+            try {
+                fplayer.playFirework(player.getWorld(), lEntity.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             plugin.getCharacterManager().getCharacter(lEntity).addEffect(new CombustEffect(this, player));
         }
 
