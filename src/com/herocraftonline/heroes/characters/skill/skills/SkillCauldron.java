@@ -71,7 +71,7 @@ public class SkillCauldron extends PassiveSkill {
 
 	public SkillCauldron(Heroes plugin) {
 		super(plugin, "Cauldron");
-		setDescription("You are able to use cauldrons to make cauldron recipes!");
+		setDescription("You are able to use cauldrons to make cauldron recipes! Visit hc.to/cauldron for more info");
 		setArgumentRange(0, 0);
 		setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
 		setEffectTypes(EffectType.BENEFICIAL);
