@@ -15,8 +15,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillScan extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private final Heroes plugin;
     
     public SkillScan(Heroes plugin) {
@@ -38,15 +36,6 @@ public class SkillScan extends TargettedSkill {
             Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), tHero.getHealth(), tHero.getMaxHealth());
         } else {
             Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), character.getHealth(), character.getMaxHealth());
-        }
-        
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.MAROON).build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return SkillResult.NORMAL;
     }

@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.util.Setting;
 public class SkillSmite extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    
     public SkillSmite(Heroes plugin) {
         super(plugin, "Smite");
         setDescription("You smite the target for $1 light damage.");
@@ -44,10 +43,9 @@ public class SkillSmite extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);
-
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.SILVER).withFade(Color.TEAL).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.SILVER).withFade(Color.NAVY).build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,11 +17,13 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillSoulLeech extends TargettedSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     private String expireText;
 
     public SkillSoulLeech(Heroes plugin) {
@@ -57,6 +61,14 @@ public class SkillSoulLeech extends TargettedSkill {
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new SoulLeechEffect(this, period, duration, tickDamage, player));
         broadcastExecuteText(hero, target);
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.GREEN).withFade(Color.PURPLE).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 

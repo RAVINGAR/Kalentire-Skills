@@ -7,15 +7,19 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillEmpathy extends TargettedSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillEmpathy(Heroes plugin) {
         super(plugin, "Empathy");
         setDescription("You deal dark damage equal to $1% of your missing health and slow the target for $2 seconds.");
@@ -119,6 +123,14 @@ public class SkillEmpathy extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
         //target.damage(damage, player);
         broadcastExecuteText(hero, target);
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.BLACK).withFade(Color.GRAY).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 

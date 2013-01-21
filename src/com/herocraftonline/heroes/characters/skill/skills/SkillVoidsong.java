@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
 import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -15,11 +17,13 @@ import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillVoidsong extends ActiveSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillVoidsong(Heroes plugin) {
         super(plugin, "Voidsong");
         setDescription("You create a void dealing $3 magic damage and silencing everyone within $1 blocks for $2 seconds.");
@@ -103,6 +107,14 @@ public class SkillVoidsong extends ActiveSkill {
         duration += SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0, false) * hero.getSkillLevel(this);
         Player player = hero.getPlayer();
         boolean hit = false;
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), player.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.BLACK).withFade(Color.MAROON).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         for (Entity e : player.getNearbyEntities(radius, radius, radius)) {
             if (!(e instanceof LivingEntity) || !damageCheck(player, (LivingEntity) e)) {
                 continue;
@@ -115,6 +127,7 @@ public class SkillVoidsong extends ActiveSkill {
             damageEntity(character.getEntity(), player, damage, DamageCause.MAGIC);
             character.addEffect(new SilenceEffect(this, duration));
             hit = true;
+            
         }
         if (!hit) {
             Messaging.send(player, "No nearby targets!");

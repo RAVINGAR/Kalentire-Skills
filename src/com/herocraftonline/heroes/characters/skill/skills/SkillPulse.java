@@ -2,6 +2,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -14,10 +16,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPulse extends ActiveSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillPulse(Heroes plugin) {
         super(plugin, "Pulse");
         setDescription("You deal $1 force damage to all nearby enemies.");
@@ -45,11 +49,20 @@ public class SkillPulse extends ActiveSkill {
                 continue;
             }
             LivingEntity target = (LivingEntity) entity;
+            
 
             if (!damageCheck(player, target))
                 continue;
 
             int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
+            // this is our fireworks shit
+            try {
+                fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);
         }

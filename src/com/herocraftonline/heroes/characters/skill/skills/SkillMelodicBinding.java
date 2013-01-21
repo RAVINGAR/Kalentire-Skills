@@ -65,8 +65,8 @@ public class SkillMelodicBinding extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%hero% is emitting ice!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%hero% produces a binding melody").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%hero% stops producing a melody!").replace("%hero%", "$1");
     }
 
     @Override
