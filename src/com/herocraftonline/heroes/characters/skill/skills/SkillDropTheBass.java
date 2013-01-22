@@ -111,7 +111,7 @@ public class SkillDropTheBass extends ActiveSkill {
             }
         }
         broadcastExecuteText(hero);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 1, 2);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 }
