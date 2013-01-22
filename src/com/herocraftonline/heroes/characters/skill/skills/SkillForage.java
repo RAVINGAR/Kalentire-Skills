@@ -167,8 +167,8 @@ public class SkillForage extends ActiveSkill{
             }
         }
         Util.syncInventory(player, plugin);
-        player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WOLF_HOWL , 10.0F, 1.0F);
+        player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WOLF_HOWL , 7.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL; 
     }
