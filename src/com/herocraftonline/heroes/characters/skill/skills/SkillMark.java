@@ -26,7 +26,6 @@ public class SkillMark extends ActiveSkill {
         setIdentifiers("skill mark");
         setTypes(SkillType.TELEPORT);
     }
-
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
