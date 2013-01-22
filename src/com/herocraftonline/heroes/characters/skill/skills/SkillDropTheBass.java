@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -110,7 +111,7 @@ public class SkillDropTheBass extends ActiveSkill {
             }
         }
         broadcastExecuteText(hero);
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 1, 2);
         return SkillResult.NORMAL;
     }
 }
