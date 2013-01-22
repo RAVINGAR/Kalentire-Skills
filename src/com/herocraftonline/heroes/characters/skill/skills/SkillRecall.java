@@ -57,7 +57,7 @@ public class SkillRecall extends ActiveSkill {
             Messaging.send(player, "Your recall location is improperly set!");
             return SkillResult.SKIP_POST_USAGE;
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL, 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         player.teleport(new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]));
         return SkillResult.NORMAL;
