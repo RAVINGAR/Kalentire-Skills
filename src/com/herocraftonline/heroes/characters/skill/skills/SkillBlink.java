@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -75,6 +77,8 @@ public class SkillBlink extends ActiveSkill {
             teleport.setPitch(player.getLocation().getPitch());
             teleport.setYaw(player.getLocation().getYaw());
             player.teleport(teleport);
+            player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
             return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "No location to blink to.");

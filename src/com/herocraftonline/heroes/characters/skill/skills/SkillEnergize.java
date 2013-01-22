@@ -8,6 +8,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -99,6 +101,8 @@ public class SkillEnergize extends ActiveSkill{
         }else{
             player.setFoodLevel(20);
         }
+        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

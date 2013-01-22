@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -65,6 +67,7 @@ public class SkillSummonCow extends ActiveSkill {
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), cType);
         }
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.COW_IDLE , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

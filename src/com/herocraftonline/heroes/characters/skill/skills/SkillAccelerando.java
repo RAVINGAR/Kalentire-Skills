@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,7 +55,7 @@ public class SkillAccelerando extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PLING , 10.0F, 4.0F);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 300000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {

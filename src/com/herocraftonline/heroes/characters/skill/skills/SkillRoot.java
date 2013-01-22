@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 
@@ -35,6 +37,7 @@ public class SkillRoot extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(this, duration));
         broadcastExecuteText(hero, target);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_WOODBREAK , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

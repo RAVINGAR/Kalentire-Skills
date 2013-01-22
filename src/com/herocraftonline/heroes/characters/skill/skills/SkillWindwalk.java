@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -52,7 +54,7 @@ public class SkillWindwalk extends ActiveSkill {
             multiplier = 20;
         }
         hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText));
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 

@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -70,6 +71,7 @@ public class SkillMark extends ActiveSkill {
             Messaging.send(player, "You have marked a new location on $1 at: $2, $3, $4", obj);
 
             plugin.getCharacterManager().saveHero(hero, false);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 10.0F, 1.0F); 
             return SkillResult.NORMAL;
         }
     }

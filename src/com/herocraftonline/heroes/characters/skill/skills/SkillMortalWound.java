@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -83,6 +85,9 @@ public class SkillMortalWound extends TargettedSkill {
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
         plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
+        
+        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

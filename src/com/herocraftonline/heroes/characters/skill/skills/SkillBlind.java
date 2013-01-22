@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -52,6 +54,8 @@ public class SkillBlind extends TargettedSkill {
         }
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 3000, false);
         hero.addEffect(new BlindEffect(this, duration, applyText, expireText));
+
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_IDLE, 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 

@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -53,7 +55,7 @@ public class SkillSyphon extends TargettedSkill {
         transferredHealth *= SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.0, false);
         targetHero.setHealth(targetHealth + transferredHealth);
         targetHero.syncHealth();
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

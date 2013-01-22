@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
@@ -80,6 +82,10 @@ public class SkillMassPiggify extends ActiveSkill {
             Messaging.send(player, "No valid targets within range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_DEATH , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_IDLE , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

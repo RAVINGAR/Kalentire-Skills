@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -65,6 +67,8 @@ public class SkillFireblade extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         hero.addEffect(new FirebladeEffect(this, duration));
+
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 

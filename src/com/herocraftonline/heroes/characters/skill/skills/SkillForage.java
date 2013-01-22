@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -165,6 +167,8 @@ public class SkillForage extends ActiveSkill{
             }
         }
         Util.syncInventory(player, plugin);
+        player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WOLF_HOWL , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL; 
     }

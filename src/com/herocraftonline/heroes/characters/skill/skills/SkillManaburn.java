@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -57,6 +59,8 @@ public class SkillManaburn extends TargettedSkill {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CAT_HISS , 10.0F, 1.0F); 
             return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "Target does not have enough mana!");

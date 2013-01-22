@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -49,6 +50,7 @@ public class SkillImpermanence extends ActiveSkill {
             if(multiplier > 20)
             	multiplier = 20;
             hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, "$1 gained a burst of speed!", "$1 returned to normal speed!"));
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHEEP_SHEAR , 10.0F, 1.0F);
             broadcastExecuteText(hero);
             return SkillResult.NORMAL;
         } else  {

@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -67,6 +69,8 @@ public class SkillDisarm extends TargettedSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 500, false);
         tHero.addEffect(new DisarmEffect(this, duration, applyText, expireText));
+        player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 10.0F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

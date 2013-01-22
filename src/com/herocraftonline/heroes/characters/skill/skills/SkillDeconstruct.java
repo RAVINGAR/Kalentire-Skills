@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -228,6 +230,7 @@ public class SkillDeconstruct extends ActiveSkill {
         int xp = SkillConfigManager.getUseSetting(hero, this, matName + "." + Setting.EXP, 0, false);
         hero.gainExp(xp, ExperienceType.CRAFTING, expLoc);
 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 10.0F, 1.0F);
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), matName.toLowerCase().replace("_", " "));
         return SkillResult.NORMAL;
     }

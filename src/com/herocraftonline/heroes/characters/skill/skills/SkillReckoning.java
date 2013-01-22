@@ -2,7 +2,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -87,6 +89,8 @@ public class SkillReckoning extends ActiveSkill {
         	Messaging.send(player, "No valid targets nearby");
         	return SkillResult.INVALID_TARGET_NO_MSG;
         }
+        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_THUNDER , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

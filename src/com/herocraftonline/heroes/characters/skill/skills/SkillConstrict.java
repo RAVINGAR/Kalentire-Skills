@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -58,6 +60,7 @@ public class SkillConstrict extends TargettedSkill {
         SlowEffect effect = new SlowEffect(this, duration, multiplier, true, applyText, expireText, hero);
         effect.types.add(EffectType.MAGIC);
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_WALK , 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 

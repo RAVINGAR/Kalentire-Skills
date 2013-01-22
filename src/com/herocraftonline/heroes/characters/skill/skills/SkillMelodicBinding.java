@@ -7,8 +7,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -78,6 +80,10 @@ public class SkillMelodicBinding extends ActiveSkill {
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 10, false);
         hero.addEffect(new MelodicBindingEffect(this, duration, period, tickDamage, range));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 10.0F, 6.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 10.0F, 2.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 10.0F, 8.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 10.0F, 3.0F);  
         return SkillResult.NORMAL;
     }
 

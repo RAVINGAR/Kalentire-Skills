@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -65,6 +67,7 @@ public class SkillBladegrasp extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         hero.addEffect(new BladegraspEffect(this, duration));
 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 

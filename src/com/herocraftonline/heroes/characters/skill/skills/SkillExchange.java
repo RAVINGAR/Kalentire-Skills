@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -62,6 +64,8 @@ public class SkillExchange extends ActiveSkill{
 		if(econ.has(player.getName(),cost)&&econ.withdrawPlayer(player.getName(), cost).transactionSuccess()){
 			player.sendMessage(ChatColor.GRAY+"You bought "+boldGold(amount+" ingots")+" for "+boldGold(cost_string)+"!");
 			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT, amount));
+	        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F);
 			broadcastExecuteText(hero);
 			return SkillResult.NORMAL;
 		}else{

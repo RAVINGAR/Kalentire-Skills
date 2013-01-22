@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -57,6 +59,7 @@ public class SkillSmeltGold extends ActiveSkill{
 		}
 		if(present){
 			int amount=1;
+	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 10.0F, 1.0F); 
 			broadcastExecuteText(hero);
 			if(calculateChance(hero)>(Math.random()*100)){
 				amount++;

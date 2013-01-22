@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -34,6 +36,7 @@ public class SkillSafefall extends ActiveSkill {
         broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
         hero.addEffect(new SafeFallEffect(this, duration));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FALL_BIG , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

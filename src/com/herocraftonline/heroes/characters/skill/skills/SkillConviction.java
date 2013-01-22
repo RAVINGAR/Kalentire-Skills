@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -93,7 +95,8 @@ public class SkillConviction extends ActiveSkill {
                 pHero.addEffect(effect);
             }
         }
-
+        player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

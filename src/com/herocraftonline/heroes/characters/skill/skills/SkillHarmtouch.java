@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -52,6 +54,7 @@ public class SkillHarmtouch extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

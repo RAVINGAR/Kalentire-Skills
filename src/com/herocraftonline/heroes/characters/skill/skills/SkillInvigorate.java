@@ -8,6 +8,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Setting;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
@@ -105,6 +107,7 @@ public class SkillInvigorate extends TargettedSkill{
             target.setFoodLevel(20);
         }
         broadcastExecuteText(hero, target);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 }

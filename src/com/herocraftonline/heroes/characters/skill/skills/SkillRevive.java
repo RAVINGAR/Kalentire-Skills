@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
@@ -56,7 +58,8 @@ public class SkillRevive extends ActiveSkill {
         }
 
         target.teleport(playerLoc);
-
+        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

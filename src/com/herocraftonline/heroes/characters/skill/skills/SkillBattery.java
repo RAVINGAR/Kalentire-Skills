@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,6 +48,8 @@ public class SkillBattery extends TargettedSkill {
             }
             hero.setMana(hero.getMana() - transferAmount);
             tHero.setMana(tHero.getMana() + transferAmount);
+            player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 10.0F, 1.0F); 
             broadcastExecuteText(hero, target);
             return SkillResult.NORMAL;
         } else {

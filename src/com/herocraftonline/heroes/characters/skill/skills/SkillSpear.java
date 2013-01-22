@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -60,6 +62,7 @@ public class SkillSpear extends TargettedSkill {
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
         Vector v = new Vector(xDir, 0, zDir).multiply(0.5).setY(0.5);
         target.setVelocity(v);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 10.0F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

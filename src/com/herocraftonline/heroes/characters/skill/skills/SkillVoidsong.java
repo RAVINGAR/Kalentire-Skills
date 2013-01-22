@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -134,6 +135,7 @@ public class SkillVoidsong extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

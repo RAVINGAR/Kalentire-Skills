@@ -8,7 +8,9 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Setting;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -37,6 +39,8 @@ public class SkillQuantumLeap extends TargettedSkill {
 		Location plocation = player.getLocation();
 		player.teleport(tlocation);
 		target.teleport(plocation);
+        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL , 10.0F, 1.0F); 
 		broadcastExecuteText(hero, target);
 		return SkillResult.NORMAL;
 	}

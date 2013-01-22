@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -90,7 +91,7 @@ public class SkillMight extends ActiveSkill {
                 pHero.addEffect(mEffect);
             }
         }
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

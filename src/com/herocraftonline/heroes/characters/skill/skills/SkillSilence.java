@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,6 +42,7 @@ public class SkillSilence extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         SilenceEffect sEffect = new SilenceEffect(this, duration);
         plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -38,7 +40,7 @@ public class SkillLayhands extends TargettedSkill {
         }
         targetHero.setHealth(targetHero.getHealth() + hrhEvent.getAmount());
         targetHero.syncHealth();
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LAVA_POP , 10.0F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

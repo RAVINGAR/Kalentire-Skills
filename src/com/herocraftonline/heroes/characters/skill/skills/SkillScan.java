@@ -1,7 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillScan extends TargettedSkill {
@@ -37,6 +36,8 @@ public class SkillScan extends TargettedSkill {
         } else {
             Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), character.getHealth(), character.getMaxHealth());
         }
+        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

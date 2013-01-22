@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -45,6 +46,7 @@ public class SkillUltravision extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 180000, false);
         hero.addEffect(new NightvisionEffect(this, duration, applyText, expireText));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -50,6 +51,7 @@ public class SkillInvuln extends ActiveSkill {
             }
         }
         hero.addEffect(new InvulnerabilityEffect(this, duration));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

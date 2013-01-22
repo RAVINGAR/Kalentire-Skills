@@ -9,6 +9,9 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
+
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -87,7 +90,7 @@ public class SkillFlyingKick extends TargettedSkill {
                 targetHero.addEffect(new SilenceEffect(this, silenceDuration));
             }
         }
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 10.0F, 1.0F);
         broadcast(target.getLocation(), useText, hero.getName());
         return SkillResult.NORMAL;
     }

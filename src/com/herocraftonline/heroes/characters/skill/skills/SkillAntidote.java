@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.MobEffectList;
 
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ public class SkillAntidote extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player) {
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 10.0F, 1.0F); 
             Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
             boolean cured = false;
             for (Effect effect : targetHero.getEffects()) {

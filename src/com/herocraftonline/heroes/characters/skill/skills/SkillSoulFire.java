@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -65,6 +67,7 @@ public class SkillSoulFire extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         hero.addEffect(new SoulFireEffect(this, duration));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

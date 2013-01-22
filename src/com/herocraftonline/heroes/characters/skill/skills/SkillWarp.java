@@ -10,7 +10,9 @@ import com.herocraftonline.heroes.util.Setting;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -90,6 +92,7 @@ public class SkillWarp extends ActiveSkill
       player.sendMessage(ChatColor.GRAY + "SkillWarp has an invalid config.");
       return SkillResult.INVALID_TARGET_NO_MSG;
     }
+    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH , 10.0F, 1.0F); 
     broadcastExecuteText(hero);
 
     return SkillResult.NORMAL;

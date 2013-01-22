@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -60,11 +62,13 @@ public class SkillShieldReflect extends ActiveSkill {
         case IRON_DOOR:
         case WOOD_DOOR:
         case TRAP_DOOR:
+            player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_METAL , 10.0F, 1.0F); 
             broadcastExecuteText(hero);
             hero.addEffect(new ShieldReflectEffect(this, duration));
             return SkillResult.NORMAL;
         default:
-            Messaging.send(player, "You must have a shield equiped to use this skill");
+            Messaging.send(player, "You must have a shield equipped to use this skill");
             return SkillResult.FAIL;
         }
     }

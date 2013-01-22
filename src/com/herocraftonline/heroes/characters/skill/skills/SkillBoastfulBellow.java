@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -65,6 +66,7 @@ public class SkillBoastfulBellow extends ActiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);
         }
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

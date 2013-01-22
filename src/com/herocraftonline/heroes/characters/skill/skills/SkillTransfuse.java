@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -47,6 +49,7 @@ public class SkillTransfuse extends ActiveSkill {
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F);
         broadcastExecuteText(hero);
 
         if (hero.isVerbose()) {

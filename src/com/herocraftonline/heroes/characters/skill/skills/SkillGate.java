@@ -20,7 +20,7 @@ public class SkillGate extends ActiveSkill {
     public SkillGate(Heroes plugin) {
         super(plugin, "Gate");
         setDescription("You teleport yourself to the set location!");
-        setUsage("/skill port <location>");
+        setUsage("/skill gate <location>");
         setArgumentRange(1, 1);
         setIdentifiers("skill gate");
         setTypes(SkillType.TELEPORT, SkillType.SILENCABLE);

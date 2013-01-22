@@ -3,7 +3,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -66,8 +68,8 @@ public class SkillBackflip extends ActiveSkill {
         Vector v = player.getVelocity().setY(1).add(player.getLocation().getDirection().setY(0).normalize().multiply(multiplier * backflipForwards)).multiply(backwards);
         player.setVelocity(v);
         player.setFallDistance(-8f);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FALL_SMALL , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
-        
         return SkillResult.NORMAL;
     }
 

@@ -13,6 +13,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -85,6 +87,7 @@ public class SkillBloodBond extends ActiveSkill {
             mana = mana > 0 ? mana : 0;
             hero.addEffect(new BloodBondEffect(this, period, mana));
         }
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 

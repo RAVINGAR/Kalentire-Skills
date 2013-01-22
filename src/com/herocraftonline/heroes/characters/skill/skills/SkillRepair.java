@@ -14,7 +14,9 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -283,6 +285,7 @@ public class SkillRepair extends ActiveSkill {
         is.setDurability((short) 0);
         player.getInventory().removeItem(reagentStack);
         Util.syncInventory(player, plugin);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 10.0F, 1.0F);
         broadcast(player.getLocation(), useText, player.getDisplayName(), is.getType().name().toLowerCase().replace("_", " "), !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
         return SkillResult.NORMAL;
     }

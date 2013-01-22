@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.DyeColor;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -66,6 +68,7 @@ public class SkillSummonSheep extends ActiveSkill {
             sheep = (Sheep) player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
         }
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHEEP_IDLE , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

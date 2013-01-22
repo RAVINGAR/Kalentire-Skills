@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -39,6 +40,7 @@ public class SkillForgeChainLeggings extends ActiveSkill {
         ItemStack dropItem = new ItemStack(Material.CHAINMAIL_LEGGINGS, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
         world.dropItem(player.getLocation(), dropItem);
         broadcastExecuteText(hero);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

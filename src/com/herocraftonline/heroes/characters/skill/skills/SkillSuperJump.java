@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -44,8 +46,9 @@ public class SkillSuperJump extends ActiveSkill {
         player.setFallDistance(-8f);
         int duration = (int) SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 5000, false);
         hero.addEffect(new JumpEffect(this, duration));
+        player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHRIEK, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
-
         return SkillResult.NORMAL;
     }
 

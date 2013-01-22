@@ -3,7 +3,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -99,7 +101,7 @@ public class SkillPort extends ActiveSkill {
                     pHero.getPlayer().teleport(loc);
                 }
             }
-
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL , 10.0F, 1.0F);
             return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "No port location named $1", args[0]);

@@ -2,7 +2,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashSet;
 
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.TreeType;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -84,6 +86,8 @@ public class SkillOvergrowth extends ActiveSkill {
             Messaging.send(player, "The spell fizzled!");
             return SkillResult.FAIL;
         }
+        player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_RAIN , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
         

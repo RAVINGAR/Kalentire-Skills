@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -58,6 +60,7 @@ public class SkillTerror extends TargettedSkill {
 		boolean useNausea = SkillConfigManager.getUseSetting(hero, this, "use-nausea", true);
 		Hero targetHero = plugin.getCharacterManager().getHero((Player)target);
 		targetHero.addEffect(new TerrorEffect(this, duration, zoomAmount, useDarkness, useNausea, applyText, expireText));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_STARE , 10.0F, 1.0F); 
 		return SkillResult.NORMAL;
 	}
 	

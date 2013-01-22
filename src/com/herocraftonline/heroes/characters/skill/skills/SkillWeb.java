@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -73,6 +75,8 @@ public class SkillWeb extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         WebEffect wEffect = new WebEffect(this, duration, target.getLocation().getBlock().getLocation());
         hero.addEffect(wEffect);
+        player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_IDLE , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -68,6 +70,8 @@ public class SkillChaosOrb extends ActiveSkill {
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         pearl.setVelocity(pearl.getVelocity().multiply(mult));
         pearl.setShooter(player);
+        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS , 10.0F, 1.0F);
         broadcastExecuteText(hero); 
         return SkillResult.NORMAL;
     }

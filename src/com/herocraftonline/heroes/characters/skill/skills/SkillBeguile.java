@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.Random;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
@@ -62,6 +63,7 @@ public class SkillBeguile extends TargettedSkill {
         float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 0.35, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new ConfuseEffect(this, duration, period, maxDrift));
         broadcastExecuteText(hero, target);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

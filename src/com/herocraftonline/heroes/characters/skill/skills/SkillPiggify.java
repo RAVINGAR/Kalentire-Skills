@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
@@ -59,6 +61,7 @@ public class SkillPiggify extends TargettedSkill {
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT , 10.0F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

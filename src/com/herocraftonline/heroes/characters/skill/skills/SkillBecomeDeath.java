@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Ghast;
@@ -68,7 +69,7 @@ public class SkillBecomeDeath extends ActiveSkill {
                 hero.removeEffect(e);
             }
         }
-        
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRIGGER , 10.0F, 1.0F);
         return SkillResult.NORMAL;
     }
     

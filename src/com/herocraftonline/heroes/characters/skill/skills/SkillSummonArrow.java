@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -38,6 +40,7 @@ public class SkillSummonArrow extends ActiveSkill {
         World world = player.getWorld();
         ItemStack dropItem = new ItemStack(Material.ARROW, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
         world.dropItem(player.getLocation(), dropItem);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ARROW_HIT , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

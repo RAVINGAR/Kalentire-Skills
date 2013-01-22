@@ -12,7 +12,9 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -131,6 +133,7 @@ public class SkillEngrave extends ActiveSkill {
                     ItemMeta im = is.getItemMeta();
                     im.setDisplayName(str);
                     is.setItemMeta(im);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 10.0F, 1.0F);
                     broadcastExecuteText(hero);
                     return SkillResult.NORMAL;
                 }

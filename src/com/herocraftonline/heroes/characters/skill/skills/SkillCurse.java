@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -64,6 +66,8 @@ public class SkillCurse extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, duration, missChance));
+
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_MOAN , 10.0F, 1.0F);
         return SkillResult.NORMAL;
 
     }

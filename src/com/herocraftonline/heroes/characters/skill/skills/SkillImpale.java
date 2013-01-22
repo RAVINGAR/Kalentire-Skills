@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -77,6 +78,7 @@ public class SkillImpale extends TargettedSkill {
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 4, false);
         SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
         plugin.getCharacterManager().getCharacter(target).addEffect(new ImpaleEffect(this, 300, sEffect));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 10.0F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

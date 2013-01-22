@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -69,6 +71,7 @@ public class SkillSoulLeech extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
         return SkillResult.NORMAL;
     }
 
