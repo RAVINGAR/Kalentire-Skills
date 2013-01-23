@@ -15,6 +15,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -24,6 +27,7 @@ public class SkillAccelerando extends ActiveSkill {
 
     private String applyText;
     private String expireText;
+    private Song skillSong;
 
     public SkillAccelerando(Heroes plugin) {
         super(plugin, "Accelerando");
@@ -33,6 +37,20 @@ public class SkillAccelerando extends ActiveSkill {
         setIdentifiers("skill accelerando", "skill accelerate");
         setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
+        skillSong = new Song(
+        		new Note(Sound.NOTE_BASS_DRUM , 0.9F, 0.2F, 0),
+                new Note(Sound.NOTE_BASS , 0.9F, 0.5F, 1),
+                new Note(Sound.NOTE_BASS_DRUM , 0.9F, 0.9F, 2),
+                new Note(Sound.NOTE_BASS , 0.9F, 0.2F, 3),
+                new Note(Sound.NOTE_BASS_DRUM , 0.9F, 0.5F, 4),
+                new Note(Sound.NOTE_BASS_DRUM , 0.9F, 0.9F, 5),
+                new Note(Sound.NOTE_BASS , 0.9F, 0.2F, 6),
+                new Note(Sound.NOTE_BASS_DRUM , 0.9F, 0.5F, 7),
+                new Note(Sound.NOTE_BASS_DRUM , 0.9F, 0.9F, 8),
+                new Note(Sound.NOTE_BASS , 0.9F, 0.2F, 9),
+                new Note(Sound.NOTE_BASS_DRUM , 0.9F, 0.5F, 10),
+                new Note(Sound.NOTE_BASS , 0.9F, 0.9F, 11)
+        );
     }
 
     @Override
@@ -59,7 +77,8 @@ public class SkillAccelerando extends ActiveSkill {
         //Removed sound playing here, see SkilSoundPlayer below
         //Schedule a delayed task using the SkillSoundPlayer class to happen in 100 milliseconds (1 / 10 of a second)
         //Substitute the name of the variable referring to a Heroes object for 'plugin'
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new SkillSoundPlayer(hero), 100);
+//        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new SkillSoundPlayer(hero), 100);
+        hero.addEffect(new SoundEffect(this, "AccelarandoSong", 100, skillSong));
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 300000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
