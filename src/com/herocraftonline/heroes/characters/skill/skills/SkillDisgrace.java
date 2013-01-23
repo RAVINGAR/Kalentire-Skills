@@ -66,7 +66,7 @@ public class SkillDisgrace extends TargettedSkill {
         BleedSkillEffect bEffect = new BleedSkillEffect(this, duration, period, tickDamage, player);
         plugin.getCharacterManager().getCharacter(target).addEffect(bEffect);
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.7F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

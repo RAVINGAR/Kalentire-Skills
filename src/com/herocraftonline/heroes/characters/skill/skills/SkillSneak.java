@@ -1,8 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -66,7 +64,6 @@ public class SkillSneak extends ActiveSkill {
             int period = SkillConfigManager.getUseSetting(hero, this, "refresh-interval", 5000, true);
             hero.addEffect(new SneakEffect(this, period, duration));
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CAT_PURREOW , 10.0F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

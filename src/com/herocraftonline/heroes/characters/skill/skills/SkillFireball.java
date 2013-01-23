@@ -3,11 +3,12 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.LargeFireball;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,14 +29,12 @@ import com.herocraftonline.heroes.util.Setting;
 public class SkillFireball extends ActiveSkill {
 
 
-	private Map<LargeFireball, FireballData> fireballs = new LinkedHashMap<LargeFireball, FireballData>(100) {
+	private Map<Snowball, FireballData> fireballs = new LinkedHashMap<Snowball, FireballData>(100) {
        private static final long serialVersionUID = 4329526013158603250L;
    };
    private class FireballData {
-   	long creationtime;
    	Player player;
    	FireballData(long creationtime, Player player) {
-   		this.creationtime = creationtime;
    		this.player = player;
    	}
    }
@@ -62,13 +61,12 @@ public class SkillFireball extends ActiveSkill {
    @Override
    public SkillResult use(Hero hero, String[] args) {
        Player player = hero.getPlayer();
-       LargeFireball fireball = player.launchProjectile(LargeFireball.class);
-       fireball.setIsIncendiary(false);
-       fireball.setYield(0F);
+       Snowball fireball = player.launchProjectile(Snowball.class);
        fireballs.put(fireball, new FireballData(System.currentTimeMillis(),player));
        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
        fireball.setVelocity(fireball.getVelocity().multiply(mult));
        fireball.setShooter(player);
+       hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIRE , 0.5F, 1.0F); 
        broadcastExecuteText(hero); 
        return SkillResult.NORMAL;
    }
@@ -89,7 +87,7 @@ public class SkillFireball extends ActiveSkill {
 
            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
            Entity fireball = subEvent.getDamager();
-           if (!(fireball instanceof LargeFireball) || !fireballs.containsKey(fireball)) {
+           if (!(fireball instanceof Snowball) || !fireballs.containsKey(fireball)) {
                return;
            }
            Player dmger = fireballs.get(fireball).player;
@@ -107,10 +105,10 @@ public class SkillFireball extends ActiveSkill {
        }
        @EventHandler(priority = EventPriority.LOWEST)
        public void onGhastProjectileHit(EntityExplodeEvent event) {
-       	if(event.isCancelled() || !(event.getEntity() instanceof LargeFireball)) {
+       	if(event.isCancelled() || !(event.getEntity() instanceof Snowball)) {
        		return;
        	}
-       	LargeFireball fireball = (LargeFireball) event.getEntity();
+       	Snowball fireball = (Snowball) event.getEntity();
        	if(fireballs.containsKey(fireball)) {
        		fireballs.remove(fireball);
        		event.setCancelled(true);
@@ -118,15 +116,14 @@ public class SkillFireball extends ActiveSkill {
        }
        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
        public void onProjectileHit(ProjectileHitEvent event) {
-       	if(!(event.getEntity() instanceof LargeFireball)) {
+       	if(!(event.getEntity() instanceof Snowball)) {
        		return;
        	}
-       	LargeFireball fireball = (LargeFireball)event.getEntity();
+       	Snowball fireball = (Snowball)event.getEntity();
        	if(!fireballs.containsKey(fireball)) {
        		return;
        	}
        	fireballs.remove(fireball);
-       	fireball.setIsIncendiary(false);
        }
    }
 

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -38,7 +39,7 @@ public class SkillFullHeal extends TargettedSkill {
         }
         targetHero.setHealth(targetHero.getHealth() + hrhEvent.getAmount());
         targetHero.syncHealth();
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
