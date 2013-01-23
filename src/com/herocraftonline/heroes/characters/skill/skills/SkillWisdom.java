@@ -84,7 +84,7 @@ public class SkillWisdom extends ActiveSkill {
                 pHero.addEffect(mEffect);
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.0F, 0.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.1F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
