@@ -59,7 +59,7 @@ public class SkillRevive extends ActiveSkill {
 
         target.teleport(playerLoc);
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

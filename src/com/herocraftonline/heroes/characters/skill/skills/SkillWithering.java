@@ -61,7 +61,7 @@ public class SkillWithering extends TargettedSkill {
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
         int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new WitheringEffect(this, duration, period, tickDamage, finishDamage, player));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SHOOT , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SHOOT , 0.5F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

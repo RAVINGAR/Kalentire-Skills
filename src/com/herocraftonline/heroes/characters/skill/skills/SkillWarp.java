@@ -92,7 +92,7 @@ public class SkillWarp extends ActiveSkill
       player.sendMessage(ChatColor.GRAY + "SkillWarp has an invalid config.");
       return SkillResult.INVALID_TARGET_NO_MSG;
     }
-    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH , 6.0F, 1.0F); 
+    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH , 0.5F, 1.0F); 
     broadcastExecuteText(hero);
 
     return SkillResult.NORMAL;

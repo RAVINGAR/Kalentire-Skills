@@ -61,7 +61,7 @@ public class SkillRuneword extends TargettedSkill {
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
         RunewordEffect effect = new RunewordEffect(this, duration, damageBonus);
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_DEATH , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_DEATH , 0.5F, 1.0F);
 		return SkillResult.NORMAL;
 	}
 

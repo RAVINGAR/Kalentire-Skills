@@ -60,7 +60,7 @@ public class SkillFearless extends ActiveSkill {
             return SkillResult.REMOVED_EFFECT;
         }
         hero.addEffect(new FearlessEffect(this));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL , 0.5F, 0.1F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
