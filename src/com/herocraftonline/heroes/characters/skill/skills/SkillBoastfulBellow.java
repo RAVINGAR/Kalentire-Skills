@@ -66,7 +66,7 @@ public class SkillBoastfulBellow extends ActiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL , 8.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL , 6.0F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
