@@ -1,8 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+// src http://pastie.org/private/syyyftinqa5r1uv4ixka
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -55,9 +56,10 @@ public class SkillAccelerando extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_DRUM , 0.5F, 0.8F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_DRUM , 0.5F, 0.5F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_DRUM , 0.5F, 0.2F);
+        //Removed sound playing here, see SkilSoundPlayer below
+        //Schedule a delayed task using the SkillSoundPlayer class to happen in 100 milliseconds (1 / 10 of a second)
+        //Substitute the name of the variable referring to a Heroes object for 'plugin'
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new SkillSoundPlayer(hero), 100);
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 300000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
@@ -85,6 +87,30 @@ public class SkillAccelerando extends ActiveSkill {
             tHero.addEffect(qEffect);
         }
         return SkillResult.NORMAL;
+    }
+    
+    //Added this
+    public class SkillSoundPlayer implements Runnable {
+        private final Player player;
+        public SkillSoundPlayer(Hero hero) {
+            this.player = hero.getPlayer();
+        }
+        public void run() {
+            World world = player.getWorld();
+            Location loc = player.getLocation();
+            world.playSound(loc, Sound.NOTE_BASS_DRUM , 0.9F, 0.2F);
+            world.playSound(loc, Sound.NOTE_BASS , 0.9F, 0.5F);
+            world.playSound(loc, Sound.NOTE_BASS_DRUM , 0.9F, 0.9F);
+            world.playSound(loc, Sound.NOTE_BASS , 0.9F, 0.2F);
+            world.playSound(loc, Sound.NOTE_BASS_DRUM , 0.9F, 0.5F);
+            world.playSound(loc, Sound.NOTE_BASS_DRUM , 0.9F, 0.9F);
+            world.playSound(loc, Sound.NOTE_BASS , 0.9F, 0.2F);
+            world.playSound(loc, Sound.NOTE_BASS_DRUM , 0.9F, 0.5F);
+            world.playSound(loc, Sound.NOTE_BASS_DRUM , 0.9F, 0.9F);
+            world.playSound(loc, Sound.NOTE_BASS , 0.9F, 0.2F);
+            world.playSound(loc, Sound.NOTE_BASS_DRUM , 0.9F, 0.5F);
+            world.playSound(loc, Sound.NOTE_BASS , 0.9F, 0.9F);
+        }
     }
     
     public class SkillEntityListener implements Listener {
