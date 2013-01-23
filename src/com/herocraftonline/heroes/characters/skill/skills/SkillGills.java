@@ -46,7 +46,7 @@ public class SkillGills extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
         hero.addEffect(new WaterBreatheEffect(this, duration, applyText, expireText));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPLASH , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPLASH , 0.5F, 1.0F); 
         return SkillResult.NORMAL;
     }
 
