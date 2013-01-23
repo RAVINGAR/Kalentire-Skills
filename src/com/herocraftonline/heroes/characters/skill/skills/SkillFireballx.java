@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+// http://pastie.org/private/rnvrflwdxua3yyxo9poloa (Snowball no fire)
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
