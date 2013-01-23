@@ -48,7 +48,7 @@ public class SkillKick extends TargettedSkill {
             SilenceEffect sEffect = new SilenceEffect(this, duration);
             plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

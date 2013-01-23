@@ -90,7 +90,7 @@ public class SkillFlyingKick extends TargettedSkill {
                 targetHero.addEffect(new SilenceEffect(this, silenceDuration));
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F);
         broadcast(target.getLocation(), useText, hero.getName());
         return SkillResult.NORMAL;
     }

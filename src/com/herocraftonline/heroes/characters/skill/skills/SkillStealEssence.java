@@ -73,7 +73,7 @@ public class SkillStealEssence extends TargettedSkill {
             possibleEffects.remove(stolenEffect);
             stolenNames += stolenEffect.getName() + " ";
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 0.8F, 1.0F); 
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), getName(), stolenNames, tHero.getPlayer().getDisplayName());
         return SkillResult.NORMAL;
     }

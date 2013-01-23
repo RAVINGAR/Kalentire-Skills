@@ -55,7 +55,7 @@ public class SkillSmoke extends ActiveSkill {
         Player player = hero.getPlayer();
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 4);
         hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

@@ -60,7 +60,7 @@ public class SkillTerror extends TargettedSkill {
 		boolean useNausea = SkillConfigManager.getUseSetting(hero, this, "use-nausea", true);
 		Hero targetHero = plugin.getCharacterManager().getHero((Player)target);
 		targetHero.addEffect(new TerrorEffect(this, duration, zoomAmount, useDarkness, useNausea, applyText, expireText));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_STARE , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_STARE , 0.8F, 1.0F); 
 		return SkillResult.NORMAL;
 	}
 	

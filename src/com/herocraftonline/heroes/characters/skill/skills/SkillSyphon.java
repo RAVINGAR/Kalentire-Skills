@@ -55,7 +55,7 @@ public class SkillSyphon extends TargettedSkill {
         transferredHealth *= SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.0, false);
         targetHero.setHealth(targetHealth + transferredHealth);
         targetHero.syncHealth();
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

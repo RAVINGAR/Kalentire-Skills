@@ -87,7 +87,7 @@ public class SkillMortalWound extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
         
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

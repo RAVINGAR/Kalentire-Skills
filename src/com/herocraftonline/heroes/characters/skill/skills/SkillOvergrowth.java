@@ -87,7 +87,7 @@ public class SkillOvergrowth extends ActiveSkill {
             return SkillResult.FAIL;
         }
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_RAIN , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_RAIN , 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
         

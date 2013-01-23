@@ -61,7 +61,7 @@ public class SkillSummonBat extends ActiveSkill {
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.BAT);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BAT_TAKEOFF , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BAT_TAKEOFF , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

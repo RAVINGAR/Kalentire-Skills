@@ -42,7 +42,7 @@ public class SkillSummonfood extends ActiveSkill {
         int amount = SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT, 1, false);
         ItemStack dropItem = new ItemStack(Material.matchMaterial(SkillConfigManager.getUseSetting(hero, this, "food-type", "BREAD")), amount);
         world.dropItem(player.getLocation(), dropItem);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BURP , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BURP , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

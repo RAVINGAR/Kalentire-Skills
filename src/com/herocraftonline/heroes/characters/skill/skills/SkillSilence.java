@@ -42,7 +42,7 @@ public class SkillSilence extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
         SilenceEffect sEffect = new SilenceEffect(this, duration);
         plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

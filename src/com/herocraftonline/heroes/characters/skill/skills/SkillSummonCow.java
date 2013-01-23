@@ -67,7 +67,7 @@ public class SkillSummonCow extends ActiveSkill {
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), cType);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.COW_IDLE , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.COW_IDLE , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

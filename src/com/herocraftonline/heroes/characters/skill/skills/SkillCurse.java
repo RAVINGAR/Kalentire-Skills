@@ -67,7 +67,7 @@ public class SkillCurse extends TargettedSkill {
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, duration, missChance));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_MOAN , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_MOAN , 0.8F, 1.0F);
         return SkillResult.NORMAL;
 
     }

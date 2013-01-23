@@ -49,7 +49,7 @@ public class SkillTransfuse extends ActiveSkill {
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F);
         broadcastExecuteText(hero);
 
         if (hero.isVerbose()) {

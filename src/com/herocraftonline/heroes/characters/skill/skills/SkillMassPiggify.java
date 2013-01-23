@@ -83,9 +83,9 @@ public class SkillMassPiggify extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT , 10.0F, 1.0F); 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_DEATH , 10.0F, 1.0F); 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_IDLE , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_DEATH , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_IDLE , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

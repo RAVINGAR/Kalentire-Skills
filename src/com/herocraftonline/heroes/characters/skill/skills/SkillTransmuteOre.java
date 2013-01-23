@@ -101,7 +101,7 @@ public class SkillTransmuteOre extends ActiveSkill {
             }
             Messaging.send(player, "Items have been dropped at your feet!");
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 1.0F); 
         Util.syncInventory(player, plugin);
         return SkillResult.NORMAL;
     }

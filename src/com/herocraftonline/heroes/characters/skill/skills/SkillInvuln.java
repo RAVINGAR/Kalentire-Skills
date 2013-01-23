@@ -51,7 +51,7 @@ public class SkillInvuln extends ActiveSkill {
             }
         }
         hero.addEffect(new InvulnerabilityEffect(this, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

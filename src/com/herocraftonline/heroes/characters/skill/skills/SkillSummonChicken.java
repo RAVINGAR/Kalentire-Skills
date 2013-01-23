@@ -61,7 +61,7 @@ public class SkillSummonChicken extends ActiveSkill {
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.CHICKEN);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CHICKEN_HURT , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CHICKEN_HURT , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

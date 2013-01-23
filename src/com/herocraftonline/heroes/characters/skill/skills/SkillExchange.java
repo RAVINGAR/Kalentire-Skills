@@ -65,7 +65,7 @@ public class SkillExchange extends ActiveSkill{
 			player.sendMessage(ChatColor.GRAY+"You bought "+boldGold(amount+" ingots")+" for "+boldGold(cost_string)+"!");
 			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT, amount));
 	        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F);
+	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F);
 			broadcastExecuteText(hero);
 			return SkillResult.NORMAL;
 		}else{

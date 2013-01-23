@@ -54,7 +54,7 @@ public class SkillWindwalk extends ActiveSkill {
             multiplier = 20;
         }
         hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
 

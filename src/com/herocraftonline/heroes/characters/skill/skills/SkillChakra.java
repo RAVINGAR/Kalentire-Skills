@@ -69,7 +69,7 @@ public class SkillChakra extends ActiveSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
 

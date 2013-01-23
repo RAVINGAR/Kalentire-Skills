@@ -80,7 +80,7 @@ public class SkillLight extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 200, false);
         hero.addEffect(new LightEffect(this, period, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

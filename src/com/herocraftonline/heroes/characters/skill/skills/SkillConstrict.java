@@ -60,7 +60,7 @@ public class SkillConstrict extends TargettedSkill {
         SlowEffect effect = new SlowEffect(this, duration, multiplier, true, applyText, expireText, hero);
         effect.types.add(EffectType.MAGIC);
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_WALK , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_WALK , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
 

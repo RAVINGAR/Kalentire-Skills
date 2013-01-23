@@ -63,7 +63,7 @@ public class SkillExcavate extends ActiveSkill {
             multiplier = 20;
         }
         hero.addEffect(new ExcavateEffect(this, duration, multiplier));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

@@ -102,7 +102,7 @@ public class SkillEnergize extends ActiveSkill{
             player.setFoodLevel(20);
         }
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

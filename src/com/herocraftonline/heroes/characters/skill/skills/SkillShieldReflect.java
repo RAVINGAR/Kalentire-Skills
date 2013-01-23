@@ -63,7 +63,7 @@ public class SkillShieldReflect extends ActiveSkill {
         case WOOD_DOOR:
         case TRAP_DOOR:
             player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_METAL , 10.0F, 1.0F); 
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_METAL , 0.8F, 1.0F); 
             broadcastExecuteText(hero);
             hero.addEffect(new ShieldReflectEffect(this, duration));
             return SkillResult.NORMAL;

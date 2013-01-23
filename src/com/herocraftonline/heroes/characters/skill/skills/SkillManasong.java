@@ -84,8 +84,8 @@ public class SkillManasong extends ActiveSkill {
                 pHero.addEffect(mEffect);
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 10.0F, 1.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
