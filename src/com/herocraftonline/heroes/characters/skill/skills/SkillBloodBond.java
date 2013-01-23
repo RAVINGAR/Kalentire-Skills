@@ -87,7 +87,7 @@ public class SkillBloodBond extends ActiveSkill {
             mana = mana > 0 ? mana : 0;
             hero.addEffect(new BloodBondEffect(this, period, mana));
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.1F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
         return SkillResult.NORMAL;
     }
 
