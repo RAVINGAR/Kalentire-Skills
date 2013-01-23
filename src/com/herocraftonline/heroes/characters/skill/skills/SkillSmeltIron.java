@@ -59,7 +59,7 @@ public class SkillSmeltIron extends ActiveSkill{
 		}
 		if(present){
 			int amount=1;
-	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 10.0F, 1.0F); 
+	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F); 
 			broadcastExecuteText(hero);
 			if(calculateChance(hero)>(Math.random()*100)){
 				amount++;

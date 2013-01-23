@@ -101,7 +101,7 @@ public class SkillPort extends ActiveSkill {
                     pHero.getPlayer().teleport(loc);
                 }
             }
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL , 10.0F, 1.0F);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL , 0.5F, 1.0F);
             return SkillResult.NORMAL;
         } else {
             Messaging.send(player, "No port location named $1", args[0]);

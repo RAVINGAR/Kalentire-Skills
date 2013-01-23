@@ -80,7 +80,7 @@ public class SkillIronFist extends ActiveSkill {
             target.setVelocity(new Vector(xDir, SkillConfigManager.getUseSetting(hero, this, "vertical-power", .25, false), zDir));
         }
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 0.5F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

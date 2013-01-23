@@ -95,8 +95,8 @@ public class SkillConviction extends ActiveSkill {
                 pHero.addEffect(effect);
             }
         }
-        player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 10.0F, 1.0F);
+        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

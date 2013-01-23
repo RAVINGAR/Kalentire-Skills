@@ -40,7 +40,7 @@ public class SkillForgeChainChest extends ActiveSkill {
         ItemStack dropItem = new ItemStack(Material.CHAINMAIL_CHESTPLATE, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
         world.dropItem(player.getLocation(), dropItem);
         broadcastExecuteText(hero);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 0.6F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

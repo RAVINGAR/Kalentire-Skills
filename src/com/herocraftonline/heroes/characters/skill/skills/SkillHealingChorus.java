@@ -69,7 +69,7 @@ public class SkillHealingChorus extends ActiveSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 10.0F, 4.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.9F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

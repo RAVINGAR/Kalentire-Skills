@@ -40,7 +40,7 @@ public class SkillQuantumLeap extends TargettedSkill {
 		player.teleport(tlocation);
 		target.teleport(plocation);
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL , 0.5F, 1.0F); 
 		broadcastExecuteText(hero, target);
 		return SkillResult.NORMAL;
 	}

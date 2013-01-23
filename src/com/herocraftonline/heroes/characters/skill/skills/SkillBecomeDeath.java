@@ -69,7 +69,7 @@ public class SkillBecomeDeath extends ActiveSkill {
                 hero.removeEffect(e);
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRIGGER , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRIGGER , 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
     

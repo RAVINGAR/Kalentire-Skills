@@ -91,7 +91,7 @@ public class SkillMight extends ActiveSkill {
                 pHero.addEffect(mEffect);
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 0.5F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

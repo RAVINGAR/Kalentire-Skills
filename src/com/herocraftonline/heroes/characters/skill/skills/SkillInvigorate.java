@@ -107,7 +107,7 @@ public class SkillInvigorate extends TargettedSkill{
             target.setFoodLevel(20);
         }
         broadcastExecuteText(hero, target);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 0.6F, 1.0F);
         return SkillResult.NORMAL;
     }
 }

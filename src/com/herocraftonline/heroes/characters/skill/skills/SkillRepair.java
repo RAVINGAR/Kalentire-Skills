@@ -285,7 +285,7 @@ public class SkillRepair extends ActiveSkill {
         is.setDurability((short) 0);
         player.getInventory().removeItem(reagentStack);
         Util.syncInventory(player, plugin);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 0.6F, 1.0F);
         broadcast(player.getLocation(), useText, player.getDisplayName(), is.getType().name().toLowerCase().replace("_", " "), !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
         return SkillResult.NORMAL;
     }

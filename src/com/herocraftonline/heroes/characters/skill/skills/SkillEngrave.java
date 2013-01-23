@@ -133,7 +133,7 @@ public class SkillEngrave extends ActiveSkill {
                     ItemMeta im = is.getItemMeta();
                     im.setDisplayName(str);
                     is.setItemMeta(im);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 10.0F, 1.0F);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F);
                     broadcastExecuteText(hero);
                     return SkillResult.NORMAL;
                 }

@@ -90,7 +90,7 @@ public class SkillReckoning extends ActiveSkill {
         	return SkillResult.INVALID_TARGET_NO_MSG;
         }
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_THUNDER , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_THUNDER , 0.4F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

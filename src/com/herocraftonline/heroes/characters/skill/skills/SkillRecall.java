@@ -26,7 +26,7 @@ public class SkillRecall extends ActiveSkill {
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORT);
     }
     //@Override public void onWarmup(Hero hero) {
-        //hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL, 9.0F, 1.0F); 
+        //hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL, 0.5F, 1.0F); 
    // }
     @Override
     public ConfigurationSection getDefaultConfig() {
