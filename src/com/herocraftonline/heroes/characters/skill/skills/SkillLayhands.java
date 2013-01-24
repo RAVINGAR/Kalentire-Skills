@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Effect;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,10 +12,12 @@ import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillLayhands extends TargettedSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillLayhands(Heroes plugin) {
         super(plugin, "Layhands");
         setDescription("You restore your target to full health.");
@@ -42,6 +45,15 @@ public class SkillLayhands extends TargettedSkill {
         targetHero.syncHealth();
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
+        // this is our fireworks shit
+        Player player = hero.getPlayer();
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 

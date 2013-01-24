@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Effect;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -15,10 +16,12 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillSuperJump extends ActiveSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillSuperJump(Heroes plugin) {
         super(plugin, "SuperJump");
         setDescription("You launch into the air, and float safely to the ground.");
@@ -46,9 +49,16 @@ public class SkillSuperJump extends ActiveSkill {
         player.setFallDistance(-8f);
         int duration = (int) SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 5000, false);
         hero.addEffect(new JumpEffect(this, duration));
-        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 0.5F, 1.0F); 
         broadcastExecuteText(hero);
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,10,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.BLUE).withFade(Color.GRAY).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 

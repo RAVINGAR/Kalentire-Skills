@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -22,12 +24,14 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSoulFire extends ActiveSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
     private String igniteText;
@@ -68,6 +72,15 @@ public class SkillSoulFire extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
         hero.addEffect(new SoulFireEffect(this, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 0.5F, 1.0F); 
+        // this is our fireworks shit
+        Player player = hero.getPlayer();
+        try {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.RED).withFade(Color.FUCHSIA).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 

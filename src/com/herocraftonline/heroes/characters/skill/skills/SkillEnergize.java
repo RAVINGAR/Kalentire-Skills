@@ -6,15 +6,19 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
+import org.bukkit.Color;
 import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillEnergize extends ActiveSkill{
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillEnergize(Heroes plugin) {
         super(plugin, "Energize");
         setDescription("Replenishes $1 points of your stamina.");
@@ -104,6 +108,14 @@ public class SkillEnergize extends ActiveSkill{
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 1.0F);
         broadcastExecuteText(hero);
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.YELLOW).withFade(Color.TEAL).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 }

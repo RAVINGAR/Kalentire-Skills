@@ -1,8 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
 import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -11,10 +14,12 @@ import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillWindwalk extends ActiveSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
@@ -55,6 +60,15 @@ public class SkillWindwalk extends ActiveSkill {
         }
         hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
+        // this is our fireworks shit
+        Player player = hero.getPlayer();
+        try {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.RED).withFade(Color.FUCHSIA).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return SkillResult.NORMAL;
     }
 
