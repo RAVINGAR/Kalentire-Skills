@@ -1,8 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Effect;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -11,10 +13,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDarkRitual extends ActiveSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     public SkillDarkRitual(Heroes plugin) {
         super(plugin, "DarkRitual");
         setDescription("Converts $1 health to $2 mana.");
@@ -50,11 +54,20 @@ public class SkillDarkRitual extends ActiveSkill {
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL , 0.5F, 1.0F);
+        // this is our fireworks shit
+        Player player = hero.getPlayer();
+        try {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,3,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLACK).withFade(Color.GRAY).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         broadcastExecuteText(hero);
-
         if (hero.isVerbose()) {
             Messaging.send(hero.getPlayer(), Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
         }
+        
         return SkillResult.NORMAL;
     }
 
