@@ -53,7 +53,7 @@ public class SkillDarkRitual extends ActiveSkill {
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL , 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.4F, 1.0F);
         // this is our fireworks shit
         Player player = hero.getPlayer();
         try {
