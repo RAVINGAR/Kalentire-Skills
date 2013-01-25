@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillHealingBloom extends ActiveSkill {
@@ -27,6 +28,7 @@ public class SkillHealingBloom extends ActiveSkill {
 		setDescription("HealingBlooms your party, healing them for $1$2 per $3s for $4s");
 		setUsage("/skill healingbloom");
 		setIdentifiers("skill healingbloom");
+        setTypes(SkillType.BUFF, SkillType.HEAL, SkillType.SILENCABLE);
 		setArgumentRange(0,0);
 	}
 	public class RejuvinationEffect extends PeriodicExpirableEffect {
