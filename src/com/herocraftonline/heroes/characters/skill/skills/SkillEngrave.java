@@ -93,7 +93,6 @@ public class SkillEngrave extends ActiveSkill {
         mats.add(Material.FISHING_ROD);
         mats.add(Material.SHEARS);
         mats.add(Material.BLAZE_ROD);
-        mats.add(Material.RAW_FISH);
         mats.add(Material.STICK);
         mats.add(Material.GREEN_RECORD);
         mats.add(Material.GOLD_RECORD);
