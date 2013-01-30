@@ -1,12 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-/* I, Roadkill909, the author of this class, PotionListener, allow anyone to use, modify, 
-* distribute, or relicense this source file or this file in compiled form without restriction */
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import net.minecraft.server.EntityPotion;
 
 import org.bukkit.Bukkit;
@@ -29,13 +25,14 @@ import static com.herocraftonline.heroes.api.SkillResult.*;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.*;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Setting;
+import static com.herocraftonline.heroes.util.Setting.HEALTH;
+import static com.herocraftonline.heroes.util.Setting.MAX_DISTANCE;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
 
 public class SkillAmpul extends ActiveSkill{
-	private Map<ThrownPotion, Long> potions = new LinkedHashMap<ThrownPotion, Long>(89) {//Didn't know this handy trick, so I reused it.
+	private Map<ThrownPotion, Long> potions = new LinkedHashMap<ThrownPotion, Long>(89) {//Reused your handy trick
 		private static final long serialVersionUID = -8018803104297802046L;
 
 		@Override
@@ -60,7 +57,7 @@ public class SkillAmpul extends ActiveSkill{
 	}
 
 	private int getMaxHeal(Hero hero){
-		return getUseSetting(hero, this, Setting.AMOUNT, 150, false);
+		return getUseSetting(hero, this, HEALTH, 150, false);
 	}
 	
 	@Override
@@ -68,6 +65,9 @@ public class SkillAmpul extends ActiveSkill{
 		final Player casterPlayer = casterHero.getPlayer();
 		
 		if(args.length>0){
+			if(args[0].equalsIgnoreCase("info")){
+				casterPlayer.sendMessage(getDescription(casterHero));
+			}
 			final Player targetPlayer = Bukkit.getPlayer(args[0]);
 			
 			//Ignores not present or offline players
@@ -77,7 +77,7 @@ public class SkillAmpul extends ActiveSkill{
 			
 			//ignores out of range players
 			if(casterPlayer.getLocation().getWorld()!=targetLocation.getWorld()
-						||casterPlayer.getLocation().distance(targetLocation)>getUseSetting(casterHero, this, Setting.MAX_DISTANCE, 10,false)){
+						||casterPlayer.getLocation().distance(targetLocation)>getUseSetting(casterHero, this, MAX_DISTANCE, 10,false)){
 				casterHero.getPlayer().sendMessage("Target is out of range!");
 				return FAIL;
 			}
@@ -101,6 +101,7 @@ public class SkillAmpul extends ActiveSkill{
 		    //converts it to bukkit
 		    final ThrownPotion thrownPotion = new CraftThrownPotion(world.getServer(),entityPotion);
 		    thrownPotion.setVelocity(thrownPotion.getVelocity().multiply(2)); //OPTIONAL Makes the potion fly twice as fast 
+		    thrownPotion.getEffects().clear();
 		    
 		    //adds it to the Potionmanager
 		    potions.put(thrownPotion,System.currentTimeMillis());
@@ -111,8 +112,8 @@ public class SkillAmpul extends ActiveSkill{
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.HEALTH.node(), 250);
-        node.set(Setting.MAX_DISTANCE.node(),10);
+        node.set(HEALTH.node(), 250);
+        node.set(MAX_DISTANCE.node(),10);
         return node;
     }
 	
@@ -121,7 +122,7 @@ public class SkillAmpul extends ActiveSkill{
 		
 		@EventHandler(priority=EventPriority.LOWEST,ignoreCancelled=false)
 		public void onPotionSplash(PotionSplashEvent event){
-			if(potions.remove(event.getPotion())!=null)return;
+			if(potions.remove(event.getPotion())==null)return;
 			final LivingEntity shooter = event.getPotion().getShooter();
 			final Hero casterHero;
 			if(shooter!=null&&shooter instanceof Player){//checks if the potion thrower is a hero
