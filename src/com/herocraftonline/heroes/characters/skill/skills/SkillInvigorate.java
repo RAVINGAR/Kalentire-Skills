@@ -17,8 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillInvigorate extends TargettedSkill{
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     
     public SkillInvigorate(Heroes plugin) {
         super(plugin, "Invigorate");
@@ -108,7 +106,6 @@ public class SkillInvigorate extends TargettedSkill{
         	}
         }
 
-
         if(target.getFoodLevel()>=20){
         	Messaging.send(hero.getPlayer(), "This player already has full stamina!", new Object[0]);
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -124,7 +121,7 @@ public class SkillInvigorate extends TargettedSkill{
             target.setFoodLevel(20);
         }
         broadcastExecuteText(hero, target);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_WINGS , 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 }
