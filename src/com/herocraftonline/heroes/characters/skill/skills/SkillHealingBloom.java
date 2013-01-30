@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.Vector;
 
@@ -18,7 +17,6 @@ import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillHealingBloom extends ActiveSkill {
@@ -28,7 +26,6 @@ public class SkillHealingBloom extends ActiveSkill {
 		setDescription("HealingBlooms your party, healing them for $1$2 per $3s for $4s");
 		setUsage("/skill healingbloom");
 		setIdentifiers("skill healingbloom");
-        setTypes(SkillType.BUFF, SkillType.HEAL, SkillType.SILENCABLE);
 		setArgumentRange(0,0);
 	}
 	public class RejuvinationEffect extends PeriodicExpirableEffect {
@@ -49,6 +46,7 @@ public class SkillHealingBloom extends ActiveSkill {
 				Bukkit.getPluginManager().callEvent(event);
 				if(!event.isCancelled()) {
 					h.setHealth(h.getHealth() + event.getAmount());
+                    h.syncHealth();
 				}
 				break;
 			case 1:
@@ -57,6 +55,7 @@ public class SkillHealingBloom extends ActiveSkill {
 				Bukkit.getPluginManager().callEvent(event1);
 				if(!event1.isCancelled()) {
 					h.setHealth(h.getHealth() + event1.getAmount());
+                    h.syncHealth();
 				}
 				break;
 			case 2:
@@ -65,6 +64,7 @@ public class SkillHealingBloom extends ActiveSkill {
 				Bukkit.getPluginManager().callEvent(event2);
 				if(!event2.isCancelled()) {
 					h.setHealth(h.getHealth() + event2.getAmount());
+                    h.syncHealth();
 				}
 				break;
 			}
@@ -79,7 +79,6 @@ public class SkillHealingBloom extends ActiveSkill {
 	@Override
 	public SkillResult use(Hero h, String[] args) {
 		//Load Skill Mode
-        h.getPlayer().getWorld().playSound(h.getPlayer().getLocation(), Sound.LEVEL_UP , 0.9F, 1.0F);
 		boolean amount = SkillConfigManager.getUseSetting(h, this, "AmountMode", true);
 		boolean percentMax = SkillConfigManager.getUseSetting(h, this, "PercentMaxHealthMode", true);
 		boolean percentMissing = SkillConfigManager.getUseSetting(h, this, "PercentMissingHealthMode", true);
@@ -98,12 +97,12 @@ public class SkillHealingBloom extends ActiveSkill {
 		
 		HeroParty hParty = h.getParty();
 		if(hParty == null) {
-			h.getPlayer().sendMessage("You are not in a party. Don't be selfish!");
+			h.getPlayer().sendMessage("You are not in a party. Coding for selfishness is not included in this skill!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 		double amountHealed = SkillConfigManager.getUseSetting(h, this, "amount", 5, false);
-		double period = SkillConfigManager.getUseSetting(h, this, "period", 1000, false)*0.001*20;
-		double duration = SkillConfigManager.getUseSetting(h, this, Setting.DURATION.node(), 30000, false)*0.001*20;
+		double period = SkillConfigManager.getUseSetting(h, this, "period", 1000, false);
+		double duration = SkillConfigManager.getUseSetting(h, this, Setting.DURATION.node(), 30000, false);
 		this.broadcast(h.getPlayer().getLocation(), h.getName() + " used HealingBloom!");
 		Vector v = h.getPlayer().getLocation().toVector();
 		Iterator<Hero> partyMembers = hParty.getMembers().iterator();
