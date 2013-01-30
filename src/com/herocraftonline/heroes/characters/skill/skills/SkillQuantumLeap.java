@@ -33,6 +33,7 @@ public class SkillQuantumLeap extends TargettedSkill {
 	}
 
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+		if(!(target instanceof Player)) {return SkillResult.INVALID_TARGET;}
 		Player player = hero.getPlayer();
 		Location tlocation = target.getLocation();
 		Location plocation = player.getLocation();
