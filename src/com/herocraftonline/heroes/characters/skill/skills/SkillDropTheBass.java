@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
-import org.bukkit.Effect;
+//src=http://pastie.org/private/oeherulcmebfy0lerywsw
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -101,13 +100,15 @@ public class SkillDropTheBass extends ActiveSkill {
         if (!hero.hasParty()){
                 return SkillResult.CANCELLED;
         }
-
         int duration = (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false)
                 + SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this));
         int radius = (int) ((SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 15.0, false)
                 + SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false) * hero.getSkillLevel(this)));
+        double radiusSquared = Math.pow(radius,2);
+        
         for(Hero member : hero.getParty().getMembers()){
-            if(member.getPlayer().getLocation().distance(hero.getPlayer().getLocation()) <= radius){
+        	if(member.getPlayer().getWorld() != hero.getPlayer().getWorld()) {continue;}
+            if(member.getPlayer().getLocation().distanceSquared(hero.getPlayer().getLocation()) <= radiusSquared){
                 member.addEffect(new SafeFallEffect(this, duration));
             }
         }
