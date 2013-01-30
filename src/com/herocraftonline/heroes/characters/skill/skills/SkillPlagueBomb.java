@@ -51,7 +51,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         setUsage("/skill plaguebomb <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill plaguebomb");
-        setTypes(SkillType.HARMFUL, SkillType.EARTH, SkillType.SUMMON);
+        setTypes(SkillType.HARMFUL, SkillType.EARTH, SkillType.SUMMON, SkillType.SILENCABLE);
         Bukkit.getPluginManager().registerEvents(new SkillListener(), plugin);
     }
 
