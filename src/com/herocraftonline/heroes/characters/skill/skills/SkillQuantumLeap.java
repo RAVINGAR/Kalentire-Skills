@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//src=http://pastie.org/private/fzesxgiubhrxtfy5pgs0wg
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -23,7 +23,6 @@ public class SkillQuantumLeap extends TargettedSkill {
 		setUsage("/skill quantumleap <target>");
 		setArgumentRange(0, 1);
 		setIdentifiers("skill quantumleap");
-
 		setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT);
 	}
 

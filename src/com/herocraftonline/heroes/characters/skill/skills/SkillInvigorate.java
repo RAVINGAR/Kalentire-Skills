@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
 
 import org.bukkit.Sound;
@@ -14,14 +15,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillInvigorate extends TargettedSkill{
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
+    
     public SkillInvigorate(Heroes plugin) {
         super(plugin, "Invigorate");
         setDescription("Resplenishes $1 points of target's stamina.");
         setUsage("/skill Invigorate");
-        setArgumentRange(0, 0);
+        setArgumentRange(0, 1);
         setIdentifiers(new String[]{"skill Invigorate"});
-
         setTypes(SkillType.SILENCABLE, SkillType.BUFF);
     }
 
