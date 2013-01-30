@@ -26,10 +26,10 @@ public class SkillDisenchant extends ActiveSkill {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public SkillResult use(Hero h, String[] args) {
-		ItemStack hand = h.getPlayer().getItemInHand();
+	public SkillResult use(Hero hero, String[] args) {
+		ItemStack hand = hero.getPlayer().getItemInHand();
 		if(!(Util.isArmor(hand.getType()) || Util.isWeapon(hand.getType()))) {
-			h.getPlayer().sendMessage(ChatColor.GRAY + "This is not a disenchantable item!");
+			hero.getPlayer().sendMessage(ChatColor.GRAY + "This is not a disenchantable item!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 		Random randgen = new Random();
@@ -45,19 +45,20 @@ public class SkillDisenchant extends ActiveSkill {
 			}
 			hand.removeEnchantment(ench);
 			//Handle breaking
-			if(randgen.nextInt(100) < Math.pow(h.getLevel(h.getSecondClass()),-1)*100) {
-				h.getPlayer().sendMessage(ChatColor.GRAY + "Oh no your item broke :("); //Like we actually give a fuck
+			if(randgen.nextInt(100) < Math.pow(hero.getLevel(hero.getSecondClass()),-1)*100) {
+				hero.getPlayer().sendMessage(ChatColor.GRAY + "Oh no your item broke!");
 				hand.setAmount(0);
-				h.getPlayer().updateInventory();
+				hero.getPlayer().updateInventory();
 				break;
 			}
 		}
+		broadcastExecuteText(hero);
 		return SkillResult.NORMAL;
 	}
 
 	@Override
-	public String getDescription(Hero h) {
-		return getDescription().replace("$1", Math.pow(h.getLevel(h.getSecondClass()),-1)*100 + "");
+	public String getDescription(Hero hero) {
+		return getDescription().replace("$1", Math.pow(hero.getLevel(hero.getSecondClass()),-1)*100 + "");
 	}
 
 
