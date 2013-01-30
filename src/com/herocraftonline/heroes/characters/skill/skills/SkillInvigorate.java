@@ -7,8 +7,10 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -88,14 +90,28 @@ public class SkillInvigorate extends TargettedSkill{
 
     @Override
     public SkillResult use(Hero hero, LivingEntity entity, String[] args) {
-        if(!(entity instanceof Player)){
-            return SkillResult.INVALID_TARGET;
+        Player target;
+    	if(entity != null) 	{
+        	if(!(entity instanceof Player)){
+        		return SkillResult.INVALID_TARGET;
+        	}
+        	target = (Player)entity;
+        } else {
+        	target = Bukkit.getServer().getPlayer(args[0]);
+        	if(target == null) {
+        		Messaging.send(hero.getPlayer(), "Targetted Player not Found!", new Object[0]);
+        		return SkillResult.INVALID_TARGET_NO_MSG;
+        	}
+        	if(target.getName() == hero.getPlayer().getName()) {
+        		Messaging.send(hero.getPlayer(), "Cannot be used on self!", new Object[0]);
+        		return SkillResult.INVALID_TARGET_NO_MSG;
+        	}
         }
 
-        Player target = (Player) entity;
 
         if(target.getFoodLevel()>=20){
-            return SkillResult.CANCELLED;
+        	Messaging.send(hero.getPlayer(), "This player already has full stamina!", new Object[0]);
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 20.0, false) +
