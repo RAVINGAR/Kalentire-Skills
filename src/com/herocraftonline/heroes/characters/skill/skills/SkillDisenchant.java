@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
