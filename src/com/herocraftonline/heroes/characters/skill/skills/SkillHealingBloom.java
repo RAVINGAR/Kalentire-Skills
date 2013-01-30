@@ -33,7 +33,7 @@ public class SkillHealingBloom extends ActiveSkill {
 		double amountHealed;
 		public RejuvinationEffect(Skill skill, Heroes plugin,
 				long period, long duration, int mode, double amountHealed) {
-			super(skill, plugin, "Rejuvination", period, duration);
+			super(skill, plugin, "HealingBloom", period, duration);
 			this.mode = mode;
 			this.amountHealed = amountHealed;
 		}

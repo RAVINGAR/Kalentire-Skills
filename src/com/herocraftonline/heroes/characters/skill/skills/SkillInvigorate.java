@@ -21,7 +21,7 @@ public class SkillInvigorate extends TargettedSkill{
     public SkillInvigorate(Heroes plugin) {
         super(plugin, "Invigorate");
         setDescription("Resplenishes $1 points of target's stamina.");
-        setUsage("/skill Invigorate");
+        setUsage("/skill Invigorate <target>");
         setArgumentRange(0, 1);
         setIdentifiers(new String[]{"skill Invigorate"});
         setTypes(SkillType.SILENCABLE, SkillType.BUFF);
@@ -89,7 +89,7 @@ public class SkillInvigorate extends TargettedSkill{
     @Override
     public SkillResult use(Hero hero, LivingEntity entity, String[] args) {
         if(!(entity instanceof Player)){
-            return SkillResult.CANCELLED;
+            return SkillResult.INVALID_TARGET;
         }
 
         Player target = (Player) entity;
