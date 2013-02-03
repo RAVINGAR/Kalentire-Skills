@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//src=http://pastie.org/private/mxduefh905orr6x0dara
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -87,7 +86,7 @@ public class SkillBloodBond extends ActiveSkill {
             mana = mana > 0 ? mana : 0;
             hero.addEffect(new BloodBondEffect(this, period, mana));
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 
@@ -102,7 +101,6 @@ public class SkillBloodBond extends ActiveSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.HEAL);
-            this.types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -157,6 +155,9 @@ public class SkillBloodBond extends ActiveSkill {
                     radius = radius > 1 ? radius : 1;
                     int amount = (int) (event.getDamage()*percent);
                     for(Hero member : hero.getParty().getMembers()){
+                        if(!member.getPlayer().getWorld().equals(hero.getPlayer().getWorld())){
+                            continue;
+                        }
                         if(member.getPlayer().getLocation().distance(hero.getPlayer().getLocation()) <= radius){
                             if(member.getHealth() + amount < member.getMaxHealth()){
                                 member.setHealth(member.getHealth()+amount);
@@ -183,6 +184,9 @@ public class SkillBloodBond extends ActiveSkill {
                     radius = radius > 1 ? radius : 1;
                     int amount = (int) (event.getDamage()*percent);
                     for(Hero member : hero.getParty().getMembers()){
+                        if(!member.getPlayer().getWorld().equals(hero.getPlayer().getWorld())){
+                            continue;
+                        }
                         if(member.getPlayer().getLocation().distance(hero.getPlayer().getLocation()) <= radius){
                             if(member.getHealth() + amount < member.getMaxHealth()){
                                 member.setHealth(member.getHealth()+amount);
