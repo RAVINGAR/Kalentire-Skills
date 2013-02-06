@@ -66,7 +66,7 @@ public class SkillJump extends ActiveSkill {
         Vector v = player.getVelocity().setY(1).add(player.getLocation().getDirection().setY(0).normalize().multiply(multiplier * jumpForwards));
         player.setVelocity(v);
         player.setFallDistance(-8f);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SKELETON_IDLE , 1.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SKELETON_IDLE , 10.0F, 1.0F); 
         broadcastExecuteText(hero);
         
         return SkillResult.NORMAL;
