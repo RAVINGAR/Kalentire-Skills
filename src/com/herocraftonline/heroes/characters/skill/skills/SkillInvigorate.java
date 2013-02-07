@@ -20,7 +20,7 @@ public class SkillInvigorate extends TargettedSkill{
     
     public SkillInvigorate(Heroes plugin) {
         super(plugin, "Invigorate");
-        setDescription("Resplenishes $1 points of target's stamina.");
+        setDescription("Refills $1 points of target's stamina.");
         setUsage("/skill Invigorate <target>");
         setArgumentRange(0, 1);
         setIdentifiers(new String[]{"skill Invigorate"});
