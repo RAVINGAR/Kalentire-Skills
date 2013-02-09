@@ -40,13 +40,12 @@ public class SkillRoot extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(this, duration));
         
         int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false); //Adding to combat-tag the player
         Player player = hero.getPlayer(); //Adding for Fireworks
         addSpellTarget(target, hero); // Combat Tagging
         damageEntity(target, player, damage, DamageCause.MAGIC); //Combat tagging
-        
+        plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(this, duration));
         broadcastExecuteText(hero, target);
         
         //This is the Sound stuff.
