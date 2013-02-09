@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.Iterator;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.Vector;
