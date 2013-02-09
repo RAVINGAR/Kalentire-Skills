@@ -52,7 +52,7 @@ public class SkillRoot extends TargettedSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_WOODBREAK , 0.8F, 1.0F); 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.LIME).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.OLIVE).build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
