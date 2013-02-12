@@ -1,5 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -16,11 +19,13 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPlague extends TargettedSkill {
-
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
@@ -55,11 +60,19 @@ public class SkillPlague extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-
+        // this is our fireworks
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withFade(Color.GREEN).build());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, duration, period, tickDamage, player));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BAT_HURT , 0.8F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
