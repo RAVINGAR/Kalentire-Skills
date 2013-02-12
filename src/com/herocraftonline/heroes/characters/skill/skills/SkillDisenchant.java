@@ -40,7 +40,7 @@ public class SkillDisenchant extends ActiveSkill {
 			Entry<Enchantment, Integer> next = enchants.next();
 			Enchantment ench = next.getKey();
 			//Skip over sharpness/prot/punch because  that is durability dependent, not enchantment dependent
-			if(ench.equals(Enchantment.ARROW_DAMAGE) || ench.equals(Enchantment.DAMAGE_ALL) || ench.equals(Enchantment.PROTECTION_ENVIRONMENTAL)) {
+			if(ench.equals(Enchantment.FIRE_ASPECT) || ench.equals(Enchantment.ARROW_FIRE)) {
 				continue;
 			}
 			hand.removeEnchantment(ench);
