@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;

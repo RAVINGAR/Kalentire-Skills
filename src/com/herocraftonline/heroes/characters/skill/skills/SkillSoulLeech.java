@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -134,8 +133,7 @@ public class SkillSoulLeech extends TargettedSkill {
                 return;
             }
 
-            hero.setHealth(hero.getHealth() + hrhEvent.getAmount());
-            hero.syncHealth();
+            hero.getPlayer().setHealth(hero.getPlayer().getHealth() + hrhEvent.getAmount());
         }
     }
 

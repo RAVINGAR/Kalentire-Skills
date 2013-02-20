@@ -76,9 +76,8 @@ public class SkillHealingChorus extends ActiveSkill {
     private void healDispel(Hero targetHero, int removals, int healAmount, Hero hero) {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         if (!hrhEvent.isCancelled()) {
-            if (targetHero.getHealth() < targetHero.getMaxHealth()) {
-                targetHero.setHealth(targetHero.getHealth() + hrhEvent.getAmount());
-                targetHero.syncHealth();
+            if (targetHero.getPlayer().getHealth() < targetHero.getPlayer().getMaxHealth()) {
+                targetHero.getPlayer().setHealth(targetHero.getPlayer().getHealth() + hrhEvent.getAmount());
             }
         }
         if (removals == 0)

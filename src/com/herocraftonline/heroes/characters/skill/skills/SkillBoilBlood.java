@@ -102,8 +102,9 @@ public class SkillBoilBlood extends TargettedSkill {
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            if(monster.getHealth() == 0)
+            if(monster.getEntity().getHealth() == 0) {
                 return;
+            }
             skill.addSpellTarget(monster.getEntity(), getApplierHero());
             Skill.damageEntity(monster.getEntity(), getApplier(), finishDamage, DamageCause.MAGIC);
             broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());

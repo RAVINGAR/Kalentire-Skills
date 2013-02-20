@@ -1,5 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import static com.herocraftonline.heroes.Heroes.econ;
+import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
+import static com.herocraftonline.heroes.characters.skill.SkillType.HEAL;
+import static com.herocraftonline.heroes.characters.skill.SkillType.ITEM;
+import static com.herocraftonline.heroes.characters.skill.SkillType.LIGHT;
+import static com.herocraftonline.heroes.characters.skill.SkillType.MANA;
+import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCABLE;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.GOLD;
+import static org.bukkit.ChatColor.GRAY;
+import static org.bukkit.ChatColor.RESET;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -7,16 +19,12 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.util.Setting;
-
-import static org.bukkit.ChatColor.*;
-import static com.herocraftonline.heroes.Heroes.econ;
-import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
-import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
 public class SkillExchange extends ActiveSkill{
 	private static final String base="base-coin-per-ingot",loss="coin-loss-per-level";

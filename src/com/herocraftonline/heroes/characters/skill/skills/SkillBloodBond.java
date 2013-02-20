@@ -1,5 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -11,16 +20,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillBloodBond extends ActiveSkill {
     private String applyText;
@@ -141,12 +140,12 @@ public class SkillBloodBond extends ActiveSkill {
     public class SkillEntityListener implements Listener {
         private final Skill skill;
         public SkillEntityListener(Skill skill) {
-                this.skill = skill;
+            this.skill = skill;
         }
 
-        @EventHandler
+        @EventHandler(ignoreCancelled = true)
         public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
-            if((!(event.isCancelled()))&&(event.getCause().equals(DamageCause.MAGIC))&&(event.getDamager() instanceof Player)){
+            if(event.getCause().equals(DamageCause.MAGIC) && event.getDamager() instanceof Player){
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
                 if(hero.hasEffect("BloodBond")&&(hero.hasParty())){
                     double percent = (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
@@ -157,13 +156,16 @@ public class SkillBloodBond extends ActiveSkill {
                     radius = radius > 1 ? radius : 1;
                     int amount = (int) (event.getDamage()*percent);
                     for(Hero member : hero.getParty().getMembers()){
-                        if(member.getPlayer().getLocation().distance(hero.getPlayer().getLocation()) <= radius){
-                            if(member.getHealth() + amount < member.getMaxHealth()){
-                                member.setHealth(member.getHealth()+amount);
+                        Player target = member.getPlayer();
+                        if (!target.getWorld().equals(hero.getPlayer().getWorld())) {
+                            continue;
+                        }
+                        if(target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
+                            if(target.getHealth() + amount < target.getMaxHealth()) {
+                                target.setHealth(target.getHealth() + amount);
                             }else{
-                                member.setHealth(member.getMaxHealth());
+                                target.setHealth(target.getMaxHealth());
                             }
-                            member.syncHealth();
                         }
                     }
                 }
@@ -182,14 +184,17 @@ public class SkillBloodBond extends ActiveSkill {
                             (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
                     radius = radius > 1 ? radius : 1;
                     int amount = (int) (event.getDamage()*percent);
-                    for(Hero member : hero.getParty().getMembers()){
-                        if(member.getPlayer().getLocation().distance(hero.getPlayer().getLocation()) <= radius){
-                            if(member.getHealth() + amount < member.getMaxHealth()){
-                                member.setHealth(member.getHealth()+amount);
+                    for(Hero member : hero.getParty().getMembers()) {
+                        Player target = member.getPlayer();
+                        if (!target.getWorld().equals(hero.getPlayer().getWorld())) {
+                            continue;
+                        }
+                        if(target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
+                            if(target.getHealth() + amount < target.getMaxHealth()){
+                                target.setHealth(target.getHealth() + amount);
                             }else{
-                                member.setHealth(member.getMaxHealth());
+                                target.setHealth(target.getMaxHealth());
                             }
-                            member.syncHealth();
                         }
                     }
                 }

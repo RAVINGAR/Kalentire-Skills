@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
@@ -47,8 +48,7 @@ public class SkillDuskblade extends TargettedSkill {
 		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (absorbAmount * healMult), this, hero);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
 		if (!hrEvent.isCancelled()) {
-			hero.setHealth(hero.getHealth() + hrEvent.getAmount());
-			hero.syncHealth();
+			player.setHealth(player.getHealth() + hrEvent.getAmount());
 		}
 		addSpellTarget(target, hero);
 		damageEntity(target, player, absorbAmount, DamageCause.MAGIC);

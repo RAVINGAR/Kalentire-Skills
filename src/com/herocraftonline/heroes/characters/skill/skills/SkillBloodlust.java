@@ -1,5 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -10,9 +13,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class SkillBloodlust extends ActiveSkill {
     private String applyText;
@@ -43,8 +43,7 @@ public class SkillBloodlust extends ActiveSkill {
 
     public SkillResult use(Hero hero, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
-        hero.setHealth(hero.getHealth() / 2);
-        hero.syncHealth();
+        hero.getPlayer().setHealth(hero.getPlayer().getHealth() / 2);
         BloodlustEffect beffect = new BloodlustEffect(this, duration, this.applyText, this.expireText);
         hero.addEffect(beffect);
         broadcastExecuteText(hero);

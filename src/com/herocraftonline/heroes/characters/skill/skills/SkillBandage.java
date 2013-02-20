@@ -48,9 +48,9 @@ public class SkillBandage extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
         hpPlus += (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
-        int targetHealth = targetHero.getHealth();
+        int targetHealth = target.getHealth();
 
-        if (targetHealth >= targetHero.getMaxHealth()) {
+        if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
             } else {
@@ -66,8 +66,7 @@ public class SkillBandage extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
 
-        targetHero.setHealth(targetHealth + hrhEvent.getAmount());
-        targetHero.syncHealth();
+        target.setHealth(targetHealth + hrhEvent.getAmount());
 
         // Bandage cures Bleeding!
         for (Effect effect : targetHero.getEffects()) {

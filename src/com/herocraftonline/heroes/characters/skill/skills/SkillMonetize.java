@@ -1,5 +1,16 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import static com.herocraftonline.heroes.Heroes.econ;
+import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
+import static com.herocraftonline.heroes.characters.skill.SkillType.ITEM;
+import static com.herocraftonline.heroes.characters.skill.SkillType.KNOWLEDGE;
+import static com.herocraftonline.heroes.characters.skill.SkillType.PHYSICAL;
+import static com.herocraftonline.heroes.characters.skill.SkillType.UNBINDABLE;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.GOLD;
+import static org.bukkit.ChatColor.GRAY;
+import static org.bukkit.ChatColor.RESET;
+
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -12,11 +23,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.util.Setting;
-
-import static org.bukkit.ChatColor.*;
-import static com.herocraftonline.heroes.Heroes.econ;
-import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
-import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
 public class SkillMonetize extends ActiveSkill{
 	private static final String base="base-coin-per-ingot",gain="coin-gain-per-level";

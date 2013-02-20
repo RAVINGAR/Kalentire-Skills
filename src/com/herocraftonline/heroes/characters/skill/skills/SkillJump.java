@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;

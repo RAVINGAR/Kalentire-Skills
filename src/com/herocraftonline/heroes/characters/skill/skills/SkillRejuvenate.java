@@ -58,7 +58,7 @@ public class SkillRejuvenate extends TargettedSkill {
         if (target instanceof Player) {
             Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
-            if (targetHero.getHealth() >= targetHero.getMaxHealth()) {
+            if (target.getHealth() >= target.getMaxHealth()) {
                 Messaging.send(player, "Target is already fully healed.");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }

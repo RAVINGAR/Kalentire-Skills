@@ -30,15 +30,14 @@ public class SkillFullHeal extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        int healAmount = (int) Math.ceil(targetHero.getMaxHealth() - targetHero.getHealth());
+        int healAmount = (int) Math.ceil(target.getMaxHealth() - target.getHealth());
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
             Messaging.send(hero.getPlayer(), "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.setHealth(targetHero.getHealth() + hrhEvent.getAmount());
-        targetHero.syncHealth();
+        target.setHealth(target.getHealth() + hrhEvent.getAmount());
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

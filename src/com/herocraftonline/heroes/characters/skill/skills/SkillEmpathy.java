@@ -1,5 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -9,13 +16,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Setting;
-
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillEmpathy extends TargettedSkill {
     // This is for Firework Effects
@@ -105,7 +105,7 @@ public class SkillEmpathy extends TargettedSkill {
         double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getSkillLevel(this)));
         damageMod = damageMod > 0 ? damageMod : 0;
-        int damage = (int) ((hero.getMaxHealth() - hero.getHealth()) * damageMod);
+        int damage = (int) ((target.getMaxHealth() - target.getHealth()) * damageMod);
         if (maxDamage != 0 && damage > maxDamage) {
             damage = maxDamage;
         }

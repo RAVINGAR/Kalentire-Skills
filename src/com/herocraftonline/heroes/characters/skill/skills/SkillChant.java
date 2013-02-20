@@ -46,9 +46,9 @@ public class SkillChant extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
-        int targetHealth = targetHero.getHealth();
+        int targetHealth = target.getHealth();
 
-        if (targetHealth >= targetHero.getMaxHealth()) {
+        if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
             } else {
@@ -64,8 +64,7 @@ public class SkillChant extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
 
-        targetHero.setHealth(targetHealth + hrhEvent.getAmount());
-        targetHero.syncHealth();
+        target.setHealth(targetHealth + hrhEvent.getAmount());
 
         broadcastExecuteText(hero, target);
         // this is our fireworks shit

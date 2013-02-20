@@ -60,14 +60,14 @@ public class SkillReborn extends PassiveSkill {
             this.skill = skill;
         }
         
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getDamage() == 0) {
+            if (!(event.getEntity() instanceof Player) || event.getDamage() == 0) {
                 return;
             }
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            int currentHealth = hero.getHealth();
+            int currentHealth = player.getHealth();
             if (currentHealth > event.getDamage()) {
                 return;
             }
@@ -75,15 +75,14 @@ public class SkillReborn extends PassiveSkill {
                 if (hero.getCooldown("Reborn") == null || hero.getCooldown("Reborn") <= System.currentTimeMillis()) {
                     double regainPercent = SkillConfigManager.getUseSetting(hero, skill, "health-percent-on-rebirth", 0.5, false)
                             + (SkillConfigManager.getUseSetting(hero, skill, "health-increase", 0.0, false) * hero.getSkillLevel(skill));
-                    int healthRegain = (int) (hero.getMaxHealth() * regainPercent);
+                    int healthRegain = (int) (player.getMaxHealth() * regainPercent);
                     HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, skill, hero);
                     if (hrh.isCancelled() || hrh.getAmount() == 0) {
                         return;
                     }
                     event.setDamage(0);
                     event.setCancelled(true);
-                    hero.setHealth(currentHealth + hrh.getAmount());
-                    hero.syncHealth();
+                    player.setHealth(currentHealth + hrh.getAmount());
                     long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, Setting.COOLDOWN.node(), 600000, false)
                             + (SkillConfigManager.getUseSetting(hero, skill, Setting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel()));
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());

@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -34,10 +33,9 @@ public class SkillSyphon extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        if (!(target instanceof Player))
+        if (!(target instanceof Player)) {
         	return SkillResult.INVALID_TARGET;
-
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        }
 
         int transferredHealth = SkillConfigManager.getUseSetting(hero, this, "default-health", 4, false);
         if (args.length == 2) {
@@ -47,14 +45,12 @@ public class SkillSyphon extends TargettedSkill {
             	throw new IllegalArgumentException("Invalid health value defined in Heroes skill - Syphon. FIX YOUR CONFIGURATION");
             }
         }
-        int playerHealth = hero.getHealth();
-        int targetHealth = targetHero.getHealth();
-        hero.setHealth(playerHealth - transferredHealth);
-        hero.syncHealth();
+        int playerHealth = hero.getPlayer().getHealth();
+        int targetHealth = target.getHealth();
+        hero.getPlayer().setHealth(playerHealth - transferredHealth);
 
         transferredHealth *= SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.0, false);
-        targetHero.setHealth(targetHealth + transferredHealth);
-        targetHero.syncHealth();
+        target.setHealth(targetHealth + transferredHealth);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 10.0F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

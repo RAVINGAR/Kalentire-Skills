@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.Iterator;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.Vector;
@@ -43,12 +42,12 @@ public class SkillBalance extends ActiveSkill {
 		while(partyMembers.hasNext()) {
 			Hero h2 = partyMembers.next();
 			if(skipRangeCheck || h2.getPlayer().getLocation().toVector().distanceSquared(v) < range) {
-				maxHealthTotal += h2.getMaxHealth();
-				currentHealthTotal += h2.getHealth();
+				maxHealthTotal += h2.getPlayer().getMaxHealth();
+				currentHealthTotal += h2.getPlayer().getHealth();
 			}
 			continue;
 		}
-		if(maxHealthTotal == h.getMaxHealth()) {
+		if(maxHealthTotal == h.getPlayer().getMaxHealth()) {
 			h.getPlayer().sendMessage("There is noone in range to balance with!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
@@ -58,8 +57,7 @@ public class SkillBalance extends ActiveSkill {
 		while(applyHealthIterator.hasNext()) {
 			Hero applyHero = applyHealthIterator.next();
 			if(skipRangeCheck || applyHero.getPlayer().getLocation().toVector().distanceSquared(v) < range) {
-				applyHero.setHealth((int) (applyHero.getMaxHealth()*healthMultiplier));
-				applyHero.syncHealth();
+				applyHero.getPlayer().setHealth((int) (applyHero.getPlayer().getMaxHealth() * healthMultiplier));
 				if(applyHero.getName() == h.getName()) {
 					h.getPlayer().sendMessage(ChatColor.GRAY + "You used Balance!");
 				} else {

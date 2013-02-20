@@ -32,9 +32,9 @@ public class SkillScan extends TargettedSkill {
         CharacterTemplate character = plugin.getCharacterManager().getCharacter(target);
         if (character instanceof Hero) {
             Hero tHero = (Hero) character;
-            Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), tHero.getHealth(), tHero.getMaxHealth());
+            Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", tHero.getPlayer().getDisplayName(), tHero.getLevel(tHero.getHeroClass()), tHero.getHeroClass().getName(), target.getHealth(), target.getMaxHealth());
         } else {
-            Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), character.getHealth(), character.getMaxHealth());
+            Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), target.getHealth(), target.getMaxHealth());
         }
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F); 

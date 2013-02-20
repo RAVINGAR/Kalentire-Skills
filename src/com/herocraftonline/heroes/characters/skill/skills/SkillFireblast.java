@@ -1,5 +1,18 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 //originalsrc-http://pastie.org/private/udeqd6iuoirm3wraci4ga
+import java.lang.reflect.Method;
+
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.meta.FireworkMeta;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -7,17 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Setting;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Firework;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.meta.FireworkMeta;
-import java.lang.reflect.Method;
-import org.bukkit.Location;
-import org.bukkit.World;
 
 public class SkillFireblast extends TargettedSkill
 {
@@ -47,7 +49,6 @@ public class SkillFireblast extends TargettedSkill
 
     int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
     addSpellTarget(target, hero);
-    int n = 5;
 
     damageEntity(target, player, damage, DamageCause.MAGIC);
     broadcastExecuteText(hero, target);

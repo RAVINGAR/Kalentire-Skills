@@ -50,8 +50,7 @@ public class SkillGroupHeal extends ActiveSkill {
                 Messaging.send(player, "Unable to heal the target at this time!");
                 return SkillResult.CANCELLED;
             }
-            hero.setHealth(hero.getHealth() + hrhEvent.getAmount());
-            hero.syncHealth();
+            player.setHealth(player.getHealth() + hrhEvent.getAmount());
         } else {
             int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false), 2);
             Location heroLoc = player.getLocation();
@@ -67,8 +66,7 @@ public class SkillGroupHeal extends ActiveSkill {
                         Messaging.send(player, "Unable to heal the target at this time!");
                         return SkillResult.CANCELLED;
                     }
-                    partyHero.setHealth(partyHero.getHealth() + hrhEvent.getAmount());
-                    partyHero.syncHealth();
+                    partyHero.getPlayer().setHealth(partyHero.getPlayer().getHealth() + hrhEvent.getAmount());
                 }
             }
         }
