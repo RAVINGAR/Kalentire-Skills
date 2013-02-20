@@ -63,8 +63,7 @@ public class SkillChant extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-
-        target.setHealth(targetHealth + hrhEvent.getAmount());
+        targetHero.heal(targetHealth + hrhEvent.getAmount());
 
         broadcastExecuteText(hero, target);
         // this is our fireworks shit

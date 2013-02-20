@@ -48,7 +48,8 @@ public class SkillDrainsoul extends TargettedSkill {
 		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (absorbAmount * healMult), this, hero);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
 		if (!hrEvent.isCancelled()) {
-			player.setHealth(player.getHealth() + hrEvent.getAmount());
+			hero.heal(player.getHealth() + hrEvent.getAmount());
+			//fixed for bukkit events for damage/health
 		}
 		addSpellTarget(target, hero);
 		damageEntity(target, player, absorbAmount, DamageCause.MAGIC);

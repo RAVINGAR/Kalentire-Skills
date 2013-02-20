@@ -2,9 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Heroes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Vault"/>
-	<classpathentry kind="lib" path="/Heroes/libs/spoutplugin.jar"/>
-	<classpathentry kind="lib" path="/Heroes/libs/libigot-1.4.6-R0.4-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/heroes/libs/spoutplugin.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/heroes"/>
+	<classpathentry kind="lib" path="E:/HeroWorkspace/heroes/libs/libigot-1.4.6-R0.4-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Vault/Vault.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

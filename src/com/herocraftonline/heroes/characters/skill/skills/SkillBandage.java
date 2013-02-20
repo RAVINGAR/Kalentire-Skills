@@ -66,8 +66,9 @@ public class SkillBandage extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-
-        target.setHealth(targetHealth + hrhEvent.getAmount());
+        targetHero.heal(target.getHealth() + hrhEvent.getAmount()); 
+        //this should be the new heal for Bukkit Damage/Health
+        //target.setHealth(targetHealth + hrhEvent.getAmount());
 
         // Bandage cures Bleeding!
         for (Effect effect : targetHero.getEffects()) {
