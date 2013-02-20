@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+//src=http://pastie.org/private/mxduefh905orr6x0dara
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -86,7 +87,7 @@ public class SkillBloodBond extends ActiveSkill {
             mana = mana > 0 ? mana : 0;
             hero.addEffect(new BloodBondEffect(this, period, mana));
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 
@@ -101,7 +102,6 @@ public class SkillBloodBond extends ActiveSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.HEAL);
-            this.types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -189,10 +189,11 @@ public class SkillBloodBond extends ActiveSkill {
                         if (!target.getWorld().equals(hero.getPlayer().getWorld())) {
                             continue;
                         }
-                        if(target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
-                            if(target.getHealth() + amount < target.getMaxHealth()){
+                        if (target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
+                            if (target.getHealth() + amount < target.getMaxHealth()){
                                 target.setHealth(target.getHealth() + amount);
-                            }else{
+
+                            } else {
                                 target.setHealth(target.getMaxHealth());
                             }
                         }

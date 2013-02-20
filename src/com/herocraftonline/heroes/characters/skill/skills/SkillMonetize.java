@@ -55,7 +55,7 @@ public class SkillMonetize extends ActiveSkill{
 			final double amount =calculateCoins(hero)*count;
 			econ.depositPlayer(player.getName(),amount);
 	        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F);
+	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F);
 			broadcastExecuteText(hero);
 			player.sendMessage(GRAY+"You have turned "+boldGold(count+" ingot"+((count>1)?"s":""))+" into "+boldGold(econ.format(amount))+"!");
 			return SkillResult.NORMAL;

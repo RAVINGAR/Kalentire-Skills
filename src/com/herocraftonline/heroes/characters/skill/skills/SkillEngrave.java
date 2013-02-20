@@ -16,6 +16,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
@@ -91,7 +92,6 @@ public class SkillEngrave extends ActiveSkill {
         mats.add(Material.FISHING_ROD);
         mats.add(Material.SHEARS);
         mats.add(Material.BLAZE_ROD);
-        mats.add(Material.RAW_FISH);
         mats.add(Material.STICK);
         mats.add(Material.GREEN_RECORD);
         mats.add(Material.GOLD_RECORD);

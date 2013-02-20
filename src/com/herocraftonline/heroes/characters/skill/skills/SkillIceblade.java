@@ -87,7 +87,7 @@ public class SkillIceblade extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 10.0F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
     

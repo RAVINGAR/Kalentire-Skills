@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+//src=http://pastie.org/private/oeherulcmebfy0lerywsw
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -100,25 +101,27 @@ public class SkillDropTheBass extends ActiveSkill {
         if (!hero.hasParty()){
                 return SkillResult.CANCELLED;
         }
-
         int duration = (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false)
                 + SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this));
         int radius = (int) ((SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 15.0, false)
                 + SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false) * hero.getSkillLevel(this)));
+        double radiusSquared = Math.pow(radius,2);
+        
         for(Hero member : hero.getParty().getMembers()){
-            if(member.getPlayer().getLocation().distance(hero.getPlayer().getLocation()) <= radius){
+        	if(member.getPlayer().getWorld() != hero.getPlayer().getWorld()) {continue;}
+            if(member.getPlayer().getLocation().distanceSquared(hero.getPlayer().getLocation()) <= radiusSquared){
                 member.addEffect(new SafeFallEffect(this, duration));
             }
         }
         broadcastExecuteText(hero);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 1.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 2.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 3.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 4.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 5.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_GUITAR, 10.0F, 6.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_DRUM, 10.0F, 7.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 10.0F, 8.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 2.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 3.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 4.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 5.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_GUITAR, 0.8F, 6.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_DRUM, 0.8F, 7.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 8.0F);
         return SkillResult.NORMAL;
     }
 }

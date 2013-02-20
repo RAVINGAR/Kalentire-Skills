@@ -37,7 +37,7 @@ public class SkillScan extends TargettedSkill {
             Messaging.send(player, "$1 has $2 / $3 HP", Messaging.getLivingEntityName(target), target.getHealth(), target.getMaxHealth());
         }
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

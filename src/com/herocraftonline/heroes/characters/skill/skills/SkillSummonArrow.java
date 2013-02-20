@@ -39,7 +39,7 @@ public class SkillSummonArrow extends ActiveSkill {
         World world = player.getWorld();
         ItemStack dropItem = new ItemStack(Material.ARROW, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
         world.dropItem(player.getLocation(), dropItem);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ARROW_HIT , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.DIG_WOOD , 0.8F, 0.2F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

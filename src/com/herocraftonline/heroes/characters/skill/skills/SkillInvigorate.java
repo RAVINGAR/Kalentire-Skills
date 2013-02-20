@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -11,17 +12,17 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
 public class SkillInvigorate extends TargettedSkill{
-
+    
     public SkillInvigorate(Heroes plugin) {
         super(plugin, "Invigorate");
-        setDescription("Resplenishes $1 points of target's stamina.");
-        setUsage("/skill Invigorate");
-        setArgumentRange(0, 0);
+        setDescription("Refills $1 points of target's stamina.");
+        setUsage("/skill Invigorate <target>");
+        setArgumentRange(0, 1);
         setIdentifiers(new String[]{"skill Invigorate"});
-
         setTypes(SkillType.SILENCABLE, SkillType.BUFF);
     }
 
@@ -86,14 +87,27 @@ public class SkillInvigorate extends TargettedSkill{
 
     @Override
     public SkillResult use(Hero hero, LivingEntity entity, String[] args) {
-        if(!(entity instanceof Player)){
-            return SkillResult.CANCELLED;
+        Player target;
+    	if(entity != null) 	{
+        	if(!(entity instanceof Player)){
+        		return SkillResult.INVALID_TARGET;
+        	}
+        	target = (Player)entity;
+        } else {
+        	target = Bukkit.getServer().getPlayer(args[0]);
+        	if(target == null) {
+        		Messaging.send(hero.getPlayer(), "Targetted Player not Found!", new Object[0]);
+        		return SkillResult.INVALID_TARGET_NO_MSG;
+        	}
+        	if(target.getName() == hero.getPlayer().getName()) {
+        		Messaging.send(hero.getPlayer(), "Cannot be used on self!", new Object[0]);
+        		return SkillResult.INVALID_TARGET_NO_MSG;
+        	}
         }
 
-        Player target = (Player) entity;
-
         if(target.getFoodLevel()>=20){
-            return SkillResult.CANCELLED;
+        	Messaging.send(hero.getPlayer(), "This player already has full stamina!", new Object[0]);
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 20.0, false) +
@@ -106,7 +120,7 @@ public class SkillInvigorate extends TargettedSkill{
             target.setFoodLevel(20);
         }
         broadcastExecuteText(hero, target);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_WINGS , 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 }

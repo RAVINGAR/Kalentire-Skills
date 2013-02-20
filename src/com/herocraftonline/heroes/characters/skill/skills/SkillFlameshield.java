@@ -52,9 +52,9 @@ public class SkillFlameshield extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
         broadcastExecuteText(hero);
         // this is our fireworks shit
+        Player player = hero.getPlayer();
         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.RED).withFade(Color.MAROON).build());
         } catch (IllegalArgumentException e) {

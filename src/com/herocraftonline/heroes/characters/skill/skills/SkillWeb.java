@@ -76,7 +76,7 @@ public class SkillWeb extends TargettedSkill {
         WebEffect wEffect = new WebEffect(this, duration, target.getLocation().getBlock().getLocation());
         hero.addEffect(wEffect);
         player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_IDLE , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_IDLE , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -74,7 +75,7 @@ public class SkillBandage extends TargettedSkill {
                 targetHero.removeEffect(effect);
             }
         }
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EAT , 0.5F, 0.01F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

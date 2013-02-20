@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+//src=http://pastie.org/private/fzesxgiubhrxtfy5pgs0wg
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -23,7 +24,6 @@ public class SkillQuantumLeap extends TargettedSkill {
 		setUsage("/skill quantumleap <target>");
 		setArgumentRange(0, 1);
 		setIdentifiers("skill quantumleap");
-
 		setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT);
 	}
 
@@ -34,6 +34,7 @@ public class SkillQuantumLeap extends TargettedSkill {
 	}
 
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+		if(!(target instanceof Player)) {return SkillResult.INVALID_TARGET;}
 		Player player = hero.getPlayer();
 		Location tlocation = target.getLocation();
 		Location plocation = player.getLocation();

@@ -78,7 +78,7 @@ public class SkillImpale extends TargettedSkill {
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 4, false);
         SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
         plugin.getCharacterManager().getCharacter(target).addEffect(new ImpaleEffect(this, 300, sEffect));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 0.8F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

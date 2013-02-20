@@ -39,7 +39,7 @@ public class SkillSummonPickaxe extends ActiveSkill {
         World world = player.getWorld();
         ItemStack dropItem = new ItemStack(Material.STONE_PICKAXE, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
         world.dropItem(player.getLocation(), dropItem);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

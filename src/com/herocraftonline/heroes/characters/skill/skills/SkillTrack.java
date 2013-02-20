@@ -52,7 +52,7 @@ public class SkillTrack extends ActiveSkill {
 
         Messaging.send(player, "Tracked $1: $2,$3,$4", target.getName(), x, y, z);
         player.setCompassTarget(location);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 10.0F, 5.0F); ;
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 5.0F); ;
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
