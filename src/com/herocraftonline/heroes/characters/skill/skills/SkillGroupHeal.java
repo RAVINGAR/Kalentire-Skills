@@ -50,7 +50,7 @@ public class SkillGroupHeal extends ActiveSkill {
                 Messaging.send(player, "Unable to heal the target at this time!");
                 return SkillResult.CANCELLED;
             }
-            
+
             hero.heal(hrhEvent.getAmount());
             //changed to hero.heal for bukkit events
         } else {
@@ -68,7 +68,7 @@ public class SkillGroupHeal extends ActiveSkill {
                         Messaging.send(player, "Unable to heal the target at this time!");
                         return SkillResult.CANCELLED;
                     }
-                    
+
                     //old - partyHero.getPlayer().setHealth(partyHero.getPlayer().getHealth() + hrhEvent.getAmount());
                     partyHero.heal(hrhEvent.getAmount());
 

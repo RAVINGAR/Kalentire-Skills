@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -75,10 +76,9 @@ public class SkillChakra extends ActiveSkill {
 
     private void healDispel(Hero targetHero, int removals, int healAmount, Hero hero) {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
+        Bukkit.getPluginManager().callEvent(hrhEvent);
         if (!hrhEvent.isCancelled()) {
-            if (targetHero.getPlayer().getHealth() < targetHero.getPlayer().getMaxHealth()) {
-            	targetHero.heal(hrhEvent.getAmount());
-            }
+            targetHero.heal(hrhEvent.getAmount());
         }
         if (removals == 0)
             return;
