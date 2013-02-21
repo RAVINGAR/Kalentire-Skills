@@ -47,7 +47,7 @@ public class SkillSyphon extends TargettedSkill {
         }
         int playerHealth = hero.getPlayer().getHealth();
         int targetHealth = target.getHealth();
-        hero.getPlayer().setHealth(playerHealth - transferredHealth);
+        hero.heal(playerHealth - transferredHealth);
 
         transferredHealth *= SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.0, false);
 
