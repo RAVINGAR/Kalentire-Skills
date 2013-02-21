@@ -51,7 +51,7 @@ public class SkillGroupHeal extends ActiveSkill {
                 return SkillResult.CANCELLED;
             }
             
-            hero.heal(player.getHealth() + hrhEvent.getAmount());
+            hero.heal(hrhEvent.getAmount());
             //changed to hero.heal for bukkit events
         } else {
             int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false), 2);
