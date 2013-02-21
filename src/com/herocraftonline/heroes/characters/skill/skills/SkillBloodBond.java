@@ -147,7 +147,7 @@ public class SkillBloodBond extends ActiveSkill {
         public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
             if(event.getCause().equals(DamageCause.MAGIC) && event.getDamager() instanceof Player){
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-                if(hero.hasEffect("BloodBond")&&(hero.hasParty())){
+                if (hero.hasEffect("BloodBond") && (hero.hasParty())){
                     double percent = (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, "percent-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
                     percent = percent > 0 ? percent : 0;
@@ -160,12 +160,8 @@ public class SkillBloodBond extends ActiveSkill {
                         if (!target.getWorld().equals(hero.getPlayer().getWorld())) {
                             continue;
                         }
-                        if(target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
-                            if(target.getHealth() + amount < target.getMaxHealth()) {
-                                hero.heal(target.getHealth() + amount);
-                            }else{
-                                hero.heal(target.getMaxHealth());
-                            }
+                        if (target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
+                            hero.heal( + amount);
                         }
                     }
                 }
@@ -190,12 +186,7 @@ public class SkillBloodBond extends ActiveSkill {
                             continue;
                         }
                         if (target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
-                            if (target.getHealth() + amount < target.getMaxHealth()){
-                                hero.heal(target.getHealth() + amount);
-
-                            } else {
-                                hero.heal(target.getMaxHealth());
-                            }
+                            hero.heal(amount);
                         }
                     }
                 }
