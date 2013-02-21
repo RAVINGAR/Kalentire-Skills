@@ -77,7 +77,9 @@ public class SkillHealingChorus extends ActiveSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         if (!hrhEvent.isCancelled()) {
             if (targetHero.getPlayer().getHealth() < targetHero.getPlayer().getMaxHealth()) {
-                targetHero.getPlayer().setHealth(targetHero.getPlayer().getHealth() + hrhEvent.getAmount());
+            	targetHero.heal(hrhEvent.getAmount());
+            //if (targetHero.getPlayer().getHealth() < targetHero.getPlayer().getMaxHealth()) {
+            //    targetHero.getPlayer().setHealth(targetHero.getPlayer().getHealth() + hrhEvent.getAmount());
             }
         }
         if (removals == 0)
