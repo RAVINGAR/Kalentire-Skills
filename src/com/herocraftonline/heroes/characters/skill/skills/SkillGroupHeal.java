@@ -68,9 +68,9 @@ public class SkillGroupHeal extends ActiveSkill {
                         Messaging.send(player, "Unable to heal the target at this time!");
                         return SkillResult.CANCELLED;
                     }
-                    
-                    partyHero.getPlayer().setHealth(partyHero.getPlayer().getHealth() + hrhEvent.getAmount());
-                    //still need to change .setHealth
+                    //old - partyHero.getPlayer().setHealth(partyHero.getPlayer().getHealth() + hrhEvent.getAmount());
+                    partyHero.heal(partyHero.getPlayer().getHealth() + hrhEvent.getAmount());
+
                 }
             }
         }
