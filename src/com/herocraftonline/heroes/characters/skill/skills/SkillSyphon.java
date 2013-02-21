@@ -46,12 +46,15 @@ public class SkillSyphon extends TargettedSkill {
             }
         }
         int playerHealth = hero.getPlayer().getHealth();
-        int targetHealth = target.getHealth();
-        hero.heal(playerHealth - transferredHealth);
+        if (playerHealth - transferredHealth < 0) {
+            return SkillResult.LOW_HEALTH;
+        } else {
+            hero.getPlayer().setHealth(playerHealth - transferredHealth);
+        }
 
         transferredHealth *= SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.0, false);
 
-        target.setHealth(targetHealth + transferredHealth);
+        plugin.getCharacterManager().getHero((Player) target).heal(transferredHealth);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
