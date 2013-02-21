@@ -63,8 +63,9 @@ public class SkillPray extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(target.getHealth() + hrhEvent.getAmount());
         //this should be the new heal for Bukkit Damage/Health
+        targetHero.heal(target.getHealth() + hrhEvent.getAmount());
+
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
