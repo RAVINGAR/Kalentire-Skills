@@ -40,30 +40,32 @@ public class SkillHealingBloom extends ActiveSkill {
 		}
 
 		@Override
-		public void tickHero(Hero h) {
-		    Player player = h.getPlayer();
+		public void tickHero(Hero hero) {
+		    Player player = hero.getPlayer();
 			switch(mode) {
 			case 0:
-				HeroRegainHealthEvent event = new HeroRegainHealthEvent(h, (int) amountHealed, skill);
+				HeroRegainHealthEvent event = new HeroRegainHealthEvent(hero, (int) amountHealed, skill);
 				Bukkit.getPluginManager().callEvent(event);
 				if(!event.isCancelled()) {
-					player.setHealth(player.getHealth() + event.getAmount());
+					//new - hero.heal(hero.getPlayer().getHealth() + hrhEvent.getAmount());
+					hero.heal(hero.getPlayer().getHealth() + event.getAmount());
 				}
 				break;
 			case 1:
 				double multiplier = amountHealed * 0.01;
-				HeroRegainHealthEvent event1 = new HeroRegainHealthEvent(h, (int) (player.getMaxHealth() * multiplier), skill);
+				HeroRegainHealthEvent event1 = new HeroRegainHealthEvent(hero, (int) (player.getMaxHealth() * multiplier), skill);
 				Bukkit.getPluginManager().callEvent(event1);
 				if(!event1.isCancelled()) {
-				    player.setHealth(player.getHealth() + event1.getAmount());
+					hero.heal(hero.getPlayer().getHealth() + event1.getAmount());
 				}
 				break;
 			case 2:
 				double multiplier1 = amountHealed * 0.01;
-				HeroRegainHealthEvent event2 = new HeroRegainHealthEvent(h, (int) ((player.getMaxHealth() - player.getHealth())*multiplier1), skill);
+				HeroRegainHealthEvent event2 = new HeroRegainHealthEvent(hero, (int) ((player.getMaxHealth() - player.getHealth())*multiplier1), skill);
 				Bukkit.getPluginManager().callEvent(event2);
 				if(!event2.isCancelled()) {
-				    player.setHealth(player.getHealth() + event2.getAmount());
+					hero.heal(hero.getPlayer().getHealth() + event2.getAmount());
+				    //player.setHealth(player.getHealth() + event2.getAmount());
 				}
 				break;
 			}
