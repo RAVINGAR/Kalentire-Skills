@@ -66,7 +66,7 @@ public class SkillBandage extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(target.getHealth() + hrhEvent.getAmount()); 
+        targetHero.heal(hrhEvent.getAmount()); 
 
         // Bandage cures Bleeding!
         for (Effect effect : targetHero.getEffects()) {
