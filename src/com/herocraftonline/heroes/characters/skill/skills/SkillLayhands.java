@@ -42,8 +42,7 @@ public class SkillLayhands extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
         //this should be the new heal for Bukkit Damage/Health
-        targetHero.heal(target.getHealth() + hrhEvent.getAmount()); 
-        //target.setHealth(target.getHealth() + hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getAmount()); 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
