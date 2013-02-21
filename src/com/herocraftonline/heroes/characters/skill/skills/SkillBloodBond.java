@@ -162,9 +162,9 @@ public class SkillBloodBond extends ActiveSkill {
                         }
                         if(target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
                             if(target.getHealth() + amount < target.getMaxHealth()) {
-                                target.setHealth(target.getHealth() + amount);
+                                hero.heal(target.getHealth() + amount);
                             }else{
-                                target.setHealth(target.getMaxHealth());
+                                hero.heal(target.getMaxHealth());
                             }
                         }
                     }
@@ -191,10 +191,10 @@ public class SkillBloodBond extends ActiveSkill {
                         }
                         if (target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
                             if (target.getHealth() + amount < target.getMaxHealth()){
-                                target.setHealth(target.getHealth() + amount);
+                                hero.heal(target.getHealth() + amount);
 
                             } else {
-                                target.setHealth(target.getMaxHealth());
+                                hero.heal(target.getMaxHealth());
                             }
                         }
                     }
