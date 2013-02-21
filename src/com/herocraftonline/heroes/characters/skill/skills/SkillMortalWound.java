@@ -23,10 +23,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMortalWound extends TargettedSkill {
@@ -48,21 +48,21 @@ public class SkillMortalWound extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.swords);
-        node.set(Setting.DURATION.node(), 12000);
-        node.set(Setting.PERIOD.node(), 3000);
+        node.set(SkillSetting.DURATION.node(), 12000);
+        node.set(SkillSetting.PERIOD.node(), 3000);
         node.set("heal-multiplier", .5);
         node.set("tick-damage", 1);
-        node.set(Setting.MAX_DISTANCE.node(), 2);
-        node.set(Setting.APPLY_TEXT.node(), "%target% has been mortally wounded by %hero%!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from their mortal wound!");
+        node.set(SkillSetting.MAX_DISTANCE.node(), 2);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been mortally wounded by %hero%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from their mortal wound!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("$2", "%hero%");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has recovered from their mortal wound!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("$2", "%hero%");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from their mortal wound!").replace("%target%", "$1");
     }
 
     @Override
@@ -80,8 +80,8 @@ public class SkillMortalWound extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 12000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
         plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
@@ -155,8 +155,8 @@ public class SkillMortalWound extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double heal = 1 - SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", .5, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         return getDescription().replace("$1", heal * 100 + "").replace("$2", damage * duration / period + "").replace("$3", duration / 1000 + "");
     }

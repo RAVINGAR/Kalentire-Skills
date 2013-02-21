@@ -21,9 +21,9 @@ import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlackjack extends ActiveSkill {
@@ -45,25 +45,25 @@ public class SkillBlackjack extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.APPLY_TEXT.node(), "%hero% prepared his blackjack!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% prepared his blackjack!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!");
         node.set("stun-duration", 5000);
         node.set("stun-chance", 0.20);
-        node.set(Setting.DURATION.node(), 20000);
+        node.set(SkillSetting.DURATION.node(), 20000);
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% prepared his blackjack!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% sheathed his blackjack!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% prepared his blackjack!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% sheathed his blackjack!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         hero.addEffect(new BlackjackEffect(this, duration));
         Player player = hero.getPlayer();
         // this is our fireworks shit

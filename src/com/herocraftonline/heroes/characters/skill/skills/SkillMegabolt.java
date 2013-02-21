@@ -10,9 +10,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillMegabolt extends TargettedSkill {
 
@@ -28,8 +28,8 @@ public class SkillMegabolt extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 4);
-        node.set(Setting.RADIUS.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 4);
+        node.set(SkillSetting.RADIUS.node(), 5);
         return node;
     }
 
@@ -37,8 +37,8 @@ public class SkillMegabolt extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
 
         // Damage the first target
         addSpellTarget(target, hero);
@@ -65,7 +65,7 @@ public class SkillMegabolt extends TargettedSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         return getDescription().replace("$1", damage + "");
     }
 }

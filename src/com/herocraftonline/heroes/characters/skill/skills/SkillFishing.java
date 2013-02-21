@@ -18,9 +18,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 
@@ -61,7 +61,7 @@ public class SkillFishing extends PassiveSkill {
             double chance = Util.nextRand();
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             Player player = hero.getPlayer();
-            if (chance < SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)){ //if the chance
+            if (chance < SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)){ //if the chance
 
                 int leatherlvl = SkillConfigManager.getUseSetting(hero, skill, "leather-level", 5, true);
                 if (hero.getLevel() >= leatherlvl && SkillConfigManager.getUseSetting(hero, skill, "enable-leather", false)){ //if fishing leather is enabled and have the level

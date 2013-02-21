@@ -18,9 +18,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillAbsorb extends ActiveSkill {
 
@@ -41,16 +41,16 @@ public class SkillAbsorb extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
     	ConfigurationSection node = super.getDefaultConfig();
         node.set("mana-amount", 20);
-        node.set(Setting.APPLY_TEXT.node(), "%target% is absorbing damage!");
-        node.set(Setting.EXPIRE_TEXT.node(), "Absorb faded from %target%!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is absorbing damage!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "Absorb faded from %target%!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is absorbing damage!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "Absorb faded from %target%!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is absorbing damage!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Absorb faded from %target%!").replace("%target%", "$1");
     }
 
     @Override

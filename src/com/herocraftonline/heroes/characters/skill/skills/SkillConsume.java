@@ -14,9 +14,9 @@ import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillConsume extends ActiveSkill {
 
@@ -33,9 +33,9 @@ public class SkillConsume extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         String root = "BONE";
-        node.set(root + "." + Setting.LEVEL.node(), 1);
-        node.set(root + "." + Setting.MANA.node(), 20);
-        node.set(root + "." + Setting.AMOUNT.node(), 1);
+        node.set(root + "." + SkillSetting.LEVEL.node(), 1);
+        node.set(root + "." + SkillSetting.MANA.node(), 20);
+        node.set(root + "." + SkillSetting.AMOUNT.node(), 1);
         return node;
     }
 
@@ -58,11 +58,11 @@ public class SkillConsume extends ActiveSkill {
                 if (mat == null)
                     throw new IllegalArgumentException("Invalid Configuration for Skill Consume: " + key + " is not a valid Material");
 
-                int amount = SkillConfigManager.getUseSetting(hero, this, key + "." + Setting.AMOUNT, 1, true);
+                int amount = SkillConfigManager.getUseSetting(hero, this, key + "." + SkillSetting.AMOUNT, 1, true);
                 if (amount < 1)
                     throw new IllegalArgumentException("Invalid Configuration for Skill Consume: " + key + " has invalid amount defined");
 
-                int level = SkillConfigManager.getUseSetting(hero, this, key + "." + Setting.LEVEL, 1, true);
+                int level = SkillConfigManager.getUseSetting(hero, this, key + "." + SkillSetting.LEVEL, 1, true);
                 if (hero.getSkillLevel(this) < level) {
                     return new SkillResult(ResultType.LOW_LEVEL, true, level);
                 }
@@ -74,7 +74,7 @@ public class SkillConsume extends ActiveSkill {
                 }
 
                 
-                int mana = SkillConfigManager.getUseSetting(hero, this, key + "." + Setting.MANA, 20, false);
+                int mana = SkillConfigManager.getUseSetting(hero, this, key + "." + SkillSetting.MANA, 20, false);
                 HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, mana, this);
                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                 if (hrmEvent.isCancelled())

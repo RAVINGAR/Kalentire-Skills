@@ -15,10 +15,10 @@ import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.MaterialUtil;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRepair extends ActiveSkill {
@@ -36,12 +36,12 @@ public class SkillRepair extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%hero% repaired a %item%%ench%").replace("%hero%", "$1").replace("%item%", "$2").replace("%ench%", "$3");
+        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "%hero% repaired a %item%%ench%").replace("%hero%", "$1").replace("%item%", "$2").replace("%ench%", "$3");
     }
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.USE_TEXT.node(), "%hero% repaired a %item%%ench%");
+        node.set(SkillSetting.USE_TEXT.node(), "%hero% repaired a %item%%ench%");
         node.set("wood-weapons", 1);
         node.set("stone-weapons", 1);
         node.set("iron-weapons", 1);

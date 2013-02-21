@@ -11,9 +11,9 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillKick extends TargettedSkill {
 
@@ -29,16 +29,16 @@ public class SkillKick extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
-        node.set(Setting.DAMAGE.node(), 4);
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer silenced!");
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.DAMAGE.node(), 4);
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer silenced!");
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         addSpellTarget(target, hero);
         if (!damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK)) {
             return SkillResult.INVALID_TARGET;
@@ -54,8 +54,8 @@ public class SkillKick extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

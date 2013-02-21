@@ -11,11 +11,11 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillChant extends TargettedSkill {
     // This is for Firework Effects
@@ -33,7 +33,7 @@ public class SkillChant extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.HEALTH.node(), 5);
+        node.set(SkillSetting.HEALTH.node(), 5);
         return node;
     }
 
@@ -45,7 +45,7 @@ public class SkillChant extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
+        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
         int targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
@@ -79,7 +79,7 @@ public class SkillChant extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
         return getDescription().replace("$1", amount + "");
     }
 }

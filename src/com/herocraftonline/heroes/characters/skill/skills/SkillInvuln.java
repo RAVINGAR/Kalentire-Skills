@@ -11,8 +11,8 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.InvulnerabilityEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillInvuln extends ActiveSkill {
 
@@ -28,9 +28,9 @@ public class SkillInvuln extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% has become invulnerable!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is once again vulnerable!");
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% has become invulnerable!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is once again vulnerable!");
         return node;
     }
 
@@ -43,7 +43,7 @@ public class SkillInvuln extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         // Remove any harmful effects on the caster
         for (Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.HARMFUL)) {
@@ -57,7 +57,7 @@ public class SkillInvuln extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 1, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

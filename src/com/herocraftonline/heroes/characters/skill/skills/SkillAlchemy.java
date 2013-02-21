@@ -15,8 +15,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillAlchemy extends PassiveSkill {
 
@@ -32,7 +32,7 @@ public class SkillAlchemy extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        section.set(Setting.LEVEL.node(), 1);
+        section.set(SkillSetting.LEVEL.node(), 1);
         return section;
     }
     

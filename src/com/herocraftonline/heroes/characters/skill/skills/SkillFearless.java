@@ -17,8 +17,8 @@ import com.herocraftonline.heroes.characters.effects.common.FormEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFearless extends ActiveSkill {
@@ -41,15 +41,15 @@ public class SkillFearless extends ActiveSkill {
         node.set("incoming-multiplier", 1.1);
         node.set("outgoing-multiplier", 1.1);
         node.set("multiplier-per-level", .005);
-        node.set(Setting.USE_TEXT.node(), "%hero% is fearless!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer fearless!");
+        node.set(SkillSetting.USE_TEXT.node(), "%hero% is fearless!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer fearless!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% is no longer fearless!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% is no longer fearless!").replace("%hero%", "$1");
     }
 
     @Override

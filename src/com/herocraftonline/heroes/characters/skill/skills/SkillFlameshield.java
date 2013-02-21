@@ -14,9 +14,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillFlameshield extends ActiveSkill {
     // This is for Firework Effects
@@ -36,9 +36,9 @@ public class SkillFlameshield extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% conjured a shield of flames!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his shield of flames!");
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% conjured a shield of flames!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his shield of flames!");
         node.set("skill-block-text", "%name%'s flameshield has blocked %hero%'s %skill%.");
         return node;
     }
@@ -46,8 +46,8 @@ public class SkillFlameshield extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% conjured a shield of flames!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% lost his shield of flames!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a shield of flames!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his shield of flames!").replace("%hero%", "$1");
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SkillFlameshield extends ActiveSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         hero.addEffect(new FlameshieldEffect(this, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 0.4F, 1.0F); 
         return SkillResult.NORMAL;
@@ -96,7 +96,7 @@ public class SkillFlameshield extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

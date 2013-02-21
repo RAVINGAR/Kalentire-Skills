@@ -19,8 +19,8 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillReflect extends ActiveSkill {
@@ -41,25 +41,25 @@ public class SkillReflect extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
+        node.set(SkillSetting.DURATION.node(), 5000);
         node.set("reflected-amount", 0.5);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% put up a reflective shield!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his reflective shield!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% put up a reflective shield!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his reflective shield!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% put up a reflective shield!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% lost his reflective shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% put up a reflective shield!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his reflective shield!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double reflectAmount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", 0.5, false);
         hero.addEffect(new ReflectEffect(this, duration, reflectAmount));
 
@@ -122,7 +122,7 @@ public class SkillReflect extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double amount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", .5, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         return getDescription().replace("$1", Util.stringDouble(amount * 100)).replace("$2", duration / 1000 + "");
     }
 }

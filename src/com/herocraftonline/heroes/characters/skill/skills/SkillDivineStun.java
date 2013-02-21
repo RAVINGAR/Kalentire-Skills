@@ -9,9 +9,9 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDivineStun extends TargettedSkill {
 	
@@ -27,15 +27,15 @@ public class SkillDivineStun extends TargettedSkill {
 	@Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
-        node.set(Setting.DAMAGE.node(), 50);
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.DAMAGE.node(), 50);
         return node;
     }
 
 	@Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-		int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-		int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 50, false);
+		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 		damageEntity(target, hero.getEntity(), damage);
 		plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.5F, 1.0F);
@@ -44,8 +44,8 @@ public class SkillDivineStun extends TargettedSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-		int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-		int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 50, false);
+		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 		return getDescription().replace("$1", (duration / 1000) + "").replace("$2", damage + "");
 	}
 

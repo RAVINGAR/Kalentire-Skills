@@ -16,9 +16,9 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillHealingChorus extends ActiveSkill {
     // This is for Firework Effects
@@ -36,7 +36,7 @@ public class SkillHealingChorus extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("heal-amount", 10);
-        node.set(Setting.RADIUS.node(), 7);
+        node.set(SkillSetting.RADIUS.node(), 7);
         node.set("max-removals", -1);
         return node;
     }
@@ -45,7 +45,7 @@ public class SkillHealingChorus extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location castLoc = player.getLocation().clone();
-        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 7, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
         int radiusSquared = radius * radius;
         int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);

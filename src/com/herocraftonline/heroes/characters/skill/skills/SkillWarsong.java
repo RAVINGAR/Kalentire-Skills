@@ -19,9 +19,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWarsong extends ActiveSkill {
@@ -43,24 +43,24 @@ public class SkillWarsong extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("damage-bonus", 1.25);
-        node.set(Setting.RADIUS.node(), 10);
-        node.set(Setting.APPLY_TEXT.node(), "Your muscles bulge with power!");
-        node.set(Setting.EXPIRE_TEXT.node(), "You feel strength leave your body!");
-        node.set(Setting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
+        node.set(SkillSetting.RADIUS.node(), 10);
+        node.set(SkillSetting.APPLY_TEXT.node(), "Your muscles bulge with power!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "You feel strength leave your body!");
+        node.set(SkillSetting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "Your muscles bulge with power!");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "You feel strength leave your body!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "Your muscles bulge with power!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You feel strength leave your body!");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
 
         WarsongEffect mEffect = new WarsongEffect(this, duration, damageBonus);
@@ -72,7 +72,7 @@ public class SkillWarsong extends ActiveSkill {
             }
             hero.addEffect(mEffect);
         } else {
-            int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false);
+            int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
             int rangeSquared = range * range;
             Location loc = player.getLocation();
             for (Hero pHero : hero.getParty().getMembers()) {

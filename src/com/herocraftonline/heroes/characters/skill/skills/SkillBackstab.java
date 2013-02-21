@@ -15,8 +15,8 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBackstab extends PassiveSkill {
@@ -40,14 +40,14 @@ public class SkillBackstab extends PassiveSkill {
         node.set("attack-chance", .5);
         node.set("sneak-bonus", 2.0); // Alternative bonus if player is sneaking when doing the backstab
         node.set("sneak-chance", 1.0);
-        node.set(Setting.USE_TEXT.node(), "%hero% backstabbed %target%!");
+        node.set(SkillSetting.USE_TEXT.node(), "%hero% backstabbed %target%!");
         return node;
     }
     
     @Override
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "%hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public class SkillHeroesListener implements Listener {

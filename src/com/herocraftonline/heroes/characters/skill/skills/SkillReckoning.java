@@ -19,9 +19,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillReckoning extends ActiveSkill {
 	
@@ -37,9 +37,9 @@ public class SkillReckoning extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 50);
-        node.set(Setting.RADIUS.node(), 5);
-        node.set(Setting.DURATION.node(), 4000); //4 second duration
+        node.set(SkillSetting.DAMAGE.node(), 50);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DURATION.node(), 4000); //4 second duration
         node.set("slow-amount", 2);
         return node;
     }
@@ -47,10 +47,10 @@ public class SkillReckoning extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
         int slowAmount = SkillConfigManager.getUseSetting(hero, this, "slow-amount", 2, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         Location playerLoc = player.getLocation();
         
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
@@ -97,8 +97,8 @@ public class SkillReckoning extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 

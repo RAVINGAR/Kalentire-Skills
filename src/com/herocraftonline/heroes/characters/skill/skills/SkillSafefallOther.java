@@ -9,9 +9,9 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillSafefallOther extends TargettedSkill {
 
@@ -28,9 +28,9 @@ public class SkillSafefallOther extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.APPLY_TEXT.node(), "%target% has gained safefall!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has lost safefall!");
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has gained safefall!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has lost safefall!");
         return node;
     }
 
@@ -41,7 +41,7 @@ public class SkillSafefallOther extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         broadcastExecuteText(hero, target);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         targetHero.addEffect(new SafeFallEffect(this, duration));
 
         return SkillResult.NORMAL;
@@ -49,7 +49,7 @@ public class SkillSafefallOther extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

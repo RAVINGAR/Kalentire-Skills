@@ -19,8 +19,8 @@ import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillExplosiveFireball extends ActiveSkill {
 
@@ -37,7 +37,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 4);
+        node.set(SkillSetting.DAMAGE.node(), 4);
         node.set("fire-ticks", 100);
         return node;
     }
@@ -78,7 +78,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
                         if (!damageCheck(shooter, (LivingEntity) entity)) {
                             event.setCancelled(true);
                         }
-                        int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
+                        int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 4, false);
                         entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
                         if (entity instanceof LivingEntity)
                         plugin.getCharacterManager().getCharacter((LivingEntity) entity).addEffect(new CombustEffect(skill, shooter));
@@ -91,7 +91,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         return getDescription().replace("$1", damage + "");
     }
 }

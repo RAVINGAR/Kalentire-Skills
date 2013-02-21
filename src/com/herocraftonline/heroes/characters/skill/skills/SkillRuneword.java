@@ -17,9 +17,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillRuneword extends TargettedSkill {
 
@@ -40,23 +40,23 @@ public class SkillRuneword extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("damage-bonus", 1.25);
-        node.set(Setting.RADIUS.node(), 10);
-        node.set(Setting.APPLY_TEXT.node(), "%target% has been cursed by a Runeword!");
-        node.set(Setting.EXPIRE_TEXT.node(), "The Runeword's curse fades from %target%!");
-        node.set(Setting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
+        node.set(SkillSetting.RADIUS.node(), 10);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been cursed by a Runeword!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "The Runeword's curse fades from %target%!");
+        node.set(SkillSetting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been cursed by a Runeword!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "The Runeword's curse fades from %target%!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been cursed by a Runeword!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "The Runeword's curse fades from %target%!").replace("%target%", "$1");
     }
     
     @Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
         RunewordEffect effect = new RunewordEffect(this, duration, damageBonus);
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);

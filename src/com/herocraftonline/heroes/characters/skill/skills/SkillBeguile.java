@@ -17,10 +17,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBeguile extends TargettedSkill {
 
@@ -41,25 +41,25 @@ public class SkillBeguile extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.PERIOD.node(), 1000);
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.PERIOD.node(), 1000);
         node.set("max-drift", 0.35);
-        node.set(Setting.APPLY_TEXT.node(), "%target% is beguiled!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has regained his wit!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is beguiled!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has regained his wit!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% is beguiled!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%target% has regained his wit!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is beguiled!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has regained his wit!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 0.35, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new ConfuseEffect(this, duration, period, maxDrift));
         broadcastExecuteText(hero, target);
@@ -133,7 +133,7 @@ public class SkillBeguile extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

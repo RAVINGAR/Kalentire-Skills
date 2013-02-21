@@ -16,8 +16,8 @@ import com.herocraftonline.heroes.characters.effects.common.FormEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillEndurance extends ActiveSkill {
@@ -40,15 +40,15 @@ public class SkillEndurance extends ActiveSkill {
         node.set("incoming-multiplier", .9);
         node.set("outgoing-multiplier", .9);
         node.set("multiplier-per-level", .005);
-        node.set(Setting.USE_TEXT.node(), "%hero% shifts into a defensive form!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% has shifted out of their defensive form!");
+        node.set(SkillSetting.USE_TEXT.node(), "%hero% shifts into a defensive form!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% has shifted out of their defensive form!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% has shifted out of their defensive form!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% has shifted out of their defensive form!").replace("%hero%", "$1");
     }
 
     @Override

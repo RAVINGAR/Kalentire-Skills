@@ -17,8 +17,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillIronFist extends ActiveSkill {
 
@@ -34,8 +34,8 @@ public class SkillIronFist extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 4);
-        node.set(Setting.RADIUS.node(), 3);
+        node.set(SkillSetting.DAMAGE.node(), 4);
+        node.set(SkillSetting.RADIUS.node(), 3);
         node.set("vertical-power", .25);
         node.set("horizontal-power", .5);
         return node;
@@ -45,7 +45,7 @@ public class SkillIronFist extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
@@ -87,7 +87,7 @@ public class SkillIronFist extends ActiveSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

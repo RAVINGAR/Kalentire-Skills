@@ -10,10 +10,10 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BlindEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBlind extends TargettedSkill {
 
@@ -32,17 +32,17 @@ public class SkillBlind extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 3000);
-        node.set(Setting.APPLY_TEXT.node(), "%target% has been blinded!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% can see again!");
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% has been blinded!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%target% can see again!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!").replace("%target%", "$1");
     }
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -51,7 +51,7 @@ public class SkillBlind extends TargettedSkill {
             Messaging.send(player, "You must target a player!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 3000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         hero.addEffect(new BlindEffect(this, duration, applyText, expireText));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_IDLE, 0.8F, 1.0F);
@@ -60,7 +60,7 @@ public class SkillBlind extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 3000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 

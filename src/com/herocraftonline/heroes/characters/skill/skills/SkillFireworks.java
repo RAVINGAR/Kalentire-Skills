@@ -16,7 +16,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.util.Setting;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 
 public class SkillFireworks extends ActiveSkill {
 
@@ -105,7 +105,7 @@ public class SkillFireworks extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 		node.set("numberFireworks", Integer.valueOf(5));
-		node.set(Setting.COOLDOWN.node(), Integer.valueOf(0));
+		node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(0));
 		return node;
 	}
 

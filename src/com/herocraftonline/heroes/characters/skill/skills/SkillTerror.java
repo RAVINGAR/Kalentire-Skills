@@ -12,9 +12,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillTerror extends TargettedSkill {
 	
@@ -33,9 +33,9 @@ public class SkillTerror extends TargettedSkill {
 	@Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.APPLY_TEXT.node(), "%target% is terrified!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has overcome his fear!");
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is terrified!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has overcome his fear!");
         node.set("zoom-multiplier", 5);
         node.set("use-darkness", true);
         node.set("use-nausea", true);
@@ -45,15 +45,15 @@ public class SkillTerror extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% is terrified!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%target% has overcome his fear!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is terrified!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has overcome his fear!").replace("%target%", "$1");
     }
 
 	@Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		if(!(target instanceof Player))
 			return SkillResult.INVALID_TARGET_NO_MSG;
-		long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 		int zoomAmount = SkillConfigManager.getUseSetting(hero, this, "zoom-multiplier", 5, false);
 		boolean useDarkness = SkillConfigManager.getUseSetting(hero, this, "use-darkness", true);
 		boolean useNausea = SkillConfigManager.getUseSetting(hero, this, "use-nausea", true);
@@ -102,7 +102,7 @@ public class SkillTerror extends TargettedSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-		int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false) / 1000;
+		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000;
 		return getDescription().replace("$1", duration + "");
 	}
 

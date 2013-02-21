@@ -19,8 +19,8 @@ import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBloodBond extends ActiveSkill {
     private String applyText;
@@ -41,8 +41,8 @@ public class SkillBloodBond extends ActiveSkill {
         int percent = (int) ((SkillConfigManager.getUseSetting(hero, this, "percent", 0.05, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "percent-increase", 0.0, false) * hero.getSkillLevel(this))) * 100);
         percent = percent > 0 ? percent : 0;
-        int radius = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 15.0, false) +
-                (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
+        int radius = (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15.0, false) +
+                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
         radius = radius > 1 ? radius : 1;
         int mana = (int) (SkillConfigManager.getUseSetting(hero, this, "mana-tick", 10.0, false) -
                 (SkillConfigManager.getUseSetting(hero, this, "mana-tick-decrease", 0.0, false) * hero.getSkillLevel(this)));
@@ -59,11 +59,11 @@ public class SkillBloodBond extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("on-text", "%hero% %skill%s with his party!");
         node.set("off-text", "%hero% breaks the %skill%!");
-        node.set(Setting.PERIOD.node(), 3000);
+        node.set(SkillSetting.PERIOD.node(), 3000);
         node.set("percent", 0.05);
         node.set("percent-increase", 0.0);
-        node.set(Setting.RADIUS.node(), 15.0);
-        node.set(Setting.RADIUS_INCREASE.node(), 0.0);
+        node.set(SkillSetting.RADIUS.node(), 15.0);
+        node.set(SkillSetting.RADIUS_INCREASE.node(), 0.0);
         node.set("mana-tick", 10.0);
         node.set("mana-tick-decrease", 0.0);
         return node;
@@ -81,7 +81,7 @@ public class SkillBloodBond extends ActiveSkill {
         if (hero.hasEffect("BloodBond")) {
             hero.removeEffect(hero.getEffect("BloodBond"));
         } else {
-            long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD.node(), 3000, false);
+            long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 3000, false);
             int mana = (int) (SkillConfigManager.getUseSetting(hero, this, "mana-tick", 10.0, false) -
                     (SkillConfigManager.getUseSetting(hero, this, "mana-tick-decrease", 0.0, false) * hero.getSkillLevel(this)));
             mana = mana > 0 ? mana : 0;
@@ -151,8 +151,8 @@ public class SkillBloodBond extends ActiveSkill {
                     double percent = (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, "percent-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
                     percent = percent > 0 ? percent : 0;
-                    int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS.node(), 15.0, false) +
-                            (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
+                    int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS.node(), 15.0, false) +
+                            (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
                     radius = radius > 1 ? radius : 1;
                     int amount = (int) (event.getDamage()*percent);
                     for(Hero member : hero.getParty().getMembers()){
@@ -176,8 +176,8 @@ public class SkillBloodBond extends ActiveSkill {
                     double percent = (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, "percent-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
                     percent = percent > 0 ? percent : 0;
-                    int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS.node(), 15.0, false) +
-                            (SkillConfigManager.getUseSetting(hero, this.skill, Setting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
+                    int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS.node(), 15.0, false) +
+                            (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
                     radius = radius > 1 ? radius : 1;
                     int amount = (int) (event.getDamage()*percent);
                     for(Hero member : hero.getParty().getMembers()) {

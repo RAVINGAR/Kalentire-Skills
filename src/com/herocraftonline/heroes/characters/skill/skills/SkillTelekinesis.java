@@ -13,9 +13,9 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillTelekinesis extends ActiveSkill {
 
@@ -31,7 +31,7 @@ public class SkillTelekinesis extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.MAX_DISTANCE.node(), 15);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 15);
         return node;
     }
 
@@ -46,7 +46,7 @@ public class SkillTelekinesis extends ActiveSkill {
         transparent.add((byte) Material.REDSTONE_WIRE.getId());
         transparent.add((byte) Material.TORCH.getId());
         transparent.add((byte) Material.SNOW.getId());
-        Block block = player.getTargetBlock(transparent, SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 15, false));
+        Block block = player.getTargetBlock(transparent, SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false));
         if (block.getType() == Material.LEVER || block.getType() == Material.STONE_BUTTON) {
             // Can't adjust levers/Buttons through CB
             net.minecraft.server.Block.byId[block.getType().getId()].interact(((CraftWorld) block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);

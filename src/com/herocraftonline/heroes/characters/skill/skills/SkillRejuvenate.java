@@ -13,11 +13,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillRejuvenate extends TargettedSkill {
     // This is for Firework Effects
@@ -38,18 +38,18 @@ public class SkillRejuvenate extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("tick-heal", 1);
-        node.set(Setting.PERIOD.node(), 3000);
-        node.set(Setting.DURATION.node(), 21000);
-        node.set(Setting.APPLY_TEXT.node(), "%target% is rejuvenating health!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has stopped rejuvenating health!");
+        node.set(SkillSetting.PERIOD.node(), 3000);
+        node.set(SkillSetting.DURATION.node(), 21000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is rejuvenating health!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has stopped rejuvenating health!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is rejuvenating health!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has stopped rejuvenating health!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is rejuvenating health!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has stopped rejuvenating health!").replace("%target%", "$1");
     }
 
     @Override
@@ -63,8 +63,8 @@ public class SkillRejuvenate extends TargettedSkill {
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
-            long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
-            long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
+            long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
+            long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
             int tickHealth = SkillConfigManager.getUseSetting(hero, this, "tick-heal", 1, false);
             RejuvenateEffect rEffect = new RejuvenateEffect(this, period, duration, tickHealth, player);
             targetHero.addEffect(rEffect);
@@ -107,8 +107,8 @@ public class SkillRejuvenate extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int heal = SkillConfigManager.getUseSetting(hero, this, "tick-heal", 1, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
         heal = heal * duration / period;
         return getDescription().replace("$1", heal + "").replace("$2", duration / 1000 + "");
     }

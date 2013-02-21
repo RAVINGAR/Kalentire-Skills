@@ -12,9 +12,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillQuantumLeap extends TargettedSkill {
 
@@ -29,7 +29,7 @@ public class SkillQuantumLeap extends TargettedSkill {
 
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set(Setting.DAMAGE.node(), 4);
+		node.set(SkillSetting.DAMAGE.node(), 4);
 		return node;
 	}
 
@@ -47,7 +47,7 @@ public class SkillQuantumLeap extends TargettedSkill {
 	}
 
 	public String getDescription(Hero hero) {
-		int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
 		return getDescription().replace("$1", damage + "");
 	}
 }

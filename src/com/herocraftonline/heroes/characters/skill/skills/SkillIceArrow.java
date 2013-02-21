@@ -21,8 +21,8 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillIceArrow extends ActiveSkill {
 
@@ -43,12 +43,12 @@ public class SkillIceArrow extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000); // 5 seconds
+        node.set(SkillSetting.DURATION.node(), 5000); // 5 seconds
         node.set("speed-multiplier", 2);
         node.set("mana-per-shot", 1); // How much mana for each attack
-        node.set(Setting.USE_TEXT.node(), "%hero% imbues their arrows with ice!");
-        node.set(Setting.APPLY_TEXT.node(), "%target% is slowed by ice!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!");
+        node.set(SkillSetting.USE_TEXT.node(), "%hero% imbues their arrows with ice!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is slowed by ice!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!");
         node.set("slow-expire-message", "%target% is no longer slowed by ice!");
         return node;
     }
@@ -57,8 +57,8 @@ public class SkillIceArrow extends ActiveSkill {
     public void init() {
         super.init();
         setUseText("%hero% imbues their arrows with ice!".replace("%hero%", "$1"));
-        slowApplyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% is slowed by ice!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!").replace("%hero%", "$1");
+        slowApplyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is slowed by ice!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!").replace("%hero%", "$1");
         slowExpireText = SkillConfigManager.getRaw(this, "slow-expire-message", "%target% is no longer slowed by ice!").replace("%target%", "$1");
     }
 
@@ -117,7 +117,7 @@ public class SkillIceArrow extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             if (hero.hasEffect("IceArrowBuff")) {
-                long duration = SkillConfigManager.getUseSetting(hero, skill, Setting.DURATION, 5000, false);
+                long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
                 SlowEffect iceSlowEffect = new SlowEffect(skill, duration, amplifier, false, slowApplyText, slowExpireText, hero);
                 LivingEntity target = (LivingEntity) event.getEntity();

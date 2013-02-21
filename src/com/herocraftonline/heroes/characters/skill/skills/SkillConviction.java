@@ -22,9 +22,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillConviction extends ActiveSkill {
@@ -46,24 +46,24 @@ public class SkillConviction extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("damage-modifier", 0.75);
-        node.set(Setting.RADIUS.node(), 10);
-        node.set(Setting.APPLY_TEXT.node(), "You are filled with renewed convinction!");
-        node.set(Setting.EXPIRE_TEXT.node(), "Your sense of convinction begins to fade!");
-        node.set(Setting.DURATION.node(), 600000); //10 minutes
+        node.set(SkillSetting.RADIUS.node(), 10);
+        node.set(SkillSetting.APPLY_TEXT.node(), "You are filled with renewed convinction!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "Your sense of convinction begins to fade!");
+        node.set(SkillSetting.DURATION.node(), 600000); //10 minutes
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "You are filled with renewed convinction!");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "Your sense of convinction begins to fade!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You are filled with renewed convinction!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Your sense of convinction begins to fade!");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.75, false);
 
         ConvictionEffect effect = new ConvictionEffect(this, duration, damageModifier, applyText, expireText);
@@ -76,7 +76,7 @@ public class SkillConviction extends ActiveSkill {
                 }
             }
         } else {
-            int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false);
+            int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
             int rangeSquared = range * range;
             Location loc = player.getLocation();
             for (Hero pHero : hero.getParty().getMembers()) {

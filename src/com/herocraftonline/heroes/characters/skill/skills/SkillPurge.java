@@ -12,10 +12,10 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPurge extends TargettedSkill {
 
@@ -32,7 +32,7 @@ public class SkillPurge extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("max-removals", -1);
-        node.set(Setting.RADIUS.node(), 10);
+        node.set(SkillSetting.RADIUS.node(), 10);
         return node;
     }
 
@@ -44,7 +44,7 @@ public class SkillPurge extends TargettedSkill {
             	return SkillResult.INVALID_TARGET;
         }
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
         int removalsLeft = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
         int maxRemovals = removalsLeft;
         for (Entity e : target.getNearbyEntities(radius, radius, radius)) {

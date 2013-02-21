@@ -12,10 +12,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDisarm extends TargettedSkill {
@@ -35,17 +35,17 @@ public class SkillDisarm extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 3000);
-        node.set(Setting.APPLY_TEXT.node(), "%target% was disarmed!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has found his weapon again!");
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% was disarmed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has found his weapon again!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has stopped regenerating mana!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is once again regenerating mana!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has stopped regenerating mana!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is once again regenerating mana!").replace("%target%", "$1");
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SkillDisarm extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 500, false);
         tHero.addEffect(new DisarmEffect(this, duration, applyText, expireText));
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 0.8F, 1.0F);
@@ -77,7 +77,7 @@ public class SkillDisarm extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 3000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

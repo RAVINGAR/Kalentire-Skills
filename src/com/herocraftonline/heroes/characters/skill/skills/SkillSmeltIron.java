@@ -17,7 +17,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.util.Setting;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 
 public class SkillSmeltIron extends ActiveSkill{
 	private static final String base="base-ingot-chance",gain="chance-gain-per-level";
@@ -79,7 +79,7 @@ public class SkillSmeltIron extends ActiveSkill{
 	@Override
 	public final ConfigurationSection getDefaultConfig(){
 		ConfigurationSection config = super.getDefaultConfig();
-		config.set(Setting.NO_COMBAT_USE.node(), true);
+		config.set(SkillSetting.NO_COMBAT_USE.node(), true);
 		config.set(base, 10);
 		config.set(gain,  0.2f);//max possible price per ingot is 11c at level 60, using defaults
 		return config;

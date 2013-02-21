@@ -20,8 +20,8 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillLight extends ActiveSkill {
 
@@ -60,24 +60,24 @@ public class SkillLight extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 30000); // in milliseconds
-        node.set(Setting.PERIOD.node(), 200); // in milliseconds
-        node.set(Setting.APPLY_TEXT.node(), "%hero% is lighting the way.");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer lighting the way");
+        node.set(SkillSetting.DURATION.node(), 30000); // in milliseconds
+        node.set(SkillSetting.PERIOD.node(), 200); // in milliseconds
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is lighting the way.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer lighting the way");
         return node;
     }
     
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% is lighting the way.").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% is no longer lighting the way.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% is lighting the way.").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% is no longer lighting the way.").replace("%hero%", "$1");
     }
     
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 200, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
         hero.addEffect(new LightEffect(this, period, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
         return SkillResult.NORMAL;

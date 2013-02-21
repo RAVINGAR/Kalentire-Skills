@@ -17,11 +17,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPlague extends TargettedSkill {
     // This is for Firework Effects
@@ -41,20 +41,20 @@ public class SkillPlague extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 21000);
-        node.set(Setting.PERIOD.node(), 3000);
+        node.set(SkillSetting.DURATION.node(), 21000);
+        node.set(SkillSetting.PERIOD.node(), 3000);
         node.set("tick-damage", 1);
-        node.set(Setting.RADIUS.node(), 4);
-        node.set(Setting.APPLY_TEXT.node(), "%target% is infected with the plague!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer infected with the plague!");
+        node.set(SkillSetting.RADIUS.node(), 4);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is infected with the plague!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer infected with the plague!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is infected with the plague!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is no longer infected with the plague!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is infected with the plague!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer infected with the plague!").replace("%target%", "$1");
     }
 
     @Override
@@ -68,8 +68,8 @@ public class SkillPlague extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, duration, period, tickDamage, player));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BAT_HURT , 0.8F, 1.0F); 
@@ -136,7 +136,7 @@ public class SkillPlague extends TargettedSkill {
          * @param lEntity
          */
         private void spreadToNearbyEntities(LivingEntity lEntity) {
-            int radius = SkillConfigManager.getUseSetting(applyHero, skill, Setting.RADIUS.node(), 4, false);
+            int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS.node(), 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
                 if (!(target instanceof LivingEntity) || target.equals(applier) || applyHero.getSummons().contains(target)) {
                     continue;
@@ -157,8 +157,8 @@ public class SkillPlague extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         return getDescription().replace("$1", damage * duration / period + "").replace("$2", duration / 1000 + "");
     }

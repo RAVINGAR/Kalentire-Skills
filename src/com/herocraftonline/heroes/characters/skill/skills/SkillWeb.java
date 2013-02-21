@@ -26,10 +26,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillWeb extends TargettedSkill {
 
@@ -49,15 +49,15 @@ public class SkillWeb extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000); // in milliseconds
-        node.set(Setting.APPLY_TEXT.node(), "%hero% conjured a web at %target%'s feet!");
+        node.set(SkillSetting.DURATION.node(), 5000); // in milliseconds
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% conjured a web at %target%'s feet!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SkillWeb extends TargettedSkill {
         }
 
         broadcast(player.getLocation(), applyText, player.getDisplayName(), name);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         WebEffect wEffect = new WebEffect(this, duration, target.getLocation().getBlock().getLocation());
         hero.addEffect(wEffect);
         player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);

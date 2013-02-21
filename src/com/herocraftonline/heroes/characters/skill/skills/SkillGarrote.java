@@ -11,10 +11,10 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillGarrote extends TargettedSkill {
 
@@ -30,9 +30,9 @@ public class SkillGarrote extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 4);
-        node.set(Setting.DURATION.node(), 4000);
-        node.set(Setting.MAX_DISTANCE.node(), 3);
+        node.set(SkillSetting.DAMAGE.node(), 4);
+        node.set(SkillSetting.DURATION.node(), 4000);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
         return node;
     }
     
@@ -50,10 +50,10 @@ public class SkillGarrote extends TargettedSkill {
             return SkillResult.FAIL;
         }
         
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         if (target instanceof Player) {
-            long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 4000, false);
+            long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
             plugin.getCharacterManager().getHero((Player) target).addEffect(new SilenceEffect(this, duration));
         }
         broadcastExecuteText(hero, target);
@@ -62,8 +62,8 @@ public class SkillGarrote extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 

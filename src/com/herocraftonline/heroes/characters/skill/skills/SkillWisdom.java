@@ -18,10 +18,10 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWisdom extends ActiveSkill {
@@ -44,22 +44,22 @@ public class SkillWisdom extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("regen-multiplier", 1.2);
-        node.set(Setting.RADIUS.node(), 10);
-        node.set(Setting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
+        node.set(SkillSetting.RADIUS.node(), 10);
+        node.set(SkillSetting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "You feel a bit wiser!");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "You no longer feel as wise!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You feel a bit wiser!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You no longer feel as wise!");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         double manaMultiplier = SkillConfigManager.getUseSetting(hero, this, "regen-multiplier", 1.2, false);
 
         WisdomEffect mEffect = new WisdomEffect(this, duration, manaMultiplier);
@@ -71,7 +71,7 @@ public class SkillWisdom extends ActiveSkill {
             }
             hero.addEffect(mEffect);
         } else {
-            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false), 2);
+            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false), 2);
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();
                 if (!pPlayer.getWorld().equals(player.getWorld())) {

@@ -14,10 +14,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDisgrace extends TargettedSkill {
 
@@ -36,20 +36,20 @@ public class SkillDisgrace extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.PERIOD.node(), 2000);
-        node.set(Setting.DAMAGE_TICK.node(), 1);
-        node.set(Setting.DAMAGE_INCREASE.node(), 0);
-        node.set(Setting.APPLY_TEXT.node(), "%target% is bleeding with disgrace!");
-        node.set(Setting.EXPIRE_TEXT.node(), "");
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.PERIOD.node(), 2000);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 1);
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is bleeding with disgrace!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% is bleeding with disgrace!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is bleeding with disgrace!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "").replace("%target%", "$1");
     }
 
     @Override
@@ -59,10 +59,10 @@ public class SkillDisgrace extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_TICK, 1, false);
-        tickDamage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 1, false);
+        tickDamage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         BleedSkillEffect bEffect = new BleedSkillEffect(this, duration, period, tickDamage, player);
         plugin.getCharacterManager().getCharacter(target).addEffect(bEffect);
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
@@ -106,10 +106,10 @@ public class SkillDisgrace extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         damage = damage * duration / period;
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }

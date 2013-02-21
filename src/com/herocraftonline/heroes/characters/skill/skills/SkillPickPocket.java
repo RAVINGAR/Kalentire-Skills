@@ -17,10 +17,10 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillPickPocket extends TargettedSkill {
@@ -43,7 +43,7 @@ public class SkillPickPocket extends TargettedSkill {
         node.set("chance-per-level", 0.003);
         node.set("failure-message", "%hero% failed to steal from %target%!");
         node.set("noisy-success-message", "%hero% stole %target%s %item%!");
-        node.set(Setting.USE_TEXT.node(), "");
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("disallowed-items", Arrays.asList(""));
         node.set("always-steal-all", true);
         node.set("max-stolen", 64);
@@ -67,7 +67,7 @@ public class SkillPickPocket extends TargettedSkill {
 
         Player tPlayer = (Player) target;        
 
-        double chance = SkillConfigManager.getUseSetting(hero, this, "base-chance", 0.1, false) + (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL, 0.02, false) * hero.getSkillLevel(this));
+        double chance = SkillConfigManager.getUseSetting(hero, this, "base-chance", 0.1, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, 0.02, false) * hero.getSkillLevel(this));
 
         if (Util.nextRand() >= chance) {
             if (Util.nextRand() >= chance) {

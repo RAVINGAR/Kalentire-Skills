@@ -23,9 +23,9 @@ import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillToxicblade extends ActiveSkill {
@@ -49,20 +49,20 @@ public class SkillToxicblade extends ActiveSkill {
         node.set("weapons", Util.swords);
         node.set("buff-duration", 600000); // 10 minutes in milliseconds
         node.set("poison-duration", 10000); // 10 seconds in milliseconds
-        node.set(Setting.PERIOD.node(), 2000); // 2 seconds in milliseconds
-        node.set(Setting.DAMAGE_TICK.node(), 2);
-        node.set(Setting.DAMAGE_INCREASE.node(), 0);
+        node.set(SkillSetting.PERIOD.node(), 2000); // 2 seconds in milliseconds
+        node.set(SkillSetting.DAMAGE_TICK.node(), 2);
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
         node.set("attacks", 1); // How many attacks the buff lasts for.
-        node.set(Setting.APPLY_TEXT.node(), "%target% has become toxic!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from the toxicity!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has become toxic!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the toxicity!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has become toxic!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has recovered from the toxicity!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has become toxic!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the toxicity!").replace("%target%", "$1");
     }
 
     @Override
@@ -175,9 +175,9 @@ public class SkillToxicblade extends ActiveSkill {
 
             if (hero.hasEffect("Toxicblade")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
-                long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, false);
+                long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, false);
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 20, false);
-                tickDamage += (SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
+                tickDamage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
                 ToxicbladePoison apEffect = new ToxicbladePoison(skill, period, duration, tickDamage, player);
                 Entity target = event.getEntity();
                 if (event.getEntity() instanceof LivingEntity) {
@@ -199,8 +199,8 @@ public class SkillToxicblade extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 20, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
         String s = getDescription().replace("$1", damage + "").replace("$2", seconds + "");
         return s;

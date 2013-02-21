@@ -12,9 +12,9 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlyingKick extends TargettedSkill {
@@ -40,14 +40,14 @@ public class SkillFlyingKick extends TargettedSkill {
             descr.append("s");
         }
 
-        double cdSec = SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN, 15000, false) / 1000.0;
+        double cdSec = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 15000, false) / 1000.0;
         if (cdSec > 0) {
             descr.append(" CD:");
             descr.append(Util.formatDouble(cdSec));
             descr.append("s");
         }
 
-        int mana = SkillConfigManager.getUseSetting(hero, this, Setting.MANA, 20, false);
+        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 20, false);
         if (mana > 0) {
             descr.append(" M:");
             descr.append(mana);
@@ -58,11 +58,11 @@ public class SkillFlyingKick extends TargettedSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
-        defaultConfig.set(Setting.USE_TEXT.node(), "%player%: This is SPARTAAAA!!!");
-        defaultConfig.set(Setting.COOLDOWN.node(), 15000);
-        defaultConfig.set(Setting.MANA.node(), 20);
-        defaultConfig.set(Setting.MAX_DISTANCE.node(), 5);
-        defaultConfig.set(Setting.DAMAGE.node(), 1);
+        defaultConfig.set(SkillSetting.USE_TEXT.node(), "%player%: This is SPARTAAAA!!!");
+        defaultConfig.set(SkillSetting.COOLDOWN.node(), 15000);
+        defaultConfig.set(SkillSetting.MANA.node(), 20);
+        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        defaultConfig.set(SkillSetting.DAMAGE.node(), 1);
         defaultConfig.set("silence-duration", 3000);
         return defaultConfig;
     }
@@ -70,14 +70,14 @@ public class SkillFlyingKick extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, Setting.USE_TEXT, "%player%: This is HEROCRAFTT!!!").replace("%player%", "$1");
+        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "%player%: This is HEROCRAFTT!!!").replace("%player%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         target.setVelocity(new Vector(Math.random() * 0.4 - 0.2, 0.8, Math.random() * 0.4 - 0.2));
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
 
         if (target instanceof Player) {

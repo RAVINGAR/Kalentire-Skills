@@ -16,9 +16,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.listeners.HBlockListener;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMining extends PassiveSkill {
@@ -34,7 +34,7 @@ public class SkillMining extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.CHANCE_LEVEL.node(), .001);
+        node.set(SkillSetting.CHANCE_LEVEL.node(), .001);
         node.set("chance-from-stone", .0005);
         return node;
     }
@@ -94,7 +94,7 @@ public class SkillMining extends PassiveSkill {
                 return;
             }
 
-            if (chance > SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)) {
+            if (chance > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)) {
                 return;
             }
             if (dropMaterial == Material.INK_SACK) {
@@ -121,7 +121,7 @@ public class SkillMining extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL, .001, false);
+        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, .001, false);
         int level = hero.getSkillLevel(this);
         if (level < 1)
             level = 1;

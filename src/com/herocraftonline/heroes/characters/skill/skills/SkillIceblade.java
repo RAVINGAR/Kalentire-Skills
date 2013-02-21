@@ -19,11 +19,11 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIceblade extends TargettedSkill {
@@ -46,18 +46,18 @@ public class SkillIceblade extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.swords);
-        node.set(Setting.MAX_DISTANCE.node(), 6);
-        node.set(Setting.DURATION.node(), 5000);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.DURATION.node(), 5000);
         node.set("amplitude", 2);
-        node.set(Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%'s iceblade!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%'s iceblade!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
         return node;
     }
     
     @Override
     public void init() {
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been slowed by %hero%'s iceblade!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been slowed by %hero%'s iceblade!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
     }
     
     @Override
@@ -74,7 +74,7 @@ public class SkillIceblade extends TargettedSkill {
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         //Add the slow effect
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 4, false);
         SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
         plugin.getCharacterManager().getCharacter(target).addEffect(new IcebladeEffect(this, 300, sEffect));
@@ -119,7 +119,7 @@ public class SkillIceblade extends TargettedSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

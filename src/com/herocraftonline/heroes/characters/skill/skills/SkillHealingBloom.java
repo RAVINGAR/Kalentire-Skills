@@ -18,7 +18,7 @@ import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.util.Setting;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 
 public class SkillHealingBloom extends ActiveSkill {
 
@@ -103,7 +103,7 @@ public class SkillHealingBloom extends ActiveSkill {
 		}
 		double amountHealed = SkillConfigManager.getUseSetting(h, this, "amount", 5, false);
 		double period = SkillConfigManager.getUseSetting(h, this, "period", 1000, false);
-		double duration = SkillConfigManager.getUseSetting(h, this, Setting.DURATION.node(), 30000, false);
+		double duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION.node(), 30000, false);
 		this.broadcast(h.getPlayer().getLocation(), h.getName() + " used HealingBloom!");
 		Vector v = h.getPlayer().getLocation().toVector();
 		Iterator<Hero> partyMembers = hParty.getMembers().iterator();
@@ -149,7 +149,7 @@ public class SkillHealingBloom extends ActiveSkill {
 		}
 		double amountHealed = SkillConfigManager.getUseSetting(h, this, "amount", 5, false);
 		double period = SkillConfigManager.getUseSetting(h, this, "period", 1000, false)*0.001;
-		double duration = SkillConfigManager.getUseSetting(h, this, Setting.DURATION.node(), 30000, false)*0.001;
+		double duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION.node(), 30000, false)*0.001;
 
 		return getDescription()
 				.replace("$1",amountHealed + "")
@@ -159,7 +159,7 @@ public class SkillHealingBloom extends ActiveSkill {
 	}
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set(Setting.DURATION.node(), Integer.valueOf(30000));
+		node.set(SkillSetting.DURATION.node(), Integer.valueOf(30000));
 		node.set("period", Integer.valueOf(1000));
 		node.set("amount", Integer.valueOf(5));
 		node.set("AmountMode", true);

@@ -15,11 +15,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBoilBlood extends TargettedSkill {
     // This is for Firework Effects
@@ -39,27 +39,27 @@ public class SkillBoilBlood extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 21000);
-        node.set(Setting.PERIOD.node(), 3000);
+        node.set(SkillSetting.DURATION.node(), 21000);
+        node.set(SkillSetting.PERIOD.node(), 3000);
         node.set("tick-damage", 2);
         node.set("finish-damage", 20);
-        node.set(Setting.APPLY_TEXT.node(), "%target%'s blood has begun to boil");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target%'s blood is no longer boiling");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target%'s blood has begun to boil");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target%'s blood is no longer boiling");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target%'s blood has begun to boil").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target%'s blood is no longer boiling").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target%'s blood has begun to boil").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target%'s blood is no longer boiling").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
         int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 20, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new BoilBloodEffect(this, duration, period, tickDamage, finishDamage, player));
@@ -124,8 +124,8 @@ public class SkillBoilBlood extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
         int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 20, false);
         

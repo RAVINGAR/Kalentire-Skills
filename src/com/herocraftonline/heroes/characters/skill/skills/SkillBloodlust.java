@@ -11,8 +11,8 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBloodlust extends ActiveSkill {
     private String applyText;
@@ -29,20 +29,20 @@ public class SkillBloodlust extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), Integer.valueOf(30000));
-        node.set(Setting.APPLY_TEXT.node(), "%hero% is in bloodlust!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer in bloodlust!");
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(30000));
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is in bloodlust!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer in bloodlust!");
         return node;
     }
 
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%hero% is in bloodlust!").replace("%hero%", "$1");
-        this.expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%hero% is no longer in bloodlust!").replace("%hero%", "$1");
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%hero% is in bloodlust!").replace("%hero%", "$1");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer in bloodlust!").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         hero.getPlayer().setHealth(hero.getPlayer().getHealth() / 2);
         BloodlustEffect beffect = new BloodlustEffect(this, duration, this.applyText, this.expireText);
         hero.addEffect(beffect);

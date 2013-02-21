@@ -15,9 +15,9 @@ import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPort extends ActiveSkill {
 
@@ -33,8 +33,8 @@ public class SkillPort extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.RADIUS.node(), 10);
-        node.set(Setting.NO_COMBAT_USE.node(), true);
+        node.set(SkillSetting.RADIUS.node(), 10);
+        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
         node.set("cross-world", false);
         return node;
     }
@@ -45,7 +45,7 @@ public class SkillPort extends ActiveSkill {
 
         List<String> keys = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, null));
         // Strip non-world keys
-        for (Setting setting : Setting.values()) {
+        for (SkillSetting setting : SkillSetting.values()) {
             keys.remove(setting.node());
         }
         keys.remove("cross-world");
@@ -75,8 +75,8 @@ public class SkillPort extends ActiveSkill {
             if (hero.getSkillLevel(this) < levelRequirement) {
                 return new SkillResult(ResultType.LOW_LEVEL, true, levelRequirement);
             }
-            int radiusInc = (int) SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
-            int range = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false) + radiusInc, 2);
+            int radiusInc = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+            int range = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false) + radiusInc, 2);
             Location loc = new Location(world, Double.parseDouble(splitArg[1]), Double.parseDouble(splitArg[2]), Double.parseDouble(splitArg[3]));
             broadcastExecuteText(hero);
             if (!hero.hasParty()) {
@@ -110,8 +110,8 @@ public class SkillPort extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false);
-        radius += (int) SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
+        radius += (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         return getDescription().replace("$1", radius + "");
     }
 }

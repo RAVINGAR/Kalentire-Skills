@@ -13,10 +13,10 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSpear extends TargettedSkill {
@@ -33,7 +33,7 @@ public class SkillSpear extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 8);
+        node.set(SkillSetting.DAMAGE.node(), 8);
         node.set("weapons", Util.shovels);
         return node;
     }
@@ -48,7 +48,7 @@ public class SkillSpear extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 0, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
@@ -68,7 +68,7 @@ public class SkillSpear extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-    	int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 8, false);
+    	int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 8, false);
         return getDescription().replace("$1", damage + "");
     }
 

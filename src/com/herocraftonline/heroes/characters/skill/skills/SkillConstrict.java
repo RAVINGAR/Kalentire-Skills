@@ -11,9 +11,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillConstrict extends TargettedSkill {
     
@@ -33,17 +33,17 @@ public class SkillConstrict extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 2);
-        node.set(Setting.DURATION.node(), 15000);
-        node.set(Setting.APPLY_TEXT.node(), "%target% has been constricted by %hero%!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer constricted!");
+        node.set(SkillSetting.DURATION.node(), 15000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been constricted by %hero%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer constricted!");
         return node;
     }
 
 
     @Override
     public void init() {
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been constricted by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is no longer constricted!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been constricted by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer constricted!").replace("%target%", "$1");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SkillConstrict extends TargettedSkill {
         if (!(target instanceof Player))
             return SkillResult.INVALID_TARGET;
         
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 15000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
@@ -65,7 +65,7 @@ public class SkillConstrict extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 15000, false);;
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);;
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

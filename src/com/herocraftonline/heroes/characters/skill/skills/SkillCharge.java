@@ -27,10 +27,10 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillCharge extends TargettedSkill {
 
@@ -53,9 +53,9 @@ public class SkillCharge extends TargettedSkill {
         section.set("slow-duration", 0);
         section.set("root-duration", 0);
         section.set("silence-duration", 0);
-        section.set(Setting.DAMAGE.node(), 0);
-        section.set(Setting.DAMAGE_INCREASE.node(), 0);
-        section.set(Setting.RADIUS.node(), 2);
+        section.set(SkillSetting.DAMAGE.node(), 0);
+        section.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
+        section.set(SkillSetting.RADIUS.node(), 2);
         return section;
     }
 
@@ -102,13 +102,13 @@ public class SkillCharge extends TargettedSkill {
             event.setDamage(0);
             event.setCancelled(true);
 
-            int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS.node(), 2, false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS.node(), 2, false);
             long stunDuration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 5000, false);
             long slowDuration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 0, false);
             long rootDuration = SkillConfigManager.getUseSetting(hero, skill, "root-duration", 0, false);
             long silenceDuration = SkillConfigManager.getUseSetting(hero, skill, "silence-duration", 0, false);
-            int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE.node(), 0, false);
-            damage += (SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
+            int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE.node(), 0, false);
+            damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
             for (Entity e : player.getNearbyEntities(radius, radius, radius)) {
                 if (!(e instanceof LivingEntity)) {
                     continue;

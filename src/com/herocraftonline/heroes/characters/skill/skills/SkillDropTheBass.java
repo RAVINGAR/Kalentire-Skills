@@ -10,8 +10,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDropTheBass extends ActiveSkill {
 
@@ -29,55 +29,55 @@ public class SkillDropTheBass extends ActiveSkill {
     public String getDescription(Hero hero) {
         String description = getDescription();
         //DURATION
-        int duration = (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false)
-                + SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this)) / 1000;
+        int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false)
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this)) / 1000;
         if (duration > 0) {
             description += " D:" + duration + "s";
         }
 
         //RADIUS
-        int radius = (int) ((SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 15.0, false)
-                + SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false) * hero.getSkillLevel(this)));
+        int radius = (int) ((SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15.0, false)
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE.node(), 0, false) * hero.getSkillLevel(this)));
         if (duration > 0) {
             description += " R:" + radius + "s";
         }
 
         //COOLDOWN
-        int cooldown = (SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN.node(), 0, false)
-                - SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN_REDUCE.node(), 0, false) * hero.getSkillLevel(this)) / 1000;
+        int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false)
+                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getSkillLevel(this)) / 1000;
         if (cooldown > 0) {
             description += " CD:" + cooldown + "s";
         }
 
         //MANA
-        int mana = SkillConfigManager.getUseSetting(hero, this, Setting.MANA.node(), 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, Setting.MANA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
+        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 0, false)
+                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
         if (mana > 0) {
             description += " M:" + mana;
         }
 
         //HEALTH_COST
-        int healthCost = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_COST, 0, false) -
-                (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_COST_REDUCE, mana, true) * hero.getSkillLevel(this));
+        int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) -
+                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getSkillLevel(this));
         if (healthCost > 0) {
             description += " HP:" + healthCost;
         }
 
         //STAMINA
-        int staminaCost = SkillConfigManager.getUseSetting(hero, this, Setting.STAMINA.node(), 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, Setting.STAMINA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
+        int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA.node(), 0, false)
+                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
         if (staminaCost > 0) {
             description += " FP:" + staminaCost;
         }
 
         //DELAY
-        int delay = SkillConfigManager.getUseSetting(hero, this, Setting.DELAY.node(), 0, false) / 1000;
+        int delay = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY.node(), 0, false) / 1000;
         if (delay > 0) {
             description += " W:" + delay + "s";
         }
 
         //EXP
-        int exp = SkillConfigManager.getUseSetting(hero, this, Setting.EXP.node(), 0, false);
+        int exp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EXP.node(), 0, false);
         if (exp > 0) {
             description += " XP:" + exp;
         }
@@ -87,12 +87,12 @@ public class SkillDropTheBass extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.APPLY_TEXT.node(), "%hero%'s party celebrates bass-drops!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s party no longer is dropping bass!");
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.DURATION_INCREASE.node(), 0);
-        node.set(Setting.RADIUS.node(), 15.0);
-        node.set(Setting.RADIUS_INCREASE.node(), 0.0);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero%'s party celebrates bass-drops!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero%'s party no longer is dropping bass!");
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.DURATION_INCREASE.node(), 0);
+        node.set(SkillSetting.RADIUS.node(), 15.0);
+        node.set(SkillSetting.RADIUS_INCREASE.node(), 0.0);
         return node;
     }
 
@@ -101,10 +101,10 @@ public class SkillDropTheBass extends ActiveSkill {
         if (!hero.hasParty()){
                 return SkillResult.CANCELLED;
         }
-        int duration = (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false)
-                + SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this));
-        int radius = (int) ((SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 15.0, false)
-                + SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false) * hero.getSkillLevel(this)));
+        int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false)
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this));
+        int radius = (int) ((SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15.0, false)
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE.node(), 0, false) * hero.getSkillLevel(this)));
         double radiusSquared = Math.pow(radius,2);
         
         for(Hero member : hero.getParty().getMembers()){

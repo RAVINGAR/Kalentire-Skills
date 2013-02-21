@@ -15,10 +15,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBlaze extends ActiveSkill {
     // This is for Firework Effects
@@ -35,19 +35,19 @@ public class SkillBlaze extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 30000);
-        node.set(Setting.RADIUS.node(), 5);
-        node.set(Setting.DAMAGE.node(), 4);
-        node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
+        node.set(SkillSetting.DURATION.node(), 30000);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 4);
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.0);
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(range, range, range);
-        int fireTicks = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false) / 50;
+        int fireTicks = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false) / 50;
         boolean damaged = false;
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
@@ -83,8 +83,8 @@ public class SkillBlaze extends ActiveSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
+        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
         return getDescription().replace("$1", damage + "");
     }
 }

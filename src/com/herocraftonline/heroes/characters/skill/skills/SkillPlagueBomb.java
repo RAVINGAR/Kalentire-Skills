@@ -26,8 +26,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPlagueBomb extends ActiveSkill {
     private Map<Integer, Player> sheepMap = new HashMap<Integer, Player>();
@@ -58,7 +58,7 @@ public class SkillPlagueBomb extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 10);
+        node.set(SkillSetting.DAMAGE.node(), 10);
         node.set("fuse-time", 5000);
         node.set("velocity", 1.0);
         return node;
@@ -66,7 +66,7 @@ public class SkillPlagueBomb extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
         return getDescription().replace("$1", damage + "");
     }
 
@@ -109,7 +109,7 @@ public class SkillPlagueBomb extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
             int damage = 10;
             if (hero != null) {
-                damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 10, false);
+                damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
             }
 
             if (!sheep.isDead()) {

@@ -13,8 +13,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSummonCow extends ActiveSkill {
@@ -40,7 +40,7 @@ public class SkillSummonCow extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("chance-2x", 0.2);
         node.set("chance-3x", 0.1);
-        node.set(Setting.MAX_DISTANCE.node(), 20);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 20);
         node.set("chance-2x-per-level", 0.0);
         node.set("chance-3x-per-level", 0.0);
         return node;
@@ -52,7 +52,7 @@ public class SkillSummonCow extends ActiveSkill {
         broadcastExecuteText(hero);
         double chance2x = SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-2x-per-level", 0.0, false) * hero.getSkillLevel(this);
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
-        int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
         EntityType cType = wTargetBlock.getType() == Material.HUGE_MUSHROOM_1 || 
                 wTargetBlock.getType() == Material.HUGE_MUSHROOM_2 || 

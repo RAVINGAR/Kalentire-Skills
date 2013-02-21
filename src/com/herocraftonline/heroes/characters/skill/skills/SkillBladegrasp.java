@@ -17,9 +17,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBladegrasp extends ActiveSkill {
@@ -42,20 +42,20 @@ public class SkillBladegrasp extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% tightened his grip!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% tightened his grip!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
         node.set("parry-text", "%hero% parried an attack!");
         node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
-        node.set(Setting.CHANCE_LEVEL.node(), .02);
+        node.set(SkillSetting.CHANCE_LEVEL.node(), .02);
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% tightened his grip!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% loosened his grip!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% tightened his grip!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% loosened his grip!").replace("%hero%", "$1");
         parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!").replace("%hero%", "$1");
         parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.").replace("$1","%hero$").replace("$2","%target%").replace("$3","%skill");
     }
@@ -63,7 +63,7 @@ public class SkillBladegrasp extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         hero.addEffect(new BladegraspEffect(this, duration));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F);
@@ -112,7 +112,7 @@ public class SkillBladegrasp extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(skill);
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(skill);
                 if (Util.nextRand() > parryChance) {
                     return;
                 }
@@ -136,7 +136,7 @@ public class SkillBladegrasp extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double parryChance = SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
                 if (Util.nextRand() > parryChance) {
                     return;
                 }
@@ -154,8 +154,8 @@ public class SkillBladegrasp extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-        double chance = SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL, .02, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, .02, false);
         int level = hero.getSkillLevel(this);
         if (level < 1)
             level = 1;

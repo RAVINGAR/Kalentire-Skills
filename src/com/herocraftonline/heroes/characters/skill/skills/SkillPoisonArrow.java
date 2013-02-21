@@ -22,9 +22,9 @@ import com.herocraftonline.heroes.characters.effects.common.ImbueEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPoisonArrow extends ActiveSkill {
 
@@ -44,13 +44,13 @@ public class SkillPoisonArrow extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000); // milliseconds
-        node.set(Setting.PERIOD.node(), 2000); // 2 seconds in milliseconds
+        node.set(SkillSetting.DURATION.node(), 10000); // milliseconds
+        node.set(SkillSetting.PERIOD.node(), 2000); // 2 seconds in milliseconds
         node.set("mana-per-shot", 1); // How much mana for each attack
         node.set("tick-damage", 2);
-        node.set(Setting.USE_TEXT.node(), "%hero% imbues their arrows with poison!");
-        node.set(Setting.APPLY_TEXT.node(), "%target% is poisoned!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!");
+        node.set(SkillSetting.USE_TEXT.node(), "%hero% imbues their arrows with poison!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is poisoned!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!");
         return node;
     }
 
@@ -58,8 +58,8 @@ public class SkillPoisonArrow extends ActiveSkill {
     public void init() {
         super.init();
         setUseText("%hero% imbues their arrows with poison!".replace("%hero%", "$1"));
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
     }
 
     @Override
@@ -148,7 +148,7 @@ public class SkillPoisonArrow extends ActiveSkill {
 
             if (hero.hasEffect("PoisonArrowBuff")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
-                long period = SkillConfigManager.getUseSetting(hero, skill, Setting.PERIOD, 2000, true);
+                long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, true);
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
                 plugin.getCharacterManager().getCharacter(target).addEffect(new ArrowPoison(skill, period, duration, tickDamage, player));
             }
@@ -173,8 +173,8 @@ public class SkillPoisonArrow extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, true);
         damage = damage * duration / period;

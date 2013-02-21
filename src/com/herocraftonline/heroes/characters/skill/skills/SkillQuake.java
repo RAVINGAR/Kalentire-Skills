@@ -17,8 +17,8 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillQuake extends PassiveSkill {
 
@@ -62,8 +62,8 @@ public class SkillQuake extends PassiveSkill {
                 return;
             }
 
-            double damage = event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 0.10, false);
-            int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 10, false);
+            double damage = event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 0.10, false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 10, false);
 
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 if (!(entity instanceof LivingEntity)) {

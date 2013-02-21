@@ -13,8 +13,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBalance extends ActiveSkill {
 
@@ -78,7 +78,7 @@ public class SkillBalance extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("maxrange", Integer.valueOf(0));
-        node.set(Setting.COOLDOWN.node(), Integer.valueOf(180000));
+        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(180000));
         return node;
 
     }

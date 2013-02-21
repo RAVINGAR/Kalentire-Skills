@@ -19,9 +19,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillManaShield extends ActiveSkill {
 
@@ -42,24 +42,24 @@ public class SkillManaShield extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("mana-amount", 20);
-        node.set(Setting.DURATION.node(), 20000);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% was surrounded by a mana shield!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his mana shield!");
+        node.set(SkillSetting.DURATION.node(), 20000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% was surrounded by a mana shield!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his mana shield!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% was surrounded by a mana shield!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% lost his mana shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% was surrounded by a mana shield!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his mana shield!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         hero.addEffect(new ManaShieldEffect(this, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
@@ -138,7 +138,7 @@ public class SkillManaShield extends ActiveSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

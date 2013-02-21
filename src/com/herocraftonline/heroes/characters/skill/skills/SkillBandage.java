@@ -13,10 +13,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillBandage extends TargettedSkill {
 
@@ -32,11 +32,11 @@ public class SkillBandage extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        section.set(Setting.HEALTH.node(), 5);
-        section.set(Setting.HEALTH_INCREASE.node(), 0);
-        section.set(Setting.MAX_DISTANCE.node(), 5);
-        section.set(Setting.REAGENT.node(), 339);
-        section.set(Setting.REAGENT_COST.node(), 1);
+        section.set(SkillSetting.HEALTH.node(), 5);
+        section.set(SkillSetting.HEALTH_INCREASE.node(), 0);
+        section.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        section.set(SkillSetting.REAGENT.node(), 339);
+        section.set(SkillSetting.REAGENT_COST.node(), 1);
         return section;
     }
 
@@ -48,8 +48,8 @@ public class SkillBandage extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
-        hpPlus += (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
+        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
+        hpPlus += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
         int targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
@@ -82,8 +82,8 @@ public class SkillBandage extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double amount = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 5, false);
-        amount += (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
+        double amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
+        amount += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
         return getDescription().replace("$1", amount + "");
     }
 }

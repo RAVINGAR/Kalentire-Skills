@@ -15,10 +15,10 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillEngrave extends ActiveSkill {
 
@@ -35,8 +35,8 @@ public class SkillEngrave extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 1.0, false) +
-                (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
+        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) +
+                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
         chance = chance > 0 ? chance : 0;
         String description = getDescription().replace("$1", chance + "%");
         return description;
@@ -45,8 +45,8 @@ public class SkillEngrave extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.CHANCE.node(), 1.0);
-        node.set(Setting.CHANCE_LEVEL.node(), 0.0);
+        node.set(SkillSetting.CHANCE.node(), 1.0);
+        node.set(SkillSetting.CHANCE_LEVEL.node(), 0.0);
         mats.add(Material.WOOD_AXE);
         mats.add(Material.WOOD_HOE);
         mats.add(Material.WOOD_PICKAXE);
@@ -124,8 +124,8 @@ public class SkillEngrave extends ActiveSkill {
 
         for(Material mat : mats){
             if(is.getType().equals(mat)){
-                double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 1.0, false) +
-                        (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this)));
+                double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) +
+                        (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this)));
                 chance = chance > 0 ? chance : 0;
                 if(Math.random()<=chance){
                     String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy

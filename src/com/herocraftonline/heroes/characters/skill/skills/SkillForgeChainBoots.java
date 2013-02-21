@@ -12,8 +12,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillForgeChainBoots extends ActiveSkill {
 
@@ -29,7 +29,7 @@ public class SkillForgeChainBoots extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.AMOUNT.node(), 2);
+        node.set(SkillSetting.AMOUNT.node(), 2);
         return node;
     }
 
@@ -46,7 +46,7 @@ public class SkillForgeChainBoots extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT, 2, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 2, false);
         return getDescription().replace("$1", amount + "");
     }
 

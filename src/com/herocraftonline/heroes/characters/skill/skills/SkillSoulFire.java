@@ -22,10 +22,10 @@ import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSoulFire extends ActiveSkill {
@@ -49,9 +49,9 @@ public class SkillSoulFire extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.swords);
-        node.set(Setting.APPLY_TEXT.node(), "%hero%'s weapon is sheathed in flame!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s weapon is no longer aflame!");
-        node.set(Setting.DURATION.node(), 600000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero%'s weapon is sheathed in flame!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero%'s weapon is no longer aflame!");
+        node.set(SkillSetting.DURATION.node(), 600000);
         node.set("ignite-chance", 0.20);
         node.set("ignite-duration", 5000);
         node.set("ignite-text", "%hero% has lit %target% on fire with soulfire!");
@@ -61,14 +61,14 @@ public class SkillSoulFire extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero%'s weapon is sheathed in flame!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero%'s weapon is no longer aflame!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s weapon is sheathed in flame!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s weapon is no longer aflame!").replace("%hero%", "$1");
         igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% has lit %target% on fire with soulfire!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 600000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         hero.addEffect(new SoulFireEffect(this, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 0.5F, 1.0F); 
         // this is our fireworks shit

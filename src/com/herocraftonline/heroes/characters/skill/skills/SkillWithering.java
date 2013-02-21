@@ -14,10 +14,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillWithering extends TargettedSkill {
     
@@ -36,27 +36,27 @@ public class SkillWithering extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 6000);
-        node.set(Setting.PERIOD.node(), 2000);
+        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.PERIOD.node(), 2000);
         node.set("tick-damage", 2);
         node.set("finish-damage", 20);
-        node.set(Setting.APPLY_TEXT.node(), "%target%'s begins to wither away!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target%'s is no longer withered!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target%'s begins to wither away!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target%'s is no longer withered!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target%'s begins to wither away!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target%'s is no longer withered!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target%'s begins to wither away!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target%'s is no longer withered!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 6000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
         int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new WitheringEffect(this, duration, period, tickDamage, finishDamage, player));
@@ -116,8 +116,8 @@ public class SkillWithering extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 6000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
         int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
         

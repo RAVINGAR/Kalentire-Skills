@@ -15,11 +15,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPoison extends TargettedSkill {
     // This is for Firework Effects
@@ -38,25 +38,25 @@ public class SkillPoison extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000); // in milliseconds
-        node.set(Setting.PERIOD.node(), 2000); // in milliseconds
+        node.set(SkillSetting.DURATION.node(), 10000); // in milliseconds
+        node.set(SkillSetting.PERIOD.node(), 2000); // in milliseconds
         node.set("tick-damage", 1);
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PoisonSkillEffect(this, period, duration, tickDamage, player));
         broadcastExecuteText(hero, target);
@@ -106,8 +106,8 @@ public class SkillPoison extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         return getDescription().replace("$1", damage * duration / period + "").replace("$2", duration / 1000 + "");
     }

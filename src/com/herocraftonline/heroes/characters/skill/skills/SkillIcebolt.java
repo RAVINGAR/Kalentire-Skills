@@ -22,8 +22,8 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillIcebolt extends ActiveSkill {
 
@@ -51,19 +51,19 @@ public class SkillIcebolt extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 3);
+        node.set(SkillSetting.DAMAGE.node(), 3);
         node.set("slow-duration", 5000); // 5 seconds
         node.set("speed-multiplier", 2);
-        node.set(Setting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
         return node;
         
     }
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
     }
     
     @Override
@@ -105,7 +105,7 @@ public class SkillIcebolt extends ActiveSkill {
                     return;
                 }
                 event.getEntity().setFireTicks(0);
-                int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 3, false);
+                int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 3, false);
                 
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 10000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
@@ -122,8 +122,8 @@ public class SkillIcebolt extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

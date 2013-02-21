@@ -13,10 +13,10 @@ import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillGroupHeal extends ActiveSkill {
     // This is for Firework Effects
@@ -34,7 +34,7 @@ public class SkillGroupHeal extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("heal-amount", 2);
-        node.set(Setting.RADIUS.node(), 5);
+        node.set(SkillSetting.RADIUS.node(), 5);
         return node;
     }
 
@@ -54,7 +54,7 @@ public class SkillGroupHeal extends ActiveSkill {
             hero.heal(hrhEvent.getAmount());
             //changed to hero.heal for bukkit events
         } else {
-            int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false), 2);
+            int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false), 2);
             Location heroLoc = player.getLocation();
             // Heal party members near the caster
             for (Hero partyHero : hero.getParty().getMembers()) {

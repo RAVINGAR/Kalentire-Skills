@@ -12,10 +12,10 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDrainsoul extends TargettedSkill {
     // This is for Firework Effects
@@ -32,8 +32,8 @@ public class SkillDrainsoul extends TargettedSkill {
 	@Override
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set(Setting.DAMAGE.node(), 4);
-		node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
+		node.set(SkillSetting.DAMAGE.node(), 4);
+		node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.0);
 		node.set("heal-mult", .5);
 		return node;
 	}
@@ -42,8 +42,8 @@ public class SkillDrainsoul extends TargettedSkill {
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		Player player = hero.getPlayer();
 		
-		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-		absorbAmount += SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+		absorbAmount += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
 		double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", .5, false);
 		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (absorbAmount * healMult), this, hero);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
@@ -67,8 +67,8 @@ public class SkillDrainsoul extends TargettedSkill {
     }
     @Override
     public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-        amount += SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        amount += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         double mult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", .5, false);
         return getDescription().replace("$1", amount + "").replace("$2", (int) (mult * amount) + "");
     }

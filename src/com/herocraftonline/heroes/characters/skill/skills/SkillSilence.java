@@ -10,9 +10,9 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillSilence extends TargettedSkill {
 
@@ -28,8 +28,8 @@ public class SkillSilence extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% is no longer silenced!");
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer silenced!");
         return node;
     }
 
@@ -38,7 +38,7 @@ public class SkillSilence extends TargettedSkill {
         if (!(target instanceof Player))
         	return SkillResult.INVALID_TARGET;
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         SilenceEffect sEffect = new SilenceEffect(this, duration);
         plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
@@ -48,7 +48,7 @@ public class SkillSilence extends TargettedSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

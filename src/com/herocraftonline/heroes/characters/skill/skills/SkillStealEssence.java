@@ -13,10 +13,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillStealEssence extends TargettedSkill {
@@ -33,15 +33,15 @@ public class SkillStealEssence extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.APPLY_TEXT.node(), "%hero% used %skill% and stole %effect% from %target%!");
-        node.set(Setting.AMOUNT.node(), 3);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% used %skill% and stole %effect% from %target%!");
+        node.set(SkillSetting.AMOUNT.node(), 3);
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        this.setUseText(SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% used %skill% and stole %effect%from %target%!").replace("%hero%", "$1").replace("%skill%", "$2").replace("%effect%", "$3").replace("%target%", "$4"));
+        this.setUseText(SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% used %skill% and stole %effect%from %target%!").replace("%hero%", "$1").replace("%skill%", "$2").replace("%effect%", "$3").replace("%target%", "$4"));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SkillStealEssence extends TargettedSkill {
         }
 
         String stolenNames = "";
-        int numEffects = SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 3, false);
+        int numEffects = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT.node(), 3, false);
         for (int i = 0; i < numEffects && possibleEffects.size() > 0; i++) {
             Effect stolenEffect = possibleEffects.get(Util.nextInt(possibleEffects.size()));
             tHero.removeEffect(stolenEffect);

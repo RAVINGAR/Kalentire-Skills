@@ -18,9 +18,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDespair extends ActiveSkill {
     private String applyText;
@@ -37,9 +37,9 @@ public class SkillDespair extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long duration = (long) (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false) + (SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0.0, false) * hero.getSkillLevel(this))) / 1000;
-        int damage = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 0, false) + (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this)));
-        int radius = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 10, false) + (SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this)));
+        long duration = (long) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) + (SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0.0, false) * hero.getSkillLevel(this))) / 1000;
+        int damage = (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this)));
+        int radius = (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this)));
         String description = getDescription().replace("$1", radius + "").replace("$2", duration + "").replace("$3", damage + "");
         return description;
     }
@@ -47,34 +47,34 @@ public class SkillDespair extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.RADIUS.node(), 10);
-        node.set(Setting.RADIUS_INCREASE.node(), 0);
-        node.set(Setting.DURATION.node(), 10000);
+        node.set(SkillSetting.RADIUS.node(), 10);
+        node.set(SkillSetting.RADIUS_INCREASE.node(), 0);
+        node.set(SkillSetting.DURATION.node(), 10000);
         node.set("duration-increase", 0);
-        node.set(Setting.DAMAGE.node(), 0);
-        node.set(Setting.DAMAGE_INCREASE.node(), 0);
+        node.set(SkillSetting.DAMAGE.node(), 0);
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
         node.set("exp-per-blinded-player", 0);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% has blinded %target% with %skill%!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% has recovered their sight!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% has blinded %target% with %skill%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% has recovered their sight!");
         return node;
     }
     
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% has blinded %target% with %skill%!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% has recovered their sight!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% has blinded %target% with %skill%!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% has recovered their sight!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 10, false);
-        radius += SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10, false);
+        radius += SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
+        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Player player = hero.getPlayer();
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE.node(), 0, false);
-        damage += SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 0, false);
+        damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         int exp = SkillConfigManager.getUseSetting(hero, this, "exp-per-blinded-player", 0, false);
         DespairEffect dEffect = new DespairEffect(this, duration, player);
         int hit = 0;

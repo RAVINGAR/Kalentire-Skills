@@ -22,9 +22,9 @@ import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillCamouflage extends ActiveSkill {
 
@@ -64,9 +64,9 @@ public class SkillCamouflage extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 30000);
-        node.set(Setting.APPLY_TEXT.node(), "You blend into the terrain");
-        node.set(Setting.EXPIRE_TEXT.node(), "You come back into view");
+        node.set(SkillSetting.DURATION.node(), 30000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "You blend into the terrain");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "You come back into view");
         node.set("fail-text", "The surrounding terrain isn't natural enough");
         node.set("detection-range", 1D);
         node.set("max-move-distance", 1D);
@@ -76,8 +76,8 @@ public class SkillCamouflage extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "You blend into the terrain");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "You come back into view");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You blend into the terrain");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You come back into view");
         failText = SkillConfigManager.getRaw(this, "fail-text", "The surrounding terrain isn't natural enough");
     }
 
@@ -120,7 +120,7 @@ public class SkillCamouflage extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 4);
         hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
         moveChecker.addHero(hero);

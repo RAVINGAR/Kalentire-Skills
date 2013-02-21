@@ -21,11 +21,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillCurse extends TargettedSkill {
@@ -48,11 +48,11 @@ public class SkillCurse extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000); // in milliseconds
+        node.set(SkillSetting.DURATION.node(), 5000); // in milliseconds
         node.set("miss-chance", .50); // decimal representation of miss-chance
         node.set("miss-text", "%target% misses an attack!");
-        node.set(Setting.APPLY_TEXT.node(), "%target% has been cursed!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!");
         return node;
     }
 
@@ -60,13 +60,13 @@ public class SkillCurse extends TargettedSkill {
     public void init() {
         super.init();
         missText = SkillConfigManager.getRaw(this, "miss-text", "%target% misses an attack!").replace("%target%", "$1");
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%target% has been cursed!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, duration, missChance));
         Player player = hero.getPlayer();
@@ -147,7 +147,7 @@ public class SkillCurse extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .5, false);
         return getDescription().replace("$1", duration / 1000 + "").replace("$2", chance * 100 + "");
     }

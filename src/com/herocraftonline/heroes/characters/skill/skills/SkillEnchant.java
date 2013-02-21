@@ -23,9 +23,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillEnchant extends PassiveSkill {
 
@@ -62,8 +62,8 @@ public class SkillEnchant extends PassiveSkill {
         section.set("ARROW_KNOCKBACK", 1);
         section.set("ARROW_FIRE", 1);
         section.set("ARROW_INFINITE", 1);
-        section.set(Setting.APPLY_TEXT.node(), "");
-        section.set(Setting.UNAPPLY_TEXT.node(), "");
+        section.set(SkillSetting.APPLY_TEXT.node(), "");
+        section.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         return section;
     }
 

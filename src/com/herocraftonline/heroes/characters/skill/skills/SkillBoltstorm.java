@@ -18,8 +18,8 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBoltstorm extends ActiveSkill {
@@ -39,26 +39,26 @@ public class SkillBoltstorm extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.RADIUS.node(), 7); // radius
-        node.set(Setting.DURATION.node(), 10000); // in milliseconds
-        node.set(Setting.PERIOD.node(), 1000); // in milliseconds
-        node.set(Setting.DAMAGE.node(), 4); // Per-tick damage
-        node.set(Setting.APPLY_TEXT.node(), "%hero% has summoned a boltstorm!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero%'s boltstorm has subsided!");
+        node.set(SkillSetting.RADIUS.node(), 7); // radius
+        node.set(SkillSetting.DURATION.node(), 10000); // in milliseconds
+        node.set(SkillSetting.PERIOD.node(), 1000); // in milliseconds
+        node.set(SkillSetting.DAMAGE.node(), 4); // Per-tick damage
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% has summoned a boltstorm!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero%'s boltstorm has subsided!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% has summoned a boltstorm!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero%'s boltstorm has subsided!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% has summoned a boltstorm!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s boltstorm has subsided!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 1000, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new BoltStormEffect(this, period, duration));
         return SkillResult.NORMAL;
     }
@@ -90,7 +90,7 @@ public class SkillBoltstorm extends ActiveSkill {
         @Override
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
-            int range = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 7, false);
+            int range = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 7, false);
 
             List<LivingEntity> targets = new ArrayList<LivingEntity>();
             for (Entity entity : player.getNearbyEntities(range, range, range)) {
@@ -116,7 +116,7 @@ public class SkillBoltstorm extends ActiveSkill {
             if (targets.isEmpty())
                 return;
 
-            int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
+            int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 4, false);
             LivingEntity target = targets.get(Util.nextInt(targets.size()));
             target.getWorld().strikeLightningEffect(target.getLocation());
             
@@ -130,8 +130,8 @@ public class SkillBoltstorm extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "");
     }
 }

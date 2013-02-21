@@ -18,9 +18,9 @@ import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillFade extends ActiveSkill {
     
@@ -45,9 +45,9 @@ public class SkillFade extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 30000);
-        node.set(Setting.APPLY_TEXT.node(), "You fade into the shadows");
-        node.set(Setting.EXPIRE_TEXT.node(), "You come back into view");
+        node.set(SkillSetting.DURATION.node(), 30000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "You fade into the shadows");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "You come back into view");
         node.set("fail-text", "It's too bright to fade");
         node.set("detection-range", 1D);
         node.set("max-light-level", 8);
@@ -58,8 +58,8 @@ public class SkillFade extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "You fade into the shadows");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "You come back into view");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You fade into the shadows");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You come back into view");
         failText = SkillConfigManager.getRaw(this, "fail-text", "It's too bright to fade");
     }
     
@@ -71,7 +71,7 @@ public class SkillFade extends ActiveSkill {
             Messaging.send(player, failText);
             return SkillResult.FAIL;
         }
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 30000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 4);

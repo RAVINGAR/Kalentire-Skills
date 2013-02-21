@@ -19,8 +19,8 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillSuperheat extends ActiveSkill {
 
@@ -40,24 +40,24 @@ public class SkillSuperheat extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        section.set(Setting.DURATION.node(), 20000);
-        section.set(Setting.APPLY_TEXT.node(), "%hero%'s pick has become superheated!");
-        section.set(Setting.EXPIRE_TEXT.node(), "%hero%'s pick has cooled down!");
+        section.set(SkillSetting.DURATION.node(), 20000);
+        section.set(SkillSetting.APPLY_TEXT.node(), "%hero%'s pick has become superheated!");
+        section.set(SkillSetting.EXPIRE_TEXT.node(), "%hero%'s pick has cooled down!");
         return section;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero%'s pick has become superheated!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero%'s pick has cooled down!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s pick has become superheated!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s pick has cooled down!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         hero.addEffect(new SuperheatEffect(this, duration));
 
         return SkillResult.NORMAL;
@@ -130,7 +130,7 @@ public class SkillSuperheat extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 20000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 

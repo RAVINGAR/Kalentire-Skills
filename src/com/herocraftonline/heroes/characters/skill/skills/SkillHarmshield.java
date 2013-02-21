@@ -20,9 +20,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillHarmshield extends ActiveSkill {
     // This is for Firework Effects
@@ -44,24 +44,24 @@ public class SkillHarmshield extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("damage-multiplier", 0.1D);
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% is shielded from harm!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% lost his harm shield!");
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is shielded from harm!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his harm shield!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%hero% is shielded from harm!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%hero% lost his harm shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% is shielded from harm!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his harm shield!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new HarmShieldEffect(this, duration));
         // this is our fireworks shit
         Player player = hero.getPlayer();
@@ -136,7 +136,7 @@ public class SkillHarmshield extends ActiveSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false) / 1000;
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000;
         float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.1D, false);
         damageReduction *= 100F;
         damageReduction = 100F - damageReduction;

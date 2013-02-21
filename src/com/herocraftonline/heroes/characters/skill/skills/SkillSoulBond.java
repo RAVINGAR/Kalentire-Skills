@@ -21,10 +21,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillSoulBond extends TargettedSkill {
 
@@ -43,17 +43,17 @@ public class SkillSoulBond extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 300000);
+        node.set(SkillSetting.DURATION.node(), 300000);
         node.set("damage-multiplier", .5);
-        node.set(Setting.RADIUS.node(), 25);
-        node.set(Setting.EXPIRE_TEXT.node(), "%target%'s soul is no longer bound to %hero%!");
+        node.set(SkillSetting.RADIUS.node(), 25);
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target%'s soul is no longer bound to %hero%!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target%'s soul is no longer bound to %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target%'s soul is no longer bound to %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
     }
 
     @Override
@@ -70,7 +70,7 @@ public class SkillSoulBond extends TargettedSkill {
             hero.removeEffect(hero.getEffect("SoulBond"));
         }
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 300000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 300000, false);
         SoulBondedEffect sbEffect = new SoulBondedEffect(this, player);
         hero.addEffect(new SoulBondEffect(this, duration, target, sbEffect));
         plugin.getCharacterManager().getCharacter(target).addEffect(sbEffect);
@@ -100,7 +100,7 @@ public class SkillSoulBond extends TargettedSkill {
                 Hero hero = plugin.getCharacterManager().getHero(applier);
 
                 // Distance check
-                int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
+                int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 25, false);
                 int radiusSquared = radius * radius;
                 if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                     return;
@@ -130,7 +130,7 @@ public class SkillSoulBond extends TargettedSkill {
                 Hero hero = plugin.getCharacterManager().getHero(applier);
 
                 // Distance check
-                int radius = SkillConfigManager.getUseSetting(hero, skill, Setting.RADIUS, 25, false);
+                int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 25, false);
                 int radiusSquared = radius * radius;
                 if (applier.getLocation().distanceSquared(target.getLocation()) > radiusSquared) {
                     return;

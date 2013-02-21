@@ -11,9 +11,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillImpermanence extends ActiveSkill {
 
@@ -30,7 +30,7 @@ public class SkillImpermanence extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 2);
-        node.set(Setting.DURATION.node(), 15000);
+        node.set(SkillSetting.DURATION.node(), 15000);
         return node;
     }
 
@@ -45,7 +45,7 @@ public class SkillImpermanence extends ActiveSkill {
         }
 
         if (removed) {
-        	int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 15000, false);
+        	int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
             int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
             if(multiplier > 20)
             	multiplier = 20;

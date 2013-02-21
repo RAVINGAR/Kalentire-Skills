@@ -18,9 +18,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlink extends ActiveSkill {
@@ -39,7 +39,7 @@ public class SkillBlink extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
         node.set("restrict-ender-pearl", true);
         return node;
     }
@@ -52,7 +52,7 @@ public class SkillBlink extends ActiveSkill {
             Messaging.send(player, "The void prevents you from blinking!");
             return SkillResult.FAIL;
         }
-        int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 6, false);
+        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
         Block prev = null;
         Block b;
         BlockIterator iter = null;
@@ -88,7 +88,7 @@ public class SkillBlink extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE, 6, false);
+        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
         return getDescription().replace("$1", distance + "");
     }
     

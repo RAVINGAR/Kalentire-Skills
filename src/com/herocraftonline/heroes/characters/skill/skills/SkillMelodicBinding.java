@@ -30,8 +30,8 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillMelodicBinding extends ActiveSkill {
 
@@ -53,31 +53,31 @@ public class SkillMelodicBinding extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 10000);
-        node.set(Setting.PERIOD.node(), 2000);
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.PERIOD.node(), 2000);
         node.set("tick-damage", 1);
-        node.set(Setting.RADIUS.node(), 10);
+        node.set(SkillSetting.RADIUS.node(), 10);
         node.set("amplitude", 2);
-        node.set(Setting.APPLY_TEXT.node(), "%hero% is emitting ice!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is emitting ice!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT.node(), "%hero% produces a binding melody").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT.node(), "%hero% stops producing a melody!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%hero% produces a binding melody").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero% stops producing a melody!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 10000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD.node(), 500, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 500, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 10, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10, false);
         hero.addEffect(new MelodicBindingEffect(this, duration, period, tickDamage, range));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 6.0F); 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 2.0F); 
@@ -200,7 +200,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

@@ -15,8 +15,8 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillVillagerTrade extends PassiveSkill {
@@ -34,7 +34,7 @@ public class SkillVillagerTrade extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.CHANCE_LEVEL.node(), .001);
+        node.set(SkillSetting.CHANCE_LEVEL.node(), .001);
         return node;
     }
 
@@ -62,7 +62,7 @@ public class SkillVillagerTrade extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL, .001, false);
+        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, .001, false);
         int level = hero.getSkillLevel(this);
         if (level < 1)
             level = 1;

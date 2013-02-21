@@ -17,9 +17,9 @@ import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillTransmuteOre extends ActiveSkill {
@@ -37,14 +37,14 @@ public class SkillTransmuteOre extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("COAL.product", "IRON_ORE");
-        node.set("COAL." + Setting.REAGENT_COST.node(), 5);
-        node.set("COAL." + Setting.LEVEL.node(), 1);
+        node.set("COAL." + SkillSetting.REAGENT_COST.node(), 5);
+        node.set("COAL." + SkillSetting.LEVEL.node(), 1);
         node.set("IRON_ORE.product", "GOLD_ORE");
-        node.set("IRON_ORE." + Setting.REAGENT_COST.node(), 3);
-        node.set("IRON_ORE." + Setting.LEVEL.node(), 1);
+        node.set("IRON_ORE." + SkillSetting.REAGENT_COST.node(), 3);
+        node.set("IRON_ORE." + SkillSetting.LEVEL.node(), 1);
         node.set("LAPIS_BLOCK.product", "DIAMOND");
-        node.set("LAPIS_BLOCK." + Setting.REAGENT_COST.node(), 1);
-        node.set("LAPIS_BLOCK." + Setting.LEVEL.node(), 1);
+        node.set("LAPIS_BLOCK." + SkillSetting.REAGENT_COST.node(), 1);
+        node.set("LAPIS_BLOCK." + SkillSetting.LEVEL.node(), 1);
         node.set("require-furnace", false);
         return node;
     }
@@ -61,7 +61,7 @@ public class SkillTransmuteOre extends ActiveSkill {
         // List all items this hero can transmute
         Set<String> itemSet = new HashSet<String>(SkillConfigManager.getUseSettingKeys(hero, this));
         itemSet.remove("require-furnace");
-        for (Setting set : Setting.values()) {
+        for (SkillSetting set : SkillSetting.values()) {
             itemSet.remove(set.node());
         }
         
@@ -71,12 +71,12 @@ public class SkillTransmuteOre extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         
-        int level = SkillConfigManager.getUseSetting(hero, this, itemName + "." + Setting.LEVEL, 1, true);
+        int level = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.LEVEL, 1, true);
         if (hero.getSkillLevel(this) < level) {
         	return new SkillResult(ResultType.LOW_LEVEL, true, level);
         }
         
-        int cost = SkillConfigManager.getUseSetting(hero, this, itemName + "." + Setting.REAGENT_COST, 1, true);
+        int cost = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.REAGENT_COST, 1, true);
         if (item.getAmount() < cost) {
             Messaging.send(player, "You need to be holding $1 of $2 to transmute.", cost, itemName);
             return new SkillResult(ResultType.MISSING_REAGENT, false);

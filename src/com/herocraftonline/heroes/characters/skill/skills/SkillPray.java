@@ -11,11 +11,11 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPray extends TargettedSkill {
     // This is for Firework Effects
@@ -32,8 +32,8 @@ public class SkillPray extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.HEALTH.node(), 10);
-        node.set(Setting.MAX_DISTANCE.node(), 25);
+        node.set(SkillSetting.HEALTH.node(), 10);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 25);
         return node;
     }
 
@@ -45,7 +45,7 @@ public class SkillPray extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        int hpPlus = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH, 10, false);
+        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
         int targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
@@ -79,7 +79,7 @@ public class SkillPray extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int health = SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH.node(), 10, false);
+        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
         return getDescription().replace("$1", health + "");
     }
 }

@@ -18,8 +18,8 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillExcavate extends ActiveSkill {
 
@@ -39,8 +39,8 @@ public class SkillExcavate extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 2);
-        node.set(Setting.DURATION.node(), 0);
-        node.set(Setting.DURATION_INCREASE.node(), 100);
+        node.set(SkillSetting.DURATION.node(), 0);
+        node.set(SkillSetting.DURATION_INCREASE.node(), 100);
         node.set("apply-text", "%hero% begins excavating!");
         node.set("expire-text", "%hero% is no longer excavating!");
         return node;
@@ -56,8 +56,8 @@ public class SkillExcavate extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 0, false);
-        duration += (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 100, false) * hero.getSkillLevel(this));
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
+        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 100, false) * hero.getSkillLevel(this));
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
@@ -128,8 +128,8 @@ public class SkillExcavate extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 0, false);
-        duration += (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 100, false) * hero.getSkillLevel(this));
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
+        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 100, false) * hero.getSkillLevel(this));
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

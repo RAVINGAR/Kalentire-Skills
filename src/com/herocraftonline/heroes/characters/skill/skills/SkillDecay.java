@@ -14,11 +14,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDecay extends TargettedSkill {
     // This is for Firework Effects
@@ -38,27 +38,27 @@ public class SkillDecay extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 21000);
-        node.set(Setting.PERIOD.node(), 3000);
+        node.set(SkillSetting.DURATION.node(), 21000);
+        node.set(SkillSetting.PERIOD.node(), 3000);
         node.set("tick-damage", 1);
-        node.set(Setting.APPLY_TEXT.node(), "%target%'s flesh has begun to rot!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% is no longer decaying alive!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target%'s flesh has begun to rot!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer decaying alive!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target%'s flesh has begun to rot!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% is no longer decaying alive!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target%'s flesh has begun to rot!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer decaying alive!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, duration, period, tickDamage, player));
         broadcastExecuteText(hero, target);
@@ -110,8 +110,8 @@ public class SkillDecay extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         damage = damage * duration / period;
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");

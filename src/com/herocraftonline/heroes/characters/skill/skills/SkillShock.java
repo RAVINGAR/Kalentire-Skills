@@ -14,10 +14,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillShock extends TargettedSkill {
     
@@ -36,30 +36,30 @@ public class SkillShock extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 4);
-        node.set(Setting.RADIUS.node(), 5);
-        node.set(Setting.DURATION.node(), 21000);
-        node.set(Setting.PERIOD.node(), 3000);
-        node.set(Setting.APPLY_TEXT.node(), "A storm forms around %target%!");
-        node.set(Setting.EXPIRE_TEXT.node(), "The storm around %target% dissipates!");
+        node.set(SkillSetting.DAMAGE.node(), 4);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DURATION.node(), 21000);
+        node.set(SkillSetting.PERIOD.node(), 3000);
+        node.set(SkillSetting.APPLY_TEXT.node(), "A storm forms around %target%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "The storm around %target% dissipates!");
         return node;
     }
     
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "A storm forms around %target%!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "The storm around %target% dissipates!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "A storm forms around %target%!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "The storm around %target% dissipates!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int range = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS, 5, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
         
         plugin.getCharacterManager().getCharacter(target).addEffect(new ShockEffect(this, period, duration, damage, range, player));
 
@@ -141,9 +141,9 @@ public class SkillShock extends TargettedSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, Setting.PERIOD, 3000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
         
         return getDescription().replace("$1", damage + "").replace("$2", (period / 1000) + "").replace("$3", (duration / 1000) + "");
     }

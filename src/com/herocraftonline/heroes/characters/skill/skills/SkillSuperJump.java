@@ -15,9 +15,9 @@ import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillSuperJump extends ActiveSkill {
     // This is for Firework Effects
@@ -34,7 +34,7 @@ public class SkillSuperJump extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
+        node.set(SkillSetting.DURATION.node(), 5000);
         node.set("jump-force", 4.0);
         return node;
     }
@@ -47,7 +47,7 @@ public class SkillSuperJump extends ActiveSkill {
         Vector v = player.getVelocity().add(v1);
         player.setVelocity(v);
         player.setFallDistance(-8f);
-        int duration = (int) SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 5000, false);
+        int duration = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
         hero.addEffect(new JumpEffect(this, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 0.5F, 1.0F); 
         broadcastExecuteText(hero);

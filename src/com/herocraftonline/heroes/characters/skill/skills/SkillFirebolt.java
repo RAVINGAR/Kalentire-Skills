@@ -23,8 +23,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillFirebolt extends ActiveSkill {
 
@@ -53,8 +53,8 @@ public class SkillFirebolt extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DAMAGE.node(), 4);
-        node.set(Setting.DAMAGE_INCREASE.node(), 0.0);
+        node.set(SkillSetting.DAMAGE.node(), 4);
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.0);
         node.set("velocity-multiplier", 0.5);
         return node;
     }
@@ -101,8 +101,8 @@ public class SkillFirebolt extends ActiveSkill {
                 return;
             }
             addSpellTarget(entity, hero);
-            int damage = SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE, 4, false);
-            damage += (int) (SkillConfigManager.getUseSetting(hero, skill, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill));
+            int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 4, false);
+            damage += (int) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill));
             damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
         }
 
@@ -134,8 +134,8 @@ public class SkillFirebolt extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
+        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
         return getDescription().replace("$1", damage + "");
     }
 }

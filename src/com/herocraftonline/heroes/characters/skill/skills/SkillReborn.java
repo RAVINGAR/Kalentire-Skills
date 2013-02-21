@@ -14,8 +14,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillReborn extends PassiveSkill {
     private String rebornText;
@@ -33,8 +33,8 @@ public class SkillReborn extends PassiveSkill {
         node.set("health-percent-on-rebirth", .5);
         node.set("health-increase", 0.0);
         node.set("on-reborn-text", "%hero% is saved from death, but weakened!");
-        node.set(Setting.COOLDOWN.node(), 600000);
-        node.set(Setting.COOLDOWN_REDUCE.node(), 0);
+        node.set(SkillSetting.COOLDOWN.node(), 600000);
+        node.set(SkillSetting.COOLDOWN_REDUCE.node(), 0);
         return node;
     }
 
@@ -42,8 +42,8 @@ public class SkillReborn extends PassiveSkill {
     public String getDescription(Hero hero) {
         int health = (int) ((SkillConfigManager.getUseSetting(hero, this, "health-percent-on-rebirth", 0.5, false)
                 + (SkillConfigManager.getUseSetting(hero, this, "health-increase", 0.0, false) * hero.getSkillLevel(this))) * 100);
-        int cooldown = SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN.node(), 600000, false)
-                + (SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
+        int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 600000, false)
+                + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
         String description = getDescription().replace("$1", health + "").replace("$2", cooldown + "");
         return description;
     }
@@ -83,8 +83,8 @@ public class SkillReborn extends PassiveSkill {
                     event.setDamage(0);
                     event.setCancelled(true);
                     hero.heal(hrh.getAmount());
-                    long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, Setting.COOLDOWN.node(), 600000, false)
-                            + (SkillConfigManager.getUseSetting(hero, skill, Setting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel()));
+                    long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false)
+                            + (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel()));
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());
                     broadcast(player.getLocation(),rebornText,player.getDisplayName());
                     player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);

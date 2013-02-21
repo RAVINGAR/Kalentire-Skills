@@ -21,10 +21,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillDeepFreeze extends TargettedSkill {
 
@@ -45,11 +45,11 @@ public class SkillDeepFreeze extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.DURATION.node(), 5000);
-        node.set(Setting.DAMAGE.node(), 1);
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.DAMAGE.node(), 1);
         node.set("shatter-damage", 11);
-        node.set(Setting.APPLY_TEXT.node(), "%target% was frozen in place!");
-        node.set(Setting.EXPIRE_TEXT.node(), "%target% has thawed from their icy prison!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%target% was frozen in place!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has thawed from their icy prison!");
         node.set("shatter-text", "%target%'s icy prison shattered from the intense heat!");
         return node;
     }
@@ -57,17 +57,17 @@ public class SkillDeepFreeze extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, Setting.APPLY_TEXT, "%target% was frozen in place!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, Setting.EXPIRE_TEXT, "%target% has thawed from their icy prison!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% was frozen in place!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has thawed from their icy prison!").replace("%target%", "$1");
         shatterText = SkillConfigManager.getRaw(this, "shatter-text", "%target%'s icy prison shattered from the intense heat!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         
         //Deal the damage to the player
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
         
         // Add the effect to the entity
@@ -211,9 +211,9 @@ public class SkillDeepFreeze extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE, 1, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
         int shatter = SkillConfigManager.getUseSetting(hero, this, "shatter-damage", 11, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "").replace("$3", shatter + "");
     }
 }

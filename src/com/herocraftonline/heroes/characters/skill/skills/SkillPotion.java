@@ -20,9 +20,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Setting;
 
 public class SkillPotion extends PassiveSkill {
     private static final Map<Byte, String> regularPotions;
@@ -38,8 +38,8 @@ public class SkillPotion extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        section.set(Setting.LEVEL.node(), 1);
-        section.set(Setting.NO_COMBAT_USE.node(), false);
+        section.set(SkillSetting.LEVEL.node(), 1);
+        section.set(SkillSetting.NO_COMBAT_USE.node(), false);
         for (String potion : regularPotions.values()) {
             section.set("allow." + potion, false);
             section.set("cooldown." + potion, 10 * 60000);
@@ -90,7 +90,7 @@ public class SkillPotion extends PassiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             // see if the player can use potions at all
-            if (!hero.canUseSkill(skill) || (hero.isInCombat() && SkillConfigManager.getUseSetting(hero, skill, Setting.NO_COMBAT_USE, false))) {
+            if (!hero.canUseSkill(skill) || (hero.isInCombat() && SkillConfigManager.getUseSetting(hero, skill, SkillSetting.NO_COMBAT_USE, false))) {
                 Messaging.send(player, "You can't use this potion!");
                 event.setUseItemInHand(Event.Result.DENY);
                 return;
