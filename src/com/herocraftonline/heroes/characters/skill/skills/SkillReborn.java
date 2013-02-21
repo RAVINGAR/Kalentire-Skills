@@ -82,8 +82,7 @@ public class SkillReborn extends PassiveSkill {
                     }
                     event.setDamage(0);
                     event.setCancelled(true);
-                    //new bukkit health system (hero.heal instead of player.setHealth)
-                    hero.heal(currentHealth + hrh.getAmount());
+                    hero.heal(hrh.getAmount());
                     long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, Setting.COOLDOWN.node(), 600000, false)
                             + (SkillConfigManager.getUseSetting(hero, skill, Setting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel()));
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());

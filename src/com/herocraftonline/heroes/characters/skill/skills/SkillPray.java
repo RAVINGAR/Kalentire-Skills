@@ -63,7 +63,6 @@ public class SkillPray extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        //targetHero.heal(target.getHealth() + hrhEvent.getAmount());
         targetHero.heal(hrhEvent.getAmount());
         
         broadcastExecuteText(hero, target);
