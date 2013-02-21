@@ -132,7 +132,7 @@ public class SkillSoulLeech extends TargettedSkill {
             if (hrhEvent.isCancelled()) {
                 return;
             }
-            hero.heal(hero.getPlayer().getHealth() + hrhEvent.getAmount());
+            hero.heal(hrhEvent.getAmount());
             //hero.getPlayer().setHealth(hero.getPlayer().getHealth() + hrhEvent.getAmount());
         }
     }
