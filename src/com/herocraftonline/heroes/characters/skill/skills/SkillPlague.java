@@ -78,9 +78,12 @@ public class SkillPlague extends TargettedSkill {
     }
 
     public class PlagueEffect extends PeriodicDamageEffect {
+        private boolean jumped = false;
 
         public PlagueEffect(Skill skill, long duration, long period, int tickDamage, Player applier) {
             super(skill, "Plague", period, duration, tickDamage, applier);
+            this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.DISEASE);
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
         }
 
@@ -89,6 +92,7 @@ public class SkillPlague extends TargettedSkill {
             super(pEffect.getSkill(), pEffect.getName(), pEffect.getPeriod(), pEffect.getRemainingTime(), pEffect.tickDamage, pEffect.applier);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DISEASE);
+            this.jumped = true;
             addMobEffect(19, (int) (pEffect.getRemainingTime() / 1000) * 20, 0, true);
         }
 
@@ -136,6 +140,9 @@ public class SkillPlague extends TargettedSkill {
          * @param lEntity
          */
         private void spreadToNearbyEntities(LivingEntity lEntity) {
+            if (jumped) {
+                return;
+            }
             int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS.node(), 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
                 if (!(target instanceof LivingEntity) || target.equals(applier) || applyHero.getSummons().contains(target)) {
