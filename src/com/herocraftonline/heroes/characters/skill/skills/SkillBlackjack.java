@@ -1,8 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,12 +21,9 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlackjack extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
@@ -65,15 +60,6 @@ public class SkillBlackjack extends ActiveSkill {
         broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         hero.addEffect(new BlackjackEffect(this, duration));
-        Player player = hero.getPlayer();
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.LIME).withFade(Color.OLIVE).build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return SkillResult.NORMAL;
     }
 
