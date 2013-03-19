@@ -48,7 +48,7 @@ public class SkillDuskblade extends TargettedSkill {
 		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (absorbAmount * healMult), this, hero);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
 		if (!hrEvent.isCancelled()) {
-			hero.heal(player.getHealth() + hrEvent.getAmount());
+			hero.heal(hrEvent.getAmount());
 		}
 		addSpellTarget(target, hero);
 		damageEntity(target, player, absorbAmount, DamageCause.MAGIC);
