@@ -154,14 +154,14 @@ public class SkillBloodBond extends ActiveSkill {
                     int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS.node(), 15.0, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
                     radius = radius > 1 ? radius : 1;
-                    int amount = (int) (event.getDamage()*percent);
-                    for(Hero member : hero.getParty().getMembers()){
+                    int amount = (int) (event.getDamage() * percent);
+                    for (Hero member : hero.getParty().getMembers()) {
                         Player target = member.getPlayer();
                         if (!target.getWorld().equals(hero.getPlayer().getWorld())) {
                             continue;
                         }
-                        if (target.getLocation().distance(hero.getPlayer().getLocation()) <= radius){
-                            hero.heal( + amount);
+                        if (target.getLocation().distance(hero.getPlayer().getLocation()) <= radius) {
+                            hero.heal(amount);
                         }
                     }
                 }
@@ -172,15 +172,15 @@ public class SkillBloodBond extends ActiveSkill {
         public void onSkillDamage(SkillDamageEvent event){
             if((!(event.isCancelled()))&&(event.getDamager() instanceof Player)){
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-                if(hero.hasEffect("BloodBond")&&(hero.hasParty())){
+                if (hero.hasEffect("BloodBond")&&(hero.hasParty())) {
                     double percent = (SkillConfigManager.getUseSetting(hero, this.skill, "percent", 0.05, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, "percent-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
                     percent = percent > 0 ? percent : 0;
                     int radius = (int) (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS.node(), 15.0, false) +
                             (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
                     radius = radius > 1 ? radius : 1;
-                    int amount = (int) (event.getDamage()*percent);
-                    for(Hero member : hero.getParty().getMembers()) {
+                    int amount = (int) (event.getDamage() * percent);
+                    for (Hero member : hero.getParty().getMembers()) {
                         Player target = member.getPlayer();
                         if (!target.getWorld().equals(hero.getPlayer().getWorld())) {
                             continue;
