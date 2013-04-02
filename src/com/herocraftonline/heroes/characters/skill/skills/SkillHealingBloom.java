@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//originial - http://pastie.org/private/diqqlssrsjp7fkn7hjayqg
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -19,14 +19,16 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillHealingBloom extends ActiveSkill {
 
     public SkillHealingBloom(Heroes plugin) {
         super(plugin, "HealingBloom");
-        setDescription("HealingBlooms your party, healing them for $1$2 per $3s for $4s");
+        setDescription("Blooms your party, healing them for $1$2 per $3s for $4s");
         setUsage("/skill healingbloom");
         setIdentifiers("skill healingbloom");
+        setTypes(SkillType.SILENCABLE, SkillType.HEAL, SkillType.LIGHT);
         setArgumentRange(0,0);
     }
 
@@ -88,13 +90,14 @@ public class SkillHealingBloom extends ActiveSkill {
 
         HeroParty hParty = hero.getParty();
         if(hParty == null) {
-            hero.getPlayer().sendMessage("You are not in a party. Coding for selfishness is not included in this skill!");
+            hero.getPlayer().sendMessage("§7[§2Skill§7] You are not in a party. Coding for selfishness is not included in this skill!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         double amountHealed = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
         double period = SkillConfigManager.getUseSetting(hero, this, "period", 1000, false);
         double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 30000, false);
-        this.broadcast(hero.getPlayer().getLocation(), hero.getName() + " used HealingBloom!");
+        broadcastExecuteText(hero);
+        //this.broadcast(hero.getPlayer().getLocation(), hero.getName() + " used HealingBloom!");
         Vector v = hero.getPlayer().getLocation().toVector();
         Iterator<Hero> partyMembers = hParty.getMembers().iterator();
         int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
