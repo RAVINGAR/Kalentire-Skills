@@ -90,7 +90,7 @@ public class SkillHealingBloom extends ActiveSkill {
 
         HeroParty hParty = hero.getParty();
         if(hParty == null) {
-            hero.getPlayer().sendMessage("§7[§2Skill§7] You are not in a party. Coding for selfishness is not included in this skill!");
+            hero.getPlayer().sendMessage("§7[§2Skill§7] You must be in a party to use §fHealingBloom!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         double amountHealed = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
