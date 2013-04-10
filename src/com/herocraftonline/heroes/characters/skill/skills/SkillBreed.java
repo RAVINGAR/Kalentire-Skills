@@ -49,7 +49,7 @@ public class SkillBreed extends PassiveSkill {
     	public void onPlayerVillagerBuy(PlayerInteractEntityEvent event) {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-    		if(event.getRightClicked() instanceof Animals && player.getItemInHand().getType() != Material.SHEARS) {
+    		if(event.getRightClicked() instanceof Animals && player.getItemInHand().getType() != Material.SHEARS && player.getItemInHand().getType() != Material.BUCKET) {
                 if (isWolfTamingAttempt(event) && hero.canUseSkill("Wolf")) {
                     event.setCancelled(false);
                 } else if (hero.canUseSkill("Breed")) {
