@@ -1,9 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -14,9 +14,12 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.onarandombox.MultiverseCore.MultiverseCore;
 
 public class SkillWarp extends ActiveSkill
 {
+  private MultiverseCore mv;
+  
   public SkillWarp(Heroes plugin)
   {
     super(plugin, "Warp");
@@ -24,6 +27,7 @@ public class SkillWarp extends ActiveSkill
     setUsage("/skill warp");
     setArgumentRange(0, 0);
     setIdentifiers(new String[] { "skill warp" });
+    mv = (MultiverseCore) plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
 
     setTypes(new SkillType[] { SkillType.TELEPORT, SkillType.SILENCABLE });
   }
@@ -72,8 +76,9 @@ public class SkillWarp extends ActiveSkill
   public ConfigurationSection getDefaultConfig()
   {
     ConfigurationSection node = super.getDefaultConfig();
-    node.set("destination", "world,0,64,0");
+    node.set("default-destination", "world");
     node.set("description", "a set location");
+    node.set("destinations","world,world_nether,world_the_end");
     return node;
   }
 
@@ -81,11 +86,21 @@ public class SkillWarp extends ActiveSkill
   {
     Player player = hero.getPlayer();
 
-    String destinationString = SkillConfigManager.getUseSetting(hero, this, "destination", "world,0,64,0");
-    String[] dArgs = destinationString.split(",");
+    String possibleDestinationsString = SkillConfigManager.getUseSetting(hero, this, "destinations", "world,world_nether,world_the_end");
+    String defaultDestinationString = SkillConfigManager.getUseSetting(hero, this, "default-destination", "world");
+    String[] dArgs = possibleDestinationsString.split(",");
     Location destination = null;
+    World world = player.getWorld();
+    for (String arg : dArgs) {
+        if(world.getName().equalsIgnoreCase(arg))
+            destination = mv.getMVWorldManager().getMVWorld(arg).getSpawnLocation();
+        else
+            destination = null;
+    }
+    if(destination == null) {
+        destination = mv.getMVWorldManager().getMVWorld(defaultDestinationString).getSpawnLocation();
+    }
     try {
-      destination = new Location(Bukkit.getWorld(dArgs[0]), Double.parseDouble(dArgs[1]), Double.parseDouble(dArgs[2]), Double.parseDouble(dArgs[3]));
       player.teleport(destination);
     } catch (Exception e) {
       player.sendMessage(ChatColor.GRAY + "SkillWarp has an invalid config.");
