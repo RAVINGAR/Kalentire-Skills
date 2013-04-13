@@ -94,7 +94,7 @@ public class SkillWarp extends ActiveSkill {
         World world = player.getWorld();
         for (String arg : possibleDestinations) {
             if (world.getName().equalsIgnoreCase(arg)) {
-                String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "default-destinations."+arg, "0,64,0").split(",");
+                String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+arg, "0,64,0").split(",");
                 destination = new Location(world,Double.parseDouble(destArgs[0]),Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
             } else {
                 destination = null;
