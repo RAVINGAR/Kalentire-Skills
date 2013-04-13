@@ -81,7 +81,14 @@ public class SkillWarp extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("default-destination", "world");
         node.set("description", "a set location");
-        node.set("destinations", "world,world_nether,world_the_end");
+        String defaultDest1 = "world: 0,64,0";
+        String defaultDest2 = "world_nether: 0,64,0";
+        String defaultDest3 = "world_the_end: 0,64,0";
+        List<String> defaultDestinations = new ArrayList<String>();
+        defaultDestinations.add(defaultDest1);
+        defaultDestinations.add(defaultDest2);
+        defaultDestinations.add(defaultDest3);
+        node.set("destinations", defaultDestinations);
         return node;
     }
 
