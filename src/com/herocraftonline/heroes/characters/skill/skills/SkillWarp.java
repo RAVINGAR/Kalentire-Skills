@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//oldsrc=http://pastie.org/private/hwkllkpsglhwd27qfhpqfg
 import java.util.ArrayList;
 import java.util.List;
 
