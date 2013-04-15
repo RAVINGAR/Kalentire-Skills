@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Animals;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import com.herocraftonline.heroes.Heroes;
@@ -43,19 +45,23 @@ public class SkillBreed extends PassiveSkill {
         SkillListener(Skill skill) {
         }
         
-        //TODO: Add all the listener shit in here
-        //TODO: Change the logic on this to deny/allow based on the player having this skill instead of permission:
+        // If right-clicking on an animal and the player does not have a pair of shears, a bucket, a bowl or any form of dye
+        // in hand, then check if they're trying to tame. If not, check if they have the breeding skill. If not, then
+        // cancel this event and send them a purty message.
     	@EventHandler
     	public void onPlayerVillagerBuy(PlayerInteractEntityEvent event) {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-    		if(event.getRightClicked() instanceof Animals && player.getItemInHand().getType() != Material.SHEARS && player.getItemInHand().getType() != Material.BUCKET) {
+            Material material = player.getItemInHand().getType();
+
+    		if(event.getRightClicked() instanceof Animals && !material.equals(Material.SHEARS) && !material.equals(Material.BUCKET)
+                    && !material.equals(Material.INK_SACK) && !material.equals(Material.BOWL)) {
                 if (isWolfTamingAttempt(event) && hero.canUseSkill("Wolf")) {
                     event.setCancelled(false);
                 } else if (hero.canUseSkill("Breed")) {
                     event.setCancelled(false);
                 } else {
-                    player.sendMessage(ChatColor.DARK_GRAY + "You are unable to breed animals!");
+                    player.sendMessage(ChatColor.DARK_GRAY + "You must be a farmer to do that!");
                     event.setCancelled(true);
                 }
             }
