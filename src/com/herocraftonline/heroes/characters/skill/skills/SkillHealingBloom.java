@@ -107,7 +107,7 @@ public class SkillHealingBloom extends ActiveSkill {
             if (!targetHero.getPlayer().getWorld().equals(hero.getPlayer().getWorld())) {
                 continue;
             }
-            if(targetHero.getPlayer().getLocation().toVector().distanceSquared(v) < Math.pow(range, 2)); {
+            if(targetHero.getPlayer().getLocation().toVector().distanceSquared(v) < Math.pow(range, 2)) {
                 targetHero.addEffect(new RejuvinationEffect(this, plugin, (long) period, (long)duration, mode, amountHealed));
             }
         }
