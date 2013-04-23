@@ -81,21 +81,26 @@ public class SkillWarp extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("default-destination", "world");
         node.set("description", "a set location");
-        String defaultDest1 = "world: 0,64,0";
-        String defaultDest2 = "world_nether: 0,64,0";
-        String defaultDest3 = "world_the_end: 0,64,0";
-        List<String> defaultDestinations = new ArrayList<String>();
-        defaultDestinations.add(defaultDest1);
-        defaultDestinations.add(defaultDest2);
-        defaultDestinations.add(defaultDest3);
-        node.set("destinations", defaultDestinations);
+        String defaultDestKey1 = "world";
+        String defaultDestKey2 = "world_nether";
+        String defaultDestKey3 = "world_the_end";
+        String defaultDestLocation = "0,64,0";
+        List<String> defaultDestinationKeys = new ArrayList<String>();
+        defaultDestinationKeys.add(defaultDestKey1);
+        defaultDestinationKeys.add(defaultDestKey2);
+        defaultDestinationKeys.add(defaultDestKey3);
+        for( String key : defaultDestinationKeys) {
+            node.createSection("destinations."+ key.toString());
+            node.set("destinations."+key,defaultDestLocation);
+        }
         return node;
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        String defaultDestinationString = SkillConfigManager.getUseSetting(hero, this, "default-destination","world,0,64,0");
+        String defaultDestinationString = SkillConfigManager.getUseSetting(hero, this, "default-destination","world");
         List<String> possibleDestinations = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "destinations"));
+        
         
         Location destination = null;
         World world = player.getWorld();
