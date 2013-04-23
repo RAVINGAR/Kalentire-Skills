@@ -81,18 +81,25 @@ public class SkillWarp extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("default-destination", "world");
         node.set("description", "a set location");
-        String defaultDestKey1 = "world";
-        String defaultDestKey2 = "world_nether";
-        String defaultDestKey3 = "world_the_end";
-        String defaultDestLocation = "0,64,0";
-        List<String> defaultDestinationKeys = new ArrayList<String>();
-        defaultDestinationKeys.add(defaultDestKey1);
-        defaultDestinationKeys.add(defaultDestKey2);
-        defaultDestinationKeys.add(defaultDestKey3);
-        for( String key : defaultDestinationKeys) {
-            node.createSection("destinations."+ key.toString());
-            node.set("destinations."+key,defaultDestLocation);
+        
+        if (node.contains("destinations")) {
+            
+            return node;
+        } else {
+            String defaultDestKey1 = "world";
+            String defaultDestKey2 = "world_nether";
+            String defaultDestKey3 = "world_the_end";
+            String defaultDestLocation = "0,64,0";
+            List<String> defaultDestinationKeys = new ArrayList<String>();
+            defaultDestinationKeys.add(defaultDestKey1);
+            defaultDestinationKeys.add(defaultDestKey2);
+            defaultDestinationKeys.add(defaultDestKey3);
+            for( String key : defaultDestinationKeys) {
+                node.createSection("destinations."+ key.toString());
+                node.set("destinations."+key,defaultDestLocation);
+            }
         }
+        
         return node;
     }
 
@@ -100,13 +107,12 @@ public class SkillWarp extends ActiveSkill {
         Player player = hero.getPlayer();
         String defaultDestinationString = SkillConfigManager.getUseSetting(hero, this, "default-destination","world");
         List<String> possibleDestinations = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "destinations"));
-        
-        
         Location destination = null;
         World world = player.getWorld();
         for (String arg : possibleDestinations) {
             if (world.getName().equalsIgnoreCase(arg)) {
                 String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+arg, "0,64,0").split(",");
+                player.sendMessage("The setting for the found world is: "+ arg.toString()+" at location "+ destArgs.toString());
                 destination = new Location(world,Double.parseDouble(destArgs[0]),Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
             } else {
                 destination = null;
