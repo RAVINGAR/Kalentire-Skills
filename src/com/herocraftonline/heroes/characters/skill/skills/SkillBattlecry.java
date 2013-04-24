@@ -15,12 +15,12 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 public class SkillBattlecry extends ActiveSkill {
 
 	public SkillBattlecry(Heroes plugin, String name) {
-		super(plugin, "BattleCry");
+		super(plugin, "Battlecry");
 		setDescription("Party members within $1 blocks ragain $2 stamina.");
 		setUsage("/skill battlecry");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill battlecry");
-		setTypes(SkillType.SILENCABLE);
+        setTypes(SkillType.BUFF, SkillType.EARTH, SkillType.SILENCABLE);
 	}
 
 	@Override
@@ -35,26 +35,24 @@ public class SkillBattlecry extends ActiveSkill {
 	}
 	
 	@Override
-	public String getDescription(Hero hero) {
-		Integer range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
-		Integer stamina = SkillConfigManager.getUseSetting(hero, this, "stamina-restored", 5, true);
-		return getDescription().replace("$1", range.toString()).replace("$2", stamina.toString());
-	}
-	
-	@Override
 	public SkillResult use(Hero hero, String[] args) {
-		int foodRestore = SkillConfigManager.getUseSetting(hero, this, "stamina-restored", 5, true);
 		Player player = hero.getPlayer();
+        int foodRestore = SkillConfigManager.getUseSetting(hero, this, "stamina-restored", 5, true);
 		if(hero.hasParty()) {
-			int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false), 2);
-			
-			for(Hero member : hero.getParty().getMembers()) {
-				Player mPlayer = member.getPlayer();
+            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false), 2);
+            for (Hero pHero : hero.getParty().getMembers()) {
+                Player pPlayer = pHero.getPlayer();
+                if (!pPlayer.getWorld().equals(player.getWorld())) {
+                    continue;
+                }
+                if (pPlayer.getLocation().distanceSquared(player.getLocation()) > rangeSquared) {
+                    continue;
+                }
 				
-				if(!mPlayer.getWorld().equals(player.getWorld())) continue;
-				if(mPlayer.getLocation().distanceSquared(player.getLocation()) > rangeSquared) continue;
+				if(!pPlayer.getWorld().equals(player.getWorld())) continue;
+				if(pPlayer.getLocation().distanceSquared(player.getLocation()) > rangeSquared) continue;
 				
-				mPlayer.setFoodLevel(Math.min(player.getFoodLevel() + foodRestore, 19));
+				pPlayer.setFoodLevel(Math.min(player.getFoodLevel() + foodRestore, 19));
 			}
 		}
 		else {
@@ -63,5 +61,10 @@ public class SkillBattlecry extends ActiveSkill {
 		return SkillResult.NORMAL;
 	}
 
-
+@Override
+public String getDescription(Hero hero) {
+	Integer range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
+	Integer stamina = SkillConfigManager.getUseSetting(hero, this, "stamina-restored", 5, true);
+	return getDescription().replace("$1", range.toString()).replace("$2", stamina.toString());
+	}
 }

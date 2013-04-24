@@ -46,13 +46,6 @@ public class SkillManasong extends ActiveSkill {
     }
 
     @Override
-    public void init() {
-        super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You feel a bit wiser!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You no longer feel as wise!");
-    }
-
-    @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
