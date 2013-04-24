@@ -113,10 +113,10 @@ public class SkillWarp extends ActiveSkill {
             if (world.getName().equalsIgnoreCase(arg)) {
                 String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+arg, "0,64,0").split(",");
                 player.sendMessage("The setting for the found world is: "+ arg.toString()+" with the amount of arguments: "+destArgs.length);
-                if(destArgs.length != 3) {
-                    
-                } else {
+                if(destArgs.length == 3) {
+                    // This means the destination should be valid
                     destination = new Location(world,Double.parseDouble(destArgs[0]),Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
+                    break;
                 }
             } else {
                 destination = null;
@@ -124,7 +124,7 @@ public class SkillWarp extends ActiveSkill {
         }
         if (destination == null) {
             String[] dArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+defaultDestinationString,"0,64,0").split(",");
-            destination = new Location(plugin.getServer().getWorld(dArgs[0]), Double.parseDouble(dArgs[1]), Double.parseDouble(dArgs[2]), Double.parseDouble(dArgs[3]));
+            destination = new Location(plugin.getServer().getWorld(defaultDestinationString), Double.parseDouble(dArgs[0]), Double.parseDouble(dArgs[1]), Double.parseDouble(dArgs[2]));
         }
         try {
             player.teleport(destination);
