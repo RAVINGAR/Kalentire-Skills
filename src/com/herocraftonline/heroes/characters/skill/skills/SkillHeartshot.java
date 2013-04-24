@@ -99,8 +99,10 @@ public class SkillHeartshot extends ActiveSkill {
 		public void onEntityDamage(EntityDamageEvent event) {
 			
 			if(!(event.getEntity() instanceof LivingEntity)) return;
+			if(!(event instanceof EntityDamageByEntityEvent)) return;
 			
 			LivingEntity target = (LivingEntity) event.getEntity();
+			
 			EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
 			
 			if (!(subEvent.getDamager() instanceof Arrow)) return;
@@ -122,4 +124,3 @@ public class SkillHeartshot extends ActiveSkill {
 	}
 	
 }
-
