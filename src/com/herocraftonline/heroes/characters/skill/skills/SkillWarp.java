@@ -81,25 +81,6 @@ public class SkillWarp extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("default-destination", "world");
         node.set("description", "a set location");
-        
-        if (node.contains("destinations")) {
-            
-            return node;
-        } else {
-            String defaultDestKey1 = "world";
-            String defaultDestKey2 = "world_nether";
-            String defaultDestKey3 = "world_the_end";
-            String defaultDestLocation = "0,64,0";
-            List<String> defaultDestinationKeys = new ArrayList<String>();
-            defaultDestinationKeys.add(defaultDestKey1);
-            defaultDestinationKeys.add(defaultDestKey2);
-            defaultDestinationKeys.add(defaultDestKey3);
-            for( String key : defaultDestinationKeys) {
-                node.createSection("destinations."+ key.toString());
-                node.set("destinations."+key,defaultDestLocation);
-            }
-        }
-        
         return node;
     }
 
@@ -112,7 +93,6 @@ public class SkillWarp extends ActiveSkill {
         for (String arg : possibleDestinations) {
             if (world.getName().equalsIgnoreCase(arg)) {
                 String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+arg, "0,64,0").split(",");
-                player.sendMessage("The setting for the found world is: "+ arg.toString()+" with the amount of arguments: "+destArgs.length);
                 if(destArgs.length == 3) {
                     // This means the destination should be valid
                     destination = new Location(world,Double.parseDouble(destArgs[0]),Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
