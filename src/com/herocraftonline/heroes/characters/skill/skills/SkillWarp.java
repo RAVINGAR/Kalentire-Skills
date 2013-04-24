@@ -112,14 +112,18 @@ public class SkillWarp extends ActiveSkill {
         for (String arg : possibleDestinations) {
             if (world.getName().equalsIgnoreCase(arg)) {
                 String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+arg, "0,64,0").split(",");
-                player.sendMessage("The setting for the found world is: "+ arg.toString()+" at location "+ destArgs.toString());
-                destination = new Location(world,Double.parseDouble(destArgs[0]),Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
+                player.sendMessage("The setting for the found world is: "+ arg.toString()+" with the amount of arguments: "+destArgs.length);
+                if(destArgs.length != 3) {
+                    
+                } else {
+                    destination = new Location(world,Double.parseDouble(destArgs[0]),Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
+                }
             } else {
                 destination = null;
             }
         }
         if (destination == null) {
-            String[] dArgs = defaultDestinationString.split(",");
+            String[] dArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+defaultDestinationString,"0,64,0").split(",");
             destination = new Location(plugin.getServer().getWorld(dArgs[0]), Double.parseDouble(dArgs[1]), Double.parseDouble(dArgs[2]), Double.parseDouble(dArgs[3]));
         }
         try {
