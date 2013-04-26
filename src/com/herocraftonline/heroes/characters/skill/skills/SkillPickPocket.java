@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
@@ -125,3 +126,4 @@ public class SkillPickPocket extends TargettedSkill {
 
 
 }
+*/

@@ -27,7 +27,7 @@ public class SkillTerror extends TargettedSkill {
         setUsage("/skill terror");
         setArgumentRange(0, 0);
         setIdentifiers("skill terror");
-        setTypes(SkillType.DARK, SkillType.DEBUFF, SkillType.ILLUSION, SkillType.MOVEMENT, SkillType.HARMFUL);
+        setTypes(SkillType.DARK, SkillType.DEBUFF, SkillType.ILLUSION, SkillType.MOVEMENT, SkillType.HARMFUL, SkillType.SILENCABLE);
 	}
 	
 	@Override

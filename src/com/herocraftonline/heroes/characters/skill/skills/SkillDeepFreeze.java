@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -217,3 +218,4 @@ public class SkillDeepFreeze extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "").replace("$3", shatter + "");
     }
 }
+*/
