@@ -1,4 +1,4 @@
-/*package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
@@ -20,15 +20,15 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillBlaze extends ActiveSkill {
+public class SkillInferno extends ActiveSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    public SkillBlaze(Heroes plugin) {
-        super(plugin, "Blaze");
+    public SkillInferno(Heroes plugin) {
+        super(plugin, "Inferno");
         setDescription("You ignite all nearby enemies on fire dealing $1 fire damage.");
-        setUsage("/skill blaze");
+        setUsage("/skill inferno");
         setArgumentRange(0, 0);
-        setIdentifiers("skill blaze");
+        setIdentifiers("skill inferno");
         setTypes(SkillType.FIRE, SkillType.DAMAGING, SkillType.HARMFUL);
     }
 
@@ -88,4 +88,3 @@ public class SkillBlaze extends ActiveSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
-*/
