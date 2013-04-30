@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -62,3 +62,4 @@ public class SkillOne extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/

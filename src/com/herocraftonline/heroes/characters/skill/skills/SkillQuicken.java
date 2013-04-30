@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -105,3 +105,4 @@ public class SkillQuicken extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/
