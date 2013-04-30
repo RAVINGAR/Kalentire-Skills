@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -85,3 +85,4 @@ public class SkillQuake extends PassiveSkill {
         return getDescription();
     }
 }
+*/
