@@ -32,7 +32,7 @@ public class SkillBattlesong extends ActiveSkill {
 		conf.set(SkillSetting.COOLDOWN.node(), 10000);
 		conf.set(SkillSetting.RADIUS.node(), 15);
 		conf.set(SkillSetting.MANA.node(), 20);
-		conf.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY.toString() + "%hero% screams a battle cry!");
+		conf.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY.toString() + "§7[§2Skill§7] %hero% screams a battle cry!");
 		conf.set("stamina-restored", 5);
 		return conf;
 	}
@@ -65,7 +65,7 @@ public class SkillBattlesong extends ActiveSkill {
 		}
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.WHITE).withFade(Color.YELLOW).build());
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.WHITE).withFade(Color.YELLOW).build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

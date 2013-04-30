@@ -41,8 +41,8 @@ public class SkillRuneword extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("damage-bonus", 1.25);
         node.set(SkillSetting.RADIUS.node(), 10);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been cursed by a Runeword!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "The Runeword's curse fades from %target%!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been cursed by a Runeword!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] The Runeword's curse fades from %target%!");
         node.set(SkillSetting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
         return node;
     }
@@ -50,8 +50,8 @@ public class SkillRuneword extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been cursed by a Runeword!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "The Runeword's curse fades from %target%!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% has been cursed by a Runeword!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] The Runeword's curse fades from %target%!").replace("%target%", "$1");
     }
     
     @Override
