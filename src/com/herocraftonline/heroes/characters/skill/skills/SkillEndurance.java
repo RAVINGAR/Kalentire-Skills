@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -158,3 +158,4 @@ public class SkillEndurance extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(inc * 100)).replace("$2", Util.stringDouble(out * 100));
     }
 }
+*/
