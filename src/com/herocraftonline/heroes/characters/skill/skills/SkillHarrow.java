@@ -25,8 +25,8 @@ public class SkillHarrow extends TargettedSkill {
 	public SkillHarrow(Heroes plugin) {
 		super(plugin, "Harrow");
 		setDescription("You harrow your victim from behind, dealing $1 damage and restoring $2 of own health.");
-		setUsage("/skill harrow <target>");
-		setArgumentRange(0, 1);
+		setUsage("/skill harrow");
+		setArgumentRange(0, 0);
 		setIdentifiers("skill harrow");
 		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
 	}
