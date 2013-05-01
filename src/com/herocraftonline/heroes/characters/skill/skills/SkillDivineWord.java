@@ -10,8 +10,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -19,23 +17,23 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillRemedy extends TargettedSkill {
+public class SkillDivineWord extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    public SkillRemedy(Heroes plugin) {
-        super(plugin, "Remedy");
-        setDescription("You restore $1 health to your target.");
-        setUsage("/skill remedy <target>");
+    
+    public SkillDivineWord(Heroes plugin) {
+        super(plugin, "DivineWord");
+        setDescription("You restore $1 health to the target.");
+        setUsage("/skill divineword <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill remedy");
+        setIdentifiers("skill divineword");
         setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALTH.node(), 10);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 25);
+        node.set(SkillSetting.HEALTH.node(), 5);
         return node;
     }
 
@@ -43,11 +41,11 @@ public class SkillRemedy extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (!(target instanceof Player)) {
-            return SkillResult.INVALID_TARGET;
+        	return SkillResult.INVALID_TARGET;
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
+        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
         int targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
@@ -66,15 +64,11 @@ public class SkillRemedy extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
         targetHero.heal(hrhEvent.getAmount());
-        for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.FIRE)) {
-                targetHero.removeEffect(effect);
-            }
-        }
+        //targetHero.heal(targetHealth + hrhEvent.getAmount());
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.SILVER).withFade(Color.WHITE).build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -85,7 +79,7 @@ public class SkillRemedy extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
-        return getDescription().replace("$1", health + "");
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
+        return getDescription().replace("$1", amount + "");
     }
 }

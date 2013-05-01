@@ -19,15 +19,15 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillRemedy extends TargettedSkill {
+public class SkillBloodGift extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    public SkillRemedy(Heroes plugin) {
-        super(plugin, "Remedy");
-        setDescription("You restore $1 health to your target.");
-        setUsage("/skill remedy <target>");
+    public SkillBloodGift(Heroes plugin) {
+        super(plugin, "BloodGift");
+        setDescription("You restore $1 health to your target at a cost of your own");
+        setUsage("/skill bloodgift <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill remedy");
+        setIdentifiers("skill bloodgift");
         setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
     }
 
@@ -67,14 +67,14 @@ public class SkillRemedy extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getAmount());
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.FIRE)) {
+            if (effect.isType(EffectType.BLEED)) {
                 targetHero.removeEffect(effect);
             }
         }
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
