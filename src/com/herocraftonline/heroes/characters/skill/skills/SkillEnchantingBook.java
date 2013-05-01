@@ -42,6 +42,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 		setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public SkillResult use(Hero h, String[] args) {
 		Player p = h.getPlayer();

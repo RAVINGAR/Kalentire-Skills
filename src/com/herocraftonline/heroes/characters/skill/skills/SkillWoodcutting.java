@@ -45,7 +45,8 @@ public class SkillWoodcutting extends PassiveSkill {
             this.skill = skill;
         }
         
-        @EventHandler(priority = EventPriority.MONITOR)
+        @SuppressWarnings("deprecation")
+		@EventHandler(priority = EventPriority.MONITOR)
         public void onBlockBreak(BlockBreakEvent event) {
             if (event.isCancelled()) {
                 return;

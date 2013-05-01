@@ -47,7 +47,8 @@ public class SkillSummonSheep extends ActiveSkill {
         return node;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         broadcastExecuteText(hero);
