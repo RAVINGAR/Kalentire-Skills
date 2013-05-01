@@ -17,11 +17,11 @@ public class SkillAsuraSlash extends TargettedSkill {
 
     public SkillAsuraSlash(Heroes plugin) {
         super(plugin, "AsuraSlash");
-        setDescription("You deal $1 light damage to your target and interrupt any spell they are currently using.");
+        setDescription("By the power of Asura you slash your target for $1 dark damage.");
         setUsage("/skill asuraslash <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill asuraslash");
-        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL);
+        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DARK);
     }
 
     @Override
