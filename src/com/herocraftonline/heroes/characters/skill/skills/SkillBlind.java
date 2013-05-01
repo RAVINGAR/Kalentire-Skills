@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//http://pastie.org/private/zjegs0gcy1a5l3iyhl61ig
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -23,15 +23,16 @@ public class SkillBlind extends TargettedSkill {
     public SkillBlind(Heroes plugin) {
         super(plugin, "Blind");
         setDescription("You blind the target for $1 seconds.");
-        setUsage("/skill blind <target>");
+        setUsage("/skill blind");
         setArgumentRange(0, 1);
         setIdentifiers("skill blind");
-        setTypes(SkillType.SILENCABLE, SkillType.ILLUSION, SkillType.HARMFUL);
+        setTypes(SkillType.DEBUFF, SkillType.ILLUSION, SkillType.HARMFUL, SkillType.DAMAGING);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+        //node.set("speed-multiplier", 3);
         node.set(SkillSetting.DURATION.node(), 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!");

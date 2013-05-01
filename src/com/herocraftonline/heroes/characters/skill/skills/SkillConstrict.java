@@ -32,22 +32,22 @@ public class SkillConstrict extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("speed-multiplier", 2);
+        node.set("speed-multiplier", 3);
         node.set(SkillSetting.DURATION.node(), 15000);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been constricted by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer constricted!");
         return node;
     }
 
-
     @Override
     public void init() {
+        //super.init();
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been constricted by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer constricted!").replace("%target%", "$1");
     }
-
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    	//Player player = hero.getPlayer();
         if (!(target instanceof Player))
             return SkillResult.INVALID_TARGET;
         
