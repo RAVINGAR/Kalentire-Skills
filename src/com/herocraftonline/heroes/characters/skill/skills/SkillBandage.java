@@ -75,7 +75,7 @@ public class SkillBandage extends TargettedSkill {
                 targetHero.removeEffect(effect);
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EAT , 0.5F, 0.01F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP , 0.5F, 0.01F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

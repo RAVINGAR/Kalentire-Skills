@@ -1,7 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,27 +16,28 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillPray extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
-    public SkillPray(Heroes plugin) {
-        super(plugin, "Pray");
-        setDescription("You restore $1 health to your target.");
-        setUsage("/skill pray <target>");
+public class SkillSacredWord extends TargettedSkill {
+
+    public SkillSacredWord(Heroes plugin) {
+        super(plugin, "SacredWord");
+        setDescription("SacredWord relieves your target, restoring $1 health while repairing status effects.");
+        setUsage("/skill sacredword <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill pray");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE);
+        setIdentifiers("skill sacredword");
+        setTypes(SkillType.HEAL, SkillType.LIGHT, SkillType.SILENCABLE);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALTH.node(), 10);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 25);
-        return node;
+        ConfigurationSection section = super.getDefaultConfig();
+        section.set(SkillSetting.HEALTH.node(), 5);
+        section.set(SkillSetting.HEALTH_INCREASE.node(), 0);
+        section.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        section.set(SkillSetting.REAGENT.node(), 339);
+        section.set(SkillSetting.REAGENT_COST.node(), 1);
+        return section;
     }
 
     @Override
@@ -47,7 +48,8 @@ public class SkillPray extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
+        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
+        hpPlus += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
         int targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
@@ -60,32 +62,28 @@ public class SkillPray extends TargettedSkill {
         }
 
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, hpPlus, this, hero);
-        plugin.getServer().getPluginManager().callEvent(hrhEvent);
+        Bukkit.getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getAmount()); 
+
+        // SacredWord cures stuff!!
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.POISON)) {
+        	if (effect.isType(EffectType.CONFUSION) || effect.isType(EffectType.FIRE) || effect.isType(EffectType.BLIND)) {
                 targetHero.removeEffect(effect);
             }
         }
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.5F, 0.01F); 
         broadcastExecuteText(hero, target);
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.MAROON).withFade(Color.WHITE).build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return SkillResult.NORMAL;
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
-        return getDescription().replace("$1", health + "");
+        double amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
+        amount += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
+        return getDescription().replace("$1", amount + "");
     }
 }
