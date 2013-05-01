@@ -8,7 +8,9 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.BlindEffect;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -53,7 +55,10 @@ public class SkillBlind extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        hero.addEffect(new BlindEffect(this, duration, applyText, expireText));
+        BlindEffect effect = new BlindEffect(this, duration, applyText, expireText);
+        effect.types.add(EffectType.MAGIC);
+        plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
+        
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_IDLE, 0.8F, 1.0F);
         return SkillResult.NORMAL;
