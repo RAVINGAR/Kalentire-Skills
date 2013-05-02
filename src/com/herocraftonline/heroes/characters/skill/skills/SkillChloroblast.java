@@ -24,7 +24,7 @@ public class SkillChloroblast extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillChloroblast(Heroes plugin) {
         super(plugin, "Chloroblast");
-        setDescription("You restore $1 health to your target.");
+        setDescription("You restore $1 health to your target and negate poisons.");
         setUsage("/skill chloroblast <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill chloroblast");

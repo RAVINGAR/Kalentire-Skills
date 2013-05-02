@@ -22,7 +22,7 @@ public class SkillBandage extends TargettedSkill {
 
     public SkillBandage(Heroes plugin) {
         super(plugin, "Bandage");
-        setDescription("Bandages your target, restoring $1 health.");
+        setDescription("Bandages your target, restoring $1 health and negates bleeding.");
         setUsage("/skill bandage <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bandage");

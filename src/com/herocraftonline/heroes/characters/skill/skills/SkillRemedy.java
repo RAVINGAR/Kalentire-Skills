@@ -24,7 +24,7 @@ public class SkillRemedy extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillRemedy(Heroes plugin) {
         super(plugin, "Remedy");
-        setDescription("You restore $1 health to your target.");
+        setDescription("You restore $1 health to your target and negates fire effects.");
         setUsage("/skill remedy <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill remedy");

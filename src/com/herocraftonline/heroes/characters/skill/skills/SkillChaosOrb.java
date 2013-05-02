@@ -42,7 +42,7 @@ public class SkillChaosOrb extends ActiveSkill {
     
     public SkillChaosOrb(Heroes plugin) {
         super(plugin, "ChaosOrb");
-        setDescription("You throw an orb of chaos that deals $1 damage,  ignites the target and teleports you");
+        setDescription("You throw an orb of chaos that deals $1 damage and ignites the target.");
         setUsage("/skill chaosorb");
         setArgumentRange(0, 0);
         setIdentifiers("skill chaosorb");

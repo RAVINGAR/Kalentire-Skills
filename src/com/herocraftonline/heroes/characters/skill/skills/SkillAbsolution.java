@@ -24,7 +24,7 @@ public class SkillAbsolution extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
-        setDescription("You restore $1 health to your target.");
+        setDescription("You restore $1 health to your target and negate Dark effects.");
         setUsage("/skill absolution <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill absolution");

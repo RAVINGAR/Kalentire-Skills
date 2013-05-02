@@ -24,7 +24,7 @@ public class SkillBloodGift extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillBloodGift(Heroes plugin) {
         super(plugin, "BloodGift");
-        setDescription("You restore $1 health to your target at a cost of your own");
+        setDescription("You restore $1 health to your target and negates bleeding, at the cost of your own health.");
         setUsage("/skill bloodgift <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bloodgift");

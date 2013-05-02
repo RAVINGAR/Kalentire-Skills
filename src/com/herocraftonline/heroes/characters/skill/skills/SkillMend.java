@@ -22,7 +22,7 @@ public class SkillMend extends TargettedSkill {
 
     public SkillMend(Heroes plugin) {
         super(plugin, "Mend");
-        setDescription("Mends your target, restoring $1 health and removing bleed and fire.");
+        setDescription("Mends your target, restoring $1 health, negating bleed and fire.");
         setUsage("/skill mend");
         setArgumentRange(0, 0);
         setIdentifiers("skill mend");

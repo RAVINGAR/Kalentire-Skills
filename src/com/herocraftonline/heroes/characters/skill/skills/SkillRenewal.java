@@ -24,7 +24,7 @@ public class SkillRenewal extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillRenewal(Heroes plugin) {
         super(plugin, "Renewal");
-        setDescription("You restore $1 health to your target.");
+        setDescription("You restore $1 health to your target, curing disease.");
         setUsage("/skill renewal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill renewal");

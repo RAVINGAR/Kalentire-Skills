@@ -22,7 +22,7 @@ public class SkillInfusion extends TargettedSkill {
 
     public SkillInfusion(Heroes plugin) {
         super(plugin, "Infusion");
-        setDescription("Infuses your target, restoring $1 health and removing poisons.");
+        setDescription("Infuses your target, restoring $1 health and negates bleeding.");
         setUsage("/skill infusion <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill infusion");
@@ -71,7 +71,7 @@ public class SkillInfusion extends TargettedSkill {
 
         // Infusion cures Bleeding!
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.POISON)) {
+            if (effect.isType(EffectType.BLEED)) {
                 targetHero.removeEffect(effect);
             }
         }
