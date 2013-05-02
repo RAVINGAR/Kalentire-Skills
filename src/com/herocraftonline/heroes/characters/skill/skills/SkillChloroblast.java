@@ -19,16 +19,16 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillPray extends TargettedSkill {
+public class SkillChloroblast extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    public SkillPray(Heroes plugin) {
-        super(plugin, "Pray");
+    public SkillChloroblast(Heroes plugin) {
+        super(plugin, "Chloroblast");
         setDescription("You restore $1 health to your target.");
-        setUsage("/skill pray <target>");
+        setUsage("/skill chloroblast <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill pray");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE);
+        setIdentifiers("skill chloroblast");
+        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.EARTH);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class SkillPray extends TargettedSkill {
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.MAROON).withFade(Color.WHITE).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.LIME).withFade(Color.WHITE).build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

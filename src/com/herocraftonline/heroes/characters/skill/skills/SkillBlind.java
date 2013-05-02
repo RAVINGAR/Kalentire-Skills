@@ -55,7 +55,7 @@ public class SkillBlind extends TargettedSkill {
         }
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         BlindEffect effect = new BlindEffect(this, duration, applyText, expireText);
-        effect.types.add(EffectType.MAGIC);
+        effect.types.add(EffectType.BLIND);
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
         
 
