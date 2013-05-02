@@ -26,8 +26,7 @@ public class SkillEmpathy extends TargettedSkill {
         setUsage("/skill empathy [target]");
         setArgumentRange(0, 1);
         setIdentifiers("skill empathy");
-        
-        setTypes(SkillType.DARK, SkillType.DAMAGING, SkillType.SILENCABLE);
+        setTypes(SkillType.DARK, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL);
     }
 
     @Override
