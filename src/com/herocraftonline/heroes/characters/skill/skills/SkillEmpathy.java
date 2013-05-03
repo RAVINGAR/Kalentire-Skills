@@ -96,7 +96,7 @@ public class SkillEmpathy extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        if (target.equals(player)) {
+        if (target.equals(hero)) {
             return SkillResult.INVALID_TARGET;
         }
         int maxDamage = (int) (SkillConfigManager.getUseSetting(hero, this, "max-damage", 0, false) +
