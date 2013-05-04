@@ -22,11 +22,10 @@ public class SkillWarp extends ActiveSkill {
 
     public SkillWarp(Heroes plugin) {
         super(plugin, "Warp");
-        setDescription("Teleports you to $1");
+        setDescription("Teleports you to a safe location in your current world.");
         setUsage("/skill warp");
         setArgumentRange(0, 0);
         setIdentifiers(new String[] { "skill warp" });
-
         setTypes(new SkillType[] { SkillType.TELEPORT, SkillType.SILENCABLE });
     }
 
