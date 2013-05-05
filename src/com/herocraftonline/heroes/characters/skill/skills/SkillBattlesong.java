@@ -19,7 +19,7 @@ public class SkillBattlesong extends ActiveSkill {
     public VisualEffect fplayer = new VisualEffect();
 	public SkillBattlesong(Heroes plugin) {
 		super(plugin, "Battlesong");
-		setDescription("Party members within $1 blocks ragain $2 stamina.");
+		setDescription("Party members within $1 blocks regain $2 stamina.");
 		setUsage("/skill battlesong");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill battlesong");
