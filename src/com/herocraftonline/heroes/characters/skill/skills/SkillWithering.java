@@ -75,7 +75,7 @@ public class SkillWithering extends TargettedSkill {
             this.types.add(EffectType.DARK);
             this.finishDamage = finishDamage;
             //addMobEffect(2, (int) (duration / 1000) * 20, 20, false);
-            addMobEffect(20, (int) (duration / 1000) * 20, 127, false);
+            addMobEffect(20, (int) (duration / 1000) * 20, 1, false);
         }
         
         @Override
