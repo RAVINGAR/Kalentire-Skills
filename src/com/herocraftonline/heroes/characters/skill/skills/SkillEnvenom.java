@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
@@ -161,7 +162,7 @@ public class SkillEnvenom extends ActiveSkill {
             }
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (!(subEvent.getDamager() instanceof Player)) {
+            if (subEvent.getCause() != DamageCause.ENTITY_ATTACK || !(subEvent.getDamager() instanceof Player)) {
                 return;
             }
 
