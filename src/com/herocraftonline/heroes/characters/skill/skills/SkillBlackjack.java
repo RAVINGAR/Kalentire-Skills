@@ -42,7 +42,7 @@ public class SkillBlackjack extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% prepared his blackjack!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!");
-        node.set("stun-duration", 5000);
+        node.set("stun-duration", 3000);
         node.set("stun-chance", 0.20);
         node.set(SkillSetting.DURATION.node(), 20000);
         return node;
@@ -109,7 +109,12 @@ public class SkillBlackjack extends ActiveSkill {
                 if (!attackingHero.hasEffect("Blackjack")) {
                     return;
                 }
+                
                 Hero defendingHero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+                
+                if (defendingHero.hasEffect("Stun")) {
+                    return;
+                }
 
                 double chance = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-chance", 0.20, false);
                 if (Util.nextRand() < chance) {
