@@ -68,6 +68,7 @@ public class SkillWindwalk extends ActiveSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // end fireworks stuff
         return SkillResult.NORMAL;
     }
 

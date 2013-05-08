@@ -75,7 +75,7 @@ public class SkillMend extends TargettedSkill {
                 targetHero.removeEffect(effect);
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BAT_IDLE , 0.5F, 0.01F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHEEP_SHEAR , 0.5F, 0.01F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
