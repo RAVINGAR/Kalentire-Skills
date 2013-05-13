@@ -20,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillAbsolution extends TargettedSkill {
-    // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
