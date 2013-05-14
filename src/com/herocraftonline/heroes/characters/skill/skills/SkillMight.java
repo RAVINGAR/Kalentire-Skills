@@ -98,7 +98,12 @@ public class SkillMight extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.RED).withFade(Color.MAROON).build());
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), 
+            		FireworkEffect.builder().flicker(false).trail(false)
+            		.with(FireworkEffect.Type.STAR)
+            		.withColor(Color.RED)
+            		.withFade(Color.MAROON)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

@@ -65,7 +65,14 @@ public class SkillBattlesong extends ActiveSkill {
 		}
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.WHITE).withFade(Color.YELLOW).build());
+            fplayer.playFirework(player.getWorld(), 
+            		player.getLocation().add(0,2,0), 
+            		FireworkEffect.builder()
+            		.flicker(false).trail(false)
+            		.with(FireworkEffect.Type.STAR)
+            		.withColor(Color.WHITE)
+            		.withFade(Color.YELLOW)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
