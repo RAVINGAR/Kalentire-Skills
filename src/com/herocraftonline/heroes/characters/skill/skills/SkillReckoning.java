@@ -21,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillReckoning extends ActiveSkill {
 	
@@ -55,7 +54,7 @@ public class SkillReckoning extends ActiveSkill {
         
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         long currentTime = System.currentTimeMillis();
-        boolean hasHit = false;
+        //boolean hasHit = false;
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
@@ -65,7 +64,7 @@ public class SkillReckoning extends ActiveSkill {
 
             if (!damageCheck(player, target))
                 continue;
-            hasHit = true;
+            //hasHit = true;
             Location targetLoc = target.getLocation();
 
             addSpellTarget(target, hero);
@@ -85,10 +84,11 @@ public class SkillReckoning extends ActiveSkill {
             Vector v = new Vector(xDir, 0, zDir).multiply(0.5).setY(0.5);
             target.setVelocity(v);
         }
-        if(!hasHit) {
+        /*if(!hasHit) {
         	Messaging.send(player, "No valid targets nearby");
         	return SkillResult.INVALID_TARGET_NO_MSG;
         }
+        */
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_THUNDER , 0.4F, 1.0F);
         broadcastExecuteText(hero);
