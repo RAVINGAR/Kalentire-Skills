@@ -80,14 +80,14 @@ public class SkillDespair extends ActiveSkill {
         //int exp = SkillConfigManager.getUseSetting(hero, this, "exp-per-blinded-player", 0, false);
         DespairEffect dEffect = new DespairEffect(this, duration, player);
         //int hit = 0;
-        for (Entity e : player.getNearbyEntities(radius, radius, radius)) {
-            if (!(e instanceof LivingEntity) || !damageCheck(player, (LivingEntity) e)) {
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                 continue;
             }
-            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) e);
+            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
             character.addEffect(dEffect);
             if (damage > 0) {
-                addSpellTarget(e, hero);
+                addSpellTarget(entity, hero);
                 damageEntity(character.getEntity(), player, damage, DamageCause.MAGIC);
             }
             //hit++;
