@@ -98,10 +98,8 @@ public class SkillVoidsong extends ActiveSkill {
         //boolean hit = false;
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), 
-            		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(true)
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder()
+            		.flicker(false).trail(false)
             		.with(FireworkEffect.Type.CREEPER)
             		.withColor(Color.BLACK)
             		.withFade(Color.MAROON)

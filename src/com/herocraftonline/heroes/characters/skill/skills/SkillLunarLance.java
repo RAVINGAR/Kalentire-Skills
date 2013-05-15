@@ -24,9 +24,9 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillLunarLance extends TargettedSkill{
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();   
-        private final int defDamage = 100;                                                                                                      // Default damage
-        private final int defBurnValue = 20;                                                                                            // Default mana burn amount
-        private final String defFailText = "§fYou need a shovel to use this ability!";         // Default skill fail text
+        private final int defDamage = 100; // Default damage
+        private final int defBurnValue = 20;     // Default mana burn amount
+        private final String defFailText = "§fYou need a shovel to use this ability!";   // Default skill fail text
  
         // This is for Firework Effects  
         public SkillLunarLance(Heroes plugin)
@@ -98,19 +98,8 @@ public class SkillLunarLance extends TargettedSkill{
                 // Deal damage
                 int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
-                // Player Firework Effect
-                // CODE HERE
-                // Play Sound
-                // CODE HERE
-                // Broadcast skill usage
-                // this is our fireworks shit
                 try {
-                    fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-                    		FireworkEffect.builder().flicker(false).trail(false)
-                    		.with(FireworkEffect.Type.BALL_LARGE)
-                    		.withColor(Color.BLUE)
-                    		.withFade(Color.AQUA)
-                    		.build());
+                    fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0),FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.AQUA).build());
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (Exception e) {

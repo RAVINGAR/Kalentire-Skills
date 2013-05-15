@@ -26,8 +26,8 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 public class SkillDespair extends ActiveSkill {
     private String applyText;
     private String expireText;
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+
+    public VisualEffect fplayer = new VisualEffect(); //fireworks
     public SkillDespair(Heroes plugin) {
         super(plugin, "Despair");
         setDescription("Blinds all enemies within $1 blocks for $2 seconds and deals $3 dark damage.");
