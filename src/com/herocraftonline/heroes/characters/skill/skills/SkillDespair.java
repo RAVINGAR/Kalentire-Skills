@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -23,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDespair extends ActiveSkill {
     private String applyText;
@@ -79,9 +77,9 @@ public class SkillDespair extends ActiveSkill {
         Player player = hero.getPlayer();
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 0, false);
         damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
-        int exp = SkillConfigManager.getUseSetting(hero, this, "exp-per-blinded-player", 0, false);
+        //int exp = SkillConfigManager.getUseSetting(hero, this, "exp-per-blinded-player", 0, false);
         DespairEffect dEffect = new DespairEffect(this, duration, player);
-        int hit = 0;
+        //int hit = 0;
         for (Entity e : player.getNearbyEntities(radius, radius, radius)) {
             if (!(e instanceof LivingEntity) || !damageCheck(player, (LivingEntity) e)) {
                 continue;
@@ -92,12 +90,12 @@ public class SkillDespair extends ActiveSkill {
                 addSpellTarget(e, hero);
                 damageEntity(character.getEntity(), player, damage, DamageCause.MAGIC);
             }
-            hit++;
+            //hit++;
         }
         /*if (hit == 0) {
             Messaging.send(player, "No valid targets within range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
-        }*/
+        }
         if (exp > 0) {
             if (hero.hasParty()) {
                 hero.getParty().gainExp(exp * hit, ExperienceType.SKILL, player.getLocation());
@@ -105,6 +103,7 @@ public class SkillDespair extends ActiveSkill {
                 hero.gainExp(exp * hit, ExperienceType.SKILL, hero.getViewingLocation(1.0));
             }
         }
+        */
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL , 0.5F, 1.0F);
         // this is our fireworks shit
