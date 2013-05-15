@@ -76,7 +76,6 @@ public class SkillLunarLance extends TargettedSkill{
  
                         return SkillResult.FAIL;
                 }
- 
                 // Get the target hero
                 Hero tHero = plugin.getCharacterManager().getHero((Player) target);
  
@@ -98,7 +97,12 @@ public class SkillLunarLance extends TargettedSkill{
                 int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 try {
-                    fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0),FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.AQUA).build());
+                    fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0),
+                    		FireworkEffect.builder().flicker(false).trail(false)
+                    		.with(FireworkEffect.Type.BALL_LARGE)
+                    		.withColor(Color.BLUE)
+                    		.withFade(Color.AQUA)
+                    		.build());
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -106,6 +110,7 @@ public class SkillLunarLance extends TargettedSkill{
                 }
                 player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
                 hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CAT_HISS , 0.8F, 1.0F); 
+                broadcastExecuteText(hero);
                 return SkillResult.NORMAL;
         }
 }
