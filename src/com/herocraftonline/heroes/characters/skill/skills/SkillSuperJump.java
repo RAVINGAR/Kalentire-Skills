@@ -53,7 +53,12 @@ public class SkillSuperJump extends ActiveSkill {
         broadcastExecuteText(hero);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,10,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.BLUE).withFade(Color.GRAY).build());
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,10,0), 
+            		FireworkEffect.builder().flicker(false).trail(false).
+            		with(FireworkEffect.Type.STAR)
+            		.withColor(Color.BLUE)
+            		.withFade(Color.GRAY)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

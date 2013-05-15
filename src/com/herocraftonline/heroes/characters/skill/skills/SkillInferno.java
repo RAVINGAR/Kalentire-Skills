@@ -48,7 +48,7 @@ public class SkillInferno extends ActiveSkill {
         int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(range, range, range);
         int fireTicks = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false) / 50;
-        boolean damaged = false;
+        //boolean damaged = false;
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
@@ -59,11 +59,17 @@ public class SkillInferno extends ActiveSkill {
                 continue;
             }
 
-            damaged = true;
+            //damaged = true;
             lEntity.setFireTicks(fireTicks);
             // this is our fireworks shit
             try {
-                fplayer.playFirework(player.getWorld(), lEntity.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+                fplayer.playFirework(player.getWorld(), lEntity.getLocation(), FireworkEffect.builder()
+                		.flicker(false)
+                		.trail(true)
+                		.with(FireworkEffect.Type.BURST)
+                		.withColor(Color.ORANGE)
+                		.withFade(Color.RED)
+                		.build());
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -71,11 +77,12 @@ public class SkillInferno extends ActiveSkill {
             }
             plugin.getCharacterManager().getCharacter(lEntity).addEffect(new CombustEffect(this, player));
         }
-
+        /*
         if (!damaged) {
             Messaging.send(player, "No targets in range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+        */
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

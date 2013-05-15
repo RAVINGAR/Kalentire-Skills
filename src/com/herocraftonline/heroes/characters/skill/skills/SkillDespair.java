@@ -94,10 +94,10 @@ public class SkillDespair extends ActiveSkill {
             }
             hit++;
         }
-        if (hit == 0) {
+        /*if (hit == 0) {
             Messaging.send(player, "No valid targets within range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
-        }
+        }*/
         if (exp > 0) {
             if (hero.hasParty()) {
                 hero.getParty().gainExp(exp * hit, ExperienceType.SKILL, player.getLocation());
@@ -109,7 +109,14 @@ public class SkillDespair extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL , 0.5F, 1.0F);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.NAVY).withFade(Color.BLACK).build());
+            fplayer.playFirework(player.getWorld(), 
+            		player.getLocation()
+            		.add(0,2.5,0), 
+            		FireworkEffect.builder()
+            		.flicker(false).trail(false)
+            		.with(FireworkEffect.Type.BURST)
+            		.withColor(Color.NAVY).withFade(Color.BLACK)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

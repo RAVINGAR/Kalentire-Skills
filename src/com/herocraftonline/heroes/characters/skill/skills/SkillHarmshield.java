@@ -66,7 +66,12 @@ public class SkillHarmshield extends ActiveSkill {
         // this is our fireworks shit
         Player player = hero.getPlayer();
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.MAROON).withFade(Color.YELLOW).build());
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), 
+            		FireworkEffect.builder().flicker(false).trail(false)
+            		.with(FireworkEffect.Type.STAR)
+            		.withColor(Color.MAROON)
+            		.withFade(Color.YELLOW)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

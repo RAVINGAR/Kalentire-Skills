@@ -62,7 +62,7 @@ public class SkillMassPiggify extends ActiveSkill {
     	Player player = hero.getPlayer();
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-        boolean didHit = false;
+        //boolean didHit = false;
         for (Entity entity : entities) {
             if(!(entity instanceof LivingEntity)) {
                     continue;
@@ -71,19 +71,22 @@ public class SkillMassPiggify extends ActiveSkill {
             if (!damageCheck(player, target)) {
                 continue;
             }
-            didHit = true;
-            EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
+            //didHit = true;
+            EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || 
+            					target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? 
+            							EntityType.SQUID : EntityType.PIG);
             
             Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
             long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
             plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
         }
+        /*
         if(!didHit) {
             Messaging.send(player, "No valid targets within range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+        */
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT , 0.8F, 1.0F); 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_DEATH , 0.8F, 1.0F); 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_IDLE , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
@@ -145,7 +148,8 @@ public class SkillMassPiggify extends ActiveSkill {
                     if (subEvent.getDamager().equals(event.getEntity().getPassenger())) {
                         event.setCancelled(true);
                         return;
-                    } else if (subEvent.getDamager() instanceof Projectile && ((Projectile) subEvent.getDamager()).getShooter().equals(event.getEntity().getPassenger())) {
+                    } else if (subEvent.getDamager() instanceof Projectile && ((Projectile) subEvent
+                    		.getDamager()).getShooter().equals(event.getEntity().getPassenger())) {
                         event.setCancelled(true);
                         return;
                     }

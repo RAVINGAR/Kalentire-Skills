@@ -124,7 +124,13 @@ public class SkillEmpathy extends TargettedSkill {
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.BLACK).withFade(Color.GRAY).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation(), 
+            		FireworkEffect.builder()
+            		.flicker(true).trail(true)
+            		.with(FireworkEffect.Type.BURST)
+            		.withColor(Color.BLACK)
+            		.withFade(Color.GRAY)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
