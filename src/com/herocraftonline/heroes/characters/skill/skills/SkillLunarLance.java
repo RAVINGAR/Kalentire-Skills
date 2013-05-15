@@ -28,7 +28,6 @@ public class SkillLunarLance extends TargettedSkill{
         private final int defBurnValue = 20;     // Default mana burn amount
         private final String defFailText = "§fYou need a shovel to use this ability!";   // Default skill fail text
  
-        // This is for Firework Effects  
         public SkillLunarLance(Heroes plugin)
         {
                 super(plugin, "LunarLance");
