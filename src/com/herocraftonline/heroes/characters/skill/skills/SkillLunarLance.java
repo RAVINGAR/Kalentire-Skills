@@ -22,12 +22,12 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
  
 public class SkillLunarLance extends TargettedSkill{
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();   
+ 
         private final int defDamage = 100; // Default damage
         private final int defBurnValue = 20;     // Default mana burn amount
         private final String defFailText = "§fYou need a shovel to use this ability!";   // Default skill fail text
  
+        public VisualEffect fplayer = new VisualEffect();  
         public SkillLunarLance(Heroes plugin)
         {
                 super(plugin, "LunarLance");
