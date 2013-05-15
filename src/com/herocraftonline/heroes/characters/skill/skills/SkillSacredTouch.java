@@ -10,6 +10,8 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -64,7 +66,11 @@ public class SkillSacredTouch extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
         targetHero.heal(hrhEvent.getAmount());
-        //targetHero.heal(targetHealth + hrhEvent.getAmount());
+        for (Effect effect : targetHero.getEffects()) {
+            if (effect.isType(EffectType.FIRE)) {
+                targetHero.removeEffect(effect);
+            }
+        }
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
