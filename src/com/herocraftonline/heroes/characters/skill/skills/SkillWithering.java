@@ -26,7 +26,7 @@ public class SkillWithering extends TargettedSkill {
 
     public SkillWithering(Heroes plugin) {
         super(plugin, "Withering");
-        setDescription("You wither your target in darkness, causing confusion for $1 damage over $2 seconds and $3 damage as a finisher");
+        setDescription("You wither your target in darkness, causing nausea for $1 damage over $2 seconds and $3 damage as a finisher");
         setUsage("/skill withering <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill withering");
@@ -74,7 +74,7 @@ public class SkillWithering extends TargettedSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DARK);
             this.finishDamage = finishDamage;
-            addMobEffect(9, (int) (duration / 1000) * 20, 1, false);
+            addMobEffect(9, (int) (duration / 1000) * 20, 3, false);
             addMobEffect(20, (int) (duration / 1000) * 20, 1, false);
         }
         
