@@ -38,7 +38,7 @@ public class SkillReckoning extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DAMAGE.node(), 50);
         node.set(SkillSetting.RADIUS.node(), 5);
-        node.set(SkillSetting.DURATION.node(), 4000); //4 second duration
+        node.set(SkillSetting.DURATION.node(), 4000);
         node.set("slow-amount", 2);
         return node;
     }
