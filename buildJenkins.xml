@@ -3,10 +3,10 @@
 	
     <property name="dir.bin" value="bin" />
     <property name="dir.dist" value="build" />
-    <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
-    <property name="dir.dist.skills" value="${ant.project.name}/skills" />
-	<property name="heroes" value="../../Heroes/workspace/build" />
-	<property name="heroeslibs" value="../../Heroes/workspace/libs" />
+    <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills/" />
+    <property name="dir.dist.skills" value="${ant.project.name}/skills/" />
+	<property name="heroes" value="../../Heroes/workspace/target/" />
+	<property name="heroeslibs" value="../../Heroes/workspace/libs/" />
 
     <path id="classpath">
     	<fileset dir="${heroes}" includes="**/*.jar" />
