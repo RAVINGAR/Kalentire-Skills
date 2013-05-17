@@ -90,19 +90,24 @@ public class SkillHellgate extends ActiveSkill {
                 if (target.equals(player)) {
                     continue;
                 }
-                if (castLocation.distanceSquared(target.getLocation()) > rangeSquared) {
-                    continue;
-                }
-
-                if (targetHero.hasEffect("Hellgate")) {
-                    HellgateEffect hEffect = (HellgateEffect) targetHero.getEffect("Hellgate");
-                    target.teleport(hEffect.getLocation());
-                    targetHero.removeEffect(hEffect);
+                if (castLocation.getWorld() != target.getWorld()) {
+                    Messaging.send(target, "You're in a different world than the caster!");
+                    Messaging.send(player,"The party member, "+target.getName()+", is in a different world than you are!");
                 } else {
-                    target.teleport(teleportLocation);
-                    // If we teleported to a hell-world lets add the effect
-                    if (world.getEnvironment() == Environment.NETHER) {
-                        targetHero.addEffect(new HellgateEffect(this, target.getLocation()));
+                    if (castLocation.distanceSquared(target.getLocation()) > rangeSquared) {
+                        continue;
+                    }
+
+                    if (targetHero.hasEffect("Hellgate")) {
+                        HellgateEffect hEffect = (HellgateEffect) targetHero.getEffect("Hellgate");
+                        target.teleport(hEffect.getLocation());
+                        targetHero.removeEffect(hEffect);
+                    } else {
+                        target.teleport(teleportLocation);
+                        // If we teleported to a hell-world lets add the effect
+                        if (world.getEnvironment() == Environment.NETHER) {
+                            targetHero.addEffect(new HellgateEffect(this, target.getLocation()));
+                        }
                     }
                 }
             }
