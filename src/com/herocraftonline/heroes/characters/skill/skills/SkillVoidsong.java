@@ -20,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillVoidsong extends ActiveSkill {
     // This is for Firework Effects
@@ -55,42 +54,30 @@ public class SkillVoidsong extends ActiveSkill {
         int damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false) + 
                 (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this)));
         String description = getDescription().replace("$1", radius + "").replace("$2", duration + "").replace("$3", damage + "");
-        
-        //COOLDOWN
         int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false)
                 - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getSkillLevel(this)) / 1000;
         if (cooldown > 0) {
             description += " CD:" + cooldown + "s";
         }
-        
-        //MANA
         int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 10, false)
                 - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
         if (mana > 0) {
             description += " M:" + mana;
         }
-        
-        //HEALTH_COST
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) - 
                 (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getSkillLevel(this));
         if (healthCost > 0) {
             description += " HP:" + healthCost;
         }
-        
-        //STAMINA
         int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA.node(), 0, false)
                 - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
         if (staminaCost > 0) {
             description += " FP:" + staminaCost;
         }
-        
-        //DELAY
         int delay = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY.node(), 0, false) / 1000;
         if (delay > 0) {
             description += " W:" + delay + "s";
         }
-        
-        //EXP
         int exp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EXP.node(), 0, false);
         if (exp > 0) {
             description += " XP:" + exp;
@@ -107,10 +94,15 @@ public class SkillVoidsong extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
         duration += SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0, false) * hero.getSkillLevel(this);
         Player player = hero.getPlayer();
-        boolean hit = false;
+        //boolean hit = false;
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.BLACK).withFade(Color.MAROON).build());
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2,0), FireworkEffect.builder()
+            		.flicker(false).trail(false)
+            		.with(FireworkEffect.Type.CREEPER)
+            		.withColor(Color.BLACK)
+            		.withFade(Color.MAROON)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -127,13 +119,14 @@ public class SkillVoidsong extends ActiveSkill {
             addSpellTarget(e, hero);
             damageEntity(character.getEntity(), player, damage, DamageCause.MAGIC);
             character.addEffect(new SilenceEffect(this, duration));
-            hit = true;
+            //hit = true;
             
         }
-        if (!hit) {
+        /*if (!hit) {
             Messaging.send(player, "No nearby targets!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+        */
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH , 0.5F, 1.0F); 
         broadcastExecuteText(hero);

@@ -10,6 +10,8 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -64,11 +66,20 @@ public class SkillSacredTouch extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
         targetHero.heal(hrhEvent.getAmount());
-        //targetHero.heal(targetHealth + hrhEvent.getAmount());
+        for (Effect effect : targetHero.getEffects()) {
+            if (effect.isType(EffectType.FIRE)) {
+                targetHero.removeEffect(effect);
+            }
+        }
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
+            		FireworkEffect.builder().flicker(false).trail(false)
+            		.with(FireworkEffect.Type.BALL_LARGE)
+            		.withColor(Color.FUCHSIA)
+            		.withFade(Color.WHITE)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

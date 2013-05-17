@@ -32,7 +32,7 @@ public class SkillBladedance extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("weapons", Util.axes);
+        node.set("weapons", Util.swords);
         node.set(SkillSetting.MAX_DISTANCE.node(), 2);
         node.set(SkillSetting.RADIUS.node(), 3);
         node.set("damage-multiplier", 1.0);

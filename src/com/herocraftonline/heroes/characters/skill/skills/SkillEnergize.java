@@ -111,7 +111,13 @@ public class SkillEnergize extends ActiveSkill{
         broadcastExecuteText(hero);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.YELLOW).withFade(Color.TEAL).build());
+            fplayer.playFirework(player.getWorld(), 
+            		player.getLocation().add(0,1.5,0), 
+            		FireworkEffect.builder().flicker(false).trail(false)
+            		.with(FireworkEffect.Type.STAR)
+            		.withColor(Color.YELLOW)
+            		.withFade(Color.TEAL)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

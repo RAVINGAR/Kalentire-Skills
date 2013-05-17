@@ -31,7 +31,7 @@ public class SkillMonetize extends ActiveSkill{
 	
 	public SkillMonetize(Heroes plugin) {
 		super(plugin, "Monetize");
-		setDescription("You turn all the gold ingots in your inventory into $1 "+econ.currencyNamePlural());
+		setDescription("You turn all the gold ingots in your inventory into $1 coins");
 		setUsage("/skill Monetize");
 		setArgumentRange(0,0);
 		setIdentifiers("skill Monetize");

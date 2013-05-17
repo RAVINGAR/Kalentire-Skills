@@ -55,7 +55,12 @@ public class SkillFireblast extends TargettedSkill
     
     // this is our funky shit
     try {
-		fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.RED).withFade(Color.ORANGE).build());
+		fplayer.playFirework(player.getWorld(), target.getLocation(), 
+				FireworkEffect.builder().flicker(false).trail(true)
+				.with(FireworkEffect.Type.BURST)
+				.withColor(Color.RED)
+				.withFade(Color.ORANGE)
+				.build());
 	} catch (IllegalArgumentException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

@@ -57,7 +57,15 @@ public class SkillBattery extends TargettedSkill {
             broadcastExecuteText(hero, target);
             // this is our fireworks shit
             try {
-                fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.SILVER).withFade(Color.NAVY).build());
+                fplayer.playFirework(player.getWorld(), 
+                		target.getLocation().add(0,1.5,0), 
+                		FireworkEffect.builder()
+                		.flicker(false)
+                		.trail(false)
+                		.with(FireworkEffect.Type.BURST)
+                		.withColor(Color.SILVER)
+                		.withFade(Color.NAVY)
+                		.build());
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (Exception e) {

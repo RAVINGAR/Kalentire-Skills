@@ -57,7 +57,14 @@ public class SkillDarkRitual extends ActiveSkill {
         // this is our fireworks shit
         Player player = hero.getPlayer();
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,3,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLACK).withFade(Color.GRAY).build());
+            fplayer.playFirework(player.getWorld(), 
+            		player.getLocation().add(0,3,0), 
+            		FireworkEffect.builder()
+            		.flicker(false).trail(true)
+            		.with(FireworkEffect.Type.BALL_LARGE)
+            		.withColor(Color.BLACK)
+            		.withFade(Color.GRAY)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

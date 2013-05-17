@@ -1,2 +1,20 @@
-bin/*
+#Folders to ignore
+bin/
+target/
+build/
+.externalToolBuilders/
+
+#Files to ignore
+.settings
+.project
 .classpath
+.manifest
+buildLocal.xml
+.gitignore
+# intellij
+*.iml
+*.ipr
+*.iws
+.idea/
+
+#Specific files to the project

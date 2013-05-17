@@ -57,7 +57,12 @@ public class SkillPulse extends ActiveSkill {
             int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
             // this is our fireworks shit
             try {
-                fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
+                fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
+                		FireworkEffect.builder().flicker(false).trail(false)
+                		.with(FireworkEffect.Type.BALL)
+                		.withColor(Color.YELLOW)
+                		.withFade(Color.SILVER)
+                		.build());
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (Exception e) {

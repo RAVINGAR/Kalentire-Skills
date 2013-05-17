@@ -62,7 +62,12 @@ public class SkillPlague extends TargettedSkill {
         Player player = hero.getPlayer();
         // this is our fireworks
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.GREEN).withFade(Color.OLIVE).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
+            		FireworkEffect.builder().flicker(false).trail(false)
+            		.with(FireworkEffect.Type.BURST)
+            		.withColor(Color.GREEN)
+            		.withFade(Color.OLIVE)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

@@ -68,7 +68,15 @@ public class SkillChant extends TargettedSkill {
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+            fplayer.playFirework(player.getWorld(), 
+            		target.getLocation(), 
+            		FireworkEffect.builder()
+            		.flicker(false)
+            		.trail(false)
+            		.with(FireworkEffect.Type.BURST)
+            		.withColor(Color.FUCHSIA)
+            		.withFade(Color.WHITE)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {

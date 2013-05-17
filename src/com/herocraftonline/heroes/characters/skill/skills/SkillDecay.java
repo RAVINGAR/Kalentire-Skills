@@ -64,7 +64,14 @@ public class SkillDecay extends TargettedSkill {
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(true).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.BLACK).withFade(Color.GRAY).build());
+            fplayer.playFirework(player.getWorld(), 
+            		target.getLocation().add(0,1.5,0), 
+            		FireworkEffect.builder()
+            		.flicker(true).trail(false)
+            		.with(FireworkEffect.Type.BALL)
+            		.withColor(Color.BLACK)
+            		.withFade(Color.GRAY)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
