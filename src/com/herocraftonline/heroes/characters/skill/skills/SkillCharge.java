@@ -40,7 +40,7 @@ public class SkillCharge extends TargettedSkill {
         super(plugin, "Charge");
         setDescription("You charge toward your target!");
         setUsage("/skill charge");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill charge");
         setTypes(SkillType.PHYSICAL, SkillType.MOVEMENT, SkillType.HARMFUL);
         Bukkit.getServer().getPluginManager().registerEvents(new ChargeEntityListener(this), plugin);

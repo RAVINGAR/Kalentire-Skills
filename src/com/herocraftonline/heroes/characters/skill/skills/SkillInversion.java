@@ -19,7 +19,7 @@ public class SkillInversion extends TargettedSkill {
         super(plugin, "Inversion");
         setDescription("You deal magic damage equal to $1% of the mana the target is missing.");
         setUsage("/skill inversion");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill inversion");
         setTypes(SkillType.MANA, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL);
     }

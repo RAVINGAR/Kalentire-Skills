@@ -32,7 +32,7 @@ public class SkillDespair extends ActiveSkill {
         super(plugin, "Despair");
         setDescription("Blinds all enemies within $1 blocks for $2 seconds and deals $3 dark damage.");
         setUsage("/skill despair");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill despair");
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.HARMFUL);
     }

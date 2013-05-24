@@ -22,7 +22,7 @@ public class SkillDispel extends TargettedSkill {
         super(plugin, "Dispel");
         setDescription("You remove up to $1 magical effects from your target.");
         setUsage("/skill dispel");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill dispel");
         setTypes(SkillType.SILENCABLE);
     }

@@ -31,7 +31,7 @@ public class SkillSoulLeech extends TargettedSkill {
         super(plugin, "SoulLeech");
         setDescription("You drain $1 health from your target over $2 seconds, restoring $3 of your own health.");
         setUsage("/skill soulleech <target>");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill soulleech", "skill sleech");
         setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.DARK, SkillType.HARMFUL);
     }

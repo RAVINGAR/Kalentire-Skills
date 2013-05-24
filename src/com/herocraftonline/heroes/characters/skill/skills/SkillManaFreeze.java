@@ -29,7 +29,7 @@ public class SkillManaFreeze extends TargettedSkill {
         super(plugin, "ManaFreeze");
         setDescription("Prevents your target from regenerating mana for $1 seconds.");
         setUsage("/skill manafreeze");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill manafreeze", "skill mfreeze");
         setTypes(SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.MANA, SkillType.HARMFUL);
         Bukkit.getServer().getPluginManager().registerEvents(new HeroListener(), plugin);

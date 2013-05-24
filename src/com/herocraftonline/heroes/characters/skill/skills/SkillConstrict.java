@@ -24,7 +24,7 @@ public class SkillConstrict extends TargettedSkill {
         super(plugin, "Constrict");
         setDescription("You slow the target's movement & attack speed for $1 seconds.");
         setUsage("/skill constrict");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill constrict");
         setTypes(SkillType.DEBUFF, SkillType.MOVEMENT, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DAMAGING);
     }

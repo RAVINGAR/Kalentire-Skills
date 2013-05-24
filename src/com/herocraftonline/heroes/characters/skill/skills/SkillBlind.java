@@ -25,7 +25,7 @@ public class SkillBlind extends TargettedSkill {
         super(plugin, "Blind");
         setDescription("You blind the target for $1 seconds.");
         setUsage("/skill blind");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill blind");
         setTypes(SkillType.DEBUFF, SkillType.ILLUSION, SkillType.HARMFUL, SkillType.DAMAGING);
     }

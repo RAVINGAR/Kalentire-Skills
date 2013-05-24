@@ -23,8 +23,8 @@ public class SkillEmpathy extends TargettedSkill {
     public SkillEmpathy(Heroes plugin) {
         super(plugin, "Empathy");
         setDescription("You deal dark damage equal to $1% of your missing health and slow the target for $2 seconds.");
-        setUsage("/skill empathy [target]");
-        setArgumentRange(0, 1);
+        setUsage("/skill empathy");
+        setArgumentRange(0, 0);
         setIdentifiers("skill empathy");
         setTypes(SkillType.DARK, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL);
     }

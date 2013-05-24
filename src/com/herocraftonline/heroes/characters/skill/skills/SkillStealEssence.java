@@ -25,7 +25,7 @@ public class SkillStealEssence extends TargettedSkill {
         super(plugin, "StealEssence");
         setDescription("You steal beneficial effects from your target.");
         setUsage("/skill stealessence");
-        setArgumentRange(0, 1);
+        setArgumentRange(0, 0);
         setIdentifiers("skill stealessence", "skill sessence");
         setTypes(SkillType.DEBUFF, SkillType.KNOWLEDGE, SkillType.BUFF, SkillType.HARMFUL, SkillType.SILENCABLE);
     }
