@@ -23,8 +23,8 @@ public class SkillBladedance extends TargettedSkill {
     public SkillBladedance(Heroes plugin) {
         super(plugin, "Bladedance");
         setDescription("You execute bladedance on your target and nearby enemies for $1% weapon damage.");
-        setUsage("/skill bladedance <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill bladedance");
+        setArgumentRange(0, 0);
         setIdentifiers("skill bladedance");
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
     }

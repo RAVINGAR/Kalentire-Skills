@@ -22,7 +22,7 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillBoilBlood extends TargettedSkill {
-    // This is for Firework Effects
+
     public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
@@ -30,8 +30,8 @@ public class SkillBoilBlood extends TargettedSkill {
     public SkillBoilBlood(Heroes plugin) {
         super(plugin, "BoilBlood");
         setDescription("You boil your target's blood, dealing $1 damage over $2 seconds and $3 damage when the target loses the effect");
-        setUsage("/skill boilblood <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill boilblood");
+        setArgumentRange(0, 0);
         setIdentifiers("skill boilblood");
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
     }

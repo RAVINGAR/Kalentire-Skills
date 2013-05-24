@@ -32,8 +32,8 @@ public class SkillPlague extends TargettedSkill {
     public SkillPlague(Heroes plugin) {
         super(plugin, "Plague");
         setDescription("You infect your target with the plague, dealing $1 damage over $2 seconds.!");
-        setUsage("/skill plague <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill plague");
+        setArgumentRange(0, 0);
         setIdentifiers("skill plague");
         setTypes(SkillType.DARK, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL);
     }

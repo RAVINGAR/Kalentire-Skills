@@ -32,8 +32,8 @@ public class SkillBlight extends TargettedSkill {
     public SkillBlight(Heroes plugin) {
         super(plugin, "Blight");
         setDescription("You disease your target, dealing $1 dark damage over $2 seconds, enemies that get too close will also be damaged.");
-        setUsage("/skill blight <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill blight");
+        setArgumentRange(0, 0);
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
         setIdentifiers("skill blight");
     }

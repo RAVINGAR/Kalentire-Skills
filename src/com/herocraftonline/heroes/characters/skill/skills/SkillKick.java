@@ -20,8 +20,8 @@ public class SkillKick extends TargettedSkill {
     public SkillKick(Heroes plugin) {
         super(plugin, "Kick");
         setDescription("Damages your target for $1 damage, and making them unable to use skills for $2 seconds.");
-        setUsage("/skill kick <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill kick");
+        setArgumentRange(0, 0);
         setIdentifiers("skill kick");
         setTypes(SkillType.DEBUFF, SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.INTERRUPT);
     }

@@ -24,8 +24,8 @@ public class SkillFlyingKick extends TargettedSkill {
     public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
         setDescription("Kicks your target upward");
-        setUsage("/skill flyingkick <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill flyingkick");
+        setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
         setTypes(SkillType.HARMFUL, SkillType.PHYSICAL, SkillType.DAMAGING);
     }

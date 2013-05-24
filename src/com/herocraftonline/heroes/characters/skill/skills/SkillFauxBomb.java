@@ -48,8 +48,8 @@ public class SkillFauxBomb extends ActiveSkill {
     public SkillFauxBomb(Heroes plugin) {
         super(plugin, "FauxBomb");
         setDescription("You spawn a diseased explosive sheep.");
-        setUsage("/skill fauxbomb <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill fauxbomb");
+        setArgumentRange(0, 0);
         setIdentifiers("skill fauxbomb");
         setTypes(SkillType.HARMFUL, SkillType.EARTH, SkillType.SUMMON, SkillType.SILENCABLE);
         Bukkit.getPluginManager().registerEvents(new SkillListener(), plugin);

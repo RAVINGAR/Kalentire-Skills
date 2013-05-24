@@ -24,8 +24,8 @@ public class SkillRoot extends TargettedSkill {
     public SkillRoot(Heroes plugin) {
         super(plugin, "Root");
         setDescription("You root your target in place for $1 seconds.");
-        setUsage("/skill root <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill root");
+        setArgumentRange(0, 0);
         setIdentifiers("skill root");
         setTypes(SkillType.MOVEMENT, SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.EARTH, SkillType.HARMFUL);
     }

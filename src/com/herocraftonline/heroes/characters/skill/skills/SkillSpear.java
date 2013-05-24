@@ -24,8 +24,8 @@ public class SkillSpear extends TargettedSkill {
 	public SkillSpear(Heroes plugin) {
         super(plugin, "Spear");
         setDescription("Spear your target, pulling him back towards you and dealing $1 damage");
-        setUsage("/skill spear <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill spear");
+        setArgumentRange(0, 0);
         setIdentifiers("skill spear");
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
     }

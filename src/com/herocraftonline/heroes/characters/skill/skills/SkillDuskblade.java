@@ -23,8 +23,8 @@ public class SkillDuskblade extends TargettedSkill {
 	public SkillDuskblade(Heroes plugin) {
 		super(plugin, "Duskblade");
 		setDescription("Your blade drains $1 health from target, restoring $2 of your own health.");
-		setUsage("/skill duskblade <target>");
-		setArgumentRange(0, 1);
+		setUsage("/skill duskblade");
+        setArgumentRange(0, 0);
 		setIdentifiers("skill duskblade");
 		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
 	}

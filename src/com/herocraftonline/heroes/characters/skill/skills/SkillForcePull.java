@@ -24,8 +24,8 @@ public class SkillForcePull extends TargettedSkill {
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
         setDescription("Forces your target toward you.");
-        setUsage("/skill forcepull <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill forcepull");
+        setArgumentRange(0, 0);
         setIdentifiers("skill forcepull", "skill fpull");
         setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
     }

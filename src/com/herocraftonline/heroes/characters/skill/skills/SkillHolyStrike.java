@@ -18,8 +18,8 @@ public class SkillHolyStrike extends TargettedSkill {
     public SkillHolyStrike(Heroes plugin) {
         super(plugin, "HolyStrike");
         setDescription("You deal $1 light damage to your target and interrupt any spell they are currently using.");
-        setUsage("/skill holystrike <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill holystrike");
+        setArgumentRange(0, 0);
         setIdentifiers("skill holystrike");
         setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.INTERRUPT, SkillType.LIGHT);
     }

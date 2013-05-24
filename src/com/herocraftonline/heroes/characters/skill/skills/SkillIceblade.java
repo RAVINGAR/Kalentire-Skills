@@ -36,8 +36,8 @@ public class SkillIceblade extends TargettedSkill {
     public SkillIceblade(Heroes plugin) {
         super(plugin, "Iceblade");
         setDescription("You freeze your target with your weapon, damaging and slowing them for $1 seconds.");
-        setUsage("/skill iceblade <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill iceblade");
+        setArgumentRange(0, 0);
         setIdentifiers("skill iceblade");
         setTypes(SkillType.ICE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.FORCE, SkillType.INTERRUPT);
     }

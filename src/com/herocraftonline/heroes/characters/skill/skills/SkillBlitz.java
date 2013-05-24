@@ -23,8 +23,8 @@ public class SkillBlitz extends TargettedSkill {
     public SkillBlitz(Heroes plugin) {
         super(plugin, "Blitz");
         setDescription("Your skills in ninjutsu cause $1 lightning damage to your target.");
-        setUsage("/skill blitz <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill blitz");
+        setArgumentRange(0, 0);
         setIdentifiers("skill blitz");
         setTypes(SkillType.LIGHTNING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
     }

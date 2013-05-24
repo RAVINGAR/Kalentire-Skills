@@ -27,8 +27,8 @@ public class SkillStrike extends TargettedSkill {
     public SkillStrike(Heroes plugin) {
         super(plugin, "Strike");
         setDescription("You violently strike the target for $1 damage!");
-        setUsage("/skill strike <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill strike");
+        setArgumentRange(0, 0);
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
         setIdentifiers("skill strike");
     }

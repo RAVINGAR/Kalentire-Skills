@@ -24,8 +24,8 @@ public class SkillDivineWord extends TargettedSkill {
     public SkillDivineWord(Heroes plugin) {
         super(plugin, "DivineWord");
         setDescription("You restore $1 health to the target.");
-        setUsage("/skill divineword <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill divineword");
+        setArgumentRange(0, 0);
         setIdentifiers("skill divineword");
         setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
     }

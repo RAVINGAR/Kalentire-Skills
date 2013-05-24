@@ -32,8 +32,8 @@ public class SkillBeguile extends TargettedSkill {
     public SkillBeguile(Heroes plugin) {
         super(plugin, "Beguile");
         setDescription("You beguile the target for $1 seconds.");
-        setUsage("/skill beguile <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill beguile");
+        setArgumentRange(0, 0);
         setIdentifiers("skill beguile");
         setTypes(SkillType.SILENCABLE, SkillType.ILLUSION, SkillType.HARMFUL);
     }

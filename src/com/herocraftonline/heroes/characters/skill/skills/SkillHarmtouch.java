@@ -24,8 +24,8 @@ public class SkillHarmtouch extends TargettedSkill {
     public SkillHarmtouch(Heroes plugin) {
         super(plugin, "Harmtouch");
         setDescription("You deal $1 dark damage to the target.");
-        setUsage("/skill harmtouch <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill harmtouch");
+        setArgumentRange(0, 0);
         setIdentifiers("skill harmtouch");
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
     }

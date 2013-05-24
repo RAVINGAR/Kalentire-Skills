@@ -18,8 +18,8 @@ public class SkillBash extends TargettedSkill {
     public SkillBash(Heroes plugin) {
         super(plugin, "Bash");
         setDescription("You deal $1 physical damage to your target and interrupt any spell they are currently using.");
-        setUsage("/skill bash <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill bash");
+        setArgumentRange(0, 0);
         setIdentifiers("skill bash");
         setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.INTERRUPT);
     }

@@ -20,7 +20,7 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillBloodGift extends TargettedSkill {
-    // This is for Firework Effects
+
     public VisualEffect fplayer = new VisualEffect();
     public SkillBloodGift(Heroes plugin) {
         super(plugin, "BloodGift");

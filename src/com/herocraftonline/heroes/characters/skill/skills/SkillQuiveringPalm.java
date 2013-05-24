@@ -18,8 +18,8 @@ public class SkillQuiveringPalm extends TargettedSkill {
 	public SkillQuiveringPalm(Heroes plugin) {
 		super(plugin, "QuiveringPalm");
 		setDescription("You stun your target for $1 seconds, rendering them useless while dealing $2 damage");
-		setUsage("/skill quiveringpalm <target>");
-		setArgumentRange(0, 1);
+		setUsage("/skill quiveringpalm");
+        setArgumentRange(0, 0);
         setIdentifiers("skill quiveringpalm");
         setTypes(SkillType.LIGHT, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
 	}

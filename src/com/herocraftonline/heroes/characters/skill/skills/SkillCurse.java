@@ -38,8 +38,8 @@ public class SkillCurse extends TargettedSkill {
     public SkillCurse(Heroes plugin) {
         super(plugin, "Curse");
         setDescription("You curse the target for $1 seconds, giving their attacks a $2% miss chance.");
-        setUsage("/skill curse <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill curse");
+        setArgumentRange(0, 0);
         setIdentifiers("skill curse");
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DEBUFF);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);

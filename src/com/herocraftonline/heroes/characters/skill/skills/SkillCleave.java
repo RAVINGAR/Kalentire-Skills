@@ -23,8 +23,8 @@ public class SkillCleave extends TargettedSkill {
     public SkillCleave(Heroes plugin) {
         super(plugin, "Cleave");
         setDescription("You cleave your target and nearby enemies for $1% weapon damage.");
-        setUsage("/skill cleave <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill cleave");
+        setArgumentRange(0, 0);
         setIdentifiers("skill cleave");
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
     }

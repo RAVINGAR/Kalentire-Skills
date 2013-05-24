@@ -32,7 +32,7 @@ public class SkillLunarLance extends TargettedSkill {
 		super(plugin, "LunarLance");
 		setDescription("Strike the target with a Lunar Lance dealing $1 Light damage and burning $2 mana from the target.");
 		setUsage("/skill lunarlance");
-		setArgumentRange(0, 1);
+		setArgumentRange(0, 0);
 		setIdentifiers("skill lunarlance", "skill lance");
 		setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.LIGHT, SkillType.MANA, SkillType.HARMFUL);
 	}

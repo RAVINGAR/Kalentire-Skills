@@ -48,8 +48,8 @@ public class SkillPlagueBomb extends ActiveSkill {
     public SkillPlagueBomb(Heroes plugin) {
         super(plugin, "PlagueBomb");
         setDescription("You spawn a diseased explosive sheep.");
-        setUsage("/skill plaguebomb <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill plaguebomb");
+        setArgumentRange(0, 0);
         setIdentifiers("skill plaguebomb");
         setTypes(SkillType.HARMFUL, SkillType.EARTH, SkillType.SUMMON, SkillType.SILENCABLE);
         Bukkit.getPluginManager().registerEvents(new SkillListener(), plugin);

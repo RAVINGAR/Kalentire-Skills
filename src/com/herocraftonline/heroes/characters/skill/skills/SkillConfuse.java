@@ -31,8 +31,8 @@ public class SkillConfuse extends TargettedSkill {
     public SkillConfuse(Heroes plugin) {
         super(plugin, "Confuse");
         setDescription("You confuse the target for $1 seconds.");
-        setUsage("/skill confuse <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill confuse");
+        setArgumentRange(0, 0);
         setIdentifiers("skill confuse");
         setTypes(SkillType.SILENCABLE, SkillType.ILLUSION, SkillType.HARMFUL);
     }

@@ -29,8 +29,8 @@ public class SkillDecay extends TargettedSkill {
     public SkillDecay(Heroes plugin) {
         super(plugin, "Decay");
         setDescription("You disease your target dealing $1 dark damage over $2 seconds.");
-        setUsage("/skill decay <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill decay");
+        setArgumentRange(0, 0);
         setIdentifiers("skill decay");
         setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
     }

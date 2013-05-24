@@ -39,8 +39,8 @@ public class SkillWeb extends TargettedSkill {
     public SkillWeb(Heroes plugin) {
         super(plugin, "Web");
         setDescription("You conjure a web around your target.");
-        setUsage("/skill web <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill web");
+        setArgumentRange(0, 0);
         setIdentifiers("skill web");
         setTypes(SkillType.EARTH, SkillType.SILENCABLE, SkillType.HARMFUL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);

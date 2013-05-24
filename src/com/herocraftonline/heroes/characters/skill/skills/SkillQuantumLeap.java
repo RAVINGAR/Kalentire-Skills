@@ -21,8 +21,8 @@ public class SkillQuantumLeap extends TargettedSkill {
 	public SkillQuantumLeap(Heroes plugin){
 		super(plugin, "QuantumLeap");
 		setDescription("Through quantum physics, change places with your target.");
-		setUsage("/skill quantumleap <target>");
-		setArgumentRange(0, 1);
+		setUsage("/skill quantumleap");
+        setArgumentRange(0, 0);
 		setIdentifiers("skill quantumleap");
 		setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT);
 	}

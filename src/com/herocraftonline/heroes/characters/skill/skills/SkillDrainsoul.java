@@ -23,8 +23,8 @@ public class SkillDrainsoul extends TargettedSkill {
 	public SkillDrainsoul(Heroes plugin) {
 		super(plugin, "Drainsoul");
 		setDescription("You drain $1 health from target, restoring $2 of your own health.");
-		setUsage("/skill drainsoul <target>");
-		setArgumentRange(0, 1);
+		setUsage("/skill drainsoul");
+        setArgumentRange(0, 0);
 		setIdentifiers("skill drainsoul");
 		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
 	}

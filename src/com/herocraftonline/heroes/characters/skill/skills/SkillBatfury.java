@@ -41,8 +41,8 @@ public class SkillBatfury extends TargettedSkill implements Listener {
     public SkillBatfury(Heroes plugin) {
         super(plugin, "Batfury");
         setDescription("Your target is surrounded by a fury of bats. Bats despawn after $4s.");
-        setUsage("/skill batfury <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill batfury ");
+        setArgumentRange(0, 0);
         setIdentifiers("skill bats", "skill batfury");
         setTypes(SkillType.SUMMON, SkillType.SILENCABLE, SkillType.KNOWLEDGE, SkillType.HARMFUL);
 

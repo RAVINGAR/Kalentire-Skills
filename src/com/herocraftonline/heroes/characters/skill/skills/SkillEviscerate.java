@@ -22,8 +22,8 @@ public class SkillEviscerate extends TargettedSkill {
     public SkillEviscerate(Heroes plugin) {
         super(plugin, "Eviscerate");
         setDescription("You eviscerate your target for $1 damage, this attack ignores armor.");
-        setUsage("/skill eviscerate <target>");
-        setArgumentRange(0, 1);
+        setUsage("/skill eviscerate");
+        setArgumentRange(0, 0);
         setIdentifiers("skill eviscerate");
         setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
     }

@@ -18,8 +18,8 @@ public class SkillDivineStun extends TargettedSkill {
 	public SkillDivineStun(Heroes plugin) {
 		super(plugin, "DivineStun");
 		setDescription("You stun your target for $1 seconds, preventing them from using skills or moving and dealing $2 damage");
-		setUsage("/skill divinestun <target>");
-		setArgumentRange(0, 1);
+		setUsage("/skill divinestun");
+        setArgumentRange(0, 0);
         setIdentifiers("skill divinestun");
         setTypes(SkillType.LIGHT, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
 	}
