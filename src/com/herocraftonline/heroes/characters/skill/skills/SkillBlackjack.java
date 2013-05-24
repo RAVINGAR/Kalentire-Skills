@@ -21,6 +21,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlackjack extends ActiveSkill {
@@ -29,20 +30,20 @@ public class SkillBlackjack extends ActiveSkill {
 
     public SkillBlackjack(Heroes plugin) {
         super(plugin, "Blackjack");
-        setDescription("Your attacks have a $1% chance to stun your target.");
+		setDescription("Prepare a blackjack. Once prepared, your attacks have a $1% chance to stun your target.");
         setUsage("/skill blackjack");
         setArgumentRange(0, 0);
         setIdentifiers("skill blackjack", "skill bjack");
-        setTypes(SkillType.PHYSICAL, SkillType.BUFF);
+		setTypes(SkillType.PHYSICAL, SkillType.STEALTHY, SkillType.BUFF);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% prepared his blackjack!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% sheathed his blackjack!");
-        node.set("stun-duration", 3000);
+		node.set(SkillSetting.APPLY_TEXT.node(), "You prepare your blackjack!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "You sheathe your blackjack!");
+        node.set("stun-duration", 5000);
         node.set("stun-chance", 0.20);
         node.set(SkillSetting.DURATION.node(), 20000);
         return node;
@@ -51,13 +52,12 @@ public class SkillBlackjack extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% prepared his blackjack!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% sheathed his blackjack!").replace("%hero%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You prepare your blackjack!").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You sheathe your blackjack!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         hero.addEffect(new BlackjackEffect(this, duration));
         return SkillResult.NORMAL;
@@ -73,15 +73,13 @@ public class SkillBlackjack extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+			Messaging.send(hero.getPlayer(), applyText, new Object[0]);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+			Messaging.send(hero.getPlayer(), expireText, new Object[0]);
         }
 
     }
@@ -113,7 +111,7 @@ public class SkillBlackjack extends ActiveSkill {
                 Hero defendingHero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 
                 if (defendingHero.hasEffect("Stun")) {
-                    return;
+                	return;
                 }
 
                 double chance = SkillConfigManager.getUseSetting(attackingHero, skill, "stun-chance", 0.20, false);
@@ -131,3 +129,4 @@ public class SkillBlackjack extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(chance));
     }
 }
+
