@@ -47,20 +47,6 @@ import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneApplic
 
 public class SkillIceRune extends ActiveSkill
 {
-	// Default skill values
-	private final int defDamage = 40;
-	private final int defSlowValue = 2;
-	private final int defDuration = 2000;
-	private final int defManaCost = 30;
-
-	// Default text values
-	private final String runeChatColor = "§b";				// Aqua
-	private final String skillText = "§7[§2Skill§7] ";		// Used to add "[Skill]" text to all skill related messages
-
-	private final String defUseText = skillText + "%hero% imbues his blade with a Rune of " + runeChatColor + "Ice.";
-	private final String defApplyText = skillText + "%target% has been slowed by a Rune of Ice!";
-	private final String defExpireText = skillText + "%target% is no longer slowed!";
-
 	public SkillIceRune(Heroes plugin)
 	{
 		// Heroes stuff
@@ -80,12 +66,13 @@ public class SkillIceRune extends ActiveSkill
 	{
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("speed-multiplier", defSlowValue);
-		node.set(SkillSetting.DAMAGE.node(), defDamage);
-		node.set(SkillSetting.DURATION.node(), defDuration);
-		node.set(SkillSetting.USE_TEXT.node(), defUseText);
-		node.set(SkillSetting.APPLY_TEXT.node(), defApplyText);
-		node.set(SkillSetting.EXPIRE_TEXT.node(), defExpireText);
+		node.set("speed-multiplier", 2);
+		node.set(SkillSetting.DAMAGE.node(), 40);
+		node.set(SkillSetting.DURATION.node(), 2000);
+		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% imbues his blade with a Rune of §bIce.");
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been slowed by a Rune of Ice!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% is no longer slowed!");
+		node.set("rune-chat-color", "§b");
 
 		return node;
 	}
@@ -93,8 +80,8 @@ public class SkillIceRune extends ActiveSkill
 	@Override
 	public String getDescription(Hero hero)
 	{
-		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, defDuration, false) / 1000;
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
+		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false) / 1000;
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
 		return getDescription().replace("$1", damage + "").replace("$2", duration + "");
 	}
 
@@ -102,7 +89,8 @@ public class SkillIceRune extends ActiveSkill
 	public SkillResult use(Hero hero, String[] args)
 	{
 		// Create the Rune
-		int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, defManaCost, false);
+		int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 30, false);
+		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "§b");
 		Rune iceRune = new Rune("IceRune", manaCost, runeChatColor);
 
 		// Add the Rune to the RuneWord queue here
@@ -152,12 +140,12 @@ public class SkillIceRune extends ActiveSkill
 			// Prep variables
 			CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-			int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", defSlowValue, false);
-			long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, defDuration, false);
-			int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, defDamage, false);
+			int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
+			long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 2000, false);
+			int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
-			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, defApplyText).replace("%target%", "$1");
-			String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, defExpireText).replace("%target%", "$1");
+			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
+			String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% is no longer slowed!").replace("%target%", "$1");
 
 			// Create the effect and slow the target
 			SlowEffect sEffect = new SlowEffect(skill, duration, amplifier, false, applyText, expireText, hero);

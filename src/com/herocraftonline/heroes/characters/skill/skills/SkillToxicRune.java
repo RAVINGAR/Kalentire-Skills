@@ -50,20 +50,6 @@ import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillToxicRune extends ActiveSkill
 {
-	// Default skill values
-	private final int defDamage = 30;
-	private final int defPeriod = 3000;
-	private final int defDuration = 6000;
-	private final int defManaCost = 20;
-
-	// Default text values
-	private final String runeChatColor = "§2";				// Green
-	private final String skillText = "§7[§2Skill§7] ";		// Used to add "[Skill]" text to all skill related messages
-
-	private final String defUseText = skillText + "%hero% imbues his blade with a Rune of " + runeChatColor + "Toxicity.";
-	private final String defApplyText = skillText + "%target% has been poisoned by a Rune of Toxicity!";
-	private final String defExpireText = skillText + "%target% has recovered from the poison!";
-
 	public SkillToxicRune(Heroes plugin)
 	{
 		// Heroes stuff
@@ -83,12 +69,13 @@ public class SkillToxicRune extends ActiveSkill
 	{
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.DAMAGE.node(), defDamage);
-		node.set(SkillSetting.PERIOD.node(), defPeriod);
-		node.set(SkillSetting.DURATION.node(), defDuration);
-		node.set(SkillSetting.USE_TEXT.node(), defUseText);
-		node.set(SkillSetting.APPLY_TEXT.node(), defApplyText);
-		node.set(SkillSetting.EXPIRE_TEXT.node(), defExpireText);
+		node.set(SkillSetting.DAMAGE.node(), 25);
+		node.set(SkillSetting.PERIOD.node(), 3000);
+		node.set(SkillSetting.DURATION.node(), 9000);
+		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% imbues his blade with a Rune of §2Toxicity.");
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been poisoned by a Rune of Toxicity!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% has recovered from the poison!");
+		node.set("rune-chat-color", "§2");
 
 		return node;
 	}
@@ -96,9 +83,9 @@ public class SkillToxicRune extends ActiveSkill
 	@Override
 	public String getDescription(Hero hero)
 	{
-		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, defDuration, false) / 1000;
-		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, defPeriod, false) / 1000;
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, defDamage, false);
+		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 9000, false) / 1000;
+		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false) / 1000;
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 25, false);
 
 		return getDescription().replace("$1", damage + "").replace("$2", period + "").replace("$3", duration + "");
 	}
@@ -107,7 +94,8 @@ public class SkillToxicRune extends ActiveSkill
 	public SkillResult use(Hero hero, String[] args)
 	{
 		// Create the Rune
-		int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, defManaCost, false);
+		int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 20, false);
+		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "§2");
 		Rune toxicRune = new Rune("ToxicRune", manaCost, runeChatColor);
 
 		// Add the ToxicRune to the rune queue here
@@ -155,12 +143,12 @@ public class SkillToxicRune extends ActiveSkill
 				return;
 
 			// Set the variables
-			long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, defDuration, false);
-			long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, defPeriod, false);
-			int tickDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, defDamage, false);
+			long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 9000, false);
+			long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
+			int tickDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 25, false);
 
-			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, defApplyText).replace("%target%", "$1");
-			String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, defExpireText).replace("%target%", "$1");
+			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been poisoned by a Rune of Toxicity!").replace("%target%", "$1");
+			String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
 
 			// Create the effect
 			ToxicRunePoison pEffect = new ToxicRunePoison(skill, period, duration, tickDamage, hero.getPlayer(), applyText, expireText);

@@ -76,16 +76,6 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillAbsorbRunes extends ActiveSkill
 {
-	// Default skill values
-	private final int defRuneApplicationCooldown = 1000;							// Default cooldown (in ms) for Rune applications.
-	private final double defConversionRate = 0.35;									// Default mana conversion rate for Rune absorption
-
-	// Default text values
-	private final String skillText = "§7[§2Skill§7] ";								// Used to add "[Skill]" text to all skill related messages
-	private final String defUseText = skillText + "%hero% absorbs his Runes!";		// Default skill usage text
-
-	private final String defFailTextNoRunes = skillText + "§fYou have no Runes to absorb!";
-
 	// Runequeue Hashmap for holding all player RuneQueue objects
 	HashMap<Hero, RuneQueue> heroRunes;
 
@@ -108,7 +98,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 	@Override
 	public String getDescription(Hero hero)
 	{
-		double conversionRate = SkillConfigManager.getUseSetting(hero, this, "conversion-rate", defConversionRate, false);
+		double conversionRate = SkillConfigManager.getUseSetting(hero, this, "conversion-rate", 0.35, false);
 		return getDescription().replace("$1", (int) (conversionRate * 100) + "");
 	}
 
@@ -118,9 +108,16 @@ public class SkillAbsorbRunes extends ActiveSkill
 	{
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("conversion-rate", defConversionRate);
-		node.set("fail-text-no-runes", defFailTextNoRunes);
-		node.set(SkillSetting.USE_TEXT.node(), defUseText);
+		// Skill usage configs
+		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% absorbs his Runes!");
+		node.set("conversion-rate", 0.35);
+		node.set("fail-text-no-runes", "§7[§2Skill§7] §fYou have no Runes to absorb!");
+
+		// Rune usage configs
+		node.set("imbued-runes-text-empty", "§7[§2Skill§7] §fYour weapon is no longer imbued with Runes!");
+		node.set("imbued-runes-text-start", "§7[§2Skill§7] §fImbued Runes: <");
+		node.set("imbued-runes-text-delimiter", "§f|");
+		node.set("imbued-runes-text-end", "§f>");
 
 		return node;
 	}
@@ -140,7 +137,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 		RuneQueue runeList = heroRunes.get(hero);
 		if (runeList.isEmpty())
 		{
-			String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", defFailTextNoRunes);
+			String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", "§7[§2Skill§7] §fYou have no Runes to absorb!");
 			Messaging.send(player, failText, new Object[0]);
 			return SkillResult.FAIL;
 		}
@@ -149,7 +146,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 
 		// Delete the whole Rune list and total an absorption value
 		int absorbValue = 0;
-		double conversionRate = SkillConfigManager.getUseSetting(hero, this, "conversion-rate", defConversionRate, false);
+		double conversionRate = SkillConfigManager.getUseSetting(hero, this, "conversion-rate", 0.35, false);
 		do
 		{
 			// Increase the absorb value
@@ -226,9 +223,8 @@ public class SkillAbsorbRunes extends ActiveSkill
 			// Check to see if the hero can apply runes to his target right now
 			Entity target = event.getEntity();
 			CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
-			Hero targetHero = (Hero) targetCT;
 			String cdEffectName = hero.getName() + "_RuneApplicationCooldownEffect";
-			if (targetHero.hasEffect(cdEffectName))
+			if (targetCT.hasEffect(cdEffectName))
 				return;		// Rune application is on cooldown. Do not continue.
 
 			// We have a runelist bound to the player, check to see if it actually has any Runes in it
@@ -250,7 +246,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 				Bukkit.getServer().getPluginManager().callEvent(new RuneExpireEvent(hero, 1));
 
 				// Add the "cooldown" effect to the hero so he can't immediately trigger another Rune Application Event here.
-				int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "rune-application-cooldown", defRuneApplicationCooldown, false);
+				int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "rune-application-cooldown", 750, false);
 				hero.addEffect(new RuneApplicationCooldownEffect(skill, cdEffectName, cdDuration));
 			}
 
@@ -511,28 +507,32 @@ public class SkillAbsorbRunes extends ActiveSkill
 	private void displayRuneQueue(Hero hero, RuneQueue runeList)
 	{
 		// Start the rune queue string
-		String runeQueueStr = skillText + "§fImbued Runes: <|";
-
 		String[] runeListStr = runeList.getColoredRuneNameList();
+		String currentRuneQueueStr = "";
 
 		// Check to see if the list is empty before attempting to build a string
 		if (runeListStr == null)
 		{
-			runeQueueStr = skillText + "§fYour weapon is no longer imbued with Runes!";
+			currentRuneQueueStr = SkillConfigManager.getRaw(this, "imbued-runes-text-empty", "§7[§2Skill§7] §fYour weapon is no longer imbued with Runes!");
 		}
 		else
 		{
+			String runeQueueStrStart = SkillConfigManager.getRaw(this, "imbued-runes-text-start", "§7[§2Skill§7] §fImbued Runes: <");
+			String runeQueueStrDelimiter = SkillConfigManager.getRaw(this, "imbued-runes-text-delimiter", "§f|");
+
+			currentRuneQueueStr = runeQueueStrStart + runeQueueStrDelimiter;
+
 			// List is not empty. Build the string
 			for (int i = 0; i < runeListStr.length; i++)
 			{
-				runeQueueStr += (" " + runeListStr[i] + "§f |");
+				currentRuneQueueStr += (" " + runeListStr[i] + " " + runeQueueStrDelimiter);
 			}
 
-			runeQueueStr += ">";
+			currentRuneQueueStr += SkillConfigManager.getRaw(this, "imbued-runes-text-end", "§f>");
 		}
 
 		// Show the player his the message
-		Messaging.send(hero.getPlayer(), runeQueueStr, new Object[0]);
+		Messaging.send(hero.getPlayer(), currentRuneQueueStr, new Object[0]);
 	}
 
 	// Effect required for implementing an internal cooldown on rune application

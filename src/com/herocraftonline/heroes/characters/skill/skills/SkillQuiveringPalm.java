@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-//http://pastie.org/private/sdrqkcvn5af1ateg56bnwg
+
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;

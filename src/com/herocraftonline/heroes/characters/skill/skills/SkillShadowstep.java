@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-//http://pastie.org/private/bfowhcqd7rl7tkedbip1q
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -9,12 +9,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -30,7 +27,7 @@ public class SkillShadowstep extends TargettedSkill {
 	private String teleFailText;
 	private String useText;
 
-	//private final BlockFace[] faces = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
+	private final BlockFace[] faces = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
 
 	public SkillShadowstep(Heroes plugin) {
 		super(plugin, "Shadowstep");
@@ -38,7 +35,7 @@ public class SkillShadowstep extends TargettedSkill {
 		setUsage("/skill shadowstep");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill shadowstep");
-		setTypes(SkillType.DARK, SkillType.TELEPORT, SkillType.SILENCABLE);
+		setTypes(SkillType.DARK, SkillType.HARMFUL, SkillType.TELEPORT, SkillType.SILENCABLE);
 	}
 
 	@Override
@@ -71,93 +68,51 @@ public class SkillShadowstep extends TargettedSkill {
 
 	@Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+
 		if (target == hero.getPlayer() || !(target instanceof Player)) {
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
+
 		if (!inLineOfSight(hero.getPlayer(), (Player) target)) {
 			hero.getPlayer().sendMessage(noLineOfSightText);
 			return SkillResult.FAIL;
 		}
-		/*
+
 		Location targetLoc = target.getLocation();
 		BlockFace targetFace = faces[Math.round(targetLoc.getYaw() / 45f) & 0x7];
 		Block teleBlock = targetLoc.getBlock().getRelative(targetFace);
-		Location teleLoc = teleBlock.getLocation();
-		teleLoc.setYaw(targetLoc.getYaw());
-		teleLoc.setPitch(targetLoc.getPitch());
-		if (hero.getPlayer().teleport(teleLoc))
-		{
-			broadcast(targetLoc, useText, hero.getName(), ((Player) target).getName());
-			return SkillResult.NORMAL;
-		}
-		else
-		{
-			Messaging.send(hero.getPlayer(), teleFailText);
-			return SkillResult.FAIL;
-		}
-		*/
 
-		// Get hero variables
-		Player player = hero.getPlayer();
-		Location heroLoc = player.getLocation();
+		// Ensure that the location isn't inside of a block
+		if (Util.transparentBlocks.contains(teleBlock.getType()) && (Util.transparentBlocks.contains(teleBlock.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(teleBlock.getRelative(BlockFace.DOWN).getType()))) {
 
-		// Get target variables
-		CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-		Hero targetHero = (Hero) targetCT;
-		Player targetPlayer = targetHero.getPlayer();
-		Location targetLoc = targetPlayer.getLocation();
-
-		// Pre-check
-		if ((heroLoc.getBlockY() > heroLoc.getWorld().getMaxHeight() || heroLoc.getBlockY() < 1) || ((targetLoc.getBlockY() > targetLoc.getWorld().getMaxHeight() || targetLoc.getBlockY() < 1))) {
-			Messaging.send(player, "The void prevents you from shadowstepping!");
-			return SkillResult.FAIL;
-		}
-
-		// Iterate over the blocks
-		Block prev = null;
-		Block b;
-		BlockIterator iter = null;
-		try {
-			iter = new BlockIterator(targetPlayer, 1);		// Iterate one block behind the target
-		}
-		catch (IllegalStateException e) {
-			Messaging.send(player, "There was an error getting your shadowstep location!");
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		}
-		while (iter.hasNext()) {
-			b = iter.next();
-			if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
-				prev = b;
-			}
-			else {
-				break;
-			}
-		}
-		if (prev != null) {
-			// Build the teleport location
-			Location teleport = prev.getLocation().clone();
-			teleport.add(new Vector(.5, .5, .5));
-
-			// Set the shadowstep location yaw/pitch to that of the target player
-			teleport.setPitch(targetPlayer.getLocation().getPitch());
-			teleport.setYaw(targetPlayer.getLocation().getYaw());
+			// Get the location
+			Location teleLoc = teleBlock.getLocation();
+			teleLoc.setYaw(targetLoc.getYaw());
+			teleLoc.setPitch(targetLoc.getPitch());
 
 			// Teleport the player
-			player.teleport(teleport);
+			Player player = hero.getPlayer();
+			if (player.teleport(teleLoc)) {
 
-			// Play Sound
-			player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+				// Play Sound
+				player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
-			// Play Firework
-			// CODE HERE
+				// Play Effect
+				player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
 
-			// Announce skill usage
-			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
-			return SkillResult.NORMAL;
+				// Announce skill usage
+				broadcast(targetLoc, useText, hero.getName(), ((Player) target).getName());
+
+				return SkillResult.NORMAL;
+			}
+			else {
+				Messaging.send(hero.getPlayer(), teleFailText);
+				return SkillResult.FAIL;
+			}
 		}
 		else {
-			Messaging.send(player, "No location to shadowstep to.");
-			return SkillResult.INVALID_TARGET_NO_MSG;
+			Messaging.send(hero.getPlayer(), teleFailText);
+			return SkillResult.FAIL;
 		}
 	}
 }

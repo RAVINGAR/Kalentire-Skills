@@ -45,23 +45,9 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.Rune;
 import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneApplicationEvent;
-import com.herocraftonline.heroes.util.Util;
 
 public class SkillVoidRune extends ActiveSkill
 {
-	// Default skill values
-	private final int defDamage = 40;
-	private final int defDuration = 1500;
-	private final int defManaCost = 30;
-
-	// Default text values
-	private final String runeChatColor = "§5";				// Purple
-	private final String skillText = "§7[§2Skill§7] ";		// Used to add "[Skill]" text to all skill related messages
-
-	private final String defUseText = skillText + "%hero% imbues his blade with a Rune of " + runeChatColor + "Void.";
-	private final String defApplyText = skillText + "%target% has been silenced by the Rune of Void!";
-	private final String defExpireText = skillText + "%target% is no longer silenced!";
-
 	public SkillVoidRune(Heroes plugin)
 	{
 		// Heroes stuff
@@ -81,12 +67,12 @@ public class SkillVoidRune extends ActiveSkill
 	{
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("weapons", Util.swords);
-		node.set(SkillSetting.DAMAGE.node(), defDamage);
-		node.set(SkillSetting.DURATION.node(), defDuration);
-		node.set(SkillSetting.USE_TEXT.node(), defUseText);
-		node.set(SkillSetting.APPLY_TEXT.node(), defApplyText);
-		node.set(SkillSetting.EXPIRE_TEXT.node(), defExpireText);
+		node.set(SkillSetting.DAMAGE.node(), 40);
+		node.set(SkillSetting.DURATION.node(), 1500);
+		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% imbues his blade with a Rune of §5Void.");
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been silenced by a Rune of Void!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% is no longer silenced!");
+		node.set("rune-chat-color", "§5");
 
 		return node;
 	}
@@ -94,8 +80,8 @@ public class SkillVoidRune extends ActiveSkill
 	@Override
 	public String getDescription(Hero hero)
 	{
-		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, defDuration, false) / 1000;
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
+		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false) / 1000;
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
 		return getDescription().replace("$1", damage + "").replace("$2", duration + "");
 	}
 
@@ -103,7 +89,8 @@ public class SkillVoidRune extends ActiveSkill
 	public SkillResult use(Hero hero, String[] args)
 	{
 		// Create the Rune
-		int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, defManaCost, false));
+		int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 30, false));
+		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "§5");
 		Rune voidRune = new Rune("VoidRune", manaCost, runeChatColor);
 
 		// Add the Rune to the RuneWord queue here
@@ -153,11 +140,11 @@ public class SkillVoidRune extends ActiveSkill
 			// Prep variables
 			CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-			long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, defDuration, false);
-			int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, defDamage, false);
+			long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
+			int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
-			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, defApplyText).replace("%target%", "$1");
-			String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, defExpireText).replace("%target%", "$1");
+			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% has been silenced by a Rune of Void!").replace("%target%", "$1");
+			String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% is no longer silenced!").replace("%target%", "$1");
 
 			// Damage and silence the target
 			skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
