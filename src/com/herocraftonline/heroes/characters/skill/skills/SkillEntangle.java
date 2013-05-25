@@ -194,8 +194,8 @@ public class SkillEntangle extends TargettedSkill {
 			final Player player = hero.getPlayer();
 			originalWalkSpeed = player.getWalkSpeed();
 			originalFlySpeed = player.getFlySpeed();
-			player.setWalkSpeed(-1);
-			player.setFlySpeed(-1);
+			player.setWalkSpeed(0);
+			player.setFlySpeed(0);
 			broadcast(player.getLocation(), applyText, player.getDisplayName());
 		}
 
