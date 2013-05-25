@@ -40,7 +40,7 @@ public class SkillEntangle extends TargettedSkill {
 	private final int defDamage = 1;
 	// Default text values
 	private final String skillText = "[§2Skill§7] "; // Used to add "[Skill]" text to all skill related messages
-	private final String defUseText = skillText + "%hero% used %skill%!";
+	private final String defUseText = skillText + "%hero% used %skill% !";
 	private final String defApplyText = skillText + "%target% has been rooted!";
 	private final String defExpireText = skillText + "%target% has broken free from the root!";
 
@@ -91,7 +91,6 @@ public class SkillEntangle extends TargettedSkill {
 		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, defApplyText).replace("%target%", "$1");
 		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, defExpireText).replace("%target%", "$1");
 
-		// Broadcast use text
 		broadcastExecuteText(hero);
 
 		// Play Sound
@@ -100,7 +99,12 @@ public class SkillEntangle extends TargettedSkill {
 
 		// Play Effect
 		try {
-			this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(true).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.OLIVE).build());
+			this.fplayer.playFirework(player.getWorld(), target.getLocation()
+					.add(0.0D, 1.5D, 0.0D), 
+					FireworkEffect.builder().flicker(false).trail(false)
+					.with(FireworkEffect.Type.BURST)
+					.withColor(Color.OLIVE)
+					.build());
 		}
 		catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -200,7 +204,7 @@ public class SkillEntangle extends TargettedSkill {
 			final Player player = hero.getPlayer();
 			originalWalkSpeed = player.getWalkSpeed();
 			originalFlySpeed = player.getFlySpeed();
-			player.setFlySpeed(-1);
+			player.setWalkSpeed(-1);
 			player.setFlySpeed(-1);
 			broadcast(player.getLocation(), applyText, player.getDisplayName());
 		}

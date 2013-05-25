@@ -1,5 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-
+//http://pastie.org/private/ujku9azqzhmdgu5lki6ooa
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
