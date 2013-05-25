@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -99,12 +98,7 @@ public class SkillEntangle extends TargettedSkill {
 
 		// Play Effect
 		try {
-			this.fplayer.playFirework(player.getWorld(), target.getLocation()
-					.add(0.0D, 1.5D, 0.0D), 
-					FireworkEffect.builder().flicker(false).trail(false)
-					.with(FireworkEffect.Type.BURST)
-					.withColor(Color.OLIVE)
-					.build());
+			this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.OLIVE).build());
 		}
 		catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -116,12 +110,10 @@ public class SkillEntangle extends TargettedSkill {
 		// Create the root effect
 
 		NewRootEffect newRootEffect = new NewRootEffect(this, period, duration, hero.getPlayer(), applyText, expireText);
-		RootEffect oldRootEffect = new RootEffect(this, duration);
 
 		// Add root effect to the target
 		CharacterTemplate targetCT = this.plugin.getCharacterManager().getCharacter(target);
 		targetCT.addEffect(newRootEffect);
-		targetCT.addEffect(oldRootEffect);
 
 		return SkillResult.NORMAL;
 	}
@@ -136,9 +128,8 @@ public class SkillEntangle extends TargettedSkill {
 			if (event.getDamager() instanceof Player) {
 				// Make sure the hero has the root effect
 				Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-				if (hero.hasEffect("Root")) {
+				if (hero.hasEffect("NewRoot")) {
 					hero.removeEffect(hero.getEffect("NewRoot"));
-					hero.removeEffect(hero.getEffect("Root"));
 				}
 			}
 		}
@@ -161,9 +152,8 @@ public class SkillEntangle extends TargettedSkill {
 			// Get our target's CT
 			CharacterTemplate characterTemplate = plugin.getCharacterManager().getCharacter((LivingEntity) subEvent.getDamager());
 
-			if (characterTemplate.hasEffect("Root")) {
+			if (characterTemplate.hasEffect("NewRoot")) {
 				characterTemplate.removeEffect(characterTemplate.getEffect("NewRoot"));
-				characterTemplate.removeEffect(characterTemplate.getEffect("Root"));
 			}
 		}
 	}
