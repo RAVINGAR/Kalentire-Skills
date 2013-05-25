@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -21,7 +22,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -40,7 +41,7 @@ public class SkillEntangle extends TargettedSkill {
 	private final int defDamage = 1;
 	// Default text values
 	private final String skillText = "[§2Skill§7] "; // Used to add "[Skill]" text to all skill related messages
-	private final String defUseText = skillText + "%hero% used %skill% !";
+	private final String defUseText = skillText + "%hero% used %skill%!";
 	private final String defApplyText = skillText + "%target% has been rooted!";
 	private final String defExpireText = skillText + "%target% has broken free from the root!";
 
@@ -91,6 +92,7 @@ public class SkillEntangle extends TargettedSkill {
 		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, defApplyText).replace("%target%", "$1");
 		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, defExpireText).replace("%target%", "$1");
 
+		// Broadcast use text
 		broadcastExecuteText(hero);
 
 		// Play Sound
@@ -99,12 +101,7 @@ public class SkillEntangle extends TargettedSkill {
 
 		// Play Effect
 		try {
-			this.fplayer.playFirework(player.getWorld(), target.getLocation()
-					.add(0.0D, 1.5D, 0.0D), 
-					FireworkEffect.builder().flicker(false).trail(false)
-					.with(FireworkEffect.Type.BURST)
-					.withColor(Color.OLIVE)
-					.build());
+			this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(true).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.OLIVE).build());
 		}
 		catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -113,15 +110,27 @@ public class SkillEntangle extends TargettedSkill {
 			e.printStackTrace();
 		}
 
-		// Create the root effect
+		// Check to see if we're applying to a player
+		if ((target instanceof Player)) {
+			// Use new root for players
 
-		NewRootEffect newRootEffect = new NewRootEffect(this, period, duration, hero.getPlayer(), applyText, expireText);
-		RootEffect oldRootEffect = new RootEffect(this, duration);
+			// Create the root effect
+			EntangleEffect EntangleEffect = new EntangleEffect(this, period, duration, hero.getPlayer(), applyText, expireText);
 
-		// Add root effect to the target
-		CharacterTemplate targetCT = this.plugin.getCharacterManager().getCharacter(target);
-		targetCT.addEffect(newRootEffect);
-		targetCT.addEffect(oldRootEffect);
+			// Add root effect to the target
+			CharacterTemplate targetCT = this.plugin.getCharacterManager().getCharacter(target);
+			targetCT.addEffect(EntangleEffect);
+		}
+		else {
+			// Use old root for mobs
+
+			// Create the root effect
+			RootEffect rootEffect = new RootEffect(this, duration);
+
+			// Add root effect to the target
+			CharacterTemplate targetCT = this.plugin.getCharacterManager().getCharacter(target);
+			targetCT.addEffect(rootEffect);
+		}
 
 		return SkillResult.NORMAL;
 	}
@@ -136,8 +145,10 @@ public class SkillEntangle extends TargettedSkill {
 			if (event.getDamager() instanceof Player) {
 				// Make sure the hero has the root effect
 				Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-				if (hero.hasEffect("Root")) {
-					hero.removeEffect(hero.getEffect("NewRoot"));
+				if (hero.hasEffect("Entangle")) {
+					hero.removeEffect(hero.getEffect("Entangle"));
+				}
+				else if (hero.hasEffect("Root")) {
 					hero.removeEffect(hero.getEffect("Root"));
 				}
 			}
@@ -161,23 +172,24 @@ public class SkillEntangle extends TargettedSkill {
 			// Get our target's CT
 			CharacterTemplate characterTemplate = plugin.getCharacterManager().getCharacter((LivingEntity) subEvent.getDamager());
 
-			if (characterTemplate.hasEffect("NewRoot")) {
-				characterTemplate.removeEffect(characterTemplate.getEffect("NewRoot"));
+			if (characterTemplate.hasEffect("Entangle")) {
+				characterTemplate.removeEffect(characterTemplate.getEffect("Entangle"));
+			}
+			else if (characterTemplate.hasEffect("Root")) {
 				characterTemplate.removeEffect(characterTemplate.getEffect("Root"));
 			}
 		}
 	}
 
-	private class NewRootEffect extends ExpirableEffect {
+	private class EntangleEffect extends PeriodicExpirableEffect {
 		private final String applyText;
 		private final String expireText;
 		private final Player applier;
 
-		private float originalWalkSpeed;
-		private float originalFlySpeed;
+		private Location loc;
 
-		public NewRootEffect(Skill skill, int period, int duration, Player applier, String applyText, String expireText) {
-			super(skill, "NewRoot", duration);
+		public EntangleEffect(Skill skill, int period, int duration, Player applier, String applyText, String expireText) {
+			super(skill, "Entangle", period, duration);
 			this.applier = applier;
 			this.applyText = applyText;
 			this.expireText = expireText;
@@ -193,19 +205,10 @@ public class SkillEntangle extends TargettedSkill {
 		}
 
 		@Override
-		public void removeFromMonster(Monster monster) {
-			super.removeFromMonster(monster);
-			broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-		}
-
-		@Override
 		public void applyToHero(Hero hero) {
 			super.applyToHero(hero);
 			final Player player = hero.getPlayer();
-			originalWalkSpeed = player.getWalkSpeed();
-			originalFlySpeed = player.getFlySpeed();
-			player.setWalkSpeed(0);
-			player.setFlySpeed(-1);
+			loc = hero.getPlayer().getLocation();
 			broadcast(player.getLocation(), applyText, player.getDisplayName());
 		}
 
@@ -213,10 +216,27 @@ public class SkillEntangle extends TargettedSkill {
 		public void removeFromHero(Hero hero) {
 			super.removeFromHero(hero);
 			final Player player = hero.getPlayer();
-			player.setWalkSpeed(originalWalkSpeed);
-			player.setFlySpeed(originalFlySpeed);
 			broadcast(player.getLocation(), expireText, player.getDisplayName());
 		}
-	}
 
+		@Override
+		public void tickHero(Hero hero) {
+			final Location location = hero.getPlayer().getLocation();
+			if ((location.getX() != loc.getX()) || (location.getZ() != loc.getZ())) {
+
+				// Retain the player's Y position and facing directions
+				loc.setYaw(location.getYaw());
+				loc.setPitch(location.getPitch());
+				loc.setY(location.getY());
+
+				// Teleport the Player back into place.
+				hero.getPlayer().teleport(loc);
+			}
+		}
+
+		@Override
+		public void tickMonster(Monster monster) {
+		}
+
+	}
 }
