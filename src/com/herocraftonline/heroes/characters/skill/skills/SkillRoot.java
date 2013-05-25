@@ -43,8 +43,8 @@ public class SkillRoot extends TargettedSkill {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false); //Adding to combat-tag the player
         Player player = hero.getPlayer(); //Adding for Fireworks
         player.setWalkSpeed(0);
-        addSpellTarget(target, hero); // Combat Tagging
-        damageEntity(target, player, damage, DamageCause.MAGIC); //Combat tagging
+        //addSpellTarget(target, hero); // Combat Tagging
+        //damageEntity(target, player, damage, DamageCause.MAGIC); //Combat tagging
         plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(this, duration));
         
         broadcastExecuteText(hero, target);
