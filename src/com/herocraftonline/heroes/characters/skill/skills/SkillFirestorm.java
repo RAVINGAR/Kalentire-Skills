@@ -16,16 +16,16 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 
-public class SkillArcaneblast extends TargettedSkill {
+public class SkillFirestorm extends TargettedSkill {
 
     public VisualEffect fplayer = new VisualEffect();
-    public SkillArcaneblast(Heroes plugin) {
-        super(plugin, "Arcaneblast");
-        setDescription("You arcaneblast the target for $1 light damage.");
-        setUsage("/skill arcaneblast");
+    public SkillFirestorm(Heroes plugin) {
+        super(plugin, "Firestorm");
+        setDescription("You firestorm the target for $1 fire damage.");
+        setUsage("/skill firestorm");
         setArgumentRange(0, 0);
-        setIdentifiers("skill arcaneblast");
-        setTypes(SkillType.DAMAGING, SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setIdentifiers("skill firestorm");
+        setTypes(SkillType.DAMAGING, SkillType.FIRE, SkillType.SILENCABLE, SkillType.HARMFUL);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -40,7 +40,6 @@ public class SkillArcaneblast extends TargettedSkill {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
-        broadcastExecuteText(hero, target);
 
         // this is our fireworks shit
         try {
@@ -49,16 +48,16 @@ public class SkillArcaneblast extends TargettedSkill {
             		FireworkEffect.builder()
             		.flicker(false)
             		.trail(false)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.SILVER)
-            		.withColor(Color.MAROON)
-            		.withColor(Color.YELLOW)
-            		.withFade(Color.WHITE).build());
+            		.with(FireworkEffect.Type.BURST)
+            		.withColor(Color.RED)
+            		.withFade(Color.RED)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 

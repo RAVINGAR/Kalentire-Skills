@@ -1,4 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
+//http://pastie.org/private/i04dtc6t4oannstqls6sq
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +15,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -22,78 +22,74 @@ import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 
 public class SkillArcaneStorm extends ActiveSkill  {
-	
-    public VisualEffect fplayer = new VisualEffect();
+
 	public SkillArcaneStorm(Heroes plugin) {
 		super(plugin, "ArcaneStorm");
 		setIdentifiers("skill ArcaneStorm");
-        setTypes(SkillType.DAMAGING, SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HARMFUL);
 		setUsage("/skill ArcaneStorm");
 		setArgumentRange(0,0);
+        setTypes(SkillType.DAMAGING, SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HARMFUL);
 		setDescription("On use, user is rooted into place for 5 seconds. " +
 				"After the 5 seconds, the user unleashes a hail of devastating magical artillery in the surrounding area");
 	}
 
 	@Override
-	public SkillResult use(final Hero h, String[] arg1) {
-		h.addEffect(new RootEffect(this, 5000L) {
+	public SkillResult use(final Hero hero, String[] arg1) {
+		hero.addEffect(new RootEffect(this, 5000L) {
 			@Override
-			public void applyToHero(Hero h) {
-				super.applyToHero(h);
-			    final Player p = h.getPlayer();
-			    broadcast(h.getEntity().getLocation(), "§7[§2Skill§7] $1 has begun channeling an arcane storm!", new Object[] {h.getPlayer().getName()});
-			    List<Location> fireworkLocations = circle(h.getPlayer(),h.getPlayer().getLocation(),10,1,true,false,15);
+			public void applyToHero(Hero hero) {
+				super.applyToHero(hero);
+			    final Player player = hero.getPlayer();
+			    broadcast(hero.getEntity().getLocation(), "§7[§2Skill§7] $1 has begun channeling an arcane storm!", new Object[] 
+			    		{hero.getPlayer().getName()});
+			    List<Location> fireworkLocations = circle(hero.getPlayer(),hero.getPlayer().getLocation(),10,1,true,false,15);
 			    long ticksPerFirework = (int) (100.00/((double)fireworkLocations.size()));
-			    final VisualEffect fplayer = new VisualEffect();
+			    final VisualEffect fireworkUtil = new VisualEffect();
 			    for(int i = 0; i < fireworkLocations.size(); i++) {
 			    	final Location fLoc = fireworkLocations.get(i);
 			    	Bukkit.getScheduler().runTaskLater(this.plugin, new Runnable() {
 						@Override
 						public void run() {
 							try {
-								fplayer.playFirework(fLoc.getWorld(), fLoc, 
-										FireworkEffect.builder()
-					            		.flicker(false).trail(false)
-					            		.with(FireworkEffect.Type.BURST)
-					            		.withColor(Color.AQUA)
-					            		.withFade(Color.AQUA)
-					            		.build());
+								fireworkUtil.playFirework(fLoc.getWorld(), fLoc, FireworkEffect.builder().withColor(Color.AQUA).with(Type.BURST).build());
 							} catch (IllegalArgumentException e) {
 								e.printStackTrace();
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
-			    		
-			    	}, ticksPerFirework*i);
-			    	Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
 
-						@Override
-						public void run() {
-							Iterator<Entity> nearby = p.getNearbyEntities(16, 2, 16).iterator();
-							while(nearby.hasNext()) {
-								Entity e = nearby.next();
-								if(!(e instanceof LivingEntity)) {
-									continue;
-								}
-								if(!Skill.damageCheck(p, (LivingEntity) e)) {
-									continue;
-								}
-								Skill.damageEntity((LivingEntity)e, p, 50, DamageCause.MAGIC);
-								p.getWorld().strikeLightningEffect(e.getLocation());
-							}
-						}
-			    		
-			    	}, 100);
+			    	}, ticksPerFirework*i);	    	
 			    }
+			    Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						Iterator<Entity> nearby = player.getNearbyEntities(16, 5, 16).iterator();
+						while(nearby.hasNext()) {
+							Entity entity = nearby.next();
+							if(!(entity instanceof LivingEntity)) {
+								continue;
+							}
+							if(!Skill.damageCheck(player, (LivingEntity) entity)) {
+								continue;
+							}
+							Skill.damageEntity((LivingEntity)entity, player, 50, DamageCause.MAGIC);
+							player.getWorld().strikeLightningEffect(entity.getLocation());
+						}
+					}
+
+		    	}, 100);
 			}
 			@Override
 			public void removeFromHero(Hero hero) {
+				super.removeFromHero(hero);
 			    broadcast(hero.getPlayer().getLocation(), "§7[§2Skill§7] Arcane Storm Unleashed!", new Object[] {});
 			}
-			
+
 		});
 		return SkillResult.NORMAL;
 	}
