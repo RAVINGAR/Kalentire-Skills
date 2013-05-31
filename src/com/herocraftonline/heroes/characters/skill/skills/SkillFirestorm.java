@@ -47,6 +47,12 @@ public class SkillFirestorm extends ActiveSkill {
         Player player = hero.getPlayer();
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+        //Lets implement the Circle
+	    List<Location> fireworkLocations = circle(hero.getPlayer(),hero.getPlayer().getLocation(),10,1,true,false,15);
+	    long ticksPerFirework = (int) (100.00/((double)fireworkLocations.size()));
+	    for(int i = 0; i < fireworkLocations.size(); i++) {
+	    	final Location fLoc = fireworkLocations.get(i);
+	    //Circle-end
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
@@ -98,7 +104,6 @@ public class SkillFirestorm extends ActiveSkill {
                         circleblocks.add(l);
                         }
                     }
-     
         return circleblocks;
     }
 	
