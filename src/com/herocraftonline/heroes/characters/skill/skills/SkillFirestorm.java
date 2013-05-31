@@ -88,8 +88,9 @@ public class SkillFirestorm extends ActiveSkill {
         // sound-end
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+	    }
+		return null;//remove this when you're back
     }
-    
 	protected List<Location> circle(Player player, Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
 		List<Location> circleblocks = new ArrayList<Location>();
         int cx = loc.getBlockX();

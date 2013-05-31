@@ -47,14 +47,18 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			    		{hero.getPlayer().getName()});
 			    List<Location> fireworkLocations = circle(hero.getPlayer(),hero.getPlayer().getLocation(),10,1,true,false,15);
 			    long ticksPerFirework = (int) (100.00/((double)fireworkLocations.size()));
-			    final VisualEffect fireworkUtil = new VisualEffect();
+			    final VisualEffect fplayer = new VisualEffect();
 			    for(int i = 0; i < fireworkLocations.size(); i++) {
 			    	final Location fLoc = fireworkLocations.get(i);
 			    	Bukkit.getScheduler().runTaskLater(this.plugin, new Runnable() {
 						@Override
 						public void run() {
 							try {
-								fireworkUtil.playFirework(fLoc.getWorld(), fLoc, FireworkEffect.builder().withColor(Color.AQUA).with(Type.BURST).build());
+								fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect
+										.builder()
+										.withColor(Color.AQUA)
+										.with(Type.BURST)
+										.build());
 							} catch (IllegalArgumentException e) {
 								e.printStackTrace();
 							} catch (Exception e) {
