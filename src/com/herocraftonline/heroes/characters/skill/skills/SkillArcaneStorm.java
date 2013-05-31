@@ -55,9 +55,11 @@ public class SkillArcaneStorm extends ActiveSkill  {
 							try {
 								fplayer.playFirework(fLoc.getWorld(), fLoc, 
 										FireworkEffect.builder()
-										.withColor(Color.AQUA)
-										.with(Type.BURST)
-										.build());
+					            		.flicker(false).trail(false)
+					            		.with(FireworkEffect.Type.BURST)
+					            		.withColor(Color.AQUA)
+					            		.withFade(Color.AQUA)
+					            		.build());
 							} catch (IllegalArgumentException e) {
 								e.printStackTrace();
 							} catch (Exception e) {
@@ -70,7 +72,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 
 						@Override
 						public void run() {
-							Iterator<Entity> nearby = p.getNearbyEntities(16, 5, 16).iterator();
+							Iterator<Entity> nearby = p.getNearbyEntities(16, 2, 16).iterator();
 							while(nearby.hasNext()) {
 								Entity e = nearby.next();
 								if(!(e instanceof LivingEntity)) {
