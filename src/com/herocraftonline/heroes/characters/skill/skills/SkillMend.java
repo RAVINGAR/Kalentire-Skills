@@ -23,8 +23,8 @@ public class SkillMend extends TargettedSkill {
     public SkillMend(Heroes plugin) {
         super(plugin, "Mend");
         setDescription("Mends your target, restoring $1 health, negating bleed and fire.");
-        setUsage("/skill mend");
-        setArgumentRange(0, 0);
+        setUsage("/skill mend <target>");
+        setArgumentRange(0, 1);
         setIdentifiers("skill mend");
         setTypes(SkillType.HEAL, SkillType.PHYSICAL);
     }
