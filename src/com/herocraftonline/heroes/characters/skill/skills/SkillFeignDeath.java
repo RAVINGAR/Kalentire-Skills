@@ -30,7 +30,7 @@ public class SkillFeignDeath extends TargettedSkill
 
   public String getDescription(Hero hero)
   {
-    int duration = SkillConfigManager.getUseSetting(hero, this, "duration", 6000, false) / 1000;
+    int duration = SkillConfigManager.getUseSetting(hero, this, "smoke-duration", 6000, false) / 1000;
     String description = getDescription().replace("$2", duration + "");
     return description;
   }
@@ -38,7 +38,9 @@ public class SkillFeignDeath extends TargettedSkill
   public ConfigurationSection getDefaultConfig()
   {
     ConfigurationSection node = super.getDefaultConfig();
-    node.set("smoke-duration", Integer.valueOf(1000));
+    
+    node.set("smoke-duration", 6000);
+    
     return node;
   }
 
@@ -65,10 +67,11 @@ public class SkillFeignDeath extends TargettedSkill
     Hero tHero = this.plugin.getCharacterManager().getHero(tPlayer);
     String tn = tHero.getPlayer().getDisplayName();
     String pn = player.getDisplayName();
-    long duration = SkillConfigManager.getUseSetting(hero, this, "duration", 6000, false);
+    long duration = SkillConfigManager.getUseSetting(hero, this, "smoke-duration", 6000, false);
     hero.addEffect(new InvisibleEffect(this, duration, this.applyText, this.expireText));
-    //String playername = player.getName();
+    String playername = player.getName();
     broadcast(player.getLocation(), ChatColor.WHITE + pn + " was slain by " + tn, new Object[0]);
     return SkillResult.NORMAL;
   }
 }
+
