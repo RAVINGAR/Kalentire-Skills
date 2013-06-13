@@ -68,7 +68,8 @@ public class SkillFeignDeath extends TargettedSkill
     String tn = tHero.getPlayer().getDisplayName();
     String pn = player.getDisplayName();
     long duration = SkillConfigManager.getUseSetting(hero, this, "smoke-duration", 6000, false);
-    hero.addEffect(new InvisibleEffect(this, duration, this.applyText, this.expireText));
+    hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
+    //hero.addEffect(new InvisibleEffect(this, duration, this.applyText, this.expireText));
     String playername = player.getName();
     broadcast(player.getLocation(), ChatColor.WHITE + pn + " was slain by " + tn, new Object[0]);
     return SkillResult.NORMAL;
