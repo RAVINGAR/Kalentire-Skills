@@ -89,7 +89,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 		setArgumentRange(0, 0);
 
 		// Start up the listener for Rune events
-		Bukkit.getPluginManager().registerEvents(new AbsorbRunesListener(this), this.plugin);
+		Bukkit.getPluginManager().registerEvents(new AbsorbRunesListener(this), plugin);
 
 		// Create a new hashmap for all hero Rune queues.
 		heroRunes = new HashMap<Hero, RuneQueue>();
@@ -114,6 +114,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 		node.set("fail-text-no-runes", "§7[§2Skill§7] §fYou have no Runes to absorb!");
 
 		// Rune usage configs
+		node.set("rune-application-cooldown", 750);
 		node.set("imbued-runes-text-empty", "§7[§2Skill§7] §fYour weapon is no longer imbued with Runes!");
 		node.set("imbued-runes-text-start", "§7[§2Skill§7] §fImbued Runes: <");
 		node.set("imbued-runes-text-delimiter", "§f|");

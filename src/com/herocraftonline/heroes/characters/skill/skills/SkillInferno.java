@@ -1,13 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -18,80 +17,74 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillInferno extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
-    public SkillInferno(Heroes plugin) {
-        super(plugin, "Inferno");
-        setDescription("You ignite all nearby enemies on fire dealing $1 fire damage.");
-        setUsage("/skill inferno");
-        setArgumentRange(0, 0);
-        setIdentifiers("skill inferno");
-        setTypes(SkillType.FIRE, SkillType.DAMAGING, SkillType.HARMFUL);
-    }
 
-    @Override
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 30000);
-        node.set(SkillSetting.RADIUS.node(), 5);
-        node.set(SkillSetting.DAMAGE.node(), 4);
-        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.0);
-        return node;
-    }
+	public VisualEffect fplayer = new VisualEffect();
 
-    @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
-        int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(range, range, range);
-        int fireTicks = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false) / 50;
-        //boolean damaged = false;
-        for (Entity entity : entities) {
-            if (!(entity instanceof LivingEntity)) {
-                continue;
-            }
-            LivingEntity lEntity = (LivingEntity) entity;
+	public SkillInferno(Heroes plugin) {
+		super(plugin, "Inferno");
+		setDescription("Unleash an inferno upon your enemies, dealing $1 fire damage and igniting them for $2 seconds.");
+		setUsage("/skill inferno");
+		setArgumentRange(0, 0);
+		setIdentifiers("skill inferno");
+		setTypes(SkillType.FIRE, SkillType.DAMAGING, SkillType.HARMFUL);
+	}
 
-            if (!damageCheck(player, lEntity)) {
-                continue;
-            }
-
-            //damaged = true;
-            lEntity.setFireTicks(fireTicks);
-            // this is our fireworks shit
-            try {
-                fplayer.playFirework(player.getWorld(), lEntity.getLocation(), FireworkEffect.builder()
-                		.flicker(false)
-                		.trail(true)
-                		.with(FireworkEffect.Type.BURST)
-                		.withColor(Color.ORANGE)
-                		.withFade(Color.RED)
-                		.build());
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            plugin.getCharacterManager().getCharacter(lEntity).addEffect(new CombustEffect(this, player));
-        }
-        /*
-        if (!damaged) {
-            Messaging.send(player, "No targets in range!");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-        */
-
-        broadcastExecuteText(hero);
-        return SkillResult.NORMAL;
-    }
-
-	@Override
 	public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
-        return getDescription().replace("$1", damage + "");
-    }
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+		damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0D, false) * hero.getSkillLevel(this));
+
+		int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false) * 50) / 1000;
+
+		return getDescription().replace("$1", damage + "").replace("$2", duration + "");
+	}
+
+	public ConfigurationSection getDefaultConfig() {
+		ConfigurationSection node = super.getDefaultConfig();
+		node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
+		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(8));
+		node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
+		node.set(SkillSetting.DAMAGE_INCREASE.node(), Double.valueOf(0.0D));
+
+		return node;
+	}
+
+	public SkillResult use(Hero hero, String[] args) {
+		Player player = hero.getPlayer();
+
+		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+		int fireTicks = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+
+		broadcastExecuteText(hero);
+
+		for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+
+			// Check to see if the entity can be damaged
+			if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
+				continue;
+
+			LivingEntity target = (LivingEntity) entity;
+
+			addSpellTarget(target, hero);
+			damageEntity(target, player, damage, EntityDamageEvent.DamageCause.FIRE);
+
+			target.setFireTicks(fireTicks);
+			plugin.getCharacterManager().getCharacter(target).addEffect(new CombustEffect(this, player));
+
+			try {
+				this.fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+			}
+			catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		return SkillResult.NORMAL;
+	}
 }

@@ -12,17 +12,17 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
-public class SkillGhost extends ActiveSkill {
+public class SkillGhostWalk extends ActiveSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillGhost(Heroes plugin) {
-        super(plugin, "Ultravision");
-        setDescription("You gain enhanced vision at night for $1 seconds.");
-        setUsage("/skill ultravision");
+    public SkillGhostWalk(Heroes plugin) {
+        super(plugin, "Ghost Walk");
+        setDescription("You walk as a ghost at night for $1 seconds.");
+        setUsage("/skill Ghost Walk");
         setArgumentRange(0, 0);
-        setIdentifiers("skill ultravision");
+        setIdentifiers("skill Ghost Walk");
         setTypes(SkillType.SILENCABLE, SkillType.BUFF);
     }
 
@@ -30,8 +30,8 @@ public class SkillGhost extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 180000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% gains Ultravision!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost Ultravision!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% gains Ghost Walk!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost Ghost Walk!");
         return node;
     }
 
