@@ -40,7 +40,7 @@ public class SkillLavaWall extends ActiveSkill {
 		node.set("width", Integer.valueOf(2));
 		node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
 		node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
-		node.set("block-type", "STATIONARY_LAVA");
+		node.set("block-type", "LAVA");
 
 		return node;
 	}
@@ -49,7 +49,7 @@ public class SkillLavaWall extends ActiveSkill {
 		int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false);
 		int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false);
 		int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
-		//String type = SkillConfigManager.getUseSetting(hero, this, "block-type", "STATIONARY_LAVA");
+		//String type = SkillConfigManager.getUseSetting(hero, this, "block-type", "LAVA");
 
 		return getDescription().replace("$1", maxDist + "").replace("$2", width + "").replace("$3", height + "");
 	}
@@ -68,7 +68,7 @@ public class SkillLavaWall extends ActiveSkill {
 		int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false);
 		int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5, false);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-		Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "STATIONARY_LAVA"));
+		Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "LAVA"));
 
 		Block tBlock = player.getTargetBlock(null, maxDist);
 		if (tBlock.getType() == Material.AIR) {
