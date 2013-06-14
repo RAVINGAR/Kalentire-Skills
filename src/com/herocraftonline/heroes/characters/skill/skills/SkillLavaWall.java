@@ -25,12 +25,12 @@ public class SkillLavaWall extends ActiveSkill {
 	private String expireText;
 
 	public SkillLavaWall(Heroes plugin) {
-		super(plugin, "Earthwall");
-		setDescription("Creates a wall of Earth in front of you. The wall is created 1$ blocks in front of you, and is $2 blocks wide, and $3 blocks high.");
-		setUsage("/skill earthwall");
+		super(plugin, "Lavawall");
+		setDescription("Creates a wall of Lava in front of you. The wall is created 1$ blocks in front of you, and is $2 blocks wide, and $3 blocks high.");
+		setUsage("/skill lavawall");
 		setArgumentRange(0, 0);
-		setIdentifiers("skill earthwall");
-		setTypes(SkillType.ILLUSION, SkillType.KNOWLEDGE, SkillType.PHYSICAL, SkillType.EARTH);
+		setIdentifiers("skill Lavawall");
+		setTypes(SkillType.ILLUSION, SkillType.KNOWLEDGE, SkillType.PHYSICAL, SkillType.FIRE);
 	}
 
 	public ConfigurationSection getDefaultConfig() {
@@ -57,8 +57,8 @@ public class SkillLavaWall extends ActiveSkill {
 	@Override
 	public void init() {
 		super.init();
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjures a wall of earth!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s shield has crumbled").replace("%hero%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjures a wall of lava!").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s wall has vanished").replace("%hero%", "$1");
 	}
 
 	public SkillResult use(Hero hero, String[] args) {
