@@ -24,21 +24,10 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillBloodBond extends ActiveSkill
 {
-	// Default skill values
-	private final double defHealPercent = 0.15;
-	private final int defRadius = 20;
-	private final int defManaTick = 8;
-	private final int defManaTickPeriod = 3000;
-
-	// Default text values
-	private final String skillText = "§8[§2Skill§8]";
-	private final String defToggleOnText = skillText + "%hero% has formed a §lBloodBond§r!";
-	private final String defToggleOffText = skillText + "%hero% has broken his §lBloodBonds§r!";
-
 	public SkillBloodBond(Heroes plugin)
 	{
 		super(plugin, "BloodBond");
-		setDescription("Form a Blood Bond with your party. This convert $1% of your magic damage into healing for party members in a $2 block radius. Costs $3 mana per second to maintain the effect.");
+		setDescription("Form a Blood Bond with your party. While bound, you convert $1% of your magic damage into healh for you and all party members within a $2 block radius. Costs $4 health to use, and $3 mana per second to maintain the effect.");
 		setUsage("/skill bloodbond");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill bloodbond");
@@ -49,11 +38,12 @@ public class SkillBloodBond extends ActiveSkill
 	@Override
 	public String getDescription(Hero hero)
 	{
-		double healPercent = SkillConfigManager.getUseSetting(hero, this, "heal-percent", defHealPercent, false);
-		int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", defManaTick, false);
-		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), defRadius, false);
+		double healPercent = SkillConfigManager.getUseSetting(hero, this, "heal-percent", 0.15, false);
+		int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 8, false);
+		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 12, false);
+		int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 25, false);
 
-		return getDescription().replace("$1", (int) (healPercent * 100) + "").replace("$2", radius + "").replace("$3", manaTick + "");
+		return getDescription().replace("$1", (int) (healPercent * 100) + "").replace("$2", radius + "").replace("$3", manaTick + "").replace("$4", healthCost + "");
 	}
 
 	@Override
@@ -61,12 +51,12 @@ public class SkillBloodBond extends ActiveSkill
 	{
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("heal-percent", defHealPercent);
-		node.set(SkillSetting.RADIUS.node(), defRadius);
-		node.set("mana-tick", defManaTick);
-		node.set("mana-tick-period", defManaTickPeriod);
-		node.set("toggle-on-text", defToggleOnText);
-		node.set("toggle-off-text", defToggleOffText);
+		node.set("heal-percent", 0.15);
+		node.set(SkillSetting.RADIUS.node(), 12);
+		node.set("mana-tick", 8);
+		node.set("mana-tick-period", 3000);
+		node.set("toggle-on-text", "§7[§2Skill§7] %hero% has formed a §lBloodBond§r!");
+		node.set("toggle-off-text", "§7[§2Skill§7] %hero% has broken his §lBloodBonds§r!");
 
 		return node;
 	}
@@ -82,12 +72,12 @@ public class SkillBloodBond extends ActiveSkill
 		}
 
 		// Get config values for the effect
-		int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", defManaTick, false);
-		int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", defManaTickPeriod, false);
+		int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 8, false);
+		int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 3000, false);
 
 		// Get config values for text values
-		String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", defToggleOnText).replace("%hero%", "$1");
-		String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", defToggleOffText).replace("%hero%", "$1");
+		String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", "§7[§2Skill§7] %hero% has formed a §lBloodBond§r!").replace("%hero%", "$1");
+		String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", "§7[§2Skill§7] %hero% has broken his §lBloodBonds§r!").replace("%hero%", "$1");
 
 		hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 
@@ -139,11 +129,11 @@ public class SkillBloodBond extends ActiveSkill
 		private void healHeroParty(Hero hero, int damage)
 		{
 			// Set the healing amount
-			double healPercent = SkillConfigManager.getUseSetting(hero, skill, "heal-percent", defHealPercent, false);
+			double healPercent = SkillConfigManager.getUseSetting(hero, skill, "heal-percent", 0.15, false);
 			int healAmount = (int) (healPercent * damage);
 
 			// Set the distance variables 
-			int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, defRadius, false);
+			int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 20, false);
 			int radiusSquared = radius * radius;
 
 			// Check if the hero has a party
