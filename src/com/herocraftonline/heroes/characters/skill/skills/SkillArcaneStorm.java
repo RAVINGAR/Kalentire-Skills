@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+ï»¿package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/i04dtc6t4oannstqls6sq
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			public void applyToHero(Hero hero) {
 				super.applyToHero(hero);
 			    final Player player = hero.getPlayer();
-			    broadcast(hero.getEntity().getLocation(), "§7[§2Skill§7] $1 has begun channeling an arcane storm!", new Object[] 
+			    broadcast(hero.getEntity().getLocation(), "Â§7[Â§2SkillÂ§7] $1 has begun channeling an arcane storm!", new Object[] 
 			    		{hero.getPlayer().getName()});
 			    List<Location> fireworkLocations = circle(hero.getPlayer(),hero.getPlayer().getLocation(),10,1,true,false,15);
 			    long ticksPerFirework = (int) (100.00/((double)fireworkLocations.size()));
@@ -91,7 +91,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			@Override
 			public void removeFromHero(Hero hero) {
 				super.removeFromHero(hero);
-			    broadcast(hero.getPlayer().getLocation(), "§7[§2Skill§7] Arcane Storm Unleashed!", new Object[] {});
+			    broadcast(hero.getPlayer().getLocation(), "Â§7[Â§2SkillÂ§7] Arcane Storm Unleashed!", new Object[] {});
 			}
 
 		});

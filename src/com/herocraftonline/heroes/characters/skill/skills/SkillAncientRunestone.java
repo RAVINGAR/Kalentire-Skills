@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+ï»¿package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -126,19 +126,19 @@ public class SkillAncientRunestone extends ActiveSkill {
 			worldName = worldName.substring(0, 1).toUpperCase() + worldName.substring(1);
 
 			// Set the Runestone name
-			metaData.setDisplayName("§6Ancient Runestone");
+			metaData.setDisplayName("Â§6Ancient Runestone");
 
 			// Set the Lore with all Runestone information
-			String locationInformation = "§b" + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
+			String locationInformation = "Â§b" + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
 
 			int numUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", -1, false);
 			String runestoneUsesInformation = "";
 			if (numUses > -1) 			// -1 is unlimited
-				runestoneUsesInformation = "§bUses: " + numUses + "/" + numUses;
+				runestoneUsesInformation = "Â§bUses: " + numUses + "/" + numUses;
 			else
-				runestoneUsesInformation = "§bUses: Unlimited";
+				runestoneUsesInformation = "Â§bUses: Unlimited";
 
-			String imbuedByInformation = "§5Imbued by " + player.getDisplayName();
+			String imbuedByInformation = "Â§5Imbued by " + player.getDisplayName();
 			List<String> newLore = Arrays.asList(locationInformation, runestoneUsesInformation, imbuedByInformation);
 			metaData.setLore(newLore);
 
