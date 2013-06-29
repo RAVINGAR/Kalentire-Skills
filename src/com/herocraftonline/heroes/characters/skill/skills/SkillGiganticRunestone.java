@@ -28,18 +28,18 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.townships.HeroTowns;
 
-public class SkillMinorRunestone extends ActiveSkill {
+public class SkillGiganticRunestone extends ActiveSkill {
 
 	private boolean herotowns = false;
 	private HeroTowns ht;
 	private boolean residence = false;
 
-	public SkillMinorRunestone(Heroes plugin) {
-		super(plugin, "MinorRunestone");
-		setDescription("You imbue a redstone block with an Minor Runestone. Minor Runestones $1");
-		setUsage("/skill minorrunestone");
+	public SkillGiganticRunestone(Heroes plugin) {
+		super(plugin, "GiganticRunestone");
+		setDescription("You imbue a redstone block with an Gigantic Runestone. Gigantic Runestones $1");
+		setUsage("/skill giganticrunestone");
 		setArgumentRange(0, 0);
-		setIdentifiers("skill minorrunestone");
+		setIdentifiers("skill giganticrunestone");
 		setTypes(SkillType.TELEPORT, SkillType.ITEM, SkillType.SILENCABLE);
 
 		try {
@@ -59,7 +59,7 @@ public class SkillMinorRunestone extends ActiveSkill {
 
 	public String getDescription(Hero hero) {
 
-		int maxUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", 2, false);
+		int maxUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", 15, false);
 
 		String maxUsesString = "";
 		if (maxUses > -1)
@@ -74,8 +74,8 @@ public class SkillMinorRunestone extends ActiveSkill {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
-		node.set(SkillSetting.DELAY.node(), 5000);
-		node.set("max-uses", Integer.valueOf(2));
+		node.set(SkillSetting.DELAY.node(), 8000);
+		node.set("max-uses", Integer.valueOf(15));
 
 		return node;
 	}
@@ -126,12 +126,12 @@ public class SkillMinorRunestone extends ActiveSkill {
 			worldName = worldName.substring(0, 1).toUpperCase() + worldName.substring(1);
 
 			// Set the Runestone name
-			metaData.setDisplayName("§2Minor Runestone");
+			metaData.setDisplayName("§eGigantic Runestone");
 
 			// Set the Lore with all Runestone information
 			String locationInformation = "§b" + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
 
-			int numUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", 2, false);
+			int numUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", 15, false);
 			String runestoneUsesInformation = "";
 			if (numUses > -1) 			// -1 is unlimited
 				runestoneUsesInformation = "§bUses: " + numUses + "/" + numUses;
@@ -155,14 +155,16 @@ public class SkillMinorRunestone extends ActiveSkill {
 			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
 			broadcastExecuteText(hero);
-			
+
 			if (actualAmount > 1) {
 				// We need to return their excess blocks to them.
 				PlayerInventory inventory = player.getInventory();
 
 				HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1) });
-				for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
-					player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
+				if (!leftOvers.isEmpty()) {
+					for (ItemStack leftOver : leftOvers.values()) {
+						player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
+					}
 					Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
 				}
 			}

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -12,12 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.ResidencePermissions;
-
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-
 import com.herocraftonline.townships.HeroTowns;
 
 import com.herocraftonline.heroes.Heroes;
@@ -25,6 +20,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
@@ -33,9 +29,6 @@ public class SkillRecall extends ActiveSkill {
     
     private boolean herotowns = false;
     private HeroTowns ht;
-    private boolean residence = false;
-    private WorldGuardPlugin wgp;
-    private boolean worldguard = false;
     
     public SkillRecall(Heroes plugin) {
         super(plugin, "Recall");
@@ -45,15 +38,9 @@ public class SkillRecall extends ActiveSkill {
         setIdentifiers("skill recall");
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORT);
         try {
-            Residence res = (Residence) this.plugin.getServer().getPluginManager().getPlugin("Residence");
-            if (res != null)
-                residence = true;
             ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             if (ht != null)
                 herotowns = true;
-            wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-            if( wgp != null)
-                worldguard = true;
         } catch (Exception e) {
             Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
         }
@@ -152,16 +139,12 @@ public class SkillRecall extends ActiveSkill {
 
                             // Teleport the player to the location
                             Location currentLocation = player.getLocation();
-                            
-                            if (residence) {
-                                ClaimedResidence residence = Residence.getResidenceManager().getByLoc(new Location(world, x, y, z, currentLocation.getYaw(), currentLocation.getPitch()));
-                                if (residence != null) {
-                                    ResidencePermissions perm = residence.getPermissions();
-                                    if (perm.playerHas(player.getName(), "build", false));
-                                    else {
-                                        broadcast(player.getLocation(), "Can not use a Runestone to a Residence you have no access to!");
-                                        return SkillResult.FAIL;
-                                    }
+
+                            // Validate world checks
+                            List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disabledWorlds"));
+                            for(String disabledWorld : disabledWorlds) {
+                                if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
+                                    return SkillResult.FAIL;
                                 }
                             }
 
@@ -169,16 +152,7 @@ public class SkillRecall extends ActiveSkill {
                             if (herotowns) {
                                 if (ht.getGlobalRegionManager().canBuild(player, new Location(world, x, y, z, currentLocation.getYaw(), currentLocation.getPitch())));
                                 else {
-                                    broadcast(player.getLocation(), "Can not use a Runestone to a Town you have no access to!");
-                                    return SkillResult.FAIL;
-                                }
-                            }
-                            
-                            // Validate WorldGuard
-                            if(worldguard) {
-                                if(wgp.canBuild(player, new Location(world, x, y, z, currentLocation.getYaw(), currentLocation.getPitch())));
-                                else {
-                                    broadcast(player.getLocation(), "Can not use a Runestone to a Region you have no access to!");
+                                    broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
                                     return SkillResult.FAIL;
                                 }
                             }
@@ -194,7 +168,7 @@ public class SkillRecall extends ActiveSkill {
 
                             // SET TO FAILURE FOR DEBUG PURPOSES. CHANGE THIS TO NORMAL LATER.
                             broadcastExecuteText(hero);
-                            return SkillResult.FAIL;
+                            return SkillResult.NORMAL;
                         }
                         else {
                             broadcast(player.getLocation(), "Runestone Contains Invalid Location Data.", player.getDisplayName());
@@ -217,13 +191,23 @@ public class SkillRecall extends ActiveSkill {
         // Continue to normal recall functionality.
 
         // DEFAULT RECALL FUNCTIONALITY
+        
+        // Validate world checks
+        List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disabledWorlds"));
+        for(String disabledWorld : disabledWorlds) {
+            if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
+                Messaging.send(player, "Magic has blocked your recall in this world");
+                return SkillResult.FAIL;
+            }
+        }
+        
         ConfigurationSection skillSettings = hero.getSkillSettings(this);
         World world = SkillMark.validateLocation(skillSettings, player);
         if (world == null) {
             return SkillResult.FAIL;
         }
         if (hero.hasEffectType(EffectType.ROOT)) {
-            Messaging.send(player, "Teleport fizzled.", new Object[0]);
+            Messaging.send(player, "Teleport fizzled.");
             return SkillResult.FAIL;
         }
 
@@ -232,9 +216,18 @@ public class SkillRecall extends ActiveSkill {
             xyzyp = SkillMark.getStoredData(skillSettings);
         }
         catch (IllegalArgumentException e) {
-            Messaging.send(player, "Your recall location is improperly set!", new Object[0]);
+            Messaging.send(player, "Your recall location is improperly set!");
             return SkillResult.SKIP_POST_USAGE;
         }
+        // Validate Herotowns
+        if (herotowns) {
+            if (ht.getGlobalRegionManager().canBuild(player, new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4])));
+            else {
+                broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
+                return SkillResult.FAIL;
+            }
+        }
+        
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         player.teleport(new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]));
