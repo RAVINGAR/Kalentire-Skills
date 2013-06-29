@@ -114,7 +114,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
 							// We have a valid max uses value, let's set it.
 
 							// Recharge the runestone
-							loreData.set(1, "§bUses: " + maxUses + "/" + maxUses);
+							loreData.set(1, "�bUses: " + maxUses + "/" + maxUses);
 							metaData.setLore(loreData);
 							heldItem.setItemMeta(metaData);
 

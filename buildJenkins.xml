@@ -12,6 +12,8 @@
     	<fileset dir="${heroes}" includes="**/*.jar" />
     	<fileset dir="${heroeslibs}" includes="**/*.jar" />
     	<fileset dir="../../Vault/lastSuccessful/archive" includes="**/*.jar" />
+    	<fileset dir="libs" includes="**/*.jar" />
+    	
     </path>
 
     <taskdef resource="net/sf/antcontrib/antlib.xml" />
