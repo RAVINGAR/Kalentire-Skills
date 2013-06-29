@@ -1,4 +1,4 @@
-﻿package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/i04dtc6t4oannstqls6sq
 
 import java.util.ArrayList;
