@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+﻿package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.Arrays;
 import java.util.HashMap;
