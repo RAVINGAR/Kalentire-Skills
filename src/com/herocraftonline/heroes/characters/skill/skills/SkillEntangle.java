@@ -40,7 +40,7 @@ public class SkillEntangle extends TargettedSkill {
 	private final int defDuration = 4000;
 	private final int defDamage = 1;
 	// Default text values
-	private final String skillText = "[�2Skill�7] "; // Used to add "[Skill]" text to all skill related messages
+	private final String skillText = "[§2Skill§7] "; // Used to add "[Skill]" text to all skill related messages
 	private final String defUseText = skillText + "%hero% used %skill%!";
 	private final String defApplyText = skillText + "%target% has been rooted!";
 	private final String defExpireText = skillText + "%target% has broken free from the root!";

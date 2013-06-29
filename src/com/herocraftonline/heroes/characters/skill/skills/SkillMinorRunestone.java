@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +19,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
+import com.herocraftonline.townships.HeroTowns;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -27,13 +31,15 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.townships.HeroTowns;
+
 
 public class SkillMinorRunestone extends ActiveSkill {
 
 	private boolean herotowns = false;
-	private HeroTowns ht;
-	private boolean residence = false;
+    private HeroTowns ht;
+    private boolean residence = false;
+    private WorldGuardPlugin wgp;
+    private boolean worldguard = false;
 
 	public SkillMinorRunestone(Heroes plugin) {
 		super(plugin, "MinorRunestone");
@@ -44,14 +50,17 @@ public class SkillMinorRunestone extends ActiveSkill {
 		setTypes(SkillType.TELEPORT, SkillType.ITEM, SkillType.SILENCABLE);
 
 		try {
-			Residence res = (Residence) plugin.getServer().getPluginManager().getPlugin("Residence");
-			if (res != null)
-				residence = true;
-			HeroTowns ht = (HeroTowns) plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-			if (ht != null) {
-				this.ht = ht;
-				herotowns = true;
-			}
+            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+                herotowns = true;
+                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            }
+            if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
+                residence = true;
+            }
+            if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+                worldguard = true;
+                wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+            }
 		}
 		catch (Exception e) {
 			Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
@@ -121,6 +130,16 @@ public class SkillMinorRunestone extends ActiveSkill {
 					return SkillResult.FAIL;
 				}
 			}
+			
+	         // Validate WorldGuard
+            if(worldguard) {
+                if(wgp.canBuild(player, player.getLocation()));
+                else {
+                    broadcast(player.getLocation(), "Can not set a Runestone in a Region you have no access to!");
+                    return SkillResult.FAIL;
+                }
+            }
+
 
 			// Set the first letter of the world name to be upper-case rather than lower case.
 			String worldName = location.getWorld().getName();

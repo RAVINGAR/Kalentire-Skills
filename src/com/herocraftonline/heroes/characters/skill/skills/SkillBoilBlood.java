@@ -44,8 +44,8 @@ public class SkillBoilBlood extends ActiveSkill {
 		node.set(SkillSetting.DAMAGE_TICK.node(), 17);
 		node.set(SkillSetting.PERIOD.node(), 2500);
 		node.set(SkillSetting.DURATION.node(), 7500);
-		node.set(SkillSetting.APPLY_TEXT.node(), "�7[�2Skill�7] %target%'s blood begins to boil!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), "�7[�2Skill�7] %target%'s blood is no longer boiling.");
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target%'s blood begins to boil!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target%'s blood is no longer boiling.");
 		node.set("blood-union-required-for-use", 3);
 
 		return node;
@@ -97,8 +97,8 @@ public class SkillBoilBlood extends ActiveSkill {
 		int tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
 		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "�7[�2Skill�7] %target%'s blood begins to boil!").replace("%target%", "$1");
-		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "�7[�2Skill�7] %target%'s blood is no longer boiling.").replace("%target%", "$1");
+		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target%'s blood begins to boil!").replace("%target%", "$1");
+		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target%'s blood is no longer boiling.").replace("%target%", "$1");
 
 		for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
 

@@ -38,9 +38,10 @@ public class SkillRecall extends ActiveSkill {
         setIdentifiers("skill recall");
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORT);
         try {
-            ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            if (ht != null)
+            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
                 herotowns = true;
+                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            }
         } catch (Exception e) {
             Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
         }
