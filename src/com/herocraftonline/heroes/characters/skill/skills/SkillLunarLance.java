@@ -24,7 +24,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillLunarLance extends TargettedSkill {
 	private final int defDamage = 95;													// Default damage
 	private final int defBurnValue = 20;												// Default mana burn amount
-	private final String defFailText = "§fYou need a shovel to use this ability!";		// Default skill fail text
+	private final String defFailText = "Â§fYou need a shovel to use this ability!";		// Default skill fail text
 
 	public VisualEffect fplayer = new VisualEffect();									// Firework effect
 

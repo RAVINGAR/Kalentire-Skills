@@ -52,7 +52,7 @@ public class SkillForgeChainLeggings extends ActiveSkill {
 		ItemMeta metaData = forgedItem.getItemMeta();
 
 		// Add the "Forged by" message to the item.
-		String imbuedByInformation = "ง5Forged  by " + player.getDisplayName();
+		String imbuedByInformation = "ยง5Forged  by " + player.getDisplayName();
 		List<String> newLore = Arrays.asList(imbuedByInformation);
 		metaData.setLore(newLore);
 

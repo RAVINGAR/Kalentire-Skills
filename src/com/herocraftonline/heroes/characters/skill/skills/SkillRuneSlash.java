@@ -29,7 +29,7 @@ public class SkillRuneSlash extends TargettedSkill {
 	private final int defMaxDistance = 5;
 
 	// Default text values
-	private final String skillText = "§7[§2Skill§7] ";			// Used to add "[Skill]" text to all skill related messages
+	private final String skillText = "Â§7[Â§2SkillÂ§7] ";			// Used to add "[Skill]" text to all skill related messages
 	private final String defFailText = skillText + "You must be holding a weapon to use this ability!";
 
 	public SkillRuneSlash(Heroes plugin) {
