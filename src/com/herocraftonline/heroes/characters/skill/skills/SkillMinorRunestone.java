@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -126,19 +127,19 @@ public class SkillMinorRunestone extends ActiveSkill {
 			worldName = worldName.substring(0, 1).toUpperCase() + worldName.substring(1);
 
 			// Set the Runestone name
-			metaData.setDisplayName("§2Minor Runestone");
+			metaData.setDisplayName("Â§2Minor Runestone");
 
 			// Set the Lore with all Runestone information
-			String locationInformation = "§b" + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
+			String locationInformation = ChatColor.AQUA+"" + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
 
 			int numUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", 2, false);
 			String runestoneUsesInformation = "";
 			if (numUses > -1) 			// -1 is unlimited
-				runestoneUsesInformation = "§bUses: " + numUses + "/" + numUses;
+				runestoneUsesInformation = ChatColor.AQUA+"Uses: " + numUses + "/" + numUses;
 			else
-				runestoneUsesInformation = "§bUses: Unlimited";
+				runestoneUsesInformation = ChatColor.AQUA+"Uses: Unlimited";
 
-			String imbuedByInformation = "§5Imbued by " + player.getDisplayName();
+			String imbuedByInformation = ChatColor.DARK_PURPLE+"Imbued by " + player.getDisplayName();
 			List<String> newLore = Arrays.asList(locationInformation, runestoneUsesInformation, imbuedByInformation);
 			metaData.setLore(newLore);
 
