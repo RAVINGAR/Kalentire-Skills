@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -17,7 +16,7 @@ public class SkillGroupTeleport extends ActiveSkill {
         setUsage("/skill groupteleport");
         setArgumentRange(0, 0);
         setIdentifiers("skill groupteleport", "skill gteleport");
-        setTypes(SkillType.TELEPORT, SkillType.SILENCABLE);
+        setTypes(SkillType.TELEPORT, SkillType.SILENCABLE, SkillType.UNBINDABLE);
     }
 
     @Override
