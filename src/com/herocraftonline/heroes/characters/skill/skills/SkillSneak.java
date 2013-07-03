@@ -23,98 +23,114 @@ import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillSneak extends ActiveSkill {
 
-    private boolean damageCancels;
-    private boolean attackCancels;
+	private boolean damageCancels;
+	private boolean attackCancels;
 
-    public SkillSneak(Heroes plugin) {
-        super(plugin, "Sneak");
-        setDescription("You can sneak at full movement speed!");
-        setUsage("/skill stealth");
-        setArgumentRange(0, 0);
-        setIdentifiers("skill sneak");
-        setTypes(SkillType.BUFF, SkillType.PHYSICAL, SkillType.STEALTHY);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
-    }
+	public SkillSneak(Heroes plugin) {
+		super(plugin, "Sneak");
+		setDescription("You crouch into the shadows.");
+		setUsage("/skill stealth");
+		setArgumentRange(0, 0);
+		setIdentifiers("skill sneak");
+		setTypes(SkillType.BUFF, SkillType.PHYSICAL, SkillType.STEALTHY);
+		Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
+	}
 
-    @Override
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 600000); // 10 minutes in milliseconds
-        node.set("damage-cancels", true);
-        node.set("attacking-cancels", true);
-        node.set("refresh-interval", 5000); // in milliseconds
-        return node;
-    }
+	@Override
+	public ConfigurationSection getDefaultConfig() {
+		final ConfigurationSection node = super.getDefaultConfig();
+		node.set(SkillSetting.DURATION.node(), 600000); // 10 minutes in milliseconds
+		node.set("damage-cancels", true);
+		node.set("attacking-cancels", true);
+		node.set("refresh-interval", 5000); // in milliseconds
+		return node;
+	}
 
-    @Override
-    public void init() {
-        super.init();
-        damageCancels = SkillConfigManager.getRaw(this, "damage-cancels", true);
-        attackCancels = SkillConfigManager.getRaw(this, "attacking-cancels", true);
-    }
+	@Override
+	public void init() {
+		super.init();
+		damageCancels = SkillConfigManager.getRaw(this, "damage-cancels", true);
+		attackCancels = SkillConfigManager.getRaw(this, "attacking-cancels", true);
+	}
 
-    @Override
-    public SkillResult use(Hero hero, String[] args) {
-        if (hero.hasEffect("Sneak")) {
-            hero.removeEffect(hero.getEffect("Sneak"));
-        } else {
-            Messaging.send(hero.getPlayer(), "You are now sneaking");
+	@Override
+	public SkillResult use(Hero hero, String[] args) {
+		if (hero.hasEffect("Sneak")) {
+			hero.removeEffect(hero.getEffect("Sneak"));
+		}
+		else {
+			Messaging.send(hero.getPlayer(), "You are now sneaking");
 
-            int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-            int period = SkillConfigManager.getUseSetting(hero, this, "refresh-interval", 5000, true);
-            hero.addEffect(new SneakEffect(this, period, duration));
-        }
-        return SkillResult.NORMAL;
-    }
+			final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
+			final int period = SkillConfigManager.getUseSetting(hero, this, "refresh-interval", 5000, true);
 
-    public class SkillEventListener implements Listener {
+			if (hero.getPlayer().isSneaking())
+				hero.addEffect(new SneakEffect(this, period, duration, true));
+			else
+				hero.addEffect(new SneakEffect(this, period, duration, false));
+		}
+		return SkillResult.NORMAL;
+	}
 
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !damageCancels || event.getDamage() == 0) {
-                return;
-            }
-            Player player = null;
-            if (event.getEntity() instanceof Player) {
-                player = (Player) event.getEntity();
-                Hero hero = plugin.getCharacterManager().getHero(player);
-                if (hero.hasEffect("Sneak")) {
-                    player.setSneaking(false);
-                    hero.removeEffect(hero.getEffect("Sneak"));
-                }
-            } 
-            player = null;
-            if (attackCancels && event instanceof EntityDamageByEntityEvent) {
-                EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-                if (subEvent.getDamager() instanceof Player) {
-                    player = (Player) subEvent.getDamager();
-                } else if (subEvent.getDamager() instanceof Projectile) {
-                    if (((Projectile) subEvent.getDamager()).getShooter() instanceof Player) {
-                        player = (Player) ((Projectile) subEvent.getDamager()).getShooter();
-                    }
-                }
-                if (player != null) {
-                    Hero hero = plugin.getCharacterManager().getHero(player);
-                    if (hero.hasEffect("Sneak")) {
-                        player.setSneaking(false);
-                        hero.removeEffect(hero.getEffect("Sneak"));
-                    }
-                }
-            }
-        }
+	public class SkillEventListener implements Listener {
 
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (hero.hasEffect("Sneak")) {
-                event.getPlayer().setSneaking(true);
-                event.setCancelled(true);
-            }
-        }
-    }
+		@EventHandler(priority = EventPriority.MONITOR)
+		public void onEntityDamage(EntityDamageEvent event) {
+			if (event.isCancelled() || !damageCancels || (event.getDamage() == 0)) {
+				return;
+			}
+			Player player = null;
+			if (event.getEntity() instanceof Player) {
+				player = (Player) event.getEntity();
+				final Hero hero = plugin.getCharacterManager().getHero(player);
+				if (hero.hasEffect("Sneak")) {
+					player.setSneaking(false);
+					hero.removeEffect(hero.getEffect("Sneak"));
+				}
+			}
+			player = null;
+			if (attackCancels && (event instanceof EntityDamageByEntityEvent)) {
+				final EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+				if (subEvent.getDamager() instanceof Player) {
+					player = (Player) subEvent.getDamager();
+				}
+				else if (subEvent.getDamager() instanceof Projectile) {
+					if (((Projectile) subEvent.getDamager()).getShooter() instanceof Player) {
+						player = (Player) ((Projectile) subEvent.getDamager()).getShooter();
+					}
+				}
+				if (player != null) {
+					final Hero hero = plugin.getCharacterManager().getHero(player);
+					if (hero.hasEffect("Sneak")) {
+						player.setSneaking(false);
+						hero.removeEffect(hero.getEffect("Sneak"));
+					}
+				}
+			}
+		}
 
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
-    }
+		@EventHandler(priority = EventPriority.HIGHEST)
+		public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+			final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+			if (hero.hasEffect("Sneak")) {
+				SneakEffect sEffect = (SneakEffect) hero.getEffect("Sneak");
+
+				// Messaging.send(hero.getPlayer(), "Sneak Toggle Event. Switching to sneak == " + event.isSneaking());	// DEBUG
+				if (!event.isSneaking()) {
+					// Messaging.send(hero.getPlayer(), "Player is leaving sneak. Setting vanilla to false.");	// DEBUG
+					sEffect.setVanillaSneaking(false);
+					event.setCancelled(true);
+				}
+				else {
+					// Messaging.send(hero.getPlayer(), "Player is entering sneak. Setting vanilla to true.");	// DEBUG
+					sEffect.setVanillaSneaking(true);
+				}
+			}
+		}
+	}
+
+	@Override
+	public String getDescription(Hero hero) {
+		return getDescription();
+	}
 }
