@@ -24,7 +24,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillLunarLance extends TargettedSkill {
 	private final int defDamage = 95;													// Default damage
 	private final int defBurnValue = 20;												// Default mana burn amount
-	private final String defFailText = "Â§fYou need a shovel to use this ability!";		// Default skill fail text
+	private final String defFailText = "§fYou need a weapon to use this ability!";		// Default skill fail text
 
 	public VisualEffect fplayer = new VisualEffect();									// Firework effect
 
@@ -33,7 +33,7 @@ public class SkillLunarLance extends TargettedSkill {
 		setDescription("Strike the target with a Lunar Lance dealing $1 Light damage and burning $2 mana from the target.");
 		setUsage("/skill lunarlance");
 		setArgumentRange(0, 0);
-		setIdentifiers("skill lunarlance", "skill lance");
+		setIdentifiers("skill lunarlance");
 		setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.LIGHT, SkillType.MANA, SkillType.HARMFUL);
 	}
 

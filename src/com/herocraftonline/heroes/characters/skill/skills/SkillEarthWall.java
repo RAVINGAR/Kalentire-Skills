@@ -26,7 +26,7 @@ public class SkillEarthWall extends ActiveSkill {
 
 	public SkillEarthWall(Heroes plugin) {
 		super(plugin, "Earthwall");
-		setDescription("Creates a wall of Earth in front of you. The wall is created 1$ blocks in front of you, and is $2 blocks wide, and $3 blocks high.");
+		setDescription("Create a wall of Earth up to $1 blocks in front of you.");
 		setUsage("/skill earthwall");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill earthwall");
@@ -38,7 +38,7 @@ public class SkillEarthWall extends ActiveSkill {
 
 		node.set("height", Integer.valueOf(3));
 		node.set("width", Integer.valueOf(2));
-		node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
+		node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
 		node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
 		node.set("block-type", "DIRT");
 
@@ -46,27 +46,27 @@ public class SkillEarthWall extends ActiveSkill {
 	}
 
 	public String getDescription(Hero hero) {
-		int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false);
-		int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false);
-		int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
+		//int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false) * 2;
+		//int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false) * 2;
+		int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
 		//String type = SkillConfigManager.getUseSetting(hero, this, "block-type", "DIRT");
 
-		return getDescription().replace("$1", maxDist + "").replace("$2", width + "").replace("$3", height + "");
+		return getDescription().replace("$1", maxDist + "");//.replace("$2", width + "").replace("$3", height + "");
 	}
 
 	@Override
 	public void init() {
 		super.init();
 		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjures a wall of earth!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s shield has crumbled").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s wall has crumbled").replace("%hero%", "$1");
 	}
 
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
 
-		int height = SkillConfigManager.getUseSetting(hero, this, "Height", 3, false);
+		int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false);
 		int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false);
-		int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5, false);
+		int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 		Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "DIRT"));
 
@@ -117,7 +117,7 @@ public class SkillEarthWall extends ActiveSkill {
 					for (int zDir = -width; zDir < width + 1; zDir++) {
 						Block chBlock = tBlock.getRelative(0, yDir, zDir);
 						if ((chBlock.getType() == Material.AIR) || (chBlock.getType() == Material.SNOW)) {
-							chBlock.setType(this.setter);
+							chBlock.setType(setter);
 							wBlocks.add(chBlock);
 						}
 					}

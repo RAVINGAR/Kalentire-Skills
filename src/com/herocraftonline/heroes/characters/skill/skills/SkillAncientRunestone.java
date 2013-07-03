@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,9 +19,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
-import com.herocraftonline.townships.HeroTowns;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -30,6 +28,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.townships.HeroTowns;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 
 public class SkillAncientRunestone extends ActiveSkill {
@@ -144,19 +144,19 @@ public class SkillAncientRunestone extends ActiveSkill {
 			worldName = worldName.substring(0, 1).toUpperCase() + worldName.substring(1);
 
 			// Set the Runestone name
-			metaData.setDisplayName("§6Ancient Runestone");
+			metaData.setDisplayName(ChatColor.GOLD + "Ancient Runestone");
 
 			// Set the Lore with all Runestone information
-			String locationInformation = "§b" + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
+			String locationInformation = ChatColor.AQUA + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
 
 			int numUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", -1, false);
 			String runestoneUsesInformation = "";
 			if (numUses > -1) 			// -1 is unlimited
-				runestoneUsesInformation = "§bUses: " + numUses + "/" + numUses;
+				runestoneUsesInformation = ChatColor.AQUA + "Uses: " + numUses + "/" + numUses;
 			else
-				runestoneUsesInformation = "§bUses: Unlimited";
+				runestoneUsesInformation = ChatColor.AQUA + "Uses: Unlimited";
 
-			String imbuedByInformation = "§5Imbued by " + player.getDisplayName();
+			String imbuedByInformation = ChatColor.DARK_PURPLE + "Imbued by " + player.getDisplayName();
 			List<String> newLore = Arrays.asList(locationInformation, runestoneUsesInformation, imbuedByInformation);
 			metaData.setLore(newLore);
 

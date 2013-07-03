@@ -45,10 +45,10 @@ public class SkillBloodGift extends TargettedSkill {
 
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("health-increase-percent-per-blood-union", 0.02);
-		node.set(SkillSetting.HEALTH.node(), 200);
-		node.set(SkillSetting.HEALTH_COST.node(), 85);
-		node.set(SkillSetting.MANA.node(), 25);
+		node.set("health-increase-percent-per-blood-union", Double.valueOf(0.02));
+		node.set(SkillSetting.HEALTH.node(), Integer.valueOf(200));
+		node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(85));
+		node.set(SkillSetting.MANA.node(), Integer.valueOf(25));
 
 		return node;
 	}
@@ -56,7 +56,8 @@ public class SkillBloodGift extends TargettedSkill {
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		Player player = hero.getPlayer();
 		if (!(target instanceof Player)) {
-			return SkillResult.INVALID_TARGET;
+			Messaging.send(player, "You cannot use this ability on yourself!", new Object[0]);
+			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 
 		Hero targetHero = this.plugin.getCharacterManager().getHero((Player) target);

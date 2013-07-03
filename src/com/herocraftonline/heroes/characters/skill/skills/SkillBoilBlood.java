@@ -29,7 +29,7 @@ public class SkillBoilBlood extends ActiveSkill {
 
 	public SkillBoilBlood(Heroes plugin) {
 		super(plugin, "BoilBlood");
-		setDescription("Boil the blood of all enemies within $1 blocks, dealing $2 instant damage, and doing an additional $3 damage over $4 seconds. Requires $5 Blood Union to use. Reduces Blood Union by $5.");
+		setDescription("Boil the blood of $6 enemies within $1 blocks, dealing $2 instant damage, and doing an additional $3 damage over $4 seconds. Requires $5 Blood Union to use. Reduces Blood Union by $5.");
 		setUsage("/skill boilblood");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill boilblood");
@@ -39,14 +39,15 @@ public class SkillBoilBlood extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.DAMAGE.node(), 65);
-		node.set(SkillSetting.RADIUS.node(), 5);
-		node.set(SkillSetting.DAMAGE_TICK.node(), 17);
-		node.set(SkillSetting.PERIOD.node(), 2500);
-		node.set(SkillSetting.DURATION.node(), 7500);
-		node.set(SkillSetting.APPLY_TEXT.node(), "Â§7[Â§2SkillÂ§7] %target%'s blood begins to boil!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %target%'s blood is no longer boiling.");
-		node.set("blood-union-required-for-use", 3);
+		node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(65));
+		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+		node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(17));
+		node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2500));
+		node.set(SkillSetting.DURATION.node(), Integer.valueOf(7500));
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target%'s blood begins to boil!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target%'s blood is no longer boiling.");
+		node.set("blood-union-required-for-use", Integer.valueOf(3));
+		node.set("max-targets", Integer.valueOf(0));
 
 		return node;
 	}
@@ -62,7 +63,16 @@ public class SkillBoilBlood extends ActiveSkill {
 		double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false) / 1000;
 		int dotDamage = (int) (damageTick * (duration / period));
 
-		return getDescription().replace("$1", radius + "").replace("$2", damage + "").replace("$3", dotDamage + "").replace("$4", duration + "").replace("$5", bloodUnionReq + "");
+		int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
+
+		// Change description to either say "all" if there is no maximum target number specified.
+		String targetText;
+		if (maxTargets > 0)
+			targetText = "up to " + maxTargets;
+		else
+			targetText = "all";
+
+		return getDescription().replace("$6", targetText).replace("$1", radius + "").replace("$2", damage + "").replace("$3", dotDamage + "").replace("$4", duration + "").replace("$5", bloodUnionReq + "");
 	}
 
 	public SkillResult use(Hero hero, String[] args) {
@@ -91,16 +101,24 @@ public class SkillBoilBlood extends ActiveSkill {
 		broadcastExecuteText(hero);
 
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-		int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 50, false);
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 
 		// Get DoT values
 		int tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
 		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "Â§7[Â§2SkillÂ§7] %target%'s blood begins to boil!").replace("%target%", "$1");
-		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Â§7[Â§2SkillÂ§7] %target%'s blood is no longer boiling.").replace("%target%", "$1");
+		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target%'s blood begins to boil!").replace("%target%", "$1");
+		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target%'s blood is no longer boiling.").replace("%target%", "$1");
 
+		int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
+
+		// Create DoT effect
+		BoilingBloodEffect bbEffect = new BoilingBloodEffect(this, period, duration, tickDamage, hero.getPlayer(), applyText, expireText);
+
+		int targetsHit = 0;
 		for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+			if (maxTargets > 0 && targetsHit >= maxTargets)
+				break;
 
 			// Check to see if the entity can be damaged
 			if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
@@ -120,10 +138,12 @@ public class SkillBoilBlood extends ActiveSkill {
 			addSpellTarget(target, hero);
 			damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 
-			// Add DoT effect
-			BoilingBloodEffect bbEffect = new BoilingBloodEffect(this, period, duration, tickDamage, hero.getPlayer(), applyText, expireText);
+			// Add DoT effect to target
 			CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 			targCT.addEffect(bbEffect);
+
+			// Increase counter
+			targetsHit++;
 		}
 
 		// Decrease Blood Union

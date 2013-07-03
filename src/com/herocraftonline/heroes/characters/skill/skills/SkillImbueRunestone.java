@@ -56,7 +56,7 @@ public class SkillImbueRunestone extends ActiveSkill {
 		}
 
 		// Merge the arguments into one string
-		String textString = "Â§f" + StringUtils.join(text, " ");
+		String textString = "§f" + StringUtils.join(text, " ");
 
 		// Ensure the string is no longer than the specified maximum number of characters
 		int maxTextLength = SkillConfigManager.getUseSetting(hero, this, "max-message-length", 40, false);

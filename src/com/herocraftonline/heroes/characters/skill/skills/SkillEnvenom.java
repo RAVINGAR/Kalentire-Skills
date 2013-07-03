@@ -149,9 +149,9 @@ public class SkillEnvenom extends ActiveSkill {
 			this.skill = skill;
 		}
 
-		@EventHandler(priority = EventPriority.MONITOR)
+		@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 		public void onEntityDamage(EntityDamageEvent event) {
-			if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) {
+			if (!(event instanceof EntityDamageByEntityEvent)) {
 				return;
 			}
 

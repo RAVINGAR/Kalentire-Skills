@@ -66,9 +66,9 @@ public class SkillFireRune extends ActiveSkill
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.DAMAGE.node(), 105);
-		node.set(SkillSetting.USE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %hero% imbues his blade with a Rune of Â§cFire.");
-		node.set(SkillSetting.APPLY_TEXT.node(), "Â§7[Â§2SkillÂ§7] %target% has been burned by a Rune of Fire!");
-		node.set("rune-chat-color", "Â§c");
+		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% imbues his blade with a Rune of §cFire.");
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been burned by a Rune of Fire!");
+		node.set("rune-chat-color", "§c");
 
 		return node;
 	}
@@ -85,7 +85,7 @@ public class SkillFireRune extends ActiveSkill
 	{
 		// Create the Rune
 		int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 15, false));
-		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "Â§c");
+		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "§c");
 		Rune fireRune = new Rune("FireRune", manaCost, runeChatColor);
 
 		// Add the Rune to the RuneWord queue here

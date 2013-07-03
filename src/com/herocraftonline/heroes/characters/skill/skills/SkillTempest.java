@@ -40,7 +40,7 @@ public class SkillTempest extends ActiveSkill {
 		node.set(SkillSetting.DAMAGE.node(), 300);
 		node.set(SkillSetting.RADIUS.node(), 10);
 		node.set(SkillSetting.DELAY.node(), 5000);
-		node.set(SkillSetting.USE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %hero% has unleashed a powerful Â§lTempest!");
+		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% has unleashed a powerful §lTempest!");
 		node.set("effect-height", 4);
 
 		return node;
@@ -79,13 +79,7 @@ public class SkillTempest extends ActiveSkill {
 				@Override
 				public void run() {
 					try {
-						fplayer.playFirework(fLoc.getWorld(), fLoc, 
-								FireworkEffect.builder()
-								.flicker(false)
-								.trail(false)
-								.withColor(Color.AQUA)
-								.with(Type.BURST)
-								.build());
+						fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect.builder().flicker(false).trail(false).withColor(Color.AQUA).with(Type.BURST).build());
 					}
 					catch (IllegalArgumentException e) {
 						e.printStackTrace();

@@ -46,8 +46,8 @@ public class SkillQuiveringPalm extends TargettedSkill {
 
 		node.set(SkillSetting.DAMAGE.node(), 50);
 		node.set(SkillSetting.DURATION.node(), 2500);
-		node.set(SkillSetting.APPLY_TEXT.node(), "Â§7[Â§2SkillÂ§7] %target% is weakened by a Â§lQuiveringPalm!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %target% has recovered from the effects of the Â§lQuiveringPalm!");
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% is weakened by a §lQuiveringPalm§r!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% has recovered from the effects of the QuiveringPalm!");
 		node.set("damage-multiplier", 1.2);
 		return node;
 	}
@@ -81,8 +81,8 @@ public class SkillQuiveringPalm extends TargettedSkill {
 		double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.2, false);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2500, false);
 
-		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "Â§7[Â§2SkillÂ§7] %target% is weakened by a Â§lQuiveringPalm!").replace("%target%", "$1");
-		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Â§7[Â§2SkillÂ§7] %target% has recovered from the effects of the Â§lQuiveringPalm!").replace("%target%", "$1");
+		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% is weakened by a §lQuiveringPalm!").replace("%target%", "$1");
+		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% has recovered from the effects of the §lQuiveringPalm!").replace("%target%", "$1");
 
 		// Add the debuff to the target
 		CharacterTemplate targCT = this.plugin.getCharacterManager().getCharacter(target);

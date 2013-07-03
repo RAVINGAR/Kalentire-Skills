@@ -31,7 +31,7 @@ public class SkillCombustBlood extends TargettedSkill {
 
 	public SkillCombustBlood(Heroes plugin) {
 		super(plugin, "CombustBlood");
-		setDescription("Boil the blood of your target, dealing $1 dark damage. If you have Blood Union $2 or greater, the target will bleed, taking an additional $3 damage over $4 seconds.");
+		setDescription("Boil the blood of your target, dealing $1 dark damage. If you have Blood Union $2 or greater, the target will bleed, taking an additional $3 damage over $4 seconds. Increases Blood Union by 1.");
 		setUsage("/skill combustblood");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill combustblood");
@@ -48,8 +48,8 @@ public class SkillCombustBlood extends TargettedSkill {
 		node.set(SkillSetting.DAMAGE_TICK.node(), 17);
 		node.set(SkillSetting.PERIOD.node(), 2500);
 		node.set(SkillSetting.DURATION.node(), 7500);
-		node.set(SkillSetting.APPLY_TEXT.node(), "Â§7[Â§2SkillÂ§7] %target% is bleeding from the effects of their Combusted Blood!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %target% is no longer bleeding.");
+		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% is bleeding from the effects of their Combusted Blood!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% is no longer bleeding.");
 		return node;
 	}
 
@@ -67,8 +67,8 @@ public class SkillCombustBlood extends TargettedSkill {
 
 	public void init() {
 		super.init();
-		this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "Â§7[Â§2SkillÂ§7] %target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
-		this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Â§7[Â§2SkillÂ§7] %target% is no longer bleeding.").replace("%target%", "$1");
+		this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
+		this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% is no longer bleeding.").replace("%target%", "$1");
 	}
 
 	@Override

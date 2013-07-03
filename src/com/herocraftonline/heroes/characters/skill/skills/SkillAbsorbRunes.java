@@ -19,11 +19,11 @@ package com.herocraftonline.heroes.characters.skill.skills;
  * Here are the REQUIRED imports for this skill to function.
  * //YOU MUST INCLUDE THESE WITH WITH THIS SKILL//
  * 
- * com.herocraftonline.heroes.characters.skill.skills.runes.Rune;
- * com.herocraftonline.heroes.characters.skill.skills.runes.RuneActivationEvent;
- * com.herocraftonline.heroes.characters.skill.skills.runes.RuneApplicationEvent;
- * com.herocraftonline.heroes.characters.skill.skills.runes.RuneExpireEvent;
- * com.herocraftonline.heroes.characters.skill.skills.runes.RuneQueue;
+ * com.herocraftonline.heroes.characters.skill.skills.absorbrunes.Rune;
+ * com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneActivationEvent;
+ * com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneApplicationEvent;
+ * com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneExpireEvent;
+ * com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneQueue;
  * 
  * Import Descriptions:
  * 
@@ -109,16 +109,16 @@ public class SkillAbsorbRunes extends ActiveSkill
 		ConfigurationSection node = super.getDefaultConfig();
 
 		// Skill usage configs
-		node.set(SkillSetting.USE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %hero% absorbs his Runes!");
+		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% absorbs his Runes!");
 		node.set("conversion-rate", 0.35);
-		node.set("fail-text-no-runes", "Â§7[Â§2SkillÂ§7] Â§fYou have no Runes to absorb!");
+		node.set("fail-text-no-runes", "§7[§2Skill§7] §fYou have no Runes to absorb!");
 
 		// Rune usage configs
-		node.set("rune-application-cooldown", 750);
-		node.set("imbued-runes-text-empty", "Â§7[Â§2SkillÂ§7] Â§fYour weapon is no longer imbued with Runes!");
-		node.set("imbued-runes-text-start", "Â§7[Â§2SkillÂ§7] Â§fImbued Runes: <");
-		node.set("imbued-runes-text-delimiter", "Â§f|");
-		node.set("imbued-runes-text-end", "Â§f>");
+		node.set("rune-application-cooldown", Integer.valueOf(1000));
+		node.set("imbued-runes-text-empty", "§7[§2Skill§7] §fYour weapon is no longer imbued with Runes!");
+		node.set("imbued-runes-text-start", "§7[§2Skill§7] §fImbued Runes: <");
+		node.set("imbued-runes-text-delimiter", "§f|");
+		node.set("imbued-runes-text-end", "§f>");
 
 		return node;
 	}
@@ -138,7 +138,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 		RuneQueue runeList = heroRunes.get(hero);
 		if (runeList.isEmpty())
 		{
-			String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", "Â§7[Â§2SkillÂ§7] Â§fYou have no Runes to absorb!");
+			String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", "§7[§2Skill§7] §fYou have no Runes to absorb!");
 			Messaging.send(player, failText, new Object[0]);
 			return SkillResult.FAIL;
 		}
@@ -514,12 +514,12 @@ public class SkillAbsorbRunes extends ActiveSkill
 		// Check to see if the list is empty before attempting to build a string
 		if (runeListStr == null)
 		{
-			currentRuneQueueStr = SkillConfigManager.getRaw(this, "imbued-runes-text-empty", "Â§7[Â§2SkillÂ§7] Â§fYour weapon is no longer imbued with Runes!");
+			currentRuneQueueStr = SkillConfigManager.getRaw(this, "imbued-runes-text-empty", "§7[§2Skill§7] §fYour weapon is no longer imbued with Runes!");
 		}
 		else
 		{
-			String runeQueueStrStart = SkillConfigManager.getRaw(this, "imbued-runes-text-start", "Â§7[Â§2SkillÂ§7] Â§fImbued Runes: <");
-			String runeQueueStrDelimiter = SkillConfigManager.getRaw(this, "imbued-runes-text-delimiter", "Â§f|");
+			String runeQueueStrStart = SkillConfigManager.getRaw(this, "imbued-runes-text-start", "§7[§2Skill§7] §fImbued Runes: <");
+			String runeQueueStrDelimiter = SkillConfigManager.getRaw(this, "imbued-runes-text-delimiter", "§f|");
 
 			currentRuneQueueStr = runeQueueStrStart + runeQueueStrDelimiter;
 
@@ -529,7 +529,7 @@ public class SkillAbsorbRunes extends ActiveSkill
 				currentRuneQueueStr += (" " + runeListStr[i] + " " + runeQueueStrDelimiter);
 			}
 
-			currentRuneQueueStr += SkillConfigManager.getRaw(this, "imbued-runes-text-end", "Â§f>");
+			currentRuneQueueStr += SkillConfigManager.getRaw(this, "imbued-runes-text-end", "§f>");
 		}
 
 		// Show the player his the message

@@ -19,18 +19,18 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillChlorobon extends TargettedSkill {
+public class SkillRegrowth extends TargettedSkill {
 
 	public VisualEffect fplayer = new VisualEffect();
 	private String expireText;
 	private String applyText;
 
-	public SkillChlorobon(Heroes plugin) {
-		super(plugin, "Chlorobon");
-		setDescription("You restore $1 health to the target over $2 seconds.");
-		setUsage("/skill chlorobon <target>");
+	public SkillRegrowth(Heroes plugin) {
+		super(plugin, "Regrowth");
+		setDescription("You restore $1 health to your target over the course of $2 seconds.");
+		setUsage("/skill regrowth <target>");
 		setArgumentRange(0, 1);
-		setIdentifiers("skill chlorobon");
+		setIdentifiers("skill regrowth");
 		setTypes(SkillType.BUFF, SkillType.HEAL, SkillType.SILENCABLE);
 	}
 
@@ -56,8 +56,8 @@ public class SkillChlorobon extends TargettedSkill {
 
 	public void init() {
 		super.init();
-		this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been given the gift of Chlorobon!").replace("%target%", "$1");
-		this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has lost the gift of Chlorobon.").replace("%target%", "$1");
+		this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been given the gift of Regrowth!").replace("%target%", "$1");
+		this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has lost the gift of Regrowth.").replace("%target%", "$1");
 	}
 
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -73,7 +73,7 @@ public class SkillChlorobon extends TargettedSkill {
 			long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
 			long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
 			int tickHealth = SkillConfigManager.getUseSetting(hero, this, "tick-heal", 71, false);
-			ChlorobonEffect cbEffect = new ChlorobonEffect(this, period, duration, tickHealth, player);
+			RegrowthEffect cbEffect = new RegrowthEffect(this, period, duration, tickHealth, player);
 			targetHero.addEffect(cbEffect);
 
 			try {
@@ -92,22 +92,22 @@ public class SkillChlorobon extends TargettedSkill {
 		return SkillResult.INVALID_TARGET;
 	}
 
-	public class ChlorobonEffect extends PeriodicHealEffect {
-		public ChlorobonEffect(Skill skill, long period, long duration, int tickHealth, Player applier) {
-			super(skill, "ChlorobonEffect", period, duration, tickHealth, applier);
+	public class RegrowthEffect extends PeriodicHealEffect {
+		public RegrowthEffect(Skill skill, long period, long duration, int tickHealth, Player applier) {
+			super(skill, "RegrowthEffect", period, duration, tickHealth, applier);
 			this.types.add(EffectType.DISPELLABLE);
 		}
 
 		public void applyToHero(Hero hero) {
 			super.applyToHero(hero);
 			Player player = hero.getPlayer();
-			broadcast(player.getLocation(), SkillChlorobon.this.applyText, new Object[] { player.getDisplayName() });
+			broadcast(player.getLocation(), SkillRegrowth.this.applyText, new Object[] { player.getDisplayName() });
 		}
 
 		public void removeFromHero(Hero hero) {
 			super.removeFromHero(hero);
 			Player player = hero.getPlayer();
-			broadcast(player.getLocation(), SkillChlorobon.this.expireText, new Object[] { player.getDisplayName() });
+			broadcast(player.getLocation(), SkillRegrowth.this.expireText, new Object[] { player.getDisplayName() });
 		}
 	}
 }

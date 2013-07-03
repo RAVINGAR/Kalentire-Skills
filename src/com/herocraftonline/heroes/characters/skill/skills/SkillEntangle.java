@@ -35,16 +35,6 @@ import com.herocraftonline.heroes.util.Messaging;
 public class SkillEntangle extends TargettedSkill {
 	public VisualEffect fplayer = new VisualEffect();
 
-	// Default skill values
-	private final int defPeriod = 100;
-	private final int defDuration = 4000;
-	private final int defDamage = 1;
-	// Default text values
-	private final String skillText = "[Â§2SkillÂ§7] "; // Used to add "[Skill]" text to all skill related messages
-	private final String defUseText = skillText + "%hero% used %skill%!";
-	private final String defApplyText = skillText + "%target% has been rooted!";
-	private final String defExpireText = skillText + "%target% has broken free from the root!";
-
 	public SkillEntangle(Heroes plugin) {
 		// Heroes stuff
 		super(plugin, "Entangle");
@@ -62,20 +52,20 @@ public class SkillEntangle extends TargettedSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.DAMAGE.node(), defDamage);
-		node.set(SkillSetting.PERIOD.node(), defPeriod);
-		node.set(SkillSetting.DURATION.node(), defDuration);
-		node.set(SkillSetting.USE_TEXT.node(), defUseText);
-		node.set(SkillSetting.APPLY_TEXT.node(), defApplyText);
-		node.set(SkillSetting.EXPIRE_TEXT.node(), defExpireText);
+		node.set(SkillSetting.DAMAGE.node(), 1);
+		node.set(SkillSetting.PERIOD.node(), 100);
+		node.set(SkillSetting.DURATION.node(), 4000);
+		node.set(SkillSetting.USE_TEXT.node(), "[§2Skill§7] %hero% used %skill% on %target%!");
+		node.set(SkillSetting.APPLY_TEXT.node(), "[§2Skill§7] %target% has been entangled!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "[§2Skill§7] %target% has broken free from the entangle!");
 
 		return node;
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
-		double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, defDuration, false) / 1000D;
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
+		double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false) / 1000D;
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
 
 		return getDescription().replace("$1", damage + "").replace("$2", duration + "");
 	}
@@ -84,16 +74,16 @@ public class SkillEntangle extends TargettedSkill {
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
 		//deal  damage
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
 		damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
 
-		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, defDuration, false);
-		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, defPeriod, false);
-		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, defApplyText).replace("%target%", "$1");
-		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, defExpireText).replace("%target%", "$1");
+		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
+		String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "[§2Skill§7] %target% has been entangled!").replace("%target%", "$1");
+		String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "[§2Skill§7] %target% has broken free from the entangle!").replace("%target%", "$1");
 
 		// Broadcast use text
-		broadcastExecuteText(hero);
+		broadcastExecuteText(hero, target);
 
 		// Play Sound
 		Player player = hero.getPlayer();
@@ -141,21 +131,40 @@ public class SkillEntangle extends TargettedSkill {
 
 		@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 		public void onSkillDamage(SkillDamageEvent event) {
+
 			// Pre-checks
-			if (event.getDamager() instanceof Player) {
-				// Make sure the hero has the root effect
-				Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-				if (hero.hasEffect("Entangle")) {
-					hero.removeEffect(hero.getEffect("Entangle"));
-				}
-				else if (hero.hasEffect("Root")) {
-					hero.removeEffect(hero.getEffect("Root"));
-				}
+			if (event.getDamage() == 0)
+				return;
+
+			if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Player))
+				return;
+
+			// Get our CT's
+			//CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
+			CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+
+			/*
+			if (attackerCT.hasEffect("Entangle")) {
+				attackerCT.removeEffect(attackerCT.getEffect("Entangle"));
+			}
+			else if (attackerCT.hasEffect("Root")) {
+				attackerCT.removeEffect(attackerCT.getEffect("Root"));
+			}
+			*/
+
+			if (defenderCT.hasEffect("Entangle")) {
+				defenderCT.removeEffect(defenderCT.getEffect("Entangle"));
+			}
+			else if (defenderCT.hasEffect("Root")) {
+				defenderCT.removeEffect(defenderCT.getEffect("Root"));
 			}
 		}
 
 		@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 		public void onEntityDamage(EntityDamageEvent event) {
+			if (event.getDamage() == 0)
+				return;
+
 			// Ensure that the event is meant to happen
 			if (!(event instanceof EntityDamageByEntityEvent))
 				return;
@@ -170,13 +179,23 @@ public class SkillEntangle extends TargettedSkill {
 				return;
 
 			// Get our target's CT
-			CharacterTemplate characterTemplate = plugin.getCharacterManager().getCharacter((LivingEntity) subEvent.getDamager());
+			//CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) subEvent.getDamager());
+			CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
 
-			if (characterTemplate.hasEffect("Entangle")) {
-				characterTemplate.removeEffect(characterTemplate.getEffect("Entangle"));
+			/*
+			if (attackerCT.hasEffect("Entangle")) {
+				attackerCT.removeEffect(attackerCT.getEffect("Entangle"));
 			}
-			else if (characterTemplate.hasEffect("Root")) {
-				characterTemplate.removeEffect(characterTemplate.getEffect("Root"));
+			else if (attackerCT.hasEffect("Root")) {
+				attackerCT.removeEffect(attackerCT.getEffect("Root"));
+			}
+			*/
+
+			if (defenderCT.hasEffect("Entangle")) {
+				defenderCT.removeEffect(defenderCT.getEffect("Entangle"));
+			}
+			else if (defenderCT.hasEffect("Root")) {
+				defenderCT.removeEffect(defenderCT.getEffect("Root"));
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -22,10 +23,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
-public class SkillBloodBond extends ActiveSkill
-{
-	public SkillBloodBond(Heroes plugin)
-	{
+public class SkillBloodBond extends ActiveSkill {
+	public SkillBloodBond(Heroes plugin) {
 		super(plugin, "BloodBond");
 		setDescription("Form a Blood Bond with your party. While bound, you convert $1% of your magic damage into healh for you and all party members within a $2 block radius. Costs $4 health to use, and $3 mana per second to maintain the effect.");
 		setUsage("/skill bloodbond");
@@ -36,8 +35,7 @@ public class SkillBloodBond extends ActiveSkill
 	}
 
 	@Override
-	public String getDescription(Hero hero)
-	{
+	public String getDescription(Hero hero) {
 		double healPercent = SkillConfigManager.getUseSetting(hero, this, "heal-percent", 0.15, false);
 		int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 8, false);
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 12, false);
@@ -47,28 +45,25 @@ public class SkillBloodBond extends ActiveSkill
 	}
 
 	@Override
-	public ConfigurationSection getDefaultConfig()
-	{
+	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set("heal-percent", 0.15);
 		node.set(SkillSetting.RADIUS.node(), 12);
 		node.set("mana-tick", 8);
 		node.set("mana-tick-period", 3000);
-		node.set("toggle-on-text", "Â§7[Â§2SkillÂ§7] %hero% has formed a Â§lBloodBondÂ§r!");
-		node.set("toggle-off-text", "Â§7[Â§2SkillÂ§7] %hero% has broken his Â§lBloodBondsÂ§r!");
+		node.set("toggle-on-text", "§7[§2Skill§7] %hero% has formed a §lBloodBond§r!");
+		node.set("toggle-off-text", "§7[§2Skill§7] %hero% has broken his §lBloodBonds§r!");
 
 		return node;
 	}
 
 	@Override
-	public SkillResult use(Hero hero, String args[])
-	{
-		if (hero.hasEffect("BloodBond"))
-		{
+	public SkillResult use(Hero hero, String args[]) {
+		if (hero.hasEffect("BloodBond")) {
 			hero.removeEffect(hero.getEffect("BloodBond"));
 
-			return SkillResult.FAIL;			// Default to fail so that it does not cost mana/health to remove.
+			return SkillResult.REMOVED_EFFECT;
 		}
 
 		// Get config values for the effect
@@ -76,8 +71,8 @@ public class SkillBloodBond extends ActiveSkill
 		int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 3000, false);
 
 		// Get config values for text values
-		String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", "Â§7[Â§2SkillÂ§7] %hero% has formed a Â§lBloodBondÂ§r!").replace("%hero%", "$1");
-		String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", "Â§7[Â§2SkillÂ§7] %hero% has broken his Â§lBloodBondsÂ§r!").replace("%hero%", "$1");
+		String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", "§7[§2Skill§7] %hero% has formed a §lBloodBond§r!").replace("%hero%", "$1");
+		String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", "§7[§2Skill§7] %hero% has broken his §lBloodBonds§r!").replace("%hero%", "$1");
 
 		hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 
@@ -86,48 +81,39 @@ public class SkillBloodBond extends ActiveSkill
 	}
 
 	// Primary listener for bloodbond healing
-	public class BloodBondListener implements Listener
-	{
+	public class BloodBondListener implements Listener {
 		private final Skill skill;
 
-		public BloodBondListener(Skill skill)
-		{
+		public BloodBondListener(Skill skill) {
 			this.skill = skill;
 		}
 
 		@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-		public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
-		{
+		public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 			// Pre-checks
-			if (event.getCause().equals(DamageCause.MAGIC) && event.getDamager() instanceof Player)
-			{
+			if (event.getCause().equals(DamageCause.MAGIC) && event.getDamager() instanceof Player) {
 				// Make sure the hero has the bloodbond effect
 				Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-				if (hero.hasEffect("BloodBond"))
-				{
+				if (hero.hasEffect("BloodBond")) {
 					healHeroParty(hero, event.getDamage());
 				}
 			}
 		}
 
 		@EventHandler(priority = EventPriority.MONITOR)
-		public void onSkillDamage(SkillDamageEvent event)
-		{
+		public void onSkillDamage(SkillDamageEvent event) {
 			// Pre-checks
-			if (!(event.isCancelled()) && (event.getDamager() instanceof Player))
-			{
+			if (!(event.isCancelled()) && (event.getDamager() instanceof Player)) {
 				// Make sure the hero has the bloodbond effect
 				Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-				if (hero.hasEffect("BloodBond"))
-				{
+				if (hero.hasEffect("BloodBond")) {
 					healHeroParty(hero, event.getDamage());
 				}
 			}
 		}
 
 		// Heals the hero and his party based on the specified damage
-		private void healHeroParty(Hero hero, int damage)
-		{
+		private void healHeroParty(Hero hero, int damage) {
 			// Set the healing amount
 			double healPercent = SkillConfigManager.getUseSetting(hero, skill, "heal-percent", 0.15, false);
 			int healAmount = (int) (healPercent * damage);
@@ -137,21 +123,21 @@ public class SkillBloodBond extends ActiveSkill
 			int radiusSquared = radius * radius;
 
 			// Check if the hero has a party
-			if (hero.hasParty())
-			{
+			if (hero.hasParty()) {
+				Location playerLocation = hero.getPlayer().getLocation();
 				// Loop through the player's party members and heal as necessary
-				for (Hero member : hero.getParty().getMembers())
-				{
-					// Check to see if they are close enough to the player to receive healing
-					if (member.getPlayer().getLocation().distanceSquared(hero.getPlayer().getLocation()) <= radiusSquared)
-					{
-						// Heal the party member
-						member.heal(healAmount);
+				for (Hero member : hero.getParty().getMembers()) {
+					// Ensure the party member is in the same world.
+					if (member.getPlayer().getLocation().getWorld().equals(playerLocation.getWorld())) {
+						// Check to see if they are close enough to the player to receive healing
+						if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
+							// Heal the party member
+							member.heal(healAmount);
+						}
 					}
 				}
 			}
-			else
-			{
+			else {
 				// Heal the player
 				hero.heal(healAmount);
 			}
@@ -159,16 +145,14 @@ public class SkillBloodBond extends ActiveSkill
 	}
 
 	// Bloodbond effect
-	public class BloodBondEffect extends PeriodicEffect
-	{
+	public class BloodBondEffect extends PeriodicEffect {
 		private String applyText = "";
 		private String expireText = "";
 
 		private final int manaTick;
 		private boolean firstTime = true;
 
-		public BloodBondEffect(SkillBloodBond skill, int manaTick, int period, String applyText, String expireText)
-		{
+		public BloodBondEffect(SkillBloodBond skill, int manaTick, int period, String applyText, String expireText) {
 			super(skill, "BloodBond", period);
 
 			this.manaTick = manaTick;
@@ -181,8 +165,7 @@ public class SkillBloodBond extends ActiveSkill
 		}
 
 		@Override
-		public void applyToHero(Hero hero)
-		{
+		public void applyToHero(Hero hero) {
 			firstTime = true;
 			super.applyToHero(hero);
 			Player player = hero.getPlayer();
@@ -190,27 +173,23 @@ public class SkillBloodBond extends ActiveSkill
 		}
 
 		@Override
-		public void removeFromHero(Hero hero)
-		{
+		public void removeFromHero(Hero hero) {
 			super.removeFromHero(hero);
 			Player player = hero.getPlayer();
 			broadcast(player.getLocation(), expireText, player.getDisplayName(), "BloodBond");
 		}
 
 		@Override
-		public void tickHero(Hero hero)
-		{
+		public void tickHero(Hero hero) {
 			super.tickHero(hero);
 
 			if (firstTime)		// Don't drain mana on first tick
 			{
 				firstTime = false;
 			}
-			else
-			{
+			else {
 				// Remove the effect if they don't have enough mana
-				if (hero.getMana() < manaTick)
-				{
+				if (hero.getMana() < manaTick) {
 					hero.removeEffect(this);
 				}
 				else
