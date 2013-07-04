@@ -116,7 +116,7 @@ public class SkillShuriken extends PassiveSkill {
 
 			int staminaCost = SkillConfigManager.getUseSetting(hero, skill, "stamina-cost", 1, false);
 			if (player.getFoodLevel() < staminaCost) {
-				Messaging.send(player, "§7[§2Skill§7] You are too fatigued!");
+				Messaging.send(player, "Â§7[Â§2SkillÂ§7] You are too fatigued!");
 				return;
 			}
 

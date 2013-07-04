@@ -47,8 +47,8 @@ public class SkillSmoke extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		final ConfigurationSection node = super.getDefaultConfig();
 		node.set(SkillSetting.DURATION.node(), 20000);
-		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %hero% vanished in a cloud of smoke!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %hero% has reappeared!");
+		node.set(SkillSetting.APPLY_TEXT.node(), "Â§7[Â§2SkillÂ§7] %hero% vanished in a cloud of smoke!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %hero% has reappeared!");
 		return node;
 	}
 
@@ -56,8 +56,8 @@ public class SkillSmoke extends ActiveSkill {
 	public void init() {
 		super.init();
 
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %hero% vanished in a cloud of smoke!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %hero% has reappeared!").replace("%hero%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "Â§7[Â§2SkillÂ§7] %hero% vanished in a cloud of smoke!").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Â§7[Â§2SkillÂ§7] %hero% has reappeared!").replace("%hero%", "$1");
 	}
 
 	@Override
