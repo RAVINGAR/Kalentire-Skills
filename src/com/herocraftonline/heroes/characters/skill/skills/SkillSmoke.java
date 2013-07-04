@@ -12,10 +12,8 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -40,7 +38,8 @@ public class SkillSmoke extends ActiveSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+		double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false) / 1000;
+
 		return getDescription().replace("$1", duration + "");
 	}
 
@@ -65,10 +64,10 @@ public class SkillSmoke extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		broadcastExecuteText(hero);
 
-		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false);
 		Player player = hero.getPlayer();
 		player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 4);
-		hero.addEffect(new SmokeEffect(this, duration));
+		hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
 
 		return SkillResult.NORMAL;
 	}
@@ -82,55 +81,10 @@ public class SkillSmoke extends ActiveSkill {
 		public void onSkillUse(SkillUseEvent event) {
 			Hero hero = event.getHero();
 
-			if (hero.hasEffect("SmokeEffect")) {
-				hero.removeEffect(hero.getEffect("SmokeEffect"));
+			if (hero.hasEffect("InvisibleEffect")) {
+				if (!event.getSkill().getTypes().contains(SkillType.STEALTHY))
+					hero.removeEffect(hero.getEffect("InvisibleEffect"));
 			}
-		}
-
-	}
-
-	// Buff effect used to keep track of warmup time
-	public class SmokeEffect extends ExpirableEffect {
-
-		public SmokeEffect(Skill skill, long duration) {
-			super(skill, "SmokeEffect", duration);
-
-			this.types.add(EffectType.BENEFICIAL);
-			this.types.add(EffectType.INVIS);
-		}
-
-		@Override
-		public void applyToHero(Hero hero) {
-			super.applyToHero(hero);
-
-			Player player = hero.getPlayer();
-
-			for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-				if (onlinePlayer.equals(player) || onlinePlayer.hasPermission("heroes.admin.seeinvis")) {
-					continue;
-				}
-				onlinePlayer.hidePlayer(player);
-			}
-
-			if (applyText != null && applyText.length() > 0)
-				broadcast(player.getLocation(), expireText, player.getDisplayName());
-		}
-
-		@Override
-		public void removeFromHero(Hero hero) {
-			super.removeFromHero(hero);
-
-			Player player = hero.getPlayer();
-			for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-				if (onlinePlayer.equals(player)) {
-					continue;
-				}
-				onlinePlayer.showPlayer(player);
-			}
-
-			if (expireText != null && expireText.length() > 0)
-				broadcast(player.getLocation(), expireText, player.getDisplayName());
 		}
 	}
-
 }

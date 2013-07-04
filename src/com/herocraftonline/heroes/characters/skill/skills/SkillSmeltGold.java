@@ -53,10 +53,11 @@ public class SkillSmeltGold extends ActiveSkill {
 			ItemStack stack = contents[i];
 			if ((stack != null) && (stack.getType() == Material.GOLD_ORE)) {
 				// Remove 1 gold ore from their inventory
-				if (stack.getAmount() == 1)
+				int curAmount = stack.getAmount();
+				if (curAmount == 1)
 					player.getInventory().setItem(i, null);
 				else
-					stack.setAmount(stack.getAmount() - 1);
+					stack.setAmount(curAmount - 1);
 
 				addIngot = true;
 

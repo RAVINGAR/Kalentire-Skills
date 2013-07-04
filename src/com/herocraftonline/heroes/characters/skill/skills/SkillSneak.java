@@ -39,10 +39,10 @@ public class SkillSneak extends ActiveSkill {
 	@Override
 	public ConfigurationSection getDefaultConfig() {
 		final ConfigurationSection node = super.getDefaultConfig();
-		node.set(SkillSetting.DURATION.node(), 600000); // 10 minutes in milliseconds
+		node.set(SkillSetting.DURATION.node(), Integer.valueOf(600000)); // 10 minutes in milliseconds
 		node.set("damage-cancels", true);
 		node.set("attacking-cancels", true);
-		node.set("refresh-interval", 5000); // in milliseconds
+		node.set("refresh-interval", Integer.valueOf(5000)); // in milliseconds
 		return node;
 	}
 
@@ -57,6 +57,7 @@ public class SkillSneak extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		if (hero.hasEffect("Sneak")) {
 			hero.removeEffect(hero.getEffect("Sneak"));
+			return SkillResult.REMOVED_EFFECT;
 		}
 		else {
 			Messaging.send(hero.getPlayer(), "You are now sneaking");
@@ -79,6 +80,7 @@ public class SkillSneak extends ActiveSkill {
 			if (event.isCancelled() || !damageCancels || (event.getDamage() == 0)) {
 				return;
 			}
+
 			Player player = null;
 			if (event.getEntity() instanceof Player) {
 				player = (Player) event.getEntity();
@@ -88,6 +90,7 @@ public class SkillSneak extends ActiveSkill {
 					hero.removeEffect(hero.getEffect("Sneak"));
 				}
 			}
+
 			player = null;
 			if (attackCancels && (event instanceof EntityDamageByEntityEvent)) {
 				final EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
@@ -99,6 +102,7 @@ public class SkillSneak extends ActiveSkill {
 						player = (Player) ((Projectile) subEvent.getDamager()).getShooter();
 					}
 				}
+
 				if (player != null) {
 					final Hero hero = plugin.getCharacterManager().getHero(player);
 					if (hero.hasEffect("Sneak")) {

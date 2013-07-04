@@ -22,6 +22,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -72,6 +73,7 @@ public class SkillGrapplingHook extends ActiveSkill {
 		node.set("num-grapples", Integer.valueOf(1));
 		node.set("velocity-multiplier", Double.valueOf(0.5D));
 		node.set("max-distance", Integer.valueOf(35));
+		node.set("safe-fall-duration", Integer.valueOf(5000));
 		node.set(SkillSetting.DURATION.node(), Integer.valueOf(12000));
 		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %hero% readies his grappling hook!");
 		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %hero% sheathes his grappling hook.");
@@ -243,11 +245,12 @@ public class SkillGrapplingHook extends ActiveSkill {
 		}
 
 		// Messaging.send(shooter, "Vector Velocity x: " + vec.getX() + ", y: " + vec.getY() + ", z: " + vec.getZ(), new Object[0]);
-
+		
 		// Grapple!
 		shooter.getWorld().playSound(shooter.getLocation(), Sound.MAGMACUBE_JUMP, 10.0F, 1.0F);
 		shooter.setVelocity(vec);
-		shooter.setFallDistance(-8.0F);
+		int safeFallDuration = SkillConfigManager.getUseSetting(shooterHero, this, "safe-fall-duration", 5000, false);
+		shooterHero.addEffect(new SafeFallEffect(this, safeFallDuration));
 	}
 
 	// Effect used for detecting who shot the arrow

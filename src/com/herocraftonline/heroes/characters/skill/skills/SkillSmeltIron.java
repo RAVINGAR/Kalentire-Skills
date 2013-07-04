@@ -6,18 +6,22 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.KNOWLEDGE;
 import static com.herocraftonline.heroes.characters.skill.SkillType.PHYSICAL;
 import static com.herocraftonline.heroes.characters.skill.SkillType.UNBINDABLE;
 
+import java.util.HashMap;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillSmeltIron extends ActiveSkill{
 	private static final String base="base-ingot-chance",gain="chance-gain-per-level";
@@ -43,37 +47,52 @@ public class SkillSmeltIron extends ActiveSkill{
 
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
-		final Player player = hero.getPlayer();
-		boolean present=false;
-		ItemStack[] contents = player.getInventory().getContents();
-		ItemStack stack;
-		for(int i=0;i<contents.length;i++){
-			stack=contents[i];
-			if(stack!=null&&stack.getType()==Material.IRON_ORE){
+		Player player = hero.getPlayer();
+
+		PlayerInventory inventory = player.getInventory();
+		ItemStack[] contents = inventory.getContents();
+
+		boolean addIngot = true;
+		for (int i = 0; i < contents.length; i++) {
+			ItemStack stack = contents[i];
+			if ((stack != null) && (stack.getType() == Material.IRON_ORE)) {
+				// Remove 1 Iron ore from their inventory
 				final int cur_amount = stack.getAmount();
-				if(cur_amount==1){
+				if (cur_amount == 1)
 					player.getInventory().setItem(i, null);
-				}else{
-					stack.setAmount(cur_amount-1);
-				}
-				present=true;
+				else
+					stack.setAmount(cur_amount - 1);
+
+				addIngot = true;
+
+				// Exit loop
 				break;
 			}
 		}
-		if(present){
-			int amount=1;
-	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F); 
-			broadcastExecuteText(hero);
-			if(calculateChance(hero)>(Math.random()*100)){
-				amount++;
-				player.sendMessage(ChatColor.GRAY+"You got an extra ingot from the smelting process!");
-			}
-			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.IRON_INGOT,amount));
-			return SkillResult.NORMAL;
-		}else{
-			player.sendMessage(ChatColor.GRAY+"You do not have any iron ore to smelt!");
+
+		if (!addIngot) {
+			player.sendMessage(ChatColor.GRAY + "You do not have any iron ore to smelt!");
+
 			return SkillResult.FAIL;
 		}
+
+		broadcastExecuteText(hero);
+
+		int amount = 1;
+		hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND, 0.6F, 1.0F);
+
+		if (calculateChance(hero) > Math.random() * 100.0D) {
+			amount++;
+			player.sendMessage(ChatColor.GRAY + "You got an extra ingot from the smelting process!");
+		}
+
+		HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.IRON_ORE, amount) });
+		for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
+			player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
+			Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+		}
+
+		return SkillResult.NORMAL;
 	}
 	
 	@Override

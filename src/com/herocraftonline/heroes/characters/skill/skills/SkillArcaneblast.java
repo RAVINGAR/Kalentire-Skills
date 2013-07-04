@@ -45,20 +45,19 @@ public class SkillArcaneblast extends TargettedSkill {
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
+            		player.getLocation().add(0,3,0), 
             		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(false)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.SILVER)
-            		.withColor(Color.MAROON)
-            		.withColor(Color.YELLOW)
-            		.withFade(Color.WHITE).build());
+            		.flicker(false).trail(true)
+            		.with(FireworkEffect.Type.BALL_LARGE)
+            		.withColor(Color.AQUA)
+            		.withFade(Color.PURPLE)
+            		.build());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         return SkillResult.NORMAL;
     }
 

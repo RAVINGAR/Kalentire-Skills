@@ -68,6 +68,7 @@ public class SkillBackstab extends ActiveSkill {
 		node.set("backstab-chance", Double.valueOf(-1D));
 		node.set("ambush-bonus", Double.valueOf(1.2D));
 		node.set("ambush-chance", Double.valueOf(-1D));
+		node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
 		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% backstabbed %target%!");
 
 		return node;
@@ -81,7 +82,7 @@ public class SkillBackstab extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
 
-		Messaging.send(player, "§c--------[ §fBackstab Damage §c]--------");
+		Messaging.send(player, "§c----------[ §fBackstab Damage §c]----------");
 		//Messaging.send(player, "§fBackstab is a passive skill.");
 		//Messaging.send(player, "§fUsing this ability displays weapon damage when backstabbing.");
 
@@ -108,7 +109,7 @@ public class SkillBackstab extends ActiveSkill {
 	}
 
 	private void displayWeaponDamage(Player player, String weaponName, int backstabDamage, int ambushDamage) {
-		Messaging.send(player, "§a" + weaponName + ": " + "§fBackstab: §7" + backstabDamage + "§f, Precise Backstab: §7" + ambushDamage);
+		Messaging.send(player, "§a" + weaponName + ": " + "§fBackstab: §7" + backstabDamage + "§f, Sneaking Backstab: §7" + ambushDamage);
 	}
 
 	public class SkillHeroesListener implements Listener {
@@ -143,7 +144,8 @@ public class SkillBackstab extends ActiveSkill {
 				double bonusDamage = -1;
 
 				// Sneak for ambush, nosneak for backstab.
-				if (hero.hasEffect("Sneak")) {
+				boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
+				if (hero.hasEffect("Sneak") || (allowVanillaSneaking && player.isSneaking())) {
 					chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1D, false);
 					bonusDamage = 1 + SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 1.2D, false);
 				}
