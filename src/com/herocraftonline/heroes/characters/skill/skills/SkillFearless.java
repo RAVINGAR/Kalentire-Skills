@@ -57,15 +57,15 @@ public class SkillFearless extends ActiveSkill {
 		node.set("incoming-multiplier", Double.valueOf(1.1D));
 		node.set("outgoing-multiplier", Double.valueOf(1.1D));
 		node.set("multiplier-per-level", Double.valueOf(0.005D));
-		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% is fearless!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %hero% is no longer fearless!");
+		node.set(SkillSetting.USE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %hero% is fearless!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), "Â§7[Â§2SkillÂ§7] %hero% is no longer fearless!");
 
 		return node;
 	}
 
 	public void init() {
 		super.init();
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %hero% is no longer fearless!").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Â§7[Â§2SkillÂ§7] %hero% is no longer fearless!").replace("%hero%", "$1");
 	}
 
 	public SkillResult use(Hero hero, String[] args) {
