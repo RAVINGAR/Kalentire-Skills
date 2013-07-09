@@ -55,7 +55,8 @@ public class SkillSoothe extends TargettedSkill {
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
-            } else {
+            }
+            else {
                 Messaging.send(player, "Target is already fully healed.");
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -67,7 +68,7 @@ public class SkillSoothe extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(hrhEvent.getAmount()); 
+        targetHero.heal(hrhEvent.getAmount());
 
         // Soothe cures WITHER!
         for (Effect effect : targetHero.getEffects()) {
@@ -75,7 +76,7 @@ public class SkillSoothe extends TargettedSkill {
                 targetHero.removeEffect(effect);
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP , 0.5F, 0.01F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 0.5F, 0.01F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

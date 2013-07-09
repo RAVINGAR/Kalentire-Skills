@@ -22,9 +22,10 @@ import com.herocraftonline.heroes.util.Messaging;
 public class SkillRenewal extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillRenewal(Heroes plugin) {
         super(plugin, "Renewal");
-        setDescription("You restore $1 health to your target, curing disease.");
+        setDescription("You restore $1 health to your target, curing disease. You cannot heal yourself with this ability.");
         setUsage("/skill renewal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill renewal");
@@ -34,8 +35,10 @@ public class SkillRenewal extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.HEALTH.node(), 10);
         node.set(SkillSetting.MAX_DISTANCE.node(), 25);
+
         return node;
     }
 
@@ -47,13 +50,21 @@ public class SkillRenewal extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+
+        // Don't allow self targeting
+        if (targetHero.equals(hero)) {
+            Messaging.send(player, "You cannot use this ability on yourself!", new Object[0]);
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
         int targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
-            } else {
+            }
+            else {
                 Messaging.send(player, "Target is already fully healed.");
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -74,15 +85,12 @@ public class SkillRenewal extends TargettedSkill {
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BURST)
-            		.withColor(Color.SILVER)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.SILVER).withFade(Color.WHITE).build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;

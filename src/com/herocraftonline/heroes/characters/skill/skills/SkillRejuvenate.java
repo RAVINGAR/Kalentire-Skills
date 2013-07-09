@@ -70,15 +70,12 @@ public class SkillRejuvenate extends TargettedSkill {
             targetHero.addEffect(rEffect);
             // this is our fireworks shit
             try {
-                fplayer.playFirework(player.getWorld(), target.getLocation(), 
-                		FireworkEffect.builder().flicker(true).trail(false)
-                		.with(FireworkEffect.Type.STAR)
-                		.withColor(Color.FUCHSIA)
-                		.withFade(Color.WHITE)
-                		.build());
-            } catch (IllegalArgumentException e) {
+                fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+            }
+            catch (IllegalArgumentException e) {
                 e.printStackTrace();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
             return SkillResult.NORMAL;
@@ -117,5 +114,5 @@ public class SkillRejuvenate extends TargettedSkill {
         heal = heal * duration / period;
         return getDescription().replace("$1", heal + "").replace("$2", duration / 1000 + "");
     }
-    
+
 }

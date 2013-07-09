@@ -28,14 +28,13 @@ public class SkillEngrave extends ActiveSkill {
         setDescription("$1 of chance of renaming the item in your hand with a custom text.");
         setUsage("/skill Engrave <Text>");
         setArgumentRange(1, 99);
-        setIdentifiers(new String[]{"skill Engrave"});
+        setIdentifiers(new String[] { "skill Engrave" });
         setTypes(SkillType.ITEM, SkillType.UNBINDABLE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) +
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
+        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
         chance = chance > 0 ? chance : 0;
         String description = getDescription().replace("$1", chance + "%");
         return description;
@@ -110,32 +109,32 @@ public class SkillEngrave extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] text) {
         Player player = hero.getPlayer();
-        if(text.length == 0){
+        if (text.length == 0) {
             Messaging.send(player, "/skill engrave <Text>");
             return SkillResult.CANCELLED;
         }
 
-        if(player.getItemInHand() == null){
+        if (player.getItemInHand() == null) {
             Messaging.send(player, "You must be holding an item in order to use this skill.");
             return SkillResult.CANCELLED;
         }
         ItemStack is = player.getItemInHand();
 
-        for(Material mat : mats){
-            if(is.getType().equals(mat)){
-                double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) +
-                        (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this)));
+        for (Material mat : mats) {
+            if (is.getType().equals(mat)) {
+                double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this)));
                 chance = chance > 0 ? chance : 0;
-                if(Math.random()<=chance){
+                if (Math.random() <= chance) {
                     String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy
                     ItemMeta im = is.getItemMeta();
                     im.setDisplayName(str);
                     is.setItemMeta(im);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND, 0.6F, 1.0F);
                     broadcastExecuteText(hero);
                     return SkillResult.NORMAL;
                 }
-                else return SkillResult.FAIL;
+                else
+                    return SkillResult.FAIL;
             }
         }
         Messaging.send(player, "You must be holding a tool or an armor in order to use this skill.");

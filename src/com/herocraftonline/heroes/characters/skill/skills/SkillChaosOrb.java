@@ -34,12 +34,13 @@ public class SkillChaosOrb extends ActiveSkill {
 
     private Map<EnderPearl, Long> pearls = new LinkedHashMap<EnderPearl, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
+
         @Override
         protected boolean removeEldestEntry(Entry<EnderPearl, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
-    
+
     public SkillChaosOrb(Heroes plugin) {
         super(plugin, "ChaosOrb");
         setDescription("You throw an orb of chaos that deals $1 damage and ignites the target.");
@@ -71,8 +72,8 @@ public class SkillChaosOrb extends ActiveSkill {
         pearl.setVelocity(pearl.getVelocity().multiply(mult));
         pearl.setShooter(player);
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHOOT_ARROW , 0.5F, 1.0F);
-        broadcastExecuteText(hero); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHOOT_ARROW, 0.5F, 1.0F);
+        broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 
@@ -119,26 +120,27 @@ public class SkillChaosOrb extends ActiveSkill {
             }
         }
     }
-    
+
     public class SkillPlayerListener implements Listener {
 
         private final Skill skill;
-        
+
         public SkillPlayerListener(Skill skill) {
             this.skill = skill;
         }
-        
+
         @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onPlayerTeleport(PlayerTeleportEvent event) {
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (!SkillConfigManager.getUseSetting(hero, skill, "restrict-ender-pearl", true)) {
                 return;
-            } else if (hero.getSkillLevel(skill) < 1 && event.getCause() == TeleportCause.ENDER_PEARL) {
+            }
+            else if (hero.getSkillLevel(skill) < 1 && event.getCause() == TeleportCause.ENDER_PEARL) {
                 event.setCancelled(true);
             }
         }
     }
-    
+
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);

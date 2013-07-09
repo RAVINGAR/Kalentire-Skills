@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -18,15 +17,16 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillGroupHeal extends ActiveSkill {
+public class SkillDivineBlessing extends ActiveSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    public SkillGroupHeal(Heroes plugin) {
-        super(plugin, "GroupHeal");
-        setDescription("You restore $1 health to all nearby party members.");
-        setUsage("/skill groupheal");
+
+    public SkillDivineBlessing(Heroes plugin) {
+        super(plugin, "DivineBlessing");
+        setDescription("You bestow upon your group a Divine Blessing, restoring $1 health to all nearby party members.");
+        setUsage("/skill divineblessing");
         setArgumentRange(0, 0);
-        setIdentifiers("skill groupheal", "skill gheal");
+        setIdentifiers("skill divineblessing");
         setTypes(SkillType.HEAL, SkillType.SILENCABLE);
     }
 
@@ -53,7 +53,8 @@ public class SkillGroupHeal extends ActiveSkill {
 
             hero.heal(hrhEvent.getAmount());
             //changed to hero.heal for bukkit events
-        } else {
+        }
+        else {
             int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false), 2);
             Location heroLoc = player.getLocation();
             // Heal party members near the caster
@@ -79,15 +80,12 @@ public class SkillGroupHeal extends ActiveSkill {
         broadcastExecuteText(hero);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.FUCHSIA)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;

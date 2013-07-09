@@ -22,6 +22,7 @@ import com.herocraftonline.heroes.util.Messaging;
 public class SkillChloroblast extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillChloroblast(Heroes plugin) {
         super(plugin, "Chloroblast");
         setDescription("You restore $1 health to your target and negate poisons.");
@@ -53,7 +54,8 @@ public class SkillChloroblast extends TargettedSkill {
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
-            } else {
+            }
+            else {
                 Messaging.send(player, "Target is already fully healed.");
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -74,17 +76,12 @@ public class SkillChloroblast extends TargettedSkill {
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder()
-            		.flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BURST)
-            		.withColor(Color.LIME)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.LIME).withFade(Color.WHITE).build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;

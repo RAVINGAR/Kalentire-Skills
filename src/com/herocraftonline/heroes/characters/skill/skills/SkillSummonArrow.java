@@ -25,16 +25,16 @@ public class SkillSummonArrow extends ActiveSkill {
         setDescription("You summon $1 arrows.");
         setUsage("/skill summonarrow");
         setArgumentRange(0, 0);
-		setIdentifiers("skill summonarrow");
+        setIdentifiers("skill summonarrow");
         setTypes(SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE);
     }
 
-	@Override
-	public String getDescription(Hero hero) {
-		int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 5, false);
+    @Override
+    public String getDescription(Hero hero) {
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 5, false);
 
-		return getDescription().replace("$1", amount + "");
-	}
+        return getDescription().replace("$1", amount + "");
+    }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
@@ -49,21 +49,19 @@ public class SkillSummonArrow extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-		int amount = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
 
-		PlayerInventory inventory = player.getInventory();
-		HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.ARROW, amount) });
-		for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
-			player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-			Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
-		}
+        PlayerInventory inventory = player.getInventory();
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.ARROW, amount) });
+        for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
+            Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+        }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.DIG_WOOD , 0.8F, 0.2F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.DIG_WOOD, 0.8F, 0.2F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }
-
-
 
 }

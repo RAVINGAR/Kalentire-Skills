@@ -24,20 +24,30 @@ public class SkillIronFist extends ActiveSkill {
 
     public SkillIronFist(Heroes plugin) {
         super(plugin, "IronFist");
-        setDescription("Deals $1 damage and knocks back nearby enemies");
+        setDescription("Strike the ground with an iron fist, dealing $1 damage and knocking nearby enemies within $2 blocks into the air.");
         setUsage("/skill ironfist");
         setArgumentRange(0, 0);
-        setIdentifiers("skill ironfist", "skill ifist");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
+        setIdentifiers("skill ironfist");
+        setTypes(SkillType.PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.HARMFUL);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(25), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+
+        return getDescription().replace("$1", damage + "").replace("$2", radius + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.DAMAGE.node(), 4);
         node.set(SkillSetting.RADIUS.node(), 3);
-        node.set("vertical-power", .25);
-        node.set("horizontal-power", .5);
+        node.set("vertical-power", 0.8);
+        node.set("horizontal-power", 0.1);
+
         return node;
     }
 
@@ -45,7 +55,7 @@ public class SkillIronFist extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
@@ -62,32 +72,27 @@ public class SkillIronFist extends ActiveSkill {
             }
 
             // Damage the target
-            int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
+            int damage = SkillConfigManager.getUseSetting(hero, this, "damage", Integer.valueOf(25), false);
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
 
             // Do our knockback
             Location playerLoc = player.getLocation();
             Location targetLoc = target.getLocation();
-            
-            double xDir =  targetLoc.getX() - playerLoc.getX();
-            double zDir =  targetLoc.getZ() - playerLoc.getZ();
+
+            double xDir = targetLoc.getX() - playerLoc.getX();
+            double zDir = targetLoc.getZ() - playerLoc.getZ();
             double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-            double multiplier = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", .5, false);
+            double multiplier = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
             xDir = xDir / magnitude * multiplier;
             zDir = zDir / magnitude * multiplier;
-            
-            target.setVelocity(new Vector(xDir, SkillConfigManager.getUseSetting(hero, this, "vertical-power", .25, false), zDir));
+
+            double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
+            target.setVelocity(new Vector(xDir, verticalPower, zDir));
         }
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE , 0.5F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
-    }
-    
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
-        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

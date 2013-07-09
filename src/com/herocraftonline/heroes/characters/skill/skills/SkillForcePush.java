@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -21,54 +22,69 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 public class SkillForcePush extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
         setDescription("Forces your target away from you.");
         setUsage("/skill forcepush");
         setArgumentRange(0, 0);
-        setIdentifiers("skill forcepush", "skill fpush");
+        setIdentifiers("skill forcepush");
         setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("power", 6);
-        node.set(SkillSetting.DAMAGE.node(), 0);
+
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(0));
+        node.set("horizontal-power", Double.valueOf(3.0));
+        node.set("vertical-power", Double.valueOf(0.5));
+
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
+        final Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero, target);
 
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
         }
 
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        double xDir = targetLoc.getX() - playerLoc.getX();
-        double zDir = targetLoc.getZ() - playerLoc.getZ();
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "power", 6.0, false);
-        Vector v = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(.5);
-        target.setVelocity(v);
+        final double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false);
+        Vector pushUpVector = new Vector(0, vPower, 0);
+        target.setVelocity(pushUpVector);
 
-        broadcastExecuteText(hero, target);
+        final double xDir = targetLoc.getX() - playerLoc.getX();
+        final double zDir = targetLoc.getZ() - playerLoc.getZ();
+        final double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 3.0, false);
+
+        // Push them "up" first. THEN we can push them away.
+        double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.5, false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                // Push them away
+                //double yDir = player.getVelocity().getY();
+                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
+                target.setVelocity(pushVector);
+            }
+        }, (long) (delay * 20));
+
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.YELLOW)
-            		.withFade(Color.NAVY)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;

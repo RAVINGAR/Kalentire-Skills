@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -21,6 +22,7 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 public class SkillForcePull extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
         setDescription("Forces your target toward you.");
@@ -33,39 +35,54 @@ public class SkillForcePull extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 0);
+
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(0));
+        node.set("horizontal-power", Double.valueOf(3.0));
+        node.set("vertical-power", Double.valueOf(0.5));
+
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
-        }        
+            damageEntity(target, player, damage, DamageCause.MAGIC);
+        }
 
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
-        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
-        Vector v = new Vector(xDir, 0, zDir).multiply(0.5).setY(0.5);
-        target.setVelocity(v);
-        broadcastExecuteText(hero, target);
+        final double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false);
+        Vector pushUpVector = new Vector(0, vPower, 0);
+        target.setVelocity(pushUpVector);
+
+        final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
+        final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
+        final double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 3.0, false);
+
+        // push them "up" first. THEN we can pull them to us.
+        double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.5, false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                // Push them away
+                //double yDir = player.getVelocity().getY();
+                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
+                target.setVelocity(pushVector);
+            }
+        }, (long) (delay * 20));
+
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(true).trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.YELLOW)
-            		.withFade(Color.NAVY)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;

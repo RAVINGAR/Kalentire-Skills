@@ -30,8 +30,7 @@ public class SkillReincarnate extends ActiveSkill {
         Player target = plugin.getServer().getPlayer(args[0]);
 
         if (target == null)
-        	return SkillResult.INVALID_TARGET;
-        
+            return SkillResult.INVALID_TARGET;
 
         String targetName = target.getName();
         if (!Util.deaths.containsKey(targetName)) {
@@ -59,7 +58,7 @@ public class SkillReincarnate extends ActiveSkill {
 
         target.teleport(playerLoc);
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

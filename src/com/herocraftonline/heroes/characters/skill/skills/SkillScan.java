@@ -1,5 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
+import org.bukkit.Sound;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
@@ -7,10 +12,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
-import org.bukkit.Effect;
-import org.bukkit.Sound;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 public class SkillScan extends TargettedSkill {
 	private final Heroes plugin;
@@ -26,15 +27,15 @@ public class SkillScan extends TargettedSkill {
 	}
 
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-		Player player = hero.getPlayer();
-		CharacterTemplate character = this.plugin.getCharacterManager().getCharacter(target);
-		if ((character instanceof Hero)) {
-			Hero tHero = (Hero) character;
-			
-			// Don't allow self targeting
-			if (tHero == hero) {
-				return SkillResult.FAIL;
-			}
+        Player player = hero.getPlayer();
+        CharacterTemplate character = this.plugin.getCharacterManager().getCharacter(target);
+        if ((character instanceof Hero)) {
+            Hero tHero = (Hero) character;
+
+            // Don't allow self targeting
+            if (tHero == hero) {
+                return SkillResult.FAIL;
+            }
 
 			// Create the message variables
 			Object[] messageVariables = new Object[] {

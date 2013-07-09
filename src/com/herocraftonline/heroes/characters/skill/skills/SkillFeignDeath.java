@@ -18,115 +18,113 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillFeignDeath extends TargettedSkill {
-	private String applyText;
-	private String expireText;
+    private String applyText;
+    private String expireText;
 
-	public SkillFeignDeath(Heroes plugin) {
-		super(plugin, "FeignDeath");
-		setDescription("You feign your death, displaying a deceptive message of death to nearby players. While feigned, but instead go invisible for $1s.");
-		setUsage("/skill feigndeath");
-		setArgumentRange(0, 0);
-		setIdentifiers("skill feigndeath");
-		setTypes(SkillType.ILLUSION, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFF);
-	}
+    public SkillFeignDeath(Heroes plugin) {
+        super(plugin, "FeignDeath");
+        setDescription("You feign your death, displaying a deceptive message of death to nearby players. While feigned, but instead go invisible for $1s.");
+        setUsage("/skill feigndeath");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill feigndeath");
+        setTypes(SkillType.ILLUSION, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFF);
+    }
 
-	public String getDescription(Hero hero) {
-		int duration = SkillConfigManager.getUseSetting(hero, this, "smoke-duration", 6000, false) / 1000;
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, "smoke-duration", 6000, false) / 1000;
 
-		return getDescription().replace("$2", duration + "");
-	}
+        return getDescription().replace("$2", duration + "");
+    }
 
-	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.DURATION.node(), 6000);
 
-		return node;
-	}
+        return node;
+    }
 
-	public void init() {
-		super.init();
+    public void init() {
+        super.init();
 
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You feign death!");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You appear to be living!");
-	}
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You feign death!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You appear to be living!");
+    }
 
-	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-		Player player = hero.getPlayer();
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        Player player = hero.getPlayer();
 
-		if (!(target instanceof Player)) {
-			return SkillResult.INVALID_TARGET;
-		}
-		if (((Player) target).equals(player)) {
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		}
-		Player targetPlayer = (Player) target;
-		if (!damageCheck(player, targetPlayer)) {
-			return SkillResult.INVALID_TARGET;
-		}
+        if (!(target instanceof Player)) {
+            return SkillResult.INVALID_TARGET;
+        }
+        if (((Player) target).equals(player)) {
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+        Player targetPlayer = (Player) target;
+        if (!damageCheck(player, targetPlayer)) {
+            return SkillResult.INVALID_TARGET;
+        }
 
-		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 
-		//String tn = tHero.getPlayer().getDisplayName();
-		//String pn = player.getDisplayName();
+        //String tn = tHero.getPlayer().getDisplayName();
+        //String pn = player.getDisplayName();
 
-		//hero.addEffect(new InvisibleEffect(this, duration, this.applyText, this.expireText));
-		String playerName = player.getName();
-		String targetName = targetPlayer.getName();
+        //hero.addEffect(new InvisibleEffect(this, duration, this.applyText, this.expireText));
+        String playerName = player.getName();
+        String targetName = targetPlayer.getName();
 
-		String deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + 
-			ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " +
-			ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
-			
-		broadcast(player.getLocation(), deathMessage, new Object[0]);
+        String deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
 
-		// Feign Death
-		hero.addEffect(new FeignDeathEffect(this, duration));
+        broadcast(player.getLocation(), deathMessage, new Object[0]);
 
-		return SkillResult.NORMAL;
-	}
+        // Feign Death
+        hero.addEffect(new FeignDeathEffect(this, duration));
 
-	// Buff effect used to keep track of warmup time
-	public class FeignDeathEffect extends ExpirableEffect {
+        return SkillResult.NORMAL;
+    }
 
-		public FeignDeathEffect(Skill skill, long duration) {
-			super(skill, "FeignDeathEffect", duration);
+    // Buff effect used to keep track of warmup time
+    public class FeignDeathEffect extends ExpirableEffect {
 
-			this.types.add(EffectType.BENEFICIAL);
-			this.types.add(EffectType.INVIS);
-		}
+        public FeignDeathEffect(Skill skill, long duration) {
+            super(skill, "FeignDeathEffect", duration);
 
-		@Override
-		public void applyToHero(Hero hero) {
-			super.applyToHero(hero);
+            this.types.add(EffectType.BENEFICIAL);
+            this.types.add(EffectType.INVIS);
+        }
 
-			Player player = hero.getPlayer();
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
 
-			for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-				if (onlinePlayer.equals(player) || onlinePlayer.hasPermission("heroes.admin.seeinvis")) {
-					continue;
-				}
-				onlinePlayer.hidePlayer(player);
-			}
+            Player player = hero.getPlayer();
 
-			if (applyText != null && applyText.length() > 0)
-				Messaging.send(player, applyText, new Object[0]);
-		}
+            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+                if (onlinePlayer.equals(player) || onlinePlayer.hasPermission("heroes.admin.seeinvis")) {
+                    continue;
+                }
+                onlinePlayer.hidePlayer(player);
+            }
 
-		@Override
-		public void removeFromHero(Hero hero) {
-			super.removeFromHero(hero);
+            if (applyText != null && applyText.length() > 0)
+                Messaging.send(player, applyText, new Object[0]);
+        }
 
-			Player player = hero.getPlayer();
-			for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-				if (onlinePlayer.equals(player)) {
-					continue;
-				}
-				onlinePlayer.showPlayer(player);
-			}
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
 
-			if (expireText != null && expireText.length() > 0)
-				Messaging.send(player, expireText, new Object[0]);
-		}
-	}
+            Player player = hero.getPlayer();
+            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+                if (onlinePlayer.equals(player)) {
+                    continue;
+                }
+                onlinePlayer.showPlayer(player);
+            }
+
+            if (expireText != null && expireText.length() > 0)
+                Messaging.send(player, expireText, new Object[0]);
+        }
+    }
 }

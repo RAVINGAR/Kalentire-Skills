@@ -22,54 +22,54 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillForgeChainChest extends ActiveSkill {
-	public SkillForgeChainChest(Heroes plugin) {
-		super(plugin, "ForgeChainChest");
-		setDescription("You forge a chain chestplate!");
-		setUsage("/skill forgechainchest");
-		setArgumentRange(0, 0);
-		setIdentifiers(new String[] { "skill forgechainchest", "skill chainchest" });
-		setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
-	}
+    public SkillForgeChainChest(Heroes plugin) {
+        super(plugin, "ForgeChainChest");
+        setDescription("You forge a chain chestplate!");
+        setUsage("/skill forgechainchest");
+        setArgumentRange(0, 0);
+        setIdentifiers(new String[] { "skill forgechainchest", "skill chainchest" });
+        setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
+    }
 
-	public String getDescription(Hero hero) {
-		int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
-		return getDescription().replace("$1", amount + "");
-	}
+    public String getDescription(Hero hero) {
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
+        return getDescription().replace("$1", amount + "");
+    }
 
-	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.AMOUNT.node(), Integer.valueOf(1));
+        node.set(SkillSetting.AMOUNT.node(), Integer.valueOf(1));
 
-		return node;
-	}
+        return node;
+    }
 
-	public SkillResult use(Hero hero, String[] args) {
-		Player player = hero.getPlayer();
+    public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
 
-		ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_CHESTPLATE, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
-		ItemMeta metaData = forgedItem.getItemMeta();
+        ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_CHESTPLATE, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
+        ItemMeta metaData = forgedItem.getItemMeta();
 
-		// Add the "Forged by" message to the item.
-		String imbuedByInformation = "§5Forged by " + player.getDisplayName();
-		List<String> newLore = Arrays.asList(imbuedByInformation);
-		metaData.setLore(newLore);
+        // Add the "Forged by" message to the item.
+        String imbuedByInformation = "§5Forged by " + player.getDisplayName();
+        List<String> newLore = Arrays.asList(imbuedByInformation);
+        metaData.setLore(newLore);
 
-		// Set the new metaData to the item
-		forgedItem.setItemMeta(metaData);
+        // Set the new metaData to the item
+        forgedItem.setItemMeta(metaData);
 
-		// Add the item to their inventory, but only if they have space.
-		PlayerInventory inventory = player.getInventory();
-		HashMap<Integer, ItemStack> leftOvers = inventory.addItem(forgedItem);
-		for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
-			player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-			Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
-		}
+        // Add the item to their inventory, but only if they have space.
+        PlayerInventory inventory = player.getInventory();
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(forgedItem);
+        for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
+            Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+        }
 
-		broadcastExecuteText(hero);
+        broadcastExecuteText(hero);
 
-		hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE, 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE, 0.6F, 1.0F);
 
-		return SkillResult.NORMAL;
-	}
+        return SkillResult.NORMAL;
+    }
 }

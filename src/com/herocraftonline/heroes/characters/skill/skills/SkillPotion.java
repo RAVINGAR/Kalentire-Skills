@@ -12,6 +12,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,6 +24,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillPotion extends PassiveSkill {
     private static final Map<Byte, String> regularPotions;
@@ -75,42 +77,67 @@ public class SkillPotion extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.useItemInHand() == Event.Result.DENY || !event.hasItem()) {
+            if (event.useItemInHand() == Event.Result.DENY) {
                 return;
             }
 
-            ItemStack item = event.getItem();
-            Material material = item.getType();
-
-            if (material != Material.POTION) {
+            // Make sure the player is right clicking.
+            if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK))
                 return;
-            }
 
-            Player player = event.getPlayer();
+            if (!event.hasItem())
+                return;
+
+            ItemStack activatedItem = event.getItem();
+
+            if (activatedItem.getType() == Material.POTION) {
+
+                Player player = event.getPlayer();
+
+                // If the clicked block is null, we are clicking air. Air is a valid block that we do not need to validate
+                if (event.getClickedBlock() != null) {
+
+                    // VALIDATE NON-AIR BLOCK
+                    if (!(Util.interactableBlocks.contains(event.getClickedBlock().getType()))) {
+                        determinePotionOutcome(player, activatedItem);
+                    }
+                    else {
+                        // Prevent us from using the item when clicking an interactable block.
+                        event.setUseItemInHand(Event.Result.DENY);
+                    }
+                }
+                else {
+                    // AIR BLOCK. NO VALIDATION
+                    determinePotionOutcome(player, activatedItem);
+                }
+            }
+        }
+
+        public void determinePotionOutcome(Player player, ItemStack activatedItem) {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             // see if the player can use potions at all
             if (!hero.canUseSkill(skill) || (hero.isInCombat() && SkillConfigManager.getUseSetting(hero, skill, SkillSetting.NO_COMBAT_USE, false))) {
                 Messaging.send(player, "You can't use this potion!");
-                event.setUseItemInHand(Event.Result.DENY);
                 return;
             }
 
             // get the potion type info
-            byte potionId = item.getData().getData();
+            byte potionId = activatedItem.getData().getData();
             String potionName;
             if (isPotion(potionId)) {
                 potionName = regularPotions.get(potionId);
-            } else if (isSplashPotion(potionId)) {
+            }
+            else if (isSplashPotion(potionId)) {
                 potionName = splashPotions.get(potionId);
-            } else {
+            }
+            else {
                 return;
             }
 
             // see if the player can use this type of potion
             if (!SkillConfigManager.getUseSetting(hero, skill, "allow." + potionName, false)) {
                 Messaging.send(player, "You can't use this potion!");
-                event.setUseItemInHand(Event.Result.DENY);
                 return;
             }
 
@@ -129,10 +156,8 @@ public class SkillPotion extends PassiveSkill {
             if (readyTime != null && time < readyTime) {
                 int secRemaining = (int) Math.ceil((readyTime - time) / 1000.0);
                 Messaging.send(player, "You can't use this potion for $1s!", secRemaining);
-                event.setUseItemInHand(Event.Result.DENY);
                 return;
             }
-
 
             // potion is okay to use, so trigger a cooldown
             long cooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown." + potionName, 10 * 60000, true);

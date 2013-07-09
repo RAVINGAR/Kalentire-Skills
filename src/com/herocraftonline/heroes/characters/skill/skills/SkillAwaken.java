@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillAwaken extends ActiveSkill {
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillAwaken(Heroes plugin) {
         super(plugin, "Awaken");
         setDescription("Awakens your target, teleporting them to their place of death.");
@@ -33,8 +34,7 @@ public class SkillAwaken extends ActiveSkill {
         Player target = plugin.getServer().getPlayer(args[0]);
 
         if (target == null)
-        	return SkillResult.INVALID_TARGET;
-        
+            return SkillResult.INVALID_TARGET;
 
         String targetName = target.getName();
         if (!Util.deaths.containsKey(targetName)) {
@@ -62,22 +62,16 @@ public class SkillAwaken extends ActiveSkill {
 
         target.teleport(playerLoc);
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         // this is our fireworks
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(false)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.PURPLE)
-            		.withFade(Color.FUCHSIA)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.CREEPER).withColor(Color.PURPLE).withFade(Color.FUCHSIA).build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;

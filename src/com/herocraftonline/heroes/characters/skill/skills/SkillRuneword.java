@@ -32,7 +32,7 @@ public class SkillRuneword extends TargettedSkill {
         setArgumentRange(0, 0);
         setUsage("/skill runeword");
         setIdentifiers("skill runeword");
-		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.HARMFUL);
+        setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.HARMFUL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 
@@ -53,16 +53,16 @@ public class SkillRuneword extends TargettedSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% has been cursed by a Runeword!").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] The Runeword's curse fades from %target%!").replace("%target%", "$1");
     }
-    
+
     @Override
-	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.25, false);
         RunewordEffect effect = new RunewordEffect(this, duration, damageBonus);
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_DEATH , 0.5F, 1.0F);
-		return SkillResult.NORMAL;
-	}
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_DEATH, 0.5F, 1.0F);
+        return SkillResult.NORMAL;
+    }
 
     public class RunewordEffect extends ExpirableEffect {
 
@@ -96,17 +96,17 @@ public class SkillRuneword extends TargettedSkill {
     }
 
     public class SkillHeroListener implements Listener {
-    	
+
         @EventHandler
         public void onSkillDamage(SkillDamageEvent event) {
-        	Skill eventSkill = event.getSkill();
-        	if(eventSkill.isType(SkillType.PHYSICAL) || !eventSkill.isType(SkillType.DAMAGING))
-        		return;
+            Skill eventSkill = event.getSkill();
+            if (eventSkill.isType(SkillType.PHYSICAL) || !eventSkill.isType(SkillType.DAMAGING))
+                return;
             CharacterTemplate character = SkillRuneword.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (character.hasEffect("Runeword")) {
                 double damageBonus = ((RunewordEffect) character.getEffect("Runeword")).damageBonus;
                 event.setDamage((int) (event.getDamage() * damageBonus));
-            }           
+            }
         }
     }
 

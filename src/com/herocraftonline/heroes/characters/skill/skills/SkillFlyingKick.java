@@ -19,78 +19,56 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlyingKick extends TargettedSkill {
 
-    private String useText;
-
     public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
-        setDescription("Kicks your target upward");
+        setDescription("Deliver a Flying Kick to your target, knocking them upwards, dealing $1 damage, and silencing them for $2 seconds.");
         setUsage("/skill flyingkick");
         setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
-        setTypes(SkillType.HARMFUL, SkillType.PHYSICAL, SkillType.DAMAGING);
+        setTypes(SkillType.HARMFUL, SkillType.FORCE, SkillType.PHYSICAL, SkillType.DAMAGING);
     }
 
     public String getDescription(Hero hero) {
-        StringBuilder descr = new StringBuilder(getDescription());
 
-        double silenceSec = SkillConfigManager.getUseSetting(hero, this, "silence-duration", 3000, false) / 1000.0;
-        if (silenceSec > 0) {
-            descr.append(" and silences it for ");
-            descr.append(Util.formatDouble(silenceSec));
-            descr.append("s");
-        }
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
+        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false) / 1000.0);
 
-        double cdSec = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 15000, false) / 1000.0;
-        if (cdSec > 0) {
-            descr.append(" CD:");
-            descr.append(Util.formatDouble(cdSec));
-            descr.append("s");
-        }
-
-        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 20, false);
-        if (mana > 0) {
-            descr.append(" M:");
-            descr.append(mana);
-        }
-
-        return descr.toString();
+        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
-        defaultConfig.set(SkillSetting.USE_TEXT.node(), "%player%: This is SPARTAAAA!!!");
-        defaultConfig.set(SkillSetting.COOLDOWN.node(), 15000);
-        defaultConfig.set(SkillSetting.MANA.node(), 20);
+
         defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 5);
-        defaultConfig.set(SkillSetting.DAMAGE.node(), 1);
-        defaultConfig.set("silence-duration", 3000);
+        defaultConfig.set(SkillSetting.DAMAGE.node(), 25);
+        defaultConfig.set(SkillSetting.DURATION.node(), 3000);
+
         return defaultConfig;
     }
 
     @Override
-    public void init() {
-        super.init();
-        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "%player%: This is HEROCRAFTT!!!").replace("%player%", "$1");
-    }
-
-    @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        target.setVelocity(new Vector(Math.random() * 0.4 - 0.2, 0.8, Math.random() * 0.4 - 0.2));
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
+        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
+
+        double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
+        target.setVelocity(new Vector(Math.random() * 0.4 - 0.2, verticalPower, Math.random() * 0.4 - 0.2));
 
         if (target instanceof Player) {
             Player targetPlayer = (Player) target;
             Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
 
-            int silenceDuration = SkillConfigManager.getUseSetting(hero, this, "silence-duration", 3000, false);
+            int silenceDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
             if (silenceDuration > 0) {
                 targetHero.addEffect(new SilenceEffect(this, silenceDuration));
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F);
-        broadcast(target.getLocation(), useText, hero.getName());
+
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
+
+        broadcastExecuteText(hero, target);
+
         return SkillResult.NORMAL;
     }
 }
