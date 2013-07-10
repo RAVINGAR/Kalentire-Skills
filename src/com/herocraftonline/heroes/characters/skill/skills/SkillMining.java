@@ -76,7 +76,7 @@ public class SkillMining extends PassiveSkill {
             case REDSTONE_ORE:
                 dropMaterial = Material.REDSTONE;
                 break;
-            case LAPIS_BLOCK:
+            case LAPIS_ORE:
                 dropMaterial = Material.INK_SACK;
                 break;
             case STONE:

@@ -42,6 +42,9 @@ public class SkillFlyingKick extends TargettedSkill {
         defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 5);
         defaultConfig.set(SkillSetting.DAMAGE.node(), 25);
         defaultConfig.set(SkillSetting.DURATION.node(), 3000);
+        defaultConfig.set("vertical-power", 0.25);
+        defaultConfig.set("min-side-push", 0.4);
+        defaultConfig.set("max-side-push", 1.0);
 
         return defaultConfig;
     }
@@ -53,7 +56,9 @@ public class SkillFlyingKick extends TargettedSkill {
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
         double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
-        target.setVelocity(new Vector(Math.random() * 0.4 - 0.2, verticalPower, Math.random() * 0.4 - 0.2));
+        double minSidePush = SkillConfigManager.getUseSetting(hero, this, "min-side-push", Double.valueOf(0.4), false);
+        double maxSidePush = SkillConfigManager.getUseSetting(hero, this, "max-side-push", Double.valueOf(1.0), false);
+        target.setVelocity(new Vector(Math.random() * maxSidePush - minSidePush, verticalPower, Math.random() * maxSidePush - minSidePush));
 
         if (target instanceof Player) {
             Player targetPlayer = (Player) target;

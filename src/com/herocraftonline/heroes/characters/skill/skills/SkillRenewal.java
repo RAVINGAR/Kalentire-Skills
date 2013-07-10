@@ -25,11 +25,18 @@ public class SkillRenewal extends TargettedSkill {
 
     public SkillRenewal(Heroes plugin) {
         super(plugin, "Renewal");
-        setDescription("You restore $1 health to your target, curing disease. You cannot heal yourself with this ability.");
+        setDescription("You restore $1 health to your target, curing disease.");
         setUsage("/skill renewal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill renewal");
         setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
+
+        return getDescription().replace("$1", health + "");
     }
 
     @Override
@@ -51,10 +58,12 @@ public class SkillRenewal extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
-        // Don't allow self targeting
         if (targetHero.equals(hero)) {
-            Messaging.send(player, "You cannot use this ability on yourself!", new Object[0]);
-            return SkillResult.INVALID_TARGET_NO_MSG;
+            boolean allowSelfTarget = SkillConfigManager.getUseSetting(hero, this, "allow-self-target", true);
+            if (!allowSelfTarget) {
+                Messaging.send(player, "You cannot use this ability on yourself!", new Object[0]);
+                return SkillResult.INVALID_TARGET_NO_MSG;
+            }
         }
 
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
@@ -94,11 +103,5 @@ public class SkillRenewal extends TargettedSkill {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
-        return getDescription().replace("$1", health + "");
     }
 }

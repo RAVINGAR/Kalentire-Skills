@@ -88,7 +88,7 @@ public class SkillBarrage extends ActiveSkill {
 		double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 2, false);
 		double diff = 2 * Math.PI / numArrows;
 		for (double a = 0; a < 2 * Math.PI; a += diff) {
-			Vector vel = new Vector(Math.cos(a), Math.tan(-10), Math.sin(a));
+            Vector vel = new Vector(Math.cos(a), 0, Math.sin(a));
 
 			Arrow arrow = player.launchProjectile(Arrow.class);
 			//arrow.setVelocity(vel);			// Old method
