@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -67,6 +68,7 @@ public class SkillPiggify extends TargettedSkill {
 
     public class PigEffect extends ExpirableEffect {
 
+        private Location startLoc;
         private final Creature creature;
 
         public PigEffect(Skill skill, long duration, Creature creature) {
@@ -88,6 +90,7 @@ public class SkillPiggify extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
+            startLoc = player.getLocation();
             creature.setPassenger(player);
             creatures.put(creature, hero);
         }
@@ -102,8 +105,10 @@ public class SkillPiggify extends TargettedSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+            Player player = hero.getPlayer();
             creatures.remove(creature);
             creature.remove();
+            player.teleport(startLoc);
         }
     }
 
