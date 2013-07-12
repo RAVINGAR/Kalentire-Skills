@@ -22,6 +22,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
  */
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -66,9 +67,9 @@ public class SkillFireRune extends ActiveSkill
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.DAMAGE.node(), 105);
-		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% imbues his blade with a Rune of §cFire.");
-		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been burned by a Rune of Fire!");
-		node.set("rune-chat-color", "§c");
+		node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% imbues his blade with a Rune of "+ChatColor.RED+"Fire.");
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has been burned by a Rune of Fire!");
+		node.set("rune-chat-color", ChatColor.RED.toString());
 
 		return node;
 	}
@@ -85,7 +86,7 @@ public class SkillFireRune extends ActiveSkill
 	{
 		// Create the Rune
 		int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 15, false));
-		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "§c");
+		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.RED.toString());
 		Rune fireRune = new Rune("FireRune", manaCost, runeChatColor);
 
 		// Add the Rune to the RuneWord queue here
@@ -135,7 +136,7 @@ public class SkillFireRune extends ActiveSkill
 			// Prep variables
 			CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-			int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 105, false);
+			double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 105, false);
 			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
 
 			// Damage and silence the target

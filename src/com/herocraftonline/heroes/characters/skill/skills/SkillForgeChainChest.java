@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -51,7 +52,7 @@ public class SkillForgeChainChest extends ActiveSkill {
         ItemMeta metaData = forgedItem.getItemMeta();
 
         // Add the "Forged by" message to the item.
-        String imbuedByInformation = "§5Forged by " + player.getDisplayName();
+        String imbuedByInformation = ChatColor.DARK_PURPLE + "Forged by " + player.getDisplayName();
         List<String> newLore = Arrays.asList(imbuedByInformation);
         metaData.setLore(newLore);
 

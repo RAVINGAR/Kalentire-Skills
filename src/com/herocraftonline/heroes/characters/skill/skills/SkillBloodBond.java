@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -52,8 +53,8 @@ public class SkillBloodBond extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), 12);
         node.set("mana-tick", 8);
         node.set("mana-tick-period", 3000);
-        node.set("toggle-on-text", "§7[§2Skill§7] %hero% has formed a §lBloodBond§r!");
-        node.set("toggle-off-text", "§7[§2Skill§7] %hero% has broken his §lBloodBonds§r!");
+        node.set("toggle-on-text", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has formed a " + ChatColor.BOLD + "BloodBonds"+ChatColor.RESET+"!");
+        node.set("toggle-off-text", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has broken his " + ChatColor.BOLD + "BloodBonds"+ChatColor.RESET+"!");
 
         return node;
     }
@@ -71,8 +72,8 @@ public class SkillBloodBond extends ActiveSkill {
         int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 3000, false);
 
         // Get config values for text values
-        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", "§7[§2Skill§7] %hero% has formed a §lBloodBond§r!").replace("%hero%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", "§7[§2Skill§7] %hero% has broken his §lBloodBonds§r!").replace("%hero%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has formed a " + ChatColor.BOLD + "BloodBonds"+ChatColor.RESET+"!").replace("%hero%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has broken his " + ChatColor.BOLD + "BloodBonds"+ChatColor.RESET+"!").replace("%hero%", "$1");
 
         hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 

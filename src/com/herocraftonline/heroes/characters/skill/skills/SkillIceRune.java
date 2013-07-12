@@ -22,6 +22,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
  */
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -66,10 +67,10 @@ public class SkillIceRune extends ActiveSkill {
         node.set("speed-multiplier", 2);
         node.set(SkillSetting.DAMAGE.node(), 40);
         node.set(SkillSetting.DURATION.node(), 2000);
-        node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% imbues his blade with a Rune of §bIce.");
-        node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been slowed by a Rune of Ice!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% is no longer slowed!");
-        node.set("rune-chat-color", "§b");
+        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% imbues his blade with a Rune of " + ChatColor.AQUA.toString() + "Ice.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has been slowed by a Rune of Ice!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is no longer slowed!");
+        node.set("rune-chat-color", ChatColor.AQUA.toString());
 
         return node;
     }
@@ -85,7 +86,7 @@ public class SkillIceRune extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         // Create the Rune
         int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 30, false);
-        String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "§b");
+        String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.AQUA.toString());
         Rune iceRune = new Rune("IceRune", manaCost, runeChatColor);
 
         // Add the Rune to the RuneWord queue here
@@ -136,8 +137,8 @@ public class SkillIceRune extends ActiveSkill {
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 2000, false);
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
-            String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
-            String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% is no longer slowed!").replace("%target%", "$1");
+            String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
+            String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is no longer slowed!").replace("%target%", "$1");
 
             // Create the effect and slow the target
             SlowEffect sEffect = new SlowEffect(skill, duration, amplifier, false, applyText, expireText, hero);

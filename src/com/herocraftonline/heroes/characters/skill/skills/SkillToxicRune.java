@@ -22,6 +22,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
  */
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -72,10 +73,10 @@ public class SkillToxicRune extends ActiveSkill
 		node.set(SkillSetting.DAMAGE.node(), 25);
 		node.set(SkillSetting.PERIOD.node(), 3000);
 		node.set(SkillSetting.DURATION.node(), 9000);
-		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% imbues his blade with a Rune of §2Toxicity.");
-		node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% has been poisoned by a Rune of Toxicity!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% has recovered from the poison!");
-		node.set("rune-chat-color", "§2");
+		node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% imbues his blade with a Rune of "+ChatColor.DARK_GREEN+"Toxicity.");
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has been poisoned by a Rune of Toxicity!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has recovered from the poison!");
+		node.set("rune-chat-color", ChatColor.DARK_GREEN.toString());
 
 		return node;
 	}
@@ -95,7 +96,7 @@ public class SkillToxicRune extends ActiveSkill
 	{
 		// Create the Rune
 		int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 20, false);
-		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", "§2");
+		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.DARK_GREEN.toString());
 		Rune toxicRune = new Rune("ToxicRune", manaCost, runeChatColor);
 
 		// Add the ToxicRune to the rune queue here

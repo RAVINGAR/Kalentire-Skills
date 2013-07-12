@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
@@ -40,7 +41,7 @@ public class SkillTempest extends ActiveSkill {
 		node.set(SkillSetting.DAMAGE.node(), 300);
 		node.set(SkillSetting.RADIUS.node(), 10);
 		node.set(SkillSetting.DELAY.node(), 5000);
-		node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% has unleashed a powerful §lTempest!");
+		node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has unleashed a powerful "+ChatColor.BOLD+"Tempest!");
 		node.set("effect-height", 4);
 
 		return node;

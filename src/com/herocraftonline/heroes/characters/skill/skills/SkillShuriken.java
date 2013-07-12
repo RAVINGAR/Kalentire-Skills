@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -116,7 +117,7 @@ public class SkillShuriken extends PassiveSkill {
 
 			int staminaCost = SkillConfigManager.getUseSetting(hero, skill, "stamina-cost", 1, false);
 			if (player.getFoodLevel() < staminaCost) {
-				Messaging.send(player, "§7[§2Skill§7] You are too fatigued!");
+				Messaging.send(player, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] You are too fatigued!");
 				return;
 			}
 

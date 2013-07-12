@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -56,7 +57,7 @@ public class SkillImbueRunestone extends ActiveSkill {
         }
 
         // Merge the arguments into one string
-        String textString = "§f" + StringUtils.join(text, " ");
+        String textString = ChatColor.WHITE.toString() + StringUtils.join(text, " ");
 
         // Ensure the string is no longer than the specified maximum number of characters
         int maxTextLength = SkillConfigManager.getUseSetting(hero, this, "max-message-length", 40, false);

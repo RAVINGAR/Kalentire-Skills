@@ -32,7 +32,7 @@ public class SkillBattlesong extends ActiveSkill {
 		conf.set(SkillSetting.COOLDOWN.node(), 10000);
 		conf.set(SkillSetting.RADIUS.node(), 15);
 		conf.set(SkillSetting.MANA.node(), 20);
-		conf.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY.toString() + "§7[§2Skill§7] %hero% screams a battle cry!");
+		conf.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY.toString() + ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% screams a battle cry!");
 		conf.set("stamina-restored", 5);
 		return conf;
 	}

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,8 +49,8 @@ public class SkillCombustBlood extends TargettedSkill {
         node.set(SkillSetting.DAMAGE_TICK.node(), 17);
         node.set(SkillSetting.PERIOD.node(), 2500);
         node.set(SkillSetting.DURATION.node(), 7500);
-        node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target% is bleeding from the effects of their Combusted Blood!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target% is no longer bleeding.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is bleeding from the effects of their Combusted Blood!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is no longer bleeding.");
         return node;
     }
 
@@ -67,8 +68,8 @@ public class SkillCombustBlood extends TargettedSkill {
 
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% is no longer bleeding.").replace("%target%", "$1");
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is no longer bleeding.").replace("%target%", "$1");
     }
 
     @Override

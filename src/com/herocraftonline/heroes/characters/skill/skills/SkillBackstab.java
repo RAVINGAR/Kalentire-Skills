@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -69,22 +70,22 @@ public class SkillBackstab extends ActiveSkill {
         node.set("ambush-bonus", Double.valueOf(1.2D));
         node.set("ambush-chance", Double.valueOf(-1D));
         node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
-        node.set(SkillSetting.USE_TEXT.node(), "§7[§2Skill§7] %hero% backstabbed %target%!");
+        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% backstabbed %target%!");
 
         return node;
     }
 
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "§7[§2Skill§7] %hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        Messaging.send(player, "§c----------[ §fBackstab Damage §c]----------");
-        //Messaging.send(player, "§fBackstab is a passive skill.");
-        //Messaging.send(player, "§fUsing this ability displays weapon damage when backstabbing.");
+        Messaging.send(player, ChatColor.RED + "----------[ "+ChatColor.WHITE+"Backstab Damage "+ChatColor.RED+"]----------");
+        //Messaging.send(player, ""+ChatColor.WHITE+"Backstab is a passive skill.");
+        //Messaging.send(player, ""+ChatColor.WHITE+"Using this ability displays weapon damage when backstabbing.");
 
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
@@ -109,7 +110,8 @@ public class SkillBackstab extends ActiveSkill {
     }
 
     private void displayWeaponDamage(Player player, String weaponName, int backstabDamage, int ambushDamage) {
-        Messaging.send(player, "§a" + weaponName + ": " + "§fBackstab: §7" + backstabDamage + "§f, Sneaking Backstab: §7" + ambushDamage);
+        Messaging.send(player, ChatColor.GREEN + weaponName + ": " + ""+ChatColor.WHITE+"Backstab: " + ChatColor.GRAY + backstabDamage 
+                +ChatColor.WHITE+", Sneaking Backstab: "+ChatColor.GRAY + ambushDamage);
     }
 
     public class SkillHeroesListener implements Listener {

@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -114,7 +115,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
                             // We have a valid max uses value, let's set it.
 
                             // Recharge the runestone
-                            loreData.set(1, "§bUses: " + maxUses + "/" + maxUses);
+                            loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + maxUses + "/" + maxUses);
                             metaData.setLore(loreData);
                             heldItem.setItemMeta(metaData);
 

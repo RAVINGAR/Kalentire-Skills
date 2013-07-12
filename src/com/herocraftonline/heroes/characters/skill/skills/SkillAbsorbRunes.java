@@ -108,14 +108,14 @@ public class SkillAbsorbRunes extends ActiveSkill {
         // Skill usage configs
         node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% absorbs his Runes!");
         node.set("conversion-rate", 0.35);
-        node.set("fail-text-no-runes", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] §fYou have no Runes to absorb!");
+        node.set("fail-text-no-runes", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] "+ChatColor.WHITE+"You have no Runes to absorb!");
 
         // Rune usage configs
         node.set("rune-application-cooldown", Integer.valueOf(1000));
-        node.set("imbued-runes-text-empty", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] §fYour weapon is no longer imbued with Runes!");
-        node.set("imbued-runes-text-start", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] §fImbued Runes: <");
-        node.set("imbued-runes-text-delimiter", "§f|");
-        node.set("imbued-runes-text-end", "§f>");
+        node.set("imbued-runes-text-empty", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] "+ChatColor.WHITE+"Your weapon is no longer imbued with Runes!");
+        node.set("imbued-runes-text-start", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] "+ChatColor.WHITE+"Imbued Runes: <");
+        node.set("imbued-runes-text-delimiter", ""+ChatColor.WHITE+"|");
+        node.set("imbued-runes-text-end", ""+ChatColor.WHITE+">");
 
         return node;
     }
@@ -132,7 +132,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         // Check to see if they actually have Runes to absorb
         RuneQueue runeList = heroRunes.get(hero);
         if (runeList.isEmpty()) {
-            String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] §fYou have no Runes to absorb!");
+            String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] "+ChatColor.WHITE+"You have no Runes to absorb!");
             Messaging.send(player, failText, new Object[0]);
             return SkillResult.FAIL;
         }
@@ -474,10 +474,10 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
         // Check to see if the list is empty before attempting to build a string
         if (runeListStr == null) {
-            currentRuneQueueStr = SkillConfigManager.getRaw(this, "imbued-runes-text-empty", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] §fYour weapon is no longer imbued with Runes!");
+            currentRuneQueueStr = SkillConfigManager.getRaw(this, "imbued-runes-text-empty", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] "+ChatColor.WHITE+"Your weapon is no longer imbued with Runes!");
         }
         else {
-            String runeQueueStrStart = SkillConfigManager.getRaw(this, "imbued-runes-text-start", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] §fImbued Runes: <");
+            String runeQueueStrStart = SkillConfigManager.getRaw(this, "imbued-runes-text-start", ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] "+ChatColor.WHITE+"Imbued Runes: <");
             String runeQueueStrDelimiter = SkillConfigManager.getRaw(this, "imbued-runes-text-delimiter", ChatColor.WHITE+"|");
 
             currentRuneQueueStr = runeQueueStrStart + runeQueueStrDelimiter;

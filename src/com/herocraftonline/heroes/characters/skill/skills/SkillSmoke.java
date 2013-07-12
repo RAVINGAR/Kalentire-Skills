@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -49,8 +50,8 @@ public class SkillSmoke extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 20000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] Someone vanished in a cloud of smoke!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %hero% has reappeared!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] Someone vanished in a cloud of smoke!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has reappeared!");
         return node;
     }
 
@@ -58,8 +59,8 @@ public class SkillSmoke extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] Someone vanished in a cloud of smoke!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %hero% has reappeared!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] Someone vanished in a cloud of smoke!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has reappeared!").replace("%hero%", "$1");
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -198,7 +199,7 @@ public class SkillRecall extends ActiveSkill {
                             if (uses != -1) {
 
                                 if (maxUses != -1) {
-                                    loreData.set(1, "§bUses: " + (uses - 1) + "/" + maxUses);
+                                    loreData.set(1, ChatColor.AQUA.toString()+"Uses: " + (uses - 1) + "/" + maxUses);
                                     metaData.setLore(loreData);
                                     heldItem.setItemMeta(metaData);
                                 }

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
@@ -24,7 +25,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillLunarLance extends TargettedSkill {
 	private final int defDamage = 95;													// Default damage
 	private final int defBurnValue = 20;												// Default mana burn amount
-	private final String defFailText = "§fYou need a weapon to use this ability!";		// Default skill fail text
+	private final String defFailText = ChatColor.WHITE.toString()+"You need a weapon to use this ability!";		// Default skill fail text
 
 	public VisualEffect fplayer = new VisualEffect();									// Firework effect
 

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,8 +37,8 @@ public class SkillThickenBlood extends TargettedSkill {
 
         node.set("hunger-value", 80);
         node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "§7[§2Skill§7] %target%'s blood begins to thicken!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "§7[§2Skill§7] %target%'s blood returns to normal.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood begins to thicken!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood returns to normal.");
 
         return node;
     }
@@ -59,8 +60,8 @@ public class SkillThickenBlood extends TargettedSkill {
         // Get Debuff values
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         int hungerValue = SkillConfigManager.getUseSetting(hero, this, "hunger-value", 80, false);
-        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target%'s blood begins to thicken!").replace("%target%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target%'s blood returns to normal.").replace("%target%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood begins to thicken!").replace("%target%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood returns to normal.").replace("%target%", "$1");
 
         broadcastExecuteText(hero, target);
 

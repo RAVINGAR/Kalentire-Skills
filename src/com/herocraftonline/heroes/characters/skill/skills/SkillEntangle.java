@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -55,9 +56,9 @@ public class SkillEntangle extends TargettedSkill {
         node.set(SkillSetting.DAMAGE.node(), 1);
         node.set(SkillSetting.PERIOD.node(), 100);
         node.set(SkillSetting.DURATION.node(), 4000);
-        node.set(SkillSetting.USE_TEXT.node(), "[§2Skill§7] %hero% used %skill% on %target%!");
-        node.set(SkillSetting.APPLY_TEXT.node(), "[§2Skill§7] %target% has been entangled!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "[§2Skill§7] %target% has broken free from the entangle!");
+        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% used %skill% on %target%!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has been entangled!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has broken free from the entangle!");
 
         return node;
     }
@@ -79,8 +80,8 @@ public class SkillEntangle extends TargettedSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
-        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "[§2Skill§7] %target% has been entangled!").replace("%target%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "[§2Skill§7] %target% has broken free from the entangle!").replace("%target%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has been entangled!").replace("%target%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has broken free from the entangle!").replace("%target%", "$1");
 
         // Broadcast use text
         broadcastExecuteText(hero, target);

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
@@ -43,7 +44,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			public void applyToHero(Hero hero) {
 				super.applyToHero(hero);
 			    final Player player = hero.getPlayer();
-			    broadcast(hero.getEntity().getLocation(), "§7[§2Skill§7] $1 has begun channeling an arcane storm!", new Object[] 
+			    broadcast(hero.getEntity().getLocation(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] $1 has begun channeling an arcane storm!", new Object[] 
 			    		{hero.getPlayer().getName()});
 			    List<Location> fireworkLocations = circle(hero.getPlayer(),hero.getPlayer().getLocation(),10,1,true,false,15);
 			    long ticksPerFirework = (int) (100.00/((double)fireworkLocations.size()));
@@ -91,7 +92,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			@Override
 			public void removeFromHero(Hero hero) {
 				super.removeFromHero(hero);
-			    broadcast(hero.getPlayer().getLocation(), "§7[§2Skill§7] Arcane Storm Unleashed!", new Object[] {});
+			    broadcast(hero.getPlayer().getLocation(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] Arcane Storm Unleashed!", new Object[] {});
 			}
 
 		});
