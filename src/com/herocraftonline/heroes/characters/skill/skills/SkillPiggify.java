@@ -91,6 +91,7 @@ public class SkillPiggify extends TargettedSkill {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
             startLoc = player.getLocation();
+            //Messaging.send(player, "StartLoc & Start: " + startLoc.getBlockX() + ", " + startLoc.getBlockY() + ", " + startLoc.getBlockZ());
             creature.setPassenger(player);
             creatures.put(creature, hero);
         }
@@ -105,10 +106,14 @@ public class SkillPiggify extends TargettedSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             creatures.remove(creature);
             creature.remove();
-            player.teleport(startLoc);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
+                    player.teleport(startLoc);
+                }
+            }, (long) (0.1 * 20));
         }
     }
 
