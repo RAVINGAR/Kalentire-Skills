@@ -120,7 +120,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
     public class MelodicBindingEffect extends PeriodicExpirableEffect {
 
-        private final int tickDamage;
+        private final double tickDamage;
         private final int range;
 
         public MelodicBindingEffect(SkillMelodicBinding skill, long duration, long period, int tickDamage, int range) {

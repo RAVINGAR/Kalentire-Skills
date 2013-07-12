@@ -37,7 +37,7 @@ public class SkillArcaneblast extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);

@@ -63,7 +63,7 @@ public class SkillShield extends PassiveSkill {
                 } else if (player.getItemInHand().getType() == Material.TRAP_DOOR) {
                     multiplier = SkillConfigManager.getUseSetting(hero, skill, "trapdoor", 0.60, true);
                 }
-                event.setDamage((int) (event.getDamage() * multiplier));
+                event.setDamage((event.getDamage() * multiplier));
             }
         }
     }

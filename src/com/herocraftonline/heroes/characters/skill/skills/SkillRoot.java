@@ -40,7 +40,7 @@ public class SkillRoot extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false); //Adding to combat-tag the player
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false); //Adding to combat-tag the player
         Player player = hero.getPlayer(); //Adding for Fireworks
         player.setWalkSpeed(0);
         addSpellTarget(target, hero); // Combat Tagging

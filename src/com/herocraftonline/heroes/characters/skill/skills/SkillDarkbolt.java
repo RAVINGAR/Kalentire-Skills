@@ -109,8 +109,8 @@ public class SkillDarkbolt extends ActiveSkill
         SkillDarkbolt.this.plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(this.skill, (Player)dmger));
 
         SkillDarkbolt.this.addSpellTarget(entity, hero);
-        int damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE, 4, false);
-        damage += (int)(SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE, 0.0D, false) * hero.getSkillLevel(this.skill));
+        double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE, 4, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE, 0.0D, false) * hero.getSkillLevel(this.skill));
         Skill.damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
         event.setCancelled(true);
       }

@@ -92,7 +92,7 @@ public class SkillInversion extends TargettedSkill {
         int maxDamage = SkillConfigManager.getUseSetting(hero, this, "max-damage", 0, false);
         double damageMod = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getSkillLevel(this));
-        int damage = (int) ((enemy.getMaxMana() - enemy.getMana()) * damageMod);
+        double damage = ((enemy.getMaxMana() - enemy.getMana()) * damageMod);
         if (maxDamage != 0 && damage > maxDamage) {
             damage = maxDamage;
         }

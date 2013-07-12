@@ -33,8 +33,8 @@ public class SkillBalance extends ActiveSkill {
             h.getPlayer().sendMessage(ChatColor.GRAY + "You are not in a party!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        int maxHealthTotal = 0;
-        int currentHealthTotal = 0;
+        double maxHealthTotal = 0;
+        double currentHealthTotal = 0;
         Iterator<Hero> partyMembers = heroParty.getMembers().iterator();
         Vector v = h.getPlayer().getLocation().toVector();
         int range = SkillConfigManager.getUseSetting(h, this, "maxrange", 0, false);
@@ -57,7 +57,7 @@ public class SkillBalance extends ActiveSkill {
         while(applyHealthIterator.hasNext()) {
             Hero applyHero = applyHealthIterator.next();
             if(skipRangeCheck || applyHero.getPlayer().getLocation().toVector().distanceSquared(v) < range) {
-                applyHero.getPlayer().setHealth((int) (applyHero.getPlayer().getMaxHealth() * healthMultiplier));
+                applyHero.getPlayer().setHealth( (applyHero.getPlayer().getMaxHealth() * healthMultiplier));
                 if(applyHero.getName() == h.getName()) {
                     h.getPlayer().sendMessage(ChatColor.GRAY + "You used Balance!");
                 } else {

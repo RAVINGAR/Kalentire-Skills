@@ -105,7 +105,7 @@ public class SkillIcebolt extends ActiveSkill {
                     return;
                 }
                 event.getEntity().setFireTicks(0);
-                int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 3, false);
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 3, false);
                 
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 10000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);

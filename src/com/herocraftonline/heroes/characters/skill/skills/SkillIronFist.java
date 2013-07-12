@@ -72,7 +72,7 @@ public class SkillIronFist extends ActiveSkill {
             }
 
             // Damage the target
-            int damage = SkillConfigManager.getUseSetting(hero, this, "damage", Integer.valueOf(25), false);
+            double damage = SkillConfigManager.getUseSetting(hero, this, "damage", Integer.valueOf(25), false);
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);
 

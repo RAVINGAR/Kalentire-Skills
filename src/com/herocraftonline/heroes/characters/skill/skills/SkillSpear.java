@@ -48,7 +48,7 @@ public class SkillSpear extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);

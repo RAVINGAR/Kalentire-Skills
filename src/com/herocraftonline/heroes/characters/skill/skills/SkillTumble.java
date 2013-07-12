@@ -53,7 +53,7 @@ public class SkillTumble extends PassiveSkill {
                 return;
             }
             int distance = (int) (SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false) + (hero.getSkillLevel(skill) * SkillConfigManager.getUseSetting(hero, skill, "distance-per-level", .5, false)));
-            int fallDistance = (event.getDamage() - 3) * 3;
+            double fallDistance = (event.getDamage() - 3) * 3;
             fallDistance -= distance;
             if (fallDistance <= 0) {
                 event.setCancelled(true);

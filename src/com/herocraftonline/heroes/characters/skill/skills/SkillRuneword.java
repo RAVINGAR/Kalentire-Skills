@@ -105,7 +105,7 @@ public class SkillRuneword extends TargettedSkill {
             CharacterTemplate character = SkillRuneword.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (character.hasEffect("Runeword")) {
                 double damageBonus = ((RunewordEffect) character.getEffect("Runeword")).damageBonus;
-                event.setDamage((int) (event.getDamage() * damageBonus));
+                event.setDamage((event.getDamage() * damageBonus));
             }
         }
     }

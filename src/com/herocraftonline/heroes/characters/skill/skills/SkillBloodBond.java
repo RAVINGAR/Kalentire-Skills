@@ -113,10 +113,10 @@ public class SkillBloodBond extends ActiveSkill {
         }
 
         // Heals the hero and his party based on the specified damage
-        private void healHeroParty(Hero hero, int damage) {
+        private void healHeroParty(Hero hero, double d) {
             // Set the healing amount
             double healPercent = SkillConfigManager.getUseSetting(hero, skill, "heal-percent", 0.15, false);
-            int healAmount = (int) (healPercent * damage);
+            double healAmount = (healPercent * d);
 
             // Set the distance variables 
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 20, false);

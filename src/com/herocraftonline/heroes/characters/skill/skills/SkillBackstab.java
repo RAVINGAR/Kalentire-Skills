@@ -155,10 +155,10 @@ public class SkillBackstab extends ActiveSkill {
                 }
 
                 if (chance < 0)		// If below 1, backstab every time.
-                    event.setDamage((int) (event.getDamage() * bonusDamage));
+                    event.setDamage( (event.getDamage() * bonusDamage));
                 else {
                     if (Util.nextRand() < chance)
-                        event.setDamage((int) (event.getDamage() * bonusDamage));
+                        event.setDamage( (event.getDamage() * bonusDamage));
                 }
 
                 Entity target = event.getEntity();

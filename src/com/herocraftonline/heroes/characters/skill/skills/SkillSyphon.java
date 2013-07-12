@@ -37,15 +37,15 @@ public class SkillSyphon extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
         }
 
-        int transferredHealth = SkillConfigManager.getUseSetting(hero, this, "default-health", 4, false);
+        double transferredHealth = SkillConfigManager.getUseSetting(hero, this, "default-health", 4, false);
         if (args.length == 2) {
             try {
-                transferredHealth = Integer.parseInt(args[1]);
+                transferredHealth = Double.parseDouble(args[1]);
             } catch (NumberFormatException e) {
             	throw new IllegalArgumentException("Invalid health value defined in Heroes skill - Syphon. FIX YOUR CONFIGURATION");
             }
         }
-        int playerHealth = hero.getPlayer().getHealth();
+        double playerHealth = hero.getPlayer().getHealth();
         if (playerHealth - transferredHealth < 0) {
             return SkillResult.LOW_HEALTH;
         } else {

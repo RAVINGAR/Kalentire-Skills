@@ -41,7 +41,7 @@ public class SkillBlitz extends TargettedSkill {
         Player player = hero.getPlayer();
 
         target.getWorld().strikeLightningEffect(target.getLocation());
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
         
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC);

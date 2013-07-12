@@ -54,7 +54,7 @@ public class SkillInferno extends ActiveSkill {
 		Player player = hero.getPlayer();
 
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 		int fireTicks = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 
 		broadcastExecuteText(hero);

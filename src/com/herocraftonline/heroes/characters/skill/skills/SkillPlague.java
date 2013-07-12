@@ -85,7 +85,7 @@ public class SkillPlague extends TargettedSkill {
     public class PlagueEffect extends PeriodicDamageEffect {
         private boolean jumped = false;
 
-        public PlagueEffect(Skill skill, long duration, long period, int tickDamage, Player applier) {
+        public PlagueEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
             super(skill, "Plague", period, duration, tickDamage, applier);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DISEASE);

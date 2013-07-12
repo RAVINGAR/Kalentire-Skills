@@ -107,7 +107,7 @@ public class SkillCharge extends TargettedSkill {
             long slowDuration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 0, false);
             long rootDuration = SkillConfigManager.getUseSetting(hero, skill, "root-duration", 0, false);
             long silenceDuration = SkillConfigManager.getUseSetting(hero, skill, "silence-duration", 0, false);
-            int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE.node(), 0, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE.node(), 0, false);
             damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
             for (Entity e : player.getNearbyEntities(radius, radius, radius)) {
                 if (!(e instanceof LivingEntity)) {

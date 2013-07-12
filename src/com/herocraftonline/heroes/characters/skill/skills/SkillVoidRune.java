@@ -133,7 +133,7 @@ public class SkillVoidRune extends ActiveSkill {
             CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
-            int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
             String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% has been silenced by a Rune of Void!").replace("%target%", "$1");
             String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% is no longer silenced!").replace("%target%", "$1");

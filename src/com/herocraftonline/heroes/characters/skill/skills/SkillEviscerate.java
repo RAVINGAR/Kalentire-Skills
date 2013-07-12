@@ -44,8 +44,8 @@ public class SkillEviscerate extends TargettedSkill {
             Messaging.send(player, "You can't use eviscerate with that weapon!");
             return SkillResult.FAIL;
         }
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.9F, 1.0F);

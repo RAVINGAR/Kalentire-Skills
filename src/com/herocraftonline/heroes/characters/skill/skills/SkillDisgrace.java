@@ -73,7 +73,7 @@ public class SkillDisgrace extends TargettedSkill {
 
     public class BleedSkillEffect extends PeriodicDamageEffect {
 
-        public BleedSkillEffect(Skill skill, long duration, long period, int tickDamage, Player applier) {
+        public BleedSkillEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
             super(skill, "Disgrace", period, duration, tickDamage, applier);
             this.types.add(EffectType.BLEED);
         }

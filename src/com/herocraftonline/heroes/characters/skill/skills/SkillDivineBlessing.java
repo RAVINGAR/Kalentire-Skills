@@ -41,7 +41,7 @@ public class SkillDivineBlessing extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 2, false);
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 2, false);
         if (hero.getParty() == null) {
             // Heal just the caster if he's not in a party
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, this, hero);

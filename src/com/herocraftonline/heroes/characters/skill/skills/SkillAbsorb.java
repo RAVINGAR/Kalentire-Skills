@@ -108,11 +108,11 @@ public class SkillAbsorb extends ActiveSkill {
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
         }
         
-        private int getAdjustment(Player player, int damage) {
+        private double getAdjustment(Player player, double d) {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("Absorb")) {
                 int absorbAmount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
-                damage = ((int) (damage * 0.50));
+                d = ((int) (d * 0.50));
                 int mana = hero.getMana();
                 if (mana + absorbAmount > hero.getMaxMana()) {
                     hero.removeEffect(hero.getEffect("Absorb"));
@@ -123,7 +123,7 @@ public class SkillAbsorb extends ActiveSkill {
                     }
                 }
             }
-            return damage;
+            return d;
         }
     }
 

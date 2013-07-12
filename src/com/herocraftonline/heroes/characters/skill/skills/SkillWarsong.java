@@ -141,7 +141,7 @@ public class SkillWarsong extends ActiveSkill {
             CharacterTemplate character = event.getDamager();
             if (character.hasEffect("Warsong")) {
                 double damageBonus = ((WarsongEffect) character.getEffect("Warsong")).damageBonus;
-                event.setDamage((int) (event.getDamage() * damageBonus));
+                event.setDamage((event.getDamage() * damageBonus));
             }           
         }
     }

@@ -83,7 +83,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
         private int totalDamage = 0;
 
-        public SoulLeechEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
+        public SoulLeechEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "SoulLeech", period, duration, tickDamage, applier);
             this.types.add(EffectType.HARMFUL);
             this.types.add(EffectType.DARK);
@@ -129,7 +129,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
         private void healApplier() {
             Hero hero = plugin.getCharacterManager().getHero(applier);
-            int healAmount = (int) (totalDamage * SkillConfigManager.getUseSetting(hero, skill, "heal-multiplier", 1.0, false));
+            double healAmount = (totalDamage * SkillConfigManager.getUseSetting(hero, skill, "heal-multiplier", 1.0, false));
 
             // Fire our heal event
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, skill, hero);

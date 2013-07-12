@@ -77,7 +77,7 @@ public class SkillCombustBlood extends TargettedSkill {
         Player player = hero.getPlayer();
 
         // Deal damage
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 
@@ -134,7 +134,7 @@ public class SkillCombustBlood extends TargettedSkill {
 
         private final Player applier;
 
-        public CombustingBloodEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
+        public CombustingBloodEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "CombustingBloodEffect", period, duration, tickDamage, applier);
 
             this.applier = applier;

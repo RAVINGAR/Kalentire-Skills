@@ -93,7 +93,7 @@ public class SkillRegrowth extends TargettedSkill {
 	}
 
 	public class RegrowthEffect extends PeriodicHealEffect {
-		public RegrowthEffect(Skill skill, long period, long duration, int tickHealth, Player applier) {
+		public RegrowthEffect(Skill skill, long period, long duration, double tickHealth, Player applier) {
 			super(skill, "RegrowthEffect", period, duration, tickHealth, applier);
 			this.types.add(EffectType.DISPELLABLE);
 		}

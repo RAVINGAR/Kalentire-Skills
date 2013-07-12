@@ -104,7 +104,7 @@ public class SkillEmpathy extends TargettedSkill {
         double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getSkillLevel(this)));
         damageMod = damageMod > 0 ? damageMod : 0;
-        int damage = (int) ((hero.getPlayer().getMaxHealth() - hero.getPlayer().getHealth()) * damageMod);
+        double damage = ((hero.getPlayer().getMaxHealth() - hero.getPlayer().getHealth()) * damageMod);
         if (maxDamage != 0 && damage > maxDamage) {
             damage = maxDamage;
         }

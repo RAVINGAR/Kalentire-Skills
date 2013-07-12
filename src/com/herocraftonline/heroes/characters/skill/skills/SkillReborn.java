@@ -67,7 +67,7 @@ public class SkillReborn extends PassiveSkill {
             }
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            int currentHealth = player.getHealth();
+            double currentHealth = player.getHealth();
             if (currentHealth > event.getDamage()) {
                 return;
             }
@@ -75,7 +75,7 @@ public class SkillReborn extends PassiveSkill {
                 if (hero.getCooldown("Reborn") == null || hero.getCooldown("Reborn") <= System.currentTimeMillis()) {
                     double regainPercent = SkillConfigManager.getUseSetting(hero, skill, "health-percent-on-rebirth", 0.5, false)
                             + (SkillConfigManager.getUseSetting(hero, skill, "health-increase", 0.0, false) * hero.getSkillLevel(skill));
-                    int healthRegain = (int) (player.getMaxHealth() * regainPercent);
+                    double healthRegain = (player.getMaxHealth() * regainPercent);
                     HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, skill, hero);
                     if (hrh.isCancelled() || hrh.getAmount() == 0) {
                         return;

@@ -75,7 +75,7 @@ public class SkillPoisonArrow extends ActiveSkill {
 
     public class ArrowPoison extends PeriodicDamageEffect {
         
-        public ArrowPoison(Skill skill, long period, long duration, int tickDamage, Player applier) {
+        public ArrowPoison(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "ArrowPoison", period, duration, tickDamage, applier);
             this.types.add(EffectType.POISON);
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);

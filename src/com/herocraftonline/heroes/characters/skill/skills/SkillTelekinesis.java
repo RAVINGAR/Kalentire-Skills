@@ -5,7 +5,7 @@ import java.util.HashSet;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
@@ -49,7 +49,7 @@ public class SkillTelekinesis extends ActiveSkill {
         Block block = player.getTargetBlock(transparent, SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false));
         if (block.getType() == Material.LEVER || block.getType() == Material.STONE_BUTTON) {
             // Can't adjust levers/Buttons through CB
-            net.minecraft.server.Block.byId[block.getType().getId()].interact(((CraftWorld) block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
+            net.minecraft.server.v1_6_R2.Block.byId[block.getType().getId()].interact(((CraftWorld) block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
             // In Case Bukkit eaver fixes blockState changes on levers:
             // Lever lever = (Lever) block.getState().getData();
             // lever.setPowered(!lever.isPowered());

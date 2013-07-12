@@ -70,7 +70,7 @@ public class SkillImpale extends TargettedSkill {
         }
 
         int force = SkillConfigManager.getUseSetting(hero, this, "force", 3, false);
-        int damage = plugin.getDamageManager().getItemDamage(item, player);
+        double damage = plugin.getDamageManager().getItemDamage(item, player);
         //damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 

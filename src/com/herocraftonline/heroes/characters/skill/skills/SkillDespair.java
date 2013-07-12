@@ -76,7 +76,7 @@ public class SkillDespair extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
         duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         Player player = hero.getPlayer();
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 0, false);
         damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
         //int exp = SkillConfigManager.getUseSetting(hero, this, "exp-per-blinded-player", 0, false);
         DespairEffect dEffect = new DespairEffect(this, duration, player);

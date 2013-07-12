@@ -87,7 +87,7 @@ public class SkillBlight extends TargettedSkill {
 
     public class BlightEffect extends PeriodicDamageEffect {
 
-        public BlightEffect(Skill skill, long duration, long period, int tickDamage, Player applier) {
+        public BlightEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
             super(skill, "Blight", period, duration, tickDamage, applier);
             this.types.add(EffectType.DISEASE);
             this.types.add(EffectType.DISPELLABLE);

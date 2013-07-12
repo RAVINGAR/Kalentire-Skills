@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.MobEffect;
+import net.minecraft.server.v1_6_R2.EntityLiving;
+import net.minecraft.server.v1_6_R2.MobEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -109,7 +109,7 @@ public class SkillPlagueBomb extends ActiveSkill {
 		if (sheepMap.containsKey(id)) {
 			Player player = (Player) sheepMap.get(id);
 			Hero hero = plugin.getCharacterManager().getHero(player);
-			int damage = 1;
+			double damage = 1;
 			if (hero != null) {
 				damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 210, false);
 			}

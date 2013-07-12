@@ -88,7 +88,7 @@ public class SkillLunarLance extends TargettedSkill {
 		}
 
 		// Deal damage
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, defDamage, false);
 		damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
 
 		// Player Firework Effect

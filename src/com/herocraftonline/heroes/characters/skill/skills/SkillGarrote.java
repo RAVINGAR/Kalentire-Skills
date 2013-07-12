@@ -50,7 +50,7 @@ public class SkillGarrote extends TargettedSkill {
             return SkillResult.FAIL;
         }
         
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         if (target instanceof Player) {
             long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);

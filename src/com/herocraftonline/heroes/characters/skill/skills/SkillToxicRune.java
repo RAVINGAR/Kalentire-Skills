@@ -173,7 +173,7 @@ public class SkillToxicRune extends ActiveSkill
 		private final String expireText;
 		private final Player applier;
 
-		public ToxicRunePoison(Skill skill, long period, long duration, int tickDamage, Player applier, String applyText, String expireText)
+		public ToxicRunePoison(Skill skill, long period, long duration, double tickDamage, Player applier, String applyText, String expireText)
 		{
 			super(skill, "ToxicRunePoison", period, duration, tickDamage, applier, false);
 

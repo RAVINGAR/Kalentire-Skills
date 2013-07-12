@@ -96,7 +96,7 @@ public class SkillFearless extends ActiveSkill {
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect("FearlessEffect")) {
                     double damageMult = SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", 1.1D, false);
-                    int newDamage = (int) (damageMult * event.getDamage());
+                    double newDamage = (damageMult * event.getDamage());
 
                     event.setDamage(newDamage);
                 }
@@ -122,7 +122,7 @@ public class SkillFearless extends ActiveSkill {
             if ((event.getEntity() instanceof Player)) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect("FearlessEffect")) {
-                    event.setDamage((int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", 1.1D, false)));
+                    event.setDamage((event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", 1.1D, false)));
                 }
             }
 
@@ -130,7 +130,7 @@ public class SkillFearless extends ActiveSkill {
                 Hero hero = (Hero) event.getDamager();
                 if (hero.hasEffect("FearlessEffect")) {
                     double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", 0.005D, false) * hero.getSkillLevel(skill);
-                    int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", 1.1D, false) + levelMult));
+                    double newDamage = (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", 1.1D, false) + levelMult));
                     event.setDamage(newDamage);
                 }
             }

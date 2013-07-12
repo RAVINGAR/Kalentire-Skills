@@ -70,7 +70,7 @@ public class SkillIceblade extends TargettedSkill {
             return SkillResult.FAIL;
         }
         
-        int damage = plugin.getDamageManager().getItemDamage(item, player);
+        double damage = plugin.getDamageManager().getItemDamage(item, player);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         //Add the slow effect

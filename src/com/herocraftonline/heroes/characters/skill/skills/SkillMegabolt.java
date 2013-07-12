@@ -38,7 +38,7 @@ public class SkillMegabolt extends TargettedSkill {
         Player player = hero.getPlayer();
 
         int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
 
         // Damage the first target
         addSpellTarget(target, hero);

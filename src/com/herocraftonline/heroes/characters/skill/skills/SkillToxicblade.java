@@ -109,7 +109,7 @@ public class SkillToxicblade extends ActiveSkill {
 
     public class ToxicbladePoison extends PeriodicDamageEffect {
 
-        public ToxicbladePoison(Skill skill, long period, long duration, int tickDamage, Player applier) {
+        public ToxicbladePoison(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "ToxicbladePoison", period, duration, tickDamage, applier);
             this.types.add(EffectType.POISON);
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);

@@ -67,8 +67,8 @@ public class SkillSiphonBlood extends TargettedSkill {
 		Player player = hero.getPlayer();
 
 		// Calculate damage
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
-		damage = (int) (damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25D, false) * hero.getSkillLevel(this));
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
+		damage = (damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25D, false) * hero.getSkillLevel(this));
 
 		double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false);
 
@@ -85,7 +85,7 @@ public class SkillSiphonBlood extends TargettedSkill {
 		healIncrease *= bloodUnionLevel;
 		healMult += healIncrease;
 
-		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (damage * healMult), this, hero);
+		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this, hero);
 
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
 		if (!hrEvent.isCancelled()) {

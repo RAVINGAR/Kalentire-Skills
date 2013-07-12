@@ -54,7 +54,7 @@ public class SkillPulse extends ActiveSkill {
             if (!damageCheck(player, target))
                 continue;
 
-            int damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
+            double damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
             // this is our fireworks shit
             try {
                 fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 

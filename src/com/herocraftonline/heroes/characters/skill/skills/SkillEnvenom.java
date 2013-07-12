@@ -252,7 +252,7 @@ public class SkillEnvenom extends ActiveSkill {
 
     public class EnvenomPoisonEffect extends PeriodicDamageEffect {
 
-        public EnvenomPoisonEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
+        public EnvenomPoisonEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "EnvenomPoisonEffect", period, duration, tickDamage, applier);
 
             types.add(EffectType.POISON);

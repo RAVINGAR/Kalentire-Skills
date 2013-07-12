@@ -78,7 +78,7 @@ public class SkillChakra extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private void healDispel(Hero targetHero, int removals, int healAmount, Hero hero) {
+    private void healDispel(Hero targetHero, int removals, double healAmount, Hero hero) {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         Bukkit.getPluginManager().callEvent(hrhEvent);
         if (!hrhEvent.isCancelled()) {

@@ -65,7 +65,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		Player player = hero.getPlayer();
 
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 
 		// Damage the target
 		addSpellTarget(target, hero);
@@ -120,7 +120,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
 			double damageMultiplier = qpEffect.getDamageModifier();
 
 			// Alter the damage being dealt to the target
-			int damage = (int) (event.getDamage() * damageMultiplier);
+			double damage = (event.getDamage() * damageMultiplier);
 			event.setDamage(damage);
 
 			return;

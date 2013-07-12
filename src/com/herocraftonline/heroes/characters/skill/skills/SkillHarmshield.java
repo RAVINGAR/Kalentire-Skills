@@ -131,11 +131,11 @@ public class SkillHarmshield extends ActiveSkill {
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
         }
 
-        private int getAdjustment(Player player, int damage) {
+        private double getAdjustment(Player player, double d) {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("HarmShield"))
-                damage *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 0.1D, false);
-            return damage;
+                d *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 0.1D, false);
+            return d;
         }
     }
     

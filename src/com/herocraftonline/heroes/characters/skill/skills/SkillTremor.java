@@ -44,7 +44,7 @@ public class SkillTremor extends ActiveSkill{
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
         double knockbackPower = SkillConfigManager.getUseSetting(hero, this, "knockback-power", 6.0, false);
         Location playerLoc = player.getLocation();
         

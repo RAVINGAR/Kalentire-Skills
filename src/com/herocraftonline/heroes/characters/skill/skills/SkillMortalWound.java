@@ -76,7 +76,7 @@ public class SkillMortalWound extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
+        double damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
@@ -95,7 +95,7 @@ public class SkillMortalWound extends TargettedSkill {
 
         private final double healMultiplier;
 
-        public MortalWound(Skill skill, long period, long duration, int tickDamage, Player applier, double healMultiplier) {
+        public MortalWound(Skill skill, long period, long duration, double tickDamage, Player applier, double healMultiplier) {
             super(skill, "MortalWound", period, duration, tickDamage, applier);
             this.healMultiplier = healMultiplier;
             this.types.add(EffectType.BLEED);
@@ -147,7 +147,7 @@ public class SkillMortalWound extends TargettedSkill {
         public void onHeroRegainHealth(HeroRegainHealthEvent event) {
             if (event.getHero().hasEffect("MortalWound")) {
                 MortalWound mEffect = (MortalWound) event.getHero().getEffect("MortalWound");
-                event.setAmount((int) (event.getAmount() * mEffect.healMultiplier));
+                event.setAmount((event.getAmount() * mEffect.healMultiplier));
             }
         }
     }

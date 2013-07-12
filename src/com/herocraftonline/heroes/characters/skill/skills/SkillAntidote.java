@@ -1,10 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.MobEffectList;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
+import net.minecraft.server.v1_6_R2.MobEffectList;
 
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

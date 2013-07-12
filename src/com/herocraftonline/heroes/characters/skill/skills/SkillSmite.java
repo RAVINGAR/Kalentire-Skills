@@ -54,7 +54,7 @@ public class SkillSmite extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int damage = 0;
+        double damage = 0;
         if (target instanceof Zombie || target instanceof Skeleton || target instanceof PigZombie)
             damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(250), false);
         else

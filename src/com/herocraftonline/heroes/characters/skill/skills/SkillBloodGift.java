@@ -67,7 +67,7 @@ public class SkillBloodGift extends TargettedSkill {
 			return SkillResult.FAIL;
 		}
 
-		int targetHealth = target.getHealth();
+		double targetHealth = target.getHealth();
 
 		// Check to see if they are at full health
 		if (targetHealth >= target.getMaxHealth()) {
@@ -75,7 +75,7 @@ public class SkillBloodGift extends TargettedSkill {
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 
-		int healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 200, false);
+		double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 200, false);
 
 		// Get Blood Union Level
 		int bloodUnionLevel = 0;

@@ -61,7 +61,7 @@ public class SkillInfusion extends TargettedSkill {
 
         Hero targetHero = this.plugin.getCharacterManager().getHero((Player) target);
 
-        int targetHealth = target.getHealth();
+        double targetHealth = target.getHealth();
 
         // Check to see if they are at full health
         if (targetHealth >= target.getMaxHealth()) {
@@ -74,7 +74,7 @@ public class SkillInfusion extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
 
         // Get Blood Union Level
         int bloodUnionLevel = 0;

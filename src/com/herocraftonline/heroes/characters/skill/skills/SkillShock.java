@@ -71,7 +71,7 @@ public class SkillShock extends TargettedSkill {
         
         private final int range;
         
-        public ShockEffect(Skill skill, long period, long duration, int tickDamage, int range, Player applier) {
+        public ShockEffect(Skill skill, long period, long duration, double tickDamage, int range, Player applier) {
             super(skill, "Shock", period, duration, tickDamage, applier);
             this.range = range;
             this.types.add(EffectType.DISPELLABLE);

@@ -53,7 +53,7 @@ public class SkillBloodRitual extends TargettedSkill {
 
 		Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
-		int targetHealth = target.getHealth();
+		double targetHealth = target.getHealth();
 
 		// Check to see if they are at full health
 		if (targetHealth >= target.getMaxHealth()) {
@@ -79,7 +79,7 @@ public class SkillBloodRitual extends TargettedSkill {
 		double healthMultiplier = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false);
 		healthMultiplier *= bloodUnionLevel;
 
-		int healAmount = (int) (healthMultiplier * target.getMaxHealth());
+		double healAmount = (healthMultiplier * target.getMaxHealth());
 
 		// Ensure they can be healed.
 		HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);

@@ -93,7 +93,7 @@ public class SkillChlorobon extends TargettedSkill {
     }
 
     public class ChlorobonEffect extends PeriodicHealEffect {
-        public ChlorobonEffect(Skill skill, long period, long duration, int tickHealth, Player applier) {
+        public ChlorobonEffect(Skill skill, long period, long duration, double tickHealth, Player applier) {
             super(skill, "ChlorobonEffect", period, duration, tickHealth, applier);
             this.types.add(EffectType.DISPELLABLE);
         }

@@ -134,7 +134,7 @@ public class SkillIceRune extends ActiveSkill {
 
             int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 2000, false);
-            int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
             String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "§7[§2Skill§7] %target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
             String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "§7[§2Skill§7] %target% is no longer slowed!").replace("%target%", "$1");

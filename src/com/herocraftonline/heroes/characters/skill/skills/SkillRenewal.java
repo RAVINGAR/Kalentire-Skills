@@ -66,8 +66,8 @@ public class SkillRenewal extends TargettedSkill {
             }
         }
 
-        int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
-        int targetHealth = target.getHealth();
+        double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
+        double targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {

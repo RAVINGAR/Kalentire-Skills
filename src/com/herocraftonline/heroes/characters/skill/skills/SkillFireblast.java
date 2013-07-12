@@ -47,7 +47,7 @@ public class SkillFireblast extends TargettedSkill
   {
     Player player = hero.getPlayer();
 
-    int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
+    double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
     addSpellTarget(target, hero);
 
     damageEntity(target, player, damage, DamageCause.MAGIC);

@@ -58,7 +58,7 @@ public class SkillStrike extends TargettedSkill {
         Player player = hero.getPlayer();
 
         // Damage the target
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
@@ -74,7 +74,7 @@ public class SkillStrike extends TargettedSkill {
 
     public class StrikeBleedEffect extends PeriodicDamageEffect {
 
-        public StrikeBleedEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
+        public StrikeBleedEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "StrikeBleed", period, duration, tickDamage, applier);
             this.types.add(EffectType.BLEED);
         }

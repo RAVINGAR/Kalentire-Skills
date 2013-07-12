@@ -82,7 +82,7 @@ public class SkillDecay extends TargettedSkill {
 
     public class DecayEffect extends PeriodicDamageEffect {
 
-        public DecayEffect(Skill skill, long duration, long period, int tickDamage, Player applier) {
+        public DecayEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
             super(skill, "Decay", period, duration, tickDamage, applier);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DISEASE);

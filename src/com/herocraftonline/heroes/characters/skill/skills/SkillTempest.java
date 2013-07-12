@@ -61,7 +61,7 @@ public class SkillTempest extends ActiveSkill {
 		final Player player = hero.getPlayer();
 
 		// Get config settings
-		final int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 300, false);
+		final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 300, false);
 		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 		final int height = SkillConfigManager.getUseSetting(hero, this, "effect-height", 5, false);
 

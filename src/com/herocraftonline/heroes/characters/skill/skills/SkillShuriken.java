@@ -171,7 +171,7 @@ public class SkillShuriken extends PassiveSkill {
 			LivingEntity target = (LivingEntity) event.getEntity();
 
 			// Damage the target
-			int damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 20, false);
+			double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 20, false);
 			skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);
 			damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 

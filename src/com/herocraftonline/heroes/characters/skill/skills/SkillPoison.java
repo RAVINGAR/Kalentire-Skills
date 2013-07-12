@@ -79,7 +79,7 @@ public class SkillPoison extends TargettedSkill {
 
     public class PoisonSkillEffect extends PeriodicDamageEffect {
         
-        public PoisonSkillEffect(Skill skill, long period, long duration, int tickDamage, Player applier) {
+        public PoisonSkillEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "Poison", period, duration, tickDamage, applier);
             this.types.add(EffectType.POISON);
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);

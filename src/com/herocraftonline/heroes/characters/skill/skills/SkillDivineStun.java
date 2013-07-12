@@ -35,7 +35,7 @@ public class SkillDivineStun extends TargettedSkill {
 	@Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 		damageEntity(target, hero.getEntity(), damage);
 		plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.5F, 1.0F);

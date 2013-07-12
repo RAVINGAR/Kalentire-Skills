@@ -139,7 +139,7 @@ public class SkillHealingBloom extends ActiveSkill {
 
 		public void tickHero(Hero hero) {
 			Player player = hero.getPlayer();
-			int amount = (int) amountHealed;
+			double amount = (int) amountHealed;
 			switch (this.mode) {
 			case 1:
 				amount = (int) (player.getMaxHealth() * amountHealed * 0.01D);

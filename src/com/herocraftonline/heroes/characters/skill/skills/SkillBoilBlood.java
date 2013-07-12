@@ -101,7 +101,7 @@ public class SkillBoilBlood extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 
         // Get DoT values
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
@@ -158,7 +158,7 @@ public class SkillBoilBlood extends ActiveSkill {
         private final String expireText;
         private final Player applier;
 
-        public BoilingBloodEffect(Skill skill, long period, long duration, int tickDamage, Player applier, String applyText, String expireText) {
+        public BoilingBloodEffect(Skill skill, long period, long duration, double tickDamage, Player applier, String applyText, String expireText) {
             super(skill, "BoilingBloodEffect", period, duration, tickDamage, applier, false);
 
             this.applyText = applyText;

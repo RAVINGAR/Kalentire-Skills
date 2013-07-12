@@ -80,9 +80,9 @@ public class SkillWithering extends TargettedSkill {
 
     public class WitheringEffect extends PeriodicDamageEffect {
 
-        private int finishDamage;
+        private double finishDamage;
 
-        public WitheringEffect(Skill skill, long duration, long period, int tickDamage, int finishDamage, Player applier) {
+        public WitheringEffect(Skill skill, long duration, long period, double tickDamage, double finishDamage, Player applier) {
             super(skill, "Withering", period, duration, tickDamage, applier);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.DARK);

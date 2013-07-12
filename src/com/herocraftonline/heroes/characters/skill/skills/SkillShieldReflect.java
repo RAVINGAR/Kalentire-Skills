@@ -120,7 +120,7 @@ public class SkillShieldReflect extends ActiveSkill {
 				case IRON_DOOR:
 				case WOOD_DOOR:
 				case TRAP_DOOR:
-					int damage = event.getDamage() * SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-amount", 2, false);
+					double damage = event.getDamage() * SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-amount", 2, false);
 					plugin.getDamageManager().addSpellTarget(attackerCT.getEntity(), defenderHero, skill);
 					Skill.damageEntity(attackerCT.getEntity(), defenderLE, damage, DamageCause.MAGIC);
 				default:
@@ -154,7 +154,7 @@ public class SkillShieldReflect extends ActiveSkill {
 					case IRON_DOOR:
 					case WOOD_DOOR:
 					case TRAP_DOOR:
-						int damage = event.getDamage() * SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-amount", 2, false);
+						double damage = event.getDamage() * SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-amount", 2, false);
 						plugin.getDamageManager().addSpellTarget(attacker, defenderHero, skill);
 						Skill.damageEntity((LivingEntity) attacker, (LivingEntity) defender, damage, DamageCause.MAGIC);
 					default:

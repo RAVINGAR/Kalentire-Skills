@@ -116,11 +116,11 @@ public class SkillManaShield extends ActiveSkill {
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
         }
 
-        private int getAdjustment(Player player, int damage) {
+        private double getAdjustment(Player player, double d) {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
                 int absorbamount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
-                damage = damage / 2;
+                d = d / 2;
                 int mana = hero.getMana();
                 if (mana < absorbamount) {
                     hero.removeEffect(hero.getEffect("ManaShield"));
@@ -132,7 +132,7 @@ public class SkillManaShield extends ActiveSkill {
                     }
                 }
             }
-            return damage;
+            return d;
         }
     }
     

@@ -42,10 +42,10 @@ public class SkillDrainsoul extends TargettedSkill {
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 		Player player = hero.getPlayer();
 		
-		int absorbAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+		double absorbAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
 		absorbAmount += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
 		double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", .5, false);
-		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (int) (absorbAmount * healMult), this, hero);
+		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (absorbAmount * healMult), this, hero);
 		plugin.getServer().getPluginManager().callEvent(hrEvent);
 		if (!hrEvent.isCancelled()) {
 			hero.heal(hrEvent.getAmount());
