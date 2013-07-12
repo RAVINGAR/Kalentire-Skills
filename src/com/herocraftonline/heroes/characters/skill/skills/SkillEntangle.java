@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -24,7 +25,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -102,7 +102,7 @@ public class SkillEntangle extends TargettedSkill {
         }
 
         // Check to see if we're applying to a player
-        if ((target instanceof Player)) {
+        //        if ((target instanceof Player)) {
             // Use new root for players
 
             // Create the root effect
@@ -111,17 +111,17 @@ public class SkillEntangle extends TargettedSkill {
             // Add root effect to the target
             CharacterTemplate targetCT = this.plugin.getCharacterManager().getCharacter(target);
             targetCT.addEffect(EntangleEffect);
-        }
-        else {
-            // Use old root for mobs
-
-            // Create the root effect
-            RootEffect rootEffect = new RootEffect(this, duration);
-
-            // Add root effect to the target
-            CharacterTemplate targetCT = this.plugin.getCharacterManager().getCharacter(target);
-            targetCT.addEffect(rootEffect);
-        }
+        //        }
+        //        else {
+        //            // Use old root for mobs
+        //
+        //            // Create the root effect
+        //            RootEffect rootEffect = new RootEffect(this, duration);
+        //
+        //            // Add root effect to the target
+        //            CharacterTemplate targetCT = this.plugin.getCharacterManager().getCharacter(target);
+        //            targetCT.addEffect(rootEffect);
+        //        }
 
         return SkillResult.NORMAL;
     }
@@ -156,9 +156,9 @@ public class SkillEntangle extends TargettedSkill {
             if (defenderCT.hasEffect("Entangle")) {
                 defenderCT.removeEffect(defenderCT.getEffect("Entangle"));
             }
-            else if (defenderCT.hasEffect("Root")) {
-                defenderCT.removeEffect(defenderCT.getEffect("Root"));
-            }
+            //            else if (defenderCT.hasEffect("Root")) {
+            //                defenderCT.removeEffect(defenderCT.getEffect("Root"));
+            //            }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -195,9 +195,9 @@ public class SkillEntangle extends TargettedSkill {
             if (defenderCT.hasEffect("Entangle")) {
                 defenderCT.removeEffect(defenderCT.getEffect("Entangle"));
             }
-            else if (defenderCT.hasEffect("Root")) {
-                defenderCT.removeEffect(defenderCT.getEffect("Root"));
-            }
+            //            else if (defenderCT.hasEffect("Root")) {
+            //                defenderCT.removeEffect(defenderCT.getEffect("Root"));
+            //            }
         }
     }
 
@@ -221,6 +221,7 @@ public class SkillEntangle extends TargettedSkill {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
+            loc = monster.getEntity().getLocation();
             broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
         }
 
@@ -240,6 +241,12 @@ public class SkillEntangle extends TargettedSkill {
         }
 
         @Override
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
+        }
+
+        @Override
         public void tickHero(Hero hero) {
             final Location location = hero.getPlayer().getLocation();
             if ((location.getX() != loc.getX()) || (location.getZ() != loc.getZ())) {
@@ -256,6 +263,8 @@ public class SkillEntangle extends TargettedSkill {
 
         @Override
         public void tickMonster(Monster monster) {
+            // Teleport the Player back into place.
+            monster.getEntity().setVelocity(new Vector(0, 0, 0));
         }
 
     }

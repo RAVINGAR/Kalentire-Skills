@@ -12,7 +12,6 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,7 +25,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -43,8 +42,14 @@ public class SkillPiggify extends TargettedSkill {
         setUsage("/skill piggify");
         setArgumentRange(0, 0);
         setIdentifiers("skill piggify");
-        setTypes(SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.INTERRUPT);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 
     @Override
@@ -66,17 +71,91 @@ public class SkillPiggify extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    public class PigEffect extends ExpirableEffect {
+    public class SkillEntityListener implements Listener {
 
-        private Location startLoc;
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (creatures.containsKey(event.getEntity())) {
+                if (event instanceof EntityDamageByEntityEvent) {
+                    EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+                    if (subEvent.getDamager().equals(event.getEntity().getPassenger())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                    else if (subEvent.getDamager() instanceof Projectile && ((Projectile) subEvent.getDamager()).getShooter().equals(event.getEntity().getPassenger())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+                CharacterTemplate character = creatures.remove(event.getEntity());
+                character.removeEffect(character.getEffect("Piggify"));
+            }
+            else if (event.getEntity() instanceof LivingEntity) {
+                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                if (character.hasEffect("Piggify")) {
+                    character.removeEffect(character.getEffect("Piggify"));
+                }
+            }
+        }
+    }
+
+    // ACTUAL PIGGIFY. SWITCH TO THIS AFTER FIXING EXPLOITS.
+    //    public class PigEffect extends ExpirableEffect {
+    //
+    //        private final Creature creature;
+    //
+    //        public PigEffect(Skill skill, long duration, Creature creature) {
+    //            super(skill, "Piggify", duration);
+    //            this.creature = creature;
+    //            
+    //            this.types.add(EffectType.DISPELLABLE);
+    //            this.types.add(EffectType.HARMFUL);
+    //            this.types.add(EffectType.DISABLE);
+    //        }
+    //
+    //        @Override
+    //        public void applyToMonster(Monster monster) {
+    //            super.applyToMonster(monster);
+    //            creature.setPassenger(monster.getEntity());
+    //            creatures.put(creature, monster);
+    //        }
+    //
+    //        @Override
+    //        public void applyToHero(Hero hero) {
+    //            super.applyToHero(hero);
+    //            Player player = hero.getPlayer();
+    //            creature.setPassenger(player);
+    //            creatures.put(creature, hero);
+    //        }
+    //
+    //        @Override
+    //        public void removeFromMonster(Monster rider) {
+    //            super.removeFromMonster(rider);
+    //            creatures.remove(creature);
+    //            creature.remove();
+    //        }
+    //
+    //        @Override
+    //        public void removeFromHero(Hero hero) {
+    //            super.removeFromHero(hero);
+    //            creatures.remove(creature);
+    //            creature.remove();
+    //        }
+    //    }
+
+    // TEMP EXPLOIT FIX. JUST A TWEAKED ROOT
+    private class PigEffect extends PeriodicExpirableEffect {
+
         private final Creature creature;
+        private Location loc;
 
         public PigEffect(Skill skill, long duration, Creature creature) {
-            super(skill, "Piggify", duration);
+            super(skill, "Piggify", 100, duration);
             this.creature = creature;
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.DISABLE);
+            
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISABLE);
         }
 
         @Override
@@ -89,63 +168,38 @@ public class SkillPiggify extends TargettedSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            startLoc = player.getLocation();
-            //Messaging.send(player, "StartLoc & Start: " + startLoc.getBlockX() + ", " + startLoc.getBlockY() + ", " + startLoc.getBlockZ());
-            creature.setPassenger(player);
-            creatures.put(creature, hero);
-        }
-
-        @Override
-        public void removeFromMonster(Monster rider) {
-            super.removeFromMonster(rider);
-            creatures.remove(creature);
-            creature.remove();
+            loc = hero.getPlayer().getLocation();
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
+        }
+
+        @Override
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
             creatures.remove(creature);
             creature.remove();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
-                    player.teleport(startLoc);
-                }
-            }, (long) (0.1 * 20));
         }
-    }
 
-    public class SkillEntityListener implements Listener {
-        
-        @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (creatures.containsKey(event.getEntity())) {
-                if (event instanceof EntityDamageByEntityEvent) {
-                    EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-                    if (subEvent.getDamager().equals(event.getEntity().getPassenger())) {
-                        event.setCancelled(true);
-                        return;
-                    } else if (subEvent.getDamager() instanceof Projectile && ((Projectile) subEvent.getDamager()).getShooter().equals(event.getEntity().getPassenger())) {
-                        event.setCancelled(true);    
-                        return;
-                    }
-                }
-                CharacterTemplate character = creatures.remove(event.getEntity());
-                character.removeEffect(character.getEffect("Piggify"));
-            } else if (event.getEntity() instanceof LivingEntity) {
-                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-                if (character.hasEffect("Piggify")) {
-                    character.removeEffect(character.getEffect("Piggify"));
-                }
+        @Override
+        public void tickHero(Hero hero) {
+            final Location location = hero.getPlayer().getLocation();
+            if ((location.getX() != loc.getX()) || (location.getZ() != loc.getZ())) {
+
+                // Retain the player's Y position and facing directions
+                loc.setYaw(location.getYaw());
+                loc.setPitch(location.getPitch());
+                loc.setY(location.getY());
+
+                // Teleport the Player back into place.
+                hero.getPlayer().teleport(loc);
             }
         }
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
+        @Override
+        public void tickMonster(Monster monster) {
+        }
     }
 }
