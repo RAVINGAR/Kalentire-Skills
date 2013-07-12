@@ -11,6 +11,7 @@
     <path id="classpath">
     	<fileset dir="${heroes}" includes="**/*.jar" />
     	<fileset dir="${heroeslibs}" includes="**/*.jar" />
+    	<fileset dir="../../jobs/Vault/lastSuccessful/archive/target" includes="**/*.jar" />
     	<fileset dir="libs" includes="**/*.jar" />
     	
     </path>
