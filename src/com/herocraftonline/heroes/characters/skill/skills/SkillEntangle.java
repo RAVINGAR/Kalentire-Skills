@@ -213,9 +213,10 @@ public class SkillEntangle extends TargettedSkill {
             this.applier = applier;
             this.applyText = applyText;
             this.expireText = expireText;
-            this.types.add(EffectType.ROOT);
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.DISPELLABLE);
+
+            types.add(EffectType.ROOT);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
         }
 
         @Override

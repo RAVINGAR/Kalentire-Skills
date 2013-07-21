@@ -20,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillVoidsong extends ActiveSkill {
     // This is for Firework Effects
@@ -37,7 +38,6 @@ public class SkillVoidsong extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.DURATION_INCREASE.node(), 0);
         node.set(SkillSetting.RADIUS.node(), 10);
         node.set(SkillSetting.RADIUS_INCREASE.node(), 0);
         node.set(SkillSetting.DAMAGE.node(), 0);
@@ -49,8 +49,7 @@ public class SkillVoidsong extends ActiveSkill {
     public String getDescription(Hero hero) {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 30, false)
                 + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0, false) * hero.getSkillLevel(this));
-        int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) +
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 0, false) * hero.getSkillLevel(this))) / 1000;
+        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000.0);
         int damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false) + 
                 (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this)));
         String description = getDescription().replace("$1", radius + "").replace("$2", duration + "").replace("$3", damage + "");

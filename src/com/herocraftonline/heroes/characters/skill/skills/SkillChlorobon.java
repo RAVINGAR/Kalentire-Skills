@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
@@ -111,3 +112,4 @@ public class SkillChlorobon extends TargettedSkill {
         }
     }
 }
+*/

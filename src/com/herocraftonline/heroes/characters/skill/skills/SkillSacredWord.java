@@ -22,7 +22,7 @@ public class SkillSacredWord extends TargettedSkill {
 
     public SkillSacredWord(Heroes plugin) {
         super(plugin, "SacredWord");
-        setDescription("SacredWord relieves your target, restoring $1 health while repairing status effects.");
+        setDescription("SacredWord relieves your target, restoring $1 of their health and removing any confusion, fire, and blind effects that they may have.");
         setUsage("/skill sacredword <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredword");
@@ -69,12 +69,14 @@ public class SkillSacredWord extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getAmount()); 
 
-        // SacredWord cures stuff!!
         for (Effect effect : targetHero.getEffects()) {
-        	if (effect.isType(EffectType.CONFUSION) || effect.isType(EffectType.FIRE) || effect.isType(EffectType.BLIND)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.CONFUSION) || effect.isType(EffectType.FIRE) || effect.isType(EffectType.BLIND)) {
+                    targetHero.removeEffect(effect);
+                }
             }
         }
+
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.5F, 0.01F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

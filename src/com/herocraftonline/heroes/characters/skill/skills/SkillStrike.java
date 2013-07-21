@@ -76,7 +76,9 @@ public class SkillStrike extends TargettedSkill {
 
         public StrikeBleedEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
             super(skill, "StrikeBleed", period, duration, tickDamage, applier);
-            this.types.add(EffectType.BLEED);
+
+            types.add(EffectType.BLEED);
+            types.add(EffectType.HARMFUL);
         }
 
         @Override

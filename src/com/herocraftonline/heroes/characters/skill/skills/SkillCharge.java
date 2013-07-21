@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashSet;
@@ -156,3 +157,4 @@ public class SkillCharge extends TargettedSkill {
         return getDescription();
     }
 }
+*/

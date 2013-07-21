@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import static com.herocraftonline.heroes.Heroes.econ;
@@ -74,9 +75,7 @@ public class SkillMonetize extends ActiveSkill{
 		return getDescription().replace("$1", calculateCoins(hero).toString());
 	}
 	
-	/**
-	 * This may cause issues if the player doesn't have a second class
-	 */
+	// This may cause issues if the player doesn't have a second class
 	private Double calculateCoins(Hero hero){
 		return getUseSetting(hero, this, base, def_base, false)
 					+getUseSetting(hero,this,gain,def_gain,false)*hero.getLevel(hero.getSecondClass());
@@ -92,3 +91,4 @@ public class SkillMonetize extends ActiveSkill{
 		return config;
 	}
 }
+*/

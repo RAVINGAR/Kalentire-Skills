@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
@@ -68,3 +69,4 @@ public class SkillGarrote extends TargettedSkill {
     }
 
 }
+*/

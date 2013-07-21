@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -119,3 +120,4 @@ public class SkillPurge extends TargettedSkill {
         return getDescription();
     }
 }
+*/

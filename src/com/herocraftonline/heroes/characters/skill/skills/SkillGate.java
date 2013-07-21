@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Location;
@@ -76,3 +77,4 @@ public class SkillGate extends ActiveSkill {
         return null;
     }
 }
+*/

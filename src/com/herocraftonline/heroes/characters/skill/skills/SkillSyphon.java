@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Sound;
@@ -64,5 +65,5 @@ public class SkillSyphon extends TargettedSkill {
     public String getDescription(Hero hero) {
         return getDescription();
     }
-
 }
+*/

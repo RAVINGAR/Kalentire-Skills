@@ -69,10 +69,15 @@ public class SkillMend extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getAmount()); 
 
-        // Mend cures Bleeding!
+        // Mend cures Bleeding and fire effects
+        if (targetHero.getPlayer().getFireTicks() > 0)
+            targetHero.getPlayer().setFireTicks(0);
+
         for (Effect effect : targetHero.getEffects()) {
-        	if (effect.isType(EffectType.BLEED) || effect.isType(EffectType.FIRE)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.BLEED) || (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.FIRE))) {
+                    targetHero.removeEffect(effect);
+                }
             }
         }
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHEEP_SHEAR , 0.5F, 0.01F); 

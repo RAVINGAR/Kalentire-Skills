@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class SkillSmite extends TargettedSkill {
 
     public SkillSmite(Heroes plugin) {
         super(plugin, "Smite");
-        setDescription("You smite the target, dealing $1 light damage to undead targets, or $2 light damage to other targets.");
+        setDescription("You smite the target, dealing $1 light damage to the target. Will instead deal $2 damage if the target is undead.");
         setUsage("/skill smite");
         setArgumentRange(0, 0);
         setIdentifiers("skill smite");
@@ -37,7 +38,7 @@ public class SkillSmite extends TargettedSkill {
         int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(250), false);
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
 
-        return getDescription().replace("$1", undeadDamage + "").replace("$2", damage + "");
+        return getDescription().replace("$2", undeadDamage + "").replace("$1", damage + "");
     }
 
     @Override
@@ -55,7 +56,7 @@ public class SkillSmite extends TargettedSkill {
         Player player = hero.getPlayer();
 
         double damage = 0;
-        if (target instanceof Zombie || target instanceof Skeleton || target instanceof PigZombie)
+        if (target instanceof Zombie || target instanceof Skeleton || target instanceof PigZombie || target instanceof Ghast)
             damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(250), false);
         else
             damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);

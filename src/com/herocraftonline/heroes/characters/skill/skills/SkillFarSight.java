@@ -48,8 +48,8 @@ public class SkillFarSight extends ActiveSkill {
 
 		public ZoomEffect(Skill skill, long duration) {
 			super(skill, "Zoom", duration);
-			this.types.add(EffectType.BENEFICIAL);
-			this.types.add(EffectType.SLOW);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.SLOW);
 			addMobEffect(2, (int) (duration / 1000) * 20, 10, false);
 		}
 	}

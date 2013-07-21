@@ -87,8 +87,10 @@ public class SkillRenewal extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getAmount());
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.DISEASE)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.DISEASE)) {
+                    targetHero.removeEffect(effect);
+                }
             }
         }
         broadcastExecuteText(hero, target);

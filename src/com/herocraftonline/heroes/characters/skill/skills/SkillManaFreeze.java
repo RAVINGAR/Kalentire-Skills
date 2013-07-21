@@ -82,7 +82,10 @@ public class SkillManaFreeze extends TargettedSkill {
 
         public ManaFreezeEffect(Skill skill, long duration) {
             super(skill, "ManaFreeze", duration);
-            this.types.add(EffectType.DISPELLABLE);
+
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.DISPELLABLE);
         }
 
         @Override

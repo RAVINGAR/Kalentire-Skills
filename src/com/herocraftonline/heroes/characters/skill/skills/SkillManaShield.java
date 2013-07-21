@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -69,9 +70,10 @@ public class SkillManaShield extends ActiveSkill {
 
         public ManaShieldEffect(Skill skill, long duration) {
             super(skill, "ManaShield", duration);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.MAGIC);
+            
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -142,3 +144,4 @@ public class SkillManaShield extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/

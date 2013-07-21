@@ -78,11 +78,13 @@ public class SkillFlameshield extends ActiveSkill {
 
         public FlameshieldEffect(Skill skill, long duration) {
             super(skill, "Flameshield", duration);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.RESIST_FIRE);
-            this.types.add(EffectType.MAGIC);
-            this.addMobEffect(12, (int) ((duration * 20) / 1000), 1, false);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.RESIST_FIRE);
+            types.add(EffectType.MAGIC);
+
+            addMobEffect(12, (int) ((duration * 20) / 1000), 1, false);
         }
 
         @Override

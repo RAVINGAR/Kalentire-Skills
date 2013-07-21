@@ -208,7 +208,6 @@ public class SkillEnvenom extends ActiveSkill {
                 types.add(EffectType.IMBUE);
 
             types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.POISON);
 
             this.applicationsLeft = numAttacks;
         }
@@ -256,6 +255,8 @@ public class SkillEnvenom extends ActiveSkill {
             super(skill, "EnvenomPoisonEffect", period, duration, tickDamage, applier);
 
             types.add(EffectType.POISON);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
 
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
         }

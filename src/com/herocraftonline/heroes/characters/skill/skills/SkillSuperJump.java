@@ -76,8 +76,10 @@ public class SkillSuperJump extends ActiveSkill {
 
         public JumpEffect(Skill skill, int duration) {
             super(skill, "Jump", duration);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.PHYSICAL);
+
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.PHYSICAL);
+
             addMobEffect(8, duration / 1000 * 20, 5, false);
         }
     }

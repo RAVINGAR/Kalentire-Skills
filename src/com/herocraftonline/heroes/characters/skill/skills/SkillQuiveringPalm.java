@@ -147,9 +147,8 @@ public class SkillQuiveringPalm extends TargettedSkill {
 			this.applyText = applyText;
 			this.expireText = expireText;
 
-			this.types.add(EffectType.DISPELLABLE);
-			this.types.add(EffectType.HARMFUL);
-			this.types.add(EffectType.PHYSICAL);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.PHYSICAL);
 		}
 
 		@Override

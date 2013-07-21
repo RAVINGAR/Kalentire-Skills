@@ -128,10 +128,13 @@ public class SkillDespair extends ActiveSkill {
         public DespairEffect(Skill skill, long duration, Player player) {
             super(skill, "Despair", duration);
             this.player = player;
-            this.addMobEffect(15, (int) ((duration / 1000) * 20), 3, false);
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.DARK);
-            this.types.add(EffectType.BLIND);
+
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DARK);
+            types.add(EffectType.BLIND);
+            types.add(EffectType.DISPELLABLE);
+
+            addMobEffect(15, (int) ((duration / 1000) * 20), 3, false);
         }
 
         @Override

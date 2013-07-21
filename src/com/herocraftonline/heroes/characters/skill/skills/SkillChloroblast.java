@@ -1,3 +1,5 @@
+
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
@@ -69,8 +71,10 @@ public class SkillChloroblast extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getAmount());
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.POISON)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.POISON)) {
+                    targetHero.removeEffect(effect);
+                }
             }
         }
         broadcastExecuteText(hero, target);
@@ -93,3 +97,4 @@ public class SkillChloroblast extends TargettedSkill {
         return getDescription().replace("$1", health + "");
     }
 }
+*/

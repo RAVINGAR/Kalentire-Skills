@@ -18,11 +18,20 @@ public class SkillReplenish extends ActiveSkill {
 
     public SkillReplenish(Heroes plugin) {
         super(plugin, "Replenish");
-        setDescription("You regain $1% ($2) of your mana.");
+        setDescription("You regain $1% (" + ChatColor.BLUE + "$2" + ChatColor.GOLD + ") of your mana.");
         setUsage("/skill replenish");
         setArgumentRange(0, 0);
         setIdentifiers("skill replenish");
         setTypes(SkillType.MANA);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double percent = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 1.0, false));
+        percent += Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "mana-bonus-per-level", 0.0, false) * hero.getSkillLevel(this));
+        int amount = (int) (hero.getMaxMana() * percent);
+
+        return getDescription().replace("$1", Util.stringDouble(percent * 100)).replace("$2", amount + "");
     }
 
     @Override
@@ -51,13 +60,5 @@ public class SkillReplenish extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double percent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 1.0, false);
-        percent += SkillConfigManager.getUseSetting(hero, this, "mana-bonus-per-level", 0.0, false) * hero.getSkillLevel(this);
-        int amount = (int) (hero.getMaxMana() * percent);
-        return getDescription().replace("$1", Util.stringDouble(percent * 100)).replace("$2", ChatColor.BLUE + "" + amount + ChatColor.WHITE);
     }
 }

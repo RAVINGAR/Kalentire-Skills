@@ -74,8 +74,11 @@ public class SkillShock extends TargettedSkill {
         public ShockEffect(Skill skill, long period, long duration, double tickDamage, int range, Player applier) {
             super(skill, "Shock", period, duration, tickDamage, applier);
             this.range = range;
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.LIGHTNING);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.LIGHTNING);
         }
         
         @Override

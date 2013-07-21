@@ -98,7 +98,9 @@ public class SkillMortalWound extends TargettedSkill {
         public MortalWound(Skill skill, long period, long duration, double tickDamage, Player applier, double healMultiplier) {
             super(skill, "MortalWound", period, duration, tickDamage, applier);
             this.healMultiplier = healMultiplier;
-            this.types.add(EffectType.BLEED);
+
+            types.add(EffectType.BLEED);
+            types.add(EffectType.HARMFUL);
         }
 
         @Override

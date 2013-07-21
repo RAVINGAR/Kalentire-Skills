@@ -168,8 +168,8 @@ public class SkillShieldReflect extends ActiveSkill {
 	public class ShieldReflectEffect extends ExpirableEffect {
 		public ShieldReflectEffect(Skill skill, long duration) {
 			super(skill, "ShieldReflect", duration);
-			this.types.add(EffectType.DISPELLABLE);
-			this.types.add(EffectType.BENEFICIAL);
+
+            types.add(EffectType.BENEFICIAL);
 		}
 
 		@Override

@@ -70,13 +70,15 @@ public class SkillTerror extends TargettedSkill {
 		
 		public TerrorEffect(Skill skill, long duration, int zoomAmount, boolean useDarkness, boolean useNausea, String applyText, String expireText) {
 			super(skill, "Terror", duration);
-			this.types.add(EffectType.DARK);
-			this.types.add(EffectType.SLOW);
-			this.types.add(EffectType.DISABLE);
-			this.types.add(EffectType.DISPELLABLE);
-			this.types.add(EffectType.HARMFUL);
 			this.applyText = applyText;
 			this.expireText = expireText;
+
+            types.add(EffectType.DARK);
+            types.add(EffectType.SLOW);
+            types.add(EffectType.DISABLE);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.HARMFUL);
+
 			if(zoomAmount > 0)
 				addMobEffect(2, (int) (duration / 1000) * 20, zoomAmount, false);
 			if(useDarkness)

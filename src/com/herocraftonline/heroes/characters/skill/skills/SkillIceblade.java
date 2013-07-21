@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
@@ -128,3 +129,4 @@ public class SkillIceblade extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/

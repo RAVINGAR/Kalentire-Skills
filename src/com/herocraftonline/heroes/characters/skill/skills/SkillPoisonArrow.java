@@ -1,3 +1,5 @@
+
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -112,8 +114,9 @@ public class SkillPoisonArrow extends ActiveSkill {
 
         public PoisonArrowBuff(Skill skill) {
             super(skill, "PoisonArrowBuff");
-            this.types.add(EffectType.POISON);
-            setDescription("poison");
+            
+            types.add(EffectType.POISON);
+            types.add(EffectType.BENEFICIAL);
         }
     }
 
@@ -181,3 +184,4 @@ public class SkillPoisonArrow extends ActiveSkill {
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "").replace("$3", mana + "");
     }
 }
+*/

@@ -88,7 +88,11 @@ public class SkillRejuvenate extends TargettedSkill {
 
         public RejuvenateEffect(Skill skill, long period, long duration, double tickHealth, Player applier) {
             super(skill, "Rejuvenate", period, duration, tickHealth, applier);
-            this.types.add(EffectType.DISPELLABLE);
+
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.HEAL);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.DISPELLABLE);
         }
 
         @Override

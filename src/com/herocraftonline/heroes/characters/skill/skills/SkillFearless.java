@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -104,17 +105,15 @@ public class SkillFearless extends ActiveSkill {
             }
 
             // FEARLESS SKILL DAMAGE INCREASE DISABLED
-            /*
-            if ((event.getSkill().isType(SkillType.PHYSICAL)) && ((event.getDamager() instanceof Hero))) {
-            	Hero hero = (Hero) event.getDamager();
-            	if (hero.hasEffect("FearlessEffect")) {
-            		double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", 0.005D, false) * hero.getSkillLevel(skill);
-            		double damageMult = SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", 1.1D, false) + levelMult;
-            		int newDamage = (int) (damageMult * event.getDamage());
-            		event.setDamage(newDamage);
-            	}
-            }
-            */
+            //            if ((event.getSkill().isType(SkillType.PHYSICAL)) && ((event.getDamager() instanceof Hero))) {
+            //            	Hero hero = (Hero) event.getDamager();
+            //            	if (hero.hasEffect("FearlessEffect")) {
+            //            		double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", 0.005D, false) * hero.getSkillLevel(skill);
+            //            		double damageMult = SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", 1.1D, false) + levelMult;
+            //            		int newDamage = (int) (damageMult * event.getDamage());
+            //            		event.setDamage(newDamage);
+            //            	}
+            //            }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -141,7 +140,9 @@ public class SkillFearless extends ActiveSkill {
     public class FearlessEffect extends FormEffect {
         public FearlessEffect(Skill skill) {
             super(skill, "FearlessEffect");
-            this.types.add(EffectType.PHYSICAL);
+
+            types.add(EffectType.PHYSICAL);
+            types.add(EffectType.BENEFICIAL);
         }
 
         public void removeFromHero(Hero hero) {
@@ -151,3 +152,4 @@ public class SkillFearless extends ActiveSkill {
         }
     }
 }
+*/

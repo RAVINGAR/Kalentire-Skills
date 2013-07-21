@@ -84,8 +84,10 @@ public class SkillDecay extends TargettedSkill {
 
         public DecayEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
             super(skill, "Decay", period, duration, tickDamage, applier);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.DISEASE);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISEASE);
         }
 
         @Override

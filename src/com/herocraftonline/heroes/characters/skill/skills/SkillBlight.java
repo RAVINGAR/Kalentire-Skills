@@ -53,6 +53,7 @@ public class SkillBlight extends TargettedSkill {
     @Override
     public void init() {
         super.init();
+
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% begins to radiate a cloud of disease!").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer diseased!").replace("%target%", "$1");
     }
@@ -89,8 +90,11 @@ public class SkillBlight extends TargettedSkill {
 
         public BlightEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
             super(skill, "Blight", period, duration, tickDamage, applier);
-            this.types.add(EffectType.DISEASE);
-            this.types.add(EffectType.DISPELLABLE);
+
+            types.add(EffectType.DISEASE);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
+
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
         }
 

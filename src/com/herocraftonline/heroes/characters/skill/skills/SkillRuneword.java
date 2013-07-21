@@ -72,9 +72,10 @@ public class SkillRuneword extends TargettedSkill {
         public RunewordEffect(Skill skill, long duration, double damageBonus) {
             super(skill, "Runeword", duration);
             this.damageBonus = damageBonus;
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.MAGIC);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -103,7 +104,7 @@ public class SkillRuneword extends TargettedSkill {
             Skill eventSkill = event.getSkill();
             if (eventSkill.isType(SkillType.PHYSICAL) || !eventSkill.isType(SkillType.DAMAGING))
                 return;
-            CharacterTemplate character = SkillRuneword.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (character.hasEffect("Runeword")) {
                 double damageBonus = ((RunewordEffect) character.getEffect("Runeword")).damageBonus;
                 event.setDamage((event.getDamage() * damageBonus));

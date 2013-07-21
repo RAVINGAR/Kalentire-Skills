@@ -97,9 +97,11 @@ public class SkillImpale extends TargettedSkill {
         public ImpaleEffect(Skill skill, long duration, Effect afterEffect) {
             super(skill, "Impale", duration);
             this.effect = afterEffect;
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.DISABLE);
-            this.types.add(EffectType.SLOW);
+
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISABLE);
+            types.add(EffectType.SLOW);
+
             addMobEffect(2, (int) (duration / 1000) * 20, 20, false);
         }
 

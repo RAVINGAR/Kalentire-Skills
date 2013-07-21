@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -85,9 +86,6 @@ public class SkillToxicblade extends ActiveSkill {
             this.types.add(EffectType.POISON);
         }
 
-        /**
-         * @return the applicationsLeft
-         */
         public int getApplicationsLeft() {
             return applicationsLeft;
         }
@@ -98,10 +96,6 @@ public class SkillToxicblade extends ActiveSkill {
             Messaging.send(hero.getPlayer(), "Your blade is no longer toxified!");
         }
 
-        /**
-         * @param applicationsLeft
-         *            the applicationsLeft to set
-         */
         public void setApplicationsLeft(int applicationsLeft) {
             this.applicationsLeft = applicationsLeft;
         }
@@ -206,3 +200,4 @@ public class SkillToxicblade extends ActiveSkill {
         return s;
     }
 }
+*/

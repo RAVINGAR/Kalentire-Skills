@@ -41,6 +41,7 @@ public class SkillBlind extends TargettedSkill {
 
 	public void init() {
 		super.init();
+
 		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!").replace("%target%", "$1");
 		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!").replace("%target%", "$1");
 	}
@@ -68,7 +69,10 @@ public class SkillBlind extends TargettedSkill {
 
 		public CustomBlindEffect(Skill skill, long duration) {
 			super(skill, duration, applyText, expireText);
+
 			types.add(EffectType.BLIND);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
 
 			addMobEffect(9, (int) ((duration + 4000) / 1000) * 20, 3, false);
 		}

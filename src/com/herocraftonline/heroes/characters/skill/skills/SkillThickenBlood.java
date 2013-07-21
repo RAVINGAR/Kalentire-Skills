@@ -88,6 +88,7 @@ public class SkillThickenBlood extends TargettedSkill {
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
+            types.add(EffectType.MAGIC);
 
             final int tickDuration = (int) (duration / 1000) * 20;
             addMobEffect(17, tickDuration, hungerValue, false);

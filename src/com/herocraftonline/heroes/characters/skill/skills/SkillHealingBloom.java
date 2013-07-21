@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -135,6 +136,11 @@ public class SkillHealingBloom extends ActiveSkill {
 			super(skill, "HealingBloomEffect", (long) period, (long) duration);
 			this.mode = mode;
 			this.amountHealed = amountHealed;
+
+            types.add(EffectType.HEAL);
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.DISPELLABLE);
 		}
 
 		public void tickHero(Hero hero) {

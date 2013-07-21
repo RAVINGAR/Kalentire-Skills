@@ -1,3 +1,5 @@
+
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -77,8 +79,8 @@ public class SkillIceArrow extends ActiveSkill {
 
         public IceArrowBuff(Skill skill) {
             super(skill, "IceArrowBuff");
-            this.types.add(EffectType.ICE);
-            setDescription("ice arrow");
+            types.add(EffectType.ICE);
+            types.add(EffectType.BENEFICIAL);
         }
 
         @Override
@@ -148,3 +150,4 @@ public class SkillIceArrow extends ActiveSkill {
         return getDescription().replace("$1", mana + "");
     }
 }
+*/

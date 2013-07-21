@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
@@ -72,3 +73,4 @@ public class SkillBladedance extends TargettedSkill {
         return getDescription().replace("$1", mult * 100 + "");
     }
 }
+*/

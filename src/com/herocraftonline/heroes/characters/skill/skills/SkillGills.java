@@ -38,6 +38,7 @@ public class SkillGills extends ActiveSkill {
     @Override
     public void init() {
         super.init();
+
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% has grown a set of gills!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his gills!").replace("%hero%", "$1");
     }

@@ -23,6 +23,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -103,6 +104,9 @@ public class SkillWeb extends TargettedSkill {
         public WebEffect(Skill skill, long duration, Location location) {
             super(skill, "Web", duration);
             this.loc = location;
+
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.HARMFUL);
         }
 
         @Override

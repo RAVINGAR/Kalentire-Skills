@@ -71,8 +71,10 @@ public class SkillBandage extends TargettedSkill {
 
         // Bandage cures Bleeding!
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.BLEED)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.BLEED)) {
+                    targetHero.removeEffect(effect);
+                }
             }
         }
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP , 0.5F, 0.01F); 

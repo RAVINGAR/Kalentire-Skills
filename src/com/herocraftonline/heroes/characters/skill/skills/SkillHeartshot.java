@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.ChatColor;
@@ -70,8 +71,8 @@ public class SkillHeartshot extends ActiveSkill {
 
 		public HeartShotBuff(Skill skill) {
 			super(skill, "HeartShotBuff");
-			this.types.add(EffectType.HARMFUL);
-			setDescription("HeartShot");
+			
+			types.add(EffectType.BENEFICIAL);
 		}
 		
 	}
@@ -122,5 +123,5 @@ public class SkillHeartshot extends ActiveSkill {
 			
 		}
 	}
-	
 }
+*/

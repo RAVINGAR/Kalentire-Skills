@@ -95,7 +95,7 @@ public class SkillChakra extends ActiveSkill {
         }
 
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.HARMFUL)) {
+            if (effect.isType(EffectType.HARMFUL) && effect.isType(EffectType.DISPELLABLE)) {
                 targetHero.removeEffect(effect);
                 removals--;
                 if (removals == 0) {

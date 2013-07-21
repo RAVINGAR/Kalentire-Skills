@@ -166,7 +166,8 @@ public class SkillBoilBlood extends ActiveSkill {
             this.expireText = expireText;
             this.applier = applier;
 
-            this.types.add(EffectType.DARK);
+            types.add(EffectType.DARK);
+            types.add(EffectType.DISPELLABLE);
         }
 
         @Override

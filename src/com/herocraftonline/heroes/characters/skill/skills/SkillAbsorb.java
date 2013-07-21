@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -132,3 +133,4 @@ public class SkillAbsorb extends ActiveSkill {
         return getDescription();
     }
 }
+*/

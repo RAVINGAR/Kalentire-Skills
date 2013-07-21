@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -95,6 +96,9 @@ public class SkillEarthWall extends ActiveSkill {
             this.height = height;
             this.setter = setter;
             this.wBlocks = new HashSet<Block>(width * height * 2);
+
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
         }
 
         public void applyToHero(Hero hero) {

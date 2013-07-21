@@ -38,5 +38,4 @@ public class SkillTaunt extends ActiveSkill {
     public String getDescription(Hero hero) {
         return getDescription();
     }
-
 }

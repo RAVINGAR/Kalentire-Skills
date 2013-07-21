@@ -104,8 +104,10 @@ public class SkillInfusion extends TargettedSkill {
 
         // Remove bleeds
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.BLEED)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.BLEED)) {
+                    targetHero.removeEffect(effect);
+                }
             }
         }
 

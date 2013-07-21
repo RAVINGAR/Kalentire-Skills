@@ -22,10 +22,10 @@ import com.herocraftonline.heroes.util.Messaging;
 public class SkillSacredTouch extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    
+
     public SkillSacredTouch(Heroes plugin) {
         super(plugin, "SacredTouch");
-        setDescription("You restore $1 health to the target.");
+        setDescription("Apply a Sacred Touch to the target, restoring $1 of their health and extinquishing any fire effects present.");
         setUsage("/skill sacredtouch <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredtouch");
@@ -43,7 +43,7 @@ public class SkillSacredTouch extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (!(target instanceof Player)) {
-        	return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET;
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
@@ -53,7 +53,8 @@ public class SkillSacredTouch extends TargettedSkill {
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
-            } else {
+            }
+            else {
                 Messaging.send(player, "Target is already fully healed.");
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -66,23 +67,25 @@ public class SkillSacredTouch extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
         targetHero.heal(hrhEvent.getAmount());
+
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.FIRE)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
+                if (effect.isType(EffectType.FIRE)) {
+                    targetHero.removeEffect(effect);
+                }
             }
         }
+
         broadcastExecuteText(hero, target);
+
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BALL_LARGE)
-            		.withColor(Color.FUCHSIA)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;

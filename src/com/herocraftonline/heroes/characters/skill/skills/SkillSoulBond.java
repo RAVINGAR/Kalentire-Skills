@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -190,3 +191,4 @@ public class SkillSoulBond extends TargettedSkill {
         return getDescription();
     }
 }
+*/

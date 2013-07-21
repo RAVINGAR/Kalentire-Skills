@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
@@ -153,3 +154,4 @@ public class SkillSoulLeech extends TargettedSkill {
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "").replace("$3", healed + "");
     }
 }
+*/

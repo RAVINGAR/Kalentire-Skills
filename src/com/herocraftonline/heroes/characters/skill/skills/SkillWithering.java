@@ -84,10 +84,13 @@ public class SkillWithering extends TargettedSkill {
 
         public WitheringEffect(Skill skill, long duration, long period, double tickDamage, double finishDamage, Player applier) {
             super(skill, "Withering", period, duration, tickDamage, applier);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.DARK);
-            this.types.add(EffectType.WITHER);
+
             this.finishDamage = finishDamage;
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.DARK);
+            types.add(EffectType.WITHER);
+            types.add(EffectType.HARMFUL);
 
             addMobEffect(9, (int) ((duration + 4000) / 1000) * 20, 3, false);
             addMobEffect(20, (int) (duration / 1000) * 20, 1, false);
@@ -112,10 +115,13 @@ public class SkillWithering extends TargettedSkill {
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
 
+            if (monster.getEntity().isDead())
+                return;
+
             skill.addSpellTarget(monster.getEntity(), getApplierHero());
             damageEntity(monster.getEntity(), getApplier(), finishDamage, DamageCause.MAGIC);
 
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
         }
 
         @Override
@@ -125,6 +131,7 @@ public class SkillWithering extends TargettedSkill {
             Player player = hero.getPlayer();
             if (player.isDead())
                 return;
+
             skill.addSpellTarget(hero.getEntity(), getApplierHero());
             damageEntity(player, getApplier(), finishDamage, DamageCause.MAGIC);
 

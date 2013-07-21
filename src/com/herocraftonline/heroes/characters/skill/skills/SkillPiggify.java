@@ -155,6 +155,7 @@ public class SkillPiggify extends TargettedSkill {
             
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
+            types.add(EffectType.STUN);
             types.add(EffectType.DISABLE);
         }
 
@@ -174,6 +175,8 @@ public class SkillPiggify extends TargettedSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+            creatures.remove(creature);
+            creature.remove();
         }
 
         @Override
