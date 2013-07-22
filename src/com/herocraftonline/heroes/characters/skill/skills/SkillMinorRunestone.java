@@ -144,7 +144,7 @@ public class SkillMinorRunestone extends ActiveSkill {
             worldName = worldName.substring(0, 1).toUpperCase() + worldName.substring(1);
 
             // Set the Runestone name
-            metaData.setDisplayName(ChatColor.GREEN + "Minor Runestone");
+            metaData.setDisplayName(ChatColor.DARK_GREEN + "Minor Runestone");
 
             // Set the Lore with all Runestone information
             String locationInformation = ChatColor.AQUA + worldName + ": " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();

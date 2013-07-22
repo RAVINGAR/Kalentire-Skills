@@ -158,7 +158,10 @@ public class SkillRecall extends ActiveSkill {
                         String zString = locationString.substring(currentIndexLocation, endIndexLocation);
 
                         // VERIFY ALL LOCATION DATA
-                        if (validateCoordinate(xString) && validateCoordinate(yString) && validateCoordinate(zString) && validateWorldByName(worldString)) {
+                        if (validateCoordinate(xString)
+                                && validateCoordinate(yString)
+                                && validateCoordinate(zString)
+                                && validateWorldByName(worldString)) {
 
                             // We have validate location information, convert our strings to real data
                             World world = Bukkit.getServer().getWorld(worldString);
@@ -192,18 +195,18 @@ public class SkillRecall extends ActiveSkill {
                                 }
                             }
 
-                            // Teleport the player to the location
-                            player.teleport(teleportLocation);
-
                             // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
                             if (uses != -1) {
 
                                 if (maxUses != -1) {
-                                    loreData.set(1, ChatColor.AQUA.toString()+"Uses: " + (uses - 1) + "/" + maxUses);
+                                    loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
                                     metaData.setLore(loreData);
                                     heldItem.setItemMeta(metaData);
                                 }
                             }
+
+                            // Teleport the player to the location
+                            player.teleport(teleportLocation);
 
                             broadcastExecuteText(hero);
                             return SkillResult.NORMAL;
