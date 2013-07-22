@@ -23,7 +23,7 @@ public class SkillTelekinesis extends ActiveSkill {
         setUsage("/skill telekinesis");
         setArgumentRange(0, 0);
         setIdentifiers("skill telekinesis");
-        setTypes(SkillType.FORCE, SkillType.SILENCABLE);
+        setTypes(SkillType.FORCE, SkillType.KNOWLEDGE, SkillType.SILENCABLE);
     }
 
     @Override
@@ -40,48 +40,38 @@ public class SkillTelekinesis extends ActiveSkill {
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false);
         Block block = player.getTargetBlock(null, maxDist);
         if (block.getType() == Material.AIR) {
-            return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        //        HashSet<Byte> transparent = new HashSet<Byte>();
-        //        transparent.add((byte) Material.AIR.getId());
-        //        transparent.add((byte) Material.WATER.getId());
-        //        transparent.add((byte) Material.REDSTONE_TORCH_ON.getId());
-        //        transparent.add((byte) Material.REDSTONE_TORCH_OFF.getId());
-        //        transparent.add((byte) Material.REDSTONE_WIRE.getId());
-        //        transparent.add((byte) Material.TORCH.getId());
-        //        transparent.add((byte) Material.SNOW.getId());
-        //        Block block = player.getTargetBlock(transparent, SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false));
+        Material blockMaterial = block.getType();
+        if (blockMaterial == Material.LEVER
+                || blockMaterial == Material.STONE_BUTTON
+                || blockMaterial == Material.WOOD_BUTTON
+                || blockMaterial == Material.IRON_DOOR
+                || blockMaterial == Material.IRON_DOOR_BLOCK
+                || blockMaterial == Material.WOODEN_DOOR
+                || blockMaterial == Material.DIODE
+                || blockMaterial == Material.DIODE_BLOCK_ON
+                || blockMaterial == Material.DIODE_BLOCK_OFF
+                || blockMaterial == Material.REDSTONE_COMPARATOR
+                || blockMaterial == Material.REDSTONE_COMPARATOR_OFF
+                || blockMaterial == Material.REDSTONE_COMPARATOR_ON
+                || blockMaterial == Material.JUKEBOX
+                || blockMaterial == Material.NOTE_BLOCK
+                || blockMaterial == Material.TRAP_DOOR) {
 
-        if (block.getType() == Material.LEVER
-                || block.getType() == Material.STONE_BUTTON
-                || block.getType() == Material.WOOD_BUTTON
-                || block.getType() == Material.IRON_DOOR
-                || block.getType() == Material.IRON_DOOR_BLOCK
-                || block.getType() == Material.WOOD_DOOR
-                || block.getType() == Material.DIODE
-                || block.getType() == Material.DIODE_BLOCK_ON
-                || block.getType() == Material.DIODE_BLOCK_OFF
-                || block.getType() == Material.REDSTONE_COMPARATOR
-                || block.getType() == Material.REDSTONE_COMPARATOR_OFF
-                || block.getType() == Material.REDSTONE_COMPARATOR_ON
-                || block.getType() == Material.JUKEBOX
-                || block.getType() == Material.NOTE_BLOCK
-                || block.getType() == Material.TRAP_DOOR
-                || block.getType() == Material.TRIPWIRE
-                || block.getType() == Material.TRIPWIRE_HOOK
-                || block.getType() == Material.STRING) {
-            // Can't adjust levers/Buttons through CB
-            net.minecraft.server.v1_6_R2.Block.byId[block.getType().getId()].interact(((CraftWorld) block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
-            // In Case Bukkit eaver fixes blockState changes on levers:
+            net.minecraft.server.v1_6_R2.Block.byId[blockMaterial.getId()].interact(((CraftWorld) block.getWorld()).getHandle(), block.getX(),
+                                                                                    block.getY(), block.getZ(), null, 0, 0, 0, 0);
+
+            // Old stuff. No longer needed
             // Lever lever = (Lever) block.getState().getData();
             // lever.setPowered(!lever.isPowered());
             // block.getState().update();
-            broadcastExecuteText(hero);
+
             return SkillResult.NORMAL;
         }
 
-        Messaging.send(player, "You must target a lever or button!");
+        Messaging.send(player, "You cannot telekinetically intreract with that object!");
         return SkillResult.INVALID_TARGET_NO_MSG;
     }
 

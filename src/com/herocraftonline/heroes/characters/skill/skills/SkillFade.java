@@ -200,6 +200,7 @@ public class SkillFade extends ActiveSkill {
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.INVIS);
+            types.add(EffectType.UNTARGETABLE_NO_MSG);
         }
 
         @Override

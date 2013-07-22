@@ -98,28 +98,27 @@ public class SkillPotion extends PassiveSkill {
                 if (event.getClickedBlock() != null) {
 
                     // VALIDATE NON-AIR BLOCK
-                    if (!(Util.interactableBlocks.contains(event.getClickedBlock().getType()))) {
-                        determinePotionOutcome(player, activatedItem);
-                    }
-                    else {
+                    if ((Util.interactableBlocks.contains(event.getClickedBlock().getType()))) {
                         // Prevent us from using the item when clicking an interactable block.
                         event.setUseItemInHand(Event.Result.DENY);
+                        return;
                     }
                 }
                 else {
                     // AIR BLOCK. NO VALIDATION
-                    determinePotionOutcome(player, activatedItem);
+                    if (!(canUsePotion(player, activatedItem)))
+                        event.setUseItemInHand(Event.Result.DENY);
                 }
             }
         }
 
-        public void determinePotionOutcome(Player player, ItemStack activatedItem) {
+        public boolean canUsePotion(Player player, ItemStack activatedItem) {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             // see if the player can use potions at all
             if (!hero.canUseSkill(skill) || (hero.isInCombat() && SkillConfigManager.getUseSetting(hero, skill, SkillSetting.NO_COMBAT_USE, false))) {
                 Messaging.send(player, "You can't use this potion!");
-                return;
+                return false;
             }
 
             // get the potion type info
@@ -132,13 +131,13 @@ public class SkillPotion extends PassiveSkill {
                 potionName = splashPotions.get(potionId);
             }
             else {
-                return;
+                return true;        // Not a proper potion, so don't block them from using it.
             }
 
             // see if the player can use this type of potion
             if (!SkillConfigManager.getUseSetting(hero, skill, "allow." + potionName, false)) {
                 Messaging.send(player, "You can't use this potion!");
-                return;
+                return false;
             }
 
             // trim the rank and splash from the potion name
@@ -156,12 +155,14 @@ public class SkillPotion extends PassiveSkill {
             if (readyTime != null && time < readyTime) {
                 int secRemaining = (int) Math.ceil((readyTime - time) / 1000.0);
                 Messaging.send(player, "You can't use this potion for $1s!", secRemaining);
-                return;
+                return false;
             }
 
             // potion is okay to use, so trigger a cooldown
             long cooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown." + potionName, 10 * 60000, true);
             hero.setCooldown(potionType, time + cooldown);
+
+            return true;
         }
     }
 

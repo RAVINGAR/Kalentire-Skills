@@ -175,7 +175,7 @@ public class SkillSmoke extends ActiveSkill {
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.INVIS);
-            types.add(EffectType.UNTARGETABLE);
+            types.add(EffectType.UNTARGETABLE_NO_MSG);
         }
 
         @Override
@@ -208,7 +208,7 @@ public class SkillSmoke extends ActiveSkill {
             }
 
             // Give them a grace period to stun a target player.
-            hero.addEffect(new SmokeStunBuffEffect(this.skill, 500));
+            hero.addEffect(new SmokeStunBuffEffect(skill, 500));
 
             if (expireText != null && expireText.length() > 0)
                 broadcast(player.getLocation(), expireText, player.getDisplayName());

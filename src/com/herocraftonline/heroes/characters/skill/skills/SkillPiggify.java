@@ -73,8 +73,12 @@ public class SkillPiggify extends TargettedSkill {
 
     public class SkillEntityListener implements Listener {
 
-        @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.LOWEST)
         public void onEntityDamage(EntityDamageEvent event) {
+            if (event.isCancelled() || event.getDamage() == 0) {
+                return;
+            }
+
             if (creatures.containsKey(event.getEntity())) {
                 if (event instanceof EntityDamageByEntityEvent) {
                     EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
