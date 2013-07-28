@@ -10,37 +10,39 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillBloodRitual extends TargettedSkill {
+public class SkillAngelsShout extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
 
-    public SkillBloodRitual(Heroes plugin) {
-        super(plugin, "BloodRitual");
-        setDescription("Perform a Ritual of Blood with your target, restoring $1% of your target's health per level of Blood Union. Removes all Blood Union on use.");
-        setUsage("/skill bloodritual <target>");
+    public SkillAngelsShout(Heroes plugin) {
+        super(plugin, "AngelsShout");
+        setDescription("Bless your target with the shout of an Angel, restoring $1 health to your target and negating their fire effects.");
+        setUsage("/skill angelsshout <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill bloodritual");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.DARK);
+        setIdentifiers("skill angelsshout");
+        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
     }
 
     public String getDescription(Hero hero) {
 
-        int healthMultiplier = (int) (SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false) * 100);
+        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, Integer.valueOf(300), false);
 
-        return getDescription().replace("$1", healthMultiplier + "");
+        return getDescription().replace("$1", health + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("blood-union-health-multiplier", 0.1);
+        node.set(SkillSetting.HEALTH.node(), Integer.valueOf(300));
 
         return node;
     }
@@ -61,27 +63,8 @@ public class SkillBloodRitual extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        if (!hero.hasEffect("BloodUnionEffect")) {
-            return SkillResult.FAIL;
-        }
-
-        // Get Blood Union Level
-        BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
-        int bloodUnionLevel = buEffect.getBloodUnionLevel();
-
-        if (bloodUnionLevel < 1) {
-            // Display No Blood Union Error Text
-            Messaging.send(player, "You must have at least 1 Blood Union to use this ability!", new Object[0]);
-            return SkillResult.FAIL;
-        }
-
-        // Increase healing based on blood union level
-        double healthMultiplier = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false);
-        healthMultiplier *= bloodUnionLevel;
-
-        double healAmount = healthMultiplier * target.getMaxHealth();
-
         // Ensure they can be healed.
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, Integer.valueOf(300), false);
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
@@ -94,12 +77,17 @@ public class SkillBloodRitual extends TargettedSkill {
         // Heal target
         targetHero.heal(hrhEvent.getAmount());
 
-        // Set Blood Union to 0
-        buEffect.setBloodUnionLevel(0);
+        // Remove fire ticks and fire effects
+        ((Player) target).setFireTicks(0);
+        for (Effect effect : targetHero.getEffects()) {
+            if (effect.isType(EffectType.FIRE)) {
+                targetHero.removeEffect(effect);
+            }
+        }
 
         // Play effect
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.SILVER).withFade(Color.YELLOW).build());
         }
         catch (IllegalArgumentException e) {
             e.printStackTrace();

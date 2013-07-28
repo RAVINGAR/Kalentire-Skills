@@ -5,27 +5,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_6_R2.EntityCreature;
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftCreature;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -48,8 +37,6 @@ public class SkillFade extends ActiveSkill {
         setIdentifiers("skill fade");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
         setTypes(SkillType.ILLUSION, SkillType.BUFF, SkillType.COUNTER, SkillType.STEALTHY);
-
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
         moveChecker = new FadeMoveChecker(this);
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);
@@ -93,54 +80,10 @@ public class SkillFade extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
-        hero.addEffect(new FadeEffect(this, duration));
-
-        // If any nearby monsters are targeting the player, force them to change their target.
-        for (Entity entity : player.getNearbyEntities(50, 50, 50)) {
-            if (!(entity instanceof CraftCreature))
-                continue;
-
-            EntityCreature notchMob = (EntityCreature) ((CraftCreature) entity).getHandle();
-            if (notchMob.target == null)
-                continue;
-
-            EntityPlayer notchPlayer = (EntityPlayer) ((CraftPlayer) player).getHandle();
-            if (notchMob.target.equals(notchPlayer))
-                notchMob.setGoalTarget(null);
-        }
+        hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
 
         moveChecker.addHero(hero);
         return SkillResult.NORMAL;
-    }
-
-    public class SkillEntityListener implements Listener {
-
-        public SkillEntityListener() {
-        }
-
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onEntityTarget(EntityTargetEvent event) {
-            if (!(event.getTarget() instanceof Player) || event.getTarget() == null) {
-                return;
-            }
-
-            Player player = (Player) event.getTarget();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!(hero.hasEffect("FadeEffect")))
-                return;
-
-            event.setCancelled(true);
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillUse(SkillUseEvent event) {
-            Hero hero = event.getHero();
-
-            if (hero.hasEffect("FadeEffect")) {
-                if (!event.getSkill().getTypes().contains(SkillType.STEALTHY))
-                    hero.removeEffect(hero.getEffect("FadeEffect"));
-            }
-        }
     }
 
     public class FadeMoveChecker implements Runnable {
@@ -159,26 +102,26 @@ public class SkillFade extends ActiveSkill {
                 Entry<Hero, Location> entry = heroes.next();
                 Hero hero = entry.getKey();
                 Location oldLoc = entry.getValue();
-                if (!hero.hasEffect("FadeEffect")) {
+                if (!hero.hasEffect("Invisible")) {
                     heroes.remove();
                     continue;
                 }
                 Location newLoc = hero.getPlayer().getLocation();
                 if (newLoc.getWorld() != oldLoc.getWorld() || newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1D, false)) {
-                    hero.removeEffect(hero.getEffect("FadeEffect"));
+                    hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
                 }
 
                 if (newLoc.getBlock().getLightLevel() > SkillConfigManager.getUseSetting(hero, skill, "max-light-level", 8, false)) {
-                    hero.removeEffect(hero.getEffect("FadeEffect"));
+                    hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
                 }
                 double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", 1D, false);
                 for (Entity entity : hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange)) {
                     if (entity instanceof Player) {
-                        hero.removeEffect(hero.getEffect("FadeEffect"));
+                        hero.removeEffect(hero.getEffect("Invisible"));
                         heroes.remove();
                         break;
                     }
@@ -187,53 +130,9 @@ public class SkillFade extends ActiveSkill {
         }
 
         public void addHero(Hero hero) {
-            if (!hero.hasEffect("FadeEffect"))
+            if (!hero.hasEffect("Invisible"))
                 return;
             oldLocations.put(hero, hero.getPlayer().getLocation());
-        }
-    }
-
-    public class FadeEffect extends ExpirableEffect {
-
-        public FadeEffect(Skill skill, long duration) {
-            super(skill, "FadeEffect", duration);
-
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.INVIS);
-            types.add(EffectType.UNTARGETABLE_NO_MSG);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            Player player = hero.getPlayer();
-
-            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-                if (onlinePlayer.equals(player) || onlinePlayer.hasPermission("heroes.admin.seeinvis")) {
-                    continue;
-                }
-                onlinePlayer.hidePlayer(player);
-            }
-
-            if (applyText != null && applyText.length() > 0)
-                Messaging.send(player, applyText);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-                if (onlinePlayer.equals(player)) {
-                    continue;
-                }
-                onlinePlayer.showPlayer(player);
-            }
-
-            if (expireText != null && expireText.length() > 0)
-                Messaging.send(player, expireText);
         }
     }
 }

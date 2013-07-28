@@ -1,0 +1,286 @@
+package com.herocraftonline.heroes.characters.skill.skills;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.util.Vector;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+
+public class SkillGrapplingHook extends ActiveSkill {
+
+    private Map<Arrow, Long> grapplingHooks = new LinkedHashMap<Arrow, Long>(100) {
+        private static final long serialVersionUID = -1L;
+
+        protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
+            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+        }
+    };
+
+    private String applyText;
+    private String expireText;
+
+    public SkillGrapplingHook(Heroes plugin) {
+        super(plugin, "GrapplingHook");
+        setDescription("Apply a grappling hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! The grappling hook weighs down your arrows however and reduces their velocity by $4%.");
+        setUsage("/skill grapplinghook");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill grapplinghook");
+        setTypes(SkillType.PHYSICAL, SkillType.BUFF, SkillType.FORCE);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+    }
+
+    public String getDescription(Hero hero) {
+        int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
+
+        String numShotsString = "";
+        if (numShots > 1)
+            numShotsString = "next " + numShots + " shots";
+        else
+            numShotsString = "next shot";
+
+        double velocityMultiplier = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5D, false));
+        velocityMultiplier = Util.formatDouble((1.0 - velocityMultiplier) * 100.0);
+        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false) / 1000.0);
+
+        return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", duration + "").replace("$4", velocityMultiplier + "");
+    }
+
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set("num-shots", Integer.valueOf(1));
+        node.set("velocity-multiplier", Double.valueOf(0.5D));
+        node.set("max-distance", Integer.valueOf(35));
+        node.set("safe-fall-duration", Integer.valueOf(4000));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
+        node.set("horizontal-divider", Integer.valueOf(6));
+        node.set("vertical-divider", Integer.valueOf(8));
+        node.set("multiplier", Double.valueOf(1.2));
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% readies his grappling hook!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% drops his grappling hook.");
+
+        return node;
+    }
+
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% readies his grappling hook!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% drops his grappling hook.").replace("%hero%", "$1");
+    }
+
+    public SkillResult use(Hero hero, String[] args) {
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
+        hero.addEffect(new GrapplingHookBuffEffect(this, duration, numShots));
+
+        return SkillResult.NORMAL;
+    }
+
+    public class SkillEntityListener implements Listener {
+
+        private Skill skill;
+
+        public SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onEntityShootBow(EntityShootBowEvent event) {
+            if ((!(event.getEntity() instanceof Player)) || (!(event.getProjectile() instanceof Arrow))) {
+                return;
+            }
+
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+            if (hero.hasEffect("GrapplingHookBuffEffect")) {
+
+                // Lower the number of shots left on the buff
+                GrapplingHookBuffEffect ghbEffect = (GrapplingHookBuffEffect) hero.getEffect("GrapplingHookBuffEffect");
+                ghbEffect.setShotsLeft(ghbEffect.getShotsLeft() - 1);
+
+                // If we're out of grapples, remove the buff.
+                if (ghbEffect.getShotsLeft() < 1) {
+                    ghbEffect.setShowExpireText(false);		// Don't show expire text if
+                    hero.removeEffect(ghbEffect);
+                }
+
+                // Modify the projectile
+                double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.5D, false);
+                Arrow grapplingHook = (Arrow) event.getProjectile();
+                grapplingHook.setVelocity(grapplingHook.getVelocity().multiply(velocityMultiplier));
+                grapplingHooks.put(grapplingHook, Long.valueOf(System.currentTimeMillis()));
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onProjectileHit(ProjectileHitEvent event) {
+            if (!(event.getEntity() instanceof Arrow))
+                return;
+
+            Arrow grapplingHook = (Arrow) event.getEntity();
+            if ((!(grapplingHook.getShooter() instanceof Player)))
+                return;
+
+            if (!(grapplingHooks.containsKey(grapplingHook)))
+                return;
+
+            Player shooter = (Player) grapplingHook.getShooter();
+            Hero hero = plugin.getCharacterManager().getHero(shooter);
+
+            // Grapple!
+            grapplingHooks.remove(grapplingHook);
+            grapplingHook.remove();
+            grapple(hero, grapplingHook.getLocation());
+        }
+    }
+
+    private void grapple(Hero shooterHero, Location targetLoc) {
+
+        Player shooter = shooterHero.getPlayer();
+
+        Location playerLoc = shooter.getLocation();
+        if (!(playerLoc.getWorld().equals(targetLoc.getWorld())))
+            return;
+
+        Vector playerLocVec = shooter.getLocation().toVector();
+        Vector locVec = targetLoc.toVector();
+
+        double distance = (int) playerLocVec.distance(locVec);
+        //Messaging.send(shooter, "Distance: " + distance + ".", new Object[0]);
+
+        int maxDistance = SkillConfigManager.getUseSetting(shooterHero, this, "max-distance", 35, false);
+        if (maxDistance > 0) {
+            if (distance > maxDistance) {
+                Messaging.send(shooter, "Your target is too far, your line has snapped!", new Object[0]);
+                return;
+            }
+        }
+
+        // If the player is aiming downwards, don't let him increase his y.
+        boolean noY = false;
+        if (locVec.getY() < playerLoc.getY())
+            noY = true;
+
+        // Create our distance vector
+        //        Vector dVector = locVec.subtract(playerLocVec);
+        //
+        //        // Store the block variables
+        //        int dX = dVector.getBlockX();
+        //        int dY = dVector.getBlockY();
+        //        int dZ = dVector.getBlockZ();
+
+        // Calculate pull vector
+        //        int multiplier = (int) ((Math.abs(dX) + Math.abs(dY) + Math.abs(dZ)) / 6);
+        //        int ymultiplier = (int) (Math.abs(dY) - (Math.abs(dX) + Math.abs(dZ)) / 30);
+        //        Vector vec = new Vector(dX, Math.abs(dY) + ymultiplier, dZ).normalize().multiply(multiplier);
+
+        double horizontalDivider = SkillConfigManager.getUseSetting(shooterHero, this, "horizontal-divider", 6, false);
+        double verticalDivider = SkillConfigManager.getUseSetting(shooterHero, this, "vertical-divider", 8, false);
+        double xDir = (targetLoc.getX() - playerLoc.getX()) / horizontalDivider;
+        double yDir = (targetLoc.getY() - playerLoc.getY()) / verticalDivider;
+        double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
+        double multiplier = SkillConfigManager.getUseSetting(shooterHero, this, "multiplier", 1.2, false);
+        Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+
+        //        if ((Math.abs(dY) + ymultiplier) * multiplier > 3) {
+        //            vec.setY(vec.getY() / 2.0D);
+        //        }
+
+        // Prevent y velocity increase if told to.
+        if (noY) {
+            vec.multiply(0.5).setY(0.5);	// Half the power of the grapple, and eliminate the y power
+        }
+        else {
+            // As long as we have Y, give them safefall
+            int safeFallDuration = SkillConfigManager.getUseSetting(shooterHero, this, "safe-fall-duration", 5000, false);
+            shooterHero.addEffect(new SafeFallEffect(this, safeFallDuration));
+        }
+
+        // Grapple!
+        shooter.getWorld().playSound(shooter.getLocation(), Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
+        shooter.setVelocity(vec);
+    }
+
+    // Buff effect used to keep track of grappling hook uses
+    public class GrapplingHookBuffEffect extends ExpirableEffect {
+
+        private int shotsLeft = 1;
+        private boolean showExpireText = true;
+
+        public GrapplingHookBuffEffect(Skill skill, long duration, int numShots) {
+            super(skill, "GrapplingHookBuffEffect", duration);
+            this.shotsLeft = numShots;
+
+            types.add(EffectType.IMBUE);
+            types.add(EffectType.PHYSICAL);
+            types.add(EffectType.BENEFICIAL);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            for (final Effect effect : hero.getEffects()) {
+                if (effect.equals(this)) {
+                    continue;
+                }
+
+                if (effect.isType(EffectType.IMBUE)) {
+                    hero.removeEffect(effect);
+                }
+            }
+
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), applyText, player.getDisplayName());
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+
+            if (showExpireText)
+                broadcast(player.getLocation(), expireText, player.getDisplayName());
+        }
+
+        public int getShotsLeft() {
+            return shotsLeft;
+        }
+
+        public void setShotsLeft(int shotsLeft) {
+            this.shotsLeft = shotsLeft;
+        }
+
+        public void setShowExpireText(boolean showExpireText) {
+            this.showExpireText = showExpireText;
+        }
+    }
+}

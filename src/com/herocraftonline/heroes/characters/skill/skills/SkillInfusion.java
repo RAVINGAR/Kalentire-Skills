@@ -59,7 +59,7 @@ public class SkillInfusion extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        Hero targetHero = this.plugin.getCharacterManager().getHero((Player) target);
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         double targetHealth = target.getHealth();
 
@@ -104,10 +104,8 @@ public class SkillInfusion extends TargettedSkill {
 
         // Remove bleeds
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.HARMFUL)) {
-                if (effect.isType(EffectType.BLEED)) {
-                    targetHero.removeEffect(effect);
-                }
+            if (effect.isType(EffectType.BLEED) && effect.isType(EffectType.HARMFUL)) {
+                targetHero.removeEffect(effect);
             }
         }
 

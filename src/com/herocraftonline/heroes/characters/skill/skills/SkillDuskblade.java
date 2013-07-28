@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
@@ -82,4 +81,3 @@ public class SkillDuskblade extends TargettedSkill {
     }
     
 }
-*/

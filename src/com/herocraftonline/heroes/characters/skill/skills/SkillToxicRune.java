@@ -73,7 +73,7 @@ public class SkillToxicRune extends ActiveSkill {
         node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% imbues his blade with a Rune of " + ChatColor.DARK_GREEN + "Toxicity.");
         node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been poisoned by a Rune of Toxicity!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has recovered from the poison!");
-        node.set("rune-chat-color", ChatColor.DARK_GREEN.toString());
+        node.set("rune-chat-color", ChatColor.DARK_GREEN + "");
 
         return node;
     }
@@ -82,7 +82,7 @@ public class SkillToxicRune extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 9000, false) / 1000;
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false) / 1000;
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 25, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 25, false);
 
         return getDescription().replace("$1", damage + "").replace("$2", period + "").replace("$3", duration + "");
     }
@@ -138,7 +138,7 @@ public class SkillToxicRune extends ActiveSkill {
             // Set the variables
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 9000, false);
             long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
-            int tickDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 25, false);
+            double tickDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 25, false);
 
             String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been poisoned by a Rune of Toxicity!").replace("%target%", "$1");
             String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");

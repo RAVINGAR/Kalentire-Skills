@@ -104,11 +104,9 @@ public class SkillPotion extends PassiveSkill {
                         return;
                     }
                 }
-                else {
-                    // AIR BLOCK. NO VALIDATION
-                    if (!(canUsePotion(player, activatedItem)))
-                        event.setUseItemInHand(Event.Result.DENY);
-                }
+
+                if (!(canUsePotion(player, activatedItem)))
+                    event.setUseItemInHand(Event.Result.DENY);
             }
         }
 

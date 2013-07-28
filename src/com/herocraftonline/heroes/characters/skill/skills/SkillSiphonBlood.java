@@ -20,106 +20,106 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 
 public class SkillSiphonBlood extends TargettedSkill {
 
-	public VisualEffect fplayer = new VisualEffect();		// Firework effect
+    public VisualEffect fplayer = new VisualEffect();		// Firework effect
 
-	public SkillSiphonBlood(Heroes plugin) {
-		super(plugin, "SiphonBlood");
-		setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4");
-		setUsage("/skill siphonblood");
-		setArgumentRange(0, 0);
-		setIdentifiers("skill siphonblood");
-		setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DARK);
-	}
+    public SkillSiphonBlood(Heroes plugin) {
+        super(plugin, "SiphonBlood");
+        setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4");
+        setUsage("/skill siphonblood");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill siphonblood");
+        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DARK);
+    }
 
-	@Override
-	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.MAX_DISTANCE.node(), 6);
-		node.set(SkillSetting.DAMAGE.node(), 95);
-		node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.25);
-		node.set("heal-mult", 1.1);
-		node.set("blood-union-heal-mult-increase", 0.04);
-		node.set("blood-union-increase", 1);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.DAMAGE.node(), 95);
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.25);
+        node.set("heal-mult", 1.1);
+        node.set("blood-union-heal-mult-increase", 0.04);
+        node.set("blood-union-increase", 1);
 
-		return node;
-	}
+        return node;
+    }
 
-	@Override
-	public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(Hero hero) {
 
-		// Damage stuff
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-		damage = (int) (damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25, false) * hero.getSkillLevel(this));
+        // Damage stuff
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
+        damage = (int) (damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25, false) * hero.getSkillLevel(this));
 
-		// Heal mult stuff
-		int healMult = (int) (SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false) * 100);
-		int healMultIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.04, false) * 100);
+        // Heal mult stuff
+        int healMult = (int) (SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false) * 100);
+        int healMultIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.04, false) * 100);
 
-		int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
+        int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
 
-		return getDescription().replace("$1", damage + "").replace("$2", healMult + "").replace("$3", healMultIncrease + "").replace("$4", bloodUnionIncrease + "");
-	}
+        return getDescription().replace("$1", damage + "").replace("$2", healMult + "").replace("$3", healMultIncrease + "").replace("$4", bloodUnionIncrease + "");
+    }
 
-	@Override
-	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    @Override
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
-		Player player = hero.getPlayer();
+        Player player = hero.getPlayer();
 
-		// Calculate damage
-		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
-		damage = (damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25D, false) * hero.getSkillLevel(this));
+        broadcastExecuteText(hero, target);
 
-		double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false);
+        // Calculate damage
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
+        damage = damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25D, false) * hero.getSkillLevel(this);
 
-		// Get Blood Union Level
-		int bloodUnionLevel = 0;
-		if (hero.hasEffect("BloodUnionEffect")) {
-			BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false);
 
-			bloodUnionLevel = buEffect.getBloodUnionLevel();
-		}
+        // Get Blood Union Level
+        int bloodUnionLevel = 0;
+        if (hero.hasEffect("BloodUnionEffect")) {
+            BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
 
-		// Increase health multiplier by blood union level
-		double healIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.05, false);
-		healIncrease *= bloodUnionLevel;
-		healMult += healIncrease;
+            bloodUnionLevel = buEffect.getBloodUnionLevel();
+        }
 
-		HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this, hero);
+        // Damage target
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 
-		plugin.getServer().getPluginManager().callEvent(hrEvent);
-		if (!hrEvent.isCancelled()) {
-			hero.heal(hrEvent.getAmount());
-		}
+        // Increase health multiplier by blood union level
+        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.05, false);
+        healIncrease *= bloodUnionLevel;
+        healMult += healIncrease;
 
-		// Damage target
-		addSpellTarget(target, hero);
-		damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+        HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, damage * healMult, this, hero);
 
-		// Increase Blood Union
-		if (hero.hasEffect("BloodUnionEffect")) {
-			int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
-			BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
+        plugin.getServer().getPluginManager().callEvent(hrEvent);
+        if (!hrEvent.isCancelled()) {
+            hero.heal(hrEvent.getAmount());
+        }
 
-			if (target instanceof Player)
-				buEffect.addBloodUnion(bloodUnionIncrease, true);
-			else
-				buEffect.addBloodUnion(bloodUnionIncrease, false);
-		}
+        // Increase Blood Union
+        if (hero.hasEffect("BloodUnionEffect")) {
+            int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
+            BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
 
-		broadcastExecuteText(hero, target);
+            if (target instanceof Player)
+                buEffect.addBloodUnion(bloodUnionIncrease, true);
+            else
+                buEffect.addBloodUnion(bloodUnionIncrease, false);
+        }
 
-		// Play Effect
-		try {
-			fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.GREEN).withFade(Color.PURPLE).build());
-		}
-		catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+        // Play Effect
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.GREEN).withFade(Color.PURPLE).build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		return SkillResult.NORMAL;
-	}
+        return SkillResult.NORMAL;
+    }
 }

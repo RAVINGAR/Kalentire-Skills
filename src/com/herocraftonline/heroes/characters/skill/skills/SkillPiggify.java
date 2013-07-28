@@ -12,12 +12,14 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -161,6 +163,10 @@ public class SkillPiggify extends TargettedSkill {
             types.add(EffectType.HARMFUL);
             types.add(EffectType.STUN);
             types.add(EffectType.DISABLE);
+            types.add(EffectType.MAGIC);
+
+            addMobEffect(2, (int) (duration / 1000) * 20, 127, false);      // Max slowness
+            addMobEffect(8, (int) (duration / 1000) * 20, 128, false);      // Max negative jump boost
         }
 
         @Override
@@ -173,7 +179,22 @@ public class SkillPiggify extends TargettedSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+
+            final Player player = hero.getPlayer();
             loc = hero.getPlayer().getLocation();
+
+            // Don't allow an entangled player to sprint. If they are sprinting, turn it off.
+            final int currentHunger = player.getFoodLevel();
+            player.setFoodLevel(1);
+            player.setSprinting(false);
+
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+            {
+                public void run()
+                {
+                    player.setFoodLevel(currentHunger);
+                }
+            }, 0L);
         }
 
         @Override
@@ -195,18 +216,21 @@ public class SkillPiggify extends TargettedSkill {
             final Location location = hero.getPlayer().getLocation();
             if ((location.getX() != loc.getX()) || (location.getZ() != loc.getZ())) {
 
+                // If they have any velocity, we wish to remove it.
+                Player player = hero.getPlayer();
+                player.setVelocity(new Vector(0, 0, 0));
+
                 // Retain the player's Y position and facing directions
                 loc.setYaw(location.getYaw());
                 loc.setPitch(location.getPitch());
                 loc.setY(location.getY());
 
                 // Teleport the Player back into place.
-                hero.getPlayer().teleport(loc);
+                player.teleport(loc);
             }
         }
 
         @Override
-        public void tickMonster(Monster monster) {
-        }
+        public void tickMonster(Monster monster) {}
     }
 }

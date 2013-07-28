@@ -45,114 +45,106 @@ import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.Rune;
 import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneApplicationEvent;
 
-public class SkillFireRune extends ActiveSkill
-{
-	public SkillFireRune(Heroes plugin)
-	{
-		// Heroes stuff
-		super(plugin, "FireRune");
-		setDescription("Imbue your blade with the Rune of Fire. Upon Rune application, this Rune will deal $1 fire damage to the target.");
-		setUsage("/skill firerune");
-		setIdentifiers("skill firerune");
-		setTypes(SkillType.FIRE, SkillType.HARMFUL, SkillType.DAMAGING, SkillType.SILENCABLE);
-		setArgumentRange(0, 0);
+public class SkillFireRune extends ActiveSkill {
+    public SkillFireRune(Heroes plugin) {
+        // Heroes stuff
+        super(plugin, "FireRune");
+        setDescription("Imbue your blade with the Rune of Fire. Upon Rune application, this Rune will deal $1 fire damage to the target.");
+        setUsage("/skill firerune");
+        setIdentifiers("skill firerune");
+        setTypes(SkillType.FIRE, SkillType.HARMFUL, SkillType.DAMAGING, SkillType.SILENCABLE);
+        setArgumentRange(0, 0);
 
-		// Start up the listener for Runeword skill usage
-		Bukkit.getServer().getPluginManager().registerEvents(new FireRuneListener(this), plugin);
-	}
+        // Start up the listener for Runeword skill usage
+        Bukkit.getServer().getPluginManager().registerEvents(new FireRuneListener(this), plugin);
+    }
 
-	@Override
-	public ConfigurationSection getDefaultConfig()
-	{
-		ConfigurationSection node = super.getDefaultConfig();
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.DAMAGE.node(), 105);
-		node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% imbues his blade with a Rune of "+ChatColor.RED+"Fire.");
-		node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% has been burned by a Rune of Fire!");
-		node.set("rune-chat-color", ChatColor.RED.toString());
+        node.set(SkillSetting.DAMAGE.node(), 105);
+        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been burned by a Rune of Fire!");
+        node.set("rune-chat-color", ChatColor.RED.toString());
 
-		return node;
-	}
+        return node;
+    }
 
-	@Override
-	public String getDescription(Hero hero)
-	{
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 105, false);
-		return getDescription().replace("$1", damage + "");
-	}
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 105, false);
+        return getDescription().replace("$1", damage + "");
+    }
 
-	@Override
-	public SkillResult use(Hero hero, String[] args)
-	{
-		// Create the Rune
-		int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 15, false));
-		String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.RED.toString());
-		Rune fireRune = new Rune("FireRune", manaCost, runeChatColor);
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+        // Create the Rune
+        int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 15, false));
+        String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.RED.toString());
+        Rune fireRune = new Rune("FireRune", manaCost, runeChatColor);
 
-		// Add the Rune to the RuneWord queue here
-		Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, fireRune));
+        // Add the Rune to the RuneWord queue here
+        Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, fireRune));
 
-		// Play Firework
-		// CODE HERE
+        // Play Firework
+        // CODE HERE
 
-		// Play Sound
-		hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
+        // Play Sound
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
-		// Let the world know that the hero has activated a Rune.
-		broadcastExecuteText(hero);
+        // Let the world know that the hero has activated a Rune.
+        broadcastExecuteText(hero);
 
-		return SkillResult.NORMAL;
-	}
+        return SkillResult.NORMAL;
+    }
 
-	/*
-	 * This listener is the main controller for the FireRune ability. The primary function is to listen to the Rune Application event.
-	 * It could be used to listen to other things as well, but that won't typically be necessary.
-	 */
-	private class FireRuneListener implements Listener
-	{
-		private final Skill skill;
+    /*
+     * This listener is the main controller for the FireRune ability. The primary function is to listen to the Rune Application event.
+     * It could be used to listen to other things as well, but that won't typically be necessary.
+     */
+    private class FireRuneListener implements Listener {
+        private final Skill skill;
 
-		public FireRuneListener(Skill skill)
-		{
-			this.skill = skill;
-		}
+        public FireRuneListener(Skill skill) {
+            this.skill = skill;
+        }
 
-		// Listen for the Fire rune application
-		@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-		public void onRuneApplication(RuneApplicationEvent event)
-		{
-			// Get Hero information
-			Hero hero = event.getHero();
+        // Listen for the Fire rune application
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onRuneApplication(RuneApplicationEvent event) {
+            // Get Hero information
+            Hero hero = event.getHero();
 
-			// Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
-			if (!(event.getRuneList().getHead().name == "FireRune"))
-				return;
+            // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
+            if (!(event.getRuneList().getHead().name == "FireRune"))
+                return;
 
-			// Ensure that the target is a living entity
-			Entity targEnt = event.getTarget();
-			if (!(targEnt instanceof LivingEntity))
-				return;
+            // Ensure that the target is a living entity
+            Entity targEnt = event.getTarget();
+            if (!(targEnt instanceof LivingEntity))
+                return;
 
-			// Prep variables
-			CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
+            // Prep variables
+            CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-			double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 105, false);
-			String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 105, false);
+            String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
 
-			// Damage and silence the target
-			skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-			damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.FIRE);
+            // Damage and silence the target
+            skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
+            damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.FIRE);
 
-			// Announce that the player has been hit with the skill	
-			broadcast(targEnt.getLocation(), applyText, targCT.getName());
+            // Announce that the player has been hit with the skill	
+            broadcast(targEnt.getLocation(), applyText, targCT.getName());
 
-			// Play Firework effect
-			// CODE HERE
+            // Play Firework effect
+            // CODE HERE
 
-			// Play sound
-			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+            // Play sound
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
 
-			return;
-		}
-	}
+            return;
+        }
+    }
 }

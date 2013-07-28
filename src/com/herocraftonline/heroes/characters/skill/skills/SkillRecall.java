@@ -55,8 +55,10 @@ public class SkillRecall extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
         node.set(SkillSetting.DELAY.node(), 10000);
+
         return node;
     }
 

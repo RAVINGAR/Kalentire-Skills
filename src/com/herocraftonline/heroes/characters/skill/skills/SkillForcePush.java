@@ -39,6 +39,7 @@ public class SkillForcePush extends TargettedSkill {
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(0));
         node.set("horizontal-power", Double.valueOf(3.0));
         node.set("vertical-power", Double.valueOf(0.5));
+        node.set("push-delay", Double.valueOf(0.2));
 
         return node;
     }
@@ -67,7 +68,7 @@ public class SkillForcePush extends TargettedSkill {
         final double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 3.0, false);
 
         // Push them "up" first. THEN we can push them away.
-        double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.5, false);
+        double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.2, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
                 // Push them away

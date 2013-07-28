@@ -30,6 +30,12 @@ public class SkillTerror extends TargettedSkill {
         setTypes(SkillType.DARK, SkillType.DEBUFF, SkillType.ILLUSION, SkillType.MOVEMENT, SkillType.HARMFUL, SkillType.SILENCABLE);
 	}
 	
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000;
+        return getDescription().replace("$1", duration + "");
+    }
+
 	@Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
@@ -101,11 +107,4 @@ public class SkillTerror extends TargettedSkill {
 		}
 		
 	}
-
-	@Override
-	public String getDescription(Hero hero) {
-		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000;
-		return getDescription().replace("$1", duration + "");
-	}
-
 }

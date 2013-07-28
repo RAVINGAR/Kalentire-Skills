@@ -19,101 +19,101 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillBloodGift extends TargettedSkill {
-	public VisualEffect fplayer = new VisualEffect();
+    public VisualEffect fplayer = new VisualEffect();
 
-	public SkillBloodGift(Heroes plugin) {
-		super(plugin, "BloodGift");
-		setDescription("You gift an ally with your own blood, restoring $1 of their health. Healing is increased by $4% per level of Blood Union. This ability cannot be used on yourself, and costs $2 health and $3 mana to use.");
-		setUsage("/skill bloodgift <target>");
-		setArgumentRange(0, 1);
-		setIdentifiers("skill bloodgift");
-		setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
-	}
+    public SkillBloodGift(Heroes plugin) {
+        super(plugin, "BloodGift");
+        setDescription("You gift an ally with your own blood, restoring $1 of their health. Healing is increased by $4% per level of Blood Union. This ability cannot be used on yourself, and costs $2 health and $3 mana to use.");
+        setUsage("/skill bloodgift <target>");
+        setArgumentRange(0, 1);
+        setIdentifiers("skill bloodgift");
+        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.DARK, SkillType.LIGHT);
+    }
 
-	public String getDescription(Hero hero) {
+    public String getDescription(Hero hero) {
 
-		int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 200, false);
-		int healthcost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 85, false);
-		int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 20, false);
+        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 200, false);
+        int healthcost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 85, false);
+        int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 20, false);
 
-		int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.02, false) * 100);
+        int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.02, false) * 100);
 
-		return getDescription().replace("$1", health + "").replace("$2", healthcost + "").replace("$3", manacost + "").replace("$4", healIncrease + "");
-	}
+        return getDescription().replace("$1", health + "").replace("$2", healthcost + "").replace("$3", manacost + "").replace("$4", healIncrease + "");
+    }
 
-	public ConfigurationSection getDefaultConfig() {
+    public ConfigurationSection getDefaultConfig() {
 
-		ConfigurationSection node = super.getDefaultConfig();
+        ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("health-increase-percent-per-blood-union", Double.valueOf(0.02));
-		node.set(SkillSetting.HEALTH.node(), Integer.valueOf(200));
-		node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(85));
-		node.set(SkillSetting.MANA.node(), Integer.valueOf(25));
+        node.set("health-increase-percent-per-blood-union", Double.valueOf(0.02));
+        node.set(SkillSetting.HEALTH.node(), Integer.valueOf(200));
+        node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(85));
+        node.set(SkillSetting.MANA.node(), Integer.valueOf(25));
 
-		return node;
-	}
+        return node;
+    }
 
-	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-		Player player = hero.getPlayer();
-		if (!(target instanceof Player)) {
-			Messaging.send(player, "You cannot use this ability on yourself!", new Object[0]);
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		}
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        Player player = hero.getPlayer();
+        if (!(target instanceof Player)) {
+            return SkillResult.INVALID_TARGET;
+        }
 
-		Hero targetHero = this.plugin.getCharacterManager().getHero((Player) target);
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
-		// Don't allow self targeting
-		if (targetHero == hero) {
-			return SkillResult.FAIL;
-		}
+        // Don't allow self targeting
+        if (targetHero.equals(hero)) {
+            Messaging.send(player, "You cannot use this ability on yourself!", new Object[0]);
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
-		double targetHealth = target.getHealth();
+        double targetHealth = target.getHealth();
 
-		// Check to see if they are at full health
-		if (targetHealth >= target.getMaxHealth()) {
-			Messaging.send(player, "Target is already at full health.", new Object[0]);
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		}
+        // Check to see if they are at full health
+        if (targetHealth >= target.getMaxHealth()) {
+            Messaging.send(player, "Target is already at full health.", new Object[0]);
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
-		double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 200, false);
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 200, false);
 
-		// Get Blood Union Level
-		int bloodUnionLevel = 0;
-		if (hero.hasEffect("BloodUnionEffect")) {
-			BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
+        // Get Blood Union Level
+        int bloodUnionLevel = 0;
+        if (hero.hasEffect("BloodUnionEffect")) {
+            BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
 
-			bloodUnionLevel = buEffect.getBloodUnionLevel();
-		}
+            bloodUnionLevel = buEffect.getBloodUnionLevel();
+        }
 
-		// Increase healing based on blood union level
-		double healIncrease = SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.02, false);
-		healIncrease = 1 + (healIncrease *= bloodUnionLevel);
-		healAmount *= healIncrease;
+        // Increase healing based on blood union level
+        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.02, false);
+        healIncrease = 1 + (healIncrease *= bloodUnionLevel);
+        healAmount *= healIncrease;
 
-		// Ensure they can be healed.
-		HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
-		this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
-		if (hrhEvent.isCancelled()) {
-			Messaging.send(player, "Unable to heal the target at this time!", new Object[0]);
-			return SkillResult.CANCELLED;
-		}
+        // Ensure they can be healed.
+        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
+        this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
+        if (hrhEvent.isCancelled()) {
+            Messaging.send(player, "Unable to heal the target at this time!", new Object[0]);
+            return SkillResult.CANCELLED;
+        }
 
-		broadcastExecuteText(hero, target);
+        broadcastExecuteText(hero, target);
 
-		// Heal target
-		targetHero.heal(hrhEvent.getAmount());
+        // Heal target
+        targetHero.heal(hrhEvent.getAmount());
 
-		// Play effect
-		try {
-			this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
-		}
-		catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+        // Play effect
+        try {
+            this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		return SkillResult.NORMAL;
-	}
+        return SkillResult.NORMAL;
+    }
 }

@@ -19,17 +19,11 @@ import org.bukkit.craftbukkit.v1_6_R2.entity.CraftCreature;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -51,6 +45,12 @@ public class SkillCamouflage extends ActiveSkill {
         allowedMaterials.add(Material.GRAVEL);
         allowedMaterials.add(Material.LOG);
         allowedMaterials.add(Material.LEAVES);
+        allowedMaterials.add(Material.LOG);
+        allowedMaterials.add(Material.LONG_GRASS);
+        allowedMaterials.add(Material.CACTUS);
+        allowedMaterials.add(Material.HUGE_MUSHROOM_1);
+        allowedMaterials.add(Material.HUGE_MUSHROOM_2);
+        allowedMaterials.add(Material.MOSSY_COBBLESTONE);
         allowedMaterials.add(Material.MYCEL);
         allowedMaterials.add(Material.MELON_BLOCK);
         allowedMaterials.add(Material.PUMPKIN);
@@ -68,8 +68,6 @@ public class SkillCamouflage extends ActiveSkill {
         setIdentifiers("skill camouflage", "skill camo");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
         setTypes(SkillType.ILLUSION, SkillType.BUFF, SkillType.COUNTER, SkillType.STEALTHY);
-
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
         moveChecker = new CamoMoveChecker(this);
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);
@@ -142,7 +140,7 @@ public class SkillCamouflage extends ActiveSkill {
         }
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
-        hero.addEffect(new CamouflageEffect(this, duration));
+        hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
 
         // If any nearby monsters are targeting the player, force them to change their target.
         for (Entity entity : player.getNearbyEntities(50, 50, 50)) {
@@ -162,36 +160,6 @@ public class SkillCamouflage extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SkillEntityListener implements Listener {
-
-        public SkillEntityListener() {
-        }
-
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onEntityTarget(EntityTargetEvent event) {
-            if (!(event.getTarget() instanceof Player) || event.getTarget() == null) {
-                return;
-            }
-
-            Player player = (Player) event.getTarget();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!(hero.hasEffect("CamouflageEffect")))
-                return;
-
-            event.setCancelled(true);
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillUse(SkillUseEvent event) {
-            Hero hero = event.getHero();
-
-            if (hero.hasEffect("CamouflageEffect")) {
-                if (!event.getSkill().getTypes().contains(SkillType.STEALTHY))
-                    hero.removeEffect(hero.getEffect("CamouflageEffect"));
-            }
-        }
-    }
-
     public class CamoMoveChecker implements Runnable {
 
         private Map<Hero, Location> oldLocations = new HashMap<Hero, Location>();
@@ -208,14 +176,14 @@ public class SkillCamouflage extends ActiveSkill {
                 Entry<Hero, Location> entry = heroes.next();
                 Hero hero = entry.getKey();
                 Location oldLoc = entry.getValue();
-                if (!hero.hasEffect("CamouflageEffect")) {
+                if (!hero.hasEffect("Invisible")) {
                     heroes.remove();
                     continue;
                 }
 
                 Location newLoc = hero.getPlayer().getLocation();
                 if (newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1D, false)) {
-                    hero.removeEffect(hero.getEffect("CamouflageEffect"));
+                    hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
                 }
@@ -223,7 +191,7 @@ public class SkillCamouflage extends ActiveSkill {
                 List<Entity> nearEntities = hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange);
                 for (Entity entity : nearEntities) {
                     if (entity instanceof Player) {
-                        hero.removeEffect(hero.getEffect("CamouflageEffect"));
+                        hero.removeEffect(hero.getEffect("Invisible"));
                         heroes.remove();
                         break;
                     }
@@ -235,50 +203,6 @@ public class SkillCamouflage extends ActiveSkill {
             if (!hero.hasEffect("Invisible"))
                 return;
             oldLocations.put(hero, hero.getPlayer().getLocation());
-        }
-    }
-
-    public class CamouflageEffect extends ExpirableEffect {
-
-        public CamouflageEffect(Skill skill, long duration) {
-            super(skill, "CamouflageEffect", duration);
-
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.INVIS);
-            types.add(EffectType.UNTARGETABLE_NO_MSG);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            Player player = hero.getPlayer();
-
-            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-                if (onlinePlayer.equals(player) || onlinePlayer.hasPermission("heroes.admin.seeinvis")) {
-                    continue;
-                }
-                onlinePlayer.hidePlayer(player);
-            }
-
-            if (applyText != null && applyText.length() > 0)
-                Messaging.send(player, applyText);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-                if (onlinePlayer.equals(player)) {
-                    continue;
-                }
-                onlinePlayer.showPlayer(player);
-            }
-
-            if (expireText != null && expireText.length() > 0)
-                Messaging.send(player, expireText);
         }
     }
 }

@@ -37,8 +37,8 @@ public class SkillThickenBlood extends TargettedSkill {
 
         node.set("hunger-value", 80);
         node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood begins to thicken!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood returns to normal.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target%'s blood begins to thicken!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target%'s blood returns to normal.");
 
         return node;
     }
@@ -60,8 +60,8 @@ public class SkillThickenBlood extends TargettedSkill {
         // Get Debuff values
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         int hungerValue = SkillConfigManager.getUseSetting(hero, this, "hunger-value", 80, false);
-        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood begins to thicken!").replace("%target%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target%'s blood returns to normal.").replace("%target%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target%'s blood begins to thicken!").replace("%target%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target%'s blood returns to normal.").replace("%target%", "$1");
 
         broadcastExecuteText(hero, target);
 
@@ -86,12 +86,11 @@ public class SkillThickenBlood extends TargettedSkill {
             this.expireText = expireText;
             this.applier = applier;
 
+            types.add(EffectType.MAGIC);
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
-            types.add(EffectType.MAGIC);
 
-            final int tickDuration = (int) (duration / 1000) * 20;
-            addMobEffect(17, tickDuration, hungerValue, false);
+            addMobEffect(17, (int) (duration / 1000) * 20, hungerValue, false);
         }
 
         @Override

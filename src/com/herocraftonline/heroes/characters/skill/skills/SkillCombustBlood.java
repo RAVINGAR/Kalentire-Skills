@@ -106,7 +106,7 @@ public class SkillCombustBlood extends TargettedSkill {
         if (bloodUnionLevel >= bloodUnionRequirement) {
 
             // Get DoT values
-            int tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
+            double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
             int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
             int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
 
@@ -139,8 +139,8 @@ public class SkillCombustBlood extends TargettedSkill {
             super(skill, "CombustingBloodEffect", period, duration, tickDamage, applier);
 
             this.applier = applier;
-            types.add(EffectType.BLEED);
-            types.add(EffectType.HARMFUL);
+
+            this.types.add(EffectType.BLEED);
         }
 
         @Override
