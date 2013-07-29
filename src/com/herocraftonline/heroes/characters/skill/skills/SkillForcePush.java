@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -79,10 +80,14 @@ public class SkillForcePush extends TargettedSkill {
 
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
-            if (!player.isOp()) {
-                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
-                hero.addEffect(ncpExemptEffect);
+            if (target instanceof Player) {
+                Player targetPlayer = (Player) target;
+                if (!targetPlayer.isOp()) {
+                    long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                    CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                    targetCT.addEffect(ncpExemptEffect);
+                }
             }
         }
 

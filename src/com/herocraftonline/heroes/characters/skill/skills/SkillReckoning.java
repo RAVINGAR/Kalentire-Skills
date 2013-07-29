@@ -32,7 +32,7 @@ public class SkillReckoning extends ActiveSkill {
 
     private boolean ncpEnabled = false;
 
-	public SkillReckoning(Heroes plugin) {
+    public SkillReckoning(Heroes plugin) {
         super(plugin, "Reckoning");
         setDescription("You pull in nearby enemies, dealing $1 damage and slowing them for $2 seconds");
         setUsage("/skill reckoning");
@@ -76,7 +76,7 @@ public class SkillReckoning extends ActiveSkill {
         int slowAmount = SkillConfigManager.getUseSetting(hero, this, "slow-amount", 2, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         Location playerLoc = player.getLocation();
-        
+
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         long currentTime = System.currentTimeMillis();
         for (Entity entity : entities) {
@@ -92,7 +92,7 @@ public class SkillReckoning extends ActiveSkill {
             Location targetLoc = target.getLocation();
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
 
             if (character instanceof Hero) {
                 Hero enemy = (Hero) character;
@@ -100,19 +100,20 @@ public class SkillReckoning extends ActiveSkill {
                     enemy.cancelDelayedSkill();
                     enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
                 }
-            }
 
-            // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    long ncpDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, ncpDuration);
-                    hero.addEffect(ncpExemptEffect);
+                // Let's bypass the nocheat issues...
+                if (ncpEnabled) {
+                    Player targetPlayer = (Player) character;
+                    if (!targetPlayer.isOp()) {
+                        long ncpDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
+                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, ncpDuration);
+                        enemy.addEffect(ncpExemptEffect);
+                    }
                 }
             }
-            
-            character.addEffect(new SlowEffect(this, duration, slowAmount	, false, "", "", hero));
-            
+
+            character.addEffect(new SlowEffect(this, duration, slowAmount, false, "", "", hero));
+
             double xDir = (playerLoc.getX() - targetLoc.getX()) / 3D;
             double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3D;
             Vector v = new Vector(xDir, 0, zDir).multiply(0.5).setY(0.5);
@@ -120,7 +121,7 @@ public class SkillReckoning extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_THUNDER , 0.4F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_THUNDER, 0.4F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

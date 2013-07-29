@@ -27,9 +27,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-
 public class SkillSneak extends ActiveSkill {
 
     private boolean ncpEnabled = false;
@@ -196,8 +193,8 @@ public class SkillSneak extends ActiveSkill {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
 
-            if (ncpEnabled)
-                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING_SURVIVALFLY);
+            //            if (ncpEnabled)
+            //                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING_SURVIVALFLY);
         }
 
         @Override
@@ -205,8 +202,8 @@ public class SkillSneak extends ActiveSkill {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
 
-            if (ncpEnabled)
-                NCPExemptionManager.unexempt(player, CheckType.MOVING_SURVIVALFLY);
+            //            if (ncpEnabled)
+            //                NCPExemptionManager.unexempt(player, CheckType.MOVING_SURVIVALFLY);
         }
     }
 }
