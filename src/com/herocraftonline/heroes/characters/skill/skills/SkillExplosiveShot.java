@@ -132,6 +132,11 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             // Lower the number of shots left on the buff
             ExplosiveShotBuffEffect bEffect = (ExplosiveShotBuffEffect) hero.getEffect("ExplosiveShotBuffEffect");
+
+            // If we're out of shots, remove the buff.
+            if (bEffect.getShotsLeft() < 1)
+                return;
+
             bEffect.setShotsLeft(bEffect.getShotsLeft() - 1);
 
             // If we're out of shots, remove the buff.

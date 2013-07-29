@@ -56,7 +56,7 @@ public class SkillBackflip extends ActiveSkill {
         node.set("no-air-backflip", false);
         node.set("horizontal-power", Double.valueOf(1.0));
         node.set("vertical-power", Double.valueOf(1.0));
-        node.set("ncp-excemption-duration", Integer.valueOf(1000));
+        node.set("ncp-exemption-duration", Integer.valueOf(1000));
         node.set("throw-shuriken", true);
         node.set("use-backflip-shuriken-values", false);
         node.set("num-shuriken", Integer.valueOf(3));

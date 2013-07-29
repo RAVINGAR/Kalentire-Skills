@@ -32,6 +32,12 @@ public class SkillTremor extends ActiveSkill{
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
+        return getDescription().replace("$1", damage + "");
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DAMAGE.node(), 10);
@@ -56,12 +62,11 @@ public class SkillTremor extends ActiveSkill{
             }
             LivingEntity target = (LivingEntity) entity;
 
-            if (!damageCheck(player, target))
-                continue;
             Location targetLoc = target.getLocation();
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
+
             if(entity instanceof Player) {
             	Hero enemy = plugin.getCharacterManager().getHero((Player)entity);
             	if(enemy.getDelayedSkill() != null) {
@@ -82,11 +87,4 @@ public class SkillTremor extends ActiveSkill{
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
-        return getDescription().replace("$1", damage + "");
-    }
-
 }

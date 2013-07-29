@@ -36,10 +36,10 @@ public class SkillHolyStrike extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
-        this.addSpellTarget(target, hero);
-        if (!damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK)) {
-            return SkillResult.INVALID_TARGET;
-        }
+
+        addSpellTarget(target, hero);
+        damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
+
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_METAL , 0.4F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

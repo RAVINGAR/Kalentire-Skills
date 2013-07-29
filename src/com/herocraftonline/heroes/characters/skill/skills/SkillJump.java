@@ -56,7 +56,7 @@ public class SkillJump extends ActiveSkill {
         node.set("no-air-jump", false);
         node.set("horizontal-power", Double.valueOf(1.0));
         node.set("vertical-power", Double.valueOf(1.0));
-        node.set("ncp-excemption-duration", Integer.valueOf(2000));
+        node.set("ncp-exemption-duration", Integer.valueOf(2000));
 
         return node;
     }

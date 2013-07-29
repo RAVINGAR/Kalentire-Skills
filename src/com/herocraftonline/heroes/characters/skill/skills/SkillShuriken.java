@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -134,14 +135,13 @@ public class SkillShuriken extends PassiveSkill {
                 shurikenToss(player);
 
                 // Remove a flint from their inventory
-                //                PlayerInventory inventory = player.getInventory();
+                PlayerInventory inventory = player.getInventory();
                 // activatedItem.setAmount(activatedItem.getAmount() - numShuriken);
                 activatedItem.setAmount(activatedItem.getAmount() - 1);
 
-                //                if (activatedItem.getAmount() == 0) {
-                //                    inventory.clear(inventory.getHeldItemSlot());
-                //                }
-
+                if (activatedItem.getAmount() == 0) {
+                    inventory.clear(inventory.getHeldItemSlot());
+                }
                 player.updateInventory();
 
                 // Reduce their stamina by the stamina cost value

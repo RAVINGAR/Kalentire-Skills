@@ -27,6 +27,13 @@ public class SkillKick extends TargettedSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 5000);
@@ -39,23 +46,17 @@ public class SkillKick extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+
         addSpellTarget(target, hero);
-        if (!damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK)) {
-            return SkillResult.INVALID_TARGET;
-        }
+        damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
+
         if (target instanceof Player) {
             SilenceEffect sEffect = new SilenceEffect(this, duration);
             plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         }
+
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

@@ -9,16 +9,22 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -32,10 +38,23 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+
 public class SkillGrapplingHook extends ActiveSkill {
 
+    private boolean ncpEnabled = false;
+
     private Map<Arrow, Long> grapplingHooks = new LinkedHashMap<Arrow, Long>(100) {
-        private static final long serialVersionUID = -1L;
+        private static final long serialVersionUID = 1L;
+
+        protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
+            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+        }
+    };
+
+    private Map<Arrow, Long> grapplingHooksAttachedToPlayers = new LinkedHashMap<Arrow, Long>(100) {
+        private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
             return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
@@ -53,6 +72,13 @@ public class SkillGrapplingHook extends ActiveSkill {
         setIdentifiers("skill grapplinghook");
         setTypes(SkillType.PHYSICAL, SkillType.BUFF, SkillType.FORCE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+
+        try {
+            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+                ncpEnabled = true;
+            }
+        }
+        catch (Exception e) {}
     }
 
     public String getDescription(Hero hero) {
@@ -82,6 +108,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         node.set("horizontal-divider", Integer.valueOf(6));
         node.set("vertical-divider", Integer.valueOf(8));
         node.set("multiplier", Double.valueOf(1.2));
+        node.set("ncp-exemption-duration", 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% readies his grappling hook!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% drops his grappling hook.");
 
@@ -123,6 +150,10 @@ public class SkillGrapplingHook extends ActiveSkill {
 
                 // Lower the number of shots left on the buff
                 GrapplingHookBuffEffect ghbEffect = (GrapplingHookBuffEffect) hero.getEffect("GrapplingHookBuffEffect");
+
+                if (ghbEffect.getShotsLeft() < 1)
+                    return;
+
                 ghbEffect.setShotsLeft(ghbEffect.getShotsLeft() - 1);
 
                 // If we're out of grapples, remove the buff.
@@ -148,7 +179,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             if ((!(grapplingHook.getShooter() instanceof Player)))
                 return;
 
-            if (!(grapplingHooks.containsKey(grapplingHook)))
+            if (!(grapplingHooks.containsKey(grapplingHook)) || grapplingHooksAttachedToPlayers.containsKey(grapplingHook))
                 return;
 
             Player shooter = (Player) grapplingHook.getShooter();
@@ -156,29 +187,59 @@ public class SkillGrapplingHook extends ActiveSkill {
 
             // Grapple!
             grapplingHooks.remove(grapplingHook);
-            grapplingHook.remove();
-            grapple(hero, grapplingHook.getLocation());
+            grappleToLocation(hero, grapplingHook.getLocation());
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
+                return;
+            }
+
+            Entity projectile = ((EntityDamageByEntityEvent) event).getDamager();
+            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player))) {
+                return;
+            }
+
+            if (!(grapplingHooks.containsKey((Arrow) projectile))) {
+                return;
+            }
+
+            Arrow grapplingHook = (Arrow) projectile;
+
+            // Switch from the normal hook to the player hook.
+            grapplingHooksAttachedToPlayers.put(grapplingHook, Long.valueOf(System.currentTimeMillis()));
+
+            // Get vars
+            Player player = (Player) grapplingHook.getShooter();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            LivingEntity target = (LivingEntity) event.getEntity();
+
+            // Grapple
+            grappleTargetToPlayer(hero, target);
+            grapplingHooks.remove(grapplingHook);
+            grapplingHooksAttachedToPlayers.remove(grapplingHook);
         }
     }
 
-    private void grapple(Hero shooterHero, Location targetLoc) {
+    private void grappleToLocation(Hero hero, Location targetLoc) {
 
-        Player shooter = shooterHero.getPlayer();
+        Player player = hero.getPlayer();
 
-        Location playerLoc = shooter.getLocation();
+        Location playerLoc = player.getLocation();
         if (!(playerLoc.getWorld().equals(targetLoc.getWorld())))
             return;
 
-        Vector playerLocVec = shooter.getLocation().toVector();
+        Vector playerLocVec = player.getLocation().toVector();
         Vector locVec = targetLoc.toVector();
 
         double distance = (int) playerLocVec.distance(locVec);
-        //Messaging.send(shooter, "Distance: " + distance + ".", new Object[0]);
+        //Messaging.send(player, "Distance: " + distance + ".", new Object[0]);
 
-        int maxDistance = SkillConfigManager.getUseSetting(shooterHero, this, "max-distance", 35, false);
+        int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(shooter, "Your target is too far, your line has snapped!", new Object[0]);
+                Messaging.send(player, "Your target is too far, your line has snapped!", new Object[0]);
                 return;
             }
         }
@@ -201,12 +262,12 @@ public class SkillGrapplingHook extends ActiveSkill {
         //        int ymultiplier = (int) (Math.abs(dY) - (Math.abs(dX) + Math.abs(dZ)) / 30);
         //        Vector vec = new Vector(dX, Math.abs(dY) + ymultiplier, dZ).normalize().multiply(multiplier);
 
-        double horizontalDivider = SkillConfigManager.getUseSetting(shooterHero, this, "horizontal-divider", 6, false);
-        double verticalDivider = SkillConfigManager.getUseSetting(shooterHero, this, "vertical-divider", 8, false);
+        double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
+        double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
         double xDir = (targetLoc.getX() - playerLoc.getX()) / horizontalDivider;
         double yDir = (targetLoc.getY() - playerLoc.getY()) / verticalDivider;
         double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
-        double multiplier = SkillConfigManager.getUseSetting(shooterHero, this, "multiplier", 1.2, false);
+        double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
         Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
 
         //        if ((Math.abs(dY) + ymultiplier) * multiplier > 3) {
@@ -219,13 +280,81 @@ public class SkillGrapplingHook extends ActiveSkill {
         }
         else {
             // As long as we have Y, give them safefall
-            int safeFallDuration = SkillConfigManager.getUseSetting(shooterHero, this, "safe-fall-duration", 5000, false);
-            shooterHero.addEffect(new SafeFallEffect(this, safeFallDuration));
+            int safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);
+            hero.addEffect(new SafeFallEffect(this, safeFallDuration));
+        }
+
+        // Let's bypass the nocheat issues...
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
+                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                hero.addEffect(ncpExemptEffect);
+            }
         }
 
         // Grapple!
-        shooter.getWorld().playSound(shooter.getLocation(), Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
-        shooter.setVelocity(vec);
+        player.getWorld().playSound(playerLoc, Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
+        player.setVelocity(vec);
+    }
+
+    private void grappleTargetToPlayer(Hero hero, LivingEntity target) {
+
+        Player player = hero.getPlayer();
+
+        Location playerLoc = player.getLocation();
+        Location targetLoc = target.getLocation();
+        if (!(playerLoc.getWorld().equals(targetLoc.getWorld())))
+            return;
+
+        Vector playerLocVec = player.getLocation().toVector();
+        Vector locVec = targetLoc.toVector();
+
+        // If the player is aiming downwards, don't let him increase his y.
+        boolean noY = false;
+        if (locVec.getY() < playerLoc.getY())
+            noY = true;
+
+        double distance = (int) playerLocVec.distance(locVec);
+
+        int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
+        if (maxDistance > 0) {
+            if (distance > maxDistance) {
+                Messaging.send(player, "Your target is too far, your line has snapped!", new Object[0]);
+                return;
+            }
+        }
+
+        double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
+        double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
+        double xDir = (playerLoc.getX() - targetLoc.getX()) / horizontalDivider;
+        double yDir = (playerLoc.getY() - targetLoc.getY()) / verticalDivider;
+        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / horizontalDivider;
+        double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
+        Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+
+        // Prevent y velocity increase if told to.
+        if (noY) {
+            vec.multiply(0.5).setY(0.5);    // Half the power of the grapple, and eliminate the y power
+        }
+
+        // Let's bypass the nocheat issues...
+        if (ncpEnabled) {
+            if (target instanceof Player) {
+                Player targetPlayer = (Player) target;
+
+                if (!targetPlayer.isOp()) {
+                    long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                    CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                    targetCT.addEffect(ncpExemptEffect);
+                }
+            }
+        }
+
+        // Grapple!
+        player.getWorld().playSound(playerLoc, Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
+        target.setVelocity(vec);
     }
 
     // Buff effect used to keep track of grappling hook uses
@@ -281,6 +410,30 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         public void setShowExpireText(boolean showExpireText) {
             this.showExpireText = showExpireText;
+        }
+    }
+
+    private class NCPExemptionEffect extends ExpirableEffect {
+
+        public NCPExemptionEffect(Skill skill, long duration) {
+            super(skill, "NCPExemptionEffect", duration);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.MOVING);
+
         }
     }
 }

@@ -47,15 +47,19 @@ public class SkillSpear extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 8, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 82, false);
+
         return getDescription().replace("$1", damage + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.DAMAGE.node(), 8);
         node.set("weapons", Util.shovels);
+        node.set("ncp-exemption-duration", 1000);
+
         return node;
     }
 
@@ -69,16 +73,16 @@ public class SkillSpear extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
         }
 
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (!player.isOp()) {
-                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
+                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false);
                 NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
                 hero.addEffect(ncpExemptEffect);
             }

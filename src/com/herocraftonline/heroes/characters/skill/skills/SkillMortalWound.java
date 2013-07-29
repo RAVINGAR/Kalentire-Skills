@@ -45,6 +45,15 @@ public class SkillMortalWound extends TargettedSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        double heal = 1 - SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", .5, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        return getDescription().replace("$1", heal * 100 + "").replace("$2", damage * duration / period + "").replace("$3", duration / 1000 + "");
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.swords);
@@ -82,7 +91,7 @@ public class SkillMortalWound extends TargettedSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
         plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
         
@@ -152,14 +161,5 @@ public class SkillMortalWound extends TargettedSkill {
                 event.setAmount((event.getAmount() * mEffect.healMultiplier));
             }
         }
-    }
-    
-    @Override
-    public String getDescription(Hero hero) {
-        double heal = 1 - SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", .5, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        return getDescription().replace("$1", heal * 100 + "").replace("$2", damage * duration / period + "").replace("$3", duration / 1000 + "");
     }
 }

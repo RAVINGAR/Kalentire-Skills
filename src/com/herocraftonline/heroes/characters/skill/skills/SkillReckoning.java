@@ -78,8 +78,7 @@ public class SkillReckoning extends ActiveSkill {
         Location playerLoc = player.getLocation();
         
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-        // long currentTime = System.currentTimeMillis();
-        //boolean hasHit = false;
+        long currentTime = System.currentTimeMillis();
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
@@ -95,14 +94,13 @@ public class SkillReckoning extends ActiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-            // Shouldn't need this anymore...
-            //            if(character instanceof Hero) {
-            //            	Hero enemy = (Hero)character;
-            //            	if(enemy.getDelayedSkill() != null) {
-            //	            	enemy.cancelDelayedSkill();
-            //	                enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
-            //            	}
-            //            }
+            if (character instanceof Hero) {
+                Hero enemy = (Hero) character;
+                if (enemy.getDelayedSkill() != null) {
+                    enemy.cancelDelayedSkill();
+                    enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
+                }
+            }
 
             // Let's bypass the nocheat issues...
             if (ncpEnabled) {
@@ -147,7 +145,6 @@ public class SkillReckoning extends ActiveSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
-
         }
     }
 }

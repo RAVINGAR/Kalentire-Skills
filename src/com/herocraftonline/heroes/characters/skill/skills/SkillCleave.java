@@ -51,17 +51,21 @@ public class SkillCleave extends TargettedSkill {
 
         double damage = plugin.getDamageManager().getItemDamage(item, player);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
+
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
+
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
         for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
             if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                 continue;
             }
+
             addSpellTarget(target, hero);
-            damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 0.8F, 1.0F);
+
+        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

@@ -56,7 +56,7 @@ public class SkillSuperJump extends ActiveSkill {
 
         node.set("jump-force", 4.0);
         node.set(SkillSetting.DURATION.node(), 5000);
-        node.set("ncp-excemption-duration", Integer.valueOf(1500));
+        node.set("ncp-exemption-duration", Integer.valueOf(1500));
 
         return node;
     }
