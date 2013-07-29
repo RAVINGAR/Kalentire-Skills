@@ -130,6 +130,9 @@ public class SkillIceRune extends ActiveSkill {
             if (!(targEnt instanceof LivingEntity))
                 return;
 
+            if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
+                return;
+
             // Prep variables
             CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 

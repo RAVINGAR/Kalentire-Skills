@@ -1,5 +1,4 @@
-
-
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
@@ -131,4 +130,4 @@ public class SkillBlackjack extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(chance));
     }
 }
-
+*/

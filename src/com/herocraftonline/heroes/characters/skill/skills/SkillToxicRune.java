@@ -135,6 +135,9 @@ public class SkillToxicRune extends ActiveSkill {
             if (!(targEnt instanceof LivingEntity))
                 return;
 
+            if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
+                return;
+
             // Set the variables
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 9000, false);
             long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
