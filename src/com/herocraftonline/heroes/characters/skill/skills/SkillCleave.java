@@ -53,7 +53,7 @@ public class SkillCleave extends TargettedSkill {
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
         for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
@@ -62,7 +62,7 @@ public class SkillCleave extends TargettedSkill {
             }
 
             addSpellTarget(target, hero);
-            damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
+            damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);

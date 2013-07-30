@@ -38,7 +38,7 @@ public class SkillBash extends TargettedSkill {
         damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
 
         addSpellTarget(target, hero);
-        damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
+        damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_METAL , 0.4F, 1.0F); 
         broadcastExecuteText(hero, target);

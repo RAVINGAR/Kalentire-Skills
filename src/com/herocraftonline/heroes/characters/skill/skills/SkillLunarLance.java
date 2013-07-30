@@ -41,10 +41,12 @@ public class SkillLunarLance extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set("weapons", Util.shovels);
         node.set("burn-amount", defBurnValue);
         node.set("fail-text", defFailText);
         node.set(SkillSetting.DAMAGE.node(), defDamage);
+
         return node;
     }
 

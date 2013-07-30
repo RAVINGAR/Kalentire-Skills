@@ -65,7 +65,7 @@ public class SkillTremor extends ActiveSkill{
             Location targetLoc = target.getLocation();
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
             if(entity instanceof Player) {
             	Hero enemy = plugin.getCharacterManager().getHero((Player)entity);

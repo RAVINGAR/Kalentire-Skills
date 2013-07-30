@@ -48,7 +48,7 @@ public class SkillKick extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
 
         addSpellTarget(target, hero);
-        damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
+        damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
 
         if (target instanceof Player) {
             SilenceEffect sEffect = new SilenceEffect(this, duration);

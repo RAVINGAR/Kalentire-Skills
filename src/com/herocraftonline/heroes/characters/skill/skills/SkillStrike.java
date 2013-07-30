@@ -70,7 +70,7 @@ public class SkillStrike extends TargettedSkill {
         // Damage the target
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         // Apply our effect
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 15000, false);

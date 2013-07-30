@@ -50,8 +50,11 @@ public class SkillWeb extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.DURATION.node(), 5000); // in milliseconds
+        node.set("root-duration", 500);
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% conjured a web at %target%'s feet!");
+
         return node;
     }
 
@@ -73,8 +76,9 @@ public class SkillWeb extends TargettedSkill {
         }
 
         broadcast(player.getLocation(), applyText, player.getDisplayName(), name);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        WebEffect wEffect = new WebEffect(this, duration, target.getLocation().getBlock().getLocation());
+        long webDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 500, false);
+        WebEffect wEffect = new WebEffect(this, webDuration, rootDuration, target.getLocation().getBlock().getLocation());
         hero.addEffect(wEffect);
         player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_IDLE , 0.8F, 1.0F); 
@@ -101,12 +105,15 @@ public class SkillWeb extends TargettedSkill {
         private List<Location> locations = new ArrayList<Location>();
         private Location loc;
 
-        public WebEffect(Skill skill, long duration, Location location) {
-            super(skill, "Web", duration);
+        public WebEffect(Skill skill, long webDuration, long rootDuration, Location location) {
+            super(skill, "Web", webDuration);
             this.loc = location;
 
             types.add(EffectType.MAGIC);
             types.add(EffectType.HARMFUL);
+
+            addMobEffect(2, (int) (rootDuration / 1000) * 20, 127, false);      // Max slowness is 127
+            addMobEffect(8, (int) (rootDuration / 1000) * 20, 128, false);      // Max negative jump boost
         }
 
         @Override

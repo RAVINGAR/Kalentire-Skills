@@ -81,7 +81,7 @@ public class SkillMaim extends TargettedSkill {
 
         // Damage and silence the target
         plugin.getDamageManager().addSpellTarget(target, hero, this);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
         targCT.addEffect(sEffect);
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT, 0.8F, 1.0F);

@@ -41,6 +41,8 @@ public class SkillImpale extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.DAMAGE.node(), 95);
         node.set("weapons", Util.shovels);
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
         node.set(SkillSetting.DURATION.node(), 5000);
@@ -48,6 +50,7 @@ public class SkillImpale extends TargettedSkill {
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%'s impale!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
         node.set("force", 3);
+
         return node;
     }
 
@@ -70,9 +73,9 @@ public class SkillImpale extends TargettedSkill {
         }
 
         int force = SkillConfigManager.getUseSetting(hero, this, "force", 3, false);
-        double damage = plugin.getDamageManager().getItemDamage(item, player);
-        //damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        // double damage = plugin.getDamageManager().getItemDamage(item, player);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         // Do a little knockup
         target.setVelocity(target.getVelocity().add(new Vector(0, force, 0)));

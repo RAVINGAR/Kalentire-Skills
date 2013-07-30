@@ -166,6 +166,8 @@ public class SkillGrapplingHook extends ActiveSkill {
                 double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.5D, false);
                 Arrow grapplingHook = (Arrow) event.getProjectile();
                 grapplingHook.setVelocity(grapplingHook.getVelocity().multiply(velocityMultiplier));
+
+                // Put it on the hashmap so we can check it in another event.
                 grapplingHooks.put(grapplingHook, Long.valueOf(System.currentTimeMillis()));
             }
         }
@@ -175,7 +177,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             if (!(event.getEntity() instanceof Arrow))
                 return;
 
-            Arrow grapplingHook = (Arrow) event.getEntity();
+            final Arrow grapplingHook = (Arrow) event.getEntity();
             if ((!(grapplingHook.getShooter() instanceof Player)))
                 return;
 
@@ -183,11 +185,24 @@ public class SkillGrapplingHook extends ActiveSkill {
                 return;
 
             Player shooter = (Player) grapplingHook.getShooter();
-            Hero hero = plugin.getCharacterManager().getHero(shooter);
+            final Hero hero = plugin.getCharacterManager().getHero(shooter);
 
-            // Grapple!
-            grapplingHooks.remove(grapplingHook);
-            grappleToLocation(hero, grapplingHook.getLocation());
+            double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
+
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+            {
+                public void run()
+                {
+                    if (!(grapplingHooks.containsKey(grapplingHook)) || grapplingHooksAttachedToPlayers.containsKey(grapplingHook))
+                        return;
+
+                    // Grapple!
+                    grapplingHooks.remove(grapplingHook);
+                    grappleToLocation(hero, grapplingHook.getLocation());
+                }
+            }, (long) (grappleDelay * 20));
+
+            return;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -205,20 +220,27 @@ public class SkillGrapplingHook extends ActiveSkill {
                 return;
             }
 
-            Arrow grapplingHook = (Arrow) projectile;
+            final Arrow grapplingHook = (Arrow) projectile;
+            Player player = (Player) grapplingHook.getShooter();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
+            final LivingEntity targetLE = (LivingEntity) event.getEntity();
 
             // Switch from the normal hook to the player hook.
             grapplingHooksAttachedToPlayers.put(grapplingHook, Long.valueOf(System.currentTimeMillis()));
 
-            // Get vars
-            Player player = (Player) grapplingHook.getShooter();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            LivingEntity target = (LivingEntity) event.getEntity();
+            double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
 
-            // Grapple
-            grappleTargetToPlayer(hero, target);
-            grapplingHooks.remove(grapplingHook);
-            grapplingHooksAttachedToPlayers.remove(grapplingHook);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+            {
+                public void run()
+                {
+                    // Grapple
+                    grappleTargetToPlayer(hero, targetLE);
+                    grapplingHooks.remove(grapplingHook);
+                    grapplingHooksAttachedToPlayers.remove(grapplingHook);
+
+                }
+            }, (long) (grappleDelay * 20));
         }
     }
 
