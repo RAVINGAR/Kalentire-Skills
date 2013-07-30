@@ -119,44 +119,47 @@ public class SkillIceRune extends ActiveSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onRuneApplication(RuneApplicationEvent event) {
             // Get Hero information
-            Hero hero = event.getHero();
+            final Hero hero = event.getHero();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
             if (!(event.getRuneList().getHead().name == "IceRune"))
                 return;
 
             // Ensure that the target is a living entity
-            Entity targEnt = event.getTarget();
+            final Entity targEnt = event.getTarget();
             if (!(targEnt instanceof LivingEntity))
                 return;
 
-            if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
-                return;
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+            {
+                public void run()
+                {
+                    if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
+                        return;
 
-            // Prep variables
-            CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
+                    // Prep variables
+                    CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-            int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
-            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 2000, false);
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
+                    int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
+                    long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 2000, false);
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
-            String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
-            String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer slowed!").replace("%target%", "$1");
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
+                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer slowed!").replace("%target%", "$1");
 
-            // Create the effect and slow the target
-            SlowEffect sEffect = new SlowEffect(skill, duration, amplifier, false, applyText, expireText, hero);
+                    // Create the effect and slow the target
+                    SlowEffect sEffect = new SlowEffect(skill, duration, amplifier, false, applyText, expireText, hero);
 
-            // Damage and silence the target
-            skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-            damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
-            targCT.addEffect(sEffect);
+                    // Damage and silence the target
+                    skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                    targCT.addEffect(sEffect);
 
-            // Play firework effect
-            //FireworkEffect fireworkEffect = new FireworkEffect(false, false, null, null, null);
-            //VisualEffect ve = new VisualEffect();
 
-            // Play sound
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    // Play sound
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                }
+            }, (long) (0.1 * 20));
 
             return;
         }

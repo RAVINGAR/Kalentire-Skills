@@ -124,40 +124,43 @@ public class SkillToxicRune extends ActiveSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onRuneApplication(RuneApplicationEvent event) {
             // Get Hero information
-            Hero hero = event.getHero();
+            final Hero hero = event.getHero();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
             if (!(event.getRuneList().getHead().name == "ToxicRune"))
                 return;
 
             // Ensure that the target is a living entity
-            Entity targEnt = event.getTarget();
+            final Entity targEnt = event.getTarget();
             if (!(targEnt instanceof LivingEntity))
                 return;
 
-            if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
-                return;
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+            {
+                public void run()
+                {
+                    if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
+                        return;
 
-            // Set the variables
-            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 9000, false);
-            long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
-            double tickDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 25, false);
+                    // Set the variables
+                    long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 9000, false);
+                    long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
+                    double tickDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 25, false);
 
-            String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been poisoned by a Rune of Toxicity!").replace("%target%", "$1");
-            String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been poisoned by a Rune of Toxicity!").replace("%target%", "$1");
+                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
 
-            // Create the effect
-            ToxicRunePoison pEffect = new ToxicRunePoison(skill, period, duration, tickDamage, hero.getPlayer(), applyText, expireText);
+                    // Create the effect
+                    ToxicRunePoison pEffect = new ToxicRunePoison(skill, period, duration, tickDamage, hero.getPlayer(), applyText, expireText);
 
-            // Add the effects to the target
-            CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
-            targCT.addEffect(pEffect);
+                    // Add the effects to the target
+                    CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
+                    targCT.addEffect(pEffect);
 
-            // Play firework effect
-            // CODE HERE
-
-            // Play sound
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    // Play sound
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                }
+            }, (long) (0.1 * 20));
 
             return;
         }

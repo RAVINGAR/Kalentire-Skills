@@ -114,40 +114,107 @@ public class SkillFireRune extends ActiveSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onRuneApplication(RuneApplicationEvent event) {
             // Get Hero information
-            Hero hero = event.getHero();
+            final Hero hero = event.getHero();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
             if (!(event.getRuneList().getHead().name == "FireRune"))
                 return;
 
             // Ensure that the target is a living entity
-            Entity targEnt = event.getTarget();
+            final Entity targEnt = event.getTarget();
             if (!(targEnt instanceof LivingEntity))
                 return;
 
-            if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
-                return;
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+            {
+                public void run()
+                {
+                    if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
+                        return;
 
-            // Prep variables
-            CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
+                    // Prep variables
+                    CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 105, false);
-            String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 105, false);
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
 
-            // Damage and silence the target
-            skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-            damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.FIRE);
+                    // Damage and silence the target
+                    skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.FIRE);
 
-            // Announce that the player has been hit with the skill	
-            broadcast(targEnt.getLocation(), applyText, targCT.getName());
+                    // Announce that the player has been hit with the skill 
+                    broadcast(targEnt.getLocation(), applyText, targCT.getName());
 
-            // Play Firework effect
-            // CODE HERE
+                    // Play Firework effect
+                    // CODE HERE
 
-            // Play sound
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    // Play sound
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                }
+            }, (long) (0.1 * 20));
 
             return;
         }
     }
+
+    //    public class WitheringEffect extends ExpirableEffect {
+    //
+    //        private double finishDamage;
+    //
+    //        public WitheringEffect(Skill skill, double damage) {
+    //            super(skill, "Withering", 100);
+    //
+    //            this.finishDamage = finishDamage;
+    //
+    //            types.add(EffectType.DISPELLABLE);
+    //            types.add(EffectType.DARK);
+    //            types.add(EffectType.WITHER);
+    //            types.add(EffectType.HARMFUL);
+    //
+    //            addMobEffect(9, (int) ((duration + 4000) / 1000) * 20, 3, false);
+    //            addMobEffect(20, (int) (duration / 1000) * 20, 1, false);
+    //        }
+    //
+    //        @Override
+    //        public void applyToMonster(Monster monster) {
+    //            super.applyToMonster(monster);
+    //
+    //            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster));
+    //        }
+    //
+    //        @Override
+    //        public void applyToHero(Hero hero) {
+    //            super.applyToHero(hero);
+    //
+    //            Player player = hero.getPlayer();
+    //            broadcast(player.getLocation(), applyText, player.getDisplayName());
+    //        }
+    //
+    //        @Override
+    //        public void removeFromMonster(Monster monster) {
+    //            super.removeFromMonster(monster);
+    //
+    //            if (monster.getEntity().isDead())
+    //                return;
+    //
+    //            skill.addSpellTarget(monster.getEntity(), getApplierHero());
+    //            damageEntity(monster.getEntity(), getApplier(), finishDamage, DamageCause.MAGIC);
+    //
+    //            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
+    //        }
+    //
+    //        @Override
+    //        public void removeFromHero(Hero hero) {
+    //            super.removeFromHero(hero);
+    //
+    //            Player player = hero.getPlayer();
+    //            if (player.isDead())
+    //                return;
+    //
+    //            skill.addSpellTarget(hero.getEntity(), getApplierHero());
+    //            damageEntity(player, getApplier(), finishDamage, DamageCause.MAGIC);
+    //
+    //            broadcast(player.getLocation(), expireText, player.getDisplayName());
+    //        }
+    //    }
 }

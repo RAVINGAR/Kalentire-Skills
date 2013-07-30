@@ -207,9 +207,11 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Player player = hero.getPlayer();
             ItemStack item = player.getItemInHand();
 
-            // Don't actually apply the rune if they can't be damaged again.
-            if (!(damageCheck(player, (LivingEntity) event.getEntity())))
-                return;
+            //            double currentHP = ((LivingEntity) event.getEntity()).getHealth();
+            //            if (currentHP - event.getDamage() < 1) {
+            //                Messaging.send(player, "Target would have too low of HP. Don't damage. (Absorb Runes)");
+            //                return;
+            //            }
 
             // Ensure that they currently have a proper weapon in hand.
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name()))

@@ -119,45 +119,48 @@ public class SkillVoidRune extends ActiveSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onRuneApplication(RuneApplicationEvent event) {
             // Get Hero information
-            Hero hero = event.getHero();
+            final Hero hero = event.getHero();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
             if (!(event.getRuneList().getHead().name == "VoidRune"))
                 return;
 
             // Ensure that the target is a living entity
-            Entity targEnt = event.getTarget();
+            final Entity targEnt = event.getTarget();
             if (!(targEnt instanceof LivingEntity))
                 return;
 
-            if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
-                return;
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+            {
+                public void run()
+                {
+                    if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
+                        return;
 
-            // Prep variables
-            CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
+                    // Prep variables
+                    CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
+                    long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
-            String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been silenced by a Rune of Void!").replace("%target%", "$1");
-            String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer silenced!").replace("%target%", "$1");
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been silenced by a Rune of Void!").replace("%target%", "$1");
+                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer silenced!").replace("%target%", "$1");
 
-            // Damage and silence the target
-            skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-            damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
-            VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, duration, applyText, expireText);
+                    // Damage and silence the target
+                    skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                    VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, duration, applyText, expireText);
 
-            // Add the effect to the target
-            targCT.addEffect(voidRuneSilenceEffect);
+                    // Add the effect to the target
+                    targCT.addEffect(voidRuneSilenceEffect);
 
-            // Announce that the player has been hit with the skill	
-            broadcast(targEnt.getLocation(), applyText, targCT.getName());
+                    // Announce that the player has been hit with the skill	
+                    broadcast(targEnt.getLocation(), applyText, targCT.getName());
 
-            // Play firework effect
-            // CODE HERE
-
-            // Play sound
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    // Play sound
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                }
+            }, (long) (0.1 * 20));
 
             return;
         }
