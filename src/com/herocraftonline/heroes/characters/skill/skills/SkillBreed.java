@@ -72,6 +72,7 @@ public class SkillBreed extends PassiveSkill {
                     || material.equals(Material.INK_SACK)
                     || material.equals(Material.BOWL)) {
 
+                event.setCancelled(false);
                 return;
             }
 
@@ -80,7 +81,8 @@ public class SkillBreed extends PassiveSkill {
                     && !material.equals(Material.APPLE) && !material.equals(Material.SUGAR) && !material.equals(Material.BREAD)
                     && !material.equals(Material.GOLDEN_APPLE) && !material.equals(Material.GOLDEN_CARROT)) {
 
-                // If they are just trying to mount the horse, let them  
+                // If they are just trying to mount the horse, let them
+                event.setCancelled(false);
                 return;
             }
             else if (targetEntity instanceof Horse) {
@@ -90,29 +92,21 @@ public class SkillBreed extends PassiveSkill {
                 boolean canBreedHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-breeding", false);
                 if (!hero.canUseSkill("Breed") || canBreedHorses == false) {
                     event.setCancelled(true);
-
                     return;     // Return early. We do not wish to display a message for horse breeding right now.
                 }
             }
 
             if (isWolfTamingAttempt(event) && !hero.canUseSkill("Wolf")) {
                 event.setCancelled(true);
-
                 player.sendMessage(ChatColor.GRAY + "You are not allowed to tame wolves!");
-
                 return;
             }
 
-            // Check to see if they are allowed to breed.
-            if (!hero.canUseSkill("Breed")) {
+            // If we make it this far, they are trying to breed.
+            if (!hero.canUseSkill(skill)) {
                 event.setCancelled(true);
+                player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
             }
-            else {
-                // Bypassed all the checks, allow them to breed the animal.
-                return;
-            }
-
-            player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
         }
     }
 

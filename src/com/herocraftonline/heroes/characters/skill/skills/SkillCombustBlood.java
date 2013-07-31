@@ -136,11 +136,12 @@ public class SkillCombustBlood extends TargettedSkill {
         private final Player applier;
 
         public CombustingBloodEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
-            super(skill, "CombustingBloodEffect", period, duration, tickDamage, applier);
+            super(skill, "CombustingBlood", period, duration, tickDamage, applier);
 
             this.applier = applier;
 
-            this.types.add(EffectType.BLEED);
+            types.add(EffectType.BLEED);
+            types.add(EffectType.HARMFUL);
         }
 
         @Override

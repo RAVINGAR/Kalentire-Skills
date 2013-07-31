@@ -68,8 +68,10 @@ public class SkillSuperJump extends ActiveSkill {
         if (ncpEnabled) {
             if (!player.isOp()) {
                 long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
-                hero.addEffect(ncpExemptEffect);
+                if (duration > 0) {
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                    hero.addEffect(ncpExemptEffect);
+                }
             }
         }
 

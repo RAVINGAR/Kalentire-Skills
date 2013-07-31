@@ -160,13 +160,14 @@ public class SkillBoilBlood extends ActiveSkill {
         private final Player applier;
 
         public BoilingBloodEffect(Skill skill, long period, long duration, double tickDamage, Player applier, String applyText, String expireText) {
-            super(skill, "BoilingBloodEffect", period, duration, tickDamage, applier, false);
+            super(skill, "BoilingBlood", period, duration, tickDamage, applier, false);
 
             this.applyText = applyText;
             this.expireText = expireText;
             this.applier = applier;
 
-            this.types.add(EffectType.DARK);
+            types.add(EffectType.DARK);
+            types.add(EffectType.HARMFUL);
         }
 
         @Override

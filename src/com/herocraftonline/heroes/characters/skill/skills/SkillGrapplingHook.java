@@ -261,7 +261,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "Your target is too far, your line has snapped!", new Object[0]);
+                Messaging.send(player, "You threw your hook to far and lost your grip!", new Object[0]);
                 return;
             }
         }
@@ -292,10 +292,6 @@ public class SkillGrapplingHook extends ActiveSkill {
         double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
         Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
 
-        //        if ((Math.abs(dY) + ymultiplier) * multiplier > 3) {
-        //            vec.setY(vec.getY() / 2.0D);
-        //        }
-
         // Prevent y velocity increase if told to.
         if (noY) {
             vec.multiply(0.5).setY(0.5);	// Half the power of the grapple, and eliminate the y power
@@ -310,8 +306,10 @@ public class SkillGrapplingHook extends ActiveSkill {
         if (ncpEnabled) {
             if (!player.isOp()) {
                 long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
-                hero.addEffect(ncpExemptEffect);
+                if (duration > 0) {
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                    hero.addEffect(ncpExemptEffect);
+                }
             }
         }
 
@@ -332,33 +330,21 @@ public class SkillGrapplingHook extends ActiveSkill {
         Vector playerLocVec = player.getLocation().toVector();
         Vector locVec = targetLoc.toVector();
 
-        // If the player is aiming downwards, don't let him increase his y.
-        boolean noY = false;
-        if (locVec.getY() < playerLoc.getY())
-            noY = true;
-
         double distance = (int) playerLocVec.distance(locVec);
 
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "Your target is too far, your line has snapped!", new Object[0]);
+                Messaging.send(player, "You threw your hook to far and lost your grip!", new Object[0]);
                 return;
             }
         }
 
         double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
-        double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
         double xDir = (playerLoc.getX() - targetLoc.getX()) / horizontalDivider;
-        double yDir = (playerLoc.getY() - targetLoc.getY()) / verticalDivider;
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / horizontalDivider;
         double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
-        Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
-
-        // Prevent y velocity increase if told to.
-        if (noY) {
-            vec.multiply(0.5).setY(0.5);    // Half the power of the grapple, and eliminate the y power
-        }
+        Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
 
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
@@ -367,9 +353,11 @@ public class SkillGrapplingHook extends ActiveSkill {
 
                 if (!targetPlayer.isOp()) {
                     long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
-                    CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                    targetCT.addEffect(ncpExemptEffect);
+                    if (duration > 0) {
+                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                        targetCT.addEffect(ncpExemptEffect);
+                    }
                 }
             }
         }

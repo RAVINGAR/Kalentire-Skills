@@ -24,6 +24,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -36,8 +37,12 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+
 public class SkillExplosiveShot extends ActiveSkill {
 
+    private boolean ncpEnabled = false;
     public VisualEffect fplayer = new VisualEffect();
 
     private Map<Arrow, Long> explosiveShots = new LinkedHashMap<Arrow, Long>(100) {
@@ -61,6 +66,13 @@ public class SkillExplosiveShot extends ActiveSkill {
         setTypes(SkillType.HARMFUL, SkillType.DAMAGING, SkillType.FIRE, SkillType.FORCE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+
+        try {
+            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+                ncpEnabled = true;
+            }
+        }
+        catch (Exception e) {}
     }
 
     public String getDescription(Hero hero) {
@@ -83,14 +95,15 @@ public class SkillExplosiveShot extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("num-shots", Integer.valueOf(1));
-        node.set("grace-period", Integer.valueOf(4000));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(100));
         node.set("horizontal-power", Double.valueOf(1.0));
         node.set("vertical-power", Double.valueOf(0.6));
+        node.set("ncp-exemption-duration", 1500);
         node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
         node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s arrows are no longer Explosive."));
-        node.set("shot-text", String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!"));
+
 
         return node;
     }
@@ -214,6 +227,20 @@ public class SkillExplosiveShot extends ActiveSkill {
                 xDir = xDir / magnitude * horizontalPower;
                 zDir = zDir / magnitude * horizontalPower;
 
+                if (ncpEnabled) {
+                    if (target instanceof Player) {
+                        Player targetPlayer = (Player) target;
+                        if (!targetPlayer.isOp()) {
+                            long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
+                            if (duration > 0) {
+                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, duration);
+                                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                                targetCT.addEffect(ncpExemptEffect);
+                            }
+                        }
+                    }
+                }
+
                 target.setVelocity(new Vector(xDir, veticalPower, zDir));
 
                 // Play effect
@@ -286,6 +313,29 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         public void setShowExpireText(boolean showExpireText) {
             this.showExpireText = showExpireText;
+        }
+    }
+
+    private class NCPExemptionEffect extends ExpirableEffect {
+
+        public NCPExemptionEffect(Skill skill, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", duration);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.MOVING);
         }
     }
 }
