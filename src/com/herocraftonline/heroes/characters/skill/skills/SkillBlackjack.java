@@ -1,4 +1,92 @@
+package com.herocraftonline.heroes.characters.skill.skills;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.common.StunEffect;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Util;
+
+public class SkillBlackjack extends TargettedSkill {
+
+    public SkillBlackjack(Heroes plugin) {
+        super(plugin, "Blackjack");
+        setDescription("Strike your target with a Blackjack, dealing $1 damage and stunning the target for $2 seconds. If you are invisible or sneaking, the stun will instead last $3 seconds.");
+        setUsage("/skill blackjack");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill blackjack");
+        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DAMAGING, SkillType.STEALTHY);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75, false);
+        double normalDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "normal-stun-duration", 500, false) / 1000.0);
+        double stealthtyDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "stealthy-stun-duration", 1500, false) / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$2", normalDuration + "").replace("$3", stealthtyDuration + "");
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 75);
+        node.set("normal-stun-duration", 500);
+        node.set("stealthy-stun-duration", 1500);
+
+        return node;
+    }
+
+    @Override
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+
+        broadcastExecuteText(hero, target);
+
+        //deal damage
+        addSpellTarget(target, hero);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75, false);
+        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+
+        // Stun, but only if they are a player.
+        if (target instanceof Player) {
+            long duration = 0;
+            if (hero.hasEffect("Sneak") || hero.hasEffect("Invisible"))
+                duration = SkillConfigManager.getUseSetting(hero, this, "stealthy-stun-duration", 1500, false);
+            else
+                duration = SkillConfigManager.getUseSetting(hero, this, "normal-stun-duration", 500, false);
+
+            Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+            targetHero.addEffect(new StunEffect(this, duration));
+        }
+
+        // Remove any invis effects the player may have on them at the time of use.
+        for (final Effect effect : hero.getEffects()) {
+            if (effect.isType(EffectType.INVIS)) {
+                hero.removeEffect(effect);
+            }
+        }
+
+        return SkillResult.NORMAL;
+    }
+}
+
 /*
+
+                    OLD BLACKJACK BELOW
+
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;

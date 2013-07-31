@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -71,7 +70,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
 
         // Damage the target
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         // Play Sound
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT, 0.8F, 1.0F);
@@ -103,9 +102,8 @@ public class SkillQuiveringPalm extends TargettedSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
 
-            if (event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            if (!(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
                 return;
-            }
 
             // Ensure that the target is a living entity
             Entity targEnt = event.getEntity();

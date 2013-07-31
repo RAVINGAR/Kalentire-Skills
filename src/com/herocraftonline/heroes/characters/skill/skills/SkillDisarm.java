@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -57,7 +58,9 @@ public class SkillDisarm extends TargettedSkill {
 
         Hero tHero = plugin.getCharacterManager().getHero((Player) target);
 
-        if (!Util.isWeapon(tHero.getPlayer().getItemInHand().getType())) {
+        Material heldItem = tHero.getPlayer().getItemInHand().getType();
+
+        if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
             Messaging.send(player, "You cannot disarm bare hands!");
             return SkillResult.FAIL;
         }

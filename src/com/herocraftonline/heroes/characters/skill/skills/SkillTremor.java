@@ -62,6 +62,11 @@ public class SkillTremor extends ActiveSkill{
             }
             LivingEntity target = (LivingEntity) entity;
 
+            // Check if the target is damagable
+            if (!damageCheck(player, target)) {
+                continue;
+            }
+
             Location targetLoc = target.getLocation();
 
             addSpellTarget(target, hero);

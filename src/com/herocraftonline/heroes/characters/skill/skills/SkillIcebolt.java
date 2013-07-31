@@ -54,6 +54,7 @@ public class SkillIcebolt extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), 3);
         node.set("slow-duration", 5000); // 5 seconds
         node.set("speed-multiplier", 2);
+        node.set("velocity-multiplier", 1.1);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
         return node;
@@ -62,6 +63,7 @@ public class SkillIcebolt extends ActiveSkill {
     @Override
     public void init() {
         super.init();
+
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
     }
@@ -71,6 +73,8 @@ public class SkillIcebolt extends ActiveSkill {
         Player player = hero.getPlayer();
         
         Snowball snowball = player.launchProjectile(Snowball.class);
+        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.1, false);
+        snowball.setVelocity(snowball.getVelocity().multiply(mult));
         snowballs.put(snowball, System.currentTimeMillis());
 
         broadcastExecuteText(hero);

@@ -41,7 +41,7 @@ public class SkillEntangle extends TargettedSkill {
     public SkillEntangle(Heroes plugin) {
         // Heroes stuff
         super(plugin, "Entangle");
-        setDescription("Deals $1 damage and roots your target in place for $2 seconds.(Effect breaks when the target takes damage) If a Player attempts to sprint while under the effects of entangle, he will be dealt $3");
+        setDescription("Deals $1 damage and roots your target in place for $2 seconds. The effect breaks when the target takes damage.");
         setUsage("/skill entangle");
         setIdentifiers("skill entangle");
         setTypes(SkillType.HARMFUL, SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.EARTH, SkillType.MOVEMENT);

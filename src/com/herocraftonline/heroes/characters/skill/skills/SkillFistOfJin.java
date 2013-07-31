@@ -12,12 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
@@ -76,22 +74,23 @@ public class SkillFistOfJin extends PassiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (!(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0) {
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (subEvent.getCause() != DamageCause.ENTITY_ATTACK || !(subEvent.getDamager() instanceof Player))
-                return;
+            Hero hero = (Hero) event.getDamager();
+            Player player = hero.getPlayer();
 
-            Player player = (Player) subEvent.getDamager();
-            Hero hero = plugin.getCharacterManager().getHero(player);
+            // Make sure they are actually dealing damage to the target.
+            if (!damageCheck(player, (LivingEntity) event.getEntity())) {
+                return;
+            }
 
             if (!hero.canUseSkill(skill))
                 return;
 
-            if (hero.hasEffect("FistOfJinCooldownEffect"))		// On cooldown, don't heal.
+            if (hero.hasEffect("FistOfJinCooldownEffect"))      // On cooldown, don't heal.
                 return;
 
             Material item = player.getItemInHand().getType();
@@ -149,7 +148,6 @@ public class SkillFistOfJin extends PassiveSkill {
                     CooldownEffect cdEffect = new CooldownEffect(skill, cdDuration);
                     hero.addEffect(cdEffect);
                 }
-
             }
         }
     }

@@ -68,14 +68,14 @@ public class SkillForcePush extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
-        final Player player = hero.getPlayer();
+        Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }
 
         // Let's bypass the nocheat issues...

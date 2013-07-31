@@ -70,20 +70,20 @@ public class SkillBackstab extends ActiveSkill {
         node.set("ambush-bonus", Double.valueOf(1.2D));
         node.set("ambush-chance", Double.valueOf(-1D));
         node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% backstabbed %target%!");
+        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% backstabbed %target%!");
 
         return node;
     }
 
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        Messaging.send(player, ChatColor.RED + "----------[ "+ChatColor.WHITE+"Backstab Damage "+ChatColor.RED+"]----------");
+        Messaging.send(player, ChatColor.RED + "----------[ " + ChatColor.WHITE + "Backstab Damage " + ChatColor.RED + "]----------");
         //Messaging.send(player, ""+ChatColor.WHITE+"Backstab is a passive skill.");
         //Messaging.send(player, ""+ChatColor.WHITE+"Using this ability displays weapon damage when backstabbing.");
 
@@ -110,8 +110,8 @@ public class SkillBackstab extends ActiveSkill {
     }
 
     private void displayWeaponDamage(Player player, String weaponName, int backstabDamage, int ambushDamage) {
-        Messaging.send(player, ChatColor.GREEN + weaponName + ": " + ""+ChatColor.WHITE+"Backstab: " + ChatColor.GRAY + backstabDamage 
-                +ChatColor.WHITE+", Sneaking Backstab: "+ChatColor.GRAY + ambushDamage);
+        Messaging.send(player, ChatColor.GREEN + weaponName + ": " + "" + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + backstabDamage
+                + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + ambushDamage);
     }
 
     public class SkillHeroesListener implements Listener {
@@ -130,8 +130,7 @@ public class SkillBackstab extends ActiveSkill {
             Hero hero = (Hero) event.getDamager();
             Player player = hero.getPlayer();
 
-            if (hero.canUseSkill(getName())) {
-
+            if (hero.canUseSkill(skill)) {
                 ItemStack item = player.getItemInHand();
 
                 if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
@@ -157,10 +156,10 @@ public class SkillBackstab extends ActiveSkill {
                 }
 
                 if (chance < 0)		// If below 1, backstab every time.
-                    event.setDamage( (event.getDamage() * bonusDamage));
+                    event.setDamage((event.getDamage() * bonusDamage));
                 else {
                     if (Util.nextRand() < chance)
-                        event.setDamage( (event.getDamage() * bonusDamage));
+                        event.setDamage((event.getDamage() * bonusDamage));
                 }
 
                 Entity target = event.getEntity();

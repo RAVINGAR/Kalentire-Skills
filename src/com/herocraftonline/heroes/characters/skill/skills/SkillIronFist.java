@@ -74,7 +74,7 @@ public class SkillIronFist extends ActiveSkill {
             // Damage the target
             double damage = SkillConfigManager.getUseSetting(hero, this, "damage", Integer.valueOf(25), false);
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
             // Do our knockback
             Location playerLoc = player.getLocation();

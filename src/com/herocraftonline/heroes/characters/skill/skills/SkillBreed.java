@@ -77,22 +77,37 @@ public class SkillBreed extends PassiveSkill {
             }
 
             // Handle horse interaction
-            if (targetEntity instanceof Horse && !material.equals(Material.WHEAT) && !material.equals(Material.HAY_BLOCK)
-                    && !material.equals(Material.APPLE) && !material.equals(Material.SUGAR) && !material.equals(Material.BREAD)
-                    && !material.equals(Material.GOLDEN_APPLE) && !material.equals(Material.GOLDEN_CARROT)) {
+            if (targetEntity instanceof Horse) {
+                if (!material.equals(Material.WHEAT) && !material.equals(Material.HAY_BLOCK)
+                        && !material.equals(Material.APPLE) && !material.equals(Material.SUGAR) && !material.equals(Material.BREAD)
+                        && !material.equals(Material.GOLDEN_APPLE) && !material.equals(Material.GOLDEN_CARROT)) {
 
-                // If they are just trying to mount the horse, let them
-                event.setCancelled(false);
-                return;
-            }
-            else if (targetEntity instanceof Horse) {
-                // They are trying to breed a horse.
+                    // If they are just trying to mount the horse, let them
+                    event.setCancelled(false);
+                    return;
+                }
+                else {
+                    // They are trying to breed a horse.
 
-                // If they are trying to breed the horse, check to make sure they are allowed to.
-                boolean canBreedHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-breeding", false);
-                if (!hero.canUseSkill("Breed") || canBreedHorses == false) {
-                    event.setCancelled(true);
-                    return;     // Return early. We do not wish to display a message for horse breeding right now.
+                    // If they are trying to breed the horse, check to make sure they are allowed to.
+                    boolean canBreedHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-breeding", false);
+                    if (!hero.canUseSkill("Breed")) {
+                        if (canBreedHorses) {
+                            event.setCancelled(true);
+                            player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
+                            return;
+                        }
+                    }
+
+                    if (!canBreedHorses) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.GRAY + "Horse breeding is currently disabled!");
+                        return;
+                    }
+
+                    // If we make it this far, they can use the skill and horse breeding is enabled.
+                    event.setCancelled(false);
+                    return;
                 }
             }
 

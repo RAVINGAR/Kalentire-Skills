@@ -53,7 +53,8 @@ public class SkillFlyingKick extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
+        addSpellTarget(target, hero);
+        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
 
         double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
         double minSidePush = SkillConfigManager.getUseSetting(hero, this, "min-side-push", Double.valueOf(0.4), false);
