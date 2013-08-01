@@ -41,7 +41,7 @@ public class SkillMultiShot extends ActiveSkill {
 
     public SkillMultiShot(Heroes plugin) {
         super(plugin, "MultiShot");
-        setDescription("Load your bow with $1 arrows for $2 seconds. You can use this ability multiple times to load additional arrows, up to a limit of $3. When firing your bow with arrows loaded, you will launch up to $4 arrows at once!");
+        setDescription("Load your bow with $1 arrows for $2 seconds. You can use this ability multiple times to load additional arrows, up to a limit of $3. When firing your bow with arrows loaded, you will launch up to $4 arrows at once! The buff duration will reset when loading new arrows or firing your loaded ones.");
         setUsage("/skill multishot");
         setArgumentRange(0, 0);
         setIdentifiers("skill multishot");

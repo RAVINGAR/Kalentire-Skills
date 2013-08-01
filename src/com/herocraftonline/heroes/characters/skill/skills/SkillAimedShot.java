@@ -146,8 +146,8 @@ public class SkillAimedShot extends TargettedSkill {
                 actualArrow.remove();
 
                 // Play wolf howl at both locations
-                player.getWorld().playSound(player.getLocation(), Sound.WOLF_HOWL, 0.8f, 1.0F);
-                target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.8f, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
+                target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
 
                 // Lower damage of shot based on how drawn back the bow is.
                 final double damage = event.getForce() * SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 250, false);
@@ -159,7 +159,6 @@ public class SkillAimedShot extends TargettedSkill {
                         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
                     }
                 }, travelTime * 20);	// make the damage happen 0.055 seconds later per block.
-
             }
         }
     }

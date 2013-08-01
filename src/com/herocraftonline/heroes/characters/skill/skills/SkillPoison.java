@@ -86,7 +86,7 @@ public class SkillPoison extends TargettedSkill {
             types.add(EffectType.HARMFUL);
             types.add(EffectType.DISPELLABLE);
 
-            addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
+            addMobEffect(19, (int) ((duration / 1000.0) * 20), 0, true);
         }
 
         @Override

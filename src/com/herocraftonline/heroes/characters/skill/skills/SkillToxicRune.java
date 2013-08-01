@@ -177,7 +177,11 @@ public class SkillToxicRune extends ActiveSkill {
             this.applyText = applyText;
             this.expireText = expireText;
             this.applier = applier;
-            this.types.add(EffectType.POISON);
+
+            types.add(EffectType.POISON);
+            types.add(EffectType.DISPELLABLE);
+
+            addMobEffect(19, (int) ((duration / 1000.0) * 20), 0, true);
         }
 
         @Override

@@ -216,7 +216,7 @@ public class SkillEntangle extends TargettedSkill {
         //    }
     }
 
-    private class EntangleEffect extends PeriodicExpirableEffect {
+    public class EntangleEffect extends PeriodicExpirableEffect {
 
         private final Player applier;
         private Location loc;
@@ -305,7 +305,7 @@ public class SkillEntangle extends TargettedSkill {
 
     // Below is the effect used for a "normal" root that doesn't use teleportation as a base. Kept here for future attempts to tweak the skill.
 
-    //    private class EntangleEffect extends ExpirableEffect {
+    //    public class EntangleEffect extends ExpirableEffect {
     //
     //        private Player applier;
     //

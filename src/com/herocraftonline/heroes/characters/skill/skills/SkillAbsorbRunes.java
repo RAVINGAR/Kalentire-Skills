@@ -242,8 +242,8 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 Bukkit.getServer().getPluginManager().callEvent(new RuneExpireEvent(hero, 1));
 
                 // Add the "cooldown" effect to the hero so he can't immediately trigger another Rune Application Event here.
-                int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "rune-application-cooldown", 750, false);
-                hero.addEffect(new RuneApplicationCooldownEffect(skill, cdEffectName, cdDuration));
+                int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "rune-application-cooldown", 1000, false);
+                targetCT.addEffect(new RuneApplicationCooldownEffect(skill, cdEffectName, cdDuration));
             }
 
             return;

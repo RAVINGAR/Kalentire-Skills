@@ -66,7 +66,7 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     public SkillGrapplingHook(Heroes plugin) {
         super(plugin, "GrapplingHook");
-        setDescription("Apply a grappling hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! The grappling hook weighs down your arrows however and reduces their velocity by $4%.");
+        setDescription("Apply a grappling hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however. The grappling hook weighs down your arrows however and reduces their velocity by $4%.");
         setUsage("/skill grapplinghook");
         setArgumentRange(0, 0);
         setIdentifiers("skill grapplinghook");
@@ -256,7 +256,6 @@ public class SkillGrapplingHook extends ActiveSkill {
         Vector locVec = targetLoc.toVector();
 
         double distance = (int) playerLocVec.distance(locVec);
-        //Messaging.send(player, "Distance: " + distance + ".", new Object[0]);
 
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {

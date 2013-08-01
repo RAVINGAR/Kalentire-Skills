@@ -22,7 +22,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -44,7 +46,13 @@ public class SkillWeb extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill web");
         setTypes(SkillType.EARTH, SkillType.SILENCABLE, SkillType.HARMFUL);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
@@ -61,6 +69,7 @@ public class SkillWeb extends TargettedSkill {
     @Override
     public void init() {
         super.init();
+
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
@@ -68,20 +77,16 @@ public class SkillWeb extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        String name = "";
-        if (target instanceof Player) {
-            name = ((Player) target).getDisplayName();
-        } else {
-            name = Messaging.getLivingEntityName(target).toLowerCase();
-        }
-
-        broadcast(player.getLocation(), applyText, player.getDisplayName(), name);
         long webDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 500, false);
-        WebEffect wEffect = new WebEffect(this, webDuration, rootDuration, target.getLocation().getBlock().getLocation());
-        hero.addEffect(wEffect);
+        WebEffect wEffect = new WebEffect(this, webDuration, rootDuration, player);
+
+        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+        targCT.addEffect(wEffect);
+
         player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_IDLE , 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.SPIDER_IDLE, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
@@ -100,86 +105,113 @@ public class SkillWeb extends TargettedSkill {
         }
     }
 
-    public class WebEffect extends ExpirableEffect {
+    private class WebEffect extends ExpirableEffect {
 
         private List<Location> locations = new ArrayList<Location>();
         private Location loc;
+        private Player applier;
 
-        public WebEffect(Skill skill, long webDuration, long rootDuration, Location location) {
+        public WebEffect(Skill skill, long webDuration, long rootDuration, Player applier) {
             super(skill, "Web", webDuration);
-            this.loc = location;
 
             types.add(EffectType.MAGIC);
             types.add(EffectType.HARMFUL);
 
-            addMobEffect(2, (int) (rootDuration / 1000) * 20, 127, false);      // Max slowness is 127
-            addMobEffect(8, (int) (rootDuration / 1000) * 20, 128, false);      // Max negative jump boost
+            this.applier = applier;
+
+            addMobEffect(2, (int) ((rootDuration / 1000.0) * 20), 127, false);      // Max slowness is 127
+            addMobEffect(8, (int) ((rootDuration / 1000.0) * 20), 128, false);      // Max negative jump boost
+        }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+
+            loc = monster.getEntity().getLocation();
+
+            broadcast(loc, applyText, applier.getDisplayName(), Messaging.getLivingEntityName(monster));
+
+            createWeb();
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            changeBlock(loc, hero);
-            Block block = loc.getBlock();
-            changeBlock(block.getRelative(BlockFace.DOWN).getLocation(), hero);
-            for (BlockFace face : BlockFace.values()) {
-                if (face.toString().contains("_") || face == BlockFace.UP || face == BlockFace.DOWN) {
-                    continue;
-                }
-                Location blockLoc = block.getRelative(face).getLocation();
-                changeBlock(blockLoc, hero);
-                blockLoc = block.getRelative(getClockwise(face)).getLocation();
-                changeBlock(blockLoc, hero);
-                blockLoc = block.getRelative(face, 2).getLocation();
-                changeBlock(blockLoc, hero);
-            }
-        }
 
-        public Location getLocation() {
-            return this.loc;
+            Player player = hero.getPlayer();
+            loc = player.getLocation();
+
+            broadcast(loc, applyText, applier.getDisplayName(), player.getDisplayName());
+
+            createWeb();
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+
+            removeWeb();
+        }
+
+        @Override
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+
+            removeWeb();
+        }
+
+        private void createWeb() {
+            changeBlock(loc);
+            Block block = loc.getBlock();
+            changeBlock(block.getRelative(BlockFace.DOWN).getLocation());
+            for (BlockFace face : BlockFace.values()) {
+                if (face.toString().contains("_") || face == BlockFace.UP || face == BlockFace.DOWN) {
+                    continue;
+                }
+                Location blockLoc = block.getRelative(face).getLocation();
+                changeBlock(blockLoc);
+                blockLoc = block.getRelative(getClockwise(face)).getLocation();
+                changeBlock(blockLoc);
+                blockLoc = block.getRelative(face, 2).getLocation();
+                changeBlock(blockLoc);
+            }
+        }
+
+        private void removeWeb() {
             for (Location location : locations) {
                 location.getBlock().setType(Material.AIR);
                 changedBlocks.remove(location);
             }
+
             locations.clear();
         }
 
-        private void changeBlock(Location location, Hero hero) {
+        private void changeBlock(Location location) {
             Block block = location.getBlock();
             switch (block.getType()) {
-            case WATER:
-            case LAVA:
-            case SNOW:
-            case AIR:
-                changedBlocks.add(location);
-                locations.add(location);
-                location.getBlock().setType(Material.WEB);
-            default:
+                case WATER:
+                case LAVA:
+                case SNOW:
+                case AIR:
+                    changedBlocks.add(location);
+                    locations.add(location);
+                    location.getBlock().setType(Material.WEB);
+                default:
             }
         }
 
         private BlockFace getClockwise(BlockFace face) {
             switch (face) {
-            case NORTH:
-                return BlockFace.EAST;
-            case EAST:
-                return BlockFace.SOUTH;
-            case SOUTH:
-                return BlockFace.WEST;
-            case WEST:
-            default:
-                return BlockFace.SELF;
+                case NORTH:
+                    return BlockFace.EAST;
+                case EAST:
+                    return BlockFace.SOUTH;
+                case SOUTH:
+                    return BlockFace.WEST;
+                case WEST:
+                default:
+                    return BlockFace.SELF;
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }
