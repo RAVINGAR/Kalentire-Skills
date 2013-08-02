@@ -177,7 +177,7 @@ public class SkillRecall extends ActiveSkill {
                             float yaw = currentLocation.getYaw();
 
                             // Validate world checks
-                            List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disabledWorlds"));
+                            List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disable-worlds"));
                             for (String disabledWorld : disabledWorlds) {
                                 if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
                                     Messaging.send(player, "Magic has blocked your recall in this world");
@@ -236,7 +236,7 @@ public class SkillRecall extends ActiveSkill {
         // DEFAULT RECALL FUNCTIONALITY
 
         // Validate world checks
-        List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disabledWorlds"));
+        List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"));
         for (String disabledWorld : disabledWorlds) {
             if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
                 Messaging.send(player, "Magic has blocked your recall in this world");
