@@ -31,7 +31,7 @@ public class SkillBlink extends ActiveSkill {
         setUsage("/skill blink");
         setArgumentRange(0, 0);
         setIdentifiers("skill blink");
-        setTypes(SkillType.SILENCABLE, SkillType.TELEPORT);
+        setTypes(SkillType.SILENCABLE, SkillType.MOVEMENT, SkillType.TELEPORT);
         
         Bukkit.getServer().getPluginManager().registerEvents(new SkillPlayerListener(this), plugin);
     }

@@ -19,15 +19,15 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillAngelsShout extends TargettedSkill {
+public class SkillSacredHymn extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
 
-    public SkillAngelsShout(Heroes plugin) {
-        super(plugin, "AngelsShout");
-        setDescription("Bless your target with the shout of an Angel, restoring $1 health to your target and negating their fire effects.");
-        setUsage("/skill angelsshout <target>");
+    public SkillSacredHymn(Heroes plugin) {
+        super(plugin, "SacredHymn");
+        setDescription("Bless your target with a Sacred Hymn, restoring $1 health to your target and negating their fire effects.");
+        setUsage("/skill sacredhymn <target>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill angelsshout");
+        setIdentifiers("skill sacredhymn");
         setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
     }
 

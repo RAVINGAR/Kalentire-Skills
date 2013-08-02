@@ -58,14 +58,25 @@ public class SkillArcaneTransfer extends TargettedSkill {
             }
         }
 
-        if (possibleEffects.isEmpty()) {
+        if (possibleEffects.isEmpty() || player.getFireTicks() == 0) {
             Messaging.send(player, "You have no effects to transfer!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+
+        // Transfer fire ticks
         int maxTransfers = SkillConfigManager.getUseSetting(hero, this, "max-transfers", 2, false);
-        for (int i = 0; i < maxTransfers && possibleEffects.size() > 0; i++) {
+        int removedEffects = 0;
+        if (player.getFireTicks() > 0 && maxTransfers > 0) {
+            int fireTicks = player.getFireTicks();
+            player.setFireTicks(0);
+            target.setFireTicks(fireTicks);
+            removedEffects++;
+        }
+
+        // Transfer debuffs
+        for (int i = removedEffects; i < maxTransfers && possibleEffects.size() > 0; i++) {
             Effect stolenEffect = possibleEffects.get(Util.nextInt(possibleEffects.size()));
             hero.removeEffect(stolenEffect);
 

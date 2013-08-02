@@ -46,7 +46,14 @@ public class SkillBackflip extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+
+        String desc = getDescription();
+
+        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
+        if (throwShuriken)
+            desc += "If you are able to currently throw Shuriken, you will do so as well.";
+
+        return desc;
     }
 
     @Override

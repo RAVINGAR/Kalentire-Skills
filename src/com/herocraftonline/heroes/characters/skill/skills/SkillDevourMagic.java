@@ -29,7 +29,7 @@ public class SkillDevourMagic extends ActiveSkill {
 
     public SkillDevourMagic(Heroes plugin) {
         super(plugin, "DevourMagic");
-        setDescription("Devour incoming magic for the next $1 seconds. While Devouring Magic, you will resist $2% of the damage dealt by spells cast on you, and convert the resisted damage to mana at a $3% rate.");
+        setDescription("Description: Devour harmful magic targeted on you for $1 seconds, reducing any incoming spell damage by $2% and restoring mana based on the resisted portion at a $3% rate.");
         setUsage("/skill devourmagic");
         setArgumentRange(0, 0);
         setIdentifiers("skill devourmagic");
