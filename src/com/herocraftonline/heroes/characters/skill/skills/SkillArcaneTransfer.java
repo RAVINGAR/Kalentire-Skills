@@ -58,7 +58,7 @@ public class SkillArcaneTransfer extends TargettedSkill {
             }
         }
 
-        if (possibleEffects.isEmpty() || player.getFireTicks() == 0) {
+        if (possibleEffects.isEmpty() && player.getFireTicks() == 0) {
             Messaging.send(player, "You have no effects to transfer!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
