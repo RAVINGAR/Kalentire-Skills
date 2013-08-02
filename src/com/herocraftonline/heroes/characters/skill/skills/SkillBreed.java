@@ -38,6 +38,7 @@ public class SkillBreed extends PassiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.CHANCE_LEVEL.node(), .001);
+        node.set("allow-horse-mounting", false);
         node.set("allow-horse-breeding", false);
 
         return node;
@@ -82,9 +83,17 @@ public class SkillBreed extends PassiveSkill {
                         && !material.equals(Material.APPLE) && !material.equals(Material.SUGAR) && !material.equals(Material.BREAD)
                         && !material.equals(Material.GOLDEN_APPLE) && !material.equals(Material.GOLDEN_CARROT)) {
 
-                    // If they are just trying to mount the horse, let them
-                    event.setCancelled(false);
-                    return;
+                    boolean canMountHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-mounting", false);
+                    if (canMountHorses) {
+                        // If they are just trying to mount the horse, let them
+                        event.setCancelled(false);
+                        return;
+                    }
+                    else {
+                        player.sendMessage(ChatColor.GRAY + "Horse Mounting is Currently Disabled!");
+                        event.setCancelled(true);
+                        return;
+                    }
                 }
                 else {
                     // They are trying to breed a horse.
