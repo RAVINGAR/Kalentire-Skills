@@ -86,7 +86,7 @@ public class SkillSmeltIron extends ActiveSkill{
 			player.sendMessage(ChatColor.GRAY + "You got an extra ingot from the smelting process!");
 		}
 
-		HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.IRON_ORE, amount) });
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.IRON_INGOT, amount) });
 		for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
 			player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
 			Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
