@@ -103,11 +103,13 @@ public class SkillReckoning extends ActiveSkill {
 
                 // Let's bypass the nocheat issues...
                 if (ncpEnabled) {
-                    Player targetPlayer = (Player) character;
-                    if (!targetPlayer.isOp()) {
-                        long ncpDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, ncpDuration);
-                        enemy.addEffect(ncpExemptEffect);
+                    if (target instanceof Player) {
+                        Player targetPlayer = (Player) target;
+                        if (!targetPlayer.isOp()) {
+                            long ncpDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
+                            NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, ncpDuration);
+                            enemy.addEffect(ncpExemptEffect);
+                        }
                     }
                 }
             }

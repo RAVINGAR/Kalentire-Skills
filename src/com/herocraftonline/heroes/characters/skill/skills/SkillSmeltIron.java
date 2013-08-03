@@ -52,7 +52,7 @@ public class SkillSmeltIron extends ActiveSkill{
 		PlayerInventory inventory = player.getInventory();
 		ItemStack[] contents = inventory.getContents();
 
-		boolean addIngot = true;
+        boolean addIngot = false;
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack stack = contents[i];
 			if ((stack != null) && (stack.getType() == Material.IRON_ORE)) {
