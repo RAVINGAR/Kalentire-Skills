@@ -3,25 +3,34 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.BlockIterator;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+
 public class SkillTelekinesis extends ActiveSkill {
+
+    private boolean ncpEnabled = false;
 
     public SkillTelekinesis(Heroes plugin) {
         super(plugin, "Telekinesis");
@@ -30,6 +39,18 @@ public class SkillTelekinesis extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill telekinesis");
         setTypes(SkillType.FORCE, SkillType.KNOWLEDGE, SkillType.SILENCABLE);
+
+        try {
+            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+                ncpEnabled = true;
+            }
+        }
+        catch (Exception e) {}
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
@@ -61,7 +82,7 @@ public class SkillTelekinesis extends ActiveSkill {
         List<String> allowedBlocks = SkillConfigManager.getUseSetting(hero, this, "allowed-blocks", new ArrayList<String>());
 
         // Make sure the player's target is actually "visible" by cycling through each block between him and his target.
-        Block tempBlock;
+        Block tempBlock = null;
         while (iter.hasNext()) {
             tempBlock = iter.next();
             // Messaging.send(player, "Iterating. CurrentBlock: " + tempBlock.getType().toString());        // DEBUG
@@ -88,14 +109,30 @@ public class SkillTelekinesis extends ActiveSkill {
 
         if (allowedBlocks.contains(blockMaterial.toString())) {
             // Messaging.send(player, "Interacting with a " + blockMaterial.toString());        // DEBUG
-            net.minecraft.server.v1_6_R2.Block.byId[blockMaterial.getId()].interact(((CraftWorld) targetBlock.getWorld()).getHandle(),
-                                                                                    targetBlock.getX(),
-                                                                                    targetBlock.getY(), targetBlock.getZ(), null, 0, 0, 0, 0);
 
-            // Old stuff. No longer needed?
-            // Lever lever = (Lever) block.getState().getData();
-            // lever.setPowered(!lever.isPowered());
-            // block.getState().update();
+            // Let's bypass the nocheat issues...
+            if (ncpEnabled) {
+                if (!player.isOp()) {
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
+                    hero.addEffect(ncpExemptEffect);
+                }
+            }
+
+            PlayerInteractEvent fakeInteractEvent = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, null, tempBlock, BlockFace.UP);
+            plugin.getServer().getPluginManager().callEvent(fakeInteractEvent);
+
+            // Old method
+            //            net.minecraft.server.v1_6_R2.Block.byId[blockMaterial.getId()].interact(((CraftWorld) targetBlock.getWorld()).getHandle(),
+            //                                                                                    targetBlock.getX(),
+            //                                                                                    targetBlock.getY(), targetBlock.getZ(), null, 0, 0, 0, 0);
+
+            // Let's bypass the nocheat issues...
+            if (ncpEnabled) {
+                if (!player.isOp()) {
+                    if (hero.hasEffect("NCPExemptionEffect_BLOCKINTERACT"))
+                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_BLOCKINTERACT"));
+                }
+            }
 
             return SkillResult.NORMAL;
         }
@@ -107,9 +144,26 @@ public class SkillTelekinesis extends ActiveSkill {
 
     }
 
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
-    }
+    private class NCPExemptionEffect extends Effect {
 
+        public NCPExemptionEffect(Skill skill) {
+            super(skill, "NCPExemptionEffect_BLOCKINTERACT");
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.BLOCKINTERACT);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.BLOCKINTERACT);
+        }
+    }
 }
