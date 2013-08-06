@@ -12,6 +12,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,6 +50,7 @@ public class SkillMinorRunestone extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill minorrunestone");
         setTypes(SkillType.TELEPORT, SkillType.ITEM, SkillType.SILENCABLE);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
 
         try {
             if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
@@ -190,6 +195,29 @@ public class SkillMinorRunestone extends ActiveSkill {
         else {
             Messaging.send(player, "You cannot imbue a Rune to that item!", new Object[0]);
             return SkillResult.FAIL;
+        }
+    }
+
+    public class SkillListener implements Listener {
+
+        public SkillListener() {}
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onBlockPlace(BlockPlaceEvent event) {
+            if (event.getItemInHand().getType() != Material.REDSTONE_BLOCK)
+                return;
+
+            ItemStack item = event.getItemInHand();
+            ItemMeta metaData = item.getItemMeta();
+
+            if (metaData == null || metaData.getDisplayName() == null)
+                return;
+
+            if (!(metaData.getDisplayName().contains("Minor Runestone")))
+                return;
+
+            Messaging.send(event.getPlayer(), "You cannot place Runestone blocks!");
+            event.setCancelled(true);
         }
     }
 }
