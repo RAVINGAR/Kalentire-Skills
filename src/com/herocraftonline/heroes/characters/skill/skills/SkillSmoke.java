@@ -30,7 +30,7 @@ public class SkillSmoke extends ActiveSkill {
         setNotes("Note: Interacting with anything removes the effect.");
         setNotes("Note: Taking damage removes the effect.");
         setNotes("Note: Using skills removes the effect.");
-        setTypes(SkillType.ILLUSION, SkillType.PHYSICAL, SkillType.BUFF, SkillType.COUNTER, SkillType.STEALTHY);
+        setTypes(SkillType.ILLUSION, SkillType.PHYSICAL, SkillType.BUFF, SkillType.STEALTHY);
 
         //Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
