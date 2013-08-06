@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -39,6 +40,14 @@ public class SkillMultiShot extends ActiveSkill {
     private boolean ncpEnabled = false;
     private String expireText;
 
+    private Map<Arrow, Long> multiShots = new LinkedHashMap<Arrow, Long>(100) {
+        private static final long serialVersionUID = 1L;
+
+        protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
+            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+        }
+    };
+
     public SkillMultiShot(Heroes plugin) {
         super(plugin, "MultiShot");
         setDescription("Load your bow with $1 arrows for $2 seconds. You can use this ability multiple times to load additional arrows, up to a limit of $3. When firing your bow with arrows loaded, you will launch up to $4 arrows at once! The buff duration will reset when loading new arrows or firing your loaded ones.");
@@ -76,6 +85,8 @@ public class SkillMultiShot extends ActiveSkill {
         node.set("max-total-arrows", Integer.valueOf(30));
         node.set("degrees", Double.valueOf(65.0));
         node.set("velocity-multiplier", Double.valueOf(1.6));
+        node.set("multishot-immunity-duration", Integer.valueOf(500));
+
         node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to load up arrows!"));
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are no longer firing multiple arrows.");
 
@@ -213,8 +224,8 @@ public class SkillMultiShot extends ActiveSkill {
             yaw = yaw * (Math.PI / 180);
 
             // Convert Pitch to radians
-            double pitch = player.getLocation().getPitch();
-            pitch = 180 - pitch;
+            double pitch = player.getEyeLocation().getPitch();
+            pitch *= -1;    // Invert pitch
             pitch = pitch * (Math.PI / 180);
 
             // Alter variables based on event force.
@@ -313,8 +324,7 @@ public class SkillMultiShot extends ActiveSkill {
             msEffect.removeArrows(arrowsToShoot, player);
             if (msEffect.getCurrentlyLoadedArrows() == 0)
                 hero.removeEffect(msEffect);
-            else
-            {
+            else {
                 // Refresh the buff after ever shot.
                 int duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 6000, false);
                 int maxArrowsPerShot = SkillConfigManager.getUseSetting(hero, skill, "max-arrows-per-shot", 5, false);
@@ -330,18 +340,23 @@ public class SkillMultiShot extends ActiveSkill {
 
         private void shootMultiShotArrow(Player player, ItemStack bow, float force, double yaw, double pitch, double velocityMultiplier) {
             // Create our velocity direction based on where the player is facing.
-            Vector vel = new Vector(Math.cos(yaw), Math.tan(pitch), Math.sin(yaw));
-            //Vector vel = new Vector(Math.sin(yaw), Math.tan(pitch), Math.cos(yaw));
+            Vector vel = new Vector(Math.cos(yaw), Math.sin(pitch), Math.sin(yaw));
+            vel.multiply(velocityMultiplier);
+            //vel.setY(pitch);
 
             Arrow arrow = player.launchProjectile(Arrow.class);
-            arrow.setVelocity(vel.multiply(velocityMultiplier));    // Apply multiplier so it goes farther.
+            arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
+
+            //arrow.spigot().setDamage(100);
+
             arrow.setShooter(player);
+            multiShots.put(arrow, Long.valueOf(System.currentTimeMillis()));
             final EntityShootBowEvent fakeShootBowEvent = new EntityShootBowEvent(player, bow, arrow, force);
             plugin.getServer().getPluginManager().callEvent(fakeShootBowEvent);
         }
     }
 
-    // Buff effect used to keep track of multishot uses
+    // Buff effect used to keep track of multishot functionality
     public class MultiShotEffect extends ExpirableEffect {
 
         private int maxArrowsPerShot;
