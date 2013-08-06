@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.Map;
@@ -100,3 +101,4 @@ public class SkillBarrage extends ActiveSkill {
 		return SkillResult.NORMAL;
 	}
 }
+*/
