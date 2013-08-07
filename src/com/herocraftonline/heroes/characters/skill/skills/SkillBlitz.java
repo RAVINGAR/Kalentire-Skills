@@ -44,7 +44,7 @@ public class SkillBlitz extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
         
         plugin.getDamageManager().addSpellTarget(target, hero, this);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         broadcastExecuteText(hero, target);
         // this is our fireworks shit

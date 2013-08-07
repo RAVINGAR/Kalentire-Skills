@@ -200,11 +200,11 @@ public class SkillShuriken extends PassiveSkill {
             // Damage the target
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 30, false);
             skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
             // Prevent arrow from dealing damage
             shuriken.remove();
-            event.setDamage(0);
+            event.setDamage(0.0);
             event.setCancelled(true);
         }
     }
@@ -257,13 +257,15 @@ public class SkillShuriken extends PassiveSkill {
                     yaw = yaw * (Math.PI / 180);
 
                     // Convert Pitch to radians
-                    double pitch = player.getLocation().getPitch();
-                    pitch = 180 - pitch;
+                    double pitch = player.getEyeLocation().getPitch();
+                    pitch *= -1;    // Invert pitch
                     pitch = pitch * (Math.PI / 180);
+
+                    // Offset Yaw
                     yaw = yaw + degreeOffsetRad;
 
                     // Create our velocity direction based on where the player is facing.
-                    Vector vel = new Vector(Math.cos(yaw + finalA), Math.tan(pitch), Math.sin(yaw + finalA));
+                    Vector vel = new Vector(Math.cos(yaw + finalA), Math.sin(pitch), Math.sin(yaw + finalA));
 
                     Arrow shuriken = (Arrow) player.launchProjectile(Arrow.class);
                     shuriken.setVelocity(vel.multiply(velocityMultiplier));

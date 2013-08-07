@@ -152,7 +152,7 @@ public class SkillIceRune extends ActiveSkill {
 
                     // Damage and silence the target
                     skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
                     targCT.addEffect(sEffect);
 
 

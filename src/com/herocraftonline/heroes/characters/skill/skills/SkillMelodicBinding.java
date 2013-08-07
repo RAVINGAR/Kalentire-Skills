@@ -76,7 +76,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 500, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10, false);
         hero.addEffect(new MelodicBindingEffect(this, duration, period, tickDamage, range));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 6.0F); 
@@ -123,7 +123,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         private final double tickDamage;
         private final int range;
 
-        public MelodicBindingEffect(SkillMelodicBinding skill, long duration, long period, int tickDamage, int range) {
+        public MelodicBindingEffect(SkillMelodicBinding skill, long duration, long period, double tickDamage, int range) {
             super(skill, "MelodicBinding", period, duration);
             this.tickDamage = tickDamage;
             this.range = range;
@@ -174,7 +174,7 @@ public class SkillMelodicBinding extends ActiveSkill {
                     }
 
                     addSpellTarget(lEntity, hero);
-                    Skill.damageEntity(lEntity, player, tickDamage, DamageCause.MAGIC);
+                    Skill.damageEntity(lEntity, player, tickDamage, DamageCause.MAGIC, false);
                     loc = lEntity.getLocation().clone();
                     loc.setY(loc.getY() - 1);
                     changeBlock(loc, hero);

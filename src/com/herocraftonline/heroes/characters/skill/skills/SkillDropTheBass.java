@@ -10,6 +10,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -21,6 +24,8 @@ import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillDropTheBass extends ActiveSkill {
 
+    private Song skillSong;
+
     private boolean ncpEnabled = false;
 
     public SkillDropTheBass(Heroes plugin) {
@@ -30,6 +35,17 @@ public class SkillDropTheBass extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill dropthebass");
         setTypes(SkillType.MOVEMENT, SkillType.BUFF, SkillType.SILENCABLE);
+
+        skillSong = new Song(
+                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),
+                             new Note(Sound.NOTE_BASS, 0.8F, 2.0F, 1),
+                             new Note(Sound.NOTE_BASS, 0.8F, 3.0F, 2),
+                             new Note(Sound.NOTE_BASS, 0.8F, 4.0F, 3),
+                             new Note(Sound.NOTE_BASS, 0.8F, 5.0F, 4),
+                             new Note(Sound.NOTE_BASS_GUITAR, 0.8F, 6.0F, 5),
+                             new Note(Sound.NOTE_BASS_DRUM, 0.8F, 7.0F, 6),
+                             new Note(Sound.NOTE_BASS, 0.8F, 8.0F, 7)
+                );
 
         try {
             if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
@@ -112,30 +128,35 @@ public class SkillDropTheBass extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        if (!hero.hasParty()){
-                return SkillResult.CANCELLED;
-        }
+
+        Player player = hero.getPlayer();
+
         int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false)
                 + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this));
         int radius = (int) ((SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15.0, false)
                 + SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE.node(), 0, false) * hero.getSkillLevel(this)));
-        double radiusSquared = Math.pow(radius,2);
-        
-        for(Hero member : hero.getParty().getMembers()){
-        	if(member.getPlayer().getWorld() != hero.getPlayer().getWorld()) {continue;}
-            if(member.getPlayer().getLocation().distanceSquared(hero.getPlayer().getLocation()) <= radiusSquared){
-                member.addEffect(new NCPCompatSafeFallEffect(this, duration));
+
+        double radiusSquared = Math.pow(radius, 2);
+
+        if (hero.hasParty()) {
+            for (Hero member : hero.getParty().getMembers()) {
+                Player memberPlayer = member.getPlayer();
+                if (memberPlayer.getWorld() != player.getWorld())
+                    continue;
+
+                if (memberPlayer.getLocation().distanceSquared(player.getLocation()) <= radiusSquared) {
+                    member.addEffect(new NCPCompatSafeFallEffect(this, duration));
+                }
             }
         }
+        else {
+            hero.addEffect(new NCPCompatSafeFallEffect(this, duration));
+        }
+
         broadcastExecuteText(hero);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 1.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 2.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 3.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 4.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 5.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_GUITAR, 0.8F, 6.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS_DRUM, 0.8F, 7.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 8.0F);
+
+        hero.addEffect(new SoundEffect(this, "DropTheBassSong", 100, skillSong));
+
         return SkillResult.NORMAL;
     }
 

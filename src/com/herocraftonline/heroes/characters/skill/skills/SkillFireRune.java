@@ -140,7 +140,7 @@ public class SkillFireRune extends ActiveSkill {
 
                     // Damage and silence the target
                     skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.FIRE);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.FIRE, false);
 
                     // Announce that the player has been hit with the skill 
                     broadcast(targEnt.getLocation(), applyText, targCT.getName());

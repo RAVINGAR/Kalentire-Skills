@@ -148,7 +148,7 @@ public class SkillVoidRune extends ActiveSkill {
 
                     // Damage and silence the target
                     skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
                     VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, duration, applyText, expireText);
 
                     // Add the effect to the target

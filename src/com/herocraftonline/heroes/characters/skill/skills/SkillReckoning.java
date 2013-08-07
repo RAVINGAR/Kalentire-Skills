@@ -92,7 +92,7 @@ public class SkillReckoning extends ActiveSkill {
             Location targetLoc = target.getLocation();
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
+            damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
             if (character instanceof Hero) {
                 Hero enemy = (Hero) character;

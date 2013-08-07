@@ -85,7 +85,7 @@ public class SkillEntangle extends TargettedSkill {
 
         //deal  damage
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
         // Broadcast use text
         broadcastExecuteText(hero, target);

@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/ujku9azqzhmdgu5lki6ooa
 import org.bukkit.Color;
@@ -72,3 +73,4 @@ public class SkillRoot extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/

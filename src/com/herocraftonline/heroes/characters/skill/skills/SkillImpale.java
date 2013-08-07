@@ -75,7 +75,7 @@ public class SkillImpale extends TargettedSkill {
         int force = SkillConfigManager.getUseSetting(hero, this, "force", 3, false);
         // double damage = plugin.getDamageManager().getItemDamage(item, player);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
-        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
 
         // Do a little knockup
         target.setVelocity(target.getVelocity().add(new Vector(0, force, 0)));

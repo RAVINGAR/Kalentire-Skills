@@ -74,7 +74,7 @@ public class SkillForcePull extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
         }
 
         // Let's bypass the nocheat issues...

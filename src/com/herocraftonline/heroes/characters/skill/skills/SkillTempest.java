@@ -107,7 +107,7 @@ public class SkillTempest extends ActiveSkill {
 
                     // Damage the target
                     addSpellTarget((LivingEntity) entity, hero);
-                    damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
+                    damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
                     player.getWorld().strikeLightningEffect(entity.getLocation());
                 }
             }

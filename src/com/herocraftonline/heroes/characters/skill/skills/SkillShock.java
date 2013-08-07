@@ -135,7 +135,7 @@ public class SkillShock extends TargettedSkill {
                         continue;
                     }
                     addSpellTarget(entity, getApplierHero());
-                    damageEntity((LivingEntity) entity, player, getTickDamage(), DamageCause.MAGIC);
+                    damageEntity((LivingEntity) entity, player, getTickDamage(), DamageCause.MAGIC, false);
                 }
             }
         }

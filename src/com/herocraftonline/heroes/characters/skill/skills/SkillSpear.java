@@ -77,7 +77,7 @@ public class SkillSpear extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
         }
 
         // Let's bypass the nocheat issues...

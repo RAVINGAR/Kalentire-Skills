@@ -45,7 +45,7 @@ public class SkillBolt extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
         damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
         plugin.getDamageManager().addSpellTarget(target, hero, this);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
