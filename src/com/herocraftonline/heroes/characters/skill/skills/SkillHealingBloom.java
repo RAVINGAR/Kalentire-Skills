@@ -49,7 +49,7 @@ public class SkillHealingBloom extends ActiveSkill {
 			Bukkit.getServer().getLogger().log(Level.SEVERE, "[SkillHealingBloom] Invalid mode selection, defaulting to amount mode");
 		}
 
-		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 150, false);
 		int radiusSquared = radius * radius;
 		double amountHealed = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
 		double period = SkillConfigManager.getUseSetting(hero, this, "period", 1000, false);
@@ -118,12 +118,12 @@ public class SkillHealingBloom extends ActiveSkill {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.DURATION.node(), Integer.valueOf(30000));
+        node.set(SkillSetting.RADIUS.node(), 150);
 		node.set("period", Integer.valueOf(1000));
 		node.set("amount", Integer.valueOf(5));
 		node.set("AmountMode", Boolean.valueOf(true));
 		node.set("PercentMaxHealthMode", Boolean.valueOf(false));
 		node.set("PercentMissingHealthMode", Boolean.valueOf(false));
-		node.set("maxrange", Integer.valueOf(0));
 
 		return node;
 	}
