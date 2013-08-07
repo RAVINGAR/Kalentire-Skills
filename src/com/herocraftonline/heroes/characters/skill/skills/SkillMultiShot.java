@@ -275,16 +275,20 @@ public class SkillMultiShot extends ActiveSkill {
                 }
             }
 
+            // Create a multiplier that lowers velocity based on how high or low the player is looking
+            double pitchMultiplier = Math.abs(Math.sin(Math.abs(pitch) - 90));
+            double yValue = Math.sin(pitch);
+
             // Fire arrows from the center and move clockwise towards the end.
             ItemStack bow = event.getBow();
             msEffect.setListenToBowShootEvents(false);      // Prevent the following bow events to be picked up by this method.
             for (double a = actualCenterDegreesRad; a <= degreesRad; a += diff) {
-                shootMultiShotArrow(player, bow, force, yaw + a, pitch, velocityMultiplier);
+                shootMultiShotArrow(player, bow, force, yaw + a, pitchMultiplier, yValue, velocityMultiplier);
             }
 
             // Fire arrows from the start and move clockwise towards the center
             for (double a = 0; a < actualCenterDegreesRad; a += diff) {
-                shootMultiShotArrow(player, bow, force, yaw + a, pitch, velocityMultiplier);
+                shootMultiShotArrow(player, bow, force, yaw + a, pitchMultiplier, yValue, velocityMultiplier);
             }
 
             // Let's bypass the nocheat issues...
@@ -338,16 +342,15 @@ public class SkillMultiShot extends ActiveSkill {
             }
         }
 
-        private void shootMultiShotArrow(Player player, ItemStack bow, float force, double yaw, double pitch, double velocityMultiplier) {
+        private void shootMultiShotArrow(Player player, ItemStack bow, float force, double yaw, double pitchMultiplier, double yValue, double velocityMultiplier) {
+
             // Create our velocity direction based on where the player is facing.
-            Vector vel = new Vector(Math.cos(yaw), Math.sin(pitch), Math.sin(yaw));
-            vel.multiply(velocityMultiplier);
-            //vel.setY(pitch);
+            Vector vel = new Vector(Math.cos(yaw), 0, Math.sin(yaw));
+            vel.multiply(pitchMultiplier * velocityMultiplier);
+            vel.setY(yValue * velocityMultiplier);
 
             Arrow arrow = player.launchProjectile(Arrow.class);
             arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
-
-            //arrow.spigot().setDamage(100);
 
             arrow.setShooter(player);
             multiShots.put(arrow, Long.valueOf(System.currentTimeMillis()));
