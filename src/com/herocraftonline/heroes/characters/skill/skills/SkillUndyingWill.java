@@ -98,10 +98,10 @@ public class SkillUndyingWill extends ActiveSkill {
                     double currentHealth = player.getHealth();
 
                     if (event.getDamage() > currentHealth) {
-                        if (currentHealth != 1)
-                            player.setHealth(1);
+                        if (currentHealth != 1.0)
+                            player.setHealth(1.0);
 
-                        event.setDamage(0);
+                        event.setDamage(0.0);
                     }
                 }
             }
