@@ -245,21 +245,6 @@ public class SkillShuriken extends PassiveSkill {
         double degreeOffset = (90.0 - (degrees / 2.0));
         final double degreeOffsetRad = degreeOffset * (Math.PI / 180);
 
-        // Convert yaw to radians
-        double tempYaw = player.getLocation().getYaw();
-        tempYaw = tempYaw * (Math.PI / 180);
-
-        // Offset Yaw
-        tempYaw = tempYaw + degreeOffsetRad;
-        final double yaw = tempYaw;
-
-        // Convert Pitch to radians
-        double pitch = player.getEyeLocation().getPitch();
-        pitch *= -1;    // Invert pitch
-        pitch = pitch * (Math.PI / 180);
-
-        final double yValue = Math.sin(pitch);
-
         // Throw shurikens in a clockwise direction, with a delay based on the passed interval.
         int i = 1;
         for (double a = 0; a <= degreesRad; a += diff) {
@@ -267,11 +252,27 @@ public class SkillShuriken extends PassiveSkill {
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    // Create our velocity direction based on where the player is facing.
-                    Vector vel = new Vector(Math.cos(yaw + finalA), yValue, Math.sin(yaw + finalA));
+                    // Convert yaw to radians
+                    double yaw = player.getLocation().getYaw();
+                    yaw = yaw * (Math.PI / 180);
 
-                    Arrow shuriken = (Arrow) player.launchProjectile(Arrow.class);
-                    shuriken.setVelocity(vel.multiply(velocityMultiplier));
+                    // Offset Yaw
+                    yaw = yaw + degreeOffsetRad;
+
+                    // Convert Pitch to radians
+                    double pitch = player.getEyeLocation().getPitch();
+                    pitch *= -1;    // Invert pitch
+                    pitch = pitch * (Math.PI / 180);
+
+                    Arrow shuriken = player.launchProjectile(Arrow.class);
+                    double newYValue = shuriken.getVelocity().getY();
+
+                    // Create our velocity direction based on where the player is facing.
+                    Vector vel = new Vector(Math.cos(yaw + finalA), 0, Math.sin(yaw + finalA));
+                    vel.multiply(velocityMultiplier);
+                    vel.setY(newYValue * velocityMultiplier);
+
+                    shuriken.setVelocity(vel);
                     shuriken.setShooter(player);
                     shurikens.put(shuriken, Long.valueOf(System.currentTimeMillis()));
                 }
