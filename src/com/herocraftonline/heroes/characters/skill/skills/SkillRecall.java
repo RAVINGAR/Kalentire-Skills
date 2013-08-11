@@ -267,9 +267,7 @@ public class SkillRecall extends ActiveSkill {
 
         // Validate Herotowns
         if (herotowns) {
-            if (ht.getGlobalRegionManager().canBuild(player, recallLocation))
-                ;
-            else {
+            if (!ht.getGlobalRegionManager().canBuild(player, recallLocation)) {
                 broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
                 return SkillResult.FAIL;
             }
