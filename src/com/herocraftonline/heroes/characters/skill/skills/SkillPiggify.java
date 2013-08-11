@@ -63,12 +63,12 @@ public class SkillPiggify extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-    	EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
+        EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
 
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT, 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -97,9 +97,14 @@ public class SkillPiggify extends TargettedSkill {
                 character.removeEffect(character.getEffect("Piggify"));
             }
             else if (event.getEntity() instanceof LivingEntity) {
-                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                final CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (character.hasEffect("Piggify")) {
-                    character.removeEffect(character.getEffect("Piggify"));
+                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            character.removeEffect(character.getEffect("Piggify"));
+                        }
+                    }, (long) (0.1 * 20));
                 }
             }
         }
@@ -158,7 +163,7 @@ public class SkillPiggify extends TargettedSkill {
         public PigEffect(Skill skill, long duration, Creature creature) {
             super(skill, "Piggify", 100, duration);
             this.creature = creature;
-            
+
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
             types.add(EffectType.STUN);

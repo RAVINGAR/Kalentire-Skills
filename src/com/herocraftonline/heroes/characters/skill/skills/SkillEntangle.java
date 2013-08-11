@@ -135,10 +135,15 @@ public class SkillEntangle extends TargettedSkill {
             if (!(event.getEntity() instanceof LivingEntity))
                 return;
 
-            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            final CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
 
             if (defenderCT.hasEffect("Root")) {
-                defenderCT.removeEffect(defenderCT.getEffect("Root"));
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        defenderCT.removeEffect(defenderCT.getEffect("Root"));
+                    }
+                }, (long) (0.1 * 20));
             }
         }
 

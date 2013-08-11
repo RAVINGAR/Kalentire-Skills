@@ -124,9 +124,14 @@ public class SkillMassPiggify extends ActiveSkill {
                 character.removeEffect(character.getEffect("MassPiggify"));
             }
             else if (event.getEntity() instanceof LivingEntity) {
-                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                final CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (character.hasEffect("MassPiggify")) {
-                    character.removeEffect(character.getEffect("MassPiggify"));
+                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            character.removeEffect(character.getEffect("MassPiggify"));
+                        }
+                    }, (long) (0.1 * 20));
                 }
             }
         }
