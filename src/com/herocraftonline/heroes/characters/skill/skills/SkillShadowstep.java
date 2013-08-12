@@ -39,9 +39,6 @@ public class SkillShadowstep extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
 
-        defaultConfig.set(SkillSetting.COOLDOWN.node(), 30000);
-        defaultConfig.set(SkillSetting.MANA.node(), 55);
-        defaultConfig.set(SkillSetting.STAMINA.node(), 0);
         defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 5.0);
         defaultConfig.set(SkillSetting.MAX_DISTANCE_INCREASE.node(), 0.1);
         defaultConfig.set("blocks-behind-target", 1);
@@ -66,7 +63,8 @@ public class SkillShadowstep extends TargettedSkill {
         }
 
         Location playerLoc = player.getLocation();
-        Location targetLoc = target.getLocation();
+        Location targetLoc = target.getLocation().clone();
+        targetLoc.setPitch(0);      // Reset pitch so that we don't have to worry about it.
 
         BlockIterator iter = null;
         try {
@@ -94,13 +92,13 @@ public class SkillShadowstep extends TargettedSkill {
             }
         }
         if (prev != null) {
-            Location teleport = prev.getLocation().clone();
-            teleport.add(new Vector(.5, 0, .5));
+            Location targetTeleportLoc = prev.getLocation().clone();
+            targetTeleportLoc.add(new Vector(.5, 0, .5));
 
             // Set the blink location yaw/pitch to that of the target
-            teleport.setPitch(targetLoc.getPitch());
-            teleport.setYaw(targetLoc.getYaw());
-            player.teleport(teleport);
+            targetTeleportLoc.setPitch(0);
+            targetTeleportLoc.setYaw(targetLoc.getYaw());
+            player.teleport(targetTeleportLoc);
 
             broadcastExecuteText(hero, target);
 
