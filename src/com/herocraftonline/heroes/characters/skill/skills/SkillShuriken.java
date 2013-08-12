@@ -265,12 +265,12 @@ public class SkillShuriken extends PassiveSkill {
                     pitch = pitch * (Math.PI / 180);
 
                     Arrow shuriken = player.launchProjectile(Arrow.class);
-                    double newYValue = shuriken.getVelocity().getY();
+                    double yValue = shuriken.getVelocity().getY();
 
                     // Create our velocity direction based on where the player is facing.
                     Vector vel = new Vector(Math.cos(yaw + finalA), 0, Math.sin(yaw + finalA));
                     vel.multiply(velocityMultiplier);
-                    vel.setY(newYValue * velocityMultiplier);
+                    vel.setY(yValue * velocityMultiplier);
 
                     shuriken.setVelocity(vel);
                     shuriken.setShooter(player);

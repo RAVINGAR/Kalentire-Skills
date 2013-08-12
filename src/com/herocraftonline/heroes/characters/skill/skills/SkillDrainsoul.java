@@ -52,7 +52,7 @@ public class SkillDrainsoul extends TargettedSkill {
 			//fixed for bukkit events for damage/health
 		}
 		addSpellTarget(target, hero);
-		damageEntity(target, player, absorbAmount, DamageCause.MAGIC);
+        damageEntity(target, player, absorbAmount, DamageCause.MAGIC);
 
 		broadcastExecuteText(hero, target);
         // this is our fireworks shit

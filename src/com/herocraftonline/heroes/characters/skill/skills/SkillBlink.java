@@ -32,7 +32,7 @@ public class SkillBlink extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill blink");
         setTypes(SkillType.SILENCABLE, SkillType.MOVEMENT, SkillType.TELEPORT);
-        
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillPlayerListener(this), plugin);
     }
 
@@ -58,7 +58,8 @@ public class SkillBlink extends ActiveSkill {
         BlockIterator iter = null;
         try {
             iter = new BlockIterator(player, distance);
-        } catch (IllegalStateException e) {
+        }
+        catch (IllegalStateException e) {
             Messaging.send(player, "There was an error getting your blink location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -66,7 +67,8 @@ public class SkillBlink extends ActiveSkill {
             b = iter.next();
             if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
                 prev = b;
-            } else {
+            }
+            else {
                 break;
             }
         }
@@ -74,13 +76,14 @@ public class SkillBlink extends ActiveSkill {
             Location teleport = prev.getLocation().clone();
             teleport.add(new Vector(.5, .5, .5));
             // Set the blink location yaw/pitch to that of the player
-            teleport.setPitch(player.getLocation().getPitch());
-            teleport.setYaw(player.getLocation().getYaw());
+            teleport.setPitch(loc.getPitch());
+            teleport.setYaw(loc.getYaw());
             player.teleport(teleport);
-            player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
+            player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
+            player.getWorld().playSound(loc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
             return SkillResult.NORMAL;
-        } else {
+        }
+        else {
             Messaging.send(player, "No location to blink to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -91,12 +94,11 @@ public class SkillBlink extends ActiveSkill {
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
         return getDescription().replace("$1", distance + "");
     }
-    
+
     public class SkillPlayerListener implements Listener {
 
-        public SkillPlayerListener(Skill skill) {
-        }
-        
+        public SkillPlayerListener(Skill skill) {}
+
         //@EventListener = EnderPearlRestriction - http://pastie.org/private/ccfetpbkwi1n9bczgxregg
     }
 }
