@@ -1,0 +1,5 @@
+Heroes-Skills Changelog:
+
+1.0 - All previously coded skills are included for Herocraft 4.94 (Heroes v1.5.3, MC 1.6.2)
+
+1.1 - Attributes branch stuff

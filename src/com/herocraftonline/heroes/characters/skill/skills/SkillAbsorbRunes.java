@@ -76,7 +76,7 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAbsorbRunes extends ActiveSkill {
-    // Runequeue Hashmap for holding all player RuneQueue objects
+    // Runequeue Hashmap for holding all player RuneQueue tables
     HashMap<Hero, RuneQueue> heroRunes;
 
     public SkillAbsorbRunes(Heroes plugin) {

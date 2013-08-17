@@ -144,7 +144,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
             }
         }
         else {
-            Messaging.send(player, "This is not a Runestone. You can only recharge Runestone objects!", new Object[0]);
+            Messaging.send(player, "This is not a Runestone. You can only recharge Runestone tables!", new Object[0]);
             return SkillResult.FAIL;
         }
     }

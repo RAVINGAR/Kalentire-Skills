@@ -128,7 +128,7 @@ public class SkillFireblast extends TargettedSkill
            * The reflection part, this gives us access to funky ways of messing around with things
            */
           if(world_getHandle == null) {
-              // get the methods of the craftbukkit objects
+              // get the methods of the craftbukkit tables
               world_getHandle = getMethod(world.getClass(), "getHandle");
               firework_getHandle = getMethod(fw.getClass(), "getHandle");
           }

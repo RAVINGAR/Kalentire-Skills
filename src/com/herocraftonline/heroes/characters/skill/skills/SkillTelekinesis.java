@@ -44,7 +44,7 @@ public class SkillTelekinesis extends ActiveSkill {
 
     public SkillTelekinesis(Heroes plugin) {
         super(plugin, "Telekinesis");
-        setDescription("You can activate levers, buttons and other interactable objects from afar.");
+        setDescription("You can activate levers, buttons and other interactable tables from afar.");
         setUsage("/skill telekinesis");
         setArgumentRange(0, 1);
         setIdentifiers("skill telekinesis");
@@ -60,7 +60,7 @@ public class SkillTelekinesis extends ActiveSkill {
             }
         }
         catch (Exception e) {
-            Heroes.log(Level.SEVERE, "Could not find LWC plugin. If this is a mistake and the LWC plugin is indeed present, the Telekinesis Skill will work on LWC'd objects.");
+            Heroes.log(Level.SEVERE, "Could not find LWC plugin. If this is a mistake and the LWC plugin is indeed present, the Telekinesis Skill will work on LWC'd tables.");
         }
     }
 
