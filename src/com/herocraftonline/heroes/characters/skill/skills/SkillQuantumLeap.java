@@ -32,20 +32,27 @@ public class SkillQuantumLeap extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
 
         Player player = hero.getPlayer();
+        Player targetPlayer = (Player) target;
+        Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
+
+        if (targetHero.hasEffect("Entangle") || targetHero.hasEffect("Stun") || targetHero.hasEffect("Piggify"))
+            return SkillResult.INVALID_TARGET;
+        else if (hero.hasEffect("Entangle") || hero.hasEffect("Stun") || hero.hasEffect("Piggify"))
+            return SkillResult.INVALID_TARGET;
 
         // Set the player's location
         Location pLocation = player.getLocation();
 
         // Set the target location
-        Location tLocation = target.getLocation();
+        Location tLocation = targetPlayer.getLocation();
 
         /*
         
         //Better Method that Kainzo hates for some reason. :(
         
         // Swap the locations yaw/pitch values
-        pLocation.setYaw(target.getLocation().getYaw());
-        pLocation.setPitch(target.getLocation().getPitch());
+        pLocation.setYaw(targetPlayer.getLocation().getYaw());
+        pLocation.setPitch(targetPlayer.getLocation().getPitch());
 
         tLocation.setYaw(player.getLocation().getYaw());
         tLocation.setPitch(player.getLocation().getPitch());
@@ -54,13 +61,13 @@ public class SkillQuantumLeap extends TargettedSkill {
 
         // Teleport the player and his target
         player.teleport(tLocation);
-        target.teleport(pLocation);
+        targetPlayer.teleport(pLocation);
 
         // Play effect
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
 
         // Play sound
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.PORTAL, 0.5F, 1.0F);
 
         broadcastExecuteText(hero, target);
 
