@@ -171,6 +171,10 @@ public class SkillRecall extends ActiveSkill {
                             int y = Integer.parseInt(yString);
                             int z = Integer.parseInt(zString);
 
+                            // Crossworld teleporting seems to teleport you 5 blocks up. We don't want to do this.
+                            if (!player.getWorld().equals(world))
+                                y -= 5;
+
                             // Grab the players current location and store their pitch / yaw values.
                             Location currentLocation = player.getLocation();
                             float pitch = currentLocation.getPitch();
@@ -189,9 +193,7 @@ public class SkillRecall extends ActiveSkill {
 
                             // Validate Herotowns
                             if (herotowns) {
-                                if (ht.getGlobalRegionManager().canBuild(player, teleportLocation))
-                                    ;
-                                else {
+                                if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
                                     broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
                                     return SkillResult.FAIL;
                                 }

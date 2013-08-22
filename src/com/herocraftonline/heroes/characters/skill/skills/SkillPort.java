@@ -91,7 +91,7 @@ public class SkillPort extends ActiveSkill {
 			broadcastExecuteText(hero);
 
 			int radiusInc = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
-			int radius = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false) + radiusInc, 2);
+            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false) + radiusInc;
 			int radiusSquared = radius * radius;
 			Location loc = new Location(world, Double.parseDouble(splitArg[1]), Double.parseDouble(splitArg[2]), Double.parseDouble(splitArg[3]));
 

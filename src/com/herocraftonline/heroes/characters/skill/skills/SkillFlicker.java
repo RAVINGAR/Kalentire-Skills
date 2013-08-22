@@ -113,7 +113,9 @@ public class SkillFlicker extends ActiveSkill {
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
             player.getWorld().playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
-            hero.addEffect(new InvisibleEffect(skill, invisDuration, null, null));
+            InvisibleEffect customInvisEffect = new InvisibleEffect(skill, invisDuration, null, null);
+            customInvisEffect.types.add(EffectType.UNBREAKABLE);
+            hero.addEffect(customInvisEffect);
         }
 
         @Override
