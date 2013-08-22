@@ -1,11 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 // src http://pastie.org/private/syyyftinqa5r1uv4ixka
+import net.minecraft.server.v1_6_R2.EntityLiving;
+import net.minecraft.server.v1_6_R2.MobEffectList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,11 +19,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -85,7 +91,7 @@ public class SkillAccelerando extends ActiveSkill {
         if (multiplier > 20) {
             multiplier = 20;
         }
-        QuickenEffect qEffect = new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText);
+        QuickenEffect qEffect = new AccelerandoEffect(this, duration, multiplier, applyText, expireText);
         if (!hero.hasParty()) {
             hero.addEffect(qEffect);
             return SkillResult.NORMAL;
@@ -159,5 +165,45 @@ public class SkillAccelerando extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return getDescription().replace("$1", duration / 1000 + "");
+    }
+
+    public class AccelerandoEffect extends QuickenEffect {
+
+        public AccelerandoEffect(Skill skill, int duration, int multiplier, String applyText, String expireText) {
+            super(skill, "Accelerando", duration, multiplier, applyText, expireText);
+        }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+        }
+
+        @Override
+        public void removeFromHero(final Hero hero) {
+            Player player = hero.getPlayer();
+            EntityLiving el = ((CraftLivingEntity) player).getHandle();
+
+            if (el.hasEffect(MobEffectList.POISON) || el.hasEffect(MobEffectList.WITHER) || el.hasEffect(MobEffectList.HARM)) {
+                // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        AccelerandoEffect.super.removeFromHero(hero);
+                    }
+                }, (long) (0.2 * 20));
+            }
+            else
+                super.removeFromHero(hero);
+        }
+
+        @Override
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+        }
     }
 }

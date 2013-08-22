@@ -3,11 +3,15 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.server.v1_6_R2.EntityLiving;
+import net.minecraft.server.v1_6_R2.MobEffectList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -97,14 +101,9 @@ public class SkillPiggify extends TargettedSkill {
                 character.removeEffect(character.getEffect("Piggify"));
             }
             else if (event.getEntity() instanceof LivingEntity) {
-                final CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (character.hasEffect("Piggify")) {
-                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            character.removeEffect(character.getEffect("Piggify"));
-                        }
-                    }, (long) (0.1 * 20));
+                    character.removeEffect(character.getEffect("Piggify"));
                 }
             }
         }
@@ -203,10 +202,27 @@ public class SkillPiggify extends TargettedSkill {
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            creatures.remove(creature);
-            creature.remove();
+        public void removeFromHero(final Hero hero) {
+
+            Player player = hero.getPlayer();
+            EntityLiving el = ((CraftLivingEntity) player).getHandle();
+
+            if (el.hasEffect(MobEffectList.POISON) || el.hasEffect(MobEffectList.WITHER) || el.hasEffect(MobEffectList.HARM)) {
+                // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        PigEffect.super.removeFromHero(hero);
+                        creatures.remove(creature);
+                        creature.remove();
+                    }
+                }, (long) (0.2 * 20));
+            }
+            else {
+                super.removeFromHero(hero);
+                creatures.remove(creature);
+                creature.remove();
+            }
         }
 
         @Override

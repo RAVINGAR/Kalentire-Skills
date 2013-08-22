@@ -1,5 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import net.minecraft.server.v1_6_R2.EntityLiving;
+import net.minecraft.server.v1_6_R2.MobEffectList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -7,6 +10,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -137,14 +141,8 @@ public class SkillEntangle extends TargettedSkill {
 
             final CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
 
-            if (defenderCT.hasEffect("Root")) {
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        defenderCT.removeEffect(defenderCT.getEffect("Root"));
-                    }
-                }, (long) (0.1 * 20));
-            }
+            if (defenderCT.hasEffect("Root"))
+                defenderCT.removeEffect(defenderCT.getEffect("Root"));
         }
 
         // Below is my attempt at preventing sprinting. None of it worked as much as I would have hoped. Keeping it here for future attempts.
@@ -277,10 +275,23 @@ public class SkillEntangle extends TargettedSkill {
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
+        public void removeFromHero(final Hero hero) {
 
             Player player = hero.getPlayer();
+            EntityLiving el = ((CraftLivingEntity) player).getHandle();
+            
+            if (el.hasEffect(MobEffectList.POISON) || el.hasEffect(MobEffectList.WITHER) || el.hasEffect(MobEffectList.HARM)) {
+                // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        EntangleEffect.super.removeFromHero(hero);
+                    }
+                }, (long) (0.2 * 20));
+            }
+            else
+                super.removeFromHero(hero);
+
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
