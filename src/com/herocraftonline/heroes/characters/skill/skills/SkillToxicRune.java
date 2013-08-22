@@ -44,9 +44,9 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.Rune;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneActivationEvent;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneApplicationEvent;
+import com.herocraftonline.heroes.characters.skill.skill.runeskills.Rune;
+import com.herocraftonline.heroes.characters.skill.skill.runeskills.RuneActivationEvent;
+import com.herocraftonline.heroes.characters.skill.skill.runeskills.RuneApplicationEvent;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillToxicRune extends ActiveSkill {
