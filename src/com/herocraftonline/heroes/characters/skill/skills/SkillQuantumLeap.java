@@ -35,9 +35,9 @@ public class SkillQuantumLeap extends TargettedSkill {
         Player targetPlayer = (Player) target;
         Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
 
-        if (targetHero.hasEffect("Entangle") || targetHero.hasEffect("Stun") || targetHero.hasEffect("Piggify"))
+        if (targetHero.hasEffect("Root") || targetHero.hasEffect("Stun") || targetHero.hasEffect("Piggify"))
             return SkillResult.INVALID_TARGET;
-        else if (hero.hasEffect("Entangle") || hero.hasEffect("Stun") || hero.hasEffect("Piggify"))
+        else if (hero.hasEffect("Root") || hero.hasEffect("Stun") || hero.hasEffect("Piggify"))
             return SkillResult.INVALID_TARGET;
 
         // Set the player's location
