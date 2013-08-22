@@ -116,7 +116,7 @@ public class SkillPlagueBomb extends ActiveSkill {
 
 			if (!sheep.isDead()) {
 				sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
-				sheep.damage(20000);
+                sheep.damage(20000.0);
 
 				int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 				List<Entity> nearby = sheep.getNearbyEntities(radius, radius, radius);
