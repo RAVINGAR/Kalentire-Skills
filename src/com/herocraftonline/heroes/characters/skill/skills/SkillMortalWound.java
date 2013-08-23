@@ -150,7 +150,7 @@ public class SkillMortalWound extends TargettedSkill {
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("MortalWound")) {
                 MortalWound mEffect = (MortalWound) hero.getEffect("MortalWound");
-                event.setAmount((int) (event.getAmount() * mEffect.healMultiplier));
+                event.setAmount((event.getAmount() * mEffect.healMultiplier));
             }
         }
         

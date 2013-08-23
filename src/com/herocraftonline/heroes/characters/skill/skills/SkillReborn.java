@@ -77,10 +77,10 @@ public class SkillReborn extends PassiveSkill {
                             + (SkillConfigManager.getUseSetting(hero, skill, "health-increase", 0.0, false) * hero.getSkillLevel(skill));
                     double healthRegain = (player.getMaxHealth() * regainPercent);
                     HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, skill, hero);
-                    if (hrh.isCancelled() || hrh.getAmount() == 0) {
+                    if (hrh.isCancelled() || hrh.getAmount() == 0.0) {
                         return;
                     }
-                    event.setDamage(0);
+                    event.setDamage(0.0);
                     event.setCancelled(true);
                     hero.heal(hrh.getAmount());
                     long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false)

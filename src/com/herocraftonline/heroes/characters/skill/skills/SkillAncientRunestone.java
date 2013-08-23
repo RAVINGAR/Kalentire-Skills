@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -13,12 +14,15 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -32,6 +36,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -41,7 +46,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillAncientRunestone extends ActiveSkill {
 
-    private HashMap<Player, List<ItemStack>> soulboundRunestones;
+    private ConcurrentHashMap<Player, List<ItemStack>> soulboundRunestones;
 
     private boolean herotowns = false;
     private HeroTowns ht;
@@ -56,9 +61,9 @@ public class SkillAncientRunestone extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill ancientrunestone");
         setTypes(SkillType.TELEPORT, SkillType.ITEM, SkillType.SILENCABLE);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
 
-        soulboundRunestones = new HashMap<Player, List<ItemStack>>();
+        soulboundRunestones = new ConcurrentHashMap<Player, List<ItemStack>>();
 
         try {
             if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
@@ -206,7 +211,11 @@ public class SkillAncientRunestone extends ActiveSkill {
 
     public class SkillListener implements Listener {
 
-        public SkillListener() {}
+        private Skill skill;
+
+        public SkillListener(Skill skill) {
+            this.skill = skill;
+        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onBlockPlace(BlockPlaceEvent event) {
@@ -224,6 +233,59 @@ public class SkillAncientRunestone extends ActiveSkill {
 
             Messaging.send(event.getPlayer(), "You cannot place Runestone blocks!");
             event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onPlayerQuit(PlayerQuitEvent event) {
+            if (!(soulboundRunestones.containsKey(event.getPlayer())))
+                return;
+
+            Player player = event.getPlayer();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
+            List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
+
+            int i = 1;
+            for (ItemStack item : runestoneDataPairs) {
+                hero.setSkillSetting(skill, Integer.toString(i), item);
+                i++;
+            }
+
+            // He's saved to the file now, don't need to keep him in the map anymore.
+            soulboundRunestones.remove(player);
+
+            // Save just in case
+            plugin.getCharacterManager().saveHero(hero, true);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onPlayerJoin(PlayerJoinEvent event) throws InvalidConfigurationException {
+
+            Player player = event.getPlayer();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            ConfigurationSection skillSettings = hero.getSkillSettings("ancientrunestone");
+            if (skillSettings == null)
+                return;
+
+            try {
+                int i = 0;
+                for (String key : skillSettings.getKeys(false)) {
+                    ItemStack runeStone = (ItemStack) skillSettings.get(key);
+                    if (runeStone != null) {
+                        addRunestoneToSoulBoundList(player, runeStone);
+                        skillSettings.set(key, null);
+                        i++;
+                    }
+                }
+
+                if (i > 0) {
+                    // Save just in case
+                    plugin.getCharacterManager().saveHero(hero, true);
+                }
+            }
+            catch (NumberFormatException e) {
+                throw new InvalidConfigurationException("Expected a number.", e);
+            }
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -252,43 +314,12 @@ public class SkillAncientRunestone extends ActiveSkill {
                 // We have a runestone. Remove it from the drops, and get ready to place it back on the player
                 event.getDrops().remove(item);
 
-                // Add the runestone data to the list.
-                if (soulboundRunestones.isEmpty()) {
-                    // Initialize our item data pairs
-                    List<ItemStack> runestoneDataPairs = new ArrayList<ItemStack>();
-
-                    // Add the paired data to the list
-                    runestoneDataPairs.add(item);
-
-                    // Pair the paired data to our player
-                    soulboundRunestones.put(player, runestoneDataPairs);
-                }
-                else {
-                    // Our main map is not empty. However, we might not have an entry for the current player.
-
-                    // Check if the player is on the map
-                    if (soulboundRunestones.containsKey(player)) {
-                        // The player is on the map, and thus already has at least 1 runestone being tracked.
-                        // Let's add this new runestone to the list.
-
-                        List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
-                        runestoneDataPairs.add(item);
-                    }
-                    else {
-                        // The player is not on the map.
-                        // Let's add the runestone to the list.
-
-                        List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
-                        runestoneDataPairs.add(item);
-
-                        // Pair the paired data to our player
-                        soulboundRunestones.put(player, runestoneDataPairs);
-                    }
-                }
+                addRunestoneToSoulBoundList(player, item);
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @SuppressWarnings("deprecation")
+        @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
         private void onPlayerRespawn(PlayerRespawnEvent event) {
             if (!(soulboundRunestones.containsKey(event.getPlayer())))
                 return;
@@ -297,11 +328,49 @@ public class SkillAncientRunestone extends ActiveSkill {
             List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
 
             // Loop through the items and give them back to the player.
+            PlayerInventory inventory = player.getInventory();
             for (ItemStack item : runestoneDataPairs) {
-                player.getInventory().addItem(item);
+                inventory.addItem(item);
             }
+            player.updateInventory();
 
             soulboundRunestones.remove(player);
+        }
+
+        private void addRunestoneToSoulBoundList(Player player, ItemStack item) {
+            // Add the runestone data to the list.
+            if (soulboundRunestones.isEmpty()) {
+                // Initialize our item data pairs
+                List<ItemStack> runestoneDataPairs = new ArrayList<ItemStack>();
+
+                // Add the paired data to the list
+                runestoneDataPairs.add(item);
+
+                // Pair the paired data to our player
+                soulboundRunestones.put(player, runestoneDataPairs);
+            }
+            else {
+                // Our main map is not empty. However, we might not have an entry for the current player.
+
+                // Check if the player is on the map
+                if (soulboundRunestones.containsKey(player)) {
+                    // The player is on the map, and thus already has at least 1 runestone being tracked.
+                    // Let's add this new runestone to the list.
+
+                    List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
+                    runestoneDataPairs.add(item);
+                }
+                else {
+                    // The player is not on the map.
+                    // Let's add the runestone to the list.
+
+                    List<ItemStack> runestoneDataPairs = new ArrayList<ItemStack>();
+                    runestoneDataPairs.add(item);
+
+                    // Pair the paired data to our player
+                    soulboundRunestones.put(player, runestoneDataPairs);
+                }
+            }
         }
     }
 }

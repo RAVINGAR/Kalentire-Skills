@@ -96,7 +96,7 @@ public class SkillBackstab extends ActiveSkill {
         int ambushDamage = 0;
         for (String weaponName : weapons) {
             Material weapon = Material.getMaterial(weaponName);
-            int baseDamage = plugin.getDamageManager().getItemDamage(weapon, player).intValue();
+            int baseDamage = plugin.getDamageManager().getHighestItemDamage(weapon, player).intValue();
 
             backstabDamage = (int) (baseDamage * backstabBonus);
             ambushDamage = (int) (baseDamage * ambushBonus);
@@ -155,18 +155,23 @@ public class SkillBackstab extends ActiveSkill {
                     bonusDamage = 1 + SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.65D, false);
                 }
 
+                boolean backstabbed = true;
                 if (chance < 0)		// If below 1, backstab every time.
                     event.setDamage((event.getDamage() * bonusDamage));
                 else {
                     if (Util.nextRand() < chance)
                         event.setDamage((event.getDamage() * bonusDamage));
+                    else
+                        backstabbed = false;
                 }
 
-                Entity target = event.getEntity();
-                if (target instanceof Monster)
-                    broadcast(player.getLocation(), useText, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
-                else if (target instanceof Player)
-                    broadcast(player.getLocation(), useText, player.getDisplayName(), ((Player) target).getDisplayName());
+                if (backstabbed) {
+                    Entity target = event.getEntity();
+                    if (target instanceof Monster)
+                        broadcast(player.getLocation(), useText, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
+                    else if (target instanceof Player)
+                        broadcast(player.getLocation(), useText, player.getDisplayName(), ((Player) target).getDisplayName());
+                }
             }
         }
     }

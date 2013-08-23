@@ -52,7 +52,7 @@ public class SkillFlyingKick extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
 
