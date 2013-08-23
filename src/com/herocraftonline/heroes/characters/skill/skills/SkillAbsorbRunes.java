@@ -67,11 +67,11 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.Rune;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneActivationEvent;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneApplicationEvent;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneExpireEvent;
-import com.herocraftonline.heroes.characters.skill.skills.absorbrunes.RuneQueue;
+import com.herocraftonline.heroes.characters.skill.runeskills.Rune;
+import com.herocraftonline.heroes.characters.skill.runeskills.RuneActivationEvent;
+import com.herocraftonline.heroes.characters.skill.runeskills.RuneApplicationEvent;
+import com.herocraftonline.heroes.characters.skill.runeskills.RuneExpireEvent;
+import com.herocraftonline.heroes.characters.skill.runeskills.RuneQueue;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
