@@ -40,12 +40,9 @@ public class SkillReckoning extends ActiveSkill {
         setIdentifiers("skill reckoning");
         setTypes(SkillType.DAMAGING, SkillType.PHYSICAL, SkillType.MOVEMENT, SkillType.HARMFUL, SkillType.INTERRUPT);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     @Override

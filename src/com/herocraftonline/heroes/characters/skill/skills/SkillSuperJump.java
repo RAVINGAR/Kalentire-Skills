@@ -37,12 +37,9 @@ public class SkillSuperJump extends ActiveSkill {
         setIdentifiers("skill superjump");
         setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     @Override
