@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -15,13 +16,20 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+
 public class SkillTremor extends ActiveSkill{
-	
+
+    private boolean ncpEnabled = false;
+
 	public SkillTremor(Heroes plugin) {
         super(plugin, "Tremor");
         setDescription("You knock back all nearby enemies and deal $1 damage");
@@ -29,6 +37,10 @@ public class SkillTremor extends ActiveSkill{
         setArgumentRange(0, 0);
         setIdentifiers("skill tremor");
         setTypes(SkillType.DAMAGING, SkillType.PHYSICAL, SkillType.MOVEMENT, SkillType.HARMFUL, SkillType.INTERRUPT);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
+        }
     }
 
     @Override
@@ -78,6 +90,18 @@ public class SkillTremor extends ActiveSkill{
 	            	enemy.cancelDelayedSkill();
 	                enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
             	}
+
+                // Let's bypass the nocheat issues...
+                if (ncpEnabled) {
+                    if (target instanceof Player) {
+                        Player targetPlayer = (Player) target;
+                        if (!targetPlayer.isOp()) {
+                            long ncpDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false);
+                            NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, ncpDuration);
+                            enemy.addEffect(ncpExemptEffect);
+                        }
+                    }
+                }
             }
             
             double xDir = targetLoc.getX() - playerLoc.getX();
@@ -91,5 +115,28 @@ public class SkillTremor extends ActiveSkill{
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    private class NCPExemptionEffect extends ExpirableEffect {
+
+        public NCPExemptionEffect(Skill skill, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", duration);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.MOVING);
+        }
     }
 }
