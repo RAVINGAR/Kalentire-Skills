@@ -36,12 +36,9 @@ public class SkillBackflip extends ActiveSkill {
         setIdentifiers("skill backflip");
         setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DAMAGING);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     @Override

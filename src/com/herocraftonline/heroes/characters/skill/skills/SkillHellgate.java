@@ -80,7 +80,6 @@ public class SkillHellgate extends ActiveSkill {
 
             hero.addEffect(new HellgateEffect(this, player.getLocation()));
             teleportLocation = world.getSpawnLocation();
-            player.teleport(teleportLocation);
         }
 
         if (hero.hasParty()) {
@@ -112,6 +111,9 @@ public class SkillHellgate extends ActiveSkill {
                 }
             }
         }
+
+        player.teleport(teleportLocation);
+
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL , 0.5F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

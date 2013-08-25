@@ -167,7 +167,7 @@ public class SkillAncientRunestone extends ActiveSkill {
 
             int numUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", -1, false);
             String runestoneUsesInformation = "";
-            if (numUses > -1) 			// -1 is unlimited
+            if (numUses > -1)           // -1 is unlimited
                 runestoneUsesInformation = ChatColor.AQUA + "Uses: " + numUses + "/" + numUses;
             else
                 runestoneUsesInformation = ChatColor.AQUA + "Uses: Unlimited";
@@ -179,7 +179,7 @@ public class SkillAncientRunestone extends ActiveSkill {
             // Seperate 1 block from their current stack (if they have one)
             int actualAmount = heldItem.getAmount();
             if (actualAmount > 1) {
-                heldItem.setAmount(1);		// Remove the excess blocks.
+                heldItem.setAmount(1);      // Remove the excess blocks.
             }
 
             // Set the new metaData to the item
@@ -258,7 +258,7 @@ public class SkillAncientRunestone extends ActiveSkill {
             plugin.getCharacterManager().saveHero(hero, true);
         }
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH)
         public void onPlayerJoin(PlayerJoinEvent event) throws InvalidConfigurationException {
 
             Player player = event.getPlayer();
@@ -319,7 +319,7 @@ public class SkillAncientRunestone extends ActiveSkill {
         }
 
         @SuppressWarnings("deprecation")
-        @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR)
         private void onPlayerRespawn(PlayerRespawnEvent event) {
             if (!(soulboundRunestones.containsKey(event.getPlayer())))
                 return;
