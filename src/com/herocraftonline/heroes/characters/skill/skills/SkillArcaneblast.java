@@ -40,8 +40,10 @@ public class SkillArcaneblast extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(150));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(3.8));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(200));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.5));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
 
         return node;
     }
@@ -49,8 +51,8 @@ public class SkillArcaneblast extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 150, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 3.8, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.5, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         addSpellTarget(target, hero);
@@ -60,17 +62,19 @@ public class SkillArcaneblast extends TargettedSkill {
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		player.getLocation().add(0,3,0), 
-            		FireworkEffect.builder()
-            		.flicker(false).trail(true)
-            		.with(FireworkEffect.Type.BALL_LARGE)
-            		.withColor(Color.AQUA)
-            		.withFade(Color.PURPLE)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(target.getWorld(),
+                                 target.getLocation().add(0, 3, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(false).trail(true)
+                                               .with(FireworkEffect.Type.BALL_LARGE)
+                                               .withColor(Color.AQUA)
+                                               .withFade(Color.PURPLE)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         

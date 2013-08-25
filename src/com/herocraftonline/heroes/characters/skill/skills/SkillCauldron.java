@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 /*
  * TODO: (Updated by Andrew2060 1/17/2012)
  * - Handling for shift-click results: before commenting on whether this is doable or not I would require more knowledge as to why this was blocked in the first place
@@ -74,7 +74,7 @@ public class SkillCauldron extends PassiveSkill {
 		super(plugin, "Cauldron");
 		setDescription("You are able to use cauldrons to make cauldron recipes! Visit hc.to/cauldron for more info");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
+        setTypes(SkillType.ITEM_CREATION, SkillType.ITEM_MODIFYING);
 		setEffectTypes(EffectType.BENEFICIAL);
 		this.plugin = plugin;
 		loadCauldronRecipes();

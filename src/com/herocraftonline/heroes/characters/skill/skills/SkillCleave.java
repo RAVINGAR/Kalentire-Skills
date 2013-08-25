@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -26,16 +26,25 @@ public class SkillCleave extends TargettedSkill {
         setUsage("/skill cleave");
         setArgumentRange(0, 0);
         setIdentifiers("skill cleave");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double mult = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
+
+        return getDescription().replace("$1", mult * 100 + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set("weapons", Util.axes);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 2);
-        node.set(SkillSetting.RADIUS.node(), 3);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.RADIUS.node(), 5);
         node.set("damage-multiplier", 1.0);
+
         return node;
     }
 
@@ -66,13 +75,9 @@ public class SkillCleave extends TargettedSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
-        broadcastExecuteText(hero, target);
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        double mult = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
-        return getDescription().replace("$1", mult * 100 + "");
+        broadcastExecuteText(hero, target);
+
+        return SkillResult.NORMAL;
     }
 }

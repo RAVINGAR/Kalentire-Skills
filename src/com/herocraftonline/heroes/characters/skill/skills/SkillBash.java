@@ -38,7 +38,9 @@ public class SkillBash extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
         node.set(SkillSetting.DAMAGE.node(), 30);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.7);
 
         return node;
     }
@@ -46,7 +48,7 @@ public class SkillBash extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
-        damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false) * hero.getAttributeValue(AttributeType.STRENGTH);
+        damage += (hero.getAttributeValue(AttributeType.STRENGTH) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false));
 
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);

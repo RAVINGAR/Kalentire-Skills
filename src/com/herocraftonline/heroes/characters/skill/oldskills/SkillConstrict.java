@@ -1,4 +1,5 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+/*
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -69,3 +70,4 @@ public class SkillConstrict extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/

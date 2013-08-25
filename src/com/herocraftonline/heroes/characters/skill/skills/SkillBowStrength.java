@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,9 +23,8 @@ public class SkillBowStrength extends PassiveSkill {
         super(plugin, "BowStrength");
         setDescription("Your arrows fly much faster!");
         setArgumentRange(0, 0);
-        setTypes(SkillType.PHYSICAL, SkillType.ITEM);
-        setEffectTypes(EffectType.BENEFICIAL);
-        setEffectTypes(EffectType.PHYSICAL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_PROJECTILE);
+        setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBowListener(this), plugin);
     }
 
@@ -37,7 +36,9 @@ public class SkillBowStrength extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
+
         section.set("velocity-multiplier", 1.4);
+
         return section;
     }
 

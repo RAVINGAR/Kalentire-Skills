@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -67,7 +67,7 @@ public class SkillCamouflage extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill camouflage", "skill camo");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
-        setTypes(SkillType.ILLUSION, SkillType.BUFF, SkillType.COUNTER, SkillType.STEALTHY);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BUFFING, SkillType.STEALTHY);
 
         moveChecker = new CamoMoveChecker(this);
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);

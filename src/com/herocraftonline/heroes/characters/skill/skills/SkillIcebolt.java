@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -44,16 +45,25 @@ public class SkillIcebolt extends ActiveSkill {
         setUsage("/skill icebolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill icebolt");
-        setTypes(SkillType.ICE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 3);
-        node.set("slow-duration", 5000); // 5 seconds
-        node.set("speed-multiplier", 2);
+        node.set(SkillSetting.DAMAGE.node(), 50);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
+        node.set("slow-duration", 4000); // 5 seconds
+        node.set("speed-multiplier", 1);
         node.set("velocity-multiplier", 1.1);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
@@ -111,8 +121,11 @@ public class SkillIcebolt extends ActiveSkill {
                     return;
                 }
                 event.getEntity().setFireTicks(0);
-                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 3, false);
                 
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+                damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 10000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
                 
@@ -125,12 +138,5 @@ public class SkillIcebolt extends ActiveSkill {
                 event.setCancelled(true);
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

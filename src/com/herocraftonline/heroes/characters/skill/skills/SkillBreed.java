@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBreed extends PassiveSkill {
@@ -29,7 +28,6 @@ public class SkillBreed extends PassiveSkill {
         super(plugin, "Breed");
         setDescription("You have gained the ability to breed animals.");
         setEffectTypes(EffectType.BENEFICIAL);
-        setTypes(SkillType.KNOWLEDGE, SkillType.BUFF);
         Bukkit.getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 

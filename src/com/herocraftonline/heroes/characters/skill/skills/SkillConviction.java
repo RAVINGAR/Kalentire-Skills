@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -38,33 +38,44 @@ public class SkillConviction extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill conviction");
         setIdentifiers("skill conviction");
-        setTypes(SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.SILENCABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double bonus = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.85, false);
+
+        String formattedDamageModifier = Util.decFormat.format((1.0 - bonus) * 100.0);
+
+        return getDescription().replace("$1", formattedDamageModifier);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("damage-modifier", 0.75);
+
+        node.set("damage-reduction", 0.85);
         node.set(SkillSetting.RADIUS.node(), 10);
-        node.set(SkillSetting.APPLY_TEXT.node(), "You are filled with renewed convinction!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "Your sense of convinction begins to fade!");
-        node.set(SkillSetting.DURATION.node(), 600000); //10 minutes
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "You are filled with renewed convinction!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "Your sense of convinction begins to fade!");
+        node.set(SkillSetting.DURATION.node(), 180000);
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You are filled with renewed convinction!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Your sense of convinction begins to fade!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "You are filled with renewed convinction!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "Your sense of convinction begins to fade!");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.75, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
+        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.85, false);
 
         ConvictionEffect effect = new ConvictionEffect(this, duration, damageModifier, applyText, expireText);
         if (!hero.hasParty()) {
@@ -95,9 +106,11 @@ public class SkillConviction extends ActiveSkill {
                 pHero.addEffect(effect);
             }
         }
+
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.6F, 1.0F);
         broadcastExecuteText(hero);
+
         return SkillResult.NORMAL;
     }
 
@@ -161,11 +174,4 @@ public class SkillConviction extends ActiveSkill {
         	}
         }
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double bonus = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.75, false);
-        return getDescription().replace("$1", Util.stringDouble((1D - bonus) * 100));
-    }
-
 }

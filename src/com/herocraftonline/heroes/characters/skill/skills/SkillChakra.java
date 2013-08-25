@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -30,15 +31,25 @@ public class SkillChakra extends ActiveSkill {
         setUsage("/skill chakra");
         setArgumentRange(0, 0);
         setIdentifiers("skill chakra");
-        setTypes(SkillType.SILENCABLE, SkillType.HEAL, SkillType.LIGHT);
+        setTypes(SkillType.SILENCABLE, SkillType.HEALING, SkillType.DISPELLING, SkillType.ABILITY_PROPERTY_LIGHT);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int amount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
+        return getDescription().replace("$1", amount + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("heal-amount", 10);
-        node.set(SkillSetting.RADIUS.node(), 7);
-        node.set("max-removals", -1);
+
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.125);
+        node.set(SkillSetting.HEALTH.node(), 100);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.5);
+        node.set("max-removals", 2);
+
         return node;
     }
 
@@ -46,10 +57,15 @@ public class SkillChakra extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location castLoc = player.getLocation().clone();
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.125, false);
+        radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
         int radiusSquared = radius * radius;
+
         int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
+
         if (hero.hasParty()) {
             for (Hero p : hero.getParty().getMembers()) {
                 if (!castLoc.getWorld().equals(p.getPlayer().getWorld())) {
@@ -60,10 +76,11 @@ public class SkillChakra extends ActiveSkill {
                 }
             }
         }
-        else {
+        else
             healDispel(hero, removals, healAmount, hero);
-        }
+
         broadcastExecuteText(hero);
+
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
@@ -74,7 +91,9 @@ public class SkillChakra extends ActiveSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+
+        player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
@@ -104,11 +123,4 @@ public class SkillChakra extends ActiveSkill {
             }
         }
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
-        return getDescription().replace("$1", amount + "");
-    }
-
 }

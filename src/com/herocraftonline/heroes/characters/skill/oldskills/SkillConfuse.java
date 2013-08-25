@@ -1,4 +1,5 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+/*
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.Random;
 
@@ -135,3 +136,4 @@ public class SkillConfuse extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/

@@ -1,4 +1,5 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+/*
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.List;
 
@@ -103,3 +104,4 @@ public class SkillConsume extends ActiveSkill {
         return getDescription();
     }
 }
+*/

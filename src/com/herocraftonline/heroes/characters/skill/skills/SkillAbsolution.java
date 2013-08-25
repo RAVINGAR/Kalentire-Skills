@@ -35,9 +35,11 @@ public class SkillAbsolution extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
         node.set(SkillSetting.HEALTH.node(), 100);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.5);
+
         return node;
     }
 

@@ -1,4 +1,5 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+/*
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,3 +136,4 @@ public class SkillBoltstorm extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "");
     }
 }
+*/
