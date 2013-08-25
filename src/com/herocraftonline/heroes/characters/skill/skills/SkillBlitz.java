@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -22,17 +23,29 @@ public class SkillBlitz extends TargettedSkill {
     
     public SkillBlitz(Heroes plugin) {
         super(plugin, "Blitz");
-        setDescription("Your skills in ninjutsu cause $1 lightning damage to your target.");
+        setDescription("Strike your target with a blitz of lightning, deal $1 damage to the target.");
         setUsage("/skill blitz");
         setArgumentRange(0, 0);
         setIdentifiers("skill blitz");
-        setTypes(SkillType.LIGHTNING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 180, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        return getDescription().replace("$1", damage + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 4);
+
+        node.set(SkillSetting.DAMAGE.node(), 180);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2);
+
         return node;
     }
 
@@ -40,13 +53,16 @@ public class SkillBlitz extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 180, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2, false);
+        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
         target.getWorld().strikeLightningEffect(target.getLocation());
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
-        
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         broadcastExecuteText(hero, target);
+
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), 
@@ -63,12 +79,7 @@ public class SkillBlitz extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
-        return getDescription().replace("$1", damage + "");
+        return SkillResult.NORMAL;
     }
 }
