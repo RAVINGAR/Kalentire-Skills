@@ -18,7 +18,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.unfinishedskills.SkillShuriken;
 import com.herocraftonline.heroes.util.Messaging;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
@@ -34,7 +36,7 @@ public class SkillBackflip extends ActiveSkill {
         setUsage("/skill backflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill backflip");
-        setTypes(SkillType.MOVEMENT, SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DAMAGING);
+        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DAMAGING);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;
@@ -43,14 +45,13 @@ public class SkillBackflip extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
-        String desc = getDescription();
+        String description = getDescription();
 
         boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
         if (throwShuriken)
-            desc += "If you are able to currently throw Shuriken, you will do so as well.";
+            description += "If you are able to currently throw Shuriken, you will do so as well.";
 
-        return desc;
+        return description;
     }
 
     @Override
@@ -58,8 +59,9 @@ public class SkillBackflip extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("no-air-backflip", false);
-        node.set("horizontal-power", Double.valueOf(1.0));
-        node.set("vertical-power", Double.valueOf(1.0));
+        node.set("horizontal-power", Double.valueOf(0.5));
+        node.set("vertical-power", Double.valueOf(0.5));
+        node.set(SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY.node(), Double.valueOf(0.0125));
         node.set("ncp-exemption-duration", Integer.valueOf(1000));
         node.set("throw-shuriken", true);
         node.set("use-backflip-shuriken-values", false);
@@ -98,7 +100,10 @@ public class SkillBackflip extends ActiveSkill {
         }
         float multiplier = (90f + pitch) / 50f;
 
+        double velocityIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.0125, false);
+
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false);
+        vPower += velocityIncrease;
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -108,6 +113,7 @@ public class SkillBackflip extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.0, false);
+        hPower += velocityIncrease;
         velocity.multiply(new Vector(-hPower, 1, -hPower));
 
         // Backflip!
@@ -146,7 +152,7 @@ public class SkillBackflip extends ActiveSkill {
     private class NCPExemptionEffect extends ExpirableEffect {
 
         public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect", duration);
+            super(skill, "NCPExemptionEffect_MOVING", duration);
         }
 
         @Override

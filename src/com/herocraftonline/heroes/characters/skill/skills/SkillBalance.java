@@ -26,7 +26,7 @@ public class SkillBalance extends ActiveSkill {
         setUsage("/skill balance");
         setIdentifiers("skill balance");
         setArgumentRange(0, 0);
-        setTypes(SkillType.SILENCABLE, SkillType.HEAL);
+        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override
@@ -39,10 +39,11 @@ public class SkillBalance extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
         node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(60000));
-        return node;
 
+        return node;
     }
 
     @Override

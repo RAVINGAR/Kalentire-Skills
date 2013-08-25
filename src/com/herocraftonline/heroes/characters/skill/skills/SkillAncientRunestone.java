@@ -60,7 +60,7 @@ public class SkillAncientRunestone extends ActiveSkill {
         setUsage("/skill ancientrunestone");
         setArgumentRange(0, 0);
         setIdentifiers("skill ancientrunestone");
-        setTypes(SkillType.TELEPORT, SkillType.ITEM, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
 
         soulboundRunestones = new ConcurrentHashMap<Player, List<ItemStack>>();

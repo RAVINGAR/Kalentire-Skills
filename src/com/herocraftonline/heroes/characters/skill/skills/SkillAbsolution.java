@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -23,18 +24,20 @@ public class SkillAbsolution extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
-        setDescription("You restore $1 health to your target and negate Dark effects.");
+        setDescription("You restore $1 health to your target and remove Dark effects.");
         setUsage("/skill absolution <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill absolution");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALTH.node(), 10);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 25);
+
+        node.set(SkillSetting.HEALTH.node(), 100);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.5);
         return node;
     }
 
@@ -46,9 +49,11 @@ public class SkillAbsolution extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
-        double targetHealth = target.getHealth();
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 100, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.5, false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
+        double targetHealth = target.getHealth();
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
@@ -58,7 +63,7 @@ public class SkillAbsolution extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, hpPlus, this, hero);
+        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
             Messaging.send(player, "Unable to heal the target at this time!");

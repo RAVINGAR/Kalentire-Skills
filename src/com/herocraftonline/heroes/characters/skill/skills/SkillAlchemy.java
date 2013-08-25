@@ -24,7 +24,7 @@ public class SkillAlchemy extends PassiveSkill {
         super(plugin, "Alchemy");
         setDescription("You are able to craft potions!");
         setArgumentRange(0, 0);
-        setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
+        setTypes(SkillType.ITEM_CREATION);
         setEffectTypes(EffectType.BENEFICIAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }

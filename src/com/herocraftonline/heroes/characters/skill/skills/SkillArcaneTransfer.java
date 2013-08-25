@@ -29,12 +29,13 @@ public class SkillArcaneTransfer extends TargettedSkill {
         setUsage("/skill arcanetransfer");
         setArgumentRange(0, 0);
         setIdentifiers("skill arcanetransfer");
-        setTypes(SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-transfers", 2, false);
+
         return getDescription().replace("$1", removals + "");
     }
 

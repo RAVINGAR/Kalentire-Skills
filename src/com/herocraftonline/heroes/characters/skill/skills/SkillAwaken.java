@@ -21,11 +21,16 @@ public class SkillAwaken extends ActiveSkill {
 
     public SkillAwaken(Heroes plugin) {
         super(plugin, "Awaken");
-        setDescription("Awakens your target, teleporting them to their place of death.");
+        setDescription("Sacrifice a portion of your health to awaken your target, bringing them back to life.");
         setUsage("/skill awaken <target>");
         setArgumentRange(1, 1);
         setIdentifiers("skill awaken");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE);
+        setTypes(SkillType.RESURRECTING, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
@@ -75,10 +80,5 @@ public class SkillAwaken extends ActiveSkill {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

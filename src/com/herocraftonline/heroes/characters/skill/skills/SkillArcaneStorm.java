@@ -32,7 +32,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 		setIdentifiers("skill ArcaneStorm");
 		setUsage("/skill ArcaneStorm");
 		setArgumentRange(0,0);
-        setTypes(SkillType.DAMAGING, SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
 		setDescription("On use, user is rooted into place for 5 seconds. " +
 				"After the 5 seconds, the user unleashes a hail of devastating magical artillery in the surrounding area");
 	}

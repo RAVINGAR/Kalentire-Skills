@@ -39,11 +39,11 @@ public class SkillAimedShot extends TargettedSkill {
         super(plugin, "AimedShot");
         setDescription("Hone your aim in on a target. Once completed, your next next shot fired within $1 seconds will land "
                 + ChatColor.BOLD + ChatColor.ITALIC+ "without question" + ChatColor.RESET
-                + ChatColor.GOLD + ". That shot will deal up to $2 damage to the target.");
+                + ChatColor.GOLD + ". That shot is armor piercing and will deal up to $2 damage to the target.");
         setUsage("/skill aimedshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill aimedshot");
-        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DAMAGING, SkillType.STEALTHY);
+        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.STEALTHY);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -51,6 +51,8 @@ public class SkillAimedShot extends TargettedSkill {
 
         double gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 4000, false) / 1000;
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
+        double damagePerAgility = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
+        damage += (int) damagePerAgility;
 
         return getDescription().replace("$1", gracePeriod + "").replace("$2", damage + "");
     }
@@ -58,7 +60,8 @@ public class SkillAimedShot extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(250));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(125));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(3.1));
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(40));
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(3000));
         node.set("grace-period", Integer.valueOf(2000));
@@ -150,13 +153,16 @@ public class SkillAimedShot extends TargettedSkill {
                 target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
 
                 // Lower damage of shot based on how drawn back the bow is.
-                final double damage = event.getForce() * SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 250, false);
+                int tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 125, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
+                tempDamage += (int) damageIncrease;
 
+                final double damage = event.getForce() * tempDamage;
                 // Damage the target, but add a delay based on the distance from the target.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);
-                        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+                        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);  // Magic so it is armor piercing.
                     }
                 }, travelTime * 20);	// make the damage happen 0.055 seconds later per block.
             }

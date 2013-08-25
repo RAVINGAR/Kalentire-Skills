@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -38,37 +39,50 @@ public class SkillBackstab extends ActiveSkill {
         setUsage("/skill backstab");
         setArgumentRange(0, 0);
         setIdentifiers("skill backstab");
-        setTypes(SkillType.KNOWLEDGE, SkillType.PHYSICAL, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.UNBINDABLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroesListener(this), plugin);
     }
 
     public String getDescription(Hero hero) {
+
+        // First get their agility
+        double agilityModifier = hero.getAttributeValue(AttributeType.AGILITY) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.02125D, false);
+
         double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", -1D, false);
-        int backstabPercent = (int) (SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.65D, false) * 100);
+        double backstabBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.65D, false);
+
+        // Modify backstab
+        backstabBonus += agilityModifier;
+        int backstabModifier = (int) backstabBonus * 100;
 
         String backstabString = "deal";
         if (backstabChance > -1)
-            backstabString = "have a " + backstabPercent + "% to deal";
+            backstabString = "have a " + backstabChance + "% chance to deal";
 
         double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", -1D, false);
-        int ambushPercent = (int) (SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.2D, false) * 100);
+        double ambushBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.325D, false);
+
+        // Modify ambush
+        ambushBonus += agilityModifier;
+        int ambushModifier = (int) ambushBonus * 100;
 
         String ambushString = "deal";
         if (ambushChance > -1)
-            backstabString = "have a " + ambushPercent + "% to deal";
+            backstabString = "have a " + ambushChance + "% chance to deal";
 
-        return getDescription().replace("$1", backstabString + "").replace("$2", backstabPercent + "").replace("$3", ambushString + "").replace("$4", ambushPercent + "");
+        return getDescription().replace("$1", backstabString + "").replace("$2", backstabModifier + "").replace("$3", ambushString + "").replace("$4", ambushModifier + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("weapons", Util.swords);
-        node.set("backstab-bonus", Double.valueOf(0.65D));
+        node.set("backstab-bonus", Double.valueOf(0.85D));
         node.set("backstab-chance", Double.valueOf(-1D));
-        node.set("ambush-bonus", Double.valueOf(1.2D));
+        node.set("ambush-bonus", Double.valueOf(1.8D));
         node.set("ambush-chance", Double.valueOf(-1D));
+        node.set(SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY.node(), Double.valueOf(0.02125D));
         node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
         node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% backstabbed %target%!");
 
@@ -84,13 +98,16 @@ public class SkillBackstab extends ActiveSkill {
         Player player = hero.getPlayer();
 
         Messaging.send(player, ChatColor.RED + "----------[ " + ChatColor.WHITE + "Backstab Damage " + ChatColor.RED + "]----------");
-        //Messaging.send(player, ""+ChatColor.WHITE+"Backstab is a passive skill.");
-        //Messaging.send(player, ""+ChatColor.WHITE+"Using this ability displays weapon damage when backstabbing.");
 
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
         double backstabBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.65D, false);
-        double ambushBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.2D, false);
+        double ambushBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.325D, false);
+
+        // Modify the damage modifier based on agility.
+        double agilityModifier = hero.getAttributeValue(AttributeType.AGILITY) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.02125D, false);
+        backstabBonus += agilityModifier;
+        ambushBonus += agilityModifier;
 
         int backstabDamage = 0;
         int ambushDamage = 0;
@@ -110,7 +127,8 @@ public class SkillBackstab extends ActiveSkill {
     }
 
     private void displayWeaponDamage(Player player, String weaponName, int backstabDamage, int ambushDamage) {
-        Messaging.send(player, ChatColor.GREEN + weaponName + ": " + "" + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + backstabDamage
+        Messaging.send(player, ChatColor.GREEN + weaponName + ": "
+                + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + backstabDamage
                 + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + ambushDamage);
     }
 

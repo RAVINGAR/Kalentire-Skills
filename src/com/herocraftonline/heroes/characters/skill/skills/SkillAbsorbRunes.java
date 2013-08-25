@@ -67,6 +67,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runeskills.Rune;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneApplicationEvent;
@@ -85,6 +86,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         setDescription("Activate to absorb your weapon's imbued Runes and regain a portion of the mana spent at a $1% rate.");
         setUsage("/skill absorbrunes");
         setIdentifiers("skill absorbrunes");
+        setTypes(SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL);
         setArgumentRange(0, 0);
 
         // Start up the listener for Rune events

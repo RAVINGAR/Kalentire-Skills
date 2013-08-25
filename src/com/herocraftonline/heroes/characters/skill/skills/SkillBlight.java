@@ -10,6 +10,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -21,6 +23,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlight extends TargettedSkill {
     // This is for Firework Effects
@@ -34,19 +37,37 @@ public class SkillBlight extends TargettedSkill {
         setDescription("You disease your target, dealing $1 dark damage over $2 seconds, enemies that get too close will also be damaged.");
         setUsage("/skill blight");
         setArgumentRange(0, 0);
-        setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         setIdentifiers("skill blight");
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 15, false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.4, false);
+        tickDamage += tickDamageIncrease;
+
+        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 21000);
-        node.set(SkillSetting.PERIOD.node(), 3000);
-        node.set("tick-damage", 1);
+
+        node.set(SkillSetting.DURATION.node(), 17500);
+        node.set(SkillSetting.PERIOD.node(), 2500);
+        node.set("tick-damage", Double.valueOf(15));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.4));
         node.set(SkillSetting.RADIUS.node(), 4);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% begins to radiate a cloud of disease!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer diseased!");
+
         return node;
     }
 
@@ -62,11 +83,18 @@ public class SkillBlight extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new BlightEffect(this, duration, period, tickDamage, player));
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 15, false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.4, false);
+        tickDamage += tickDamageIncrease;
+
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        targetCT.addEffect(new BlightEffect(this, duration, period, tickDamage, player));
+
         broadcastExecuteText(hero, target);
+
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), 
@@ -83,6 +111,7 @@ public class SkillBlight extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return SkillResult.NORMAL;
     }
 
@@ -148,21 +177,14 @@ public class SkillBlight extends TargettedSkill {
                 if (!damageCheck(getApplier(), lTarget)) {
                     continue;
                 }
+
                 if (plugin.getCharacterManager().getCharacter(lTarget).hasEffect("Blight")) {
                     continue;
                 }
+
                 addSpellTarget(target, applyHero);
                 Skill.damageEntity((LivingEntity) target, applier.getPlayer(), tickDamage, DamageCause.MAGIC);
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        damage = damage * duration / period;
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

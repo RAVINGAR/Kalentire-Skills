@@ -25,8 +25,8 @@ public class SkillBlind extends TargettedSkill {
         setDescription("You blind the target for $1 seconds.");
         setUsage("/skill blind");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill blind" });
-        setTypes(new SkillType[] { SkillType.DEBUFF, SkillType.ILLUSION, SkillType.HARMFUL, SkillType.DAMAGING });
+        setIdentifiers("skill blind");
+        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
     }
 
     public String getDescription(Hero hero) {
@@ -41,6 +41,7 @@ public class SkillBlind extends TargettedSkill {
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!");
+
         return node;
     }
 
