@@ -1,6 +1,5 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
 /*
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;

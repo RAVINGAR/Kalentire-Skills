@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -26,11 +26,10 @@ public class SkillBloodRitual extends TargettedSkill {
         setUsage("/skill bloodritual <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bloodritual");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.DARK);
+        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     public String getDescription(Hero hero) {
-
         int healthMultiplier = (int) (SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false) * 100);
 
         return getDescription().replace("$1", healthMultiplier + "");
