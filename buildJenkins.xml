@@ -5,8 +5,6 @@
     <property name="dir.dist" value="build" />
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills/" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills/" />
-    <property name="dir.dist.runes" value="${ant.project.name}/runes/" />
-    <property name="dir.bin.runes" value="com/herocraftonline/heroes/characters/skill/skills/absorbrunes" />
 	<property name="heroes" value="../../Heroes-Attributes/workspace/target/" />
 	<property name="heroeslibs" value="../../Heroes-Attributes/workspace/libs/" />
 
