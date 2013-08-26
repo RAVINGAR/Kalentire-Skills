@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -31,7 +32,7 @@ public class SkillBackflip extends ActiveSkill {
 
     public SkillBackflip(Heroes plugin) {
         super(plugin, "Backflip");
-        setDescription("Do a backflip into the air.");
+        setDescription("Do a backflip into the air. Distance traveled is affected by your Agility.");
         setUsage("/skill backflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill backflip");
@@ -59,15 +60,9 @@ public class SkillBackflip extends ActiveSkill {
 
         node.set("no-air-backflip", false);
         node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("vertical-power", Double.valueOf(0.5));
+        node.set("vertical-power", Double.valueOf(1.0));
         node.set(SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY.node(), Double.valueOf(0.0125));
         node.set("ncp-exemption-duration", Integer.valueOf(1000));
-        node.set("throw-shuriken", true);
-        node.set("use-backflip-shuriken-values", false);
-        node.set("num-shuriken", Integer.valueOf(3));
-        node.set("degrees", Double.valueOf(15));
-        node.set("interval", Double.valueOf(0.5));
-        node.set("velocity-multiplier", Double.valueOf(3.0));
 
         return node;
     }
@@ -99,10 +94,7 @@ public class SkillBackflip extends ActiveSkill {
         }
         float multiplier = (90f + pitch) / 50f;
 
-        double velocityIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.0125, false);
-
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false);
-        vPower += velocityIncrease;
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -111,9 +103,10 @@ public class SkillBackflip extends ActiveSkill {
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.0, false);
-        hPower += velocityIncrease;
-        velocity.multiply(new Vector(-hPower, 1, -hPower));
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double velocityIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.0125, false);
+        hPower += (hero.getAttributeValue(AttributeType.AGILITY) * velocityIncrease);
+        velocity.multiply(new Vector(-hPower, vPower, -hPower));
 
         // Backflip!
         player.setVelocity(velocity);
@@ -125,24 +118,12 @@ public class SkillBackflip extends ActiveSkill {
             if (hero.canUseSkill("Shuriken")) {
                 SkillShuriken shurikenSkill = (SkillShuriken) plugin.getSkillManager().getSkill("Shuriken");
 
-                if (shurikenSkill != null) {
-                    boolean useBackflipShurikenValues = SkillConfigManager.getUseSetting(hero, this, "use-backflip-shuriken-values", false);
-                    if (useBackflipShurikenValues) {
-                        int numShuriken = SkillConfigManager.getUseSetting(hero, this, "num-shuriken", 3, false);
-
-                        double degrees = SkillConfigManager.getUseSetting(hero, this, "degrees", 10, false);
-                        double interval = SkillConfigManager.getUseSetting(hero, this, "interval", 0.2, false);
-                        double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 3.0, false);
-
-                        shurikenSkill.shurikenToss(player, numShuriken, degrees, interval, velocityMultiplier);
-                    }
-                    else
-                        shurikenSkill.shurikenToss(player);
-                }
+                if (shurikenSkill != null)
+                    shurikenSkill.shurikenToss(player);
             }
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SKELETON_IDLE, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 1.0F, 1.0F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;

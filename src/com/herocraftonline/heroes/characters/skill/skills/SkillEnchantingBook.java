@@ -1,8 +1,9 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -39,7 +40,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 		setArgumentRange(0,0);
 		executors = new LinkedHashMap<Player, PlayerExecuteData>(100);
 		setIdentifiers("skill enchantingbook");
-		setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.TELEPORT);
+        setTypes(SkillType.SILENCABLE);
 	}
 
 	@SuppressWarnings("deprecation")

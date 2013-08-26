@@ -40,10 +40,10 @@ public class SkillArcaneblast extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(200));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.5));
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(200));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.5));
 
         return node;
     }

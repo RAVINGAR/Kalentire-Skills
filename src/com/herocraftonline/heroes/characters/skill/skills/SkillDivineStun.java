@@ -10,20 +10,22 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Util;
 
-public class SkillBash extends TargettedSkill {
+public class SkillDivineStun extends TargettedSkill {
 
-    public SkillBash(Heroes plugin) {
-        super(plugin, "Bash");
-        setDescription("You deal $1 physical damage to your target and interrupt any warmup ability they are currently using.");
-        setUsage("/skill bash");
+    public SkillDivineStun(Heroes plugin) {
+        super(plugin, "DivineStun");
+        setDescription("You stun your target for $1 seconds, preventing them from using skills or moving and dealing $2 damage");
+        setUsage("/skill divinestun");
         setArgumentRange(0, 0);
-        setIdentifiers("skill bash");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
+        setIdentifiers("skill divinestun");
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.DISABLING, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 
     @Override
@@ -32,16 +34,25 @@ public class SkillBash extends TargettedSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        return getDescription().replace("$1", damage + "");
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", damage + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
-        node.set(SkillSetting.DAMAGE.node(), 30);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.DURATION.node(), 1500);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 30);
+        node.set(SkillSetting.DAMAGE.node(), 31);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.7);
+        node.set(SkillSetting.DELAY.node(), 500);
 
         return node;
     }
@@ -50,6 +61,10 @@ public class SkillBash extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
@@ -57,8 +72,8 @@ public class SkillBash extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.0F);
-        broadcastExecuteText(hero, target);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, duration));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

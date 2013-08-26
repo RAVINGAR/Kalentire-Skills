@@ -66,6 +66,7 @@ public class SkillBeguile extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set(SkillSetting.PERIOD.node(), 1000);
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 125);

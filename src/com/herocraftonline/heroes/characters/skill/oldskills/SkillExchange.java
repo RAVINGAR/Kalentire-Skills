@@ -1,12 +1,7 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import static com.herocraftonline.heroes.Heroes.econ;
 import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
-import static com.herocraftonline.heroes.characters.skill.SkillType.HEAL;
-import static com.herocraftonline.heroes.characters.skill.SkillType.ITEM;
-import static com.herocraftonline.heroes.characters.skill.SkillType.LIGHT;
-import static com.herocraftonline.heroes.characters.skill.SkillType.MANA;
-import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCABLE;
 import static org.bukkit.ChatColor.BOLD;
 import static org.bukkit.ChatColor.GOLD;
 import static org.bukkit.ChatColor.GRAY;
@@ -25,6 +20,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillExchange extends ActiveSkill{
 	private static final String base="base-coin-per-ingot",loss="coin-loss-per-level";
@@ -35,7 +31,7 @@ public class SkillExchange extends ActiveSkill{
 		setUsage("/skill exchange [amount]");
 		setIdentifiers("skill exchange");
 		setArgumentRange(0, 1);
-		setTypes(HEAL,LIGHT,MANA,SILENCABLE,ITEM);
+        setTypes(SkillType.UNBINDABLE);
 	}
 	
 	private static String boldGold(String string){

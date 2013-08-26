@@ -25,6 +25,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillIcebolt extends ActiveSkill {
 
@@ -53,13 +54,20 @@ public class SkillIcebolt extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
+
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.DAMAGE.node(), 50);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
         node.set("slow-duration", 4000); // 5 seconds
@@ -67,9 +75,10 @@ public class SkillIcebolt extends ActiveSkill {
         node.set("velocity-multiplier", 1.1);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
+
         return node;
-        
     }
+
     @Override
     public void init() {
         super.init();

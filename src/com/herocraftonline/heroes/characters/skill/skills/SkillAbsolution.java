@@ -32,13 +32,22 @@ public class SkillAbsolution extends TargettedSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
+        healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
+        return getDescription().replace("$1", healing + "");
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 5);
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
-        node.set(SkillSetting.HEALTH.node(), 100);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.5);
+        node.set(SkillSetting.HEALING.node(), 125);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0);
 
         return node;
     }
@@ -51,8 +60,8 @@ public class SkillAbsolution extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 100, false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.5, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 125, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double targetHealth = target.getHealth();
@@ -97,11 +106,5 @@ public class SkillAbsolution extends TargettedSkill {
             e.printStackTrace();
         }
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
-        return getDescription().replace("$1", health + "");
     }
 }

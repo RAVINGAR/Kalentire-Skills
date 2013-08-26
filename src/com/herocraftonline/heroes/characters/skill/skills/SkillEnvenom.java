@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -39,11 +40,11 @@ public class SkillEnvenom extends ActiveSkill {
 
     public SkillEnvenom(Heroes plugin) {
         super(plugin, "Envenom");
-        setDescription("Apply a poison to a melee weapon$1. Your next $5 then poison them, causing $2 damage over $3 seconds. If you do not attack a target for $4 seconds, your weapon loses the effect. $1");
+        setDescription("Apply a poison to your melee weapon$1. Your next $5 will poison your target, causing $2 damage over $3 seconds. If you do not use the poison within $4 seconds, it expires.");
         setUsage("/skill envenom");
         setArgumentRange(0, 0);
         setIdentifiers("skill envenom");
-        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DAMAGING, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_POISON, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.BUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
@@ -51,26 +52,30 @@ public class SkillEnvenom extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        double buffDuration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 600000, false) / 1000.0;
-        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 19, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false) / 1000.0;
-        double duration = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        int buffDuration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 20000, false);
+        int poisonDuration = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false);
 
-        // calculate actual total damage
-        damage = (int) ((duration / period) * damage);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 14, false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1.25, false);
+        tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         boolean rangedAttacksEnabled = SkillConfigManager.getUseSetting(hero, this, "ranged-attacks-enabled", false);
 
         String rangedEnabledString = "";
         if (rangedAttacksEnabled)
-            rangedEnabledString = " or arrow";
+            rangedEnabledString = " and arrows";
 
         String numAttacksString = "attack";
         int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", Integer.valueOf(1), false);
         if (numAttacks > 1)
             numAttacksString = numAttacks + " attacks";
 
-        return getDescription().replace("$1", rangedEnabledString + "").replace("$5", numAttacksString + "").replace("$2", damage + "").replace("$3", duration + "").replace("$4", buffDuration + "");
+        String formattedDamage = Util.decFormat.format((tickDamage * ((double) poisonDuration / (double) period)));
+        String formattedBuffDuration = Util.decFormat.format(buffDuration / 1000.0);
+        String formattedPoisonDuration = Util.decFormat.format(poisonDuration / 1000.0);
+
+        return getDescription().replace("$1", rangedEnabledString + "").replace("$5", numAttacksString + "").replace("$2", formattedDamage).replace("$3", formattedPoisonDuration).replace("$4", formattedBuffDuration);
     }
 
     @Override
@@ -84,8 +89,8 @@ public class SkillEnvenom extends ActiveSkill {
         node.set("attacks", Integer.valueOf(1));
         node.set("ranged-attacks-enabled", Boolean.valueOf(false));
 
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is poisoned!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the poison!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% is poisoned!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has recovered from the poison!");
         return node;
     }
 
@@ -93,13 +98,13 @@ public class SkillEnvenom extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%target% is poisoned!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%target% has recovered from the poison!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", Integer.valueOf(6000), false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", Integer.valueOf(20000), false);
         int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", Integer.valueOf(1), false);
         boolean rangedAttacksEnabled = SkillConfigManager.getUseSetting(hero, this, "ranged-attacks-enabled", false);
 
@@ -156,35 +161,28 @@ public class SkillEnvenom extends ActiveSkill {
                 return;
             }
 
-            long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", Integer.valueOf(18000), false);
-            long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, Integer.valueOf(6000), false);
-            int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 25, false);
-
-            EnvenomPoisonEffect epEffect = new EnvenomPoisonEffect(skill, period, duration, tickDamage, player);
-
             Entity target = event.getEntity();
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
 
-            if (arrow == true && rangedAttacksEnabled) {
-                // We're dealing with a ranged attack, and ranged attacks are enabled.
-                targetCT.addEffect(epEffect);
-                checkBuff(hero);
-
-                return;
-            }
-            else {
+            if (arrow != true) {
                 // Not dealing with a ranged attack. Check to see if they're wielding a proper weapon.
 
                 ItemStack item = player.getItemInHand();
                 if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                     return;
                 }
-
-                targetCT.addEffect(epEffect);
-                checkBuff(hero);
-
-                return;
             }
+
+            int period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, false);
+            int poisonDuration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
+
+            int tickDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 14, false);
+            double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1.25, false);
+            tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+            EnvenomPoisonEffect epEffect = new EnvenomPoisonEffect(skill, period, poisonDuration, tickDamage, player);
+            targetCT.addEffect(epEffect);
+            checkBuff(hero);
         }
 
         private void checkBuff(Hero hero) {

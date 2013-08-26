@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -27,13 +27,16 @@ public class SkillDivineWord extends TargettedSkill {
         setUsage("/skill divineword");
         setArgumentRange(0, 0);
         setIdentifiers("skill divineword");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALTH.node(), 5);
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set(SkillSetting.HEALING.node(), 5);
+
         return node;
     }
 

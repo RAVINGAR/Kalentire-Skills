@@ -1,10 +1,9 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import net.minecraft.server.v1_6_R2.EntityLiving;
 import net.minecraft.server.v1_6_R2.MobEffectList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -45,10 +44,10 @@ public class SkillEntangle extends TargettedSkill {
     public SkillEntangle(Heroes plugin) {
         // Heroes stuff
         super(plugin, "Entangle");
-        setDescription("Deals $1 damage and roots your target in place for $2 seconds. The effect breaks when the target takes damage.");
+        setDescription("Roots your target in place for $2 seconds. The effect breaks when the target takes damage.");
         setUsage("/skill entangle");
         setIdentifiers("skill entangle");
-        setTypes(SkillType.HARMFUL, SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.EARTH, SkillType.MOVEMENT);
+        setTypes(SkillType.AGGRESSIVE, SkillType.MOVEMENT_PREVENTING, SkillType.DEBUFFING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_EARTH);
         setArgumentRange(0, 0);
 
         // Start up the listener for root skill usage
@@ -57,22 +56,21 @@ public class SkillEntangle extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false) / 1000.0);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
+        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), 1);
         node.set(SkillSetting.PERIOD.node(), 100);
-        node.set(SkillSetting.DURATION.node(), 4000);
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% used %skill% on %target%!");
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been rooted!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has broken free from the root!");
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% used %skill% on %target%!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has been rooted!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has broken free from the root!");
 
         return node;
     }
@@ -80,16 +78,12 @@ public class SkillEntangle extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been rooted!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has broken free from the root!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%target% has been rooted!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%target% has broken free from the root!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-
-        //deal  damage
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
         // Broadcast use text
         broadcastExecuteText(hero, target);

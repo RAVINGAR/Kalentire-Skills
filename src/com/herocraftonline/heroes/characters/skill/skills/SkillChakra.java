@@ -46,7 +46,7 @@ public class SkillChakra extends ActiveSkill {
 
         node.set(SkillSetting.RADIUS.node(), 5);
         node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.125);
-        node.set(SkillSetting.HEALTH.node(), 100);
+        node.set(SkillSetting.HEALING.node(), 100);
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.5);
         node.set("max-removals", 2);
 
@@ -63,7 +63,10 @@ public class SkillChakra extends ActiveSkill {
         radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
         int radiusSquared = radius * radius;
 
-        int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 125, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
 
         if (hero.hasParty()) {
@@ -72,12 +75,12 @@ public class SkillChakra extends ActiveSkill {
                     continue;
                 }
                 if (castLoc.distanceSquared(p.getPlayer().getLocation()) <= radiusSquared) {
-                    healDispel(p, removals, healAmount, hero);
+                    healDispel(p, removals, healing, hero);
                 }
             }
         }
         else
-            healDispel(hero, removals, healAmount, hero);
+            healDispel(hero, removals, healing, hero);
 
         broadcastExecuteText(hero);
 

@@ -32,10 +32,22 @@ public class SkillBreed extends PassiveSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .001, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 1)
+            level = 1;
+
+        String formattedChance = Util.decFormat.format(chance * level * 100.0);
+
+        return getDescription().replace("$1", formattedChance);
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.CHANCE_LEVEL.node(), .001);
+        node.set(SkillSetting.CHANCE_PER_LEVEL.node(), .001);
         node.set("allow-horse-mounting", false);
         node.set("allow-horse-breeding", false);
 
@@ -140,14 +152,5 @@ public class SkillBreed extends PassiveSkill {
         }
 
         return isWolfTamingAttempt;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, .001, false);
-        int level = hero.getSkillLevel(this);
-        if (level < 1)
-            level = 1;
-        return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
     }
 }

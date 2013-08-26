@@ -132,7 +132,7 @@ public class SkillShuriken extends PassiveSkill {
                     return;     // Shuriken Toss is on cooldown. Do not continue.
 
                 int staminaCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 100, false);
-                if (player.getFoodLevel() < staminaCost) {
+                if (hero.getStamina() < staminaCost) {
                     Messaging.send(player, Messaging.getSkillDeonoter() + "You are too fatigued!");
                     return;
                 }
@@ -151,7 +151,7 @@ public class SkillShuriken extends PassiveSkill {
                 player.updateInventory();
 
                 // Reduce their stamina by the stamina cost value
-                player.setFoodLevel(Math.max(player.getFoodLevel() - staminaCost, 0));
+                hero.setStamina(hero.getStamina() - staminaCost);
             }
         }
 

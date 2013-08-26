@@ -33,12 +33,12 @@ public class SkillBloodGift extends TargettedSkill {
 
     public String getDescription(Hero hero) {
 
-        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 130, false);
-        double healingIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false));
-        healing += healingIncrease;
+        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 130, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false);
+        healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
         
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 85, false);
-        int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 20, false);
+        int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 125, false);
 
         int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.02, false) * 100);
 
@@ -50,10 +50,10 @@ public class SkillBloodGift extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("health-increase-percent-per-blood-union", Double.valueOf(0.02));
-        node.set(SkillSetting.HEALTH.node(), Integer.valueOf(130));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(130));
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.8));
         node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(85));
-        node.set(SkillSetting.MANA.node(), Integer.valueOf(25));
+        node.set(SkillSetting.MANA.node(), Integer.valueOf(125));
 
         return node;
     }
@@ -80,7 +80,7 @@ public class SkillBloodGift extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 130, false);
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 130, false);
         double wisHealIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false));
         healAmount += wisHealIncrease;
 

@@ -56,6 +56,7 @@ public class SkillDecay extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
         node.set(SkillSetting.DURATION.node(), 20000);
         node.set(SkillSetting.PERIOD.node(), 2500);
         node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(17));
