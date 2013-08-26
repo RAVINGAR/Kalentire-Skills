@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -41,36 +41,53 @@ public class SkillCurse extends TargettedSkill {
         setUsage("/skill curse");
         setArgumentRange(0, 0);
         setIdentifiers("skill curse");
-        setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DEBUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", 0.5, false);
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedChance = Util.decFormat.format(chance * 100.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedChance);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.DURATION.node(), 5000); // in milliseconds
         node.set("miss-chance", .50); // decimal representation of miss-chance
-        node.set("miss-text", "%target% misses an attack!");
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!");
+        node.set("miss-text", Messaging.getSkillDeonoter() + "%target% misses an attack!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has been cursed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has recovered from the curse!");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        missText = SkillConfigManager.getRaw(this, "miss-text", "%target% misses an attack!").replace("%target%", "$1");
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!").replace("%target%", "$1");
+
+        missText = SkillConfigManager.getRaw(this, "miss-text", Messaging.getSkillDeonoter() + "%target% misses an attack!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has been cursed!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has recovered from the curse!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, duration, missChance));
+
         Player player = hero.getPlayer();
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_MOAN , 0.8F, 1.0F);
+
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), 
@@ -150,12 +167,5 @@ public class SkillCurse extends TargettedSkill {
                 }
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .5, false);
-        return getDescription().replace("$1", duration / 1000 + "").replace("$2", chance * 100 + "");
     }
 }

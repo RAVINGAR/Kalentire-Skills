@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 //src=http://pastie.org/private/oeherulcmebfy0lerywsw
 import org.bukkit.Bukkit;

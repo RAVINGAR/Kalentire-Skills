@@ -1,5 +1,5 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
-// http://pastie.org/private/rnvrflwdxua3yyxo9poloa (Snowball no fire)
+package com.herocraftonline.heroes.characters.skill.oldskills;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,64 +9,79 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
+import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
-public class SkillFireballx extends ActiveSkill {
+public class SkillDecimation extends ActiveSkill {
 
-    private Map<SmallFireball, Long> fireballs = new LinkedHashMap<SmallFireball, Long>(100) {
+    private Map<WitherSkull, Long> fireballs = new LinkedHashMap<WitherSkull, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
         @Override
-        protected boolean removeEldestEntry(Entry<SmallFireball, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<WitherSkull, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
-    
-    public SkillFireballx(Heroes plugin) {
-        super(plugin, "Fireballx");
-        setDescription("You shoot a ball of fire that deals $1 damage and lights your target on fire");
-        setUsage("/skill fireballx");
-        setArgumentRange(0, 0);
-        setIdentifiers("skill fireballx");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-    }
 
-    @Override
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+	public SkillDecimation(Heroes plugin) {
+		super(plugin, "Decimation");
+		setDescription("You let lose Withering Skulls that deals $1 dark damage in all directions.");
+		setUsage("/skill decimation");
+		setArgumentRange(0, 0);
+		setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+		setIdentifiers("skill decimation");
+		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+	}
+
+	@Override
+	public ConfigurationSection getDefaultConfig() {
+		ConfigurationSection node = super.getDefaultConfig();
+		node.set("fireballs", 8);
+		node.set("fireballs-per-level", .2);
         node.set(SkillSetting.DAMAGE.node(), 4);
         node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.0);
-        node.set("velocity-multiplier", 1.5);
-        node.set("fire-ticks", 100);
-        return node;
-    }
+		return node;
+	}
 
-    @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
-        SmallFireball fireball = player.launchProjectile(SmallFireball.class);
-        fireball.setFireTicks(100);
-        fireballs.put(fireball, System.currentTimeMillis());
-        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        fireball.setVelocity(fireball.getVelocity().multiply(mult));
-        fireball.setShooter(player);
-        broadcastExecuteText(hero); 
-        return SkillResult.NORMAL;
-    }
+	@Override
+	public SkillResult use(Hero hero, String[] args) {
+		Player player = hero.getPlayer();
+		int numFireballs = SkillConfigManager.getUseSetting(hero, this, "fireballs", 8, false);
+		numFireballs += (SkillConfigManager.getUseSetting(hero, this, "fireballs-per-level", .2, false) * hero.getSkillLevel(this));
 
+		double diff = 2 * Math.PI / numFireballs;
+		long time = System.currentTimeMillis(); //<- red = variable type
+		for (double a = 0; a < 2 * Math.PI; a += diff) {
+			Vector vel = new Vector(Math.cos(a), 0, Math.sin(a));
+			WitherSkull snowball = player.launchProjectile(WitherSkull.class);
+			snowball.setVelocity(vel);
+			fireballs.put(snowball, time);
+			snowball.setFireTicks(100);
+		}
+		broadcastExecuteText(hero);
+		return SkillResult.NORMAL;
+	}
+
+	@Override
+	public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
+        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
+        return getDescription().replace("$1", damage + "");
+	}
+	
     public class SkillEntityListener implements Listener {
 
         private final Skill skill;
@@ -83,12 +98,12 @@ public class SkillFireballx extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof SmallFireball) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof WitherSkull) || !fireballs.containsKey(projectile)) {
                 return;
             }
             fireballs.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((SmallFireball) projectile).getShooter();
+            Entity dmger = ((WitherSkull) projectile).getShooter();
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
@@ -98,8 +113,8 @@ public class SkillFireballx extends ActiveSkill {
                 }
 
                 // Ignite the player
-             //   entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
-             //   plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
+                entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
+                plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the player
                 addSpellTarget(entity, hero);
@@ -109,12 +124,5 @@ public class SkillFireballx extends ActiveSkill {
                 event.setCancelled(true);
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
-        return getDescription().replace("$1", damage + "");
     }
 }

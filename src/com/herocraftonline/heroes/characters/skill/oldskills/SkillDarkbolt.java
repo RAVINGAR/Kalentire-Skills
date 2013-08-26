@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 //http://pastie.org/private/0mwuk61iottgjmswmw
 
 import com.herocraftonline.heroes.Heroes;

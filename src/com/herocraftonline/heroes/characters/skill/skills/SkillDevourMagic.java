@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -20,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDevourMagic extends ActiveSkill {
@@ -33,7 +34,7 @@ public class SkillDevourMagic extends ActiveSkill {
         setUsage("/skill devourmagic");
         setArgumentRange(0, 0);
         setIdentifiers("skill devourmagic");
-        setTypes(SkillType.MANA, SkillType.SILENCABLE, SkillType.BUFF, SkillType.DARK);
+        setTypes(SkillType.MANA_INCREASING, SkillType.SILENCABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK);
 
         Bukkit.getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
@@ -54,8 +55,8 @@ public class SkillDevourMagic extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
         node.set("resist-value", Double.valueOf(0.2));
         node.set("mana-per-damage", Double.valueOf(0.8));
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is devouring incoming magic!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer devouring magic.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% is devouring incoming magic!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% is no longer devouring magic.");
 
         return node;
     }
@@ -64,8 +65,8 @@ public class SkillDevourMagic extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% is devouring incoming magic!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% is no longer devouring magic.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%hero% is devouring incoming magic!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%hero% is no longer devouring magic.").replace("%hero%", "$1");
     }
 
     @Override
@@ -94,7 +95,7 @@ public class SkillDevourMagic extends ActiveSkill {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
             Skill eventSkill = event.getSkill();
-            if (eventSkill.isType(SkillType.PHYSICAL) || !eventSkill.isType(SkillType.DAMAGING))
+            if (eventSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) || !eventSkill.isType(SkillType.DAMAGING))
                 return;
 
             if (!(event.getEntity() instanceof Player))

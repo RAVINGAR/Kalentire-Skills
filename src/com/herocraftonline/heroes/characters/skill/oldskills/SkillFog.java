@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;

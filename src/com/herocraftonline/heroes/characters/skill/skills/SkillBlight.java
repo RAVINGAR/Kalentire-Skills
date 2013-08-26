@@ -64,7 +64,7 @@ public class SkillBlight extends TargettedSkill {
         node.set(SkillSetting.PERIOD.node(), 2500);
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
         node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(15));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.4));
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.4));
         node.set(SkillSetting.RADIUS.node(), 4);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% begins to radiate a cloud of disease!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer diseased!");
@@ -88,8 +88,8 @@ public class SkillBlight extends TargettedSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.4, false);
-        tickDamage += tickDamageIncrease;
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.4, false);
+        tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new BlightEffect(this, duration, period, tickDamage, player));

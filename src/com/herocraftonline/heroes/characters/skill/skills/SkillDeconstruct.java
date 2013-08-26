@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,12 +35,18 @@ public class SkillDeconstruct extends ActiveSkill {
         setUsage("/skill deconstruct <list|info|item>");
         setArgumentRange(0, 2);
         setIdentifiers("skill deconstruct", "skill dstruct", "skill decon");
-        setTypes(SkillType.ITEM, SkillType.KNOWLEDGE, SkillType.UNBINDABLE);
+        setTypes(SkillType.ITEM_DESTRUCTION, SkillType.ITEM_CREATION, SkillType.UNBINDABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         String root = "IRON_AXE";
         node.set("require-workbench", true);
         node.set(root + "." + SkillSetting.LEVEL.node(), 1);
@@ -49,6 +55,7 @@ public class SkillDeconstruct extends ActiveSkill {
         node.set(root + ".IRON_INGOT", 1);
         node.set(root + ".STICK", 1);
         node.set(SkillSetting.USE_TEXT.node(), "%hero% has deconstructed a %item%");
+
         return node;
     }
 
@@ -232,10 +239,5 @@ public class SkillDeconstruct extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 0.6F, 1.0F);
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), matName.toLowerCase().replace("_", " "));
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

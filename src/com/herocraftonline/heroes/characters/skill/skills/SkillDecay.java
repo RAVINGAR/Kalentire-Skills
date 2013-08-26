@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -19,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillDecay extends TargettedSkill {
     // This is for Firework Effects
@@ -32,36 +34,60 @@ public class SkillDecay extends TargettedSkill {
         setUsage("/skill decay");
         setArgumentRange(0, 0);
         setIdentifiers("skill decay");
-        setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 17, false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.17, false);
+        tickDamage += tickDamageIncrease;
+
+        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 21000);
-        node.set(SkillSetting.PERIOD.node(), 3000);
-        node.set("tick-damage", 1);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target%'s flesh has begun to rot!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer decaying alive!");
+
+        node.set(SkillSetting.DURATION.node(), 20000);
+        node.set(SkillSetting.PERIOD.node(), 2500);
+        node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(17));
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.17));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target%'s flesh has begun to rot!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% is no longer decaying alive!");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target%'s flesh has begun to rot!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer decaying alive!").replace("%target%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%target%'s flesh has begun to rot!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%target% is no longer decaying alive!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.17, false);
+        tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
         plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, duration, period, tickDamage, player));
         broadcastExecuteText(hero, target);
+
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), 
@@ -77,6 +103,7 @@ public class SkillDecay extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return SkillResult.NORMAL;
     }
 
@@ -115,14 +142,5 @@ public class SkillDecay extends TargettedSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        damage = damage * duration / period;
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

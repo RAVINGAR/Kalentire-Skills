@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -24,13 +24,21 @@ public class SkillDispel extends TargettedSkill {
         setUsage("/skill dispel");
         setArgumentRange(0, 0);
         setIdentifiers("skill dispel");
-        setTypes(SkillType.SILENCABLE);
+        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DISPELLING);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 3, false);
+        return getDescription().replace("$1", removals + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set("max-removals", 3);
+
         return node;
     }
 
@@ -91,11 +99,4 @@ public class SkillDispel extends TargettedSkill {
         Messaging.send(player, "The target has nothing to dispel!");
         return SkillResult.INVALID_TARGET_NO_MSG;
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 3, false);
-        return getDescription().replace("$1", removals + "");
-    }
-
 }
