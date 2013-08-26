@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -17,6 +17,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlameshield extends ActiveSkill {
     // This is for Firework Effects
@@ -30,24 +32,35 @@ public class SkillFlameshield extends ActiveSkill {
         setUsage("/skill flameshield");
         setArgumentRange(0, 0);
         setIdentifiers("skill flameshield", "skill fshield");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.BUFFING);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% conjured a shield of flames!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his shield of flames!");
-        node.set("skill-block-text", "%name%'s flameshield has blocked %hero%'s %skill%.");
+
+        node.set(SkillSetting.DURATION.node(), 8000);
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% conjured a shield of flames!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% lost his shield of flames!");
+        node.set("skill-block-text", Messaging.getSkillDeonoter() + "%name%'s flameshield has blocked %hero%'s %skill%.");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a shield of flames!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his shield of flames!").replace("%hero%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%hero% conjured a shield of flames!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%hero% lost his shield of flames!").replace("%hero%", "$1");
     }
 
     @Override
@@ -100,11 +113,5 @@ public class SkillFlameshield extends ActiveSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

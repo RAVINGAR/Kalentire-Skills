@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 /*
  * Coded by: Delfofthebla - Last updated on 5 / 5 / 2013
@@ -34,6 +34,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -136,18 +137,18 @@ public class SkillFireRune extends ActiveSkill {
                     // Prep variables
                     CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 105, false);
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 55, false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
+                    damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
                     String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
 
                     // Damage and silence the target
-                    skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.FIRE, false);
+                    addSpellTarget((LivingEntity) targEnt, hero);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
                     // Announce that the player has been hit with the skill 
                     broadcast(targEnt.getLocation(), applyText, targCT.getName());
-
-                    // Play Firework effect
-                    // CODE HERE
 
                     // Play sound
                     hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);

@@ -64,16 +64,12 @@ public class SkillExplosiveShot extends ActiveSkill {
         setUsage("/skill explosiveshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill explosiveshot");
-        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
+        setTypes(SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
-        }
-        catch (Exception e) {}
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
+            ncpEnabled = true;
     }
 
     public String getDescription(Hero hero) {

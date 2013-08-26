@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,18 +22,19 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillForgeChainChest extends ActiveSkill {
-    public SkillForgeChainChest(Heroes plugin) {
-        super(plugin, "ForgeChainChest");
-        setDescription("You forge a chain chestplate!");
+public class SkillForgeChainLeggings extends ActiveSkill {
+    public SkillForgeChainLeggings(Heroes plugin) {
+        super(plugin, "ForgeChainLeggings");
+        setDescription("You forge a chain leggings!");
         setUsage("/skill forgechainchest");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill forgechainchest", "skill chainchest" });
+        setIdentifiers(new String[] { "skill forgechainleggings", "skill chainleggings" });
         setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
     }
 
     public String getDescription(Hero hero) {
         int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
+
         return getDescription().replace("$1", amount + "");
     }
 
@@ -48,7 +49,7 @@ public class SkillForgeChainChest extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_CHESTPLATE, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
+        ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_LEGGINGS, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
         ItemMeta metaData = forgedItem.getItemMeta();
 
         // Add the "Forged by" message to the item.

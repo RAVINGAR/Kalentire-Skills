@@ -26,7 +26,7 @@ public class SkillBalance extends ActiveSkill {
         setUsage("/skill balance");
         setIdentifiers("skill balance");
         setArgumentRange(0, 0);
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override

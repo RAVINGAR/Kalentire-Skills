@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -34,31 +35,37 @@ public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
-        setDescription("Forces your target away from you.");
+        setDescription("Deal $1 damage and force your target away from you. The push power is affected by your Intellect.");
         setUsage("/skill forcepush");
         setArgumentRange(0, 0);
         setIdentifiers("skill forcepush");
-        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
+        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;
-        }
     }
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+
+        return getDescription().replace("$1", damage + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(0));
-        node.set("horizontal-power", Double.valueOf(3.0));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("push-delay", Double.valueOf(0.2));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
+        node.set("horizontal-power", Double.valueOf(1.5));
+        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0375));
+        node.set("vertical-power", Double.valueOf(0.25));
+        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.0075));
         node.set("ncp-exemption-duration", 1500);
+        node.set("push-delay", Double.valueOf(0.2));
 
         return node;
     }
@@ -69,7 +76,10 @@ public class SkillForcePush extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
         if (damage > 0) {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
@@ -93,13 +103,21 @@ public class SkillForcePush extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        final double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false);
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0075), false);
+        tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        final double vPower = tempVPower;
+
         Vector pushUpVector = new Vector(0, vPower, 0);
         target.setVelocity(pushUpVector);
 
         final double xDir = targetLoc.getX() - playerLoc.getX();
         final double zDir = targetLoc.getZ() - playerLoc.getZ();
-        final double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 3.0, false);
+
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0375), false);
+        tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        final double hPower = tempHPower;
 
         // Push them "up" first. THEN we can push them away.
         double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.2, false);

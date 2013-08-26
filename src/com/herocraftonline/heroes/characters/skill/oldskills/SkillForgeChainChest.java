@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,18 +22,18 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillForgeChainBoots extends ActiveSkill {
-    public SkillForgeChainBoots(Heroes plugin) {
-        super(plugin, "ForgeChainBoots");
-        setDescription("You forge chain boots!");
+public class SkillForgeChainChest extends ActiveSkill {
+    public SkillForgeChainChest(Heroes plugin) {
+        super(plugin, "ForgeChainChest");
+        setDescription("You forge a chain chestplate!");
         setUsage("/skill forgechainchest");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill forgechainboots", "skill chainboots" });
+        setIdentifiers(new String[] { "skill forgechainchest", "skill chainchest" });
         setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
     }
 
     public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 2, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
         return getDescription().replace("$1", amount + "");
     }
 
@@ -48,7 +48,7 @@ public class SkillForgeChainBoots extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_BOOTS, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
+        ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_CHESTPLATE, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
         ItemMeta metaData = forgedItem.getItemMeta();
 
         // Add the "Forged by" message to the item.

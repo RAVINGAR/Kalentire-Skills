@@ -44,7 +44,7 @@ public class SkillAccelerando extends ActiveSkill {
         setUsage("/skill accelerando");
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerando");
-        setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING, SkillType.UNINTERRUPTIBLE);
+        setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT, SkillType.UNINTERRUPTIBLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
         skillSong = new Song(
                              new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.2F, 0),
@@ -64,10 +64,13 @@ public class SkillAccelerando extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false) / 1000);
-        double stunDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "stun-duration", 1500, false) / 1000);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int stunDuration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 1500, false);
 
-        return getDescription().replace("$1", duration + "").replace("$2", stunDuration + "");
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedStunDuration = Util.decFormat.format(stunDuration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedStunDuration);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class SkillAccelerando extends ActiveSkill {
         broadcastExecuteText(hero);
 
         hero.addEffect(new SoundEffect(this, "AccelarandoSong", 100, skillSong));
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 300000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
@@ -168,7 +171,7 @@ public class SkillAccelerando extends ActiveSkill {
 
             final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("Accelerando")) {
-                int duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
+                int duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
                 hero.addEffect(new StunEffect(skill, duration));
                 hero.removeEffect(hero.getEffect("Accelerando"));
             }

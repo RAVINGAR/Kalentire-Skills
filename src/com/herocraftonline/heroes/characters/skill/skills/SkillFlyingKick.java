@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,6 +9,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -25,15 +26,19 @@ public class SkillFlyingKick extends TargettedSkill {
         setUsage("/skill flyingkick");
         setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
-        setTypes(SkillType.HARMFUL, SkillType.FORCE, SkillType.PHYSICAL, SkillType.DAMAGING);
+        setTypes(SkillType.AGGRESSIVE, SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCING, SkillType.DAMAGING);
     }
 
     public String getDescription(Hero hero) {
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false) / 1000.0);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$1", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -42,9 +47,9 @@ public class SkillFlyingKick extends TargettedSkill {
         defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 5);
         defaultConfig.set(SkillSetting.DAMAGE.node(), 25);
         defaultConfig.set(SkillSetting.DURATION.node(), 3000);
-        defaultConfig.set("vertical-power", 0.25);
-        defaultConfig.set("min-side-push", 0.4);
-        defaultConfig.set("max-side-push", 1.0);
+        defaultConfig.set("vertical-power", Double.valueOf(0.9));
+        defaultConfig.set("min-side-push", Double.valueOf(0.4));
+        defaultConfig.set("max-side-push", Double.valueOf(1.0));
 
         return defaultConfig;
     }
@@ -52,11 +57,14 @@ public class SkillFlyingKick extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        damage += (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
 
-        double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
+        double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.9), false);
         double minSidePush = SkillConfigManager.getUseSetting(hero, this, "min-side-push", Double.valueOf(0.4), false);
         double maxSidePush = SkillConfigManager.getUseSetting(hero, this, "max-side-push", Double.valueOf(1.0), false);
         target.setVelocity(new Vector(Math.random() * maxSidePush - minSidePush, verticalPower, Math.random() * maxSidePush - minSidePush));

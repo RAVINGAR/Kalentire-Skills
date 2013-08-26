@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,7 +27,7 @@ public class SkillFeignDeath extends TargettedSkill {
         setUsage("/skill feigndeath");
         setArgumentRange(0, 0);
         setIdentifiers("skill feigndeath");
-        setTypes(SkillType.ILLUSION, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFFING);
     }
 
     public String getDescription(Hero hero) {

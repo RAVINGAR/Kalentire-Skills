@@ -35,7 +35,7 @@ public class SkillBoilBlood extends ActiveSkill {
         setUsage("/skill boilblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill boilblood");
-        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
     }
 
     public ConfigurationSection getDefaultConfig() {

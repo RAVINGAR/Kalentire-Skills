@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +38,13 @@ public class SkillFauxBomb extends ActiveSkill {
         setUsage("/skill fauxbomb");
         setArgumentRange(0, 0);
         setIdentifiers("skill fauxbomb");
-        setTypes(SkillType.ILLUSION, SkillType.COUNTER, SkillType.SUMMON, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SUMMONING, SkillType.SILENCABLE);
 
         Bukkit.getPluginManager().registerEvents(new SkillListener(), plugin);
+    }
+
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -50,12 +54,10 @@ public class SkillFauxBomb extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
         node.set("fuse-time", Integer.valueOf(6000));
         node.set("velocity", Double.valueOf(1.0D));
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(367));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(0));
 
         return node;
-    }
-
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -105,10 +107,6 @@ public class SkillFauxBomb extends ActiveSkill {
         if (sheepMap.containsKey(id)) {
             Player player = (Player) sheepMap.get(id);
             Hero hero = plugin.getCharacterManager().getHero(player);
-            double damage = 1D;
-            if (hero != null) {
-                damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 210, false);
-            }
 
             if (!sheep.isDead()) {
                 sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
@@ -123,7 +121,7 @@ public class SkillFauxBomb extends ActiveSkill {
                         if (hero != null) {
                             plugin.getDamageManager().addSpellTarget(livingEntity, hero, this);
                         }
-                        damageEntity(livingEntity, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+                        damageEntity(livingEntity, player, 0.0, EntityDamageEvent.DamageCause.MAGIC);
                     }
                 }
             }

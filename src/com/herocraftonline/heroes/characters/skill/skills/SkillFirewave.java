@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/oz5iqyfjto1vgoova1qn2g (original source)
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -45,36 +46,49 @@ public class SkillFirewave extends ActiveSkill {
 
 	public SkillFirewave(Heroes plugin) {
 		super(plugin, "Firewave");
-		setDescription("You throw a wave of fire that deals $1 fire damage in all directions.");
+        setDescription("Unleash of wave of fire around you, launching $1 fireballs in a circle, each dealing $1 fire damage.");
 		setUsage("/skill firewave");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 		setIdentifiers("skill firewave");
 		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
-        }
-        catch (Exception e) {}
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
+            ncpEnabled = true;
 	}
+
+    @Override
+    public String getDescription(Hero hero) {
+
+        int numFireballs = SkillConfigManager.getUseSetting(hero, this, "fireballs", 12, false);
+        double numFireballsIncrease = SkillConfigManager.getUseSetting(hero, this, "fireballs-per-intellect", 0.2, false);
+        numFireballs += (int) (numFireballsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        return getDescription().replace("$1", numFireballs + "").replace("$2", damage + "");
+    }
 
 	@Override
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set("fireballs", 8);
-		node.set("fireballs-per-level", .2);
-        node.set(SkillSetting.DAMAGE.node(), 4);
-        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.0);
+
+        node.set("fireballs", Integer.valueOf(12));
+        node.set("fireballs-per-intellect", Double.valueOf(0.2));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
+
 		return node;
 	}
 
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
-		int numFireballs = SkillConfigManager.getUseSetting(hero, this, "fireballs", 8, false);
-		numFireballs += (SkillConfigManager.getUseSetting(hero, this, "fireballs-per-level", .2, false) * hero.getSkillLevel(this));
+        int numFireballs = SkillConfigManager.getUseSetting(hero, this, "fireballs", 12, false);
+        double numFireballsIncrease = SkillConfigManager.getUseSetting(hero, this, "fireballs-per-intellect", 0.2, false);
+        numFireballs += (int) (numFireballsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
@@ -104,13 +118,6 @@ public class SkillFirewave extends ActiveSkill {
 
 		return SkillResult.NORMAL;
 	}
-
-	@Override
-	public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
-        return getDescription().replace("$1", damage + "");
-	}
 	
     public class SkillEntityListener implements Listener {
 
@@ -133,41 +140,38 @@ public class SkillFirewave extends ActiveSkill {
             }
 
             fireballs.remove(projectile);
-            LivingEntity entity = (LivingEntity) subEvent.getEntity();
+            LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
             Entity dmger = ((Snowball) projectile).getShooter();
-
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
-                if (!damageCheck((Player) dmger, entity)) {
+                if (!damageCheck((Player) dmger, targetLE)) {
                     event.setCancelled(true);
                     return;
-                    //CharacterTemplate cm = plugin.getCharacterManager().getCharacter(entity);
-                    //cm.hasEffect/cm.addEffect
                 }
                 
                 // Check if entity is immune to further firewave hits
-                if(plugin.getCharacterManager().getCharacter(entity).hasEffect("FireWaveAntiMultiEffect")) {
-                	//cm.hasEffect/cm.addEffect
+                if (plugin.getCharacterManager().getCharacter(targetLE).hasEffect("FireWaveAntiMultiEffect")) {
                     event.setCancelled(true);
                     return;
                 }
 
                 // Ignite the player
-                entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
-                //cm.hasEffect/cm.addEffect
-                plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
+                targetLE.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 50, false));
+                plugin.getCharacterManager().getCharacter(targetLE).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the player
-                addSpellTarget(entity, hero);
-                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 4, false);
-                damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill));
-                damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 80, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
+                damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+                // Damage the target
+                addSpellTarget(targetLE, hero);
+                damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 event.setCancelled(true);
 
                 //Adds an Effect to Prevent Multihit
-                //cm.hasEffect/cm.addEffect
-                plugin.getCharacterManager().getCharacter(entity).addEffect(new ExpirableEffect(skill, "FireWaveAntiMultiEffect", 500));
+                plugin.getCharacterManager().getCharacter(targetLE).addEffect(new ExpirableEffect(skill, "FireWaveAntiMultiEffect", 500));
             }
         }
     }

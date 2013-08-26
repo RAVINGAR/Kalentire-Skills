@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -24,7 +24,12 @@ public class SkillFullHeal extends TargettedSkill {
         setUsage("/skill fullheal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill fullheal");
-        setTypes(SkillType.LIGHT, SkillType.HEAL, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
@@ -36,17 +41,19 @@ public class SkillFullHeal extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         double healAmount = (int) Math.ceil(target.getMaxHealth() - target.getHealth());
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
+
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
             Messaging.send(hero.getPlayer(), "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
         targetHero.heal(hrhEvent.getAmount());
-        //this should be the new heal for Bukkit Damage/Health
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.9F, 1.0F);
-        broadcastExecuteText(hero, target);
-        // this is our fireworks shit
         Player player = hero.getPlayer();
+
+        player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.9F, 1.0F);
+        broadcastExecuteText(hero, target);
+
+        // this is our fireworks shit        
         try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
             		FireworkEffect.builder().flicker(false).trail(false)
@@ -59,11 +66,7 @@ public class SkillFullHeal extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
+        return SkillResult.NORMAL;
     }
 }

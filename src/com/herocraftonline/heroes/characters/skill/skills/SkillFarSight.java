@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -21,13 +21,15 @@ public class SkillFarSight extends ActiveSkill {
         setUsage("/skill farsight");
         setArgumentRange(0, 1);
         setIdentifiers("skill farsight", "skill fsight");
-        setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE, SkillType.STEALTHY);
+        setTypes(SkillType.BUFFING, SkillType.SILENCABLE, SkillType.STEALTHY);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 15000);
+
+        node.set(SkillSetting.DURATION.node(), 12000);
+
         return node;
     }
 
@@ -38,9 +40,10 @@ public class SkillFarSight extends ActiveSkill {
 			return SkillResult.REMOVED_EFFECT;
 		}
 		
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
         ZoomEffect effect = new ZoomEffect(this, duration);
         hero.addEffect(effect);
+
         return SkillResult.NORMAL;
 	}
 	

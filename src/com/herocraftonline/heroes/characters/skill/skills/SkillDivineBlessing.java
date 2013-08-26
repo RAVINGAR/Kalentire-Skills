@@ -28,7 +28,7 @@ public class SkillDivineBlessing extends ActiveSkill {
         setUsage("/skill divineblessing");
         setArgumentRange(0, 0);
         setIdentifiers("skill divineblessing");
-        setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE);
+        setTypes(SkillType.HEALING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class SkillDespair extends ActiveSkill {
         setUsage("/skill despair");
         setArgumentRange(0, 0);
         setIdentifiers("skill despair");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
     }
 
     @Override

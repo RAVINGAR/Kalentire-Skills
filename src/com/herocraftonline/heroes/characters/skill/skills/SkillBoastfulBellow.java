@@ -30,7 +30,7 @@ public class SkillBoastfulBellow extends ActiveSkill {
         setUsage("/skill boastfulbellow");
         setArgumentRange(0, 0);
         setIdentifiers("skill boastfulbellow");
-        setTypes(SkillType.DAMAGING, SkillType.INTERRUPTING, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.INTERRUPTING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
