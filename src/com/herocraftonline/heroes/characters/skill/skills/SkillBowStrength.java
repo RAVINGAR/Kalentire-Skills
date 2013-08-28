@@ -37,7 +37,7 @@ public class SkillBowStrength extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
 
-        section.set("velocity-multiplier", 1.4);
+        section.set("velocity-multiplier", 1.2);
 
         return section;
     }
@@ -56,7 +56,7 @@ public class SkillBowStrength extends PassiveSkill {
             }
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect(getName())) {
-                double mult = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.4, false);
+                double mult = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.2, false);
                 Projectile proj = (Projectile) event.getProjectile();
                 proj.setVelocity(proj.getVelocity().multiply(mult));
             }

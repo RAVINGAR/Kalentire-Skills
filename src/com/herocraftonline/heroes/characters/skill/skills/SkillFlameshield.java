@@ -48,9 +48,9 @@ public class SkillFlameshield extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), 8000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% conjured a shield of flames!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% lost his shield of flames!");
-        node.set("skill-block-text", Messaging.getSkillDeonoter() + "%name%'s flameshield has blocked %hero%'s %skill%.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% conjured a shield of flames!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% lost his shield of flames!");
+        node.set("skill-block-text", Messaging.getSkillDenoter() + "%name%'s flameshield has blocked %hero%'s %skill%.");
 
         return node;
     }
@@ -59,8 +59,8 @@ public class SkillFlameshield extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%hero% conjured a shield of flames!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%hero% lost his shield of flames!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a shield of flames!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost his shield of flames!").replace("%hero%", "$1");
     }
 
     @Override

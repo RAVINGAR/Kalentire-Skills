@@ -48,8 +48,8 @@ public class SkillBoilBlood extends ActiveSkill {
         node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(12000));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target%'s blood begins to boil!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target%'s blood is no longer boiling.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood begins to boil!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood is no longer boiling.");
         node.set("blood-union-required-for-use", Integer.valueOf(3));
         node.set("max-targets", Integer.valueOf(6));
 
@@ -124,8 +124,8 @@ public class SkillBoilBlood extends ActiveSkill {
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%target%'s blood begins to boil!").replace("%target%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%target%'s blood is no longer boiling.").replace("%target%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target%'s blood begins to boil!").replace("%target%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target%'s blood is no longer boiling.").replace("%target%", "$1");
 
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
 

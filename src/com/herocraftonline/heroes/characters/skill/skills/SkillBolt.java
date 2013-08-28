@@ -45,8 +45,10 @@ public class SkillBolt extends TargettedSkill {
 
         node.set(SkillSetting.DAMAGE.node(), 180);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.4));
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(9));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
 
         return node;
     }

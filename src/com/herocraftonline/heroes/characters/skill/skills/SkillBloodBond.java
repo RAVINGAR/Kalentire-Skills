@@ -59,8 +59,8 @@ public class SkillBloodBond extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), 12);
         node.set("mana-tick", 13);
         node.set("mana-tick-period", 1000);
-        node.set("toggle-on-text", Messaging.getSkillDeonoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
-        node.set("toggle-off-text", Messaging.getSkillDeonoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
+        node.set("toggle-on-text", Messaging.getSkillDenoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
+        node.set("toggle-off-text", Messaging.getSkillDenoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
 
         return node;
     }
@@ -77,8 +77,8 @@ public class SkillBloodBond extends ActiveSkill {
         int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 1000, false);
 
         // Get config values for text values
-        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", Messaging.getSkillDeonoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", Messaging.getSkillDeonoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", Messaging.getSkillDenoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", Messaging.getSkillDenoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
 
         hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 
@@ -205,8 +205,7 @@ public class SkillBloodBond extends ActiveSkill {
                 if (hero.getMana() < manaTick) {
                     hero.removeEffect(this);
                 }
-                else    // They have enough mana--continue
-                {
+                else {      // They have enough mana--continue
                     // Drain the player's mana
                     hero.setMana(hero.getMana() - manaTick);
                 }

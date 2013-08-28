@@ -31,7 +31,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillBackstab extends ActiveSkill {
 
-    private String useText;
+    private String backstabText;
 
     public SkillBackstab(Heroes plugin) {
         super(plugin, "Backstab");
@@ -84,14 +84,15 @@ public class SkillBackstab extends ActiveSkill {
         node.set("ambush-chance", Double.valueOf(-1D));
         node.set(SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY.node(), Double.valueOf(0.02125D));
         node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% backstabbed %target%!");
+        node.set(SkillSetting.USE_TEXT.node(), "");
+        node.set("backstab-text", "");
 
         return node;
     }
 
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        backstabText = SkillConfigManager.getRaw(this, "backstab-text", "").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -186,9 +187,9 @@ public class SkillBackstab extends ActiveSkill {
                 if (backstabbed) {
                     Entity target = event.getEntity();
                     if (target instanceof Monster)
-                        broadcast(player.getLocation(), useText, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
+                        broadcast(player.getLocation(), backstabText, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
                     else if (target instanceof Player)
-                        broadcast(player.getLocation(), useText, player.getDisplayName(), ((Player) target).getDisplayName());
+                        broadcast(player.getLocation(), backstabText, player.getDisplayName(), ((Player) target).getDisplayName());
                 }
             }
         }

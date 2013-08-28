@@ -32,7 +32,7 @@ public class SkillBackflip extends ActiveSkill {
 
     public SkillBackflip(Heroes plugin) {
         super(plugin, "Backflip");
-        setDescription("Do a backflip into the air. Distance traveled is affected by your Agility.");
+        setDescription("Backflip away from your enemies.$1 Distance traveled is affected by your Agility.");
         setUsage("/skill backflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill backflip");
@@ -49,7 +49,7 @@ public class SkillBackflip extends ActiveSkill {
 
         boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
         if (throwShuriken)
-            description += "If you are able to currently throw Shuriken, you will do so as well.";
+            description.replace("$1", " If you are able to currently throw Shuriken, you will do so as well.");
 
         return description;
     }
@@ -60,9 +60,9 @@ public class SkillBackflip extends ActiveSkill {
 
         node.set("no-air-backflip", false);
         node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("vertical-power", Double.valueOf(1.0));
+        node.set("vertical-power", Double.valueOf(0.5));
         node.set(SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY.node(), Double.valueOf(0.0125));
-        node.set("ncp-exemption-duration", Integer.valueOf(1000));
+        node.set("ncp-exemption-duration", Integer.valueOf(2000));
 
         return node;
     }
@@ -94,7 +94,10 @@ public class SkillBackflip extends ActiveSkill {
         }
         float multiplier = (90f + pitch) / 50f;
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
+        double velocityIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, Double.valueOf(0.0125), false);
+        double calculatedIncrease = hero.getAttributeValue(AttributeType.AGILITY) * velocityIncrease;
+        vPower += calculatedIncrease;
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -103,9 +106,8 @@ public class SkillBackflip extends ActiveSkill {
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double velocityIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.0125, false);
-        hPower += (hero.getAttributeValue(AttributeType.AGILITY) * velocityIncrease);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
+        hPower += calculatedIncrease;
         velocity.multiply(new Vector(-hPower, vPower, -hPower));
 
         // Backflip!

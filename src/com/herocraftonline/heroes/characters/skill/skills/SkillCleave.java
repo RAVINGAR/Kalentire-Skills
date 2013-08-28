@@ -26,7 +26,7 @@ public class SkillCleave extends TargettedSkill {
         setUsage("/skill cleave");
         setArgumentRange(0, 0);
         setIdentifiers("skill cleave");
-        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+        setTypes(SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PHYSICAL);
     }
 
     @Override

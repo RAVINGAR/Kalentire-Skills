@@ -28,8 +28,8 @@ public class SkillBash extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         return getDescription().replace("$1", damage + "");
@@ -39,9 +39,9 @@ public class SkillBash extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
-        node.set(SkillSetting.DAMAGE.node(), 30);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.7);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(30));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.7));
 
         return node;
     }
@@ -50,8 +50,8 @@ public class SkillBash extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         addSpellTarget(target, hero);

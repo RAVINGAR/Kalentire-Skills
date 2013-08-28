@@ -47,8 +47,8 @@ public class SkillForcePush extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.6), false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         return getDescription().replace("$1", damage + "");
@@ -59,7 +59,7 @@ public class SkillForcePush extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.6));
         node.set("horizontal-power", Double.valueOf(1.5));
         node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0375));
         node.set("vertical-power", Double.valueOf(0.25));
@@ -76,8 +76,8 @@ public class SkillForcePush extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.6), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         if (damage > 0) {

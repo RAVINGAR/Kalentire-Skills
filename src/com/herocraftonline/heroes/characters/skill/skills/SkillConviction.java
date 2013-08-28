@@ -57,8 +57,8 @@ public class SkillConviction extends ActiveSkill {
 
         node.set("damage-reduction", 0.85);
         node.set(SkillSetting.RADIUS.node(), 10);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "You are filled with renewed convinction!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "Your sense of convinction begins to fade!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are filled with renewed convinction!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "Your sense of convinction begins to fade!");
         node.set(SkillSetting.DURATION.node(), 180000);
 
         return node;
@@ -67,8 +67,8 @@ public class SkillConviction extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "You are filled with renewed convinction!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "Your sense of convinction begins to fade!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You are filled with renewed convinction!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "Your sense of convinction begins to fade!");
     }
 
     @Override

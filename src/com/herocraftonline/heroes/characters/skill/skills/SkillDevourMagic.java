@@ -55,8 +55,8 @@ public class SkillDevourMagic extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
         node.set("resist-value", Double.valueOf(0.2));
         node.set("mana-per-damage", Double.valueOf(0.8));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% is devouring incoming magic!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% is no longer devouring magic.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is devouring incoming magic!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer devouring magic.");
 
         return node;
     }
@@ -65,8 +65,8 @@ public class SkillDevourMagic extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%hero% is devouring incoming magic!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%hero% is no longer devouring magic.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is devouring incoming magic!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer devouring magic.").replace("%hero%", "$1");
     }
 
     @Override

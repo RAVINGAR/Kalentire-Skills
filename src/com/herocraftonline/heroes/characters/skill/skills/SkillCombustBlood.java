@@ -54,8 +54,8 @@ public class SkillCombustBlood extends TargettedSkill {
         node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.15);
         node.set(SkillSetting.PERIOD.node(), 2500);
         node.set(SkillSetting.DURATION.node(), 7500);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% is bleeding from the effects of their Combusted Blood!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% is no longer bleeding.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is bleeding from the effects of their Combusted Blood!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer bleeding.");
 
         return node;
     }
@@ -83,8 +83,8 @@ public class SkillCombustBlood extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%target% is no longer bleeding.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer bleeding.").replace("%target%", "$1");
     }
 
     @Override

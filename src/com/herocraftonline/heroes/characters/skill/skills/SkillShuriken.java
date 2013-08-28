@@ -78,7 +78,7 @@ public class SkillShuriken extends PassiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(20));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.6));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.4));
         node.set(SkillSetting.STAMINA.node(), Integer.valueOf(100));
         node.set("shuriken-toss-cooldown", Integer.valueOf(1000));
         node.set("num-shuriken", Integer.valueOf(3));
@@ -133,7 +133,7 @@ public class SkillShuriken extends PassiveSkill {
 
                 int staminaCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 100, false);
                 if (hero.getStamina() < staminaCost) {
-                    Messaging.send(player, Messaging.getSkillDeonoter() + "You are too fatigued!");
+                    Messaging.send(player, Messaging.getSkillDenoter() + "You are too fatigued!");
                     return;
                 }
 
@@ -204,7 +204,7 @@ public class SkillShuriken extends PassiveSkill {
 
             // Damage the target
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 20, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 0.6, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 0.4, false);
             damage += (int) (hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease);
 
             skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);

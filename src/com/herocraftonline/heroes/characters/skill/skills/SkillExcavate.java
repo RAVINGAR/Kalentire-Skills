@@ -54,8 +54,8 @@ public class SkillExcavate extends ActiveSkill {
         node.set("speed-multiplier", 3);
         node.set(SkillSetting.DURATION.node(), 0);
         node.set(SkillSetting.DURATION_INCREASE_PER_LEVEL.node(), 200);
-        node.set("apply-text", Messaging.getSkillDeonoter() + "%hero% begins excavating!");
-        node.set("expire-text", Messaging.getSkillDeonoter() + "%hero% is no longer excavating!");
+        node.set("apply-text", Messaging.getSkillDenoter() + "%hero% begins excavating!");
+        node.set("expire-text", Messaging.getSkillDenoter() + "%hero% is no longer excavating!");
         return node;
     }
 
@@ -63,8 +63,8 @@ public class SkillExcavate extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, "apply-text", Messaging.getSkillDeonoter() + "%hero% begins excavating!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, "expire-text", Messaging.getSkillDeonoter() + "%hero% is no longer excavating!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, "apply-text", Messaging.getSkillDenoter() + "%hero% begins excavating!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, "expire-text", Messaging.getSkillDenoter() + "%hero% is no longer excavating!").replace("%hero%", "$1");
     }
 
     @Override

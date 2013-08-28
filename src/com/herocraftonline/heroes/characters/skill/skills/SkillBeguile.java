@@ -70,10 +70,10 @@ public class SkillBeguile extends TargettedSkill {
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set(SkillSetting.PERIOD.node(), 1000);
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 125);
-        node.set("max-drift", 0.35);
+        node.set("max-drift", 2.1);
         node.set("ncp-exemption-duration", Integer.valueOf(500));
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is beguiled!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has regained his wit!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is beguiled!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has regained his wit!");
 
         return node;
     }
@@ -82,8 +82,8 @@ public class SkillBeguile extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is beguiled!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has regained his wit!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is beguiled!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has regained his wit!").replace("%target%", "$1");
     }
 
     @Override
@@ -94,7 +94,7 @@ public class SkillBeguile extends TargettedSkill {
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
 
-        float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 0.35, false);
+        float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 2.1, false);
 
         broadcastExecuteText(hero, target);
 

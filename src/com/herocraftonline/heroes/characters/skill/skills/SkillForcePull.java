@@ -48,7 +48,7 @@ public class SkillForcePull extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         return getDescription().replace("$1", damage + "");
@@ -59,11 +59,10 @@ public class SkillForcePull extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
-        node.set("horizontal-power", Double.valueOf(1.5));
-        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0375));
-        node.set("vertical-power", Double.valueOf(0.25));
-        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.0075));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.6));
+        node.set("horizontal-power", Double.valueOf(0.3));
+        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0125));
+        node.set("vertical-power", Double.valueOf(0.4));
         node.set("ncp-exemption-duration", 1500);
         node.set("pull-delay", Double.valueOf(0.2));
 
@@ -77,7 +76,7 @@ public class SkillForcePull extends TargettedSkill {
         broadcastExecuteText(hero, target);
         
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         if (damage > 0) {
@@ -103,9 +102,7 @@ public class SkillForcePull extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0075), false);
-        tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
         final double vPower = tempVPower;
 
         Vector pushUpVector = new Vector(0, vPower, 0);
@@ -114,8 +111,8 @@ public class SkillForcePull extends TargettedSkill {
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
         final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
 
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0375), false);
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0125), false);
         tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
         final double hPower = tempHPower;
 

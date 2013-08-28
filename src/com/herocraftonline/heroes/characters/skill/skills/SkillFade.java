@@ -52,9 +52,9 @@ public class SkillFade extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), 30000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "You fade into the shadows");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "You come back into view");
-        node.set("fail-text", Messaging.getSkillDeonoter() + "It's too bright to fade");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You fade into the shadows");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "You come back into view");
+        node.set("fail-text", Messaging.getSkillDenoter() + "It's too bright to fade");
         node.set("detection-range", 0);
         node.set("max-light-level", 8);
         node.set("max-move-distance", 1.0);
@@ -66,9 +66,9 @@ public class SkillFade extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "You fade into the shadows");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "You come back into view");
-        failText = SkillConfigManager.getRaw(this, "fail-text", Messaging.getSkillDeonoter() + "It's too bright to fade");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You fade into the shadows");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You come back into view");
+        failText = SkillConfigManager.getRaw(this, "fail-text", Messaging.getSkillDenoter() + "It's too bright to fade");
     }
 
     @Override

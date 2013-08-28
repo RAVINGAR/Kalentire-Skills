@@ -44,8 +44,8 @@ public class SkillEarthWall extends ActiveSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.2);
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% conjures a wall of earth!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero%'s wall has crumbled");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% conjures a wall of earth!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s wall has crumbled");
         node.set("block-type", "DIRT");
 
         return node;
@@ -67,8 +67,8 @@ public class SkillEarthWall extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%hero% conjures a wall of earth!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%hero%'s wall has crumbled").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjures a wall of earth!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s wall has crumbled").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {

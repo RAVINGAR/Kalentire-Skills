@@ -96,13 +96,14 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         node.set("num-shots", Integer.valueOf(1));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(100));
-        node.set("horizontal-power", Double.valueOf(1.0));
-        node.set("vertical-power", Double.valueOf(0.6));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.0));
+        node.set("horizontal-power", Double.valueOf(1.1));
+        node.set("vertical-power", Double.valueOf(0.5));
         node.set("ncp-exemption-duration", 1500);
-        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDeonoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
-        node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDeonoter() + "%hero%'s arrows are no longer Explosive."));
+        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
+        node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive."));
 
 
         return node;
@@ -111,9 +112,9 @@ public class SkillExplosiveShot extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, "expire-text-fail", Messaging.getSkillDeonoter() + "%hero%'s arrows are no longer Explosive.").replace("%hero%", "$1");
-        shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDeonoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, "expire-text-fail", Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive.").replace("%hero%", "$1");
+        shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDenoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -185,7 +186,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4, false);
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 80, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
             damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
             // Play an effect, but only if we actually hit a target.

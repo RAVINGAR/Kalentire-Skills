@@ -44,7 +44,7 @@ public class SkillEntangle extends TargettedSkill {
     public SkillEntangle(Heroes plugin) {
         // Heroes stuff
         super(plugin, "Entangle");
-        setDescription("Roots your target in place for $2 seconds. The effect breaks when the target takes damage.");
+        setDescription("Roots your target in place for $1 seconds. The effect breaks when the target takes damage.");
         setUsage("/skill entangle");
         setIdentifiers("skill entangle");
         setTypes(SkillType.AGGRESSIVE, SkillType.MOVEMENT_PREVENTING, SkillType.DEBUFFING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_EARTH);
@@ -66,11 +66,12 @@ public class SkillEntangle extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
         node.set(SkillSetting.PERIOD.node(), 100);
         node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% used %skill% on %target%!");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has been rooted!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has broken free from the root!");
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% used %skill% on %target%!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been rooted!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has broken free from the root!");
 
         return node;
     }
@@ -78,8 +79,8 @@ public class SkillEntangle extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%target% has been rooted!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%target% has broken free from the root!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been rooted!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has broken free from the root!").replace("%target%", "$1");
     }
 
     @Override

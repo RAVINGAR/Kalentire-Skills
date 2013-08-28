@@ -52,27 +52,27 @@ public class SkillFireblast extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
         distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 150, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 3.8, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        return getDescription().replace("$1", radius + "").replace("$2", distance + "").replace("$3", damage + "");
+        return getDescription().replace("$1", distance + "").replace("$2", radius + "").replace("$3", damage + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(2));
+        // node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.2));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
 
         return node;
     }
@@ -81,11 +81,11 @@ public class SkillFireblast extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
-        distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
+        //        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
+        //        distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
 
-        Block prev = null;
-        Block b;
+        Block targetBlock = null;
+        Block tempBlock;
         BlockIterator iter = null;
         try {
             iter = new BlockIterator(player, distance);
@@ -93,19 +93,25 @@ public class SkillFireblast extends ActiveSkill {
         catch (IllegalStateException e) {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        while (iter.hasNext()) {
-            b = iter.next();
-            if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
-                prev = b;
-            }
-            else {
-                break;
-            }
-        }
-        if (prev != null) {
 
+        while (iter.hasNext()) {
+            tempBlock = iter.next();
+
+            if ((Util.transparentBlocks.contains(tempBlock.getType())
+            && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
+            || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
+                targetBlock = tempBlock;
+            }
+            else
+                break;
+        }
+
+        if (targetBlock != null) {
+            Location targetLocation = targetBlock.getLocation().clone();
+            targetLocation.add(new Vector(.5, .5, .5));
+            
             try {
-                fplayer.playFirework(prev.getWorld(), prev.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+                fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
             }
             catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -114,16 +120,16 @@ public class SkillFireblast extends ActiveSkill {
                 e.printStackTrace();
             }
 
-            double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1, false);
+            double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
             damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
             double horizontalPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.1, false);
             double veticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
 
             // Loop through nearby targets and damage / knock them back
-            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
-            List<Entity> targets = getNearbyEntities(prev.getLocation(), radius, radius, radius);
+            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
+            List<Entity> targets = getNearbyEntities(targetLocation, radius, radius, radius);
             for (Entity entity : targets) {
 
                 // Check to see if the entity can be damaged
@@ -139,8 +145,8 @@ public class SkillFireblast extends ActiveSkill {
                 // Do a knock up/back effect.
                 Location targetLoc = target.getLocation();
 
-                double xDir = prev.getX() - targetLoc.getX();
-                double zDir = prev.getZ() - targetLoc.getZ();
+                double xDir = targetBlock.getX() - targetLoc.getX();
+                double zDir = targetBlock.getZ() - targetLoc.getZ();
                 double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
 
                 xDir = xDir / magnitude * horizontalPower;

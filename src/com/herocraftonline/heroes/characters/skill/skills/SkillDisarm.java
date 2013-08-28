@@ -47,8 +47,8 @@ public class SkillDisarm extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% was disarmed!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has found his weapon again!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% was disarmed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has found his weapon again!");
 
         return node;
     }

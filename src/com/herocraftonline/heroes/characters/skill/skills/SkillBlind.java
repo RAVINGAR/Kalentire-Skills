@@ -38,9 +38,10 @@ public class SkillBlind extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been blinded!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% can see again!");
 
         return node;
     }
@@ -48,8 +49,8 @@ public class SkillBlind extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been blinded!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% can see again!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {

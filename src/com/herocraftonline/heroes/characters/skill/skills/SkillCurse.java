@@ -63,9 +63,9 @@ public class SkillCurse extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set("miss-chance", 0.50);
-        node.set("miss-text", Messaging.getSkillDeonoter() + "%target% misses an attack!");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has been cursed!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has recovered from the curse!");
+        node.set("miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!");
 
         return node;
     }
@@ -74,9 +74,9 @@ public class SkillCurse extends TargettedSkill {
     public void init() {
         super.init();
 
-        missText = SkillConfigManager.getRaw(this, "miss-text", Messaging.getSkillDeonoter() + "%target% misses an attack!").replace("%target%", "$1");
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has been cursed!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has recovered from the curse!").replace("%target%", "$1");
+        missText = SkillConfigManager.getRaw(this, "miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!").replace("%target%", "$1");
     }
 
     @Override

@@ -47,6 +47,8 @@ public class SkillBlitz extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
         node.set(SkillSetting.DAMAGE.node(), 180);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2);
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
 
         return node;
     }

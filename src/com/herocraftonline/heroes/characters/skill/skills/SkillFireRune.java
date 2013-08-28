@@ -57,7 +57,6 @@ public class SkillFireRune extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.SILENCABLE);
         setArgumentRange(0, 0);
 
-        // Start up the listener for Runeword skill usage
         Bukkit.getServer().getPluginManager().registerEvents(new FireRuneListener(this), plugin);
     }
 
@@ -65,9 +64,10 @@ public class SkillFireRune extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), 105);
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%target% has been burned by a Rune of Fire!");
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(55));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.875));
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been burned by a Rune of Fire!");
         node.set("rune-chat-color", ChatColor.RED.toString());
 
         return node;
@@ -75,7 +75,10 @@ public class SkillFireRune extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 105, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(55), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.875), false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
         return getDescription().replace("$1", damage + "");
     }
 
@@ -101,10 +104,6 @@ public class SkillFireRune extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    /*
-     * This listener is the main controller for the FireRune ability. The primary function is to listen to the Rune Application event.
-     * It could be used to listen to other things as well, but that won't typically be necessary.
-     */
     private class FireRuneListener implements Listener {
         private final Skill skill;
 
@@ -137,13 +136,13 @@ public class SkillFireRune extends ActiveSkill {
                     // Prep variables
                     CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 55, false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(55), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.875), false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                     String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
 
-                    // Damage and silence the target
+                    // Damage the target
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
@@ -158,65 +157,4 @@ public class SkillFireRune extends ActiveSkill {
             return;
         }
     }
-
-    //    public class WitheringEffect extends ExpirableEffect {
-    //
-    //        private double finishDamage;
-    //
-    //        public WitheringEffect(Skill skill, double damage) {
-    //            super(skill, "Withering", 100);
-    //
-    //            this.finishDamage = finishDamage;
-    //
-    //            types.add(EffectType.DISPELLABLE);
-    //            types.add(EffectType.DARK);
-    //            types.add(EffectType.WITHER);
-    //            types.add(EffectType.HARMFUL);
-    //
-    //            addMobEffect(9, (int) ((duration + 4000) / 1000) * 20, 3, false);
-    //            addMobEffect(20, (int) (duration / 1000) * 20, 1, false);
-    //        }
-    //
-    //        @Override
-    //        public void applyToMonster(Monster monster) {
-    //            super.applyToMonster(monster);
-    //
-    //            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster));
-    //        }
-    //
-    //        @Override
-    //        public void applyToHero(Hero hero) {
-    //            super.applyToHero(hero);
-    //
-    //            Player player = hero.getPlayer();
-    //            broadcast(player.getLocation(), applyText, player.getDisplayName());
-    //        }
-    //
-    //        @Override
-    //        public void removeFromMonster(Monster monster) {
-    //            super.removeFromMonster(monster);
-    //
-    //            if (monster.getEntity().isDead())
-    //                return;
-    //
-    //            skill.addSpellTarget(monster.getEntity(), getApplierHero());
-    //            damageEntity(monster.getEntity(), getApplier(), finishDamage, DamageCause.MAGIC);
-    //
-    //            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
-    //        }
-    //
-    //        @Override
-    //        public void removeFromHero(Hero hero) {
-    //            super.removeFromHero(hero);
-    //
-    //            Player player = hero.getPlayer();
-    //            if (player.isDead())
-    //                return;
-    //
-    //            skill.addSpellTarget(hero.getEntity(), getApplierHero());
-    //            damageEntity(player, getApplier(), finishDamage, DamageCause.MAGIC);
-    //
-    //            broadcast(player.getLocation(), expireText, player.getDisplayName());
-    //        }
-    //    }
 }

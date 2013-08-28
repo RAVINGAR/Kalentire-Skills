@@ -19,6 +19,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillAbsolution extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
@@ -33,21 +34,23 @@ public class SkillAbsolution extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
-        healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        return getDescription().replace("$1", healing + "");
+        String formattedHealing = Util.decFormat.format(healing);
+
+        return getDescription().replace("$1", formattedHealing);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
-        node.set(SkillSetting.HEALING.node(), 125);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(125));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0));
 
         return node;
     }
@@ -60,8 +63,8 @@ public class SkillAbsolution extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 125, false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(2.0), false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double targetHealth = target.getHealth();

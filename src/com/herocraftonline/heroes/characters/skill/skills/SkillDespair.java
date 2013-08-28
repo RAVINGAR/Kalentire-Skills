@@ -34,7 +34,7 @@ public class SkillDespair extends ActiveSkill {
 
     public SkillDespair(Heroes plugin) {
         super(plugin, "Despair");
-        setDescription("Blinds all enemies within $1 blocks for $2 seconds and deals $3 dark damage.");
+        setDescription("Blinds all enemies within $1 blocks for $2 seconds and dealing $3 dark damage.");
         setUsage("/skill despair");
         setArgumentRange(0, 0);
         setIdentifiers("skill despair");
@@ -67,8 +67,11 @@ public class SkillDespair extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(8));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% has blinded %target% with %skill%!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDeonoter() + "%hero% has recovered their sight!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has blinded %target% with %skill%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has recovered their sight!");
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(367));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+
         return node;
     }
 
@@ -76,8 +79,8 @@ public class SkillDespair extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDeonoter() + "%hero% has blinded %target% with %skill%!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDeonoter() + "%hero% has recovered their sight!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has blinded %target% with %skill%!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% has recovered their sight!").replace("%hero%", "$1").replace("%target%", "$2").replace("%skill%", "$3");
     }
 
     @Override

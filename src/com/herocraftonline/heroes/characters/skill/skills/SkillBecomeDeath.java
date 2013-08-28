@@ -28,6 +28,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillBecomeDeath extends ActiveSkill {
 
@@ -46,7 +47,7 @@ public class SkillBecomeDeath extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 120000, false);
 
         return getDescription().replace("$1", duration / 1000 + "");
     }
@@ -55,9 +56,9 @@ public class SkillBecomeDeath extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), 30000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% gains the features of a zombie!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% no longer appears as an undead!");
+        node.set(SkillSetting.DURATION.node(), 120000);
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% shrouds themself in death!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% no longer appears as an undead!");
 
         return node;
     }
@@ -65,21 +66,24 @@ public class SkillBecomeDeath extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% gains the features of a zombie!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% no longer appears as an undead!").replace("%hero%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% shrouds themself in death!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% no longer appears as an undead!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 120000, false);
         hero.addEffect(new BecomeDeathEffect(this, duration));
         for (Effect e : hero.getEffects()) {
             if (e.isType(EffectType.POISON) && e.isType(EffectType.HARMFUL)) {
                 hero.removeEffect(e);
             }
         }
+
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_IDLE, 0.7F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
