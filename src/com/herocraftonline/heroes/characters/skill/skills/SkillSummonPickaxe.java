@@ -1,11 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.HashMap;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -14,6 +16,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillSummonPickaxe extends ActiveSkill {
 
@@ -36,10 +39,16 @@ public class SkillSummonPickaxe extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        World world = player.getWorld();
-        ItemStack dropItem = new ItemStack(Material.STONE_PICKAXE, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
-        world.dropItem(player.getLocation(), dropItem);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 0.8F, 1.0F); 
+
+        int amount = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
+
+        PlayerInventory inventory = player.getInventory();
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.STONE_PICKAXE, amount) });
+        for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
+            Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+        }
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
