@@ -32,7 +32,6 @@ public class SkillAimedShot extends TargettedSkill {
 
     private String applyText;
     private String expireTextFail;
-    private String expireTextBadShot;
     private String expireTextSuccess;
 
     public SkillAimedShot(Heroes plugin) {
@@ -60,16 +59,16 @@ public class SkillAimedShot extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(125));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(3.1));
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(40));
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(3000));
-        node.set("grace-period", Integer.valueOf(2000));
-        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% is locked on!"));
-        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to hone in his aim on %target%"));
-        node.set("expire-text-fail", String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has lost sight of his target."));
-        node.set("expire-text-bad-shot", String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% did not put enough strength into his shot!"));
-        node.set("expire-text-success", String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!"));
+        node.set("grace-period", Integer.valueOf(4000));
+        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% is locked on!"));
+        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% begins to hone in his aim on %target%"));
+        node.set("expire-text-fail", String.valueOf(Messaging.getSkillDenoter() + "%hero% has lost sight of his target."));
+        node.set("expire-text-success", String.valueOf(Messaging.getSkillDenoter() + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!"));
 
         return node;
     }
@@ -77,10 +76,9 @@ public class SkillAimedShot extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% is locked on!").replace("%hero%", "$1");
-        expireTextFail = SkillConfigManager.getRaw(this, "expire-text-fail", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has lost sight of his target.").replace("%hero%", "$1");
-        expireTextBadShot = SkillConfigManager.getRaw(this, "expire-text-bad-shot", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% did not put enough strength into his shot!").replace("%hero%", "$1");
-        expireTextSuccess = SkillConfigManager.getRaw(this, "expire-text-success", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is locked on!").replace("%hero%", "$1");
+        expireTextFail = SkillConfigManager.getRaw(this, "expire-text-fail", Messaging.getSkillDenoter() + "%hero% has lost sight of his target.").replace("%hero%", "$1");
+        expireTextSuccess = SkillConfigManager.getRaw(this, "expire-text-success", Messaging.getSkillDenoter() + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!").replace("%hero%", "$1").replace("%target%", "$2");
     }
     
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -124,14 +122,6 @@ public class SkillAimedShot extends TargettedSkill {
                 // Player released arrow too soon--skill failure.
                 AimedShotBuffEffect asEffect = (AimedShotBuffEffect) hero.getEffect("AimedShotBuffEffect");
 
-                //                if (event.getForce() < 1) {
-                //                    // Player released arrow too soon--skill failure.
-                //                    asEffect.setLostSight(false);
-                //                    asEffect.setBadShot(true);
-                //                    hero.removeEffect(asEffect);
-                //                    return;
-                //                }
-
                 // Tell the buff that we have a successful shot and then remove it
                 asEffect.setLostSight(false);
                 hero.removeEffect(asEffect);
@@ -172,7 +162,6 @@ public class SkillAimedShot extends TargettedSkill {
     // Buff effect used to keep track of warmup time
     private class AimedShotBuffEffect extends ExpirableEffect {
 
-        private boolean badShot = false;
         private boolean lostSight = true;
         private LivingEntity target;
 
@@ -215,14 +204,10 @@ public class SkillAimedShot extends TargettedSkill {
                 return;
             }
 
-            if (badShot)
-                broadcast(player.getLocation(), expireTextBadShot, player.getDisplayName());
-            else {
-                if (target instanceof Monster)
-                    broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
-                else if (target instanceof Player)
-                    broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), ((Player) target).getDisplayName());
-            }
+            if (target instanceof Monster)
+                broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
+            else if (target instanceof Player)
+                broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), ((Player) target).getDisplayName());
         }
 
         public void setLostSight(boolean lostSight) {

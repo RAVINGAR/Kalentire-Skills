@@ -39,8 +39,8 @@ public class SkillHellgate extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(10));
-        node.set("hell-world", "world_nether");
-        node.set("default-return", "world"); // default world the player return to if their location wasn't
+        node.set("hell-world", "hell");
+        node.set("default-return", "bastion"); // default world the player return to if their location wasn't
                                                      // saved
         return node;
     }

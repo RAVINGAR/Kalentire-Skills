@@ -55,6 +55,7 @@ public class SkillHarmshield extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("damage-multiplier", Double.valueOf(0.2));
         node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is shielded from harm!");

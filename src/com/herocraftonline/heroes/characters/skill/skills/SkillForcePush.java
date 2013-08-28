@@ -58,6 +58,7 @@ public class SkillForcePush extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.6));
         node.set("horizontal-power", Double.valueOf(1.5));

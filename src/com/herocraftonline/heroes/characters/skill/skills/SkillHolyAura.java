@@ -83,7 +83,7 @@ public class SkillHolyAura extends ActiveSkill {
         node.set("undead-damage", Integer.valueOf(20));
         node.set("undead-damage-increase-per-wisdom", Double.valueOf(0.375));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% begins to radiate a holy aura!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer holy!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has lost their holy aura!");
 
         return node;
     }
@@ -93,12 +93,14 @@ public class SkillHolyAura extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% begins to radiate a holy aura!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer holy!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has lost their holy aura!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(16000), false);
@@ -112,8 +114,6 @@ public class SkillHolyAura extends ActiveSkill {
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
         hero.addEffect(new HolyAuraEffect(this, duration, period, healing, undeadDamage));
-
-        broadcastExecuteText(hero);
 
         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());

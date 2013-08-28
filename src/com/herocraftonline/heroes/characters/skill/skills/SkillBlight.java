@@ -66,8 +66,8 @@ public class SkillBlight extends TargettedSkill {
         node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(15));
         node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.4));
         node.set(SkillSetting.RADIUS.node(), 4);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% begins to radiate a cloud of disease!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer diseased!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% begins to radiate a cloud of disease!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer diseased!");
 
         return node;
     }
@@ -76,8 +76,8 @@ public class SkillBlight extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% begins to radiate a cloud of disease!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer diseased!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% begins to radiate a cloud of disease!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer diseased!").replace("%target%", "$1");
     }
 
     @Override

@@ -1,10 +1,9 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -30,7 +29,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -50,53 +48,34 @@ public class SkillMultiShot extends ActiveSkill {
 
     public SkillMultiShot(Heroes plugin) {
         super(plugin, "MultiShot");
-        setDescription("Load your bow with $1 arrows for $2 seconds. You can use this ability multiple times to load additional arrows, up to a limit of $3. When firing your bow with arrows loaded, you will launch up to $4 arrows at once! The buff duration will reset when loading new arrows or firing your loaded ones.");
+        setDescription("Enter Multi Shot Mode. While in Multi Shot Mode, you will your bow will launch up to $1 arrows at once! Multi Shot arrows are less powerful than normal ones however.");
         setUsage("/skill multishot");
         setArgumentRange(0, 0);
         setIdentifiers("skill multishot");
-        setTypes(SkillType.PHYSICAL, SkillType.BUFF, SkillType.HARMFUL, SkillType.DAMAGING);
+        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.BUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     public String getDescription(Hero hero) {
 
-        int arrowIncrement = SkillConfigManager.getUseSetting(hero, this, "arrows-loaded-per-use", 4, false);
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false) / 1000.0);
-        int maxTotalArrows = SkillConfigManager.getUseSetting(hero, this, "max-total-arrows", 20, false);
-        int maxArrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", 4, false);
+        int arrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "arrows-per-shot", Integer.valueOf(5), false);
 
-        return getDescription().replace("$1", arrowIncrement + "").replace("$2", duration + "").replace("$3", maxTotalArrows + "").replace("$4", maxArrowsPerShot + "");
+        return getDescription().replace("$1", arrowsPerShot + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
-        node.set("arrows-loaded-per-use", Integer.valueOf(6));
         node.set("max-arrows-per-shot", Integer.valueOf(6));
-        node.set("max-total-arrows", Integer.valueOf(30));
-        node.set("degrees", Double.valueOf(65.0));
-        node.set("velocity-multiplier", Double.valueOf(1.6));
-        node.set("multishot-immunity-duration", Integer.valueOf(500));
-
-        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to load up arrows!"));
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are no longer firing multiple arrows.");
+        node.set("degrees", Double.valueOf(10.0));
+        node.set("velocity-multiplier", Double.valueOf(3.0));
 
         return node;
-    }
-
-    public void init() {
-        super.init();
-
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are no longer firing multiple arrows.");
     }
 
     public SkillResult use(Hero hero, String[] args) {

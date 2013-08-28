@@ -61,11 +61,13 @@ public class SkillCurse extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
-        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.DURATION.node(), 7000);
         node.set("miss-chance", 0.50);
         node.set("miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!");
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!");
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(318));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
 
         return node;
     }

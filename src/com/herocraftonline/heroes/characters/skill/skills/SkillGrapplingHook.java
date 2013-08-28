@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -73,12 +72,9 @@ public class SkillGrapplingHook extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.VELOCITY_INCREASING, SkillType.FORCE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     public String getDescription(Hero hero) {
@@ -102,15 +98,17 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         node.set("num-shots", Integer.valueOf(1));
         node.set("velocity-multiplier", Double.valueOf(0.5D));
-        node.set("max-distance", Integer.valueOf(35));
-        node.set("safe-fall-duration", Integer.valueOf(4000));
+        node.set("max-distance", Integer.valueOf(-1));
+        node.set("safe-fall-duration", Integer.valueOf(4500));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
         node.set("horizontal-divider", Integer.valueOf(6));
         node.set("vertical-divider", Integer.valueOf(8));
-        node.set("multiplier", Double.valueOf(1.2));
+        node.set("multiplier", Double.valueOf(1.0));
         node.set("ncp-exemption-duration", 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% readies his grappling hook!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% drops his grappling hook.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% readies his grappling hook!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% drops his grappling hook.");
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(287));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(2));
 
         return node;
     }
@@ -118,8 +116,8 @@ public class SkillGrapplingHook extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% readies his grappling hook!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% drops his grappling hook.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% readies his grappling hook!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% drops his grappling hook.").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -298,7 +296,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         else {
             // As long as we have Y, give them safefall
             int safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);
-            hero.addEffect(new SafeFallEffect(this, safeFallDuration));
+            hero.addEffect(new JumpSafeFallEffect(this, safeFallDuration));
         }
 
         // Let's bypass the nocheat issues...
@@ -419,6 +417,18 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         public void setShowExpireText(boolean showExpireText) {
             this.showExpireText = showExpireText;
+        }
+    }
+
+    private class JumpSafeFallEffect extends SafeFallEffect {
+
+        public JumpSafeFallEffect(Skill skill, int duration) {
+            super(skill, "GrappleJumpSafeFall", duration);
+
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.JUMP);
+
+            addMobEffect(8, duration / 1000 * 20, 5, false);
         }
     }
 

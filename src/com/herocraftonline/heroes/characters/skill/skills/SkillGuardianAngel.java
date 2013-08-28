@@ -1,4 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
+
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,18 +27,18 @@ public class SkillGuardianAngel extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
-        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
-        
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
+        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+
         return getDescription().replace("$1", radius + "").replace("$2", (int) (duration / 1000) + "");
     }
-    
+
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), 10);
-        node.set(SkillSetting.DURATION.node(), 12000); // in Milliseconds - 10 minutes
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
 
         return node;
     }
@@ -45,13 +46,17 @@ public class SkillGuardianAngel extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
+
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
 
         InvulnerabilityEffect iEffect = new InvulnerabilityEffect(this, duration);
         if (!hero.hasParty()) {
             hero.addEffect(iEffect);
-        } else {
-            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10, false), 2);
+        }
+        else {
+            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 7, false), 2);
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();
                 if (!pPlayer.getWorld().equals(player.getWorld()) || pPlayer.getLocation().distanceSquared(player.getLocation()) > rangeSquared) {
@@ -62,9 +67,7 @@ public class SkillGuardianAngel extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH , 0.5F, 1.0F); 
-
-        broadcastExecuteText(hero);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

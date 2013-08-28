@@ -46,7 +46,7 @@ public class SkillCombustBlood extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(70));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(95));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.75));
         node.set("blood-union-increase", 1);
         node.set("blood-union-required-for-dot", 3);
@@ -66,7 +66,7 @@ public class SkillCombustBlood extends TargettedSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 70, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.75, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 

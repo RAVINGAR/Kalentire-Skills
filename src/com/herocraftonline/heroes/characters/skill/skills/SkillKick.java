@@ -44,6 +44,7 @@ public class SkillKick extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(40));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));

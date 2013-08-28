@@ -94,6 +94,7 @@ public class SkillExplosiveShot extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("num-shots", Integer.valueOf(1));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
@@ -101,7 +102,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.0));
         node.set("horizontal-power", Double.valueOf(1.1));
         node.set("vertical-power", Double.valueOf(0.5));
-        node.set("ncp-exemption-duration", 1500);
+        node.set("ncp-exemption-duration", 500);
         node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
         node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive."));
 

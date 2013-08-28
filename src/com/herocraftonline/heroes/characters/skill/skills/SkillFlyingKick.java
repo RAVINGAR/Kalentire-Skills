@@ -44,7 +44,7 @@ public class SkillFlyingKick extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
 
-        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 3);
         defaultConfig.set(SkillSetting.DAMAGE.node(), 25);
         defaultConfig.set(SkillSetting.DURATION.node(), 3000);
         defaultConfig.set("vertical-power", Double.valueOf(0.9));

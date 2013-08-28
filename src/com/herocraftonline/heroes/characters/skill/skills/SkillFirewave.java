@@ -76,9 +76,11 @@ public class SkillFirewave extends ActiveSkill {
 		ConfigurationSection node = super.getDefaultConfig();
 
         node.set("fireballs", Integer.valueOf(12));
-        node.set("fireballs-per-intellect", Double.valueOf(0.2));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
+        node.set("fireballs-per-intellect", Double.valueOf(0.325));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(95));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
 
 		return node;
 	}
@@ -87,7 +89,7 @@ public class SkillFirewave extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
         int numFireballs = SkillConfigManager.getUseSetting(hero, this, "fireballs", 12, false);
-        double numFireballsIncrease = SkillConfigManager.getUseSetting(hero, this, "fireballs-per-intellect", 0.2, false);
+        double numFireballsIncrease = SkillConfigManager.getUseSetting(hero, this, "fireballs-per-intellect", 0.325, false);
         numFireballs += (int) (numFireballsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         // Let's bypass the nocheat issues...

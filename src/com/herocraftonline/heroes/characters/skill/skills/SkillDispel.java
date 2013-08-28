@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
@@ -29,7 +30,7 @@ public class SkillDispel extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 3, false);
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 1, false);
         return getDescription().replace("$1", removals + "");
     }
 
@@ -37,7 +38,8 @@ public class SkillDispel extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("max-removals", 3);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
+        node.set("max-removals", Integer.valueOf(1));
 
         return node;
     }
@@ -47,7 +49,8 @@ public class SkillDispel extends TargettedSkill {
         Player player = hero.getPlayer();
 
         boolean removed = false;
-        int maxRemovals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 3, false);
+        int maxRemovals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 1, false);
+
         // if player is targetting itself
         if (target.equals(player)) {
             for (Effect effect : hero.getEffects()) {

@@ -13,6 +13,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
@@ -41,7 +42,8 @@ public class SkillBattery extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("transfer-amount", 20);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set("transfer-amount", 150);
 
         return node;
     }
@@ -54,7 +56,7 @@ public class SkillBattery extends TargettedSkill {
 
         Hero tHero = plugin.getCharacterManager().getHero((Player) target);	
 
-        int transferAmount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
+        int transferAmount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 150, false);
         if (hero.getMana() > transferAmount) {
             if (tHero.getMana() + transferAmount > tHero.getMaxMana()) {
                 transferAmount = tHero.getMaxMana() - tHero.getMana();

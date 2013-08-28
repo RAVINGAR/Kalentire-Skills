@@ -52,8 +52,8 @@ public class SkillChaosOrb extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(90), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         return getDescription().replace("$1", damage + "");
@@ -64,7 +64,7 @@ public class SkillChaosOrb extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.5));
         node.set("velocity-multiplier", 0.4);
         node.set("fire-ticks", 50);
 
@@ -129,7 +129,7 @@ public class SkillChaosOrb extends ActiveSkill {
 
                 // Damage the player
                 double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
-                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
                 damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                 addSpellTarget(entity, hero);

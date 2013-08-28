@@ -67,7 +67,7 @@ public class SkillHolyWater extends ActiveSkill {
 
         node.set(SkillSetting.HEALING.node(), Integer.valueOf(85));
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(6));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
         node.set("undead-damage", Integer.valueOf(45));
         node.set("undead-damage-increase-per-wisdom", Double.valueOf(0.625));
         node.set("velocity-multiplier", Double.valueOf(1.5));
@@ -123,7 +123,7 @@ public class SkillHolyWater extends ActiveSkill {
             Player player = (Player) shooter;
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(6), false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(7), false);
 
             double healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING.node(), Integer.valueOf(85), false);
             double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0), false);
@@ -137,6 +137,7 @@ public class SkillHolyWater extends ActiveSkill {
             if (hero.hasParty())
                 partyMembers = hero.getParty().getMembers();
 
+            // We could just grab the affected entities by the splash, but the radius is reeeaally small, so we're just gonna use our own radius.
             List<Entity> entities = event.getEntity().getNearbyEntities(radius, radius, radius);
             for (Entity entity : entities) {
                 if (!(entity instanceof LivingEntity)) {

@@ -51,10 +51,10 @@ public class SkillIronFist extends ActiveSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.125));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(500));
-        node.set("horizontal-power", Double.valueOf(1.5));
-        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0375));
-        node.set("vertical-power", Double.valueOf(0.25));
-        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.0075));
+        node.set("horizontal-power", Double.valueOf(0.0));
+        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0));
+        node.set("vertical-power", Double.valueOf(0.4));
+        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.015));
 
         return node;
     }
@@ -69,12 +69,12 @@ public class SkillIronFist extends ActiveSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.125), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.0), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0), false);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.4), false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.015), false);
         hPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.015), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.0), false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0), false);
         vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);

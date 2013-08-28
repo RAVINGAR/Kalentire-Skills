@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unfinishedskills;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
@@ -23,11 +22,8 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillLunarLance extends TargettedSkill {
-    private final int defDamage = 95;													// Default damage
-    private final int defBurnValue = 20;												// Default mana burn amount
-    private final String defFailText = ChatColor.WHITE + "You need a weapon to use this ability!";		// Default skill fail text
 
-    public VisualEffect fplayer = new VisualEffect();									// Firework effect
+    public VisualEffect fplayer = new VisualEffect();
 
     public SkillLunarLance(Heroes plugin) {
         super(plugin, "LunarLance");
@@ -35,7 +31,7 @@ public class SkillLunarLance extends TargettedSkill {
         setUsage("/skill lunarlance");
         setArgumentRange(0, 0);
         setIdentifiers("skill lunarlance");
-        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.LIGHT, SkillType.MANA, SkillType.HARMFUL);
+        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MANA_DECREASING, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -43,6 +39,9 @@ public class SkillLunarLance extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("weapons", Util.shovels);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.84));
         node.set("burn-amount", defBurnValue);
         node.set("fail-text", defFailText);
         node.set(SkillSetting.DAMAGE.node(), defDamage);

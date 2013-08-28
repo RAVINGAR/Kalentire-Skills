@@ -18,6 +18,9 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillInvuln extends ActiveSkill {
 
+    private String applyText;
+    private String expireText;
+
     public SkillInvuln(Heroes plugin) {
         super(plugin, "Invuln");
         setDescription("You become immune to all attacks, and may not attack for $1 seconds.");
@@ -42,6 +45,8 @@ public class SkillInvuln extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has become invulnerable!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is once again vulnerable!");
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(81));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
 
         return node;
     }
@@ -50,6 +55,8 @@ public class SkillInvuln extends ActiveSkill {
     public void init() {
         super.init();
 
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has become invulnerable!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is once again vulnerable!").replace("%hero%", "$1");
     }
 
     @Override
@@ -64,7 +71,7 @@ public class SkillInvuln extends ActiveSkill {
         }
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
-        hero.addEffect(new InvulnerabilityEffect(this, duration));
+        hero.addEffect(new InvulnerabilityEffect(this, duration, applyText, expireText));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 1.0F); 
 

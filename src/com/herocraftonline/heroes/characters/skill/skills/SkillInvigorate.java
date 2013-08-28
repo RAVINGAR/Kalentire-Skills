@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
@@ -36,6 +37,7 @@ public class SkillInvigorate extends TargettedSkill{
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
         node.set("stamina-gain", 1000);
 
         return node;

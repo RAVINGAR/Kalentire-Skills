@@ -25,6 +25,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIcebolt extends ActiveSkill {
@@ -72,9 +73,9 @@ public class SkillIcebolt extends ActiveSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
         node.set("slow-multiplier", Integer.valueOf(1));
-        node.set("velocity-multiplier", Double.valueOf(1.1));
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
+        node.set("velocity-multiplier", Double.valueOf(1.2));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been slowed by %hero%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
 
         return node;
     }
@@ -83,8 +84,8 @@ public class SkillIcebolt extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
     }
     
     @Override

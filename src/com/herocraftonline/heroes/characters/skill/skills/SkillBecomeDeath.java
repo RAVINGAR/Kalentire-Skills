@@ -56,6 +56,7 @@ public class SkillBecomeDeath extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set(SkillSetting.DURATION.node(), 120000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% shrouds themself in death!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% no longer appears as an undead!");
