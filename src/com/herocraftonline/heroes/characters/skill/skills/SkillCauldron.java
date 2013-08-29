@@ -83,9 +83,13 @@ public class SkillCauldron extends PassiveSkill {
 
 	@Override
 	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection section = super.getDefaultConfig();
-		section.set(SkillSetting.LEVEL.node(), 1);
-		return section;
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        node.set(SkillSetting.LEVEL.node(), 1);
+
+        return node;
 	}
 
 	public void loadCauldronConfig() {

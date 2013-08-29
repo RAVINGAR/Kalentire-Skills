@@ -38,24 +38,6 @@ public class SkillBoilBlood extends ActiveSkill {
         setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
     }
 
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(70));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(10));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(12000));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood begins to boil!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood is no longer boiling.");
-        node.set("blood-union-required-for-use", Integer.valueOf(3));
-        node.set("max-targets", Integer.valueOf(6));
-
-        return node;
-    }
-
     public String getDescription(Hero hero) {
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
@@ -84,6 +66,24 @@ public class SkillBoilBlood extends ActiveSkill {
         String formattedDotDamage = Util.decFormat.format((tickDamage * ((double) duration / (double) period)));
 
         return getDescription().replace("$6", targetText).replace("$1", radius + "").replace("$2", damage + "").replace("$3", formattedDotDamage + "").replace("$4", formattedDuration + "").replace("$5", bloodUnionReq + "");
+    }
+
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(70));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+        node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(10));
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(12000));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood begins to boil!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood is no longer boiling.");
+        node.set("blood-union-required-for-use", Integer.valueOf(3));
+        node.set("max-targets", Integer.valueOf(6));
+
+        return node;
     }
 
     public SkillResult use(Hero hero, String[] args) {

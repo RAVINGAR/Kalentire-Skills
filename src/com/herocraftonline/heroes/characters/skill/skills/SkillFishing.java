@@ -42,9 +42,13 @@ public class SkillFishing extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("chance-per-level", .001);
         node.set("leather-level", 5);
         node.set("enable-leather", false);
+
         return node;
     }
 

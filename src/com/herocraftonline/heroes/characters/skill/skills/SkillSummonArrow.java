@@ -18,20 +18,21 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillSummonPickaxe extends ActiveSkill {
+public class SkillSummonArrow extends ActiveSkill {
 
-    public SkillSummonPickaxe(Heroes plugin) {
-        super(plugin, "SummonPickaxe");
-        setDescription("You summon a mysterious pickaxe.");
-        setUsage("/skill summonpickaxe");
+    public SkillSummonArrow(Heroes plugin) {
+        super(plugin, "SummonArrow");
+        setDescription("You summon $1 arrows.");
+        setUsage("/skill summonarrow");
         setArgumentRange(0, 0);
-        setIdentifiers("skill summonpickaxe", "skill pickaxe");
+        setIdentifiers("skill summonarrow");
         setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 5, false);
+
         return getDescription().replace("$1", amount + "");
     }
 
@@ -39,7 +40,7 @@ public class SkillSummonPickaxe extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.AMOUNT.node(), 1);
+        node.set(SkillSetting.AMOUNT.node(), 2);
 
         return node;
     }
@@ -48,16 +49,19 @@ public class SkillSummonPickaxe extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
 
         PlayerInventory inventory = player.getInventory();
-        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.STONE_PICKAXE, amount) });
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.ARROW, amount) });
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
             Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
         }
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.DIG_WOOD, 0.8F, 0.2F);
         broadcastExecuteText(hero);
+
         return SkillResult.NORMAL;
     }
+
 }

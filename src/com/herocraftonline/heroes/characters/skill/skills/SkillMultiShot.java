@@ -18,17 +18,13 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -36,7 +32,6 @@ import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 public class SkillMultiShot extends ActiveSkill {
 
     private boolean ncpEnabled = false;
-    private String expireText;
 
     private Map<Arrow, Long> multiShots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
@@ -63,7 +58,7 @@ public class SkillMultiShot extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        int arrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "arrows-per-shot", Integer.valueOf(5), false);
+        int arrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", Integer.valueOf(5), false);
 
         return getDescription().replace("$1", arrowsPerShot + "");
     }
@@ -71,7 +66,7 @@ public class SkillMultiShot extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("max-arrows-per-shot", Integer.valueOf(6));
+        node.set("max-arrows-per-shot", Integer.valueOf(5));
         node.set("degrees", Double.valueOf(10.0));
         node.set("velocity-multiplier", Double.valueOf(3.0));
 
@@ -80,67 +75,16 @@ public class SkillMultiShot extends ActiveSkill {
 
     public SkillResult use(Hero hero, String[] args) {
 
-        Player player = hero.getPlayer();
-        PlayerInventory inventory = player.getInventory();
-
-        Map<Integer, ? extends ItemStack> arrowSlots = inventory.all(Material.ARROW);
-
-        int numHeldArrows = 0;
-        for (Map.Entry<Integer, ? extends ItemStack> entry : arrowSlots.entrySet()) {
-            numHeldArrows += entry.getValue().getAmount();
-        }
-
-        if (numHeldArrows == 0) {
-            Messaging.send(player, "You don't have any arrows!");
-            return new SkillResult(ResultType.MISSING_REAGENT, false);
-        }
-
-        int arrowIncrement = SkillConfigManager.getUseSetting(hero, this, "arrows-loaded-per-use", 6, false);
-
-        // Check to make sure they haven't already hit their max number of arrows before proceeding
-        int currentlyLoadedArrows = 0;
-        boolean hasEffectAlready = false;
-        MultiShotEffect msEffect = null;
         if (hero.hasEffect("Multishot")) {
-            msEffect = (MultiShotEffect) hero.getEffect("MultiShot");
-            currentlyLoadedArrows = msEffect.getCurrentlyLoadedArrows();
 
-            if (msEffect.getCurrentlyLoadedArrows() == msEffect.getMaxTotalArrows()) {
-                Messaging.send(player, "You've already loaded your maximum number of arrows!");
-                return SkillResult.FAIL;
-            }
-            else if (arrowIncrement + msEffect.getCurrentlyLoadedArrows() > msEffect.getMaxTotalArrows()) {
-                // Put them at max if they're offset by a couple of arrows for some reason.
-                arrowIncrement = msEffect.getMaxTotalArrows() - msEffect.getCurrentlyLoadedArrows();
-            }
-
-            hasEffectAlready = true;
+            hero.removeEffect(hero.getEffect("Multishot"));
+            return SkillResult.REMOVED_EFFECT;
         }
-
-        // If they don't have enough arrows, cancel.
-        if (numHeldArrows < currentlyLoadedArrows + arrowIncrement) {
-            Messaging.send(player, "You don't have enough arrows to load!");
-            return new SkillResult(ResultType.MISSING_REAGENT, false);
+        else {
+            broadcastExecuteText(hero);
+            hero.addEffect(new MultiShotEffect(this));
+            return SkillResult.NORMAL;
         }
-
-        // They haven't loaded any arrows before. Let's add the effect before we load them.
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
-        int maxArrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", 6, false);
-        int maxTotalArrows = SkillConfigManager.getUseSetting(hero, this, "max-total-arrows", 30, false);
-
-        if (hasEffectAlready) {
-            // Remove the effect if they actually have it already, but don't show expire text when we do it this way.
-            msEffect.showExpireText = false;
-            hero.removeEffect(msEffect);
-        }
-
-        hero.addEffect(new MultiShotEffect(this, duration, currentlyLoadedArrows, maxArrowsPerShot, maxTotalArrows));
-
-        // "Load" the arrows
-        msEffect = (MultiShotEffect) hero.getEffect("MultiShot");
-        msEffect.addArrows(arrowIncrement, player);
-
-        return SkillResult.NORMAL;
     }
 
     public class SkillEntityListener implements Listener {
@@ -169,15 +113,7 @@ public class SkillMultiShot extends ActiveSkill {
             if (!msEffect.shouldListenToBowShootEvents())
                 return;
 
-            // Don't proceed if we don't actually have any arrows loaded.
-            if (msEffect.getCurrentlyLoadedArrows() < 2)
-                return;
-
-            int maxArrowsToShoot = 0;
-            if (msEffect.getCurrentlyLoadedArrows() > msEffect.getMaxArrowsPerShot())
-                maxArrowsToShoot = msEffect.getMaxArrowsPerShot();
-            else
-                maxArrowsToShoot = msEffect.getCurrentlyLoadedArrows();
+            int maxArrowsToShoot = SkillConfigManager.getUseSetting(hero, skill, "max-arrows-per-shot", Integer.valueOf(5), false);
 
             // Ensure the player still has enough arrows in his inventory.
             Player player = hero.getPlayer();
@@ -301,34 +237,16 @@ public class SkillMultiShot extends ActiveSkill {
                 }
             }
             player.updateInventory();
-
-            // Remove the arrows from the buff. If the buff is out of arrows, remove it.
-            msEffect.removeArrows(arrowsToShoot, player);
-            if (msEffect.getCurrentlyLoadedArrows() == 0)
-                hero.removeEffect(msEffect);
-            else {
-                // Refresh the buff after ever shot.
-                int duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 6000, false);
-                int maxArrowsPerShot = SkillConfigManager.getUseSetting(hero, skill, "max-arrows-per-shot", 5, false);
-                int maxTotalArrows = SkillConfigManager.getUseSetting(hero, skill, "max-total-arrows", 30, false);
-                int currentlyLoadedArrows = msEffect.getCurrentlyLoadedArrows();
-
-                msEffect.showExpireText = false;
-                hero.removeEffect(msEffect);
-
-                hero.addEffect(new MultiShotEffect(skill, duration, currentlyLoadedArrows, maxArrowsPerShot, maxTotalArrows));
-            }
         }
 
         private void shootMultiShotArrow(Player player, ItemStack bow, float force, double yaw, double pitchMultiplier, double velocityMultiplier) {
 
             Arrow arrow = player.launchProjectile(Arrow.class);
-            double newYValue = arrow.getVelocity().getY();
 
             // Create our velocity direction based on where the player is facing.
             Vector vel = new Vector(Math.cos(yaw), 0, Math.sin(yaw));
             vel.multiply(pitchMultiplier * velocityMultiplier);
-            vel.setY(newYValue * velocityMultiplier);
+            vel.setY(arrow.getVelocity().getY());
 
             arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
 
@@ -340,37 +258,16 @@ public class SkillMultiShot extends ActiveSkill {
     }
 
     // Buff effect used to keep track of multishot functionality
-    public class MultiShotEffect extends ExpirableEffect {
+    public class MultiShotEffect extends Effect {
 
         private int maxArrowsPerShot;
-        private int maxTotalArrows;
-        private int currentlyLoadedArrows;
         private boolean listenToBowShootEvents;
-        private boolean showExpireText;
 
-        public MultiShotEffect(Skill skill, long duration, int maxArrowsPerShot, int maxTotalArrows) {
-            super(skill, "MultiShot", duration);
-
-            currentlyLoadedArrows = 0;
-            setShowExpireText(true);
+        public MultiShotEffect(Skill skill) {
+            super(skill, "MultiShot");
 
             setListenToBowShootEvents(true);
             setMaxArrowsPerShot(maxArrowsPerShot);
-            setMaxTotalArrows(maxTotalArrows);
-
-            types.add(EffectType.PHYSICAL);
-            types.add(EffectType.BENEFICIAL);
-        }
-
-        public MultiShotEffect(Skill skill, long duration, int currentlyLoadedArrows, int maxArrowsPerShot, int maxTotalArrows) {
-            super(skill, "MultiShot", duration);
-
-            this.currentlyLoadedArrows = currentlyLoadedArrows;
-            setShowExpireText(true);
-
-            setListenToBowShootEvents(true);
-            setMaxArrowsPerShot(maxArrowsPerShot);
-            setMaxTotalArrows(maxTotalArrows);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
@@ -384,40 +281,6 @@ public class SkillMultiShot extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-
-            if (showExpireText)
-                Messaging.send(player, expireText);
-        }
-
-        public int getCurrentlyLoadedArrows() {
-            return currentlyLoadedArrows;
-        }
-
-        public void addArrows(int numArrows, Player player) {
-            if (currentlyLoadedArrows + numArrows <= maxTotalArrows)
-                this.currentlyLoadedArrows += numArrows;
-            else
-                this.currentlyLoadedArrows = maxTotalArrows;
-
-            Messaging.send(player, "MultiShot Arrows: " + this.currentlyLoadedArrows);
-        }
-
-        public void removeArrows(int numArrows, Player player) {
-            if (currentlyLoadedArrows - numArrows >= 0)
-                this.currentlyLoadedArrows -= numArrows;
-            else
-                this.currentlyLoadedArrows = 0;
-
-            Messaging.send(player, "MultiShot Arrows: " + this.currentlyLoadedArrows);
-        }
-
-        public int getMaxTotalArrows() {
-            return maxTotalArrows;
-        }
-
-        public void setMaxTotalArrows(int maxTotalArrows) {
-            this.maxTotalArrows = maxTotalArrows;
         }
 
         public int getMaxArrowsPerShot() {
@@ -434,14 +297,6 @@ public class SkillMultiShot extends ActiveSkill {
 
         public void setListenToBowShootEvents(boolean listenToBowShootEvents) {
             this.listenToBowShootEvents = listenToBowShootEvents;
-        }
-
-        public boolean getShowExpireText() {
-            return showExpireText;
-        }
-
-        public void setShowExpireText(boolean showExpireText) {
-            this.showExpireText = showExpireText;
         }
     }
 

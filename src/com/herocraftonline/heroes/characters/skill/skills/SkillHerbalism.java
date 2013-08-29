@@ -39,7 +39,11 @@ public class SkillHerbalism extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set(SkillSetting.CHANCE_PER_LEVEL.node(), .001);
+
         return node;
     }
 

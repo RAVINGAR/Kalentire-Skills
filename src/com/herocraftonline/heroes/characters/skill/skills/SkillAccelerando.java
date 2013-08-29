@@ -7,7 +7,6 @@ import net.minecraft.server.v1_6_R2.MobEffectList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Player;
@@ -45,7 +44,9 @@ public class SkillAccelerando extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerando");
         setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT, SkillType.UNINTERRUPTIBLE);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+
         skillSong = new Song(
                              new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.2F, 0),
                              new Note(Sound.NOTE_BASS, 0.9F, 0.5F, 1),
@@ -129,31 +130,31 @@ public class SkillAccelerando extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    //Added this
-    public class SkillSoundPlayer implements Runnable {
-        private final Player player;
-
-        public SkillSoundPlayer(Hero hero) {
-            this.player = hero.getPlayer();
-        }
-
-        public void run() {
-            World world = player.getWorld();
-            Location loc = player.getLocation();
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.9F);
-        }
-    }
+    //    //Added this
+    //    public class SkillSoundPlayer implements Runnable {
+    //        private final Player player;
+    //
+    //        public SkillSoundPlayer(Hero hero) {
+    //            this.player = hero.getPlayer();
+    //        }
+    //
+    //        public void run() {
+    //            World world = player.getWorld();
+    //            Location loc = player.getLocation();
+    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.2F);
+    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.5F);
+    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
+    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
+    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
+    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
+    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
+    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
+    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
+    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
+    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
+    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.9F);
+    //        }
+    //    }
 
     public class SkillEntityListener implements Listener {
         

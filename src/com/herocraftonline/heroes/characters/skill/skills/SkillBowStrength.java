@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillBowStrength extends PassiveSkill {
@@ -35,11 +36,13 @@ public class SkillBowStrength extends PassiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection section = super.getDefaultConfig();
+        ConfigurationSection node = super.getDefaultConfig();
 
-        section.set("velocity-multiplier", 1.2);
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        node.set("velocity-multiplier", 1.2);
 
-        return section;
+        return node;
     }
 
     public class SkillBowListener implements Listener {

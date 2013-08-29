@@ -62,6 +62,8 @@ public class SkillFistOfJin extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("healing-internal-cooldown", Integer.valueOf(1000));
         node.set("heal-per-hit-self", Integer.valueOf(8));
         node.set("heal-per-hit-party", Integer.valueOf(3));

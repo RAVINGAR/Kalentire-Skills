@@ -37,6 +37,8 @@ public class SkillBloodUnion extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set(SkillSetting.PERIOD.node(), 25000);
         node.set("max-blood-union", 4);
 
