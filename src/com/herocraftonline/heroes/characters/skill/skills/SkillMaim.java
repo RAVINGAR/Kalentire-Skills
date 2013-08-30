@@ -91,7 +91,7 @@ public class SkillMaim extends TargettedSkill {
         // Create the effect and slow the target
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
-        SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
+        SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, false, applyText, expireText);
         targCT.addEffect(sEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);

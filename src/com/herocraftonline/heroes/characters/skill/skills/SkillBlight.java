@@ -28,7 +28,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillBlight extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-    
+
     private String applyText;
     private String expireText;
 
@@ -46,7 +46,7 @@ public class SkillBlight extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 15, false);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
         double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.4, false);
         tickDamage += tickDamageIncrease;
 
@@ -84,6 +84,8 @@ public class SkillBlight extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        broadcastExecuteText(hero, target);
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
 
@@ -92,24 +94,24 @@ public class SkillBlight extends TargettedSkill {
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(new BlightEffect(this, duration, period, tickDamage, player));
-
-        broadcastExecuteText(hero, target);
+        targetCT.addEffect(new BlightEffect(this, player, duration, period, tickDamage));
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.GRAY)
-            		.withFade(Color.GREEN)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(),
+                                 target.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(false)
+                                               .trail(false)
+                                               .with(FireworkEffect.Type.BALL)
+                                               .withColor(Color.GRAY)
+                                               .withFade(Color.GREEN)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -118,8 +120,8 @@ public class SkillBlight extends TargettedSkill {
 
     public class BlightEffect extends PeriodicDamageEffect {
 
-        public BlightEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
-            super(skill, "Blight", period, duration, tickDamage, applier);
+        public BlightEffect(Skill skill, Player applier, long duration, long period, double tickDamage) {
+            super(skill, "Blight", applier, period, duration, tickDamage);
 
             types.add(EffectType.DISEASE);
             types.add(EffectType.HARMFUL);
@@ -137,20 +139,20 @@ public class SkillBlight extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
         }
 
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getDisplayName());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getDisplayName(), applier.getDisplayName());
         }
 
         @Override
@@ -175,7 +177,7 @@ public class SkillBlight extends TargettedSkill {
                 LivingEntity lTarget = (LivingEntity) target;
 
                 // PvP Check
-                if (!damageCheck(getApplier(), lTarget)) {
+                if (!damageCheck(applier, lTarget)) {
                     continue;
                 }
 

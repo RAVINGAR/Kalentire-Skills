@@ -65,8 +65,8 @@ public class SkillHolyWater extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(85));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(75));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.875));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
         node.set("undead-damage", Integer.valueOf(45));
         node.set("undead-damage-increase-per-wisdom", Double.valueOf(0.625));

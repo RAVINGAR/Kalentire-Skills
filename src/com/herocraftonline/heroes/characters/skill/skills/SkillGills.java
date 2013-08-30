@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -54,9 +55,14 @@ public class SkillGills extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+        broadcastExecuteText(hero);
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
-        hero.addEffect(new WaterBreatheEffect(this, duration, applyText, expireText));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPLASH , 0.5F, 1.0F); 
+        hero.addEffect(new WaterBreatheEffect(this, player, duration, applyText, expireText));
+
+        player.getWorld().playSound(player.getLocation(), Sound.SPLASH, 0.5F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 }

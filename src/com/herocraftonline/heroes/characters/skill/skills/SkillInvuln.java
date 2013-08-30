@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -61,6 +62,7 @@ public class SkillInvuln extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
         // Remove any harmful effects on the caster
@@ -71,9 +73,9 @@ public class SkillInvuln extends ActiveSkill {
         }
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
-        hero.addEffect(new InvulnerabilityEffect(this, duration, applyText, expireText));
+        hero.addEffect(new InvulnerabilityEffect(this, player, duration, applyText, expireText));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

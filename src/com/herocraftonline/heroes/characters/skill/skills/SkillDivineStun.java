@@ -72,7 +72,7 @@ public class SkillDivineStun extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, duration));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;

@@ -27,6 +27,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -61,19 +62,6 @@ public class SkillFireRune extends ActiveSkill {
     }
 
     @Override
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(55));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.875));
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been burned by a Rune of Fire!");
-        node.set("rune-chat-color", ChatColor.RED.toString());
-
-        return node;
-    }
-
-    @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(55), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.875), false);
@@ -83,7 +71,25 @@ public class SkillFireRune extends ActiveSkill {
     }
 
     @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(55));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.375));
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been burned by a Rune of Fire!");
+        node.set("rune-chat-color", ChatColor.RED.toString());
+
+        return node;
+    }
+
+    @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+
+        // Let the world know that the hero has activated a Rune.
+        broadcastExecuteText(hero);
+
         // Create the Rune
         int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 15, false));
         String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.RED.toString());
@@ -96,10 +102,7 @@ public class SkillFireRune extends ActiveSkill {
         // CODE HERE
 
         // Play Sound
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
-
-        // Let the world know that the hero has activated a Rune.
-        broadcastExecuteText(hero);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

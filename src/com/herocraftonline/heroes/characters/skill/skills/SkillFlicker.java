@@ -71,7 +71,7 @@ public class SkillFlicker extends ActiveSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         long invisDuration = SkillConfigManager.getUseSetting(hero, this, "invis-duration", 500, false);
-        hero.addEffect(new FlickerEffect(this, period, duration, invisDuration));
+        hero.addEffect(new FlickerEffect(this, hero.getPlayer(), period, duration, invisDuration));
 
         return SkillResult.NORMAL;
     }
@@ -80,8 +80,8 @@ public class SkillFlicker extends ActiveSkill {
 
         long invisDuration;
         
-        public FlickerEffect(Skill skill, long period, long duration, long invisDuration) {
-            super(skill, "Flicker", period, duration);
+        public FlickerEffect(Skill skill, Player applier, long period, long duration, long invisDuration) {
+            super(skill, "Flicker", applier, period, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
@@ -114,7 +114,7 @@ public class SkillFlicker extends ActiveSkill {
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
             player.getWorld().playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
-            InvisibleEffect customInvisEffect = new InvisibleEffect(skill, invisDuration, null, null);
+            InvisibleEffect customInvisEffect = new InvisibleEffect(skill, player, invisDuration, null, null);
             customInvisEffect.types.add(EffectType.UNBREAKABLE);
             hero.addEffect(customInvisEffect);
         }

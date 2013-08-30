@@ -91,7 +91,18 @@ public class SkillEntangle extends TargettedSkill {
 
         // Play Sound
         Player player = hero.getPlayer();
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_WOODBREAK, 0.8F, 1.0F);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
+
+        //EntangleEffect EntangleEffect = new EntangleEffect(this, hero.getPlayer(), duration);
+        EntangleEffect EntangleEffect = new EntangleEffect(this, player, period, duration);
+
+        // Add root effect to the target
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        targetCT.addEffect(EntangleEffect);
+
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_WOODBREAK, 0.8F, 1.0F);
 
         // Play Effect
         try {
@@ -103,16 +114,6 @@ public class SkillEntangle extends TargettedSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
-
-        //EntangleEffect EntangleEffect = new EntangleEffect(this, hero.getPlayer(), duration);
-        EntangleEffect EntangleEffect = new EntangleEffect(this, period, duration, hero.getPlayer());
-
-        // Add root effect to the target
-        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(EntangleEffect);
 
         return SkillResult.NORMAL;
     }
@@ -219,8 +220,8 @@ public class SkillEntangle extends TargettedSkill {
         private final Player applier;
         private Location loc;
 
-        public EntangleEffect(Skill skill, int period, int duration, Player applier) {
-            super(skill, "Root", period, duration);
+        public EntangleEffect(Skill skill, Player applier, int period, int duration) {
+            super(skill, "Root", applier, period, duration);
             this.applier = applier;
 
             types.add(EffectType.ROOT);

@@ -292,13 +292,13 @@ public class SkillShuriken extends PassiveSkill {
 
         // Add the cooldown effect
         int cdDuration = SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1000, false);
-        hero.addEffect(new ShurikenTossCooldownEffect(this, cdDuration));
+        hero.addEffect(new ShurikenTossCooldownEffect(this, player, cdDuration));
     }
 
     // Effect required for implementing an internal cooldown
     private class ShurikenTossCooldownEffect extends ExpirableEffect {
-        public ShurikenTossCooldownEffect(Skill skill, long duration) {
-            super(skill, "ShurikenTossCooldownEffect", duration);
+        public ShurikenTossCooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, "ShurikenTossCooldownEffect", applier, duration);
         }
     }
 }

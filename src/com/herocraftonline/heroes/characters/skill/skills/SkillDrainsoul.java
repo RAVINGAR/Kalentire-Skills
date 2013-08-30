@@ -22,31 +22,33 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillDrainsoul extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-	public SkillDrainsoul(Heroes plugin) {
-		super(plugin, "Drainsoul");
+
+    public SkillDrainsoul(Heroes plugin) {
+        super(plugin, "Drainsoul");
         setDescription("Drain the soul of your target, dealing $1 damage, and restoring $2 of your own health.");
-		setUsage("/skill drainsoul");
+        setUsage("/skill drainsoul");
         setArgumentRange(0, 0);
-		setIdentifiers("skill drainsoul");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
-	}
+        setIdentifiers("skill drainsoul");
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.HEALING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+    }
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
 
+        String formattedDamage = Util.decFormat.format(damage);
         String formattedHeal = Util.decFormat.format(damage * healMult);
 
-        return getDescription().replace("$1", damage + "").replace("$2", formattedHeal);
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedHeal);
     }
 
-	@Override
-	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
@@ -54,18 +56,18 @@ public class SkillDrainsoul extends TargettedSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
         node.set("heal-mult", Double.valueOf(0.77));
 
-		return node;
-	}
+        return node;
+    }
 
-	@Override
-	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-		Player player = hero.getPlayer();
-		
+    @Override
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        Player player = hero.getPlayer();
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-		addSpellTarget(target, hero);
+        addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
@@ -75,21 +77,23 @@ public class SkillDrainsoul extends TargettedSkill {
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());
 
-		broadcastExecuteText(hero, target);
+        broadcastExecuteText(hero, target);
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation(), 
-            		FireworkEffect.builder()
-            		.flicker(false).trail(true)
-            		.with(FireworkEffect.Type.BURST)
-            		.withColor(Color.GREEN)
-            		.withFade(Color.PURPLE)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(target.getWorld(),
+                                 target.getLocation(),
+                                 FireworkEffect.builder()
+                                               .flicker(false).trail(true)
+                                               .with(FireworkEffect.Type.BURST)
+                                               .withColor(Color.GREEN)
+                                               .withFade(Color.PURPLE)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 

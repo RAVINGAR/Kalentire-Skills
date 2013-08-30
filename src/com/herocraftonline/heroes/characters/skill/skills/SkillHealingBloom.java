@@ -47,8 +47,8 @@ public class SkillHealingBloom extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(15));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(17));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.175));
+        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(11));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.275));
 
         return node;
     }
@@ -58,6 +58,7 @@ public class SkillHealingBloom extends ActiveSkill {
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
         int radiusSquared = radius * radius;
+
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.175), false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
@@ -77,14 +78,14 @@ public class SkillHealingBloom extends ActiveSkill {
                     // Check to see if they are close enough to the player to receive the buff
                     if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
                         // Add the effect
-                        member.addEffect(new PeriodicHealEffect(this, "HealingBloom", period, duration, healing, player));
+                        member.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
                     }
                 }
             }
         }
         else {
             // Add the effect to just the player
-            hero.addEffect(new PeriodicHealEffect(this, "HealingBloom", period, duration, healing, player));
+            hero.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
         }
 
         return SkillResult.NORMAL;

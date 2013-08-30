@@ -20,6 +20,7 @@ import com.herocraftonline.heroes.util.Messaging;
 public class SkillDarkRitual extends ActiveSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillDarkRitual(Heroes plugin) {
         super(plugin, "DarkRitual");
         setDescription("Converts $1 health to $2 mana.");
@@ -55,40 +56,42 @@ public class SkillDarkRitual extends ActiveSkill {
             Messaging.send(hero.getPlayer(), "You are already at full mana.");
             return SkillResult.FAIL;
         }
-        
+
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaGain, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (hrmEvent.isCancelled()) {
             return SkillResult.CANCELLED;
         }
 
-        hero.setMana(hrmEvent.getAmount() + hero.getMana());
-
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.4F, 1.0F);
-
-        // this is our fireworks shit
         Player player = hero.getPlayer();
-        try {
-            fplayer.playFirework(player.getWorld(), 
-            		player.getLocation().add(0,3,0), 
-            		FireworkEffect.builder()
-            		.flicker(false).trail(true)
-            		.with(FireworkEffect.Type.BALL_LARGE)
-            		.withColor(Color.BLACK)
-            		.withFade(Color.GRAY)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         broadcastExecuteText(hero);
 
+        hero.setMana(hrmEvent.getAmount() + hero.getMana());
         if (hero.isVerbose()) {
             Messaging.send(hero.getPlayer(), Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
         }
-        
+
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.4F, 1.0F);
+
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(),
+                                 player.getLocation().add(0, 3, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(false).trail(true)
+                                               .with(FireworkEffect.Type.BALL_LARGE)
+                                               .withColor(Color.BLACK)
+                                               .withFade(Color.GRAY)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return SkillResult.NORMAL;
     }
 }

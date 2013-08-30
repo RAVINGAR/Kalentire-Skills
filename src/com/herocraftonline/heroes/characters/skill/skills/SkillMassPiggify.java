@@ -103,7 +103,7 @@ public class SkillMassPiggify extends ActiveSkill {
 
             Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
 
-            plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
+            plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, (Creature) creature));
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
@@ -197,15 +197,16 @@ public class SkillMassPiggify extends ActiveSkill {
         private final Creature creature;
         private Location loc;
 
-        public PigEffect(Skill skill, int duration, Creature creature) {
-            super(skill, "MassPiggify", 100, duration);
-            this.creature = creature;
+        public PigEffect(Skill skill, Player applier, int duration, Creature creature) {
+            super(skill, "MassPiggify", applier, 100, duration);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
             types.add(EffectType.STUN);
             types.add(EffectType.DISABLE);
             types.add(EffectType.MAGIC);
+
+            this.creature = creature;
 
             addMobEffect(2, (int) (duration / 1000) * 20, 127, false);      // Max slowness
             addMobEffect(8, (int) (duration / 1000) * 20, 128, false);      // Max negative jump boost

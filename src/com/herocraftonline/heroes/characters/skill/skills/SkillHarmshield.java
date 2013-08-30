@@ -28,7 +28,7 @@ import com.herocraftonline.heroes.util.Messaging;
 public class SkillHarmshield extends ActiveSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-	private String applyText;
+    private String applyText;
     private String expireText;
 
     public SkillHarmshield(Heroes plugin) {
@@ -73,23 +73,26 @@ public class SkillHarmshield extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
         broadcastExecuteText(hero);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
+
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        hero.addEffect(new HarmShieldEffect(this, duration));
+        hero.addEffect(new HarmShieldEffect(this, player, duration));
 
         // this is our fireworks shit
-        Player player = hero.getPlayer();
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.STAR)
-            		.withColor(Color.MAROON)
-            		.withFade(Color.YELLOW)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder().flicker(false).trail(false)
+                                               .with(FireworkEffect.Type.STAR)
+                                               .withColor(Color.MAROON)
+                                               .withFade(Color.YELLOW)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -99,17 +102,17 @@ public class SkillHarmshield extends ActiveSkill {
     public class SkillHeroListener implements Listener {
 
         private final Skill skill;
-        
+
         public SkillHeroListener(Skill skill) {
             this.skill = skill;
         }
-        
+
         @EventHandler(priority = EventPriority.HIGH)
         public void onSkillDamage(SkillDamageEvent event) {
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
                 return;
             }
-            
+
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
         }
 
@@ -118,7 +121,7 @@ public class SkillHarmshield extends ActiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
                 return;
             }
-            
+
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
         }
 
@@ -133,11 +136,12 @@ public class SkillHarmshield extends ActiveSkill {
 
     public class HarmShieldEffect extends ExpirableEffect {
 
-        public HarmShieldEffect(Skill skill, long duration) {
-            super(skill, "HarmShield", duration);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.MAGIC);
+        public HarmShieldEffect(Skill skill, Player applier, long duration) {
+            super(skill, "HarmShield", applier, duration);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -153,6 +157,5 @@ public class SkillHarmshield extends ActiveSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-
     }
 }

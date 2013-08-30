@@ -103,8 +103,8 @@ public class SkillImpale extends TargettedSkill {
         // Add the slow effect
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
-        SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new ImpaleEffect(this, 300, sEffect));
+        SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, false, applyText, expireText);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new ImpaleEffect(this, player, 300, sEffect));
 
         // Play sound
         player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
@@ -116,8 +116,8 @@ public class SkillImpale extends TargettedSkill {
 
         private final Effect effect;
 
-        public ImpaleEffect(Skill skill, long duration, Effect afterEffect) {
-            super(skill, "Impale", duration);
+        public ImpaleEffect(Skill skill, Player applier, long duration, Effect afterEffect) {
+            super(skill, "Impale", applier, duration);
             this.effect = afterEffect;
 
             types.add(EffectType.HARMFUL);

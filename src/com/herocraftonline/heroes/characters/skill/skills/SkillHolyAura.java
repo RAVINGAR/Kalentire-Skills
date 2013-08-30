@@ -113,7 +113,7 @@ public class SkillHolyAura extends ActiveSkill {
         double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", Double.valueOf(0.375), false);
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
-        hero.addEffect(new HolyAuraEffect(this, duration, period, healing, undeadDamage));
+        hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
 
         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
@@ -133,8 +133,8 @@ public class SkillHolyAura extends ActiveSkill {
         double tickHeal;
         double undeadDamage;
 
-        public HolyAuraEffect(Skill skill, long duration, long period, double tickHeal, double undeadDamage) {
-            super(skill, "HolyAuraEffect", period, duration);
+        public HolyAuraEffect(Skill skill, Player applier, long duration, long period, double tickHeal, double undeadDamage) {
+            super(skill, "HolyAuraEffect", applier, period, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DISPELLABLE);

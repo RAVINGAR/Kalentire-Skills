@@ -23,6 +23,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillEmpathy extends TargettedSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillEmpathy(Heroes plugin) {
         super(plugin, "Empathy");
         setDescription("You deal up to $1 dark damage equal to $2% of your missing health and slow the target for $3 seconds.");
@@ -37,15 +38,15 @@ public class SkillEmpathy extends TargettedSkill {
         double maxDamage = SkillConfigManager.getUseSetting(hero, this, "max-damage", 152, false);
         double maxDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "max-damage-increase-per-intellect", 1.0, false);
         maxDamage += (maxDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
-        
+
         double modifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1, false);
         double modifierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase-per-intellect", 0.0, false);
         modifier += (modifierIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
-        
+
         int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 4000, false);
-        
+
         String formattedModifier = Util.decFormat.format(modifier);
-        
+
         String description = getDescription().replace("$1", maxDamage + "").replace("$2", formattedModifier).replace("$3", slowDuration + "");
 
         return description;
@@ -93,22 +94,24 @@ public class SkillEmpathy extends TargettedSkill {
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "amplifier", 2, false);
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(new SlowEffect(this, slowDuration, amplifier, false, null, null, hero));
+        targetCT.addEffect(new SlowEffect(this, player, slowDuration, amplifier, false, null, null));
 
         broadcastExecuteText(hero, target);
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), 
-            		FireworkEffect.builder()
-            		.flicker(true).trail(true)
-            		.with(FireworkEffect.Type.BURST)
-            		.withColor(Color.BLACK)
-            		.withFade(Color.GRAY)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation(),
+                                 FireworkEffect.builder()
+                                               .flicker(true).trail(true)
+                                               .with(FireworkEffect.Type.BURST)
+                                               .withColor(Color.BLACK)
+                                               .withFade(Color.GRAY)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 

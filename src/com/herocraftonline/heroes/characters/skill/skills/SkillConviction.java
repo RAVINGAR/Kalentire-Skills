@@ -67,6 +67,7 @@ public class SkillConviction extends ActiveSkill {
     @Override
     public void init() {
         super.init();
+
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You are filled with renewed convinction!");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "Your sense of convinction begins to fade!");
     }
@@ -77,7 +78,7 @@ public class SkillConviction extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.85, false);
 
-        ConvictionEffect effect = new ConvictionEffect(this, duration, damageModifier, applyText, expireText);
+        ConvictionEffect effect = new ConvictionEffect(this, player, duration, damageModifier, applyText, expireText);
         if (!hero.hasParty()) {
         	if (hero.hasEffect("Conviction")) {
                 if (((ConvictionEffect) hero.getEffect("Conviction")).getDamageModifier() < effect.getDamageModifier()) {
@@ -120,12 +121,14 @@ public class SkillConviction extends ActiveSkill {
         private String applyText;
         private String expireText;
 
-        public ConvictionEffect(Skill skill, long duration, double damageModifier, String applyText, String expireText) {
-            super(skill, "Conviction", duration);
+        public ConvictionEffect(Skill skill, Player applier, long duration, double damageModifier, String applyText, String expireText) {
+            super(skill, "Conviction", applier, duration);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
+
             this.damageModifier = damageModifier;
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.MAGIC);
             this.applyText = applyText;
             this.expireText = expireText;
         }

@@ -106,7 +106,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
 
-        hero.addEffect(new MelodicBindingEffect(this, period, duration, radius, amplifier));
+        hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius, amplifier));
 
         return SkillResult.NORMAL;
     }
@@ -116,8 +116,8 @@ public class SkillMelodicBinding extends ActiveSkill {
         private final int radius;
         private final int amplifier;
 
-        public MelodicBindingEffect(SkillMelodicBinding skill, int period, int duration, int radius, int amplifier) {
-            super(skill, "MelodicBindingSong", period, duration);
+        public MelodicBindingEffect(SkillMelodicBinding skill, Player applier, int period, int duration, int radius, int amplifier) {
+            super(skill, "MelodicBindingSong", applier, period, duration);
 
             this.radius = radius;
             this.amplifier = amplifier;
@@ -163,7 +163,7 @@ public class SkillMelodicBinding extends ActiveSkill {
                     damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
                 }
 
-                targetCT.addEffect(new SlowEffect(skill, slowDuration, amplifier, false, applyText, expireText, hero));
+                targetCT.addEffect(new SlowEffect(skill, player, slowDuration, amplifier, false, applyText, expireText));
             }
         }
 

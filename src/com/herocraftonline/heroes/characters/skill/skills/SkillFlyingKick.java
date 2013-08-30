@@ -38,7 +38,7 @@ public class SkillFlyingKick extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", damage + "").replace("$1", formattedDuration);
+        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -56,6 +56,10 @@ public class SkillFlyingKick extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+
+        Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
@@ -75,13 +79,11 @@ public class SkillFlyingKick extends TargettedSkill {
 
             int silenceDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
             if (silenceDuration > 0) {
-                targetHero.addEffect(new SilenceEffect(this, silenceDuration));
+                targetHero.addEffect(new SilenceEffect(this, player, silenceDuration));
             }
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
-
-        broadcastExecuteText(hero, target);
+        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

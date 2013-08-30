@@ -1,16 +1,16 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
 import org.bukkit.Effect;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
@@ -31,6 +31,16 @@ public class SkillAwaken extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         return getDescription();
+    }
+
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.DELAY.node(), Integer.valueOf(7500));
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(38));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(0));
+
+        return node;
     }
 
     @Override
@@ -65,20 +75,13 @@ public class SkillAwaken extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        target.teleport(playerLoc);
-        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         broadcastExecuteText(hero);
-        // this is our fireworks
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.CREEPER).withColor(Color.PURPLE).withFade(Color.FUCHSIA).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        target.teleport(playerLoc);
+
+        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 }

@@ -85,7 +85,7 @@ public class SkillManasong extends ActiveSkill {
         double manaRegenTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-regen-tick-increase-per-charisma", Double.valueOf(0.15), false);
         manaRegenTick += (int) (manaRegenTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
-        ManasongEffect mEffect = new ManasongEffect(this, period, duration, radius, manaRegenTick);
+        ManasongEffect mEffect = new ManasongEffect(this, hero.getPlayer(), period, duration, radius, manaRegenTick);
         hero.addEffect(mEffect);
 
         broadcastExecuteText(hero);
@@ -99,8 +99,8 @@ public class SkillManasong extends ActiveSkill {
         private final int radius;
         private final int manaRegen;
 
-        public ManasongEffect(Skill skill, int period, int duration, int radius, int manaRegen) {
-            super(skill, "Manasong", period, duration);
+        public ManasongEffect(Skill skill, Player applier, int period, int duration, int radius, int manaRegen) {
+            super(skill, "Manasong", applier, period, duration);
 
             this.radius = radius;
             this.manaRegen = manaRegen;

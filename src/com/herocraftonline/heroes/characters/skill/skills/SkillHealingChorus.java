@@ -78,14 +78,14 @@ public class SkillHealingChorus extends ActiveSkill {
                     // Check to see if they are close enough to the player to receive the buff
                     if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
                         // Add the effect
-                        member.addEffect(new PeriodicHealEffect(this, "HealingChorus", period, duration, healing, player));
+                        member.addEffect(new PeriodicHealEffect(this, "HealingChorus", player, period, duration, healing));
                     }
                 }
             }
         }
         else {
             // Add the effect to just the player
-            hero.addEffect(new PeriodicHealEffect(this, "HealingChorus", period, duration, healing, player));
+            hero.addEffect(new PeriodicHealEffect(this, "HealingChorus", player, period, duration, healing));
         }
 
         return SkillResult.NORMAL;

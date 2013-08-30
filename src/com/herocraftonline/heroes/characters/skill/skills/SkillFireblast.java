@@ -158,7 +158,7 @@ public class SkillFireblast extends ActiveSkill {
                         if (!targetPlayer.isOp()) {
                             long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
                             if (duration > 0) {
-                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, duration);
                                 CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                                 targetCT.addEffect(ncpExemptEffect);
                             }
@@ -203,8 +203,8 @@ public class SkillFireblast extends ActiveSkill {
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
         @Override

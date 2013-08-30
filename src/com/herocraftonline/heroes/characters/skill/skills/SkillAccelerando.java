@@ -19,10 +19,10 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
+import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -100,20 +100,26 @@ public class SkillAccelerando extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
+        Player player = hero.getPlayer();
+
         hero.addEffect(new SoundEffect(this, "AccelarandoSong", 100, skillSong));
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
         }
-        QuickenEffect qEffect = new AccelerandoEffect(this, duration, multiplier, applyText, expireText);
+
+        AccelerandoEffect accelEffect = new AccelerandoEffect(this, player, duration, multiplier, applyText, expireText);
+
         if (!hero.hasParty()) {
-            hero.addEffect(qEffect);
+            hero.addEffect(accelEffect);
             return SkillResult.NORMAL;
         }
-        Player player = hero.getPlayer();
+
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
         int rSquared = radius * radius;
+
         Location loc = player.getLocation();
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {
@@ -125,7 +131,7 @@ public class SkillAccelerando extends ActiveSkill {
                 continue;
             }
 
-            tHero.addEffect(qEffect);
+            tHero.addEffect(accelEffect);
         }
         return SkillResult.NORMAL;
     }
@@ -173,16 +179,16 @@ public class SkillAccelerando extends ActiveSkill {
             final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("Accelerando")) {
                 int duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
-                hero.addEffect(new StunEffect(skill, duration));
+                hero.addEffect(new StunEffect(skill, hero.getPlayer(), duration));
                 hero.removeEffect(hero.getEffect("Accelerando"));
             }
         }
     }
 
-    public class AccelerandoEffect extends QuickenEffect {
+    public class AccelerandoEffect extends SpeedEffect {
 
-        public AccelerandoEffect(Skill skill, int duration, int multiplier, String applyText, String expireText) {
-            super(skill, "Accelerando", duration, multiplier, applyText, expireText);
+        public AccelerandoEffect(Skill skill, Player applier, int duration, int multiplier, String applyText, String expireText) {
+            super(skill, "Accelerando", applier, duration, multiplier, applyText, expireText);
         }
 
         @Override

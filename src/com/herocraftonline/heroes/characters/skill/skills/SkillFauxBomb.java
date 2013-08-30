@@ -90,8 +90,7 @@ public class SkillFauxBomb extends ActiveSkill {
     }
 
     private class SkillListener implements Listener {
-        private SkillListener() {
-        }
+        private SkillListener() {}
 
         @EventHandler
         public void onEntityDamage(EntityDamageEvent event) {

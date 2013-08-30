@@ -173,7 +173,7 @@ public class SkillFirewave extends ActiveSkill {
                 event.setCancelled(true);
 
                 //Adds an Effect to Prevent Multihit
-                plugin.getCharacterManager().getCharacter(targetLE).addEffect(new ExpirableEffect(skill, "FireWaveAntiMultiEffect", 500));
+                plugin.getCharacterManager().getCharacter(targetLE).addEffect(new ExpirableEffect(skill, "FireWaveAntiMultiEffect", (Player) dmger, 500));
             }
         }
     }

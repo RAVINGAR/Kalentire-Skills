@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.unfinishedskills;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,21 +10,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.skills.SkillDecay.DecayEffect;
 
-public class SkillReborn extends PassiveSkill {
+public class SkillReborn extends ActiveSkill {
     private String rebornText;
 
     public SkillReborn(Heroes plugin) {
         super(plugin, "Reborn");
         setDescription("If you are about to die instead you regain $1% hp, can only trigger once every $2 seconds.");
-        setTypes(SkillType.COUNTER, SkillType.DARK);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT);
         Bukkit.getServer().getPluginManager().registerEvents(new RebornListener(this), plugin);
     }
 
@@ -54,6 +57,38 @@ public class SkillReborn extends PassiveSkill {
         rebornText = SkillConfigManager.getUseSetting(null, this, "on-reborn-text", "%hero% is saved from death, but weakened!").replace("%hero%", "$1");
     }
     
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
+
+        plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, player, duration, period, tickDamage));
+
+        // this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(),
+                                 target.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(true).trail(false)
+                                               .with(FireworkEffect.Type.BALL)
+                                               .withColor(Color.BLACK)
+                                               .withFade(Color.GRAY)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return SkillResult.NORMAL;
+    }
+
     public class RebornListener implements Listener {
         private Skill skill;
         public RebornListener(Skill skill) {

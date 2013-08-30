@@ -75,30 +75,35 @@ public class SkillBecomeDeath extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
+
+        Player player = hero.getPlayer();
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 120000, false);
-        hero.addEffect(new BecomeDeathEffect(this, duration));
+        hero.addEffect(new BecomeDeathEffect(this, player, duration));
         for (Effect e : hero.getEffects()) {
             if (e.isType(EffectType.POISON) && e.isType(EffectType.HARMFUL)) {
                 hero.removeEffect(e);
             }
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_IDLE, 0.7F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_IDLE, 0.7F, 1.0F);
 
         return SkillResult.NORMAL;
     }
 
     public class BecomeDeathEffect extends ExpirableEffect {
 
-        public BecomeDeathEffect(Skill skill, long duration) {
-            super(skill, "BecomeDeathEffect", duration);
+        public BecomeDeathEffect(Skill skill, Player applier, long duration) {
+            super(skill, "BecomeDeathEffect", applier, duration);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.DARK);
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.RESIST_POISON);
+            types.add(EffectType.WATER_BREATHING);
+
             addMobEffect(13, (int) (duration / 1000) * 20, 0, false);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.DARK);
-            this.types.add(EffectType.MAGIC);
-            this.types.add(EffectType.RESIST_POISON);
-            this.types.add(EffectType.WATER_BREATHING);
         }
 
         @Override

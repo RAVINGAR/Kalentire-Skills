@@ -245,7 +245,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
                 // Add the "cooldown" effect to the hero so he can't immediately trigger another Rune Application Event here.
                 int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "rune-application-cooldown", 1000, false);
-                targetCT.addEffect(new RuneApplicationCooldownEffect(skill, cdEffectName, cdDuration));
+                targetCT.addEffect(new RuneApplicationCooldownEffect(skill, player, cdEffectName, cdDuration));
             }
 
             return;
@@ -504,8 +504,8 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
     // Effect required for implementing an internal cooldown on rune application
     private class RuneApplicationCooldownEffect extends ExpirableEffect {
-        public RuneApplicationCooldownEffect(Skill skill, String effectName, long duration) {
-            super(skill, effectName, duration);
+        public RuneApplicationCooldownEffect(Skill skill, Player applier, String effectName, long duration) {
+            super(skill, effectName, applier, duration);
         }
     }
 }

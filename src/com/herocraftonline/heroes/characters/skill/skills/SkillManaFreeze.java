@@ -74,7 +74,7 @@ public class SkillManaFreeze extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        targetHero.addEffect(new ManaFreezeEffect(this, duration));
+        targetHero.addEffect(new ManaFreezeEffect(this, hero.getPlayer(), duration));
 
         return SkillResult.NORMAL;
 
@@ -96,8 +96,8 @@ public class SkillManaFreeze extends TargettedSkill {
 
     public class ManaFreezeEffect extends ExpirableEffect {
 
-        public ManaFreezeEffect(Skill skill, long duration) {
-            super(skill, "ManaFreeze", duration);
+        public ManaFreezeEffect(Skill skill, Player applier, long duration) {
+            super(skill, "ManaFreeze", applier, duration);
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.MAGIC);

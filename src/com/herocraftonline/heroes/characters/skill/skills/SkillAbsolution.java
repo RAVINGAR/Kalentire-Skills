@@ -23,6 +23,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillAbsolution extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
         setDescription("You restore $1 health to your target and remove Dark effects.");
@@ -71,7 +72,8 @@ public class SkillAbsolution extends TargettedSkill {
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
-            } else {
+            }
+            else {
                 Messaging.send(player, "Target is already fully healed.");
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -83,7 +85,9 @@ public class SkillAbsolution extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
+
         targetHero.heal(hrhEvent.getAmount());
+
         for (Effect effect : targetHero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.DARK)) {
@@ -91,23 +95,28 @@ public class SkillAbsolution extends TargettedSkill {
                 }
             }
         }
+
         broadcastExecuteText(hero, target);
+
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(false)
-            		.with(FireworkEffect.Type.BURST)
-            		.withColor(Color.MAROON)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(),
+                                 target.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(false)
+                                               .trail(false)
+                                               .with(FireworkEffect.Type.BURST)
+                                               .withColor(Color.MAROON)
+                                               .withFade(Color.WHITE)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return SkillResult.NORMAL;
     }
 }

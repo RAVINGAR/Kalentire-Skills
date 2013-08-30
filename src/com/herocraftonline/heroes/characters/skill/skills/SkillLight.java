@@ -82,10 +82,16 @@ public class SkillLight extends ActiveSkill {
     
     @Override
     public SkillResult use(Hero hero, String[] args) {
+
+        Player player = hero.getPlayer();
+        broadcastExecuteText(hero);
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
-        hero.addEffect(new LightEffect(this, period, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
+
+        hero.addEffect(new LightEffect(this, player, period, duration));
+        player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
@@ -95,8 +101,8 @@ public class SkillLight extends ActiveSkill {
         private Byte lastData = null;
         private Material lastMat = null;
 
-        public LightEffect(Skill skill, long period, long duration) {
-            super(skill, "Light", period, duration);
+        public LightEffect(Skill skill, Player applier, long period, long duration) {
+            super(skill, "Light", applier, period, duration);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.LIGHT);
             this.types.add(EffectType.MAGIC);

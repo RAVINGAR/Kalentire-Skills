@@ -87,7 +87,7 @@ public class SkillPiggify extends TargettedSkill {
 
         EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, (Creature) creature));
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.8F, 1.0F);
 
@@ -176,8 +176,8 @@ public class SkillPiggify extends TargettedSkill {
         private final Creature creature;
         private Location loc;
 
-        public PigEffect(Skill skill, int duration, Creature creature) {
-            super(skill, "Piggify", 100, duration);
+        public PigEffect(Skill skill, Player applier, int duration, Creature creature) {
+            super(skill, "Piggify", applier, 100, duration);
             this.creature = creature;
 
             types.add(EffectType.DISPELLABLE);

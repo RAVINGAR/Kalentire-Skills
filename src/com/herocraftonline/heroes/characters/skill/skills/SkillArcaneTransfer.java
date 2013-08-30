@@ -13,8 +13,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -83,11 +82,8 @@ public class SkillArcaneTransfer extends TargettedSkill {
             Effect stolenEffect = possibleEffects.get(Util.nextInt(possibleEffects.size()));
             hero.removeEffect(stolenEffect);
 
-            if (stolenEffect instanceof PeriodicDamageEffect) {
-                ((PeriodicDamageEffect) stolenEffect).setApplierHero(hero);
-            }
-            else if (stolenEffect instanceof PeriodicHealEffect) {
-                ((PeriodicHealEffect) stolenEffect).setApplierHero(hero);
+            if (stolenEffect instanceof ExpirableEffect) {
+                ((ExpirableEffect) stolenEffect).setApplier(player);
             }
 
             targCT.addEffect(stolenEffect);

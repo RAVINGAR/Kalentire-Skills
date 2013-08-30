@@ -96,7 +96,7 @@ public class SkillAimedShot extends TargettedSkill {
         }
 
         int gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 2000, false);
-        hero.addEffect(new AimedShotBuffEffect(this, target, gracePeriod));
+        hero.addEffect(new AimedShotBuffEffect(this, player, target, gracePeriod));
 
         return SkillResult.NORMAL;
     }
@@ -165,8 +165,8 @@ public class SkillAimedShot extends TargettedSkill {
         private boolean lostSight = true;
         private LivingEntity target;
 
-        public AimedShotBuffEffect(Skill skill, LivingEntity target, long duration) {
-            super(skill, "AimedShotBuffEffect", duration);
+        public AimedShotBuffEffect(Skill skill, Player applier, LivingEntity target, long duration) {
+            super(skill, "AimedShotBuffEffect", applier, duration);
 
             types.add(EffectType.IMBUE);
             types.add(EffectType.PHYSICAL);

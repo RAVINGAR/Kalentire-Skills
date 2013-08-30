@@ -88,6 +88,11 @@ public class SkillBeguile extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+
+        broadcastExecuteText(hero, target);
+
+        Player player = hero.getPlayer();
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 125, false);
         duration += durationIncrease;
@@ -96,12 +101,10 @@ public class SkillBeguile extends TargettedSkill {
 
         float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 2.1, false);
 
-        broadcastExecuteText(hero, target);
-
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(new ConfuseEffect(this, duration, period, maxDrift));
+        targetCT.addEffect(new ConfuseEffect(this, player, duration, period, maxDrift));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -110,13 +113,14 @@ public class SkillBeguile extends TargettedSkill {
 
         private final float maxDrift;
 
-        public ConfuseEffect(Skill skill, long duration, long period, float maxDrift) {
-            super(skill, "Beguile", period, duration);
+        public ConfuseEffect(Skill skill, Player applier, long duration, long period, float maxDrift) {
+            super(skill, "Beguile", applier, period, duration);
+
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.MAGIC);
 
             this.maxDrift = maxDrift;
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.MAGIC);
 
             addMobEffect(9, (int) (duration / 1000) * 20, 127, false);
         }
@@ -175,7 +179,7 @@ public class SkillBeguile extends TargettedSkill {
                 if (!player.isOp()) {
                     long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
                     if (duration > 0) {
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, duration);
+                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, applier, duration);
                         hero.addEffect(ncpExemptEffect);
                     }
                 }
@@ -187,8 +191,8 @@ public class SkillBeguile extends TargettedSkill {
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
         @Override

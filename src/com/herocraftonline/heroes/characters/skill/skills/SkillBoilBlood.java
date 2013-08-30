@@ -14,9 +14,9 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -130,7 +130,7 @@ public class SkillBoilBlood extends ActiveSkill {
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
 
         // Create DoT effect
-        BoilingBloodEffect bbEffect = new BoilingBloodEffect(this, period, duration, tickDamage, player, applyText, expireText);
+        BoilingBloodEffect bbEffect = new BoilingBloodEffect(this, player, period, duration, tickDamage, applyText, expireText);
 
         int targetsHit = 0;
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
@@ -174,17 +174,15 @@ public class SkillBoilBlood extends ActiveSkill {
     public class BoilingBloodEffect extends PeriodicDamageEffect {
         private final String applyText;
         private final String expireText;
-        private final Player applier;
 
-        public BoilingBloodEffect(Skill skill, long period, long duration, double tickDamage, Player applier, String applyText, String expireText) {
-            super(skill, "BoilingBlood", period, duration, tickDamage, applier, false);
-
-            this.applyText = applyText;
-            this.expireText = expireText;
-            this.applier = applier;
+        public BoilingBloodEffect(Skill skill, Player applier, long period, long duration, double tickDamage, String applyText, String expireText) {
+            super(skill, "BoilingBlood", applier, period, duration, tickDamage, false);
 
             types.add(EffectType.DARK);
             types.add(EffectType.HARMFUL);
+
+            this.applyText = applyText;
+            this.expireText = expireText;
         }
 
         @Override
@@ -197,7 +195,7 @@ public class SkillBoilBlood extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
         }
 
         @Override
@@ -210,7 +208,7 @@ public class SkillBoilBlood extends ActiveSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getDisplayName(), applier.getDisplayName());
         }
     }
 }

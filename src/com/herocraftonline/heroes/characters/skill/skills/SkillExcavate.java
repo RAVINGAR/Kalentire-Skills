@@ -69,6 +69,7 @@ public class SkillExcavate extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
@@ -79,16 +80,16 @@ public class SkillExcavate extends ActiveSkill {
             multiplier = 20;
         }
 
-        hero.addEffect(new ExcavateEffect(this, duration, multiplier));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
+        hero.addEffect(new ExcavateEffect(this, player, duration, multiplier));
+        player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
 
     public class ExcavateEffect extends ExpirableEffect {
 
-        public ExcavateEffect(Skill skill, long duration, int amplifier) {
-            super(skill, "Excavate", duration);
+        public ExcavateEffect(Skill skill, Player applier, long duration, int amplifier) {
+            super(skill, "Excavate", applier, duration);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             addMobEffect(3, (int) (duration / 1000) * 20, amplifier, false);
@@ -128,19 +129,19 @@ public class SkillExcavate extends ActiveSkill {
 
     private boolean isExcavatable(Material m) {
         switch (m) {
-        case DIRT:
-        case GRASS:
-        case GRAVEL:
-        case SAND:
-        case CLAY:
-        case SNOW_BLOCK:
-        case SNOW:
-        case SOUL_SAND:
-        case SOIL:
-        case NETHERRACK:
-            return true;
-        default: 
-            return false;
+            case DIRT:
+            case GRASS:
+            case GRAVEL:
+            case SAND:
+            case CLAY:
+            case SNOW_BLOCK:
+            case SNOW:
+            case SOUL_SAND:
+            case SOIL:
+            case NETHERRACK:
+                return true;
+            default:
+                return false;
         }
     }
 }

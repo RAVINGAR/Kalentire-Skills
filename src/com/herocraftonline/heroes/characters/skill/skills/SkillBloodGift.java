@@ -11,7 +11,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -69,7 +69,7 @@ public class SkillBloodGift extends TargettedSkill {
 
         // Don't allow self targeting
         if (targetHero.equals(hero)) {
-            Messaging.send(player, "You cannot use this ability on yourself!", new Object[0]);
+            Messaging.send(player, "You cannot use this ability on yourself!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -77,9 +77,11 @@ public class SkillBloodGift extends TargettedSkill {
 
         // Check to see if they are at full health
         if (targetHealth >= target.getMaxHealth()) {
-            Messaging.send(player, "Target is already at full health.", new Object[0]);
+            Messaging.send(player, "Target is already at full health.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+
+        broadcastExecuteText(hero, target);
 
         double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(130), false);
         double wisHealIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.8), false));
@@ -104,8 +106,6 @@ public class SkillBloodGift extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!", new Object[0]);
             return SkillResult.CANCELLED;
         }
-
-        broadcastExecuteText(hero, target);
 
         // Heal target
         targetHero.heal(hrhEvent.getAmount());

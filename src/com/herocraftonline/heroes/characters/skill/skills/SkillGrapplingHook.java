@@ -124,7 +124,7 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
-        hero.addEffect(new GrapplingHookBuffEffect(this, duration, numShots));
+        hero.addEffect(new GrapplingHookBuffEffect(this, hero.getPlayer(), duration, numShots));
 
         return SkillResult.NORMAL;
     }
@@ -296,7 +296,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         else {
             // As long as we have Y, give them safefall
             int safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);
-            hero.addEffect(new JumpSafeFallEffect(this, safeFallDuration));
+            hero.addEffect(new JumpSafeFallEffect(this, player, safeFallDuration));
         }
 
         // Let's bypass the nocheat issues...
@@ -304,7 +304,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             if (!player.isOp()) {
                 long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
                 if (duration > 0) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
                     hero.addEffect(ncpExemptEffect);
                 }
             }
@@ -332,7 +332,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "You threw your hook to far and lost your grip!", new Object[0]);
+                Messaging.send(player, "You threw your hook to far and lost your grip!");
                 return;
             }
         }
@@ -351,7 +351,7 @@ public class SkillGrapplingHook extends ActiveSkill {
                 if (!targetPlayer.isOp()) {
                     long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
                     if (duration > 0) {
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
                         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                         targetCT.addEffect(ncpExemptEffect);
                     }
@@ -370,8 +370,8 @@ public class SkillGrapplingHook extends ActiveSkill {
         private int shotsLeft = 1;
         private boolean showExpireText = true;
 
-        public GrapplingHookBuffEffect(Skill skill, long duration, int numShots) {
-            super(skill, "GrapplingHookBuffEffect", duration);
+        public GrapplingHookBuffEffect(Skill skill, Player applier, long duration, int numShots) {
+            super(skill, "GrapplingHookBuffEffect", applier, duration);
             this.shotsLeft = numShots;
 
             types.add(EffectType.IMBUE);
@@ -422,8 +422,8 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     private class JumpSafeFallEffect extends SafeFallEffect {
 
-        public JumpSafeFallEffect(Skill skill, int duration) {
-            super(skill, "GrappleJumpSafeFall", duration);
+        public JumpSafeFallEffect(Skill skill, Player applier, int duration) {
+            super(skill, "GrappleJumpSafeFall", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.JUMP);
@@ -434,8 +434,8 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect", applier, duration);
         }
 
         @Override

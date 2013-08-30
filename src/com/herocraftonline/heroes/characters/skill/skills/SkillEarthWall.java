@@ -89,7 +89,7 @@ public class SkillEarthWall extends ActiveSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        ShieldWallEffect swEffect = new ShieldWallEffect(this, duration, tBlock, width, height, setter);
+        ShieldWallEffect swEffect = new ShieldWallEffect(this, player, duration, tBlock, width, height, setter);
         hero.addEffect(swEffect);
 
         return SkillResult.NORMAL;
@@ -102,16 +102,17 @@ public class SkillEarthWall extends ActiveSkill {
         private HashSet<Block> wBlocks;
         private Material setter;
 
-        public ShieldWallEffect(Skill skill, long duration, Block tBlock, int width, int height, Material setter) {
-            super(skill, "sheildWallEffect", duration);
+        public ShieldWallEffect(Skill skill, Player applier, long duration, Block tBlock, int width, int height, Material setter) {
+            super(skill, "sheildWallEffect", applier, duration);
+
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
+
             this.tBlock = tBlock;
             this.width = width;
             this.height = height;
             this.setter = setter;
             this.wBlocks = new HashSet<Block>(width * height * 2);
-
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.MAGIC);
         }
 
         public void applyToHero(Hero hero) {

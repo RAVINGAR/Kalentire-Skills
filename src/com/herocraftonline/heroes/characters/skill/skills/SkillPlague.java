@@ -23,6 +23,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillPlague extends TargettedSkill {
     // This is for Firework Effects
@@ -32,7 +33,7 @@ public class SkillPlague extends TargettedSkill {
 
     public SkillPlague(Heroes plugin) {
         super(plugin, "Plague");
-        setDescription("You infect your target with the plague, dealing $1 damage over $2 seconds.!");
+        setDescription("You infect your target with the plague, dealing $1 damage over $2 seconds. Enemies within $3 blocks of a plagued target will also be infected.");
         setUsage("/skill plague");
         setArgumentRange(0, 0);
         setIdentifiers("skill plague");
@@ -41,10 +42,20 @@ public class SkillPlague extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        return getDescription().replace("$1", damage * duration / period + "").replace("$2", duration / 1000 + "");
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 4, false);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), false);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", Integer.valueOf(17), false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.17), false);
+        tickDamage += tickDamageIncrease;
+
+        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", radius + "");
     }
 
     @Override
@@ -84,7 +95,7 @@ public class SkillPlague extends TargettedSkill {
         double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.17), false);
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, duration, period, tickDamage, player));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, player, duration, period, tickDamage));
 
         // this is our fireworks
         try {
@@ -110,8 +121,8 @@ public class SkillPlague extends TargettedSkill {
     public class PlagueEffect extends PeriodicDamageEffect {
         private boolean jumped = false;
 
-        public PlagueEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
-            super(skill, "Plague", period, duration, tickDamage, applier);
+        public PlagueEffect(Skill skill, Player applier, long duration, long period, double tickDamage) {
+            super(skill, "Plague", applier, period, duration, tickDamage);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DISEASE);
@@ -121,7 +132,7 @@ public class SkillPlague extends TargettedSkill {
 
         // Clone Constructor
         private PlagueEffect(PlagueEffect pEffect) {
-            super(pEffect.getSkill(), pEffect.getName(), pEffect.getPeriod(), pEffect.getRemainingTime(), pEffect.tickDamage, pEffect.applier);
+            super(pEffect.getSkill(), pEffect.getName(), pEffect.getApplier(), pEffect.getPeriod(), pEffect.getRemainingTime(), pEffect.tickDamage);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DISEASE);

@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;

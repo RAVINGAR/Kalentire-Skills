@@ -13,9 +13,9 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -132,7 +132,7 @@ public class SkillCombustBlood extends TargettedSkill {
             int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
 
             // Add DoT effect
-            CombustingBloodEffect cbEffect = new CombustingBloodEffect(this, period, duration, tickDamage, player);
+            CombustingBloodEffect cbEffect = new CombustingBloodEffect(this, player, period, duration, tickDamage);
             CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
             targCT.addEffect(cbEffect);
         }
@@ -153,12 +153,8 @@ public class SkillCombustBlood extends TargettedSkill {
 
     public class CombustingBloodEffect extends PeriodicDamageEffect {
 
-        private final Player applier;
-
-        public CombustingBloodEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
-            super(skill, "CombustingBlood", period, duration, tickDamage, applier);
-
-            this.applier = applier;
+        public CombustingBloodEffect(Skill skill, Player applier, long period, long duration, double tickDamage) {
+            super(skill, "CombustingBlood", applier, period, duration, tickDamage);
 
             types.add(EffectType.BLEED);
             types.add(EffectType.DARK);

@@ -89,7 +89,7 @@ public class SkillPoison extends TargettedSkill {
         double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.075), false);
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new PoisonSkillEffect(this, period, duration, tickDamage, player));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PoisonSkillEffect(this, player, period, duration, tickDamage));
 
         // this is our fireworks shit
         try {
@@ -114,8 +114,8 @@ public class SkillPoison extends TargettedSkill {
 
     public class PoisonSkillEffect extends PeriodicDamageEffect {
 
-        public PoisonSkillEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
-            super(skill, "Poison", period, duration, tickDamage, applier);
+        public PoisonSkillEffect(Skill skill, Player applier, long period, long duration, double tickDamage) {
+            super(skill, "Poison", applier, period, duration, tickDamage);
 
             types.add(EffectType.POISON);
             types.add(EffectType.HARMFUL);

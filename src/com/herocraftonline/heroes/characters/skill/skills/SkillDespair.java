@@ -97,7 +97,7 @@ public class SkillDespair extends ActiveSkill {
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
-        DespairEffect dEffect = new DespairEffect(this, duration, player);
+        DespairEffect dEffect = new DespairEffect(this, player, duration);
 
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
@@ -132,11 +132,8 @@ public class SkillDespair extends ActiveSkill {
 
     public class DespairEffect extends ExpirableEffect {
 
-        private final Player player;
-
-        public DespairEffect(Skill skill, long duration, Player player) {
-            super(skill, "Despair", duration);
-            this.player = player;
+        public DespairEffect(Skill skill, Player applier, long duration) {
+            super(skill, "Despair", applier, duration);
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.DARK);
@@ -149,13 +146,15 @@ public class SkillDespair extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            broadcast(hero.getPlayer().getLocation(), applyText, player.getDisplayName(), hero.getPlayer().getDisplayName(), "Despair");
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName(), "Despair");
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            broadcast(hero.getPlayer().getLocation(), expireText, player.getDisplayName(), hero.getPlayer().getDisplayName(), "Despair");
+            Player player = hero.getPlayer();
+            broadcast(player.getLocation(), expireText, player.getDisplayName(), applier.getDisplayName(), "Despair");
         }
     }
 }

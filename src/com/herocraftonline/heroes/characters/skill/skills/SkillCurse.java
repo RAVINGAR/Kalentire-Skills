@@ -42,6 +42,7 @@ public class SkillCurse extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill curse");
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
     }
 
@@ -84,42 +85,49 @@ public class SkillCurse extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
+        Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero, target);
+
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, duration, missChance));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, player, duration, missChance));
 
-        Player player = hero.getPlayer();
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_MOAN , 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.GHAST_MOAN, 0.8F, 1.0F);
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,2,0), 
-            		FireworkEffect.builder()
-            		.flicker(false).trail(true)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.PURPLE)
-            		.withFade(Color.GREEN)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(),
+                                 target.getLocation().add(0, 2, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(false).trail(true)
+                                               .with(FireworkEffect.Type.CREEPER)
+                                               .withColor(Color.PURPLE)
+                                               .withFade(Color.GREEN)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        return SkillResult.NORMAL;
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        return SkillResult.NORMAL;
     }
 
     public class CurseEffect extends ExpirableEffect {
 
         private final double missChance;
 
-        public CurseEffect(Skill skill, long duration, double missChance) {
-            super(skill, "Curse", duration);
+        public CurseEffect(Skill skill, Player applier, long duration, double missChance) {
+            super(skill, "Curse", applier, duration);
+
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.MAGIC);
+
             this.missChance = missChance;
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.MAGIC);
         }
 
         @Override

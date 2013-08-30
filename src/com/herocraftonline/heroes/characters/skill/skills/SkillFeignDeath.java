@@ -10,20 +10,21 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillFeignDeath extends TargettedSkill {
+public class SkillFeignDeath extends ActiveSkill {
     private String applyText;
     private String expireText;
 
     public SkillFeignDeath(Heroes plugin) {
         super(plugin, "FeignDeath");
-        setDescription("You feign your death, displaying a deceptive message of death to nearby players. While feigned, but instead go invisible for $1s.");
+        setDescription("You feign your death, displaying a deceptive message of death to nearby players. After feigning, you are invisible for $1 seconds. Moving will break the effect however.");
         setUsage("/skill feigndeath");
         setArgumentRange(0, 0);
         setIdentifiers("skill feigndeath");
@@ -51,35 +52,26 @@ public class SkillFeignDeath extends TargettedSkill {
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You appear to be living!");
     }
 
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-
-        if (!(target instanceof Player)) {
-            return SkillResult.INVALID_TARGET;
-        }
-        if (((Player) target).equals(player)) {
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-        Player targetPlayer = (Player) target;
-        if (!damageCheck(player, targetPlayer)) {
-            return SkillResult.INVALID_TARGET;
-        }
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 
-        //String tn = tHero.getPlayer().getDisplayName();
-        //String pn = player.getDisplayName();
-
-        //hero.addEffect(new InvisibleEffect(this, duration, this.applyText, this.expireText));
         String playerName = player.getName();
-        String targetName = targetPlayer.getName();
-
-        String deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
-
-        broadcast(player.getLocation(), deathMessage, new Object[0]);
+        LivingEntity lastCombatTarget = hero.getCombatEffect().getLastCombatant();
+        if (lastCombatTarget instanceof Player) {
+            String targetName = ((Player) lastCombatTarget).getName();
+            String deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
+            broadcast(player.getLocation(), deathMessage);
+        }
+        else {
+            String targetName = Messaging.getLivingEntityName(lastCombatTarget);
+            String deathMessage = "[" + ChatColor.GREEN + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
+            broadcast(player.getLocation(), deathMessage);
+        }
 
         // Feign Death
-        hero.addEffect(new FeignDeathEffect(this, duration));
+        hero.addEffect(new InvisibleEffect(this, "FeignDeathed", player, duration, "", ""));
 
         return SkillResult.NORMAL;
     }
@@ -87,8 +79,8 @@ public class SkillFeignDeath extends TargettedSkill {
     // Buff effect used to keep track of warmup time
     public class FeignDeathEffect extends ExpirableEffect {
 
-        public FeignDeathEffect(Skill skill, long duration) {
-            super(skill, "FeignDeathEffect", duration);
+        public FeignDeathEffect(Skill skill, Player applier, long duration) {
+            super(skill, "FeignDeathEffect", applier, duration);
 
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.INVIS);

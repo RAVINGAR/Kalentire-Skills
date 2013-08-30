@@ -148,7 +148,7 @@ public class SkillFistOfJin extends PassiveSkill {
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled()) {
                                 hero.heal(healEvent.getAmount());
-                                CooldownEffect cdEffect = new CooldownEffect(skill, cdDuration);
+                                CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                                 hero.addEffect(cdEffect);
                             }
                         }
@@ -159,7 +159,7 @@ public class SkillFistOfJin extends PassiveSkill {
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled()) {
                                 member.heal(healEvent.getAmount());
-                                CooldownEffect cdEffect = new CooldownEffect(skill, cdDuration);
+                                CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                                 hero.addEffect(cdEffect);
                             }
                         }
@@ -171,7 +171,7 @@ public class SkillFistOfJin extends PassiveSkill {
                 Bukkit.getPluginManager().callEvent(healEvent);
                 if (!healEvent.isCancelled()) {
                     hero.heal(healEvent.getAmount());
-                    CooldownEffect cdEffect = new CooldownEffect(skill, cdDuration);
+                    CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                     hero.addEffect(cdEffect);
                 }
             }
@@ -180,8 +180,8 @@ public class SkillFistOfJin extends PassiveSkill {
 
     // Effect required for implementing an internal cooldown on healing
     private class CooldownEffect extends ExpirableEffect {
-        public CooldownEffect(Skill skill, long duration) {
-            super(skill, "FistOfJinCooldownEffect", duration);
+        public CooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, "FistOfJinCooldownEffect", applier, duration);
         }
     }
 }

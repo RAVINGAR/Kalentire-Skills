@@ -65,32 +65,38 @@ public class SkillFlameshield extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        broadcastExecuteText(hero);
-        // this is our fireworks shit
         Player player = hero.getPlayer();
+        broadcastExecuteText(hero);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        hero.addEffect(new FlameshieldEffect(this, player, duration));
+
+        // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		player.getLocation().add(0,2,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.RED)
-            		.withFade(Color.MAROON)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(),
+                                 player.getLocation().add(0, 2, 0),
+                                 FireworkEffect.builder().flicker(false).trail(false)
+                                               .with(FireworkEffect.Type.CREEPER)
+                                               .withColor(Color.RED)
+                                               .withFade(Color.MAROON)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        hero.addEffect(new FlameshieldEffect(this, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 0.4F, 1.0F); 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.4F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
     public class FlameshieldEffect extends ExpirableEffect {
 
-        public FlameshieldEffect(Skill skill, long duration) {
-            super(skill, "Flameshield", duration);
+        public FlameshieldEffect(Skill skill, Player applier, long duration) {
+            super(skill, "Flameshield", applier, duration);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);

@@ -80,7 +80,7 @@ public class SkillDevourMagic extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.BLAZE_BREATH, 0.8F, 1.0F);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        hero.addEffect(new DevourMagicEffect(this, duration));
+        hero.addEffect(new DevourMagicEffect(this, player, duration));
 
         return SkillResult.NORMAL;
     }
@@ -118,8 +118,8 @@ public class SkillDevourMagic extends ActiveSkill {
     }
 
     public class DevourMagicEffect extends ExpirableEffect {
-        public DevourMagicEffect(Skill skill, long duration) {
-            super(skill, "DevourMagic", duration);
+        public DevourMagicEffect(Skill skill, Player applier, long duration) {
+            super(skill, "DevourMagic", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DARK);

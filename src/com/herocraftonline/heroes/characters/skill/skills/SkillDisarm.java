@@ -84,7 +84,7 @@ public class SkillDisarm extends TargettedSkill {
         }
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        tHero.addEffect(new DisarmEffect(this, duration, applyText, expireText));
+        tHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
 
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);

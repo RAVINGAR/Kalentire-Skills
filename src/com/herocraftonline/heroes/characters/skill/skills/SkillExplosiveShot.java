@@ -122,7 +122,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
-        hero.addEffect(new ExplosiveShotBuffEffect(this, duration, numShots));
+        hero.addEffect(new ExplosiveShotBuffEffect(this, hero.getPlayer(), duration, numShots));
 
         return SkillResult.NORMAL;
     }
@@ -237,7 +237,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                         if (!targetPlayer.isOp()) {
                             long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
                             if (duration > 0) {
-                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, duration);
+                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, duration);
                                 CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                                 targetCT.addEffect(ncpExemptEffect);
                             }
@@ -270,13 +270,14 @@ public class SkillExplosiveShot extends ActiveSkill {
         private int shotsLeft = 1;
         private boolean showExpireText = true;
 
-        public ExplosiveShotBuffEffect(Skill skill, long duration, int shotsLeft) {
-            super(skill, "ExplosiveShotBuffEffect", duration);
-            this.shotsLeft = shotsLeft;
+        public ExplosiveShotBuffEffect(Skill skill, Player applier, long duration, int shotsLeft) {
+            super(skill, "ExplosiveShotBuffEffect", applier, duration);
 
             types.add(EffectType.IMBUE);
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
+
+            this.shotsLeft = shotsLeft;
         }
 
         @Override
@@ -322,8 +323,8 @@ public class SkillExplosiveShot extends ActiveSkill {
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
         @Override

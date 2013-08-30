@@ -99,7 +99,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
 
         // Add the debuff to the target
         CharacterTemplate targCT = this.plugin.getCharacterManager().getCharacter(target);
-        QuiveringPalmEffect qpEffect = new QuiveringPalmEffect(this, duration, damageMultiplier, hero.getPlayer(), applyText, expireText);
+        QuiveringPalmEffect qpEffect = new QuiveringPalmEffect(this, hero.getPlayer(), duration, damageMultiplier, applyText, expireText);
         targCT.addEffect(qpEffect);
 
         return SkillResult.NORMAL;
@@ -107,8 +107,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
 
     private class QuiveringPalmListener implements Listener {
 
-        public QuiveringPalmListener() {
-        }
+        public QuiveringPalmListener() {}
 
         // Alter damage dealt by players when they are under the effect of quivering palm
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -124,11 +123,11 @@ public class SkillQuiveringPalm extends TargettedSkill {
 
             // Check to make sure that the target has the quivering palm effect
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
-            if (!targetCT.hasEffect("QuiveringPalmEffect"))
+            if (!targetCT.hasEffect("QuiveringPalmed"))
                 return;
 
             // Get the damage multiplier
-            QuiveringPalmEffect qpEffect = (QuiveringPalmEffect) targetCT.getEffect("QuiveringPalmEffect");
+            QuiveringPalmEffect qpEffect = (QuiveringPalmEffect) targetCT.getEffect("QuiveringPalmed");
             double damageMultiplier = qpEffect.getDamageModifier();
 
             // Alter the damage being dealt to the target
@@ -149,8 +148,8 @@ public class SkillQuiveringPalm extends TargettedSkill {
 
         private final Player applier;
 
-        public QuiveringPalmEffect(Skill skill, long duration, double damageMultipler, Player applier, String applyText, String expireText) {
-            super(skill, "QuiveringPalmEffect", duration);
+        public QuiveringPalmEffect(Skill skill, Player applier, long duration, double damageMultipler, String applyText, String expireText) {
+            super(skill, "QuiveringPalmed", applier, duration);
 
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.HARMFUL);

@@ -51,7 +51,7 @@ public class SkillGuardianAngel extends ActiveSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
 
-        InvulnerabilityEffect iEffect = new InvulnerabilityEffect(this, duration);
+        InvulnerabilityEffect iEffect = new InvulnerabilityEffect(this, player, duration);
         if (!hero.hasParty()) {
             hero.addEffect(iEffect);
         }

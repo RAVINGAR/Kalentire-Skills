@@ -66,7 +66,7 @@ public class SkillKick extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         if (target instanceof Player) {
-            SilenceEffect sEffect = new SilenceEffect(this, duration);
+            SilenceEffect sEffect = new SilenceEffect(this, player, duration);
             plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         }
 

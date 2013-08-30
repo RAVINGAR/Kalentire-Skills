@@ -81,14 +81,14 @@ public class SkillDecay extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, Double.valueOf(17), false);
         double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.17), false);
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, duration, period, tickDamage, player));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, player, duration, period, tickDamage));
 
         // this is our fireworks shit
         try {
@@ -113,8 +113,8 @@ public class SkillDecay extends TargettedSkill {
 
     public class DecayEffect extends PeriodicDamageEffect {
 
-        public DecayEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
-            super(skill, "Decay", period, duration, tickDamage, applier);
+        public DecayEffect(Skill skill, Player applier, long duration, long period, double tickDamage) {
+            super(skill, "Decay", applier, period, duration, tickDamage);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
@@ -124,27 +124,27 @@ public class SkillDecay extends TargettedSkill {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
         }
 
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getDisplayName());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getDisplayName(), applier.getDisplayName());
         }
     }
 }

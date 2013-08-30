@@ -29,15 +29,12 @@ public class SkillTumble extends PassiveSkill {
         super(plugin, "Tumble");
         setDescription("You are able to fall $1 blocks without taking damage.");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
-        setTypes(SkillType.PHYSICAL, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
     
     @Override

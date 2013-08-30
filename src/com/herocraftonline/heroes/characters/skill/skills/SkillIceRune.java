@@ -27,6 +27,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -93,6 +94,11 @@ public class SkillIceRune extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+
+        // Let the world know that the hero has activated a Rune.
+        broadcastExecuteText(hero);
+
         // Create the Rune
         int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 30, false);
         String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.AQUA.toString());
@@ -101,14 +107,8 @@ public class SkillIceRune extends ActiveSkill {
         // Add the Rune to the RuneWord queue here
         Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, iceRune));
 
-        // Play Firework
-        // CODE HERE
-
-        // Play sound
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
-
-        // Let the world know that the hero has activated a Rune.
-        broadcastExecuteText(hero);
+        // Play Sound
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -129,6 +129,7 @@ public class SkillIceRune extends ActiveSkill {
         public void onRuneApplication(RuneApplicationEvent event) {
             // Get Hero information
             final Hero hero = event.getHero();
+            final Player player = hero.getPlayer();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
             if (!(event.getRuneList().getHead().name == "IceRune"))
@@ -160,13 +161,12 @@ public class SkillIceRune extends ActiveSkill {
                     String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
 
                     // Create the effect and slow the target
-                    SlowEffect sEffect = new SlowEffect(skill, duration, amplifier, false, applyText, expireText, hero);
+                    SlowEffect sEffect = new SlowEffect(skill, player, duration, amplifier, false, applyText, expireText);
 
                     // Damage and slow the target
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
                     targCT.addEffect(sEffect);
-
 
                     // Play sound
                     hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
