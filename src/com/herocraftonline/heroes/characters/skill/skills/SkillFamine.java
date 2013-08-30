@@ -31,7 +31,7 @@ public class SkillFamine extends TargettedSkill {
 
     public SkillFamine(Heroes plugin) {
         super(plugin, "Famine");
-        setDescription("Cause a wave of famine to your target and all enemies within $1 blocks of that target for $2 seconds. Famine causes the target to lose $3 stamina every $4 seconds.");
+        setDescription("Cause a wave of famine to your target and all enemies within $1 blocks of that target. Famine causes the target to lose $2 stamina over $3 seconds.");
         setUsage("/skill famine");
         setArgumentRange(0, 0);
         setIdentifiers("skill famine");
@@ -43,9 +43,16 @@ public class SkillFamine extends TargettedSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(4), false);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), true);
+
+        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", Integer.valueOf(60), false);
+        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", Integer.valueOf(1), false);
+        staminaDrain += hero.getAttributeValue(AttributeType.INTELLECT) * staminaIncrease;
+
+        String formattedStaminaDrain = Util.decFormat.format(staminaDrain * ((double) duration / (double) period));
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", radius + "").replace("$2", formattedDuration);
+        return getDescription().replace("$1", radius + "").replace("$3", formattedStaminaDrain).replace("$2", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {

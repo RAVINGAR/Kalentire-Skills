@@ -29,6 +29,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAccelerando extends ActiveSkill {
@@ -81,9 +82,9 @@ public class SkillAccelerando extends ActiveSkill {
         node.set("speed-multiplier", 2);
         node.set(SkillSetting.DURATION.node(), 3000);
         node.set(SkillSetting.DELAY.node(), 1000);
-        node.set(SkillSetting.RADIUS.node(), 15);
-        node.set("apply-text", "%hero% gained a burst of speed!");
-        node.set("expire-text", "%hero% returned to normal speed!");
+        node.set(SkillSetting.RADIUS.node(), 12);
+        node.set("apply-text", Messaging.getSkillDenoter() + "%hero% gained a burst of speed!");
+        node.set("expire-text", Messaging.getSkillDenoter() + "%hero% returned to normal speed!");
 
         return node;
     }
@@ -92,8 +93,8 @@ public class SkillAccelerando extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% gained a burst of speed!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% returned to normal speed!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% gained a burst of speed!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% returned to normal speed!").replace("%hero%", "$1");
     }
 
     @Override

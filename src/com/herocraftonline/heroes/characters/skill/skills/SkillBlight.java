@@ -60,9 +60,9 @@ public class SkillBlight extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), 17500);
-        node.set(SkillSetting.PERIOD.node(), 2500);
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(17500));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2500));
         node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(15));
         node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.4));
         node.set(SkillSetting.RADIUS.node(), 4);
@@ -168,6 +168,7 @@ public class SkillBlight extends TargettedSkill {
         }
 
         private void damageNearby(LivingEntity lEntity) {
+            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
             int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS, 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
                 if (!(target instanceof LivingEntity) || target.equals(applier) || applyHero.getSummons().contains(target)) {

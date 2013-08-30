@@ -66,7 +66,7 @@ public class SkillDespair extends ActiveSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.5));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(8));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(50));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has blinded %target% with %skill%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has recovered their sight!");
         node.set(SkillSetting.REAGENT.node(), Integer.valueOf(367));

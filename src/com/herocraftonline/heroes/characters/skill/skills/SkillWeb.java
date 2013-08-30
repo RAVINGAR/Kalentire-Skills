@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,6 +22,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -45,7 +46,7 @@ public class SkillWeb extends TargettedSkill {
         setUsage("/skill web");
         setArgumentRange(0, 0);
         setIdentifiers("skill web");
-        setTypes(SkillType.EARTH, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
@@ -59,9 +60,12 @@ public class SkillWeb extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), 5000); // in milliseconds
-        node.set("root-duration", 500);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% conjured a web at %target%'s feet!");
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(75));
+        node.set("root-duration", Integer.valueOf(500));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% conjured a web at %target%'s feet!");
 
         return node;
     }
@@ -70,16 +74,19 @@ public class SkillWeb extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        long webDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
         long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 500, false);
-        WebEffect wEffect = new WebEffect(this, webDuration, rootDuration, player);
+        WebEffect wEffect = new WebEffect(this, player, duration, rootDuration);
 
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
         targCT.addEffect(wEffect);
@@ -111,8 +118,8 @@ public class SkillWeb extends TargettedSkill {
         private Location loc;
         private Player applier;
 
-        public WebEffect(Skill skill, long webDuration, long rootDuration, Player applier) {
-            super(skill, "Web", webDuration);
+        public WebEffect(Skill skill, Player applier, long webDuration, long rootDuration) {
+            super(skill, "Web", applier, webDuration);
 
             types.add(EffectType.MAGIC);
             types.add(EffectType.HARMFUL);

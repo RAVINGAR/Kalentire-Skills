@@ -60,7 +60,6 @@ public class SkillIceRune extends ActiveSkill {
         setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.DEBUFFING, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING, SkillType.SILENCABLE);
         setArgumentRange(0, 0);
 
-        // Start up the listener for skill usage
         Bukkit.getServer().getPluginManager().registerEvents(new IceRuneListener(this), plugin);
     }
 
@@ -80,9 +79,9 @@ public class SkillIceRune extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("speed-multiplier", 2);
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(35));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.625));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.75));
+        node.set("speed-multiplier", 2);
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.AQUA + "Ice.");
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been slowed by a Rune of Ice!");
@@ -165,11 +164,11 @@ public class SkillIceRune extends ActiveSkill {
 
                     // Damage and slow the target
                     addSpellTarget((LivingEntity) targEnt, hero);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                    damageEntity((LivingEntity) targEnt, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
                     targCT.addEffect(sEffect);
 
                     // Play sound
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
                 }
             }, (long) (0.1 * 20));
 

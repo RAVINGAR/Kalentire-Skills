@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.AnimalTamer;
@@ -24,10 +24,15 @@ public class SkillWolf extends PassiveSkill {
         setUsage("/skill wolf <release|summon>");
         setArgumentRange(0, 1);
         setIdentifiers("skill wolf");
-        setTypes(SkillType.SUMMON, SkillType.KNOWLEDGE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
+    }
 
     public class SkillEntityListener implements Listener {
 
@@ -52,11 +57,5 @@ public class SkillWolf extends PassiveSkill {
                 event.setCancelled(true);
             }
         }
-    }
-
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

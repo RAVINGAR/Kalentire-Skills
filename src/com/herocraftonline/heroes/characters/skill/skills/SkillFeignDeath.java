@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillFeignDeath extends ActiveSkill {
     private String applyText;
@@ -32,15 +33,17 @@ public class SkillFeignDeath extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, "smoke-duration", 6000, false) / 1000;
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
 
-        return getDescription().replace("$2", duration + "");
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(60000));
 
         return node;
     }
@@ -55,7 +58,7 @@ public class SkillFeignDeath extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
 
         String playerName = player.getName();
         LivingEntity lastCombatTarget = hero.getCombatEffect().getLastCombatant();
@@ -100,7 +103,7 @@ public class SkillFeignDeath extends ActiveSkill {
             }
 
             if (applyText != null && applyText.length() > 0)
-                Messaging.send(player, applyText, new Object[0]);
+                Messaging.send(player, applyText);
         }
 
         @Override
@@ -116,7 +119,7 @@ public class SkillFeignDeath extends ActiveSkill {
             }
 
             if (expireText != null && expireText.length() > 0)
-                Messaging.send(player, expireText, new Object[0]);
+                Messaging.send(player, expireText);
         }
     }
 }

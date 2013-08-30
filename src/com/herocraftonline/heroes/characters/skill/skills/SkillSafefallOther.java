@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -30,12 +31,9 @@ public class SkillSafefallOther extends TargettedSkill {
         setIdentifiers("skill safefallother");
         setTypes(SkillType.ABILITY_PROPERTY_AIR, SkillType.BUFFING, SkillType.SILENCABLE);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     @Override
@@ -48,15 +46,15 @@ public class SkillSafefallOther extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has gained safefall!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has lost safefall!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has gained safefall!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has lost safefall!");
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         if (!(target instanceof Player) || hero.getPlayer().equals(target))
-        	return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET;
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         broadcastExecuteText(hero, target);

@@ -132,9 +132,8 @@ public class SkillBreed extends PassiveSkill {
                 }
             }
 
-            if (isWolfTamingAttempt(event) && !hero.canUseSkill("Wolf")) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.GRAY + "You are not allowed to tame wolves!");
+            if (isWolfTamingAttempt(event)) {
+                // We don't handle wolf taming events. ignore it.
                 return;
             }
 

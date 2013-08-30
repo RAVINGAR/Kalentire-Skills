@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.listeners.HBlockListener;
 import com.herocraftonline.heroes.util.Util;
 
@@ -26,27 +25,36 @@ public class SkillWoodcutting extends PassiveSkill {
         super(plugin, "Woodcutting");
         setDescription("You have a $1% chance to get extra materials when logging.");
         setEffectTypes(EffectType.BENEFICIAL);
-        setTypes(SkillType.KNOWLEDGE, SkillType.EARTH, SkillType.BUFF);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(this), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .001, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 1)
+            level = 1;
+        return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.CHANCE_LEVEL.node(), .001);
+        node.set(SkillSetting.CHANCE_PER_LEVEL.node(), .001);
         return node;
     }
 
     public class SkillBlockListener implements Listener {
 
         private Skill skill;
-        
+
         SkillBlockListener(Skill skill) {
             this.skill = skill;
         }
-        
+
         @SuppressWarnings("deprecation")
-		@EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onBlockBreak(BlockBreakEvent event) {
             if (event.isCancelled()) {
                 return;
@@ -66,26 +74,18 @@ public class SkillWoodcutting extends PassiveSkill {
             }
 
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (!hero.hasEffect("Woodcutting") || Util.nextRand() > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)) {
+            if (!hero.hasEffect("Woodcutting") || Util.nextRand() > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getSkillLevel(skill)) {
                 return;
             }
 
             if (extraDrops != 0) {
                 extraDrops = Util.nextInt(extraDrops) + 1;
-            } else {
+            }
+            else {
                 extraDrops = 1;
             }
 
             block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, (short) 0, block.getData()));
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, .001, false);
-        int level = hero.getSkillLevel(this);
-        if (level < 1)
-            level = 1;
-        return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
     }
 }

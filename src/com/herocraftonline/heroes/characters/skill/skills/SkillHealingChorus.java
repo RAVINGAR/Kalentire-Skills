@@ -45,7 +45,7 @@ public class SkillHealingChorus extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(15));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
         node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(17));
         node.set(SkillSetting.HEALING_INCREASE_PER_CHARISMA.node(), Double.valueOf(0.175));
