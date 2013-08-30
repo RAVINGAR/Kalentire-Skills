@@ -125,6 +125,7 @@ public class SkillBlight extends TargettedSkill {
 
             types.add(EffectType.DISEASE);
             types.add(EffectType.HARMFUL);
+            types.add(EffectType.AREA_OF_EFFECT);
             types.add(EffectType.DISPELLABLE);
 
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);

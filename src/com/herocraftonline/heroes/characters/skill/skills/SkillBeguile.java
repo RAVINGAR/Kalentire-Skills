@@ -102,7 +102,9 @@ public class SkillBeguile extends TargettedSkill {
         float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 2.1, false);
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(new ConfuseEffect(this, player, duration, period, maxDrift));
+        ConfuseEffect beguileEffect = new ConfuseEffect(this, player, duration, period, maxDrift);
+        beguileEffect.types.add(EffectType.DISPELLABLE);
+        targetCT.addEffect(beguileEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
 

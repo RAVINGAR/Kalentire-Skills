@@ -176,6 +176,7 @@ public class SkillBloodBond extends ActiveSkill {
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MANA_DECREASING);
+            types.add(EffectType.AREA_OF_EFFECT);
             types.add(EffectType.HEALING);
         }
 

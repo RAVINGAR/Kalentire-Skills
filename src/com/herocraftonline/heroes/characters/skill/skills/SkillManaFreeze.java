@@ -1,16 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -33,8 +28,6 @@ public class SkillManaFreeze extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill manafreeze", "skill mfreeze");
         setTypes(SkillType.SILENCABLE, SkillType.DEBUFFING, SkillType.MANA_FREEZING, SkillType.AGGRESSIVE);
-
-        Bukkit.getServer().getPluginManager().registerEvents(new HeroListener(), plugin);
     }
 
     @Override
@@ -78,20 +71,6 @@ public class SkillManaFreeze extends TargettedSkill {
 
         return SkillResult.NORMAL;
 
-    }
-
-    public class HeroListener implements Listener {
-
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onHeroRegainMana(HeroRegainManaEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
-
-            if (event.getHero().hasEffect("ManaFreeze")) {
-                event.setCancelled(true);
-            }
-        }
     }
 
     public class ManaFreezeEffect extends ExpirableEffect {

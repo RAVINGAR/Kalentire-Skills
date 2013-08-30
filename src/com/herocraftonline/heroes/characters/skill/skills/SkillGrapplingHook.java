@@ -104,6 +104,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         node.set("horizontal-divider", Integer.valueOf(6));
         node.set("vertical-divider", Integer.valueOf(8));
         node.set("multiplier", Double.valueOf(1.0));
+        node.set("grapple-delay", Double.valueOf(0.5));
         node.set("ncp-exemption-duration", 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% readies his grappling hook!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% drops his grappling hook.");

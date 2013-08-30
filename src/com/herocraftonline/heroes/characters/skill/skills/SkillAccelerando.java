@@ -19,6 +19,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
@@ -44,7 +45,7 @@ public class SkillAccelerando extends ActiveSkill {
         setUsage("/skill accelerando");
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerando");
-        setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT, SkillType.UNINTERRUPTIBLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_SONG, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT, SkillType.UNINTERRUPTIBLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
@@ -190,6 +191,8 @@ public class SkillAccelerando extends ActiveSkill {
 
         public AccelerandoEffect(Skill skill, Player applier, int duration, int multiplier, String applyText, String expireText) {
             super(skill, "Accelerando", applier, duration, multiplier, applyText, expireText);
+
+            types.add(EffectType.DISPELLABLE);
         }
 
         @Override

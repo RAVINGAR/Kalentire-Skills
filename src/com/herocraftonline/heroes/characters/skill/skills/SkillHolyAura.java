@@ -140,6 +140,7 @@ public class SkillHolyAura extends ActiveSkill {
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HEALING);
             types.add(EffectType.LIGHT);
+            types.add(EffectType.AREA_OF_EFFECT);
 
             this.tickHeal = tickHeal;
             this.undeadDamage = undeadDamage;

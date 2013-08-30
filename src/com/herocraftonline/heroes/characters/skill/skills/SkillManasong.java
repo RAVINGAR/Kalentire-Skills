@@ -34,7 +34,7 @@ public class SkillManasong extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill manasong");
         setIdentifiers("skill manasong");
-        setTypes(SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_SONG, SkillType.UNINTERRUPTIBLE);
+        setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG, SkillType.UNINTERRUPTIBLE);
 
         skillSong = new Song(
                              new Note(Sound.NOTE_PIANO, 0.8F, 1.0F, 0),
@@ -105,8 +105,9 @@ public class SkillManasong extends ActiveSkill {
             this.radius = radius;
             this.manaRegen = manaRegen;
 
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.MAGIC);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.MANA_INCREASING);
         }
 
         @Override

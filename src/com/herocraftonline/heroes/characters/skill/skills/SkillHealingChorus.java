@@ -21,7 +21,7 @@ public class SkillHealingChorus extends ActiveSkill {
         setDescription("You sing a chorus of healing, affecting party members within $1 blocks. The chorus heals them for $2 health over $3 seconds.");
         setUsage("/skill healingchorus");
         setIdentifiers("skill healingchorus");
-        setTypes(SkillType.UNINTERRUPTIBLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_SONG);
+        setTypes(SkillType.UNINTERRUPTIBLE, SkillType.AREA_OF_EFFECT, SkillType.BUFFING, SkillType.HEALING, SkillType.ABILITY_PROPERTY_SONG);
         setArgumentRange(0, 0);
     }
 

@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -10,6 +11,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
@@ -20,16 +22,26 @@ public class SkillFullHeal extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillFullHeal(Heroes plugin) {
         super(plugin, "FullHeal");
-        setDescription("You restore your target to full health.");
+        setDescription("You restore your target to full health. This ability cannot be used on yourself.");
         setUsage("/skill fullheal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill fullheal");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.NO_SELF_TARGETTING, SkillType.HEALING, SkillType.SILENCABLE);
     }
 
     @Override
     public String getDescription(Hero hero) {
         return getDescription();
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
+
+        return node;
     }
 
     @Override

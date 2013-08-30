@@ -96,7 +96,6 @@ public class SkillBecomeDeath extends ActiveSkill {
         public BecomeDeathEffect(Skill skill, Player applier, long duration) {
             super(skill, "BecomeDeathEffect", applier, duration);
 
-            types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DARK);
             types.add(EffectType.MAGIC);

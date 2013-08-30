@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.logging.Level;
+
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,7 +31,7 @@ public class SkillDrainsoul extends TargettedSkill {
         setUsage("/skill drainsoul");
         setArgumentRange(0, 0);
         setIdentifiers("skill drainsoul");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.HEALING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -63,9 +65,13 @@ public class SkillDrainsoul extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        Heroes.log(Level.INFO, "DrainSoul Skill Usage attempt. Are we seeing this?");
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        broadcastExecuteText(hero, target);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
@@ -76,8 +82,6 @@ public class SkillDrainsoul extends TargettedSkill {
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());
-
-        broadcastExecuteText(hero, target);
 
         // this is our fireworks shit
         try {

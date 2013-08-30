@@ -64,7 +64,7 @@ public class SkillMegabolt extends TargettedSkill {
 
         // Damage the first target
         target.getWorld().strikeLightningEffect(target.getLocation());
-        plugin.getDamageManager().addSpellTarget(target, hero, this);
+        addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         // Damage the rest
@@ -75,7 +75,7 @@ public class SkillMegabolt extends TargettedSkill {
                 }
                 
                 target.getWorld().strikeLightningEffect(target.getLocation());
-                plugin.getDamageManager().addSpellTarget(target, hero, this);
+                addSpellTarget(target, hero);
                 damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
             }
         }
