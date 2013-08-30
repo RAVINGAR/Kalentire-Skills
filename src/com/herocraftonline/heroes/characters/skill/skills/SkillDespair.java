@@ -38,7 +38,7 @@ public class SkillDespair extends ActiveSkill {
         setUsage("/skill despair");
         setArgumentRange(0, 0);
         setIdentifiers("skill despair");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AREA_OF_EFFECT, SkillType.BLINDING, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -97,6 +97,8 @@ public class SkillDespair extends ActiveSkill {
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
+        broadcastExecuteText(hero);
+
         DespairEffect dEffect = new DespairEffect(this, player, duration);
 
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
@@ -124,8 +126,6 @@ public class SkillDespair extends ActiveSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }

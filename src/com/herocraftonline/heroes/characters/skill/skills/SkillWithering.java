@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,18 +30,19 @@ public class SkillWithering extends TargettedSkill {
         setUsage("/skill withering");
         setArgumentRange(0, 0);
         setIdentifiers("skill withering");
-        setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.DURATION.node(), 6000);
         node.set(SkillSetting.PERIOD.node(), 2000);
         node.set("tick-damage", 2);
         node.set("finish-damage", 20);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target%'s begins to wither away!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target%'s is no longer withered!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s begins to wither away!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s is no longer withered!");
 
         return node;
     }
@@ -49,8 +50,8 @@ public class SkillWithering extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target%'s begins to wither away!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target%'s is no longer withered!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target%'s begins to wither away!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target%'s is no longer withered!").replace("%target%", "$1");
     }
 
     @Override
@@ -67,14 +68,17 @@ public class SkillWithering extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero, target);
+
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
         int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new WitheringEffect(this, duration, period, tickDamage, finishDamage, player));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SHOOT, 0.5F, 1.0F);
 
-        broadcastExecuteText(hero, target);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new WitheringEffect(this, player, duration, period, tickDamage, finishDamage));
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.5F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
@@ -82,8 +86,8 @@ public class SkillWithering extends TargettedSkill {
 
         private double finishDamage;
 
-        public WitheringEffect(Skill skill, long duration, long period, double tickDamage, double finishDamage, Player applier) {
-            super(skill, "Withering", period, duration, tickDamage, applier);
+        public WitheringEffect(Skill skill, Player applier, long duration, long period, double tickDamage, double finishDamage) {
+            super(skill, "Withering", applier, period, duration, tickDamage);
 
             this.finishDamage = finishDamage;
 
@@ -118,7 +122,8 @@ public class SkillWithering extends TargettedSkill {
             if (monster.getEntity().isDead())
                 return;
 
-            skill.addSpellTarget(monster.getEntity(), getApplierHero());
+            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
+            addSpellTarget(monster.getEntity(), applyHero);
             damageEntity(monster.getEntity(), getApplier(), finishDamage, DamageCause.MAGIC);
 
             broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
@@ -132,7 +137,8 @@ public class SkillWithering extends TargettedSkill {
             if (player.isDead())
                 return;
 
-            skill.addSpellTarget(hero.getEntity(), getApplierHero());
+            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
+            addSpellTarget(hero.getEntity(), applyHero);
             damageEntity(player, getApplier(), finishDamage, DamageCause.MAGIC);
 
             broadcast(player.getLocation(), expireText, player.getDisplayName());

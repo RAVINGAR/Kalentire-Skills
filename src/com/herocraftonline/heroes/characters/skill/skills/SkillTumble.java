@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -39,22 +40,20 @@ public class SkillTumble extends PassiveSkill {
     
     @Override
     public String getDescription(Hero hero) {
-        int dist = SkillConfigManager.getUseSetting(hero, this, "base-distance", 3, false);
-        double distlev = SkillConfigManager.getUseSetting(hero, this, "distance-per-level", .5, false);
-        int level = hero.getSkillLevel(this);
-        if (level < 0)
-            level = 0;
-        dist += (int) (distlev * level);
-        return getDescription().replace("$1", dist + "");
+        int distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", Integer.valueOf(0), false);
+        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
+        distance += (int) (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease);
+
+        return getDescription().replace("$1", distance + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("distance-per-level", .5);
-        node.set("base-distance", 3);
-        node.set("ncp-exemption-duration", 500);
+        node.set("base-distance", Integer.valueOf(0));
+        node.set("distance-increase-per-agility-level", Double.valueOf(0.25));
+        node.set("ncp-exemption-duration", Integer.valueOf(100));
 
         return node;
     }
@@ -81,13 +80,16 @@ public class SkillTumble extends PassiveSkill {
             if (ncpEnabled) {
                 Player player = (Player) event.getEntity();
                 if (!player.isOp()) {
-                    long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, duration);
+                    long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", Integer.valueOf(100), false);
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, (Player) event.getEntity(), duration);
                     hero.addEffect(ncpExemptEffect);
                 }
             }
 
-            int distance = (int) (SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false) + (hero.getSkillLevel(skill) * SkillConfigManager.getUseSetting(hero, skill, "distance-per-level", .5, false)));
+            int distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", Integer.valueOf(0), false);
+            double distanceIncrease = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
+            distance += (int) (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease);
+
             double fallDistance = (event.getDamage() - 3) * 3;
             fallDistance -= distance;
             if (fallDistance <= 0) {
@@ -100,8 +102,8 @@ public class SkillTumble extends PassiveSkill {
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect", applier, duration);
         }
 
         @Override
@@ -118,7 +120,6 @@ public class SkillTumble extends PassiveSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
-
         }
     }
 }

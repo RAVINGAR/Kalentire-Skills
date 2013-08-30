@@ -110,6 +110,7 @@ public class SkillSuperJump extends ActiveSkill {
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.PHYSICAL);
+            types.add(EffectType.JUMP_BOOST);
 
             addMobEffect(8, duration / 1000 * 20, 5, false);
         }

@@ -14,7 +14,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -24,48 +24,36 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillFamine extends TargettedSkill {
+public class SkillThickenBlood extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
-    public SkillFamine(Heroes plugin) {
-        super(plugin, "Famine");
-        setDescription("Cause a wave of famine to your target and all enemies within $1 blocks of that target. Famine causes the target to lose $2 stamina over $3 seconds.");
-        setUsage("/skill famine");
+    public SkillThickenBlood(Heroes plugin) {
+        super(plugin, "ThickenBlood");
+        setDescription("Thicken the blood of your target, causing them to be inable to use stamina for $1 seconds.");
+        setUsage("/skill thickenblood");
         setArgumentRange(0, 0);
-        setIdentifiers("skill famine");
-        setTypes(SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.STAMINA_DECREASING, SkillType.DEBUFFING);
+        setIdentifiers("skill thickenblood");
+        setTypes(SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.STAMINA_FREEZING, SkillType.DEBUFFING);
     }
 
     public String getDescription(Hero hero) {
-
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(4), false);
-
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), true);
 
-        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", Integer.valueOf(60), false);
-        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", Integer.valueOf(1), false);
-        staminaDrain += hero.getAttributeValue(AttributeType.INTELLECT) * staminaIncrease;
-
-        String formattedStaminaDrain = Util.decFormat.format(staminaDrain * ((double) duration / (double) period));
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", radius + "").replace("$3", formattedStaminaDrain).replace("$2", formattedDuration);
+        return getDescription().replace("$1", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
-        node.set("stamina-drain-per-tick", Integer.valueOf(60));
-        node.set("stamina-drain-increase-intellect", Integer.valueOf(1));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s has been overcome with famine!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s famine has ended.");
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(75));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood has thickened!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood returns to normal.");
 
         return node;
     }
@@ -74,8 +62,8 @@ public class SkillFamine extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target%'s has been overcome with famine!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target%'s famine has ended.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target%'s blood has thickened!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target%'s blood returns to normal.").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -90,14 +78,12 @@ public class SkillFamine extends TargettedSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(4), false);
 
         // Get Debuff values
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), true);
-        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", Integer.valueOf(60), false);
-        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", Integer.valueOf(1), false);
-        staminaDrain += hero.getAttributeValue(AttributeType.INTELLECT) * staminaIncrease;
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, Integer.valueOf(75), false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
         // Famine the first target
-        FamineEffect tbEffect = new FamineEffect(this, player, period, duration, staminaDrain);
+        ThickenBloodEffect tbEffect = new ThickenBloodEffect(this, player, duration);
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(tbEffect);
 
@@ -133,56 +119,46 @@ public class SkillFamine extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    public class FamineEffect extends PeriodicExpirableEffect {
-        private final int staminaDrain;
+    public class ThickenBloodEffect extends ExpirableEffect {
+        private int originalStamina;
 
-        public FamineEffect(Skill skill, Player applier, int period, int duration, int staminaDrain) {
-            super(skill, "FamineEffect", applier, period, duration);
+        public ThickenBloodEffect(Skill skill, Player applier, int duration) {
+            super(skill, "ThickenedBlood", applier, duration);
 
             types.add(EffectType.MAGIC);
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
             types.add(EffectType.HUNGER);
-            types.add(EffectType.STAMINA_REGEN_FREEZING);
-            types.add(EffectType.STAMINA_DECREASING);
-
-            this.staminaDrain = staminaDrain;
+            types.add(EffectType.STAMINA_FREEZING);
 
             addMobEffect(17, (int) (duration / 1000) * 20, 0, false);
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-        }
+        public void applyToMonster(Monster monster) {}
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
+
+            this.originalStamina = hero.getStamina();
+            hero.setStamina(0);
+
             broadcast(player.getLocation(), applyText, player.getDisplayName());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-        }
+        public void removeFromMonster(Monster monster) {}
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
+
+            hero.setStamina(originalStamina);
+
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-
-        @Override
-        public void tickHero(Hero hero) {
-            hero.setStamina(hero.getStamina() - staminaDrain);
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {}
     }
 }

@@ -426,7 +426,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             super(skill, "GrappleJumpSafeFall", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.JUMP);
+            types.add(EffectType.JUMP_BOOST);
 
             addMobEffect(8, duration / 1000 * 20, 5, false);
         }

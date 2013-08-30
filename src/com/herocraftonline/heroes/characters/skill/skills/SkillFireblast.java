@@ -127,7 +127,7 @@ public class SkillFireblast extends ActiveSkill {
             double horizontalPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.1, false);
             double veticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
 
-            // Loop through nearby targets and damage / knock them back
+            // Loop through nearby targets and damage / knock back one of them
             int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
             List<Entity> targets = getNearbyEntities(targetLocation, radius, radius, radius);
             for (Entity entity : targets) {
@@ -167,6 +167,7 @@ public class SkillFireblast extends ActiveSkill {
                 }
 
                 target.setVelocity(new Vector(xDir, veticalPower, zDir));
+                continue;       // Only hit 1 target.
             }
 
             broadcastExecuteText(hero);

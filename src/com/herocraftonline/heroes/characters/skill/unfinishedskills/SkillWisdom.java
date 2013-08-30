@@ -31,16 +31,25 @@ public class SkillWisdom extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill wisdom");
         setIdentifiers("skill wisdom");
-        setTypes(SkillType.BUFF, SkillType.MANA, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.MANA_INCREASING, SkillType.SILENCABLE);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double mult = SkillConfigManager.getUseSetting(hero, this, "regen-multiplier", 1.2, false);
+        return getDescription().replace("$1", Util.stringDouble((mult - 1) * 100));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set("regen-multiplier", 1.2);
         node.set(SkillSetting.RADIUS.node(), 10);
         node.set(SkillSetting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
+
         return node;
     }
 
@@ -106,8 +115,8 @@ public class SkillWisdom extends ActiveSkill {
 
         private final double manaMultiplier;
 
-        public WisdomEffect(Skill skill, long duration, double manaMultiplier) {
-            super(skill, "Wisdom", duration);
+        public WisdomEffect(Skill skill, Player applier, long duration, double manaMultiplier) {
+            super(skill, "Wisdom", applier, duration);
             this.manaMultiplier = manaMultiplier;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
@@ -131,11 +140,5 @@ public class SkillWisdom extends ActiveSkill {
             Player player = hero.getPlayer();
             Messaging.send(player, expireText);
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double mult = SkillConfigManager.getUseSetting(hero, this, "regen-multiplier", 1.2, false);
-        return getDescription().replace("$1", Util.stringDouble((mult - 1) * 100));
     }
 }

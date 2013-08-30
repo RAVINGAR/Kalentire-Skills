@@ -27,16 +27,16 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
-public class SkillIronFist extends ActiveSkill {
+public class SkillTornadoKick extends ActiveSkill {
 
     private boolean ncpEnabled = false;
 
-    public SkillIronFist(Heroes plugin) {
-        super(plugin, "IronFist");
-        setDescription("Strike the ground with an iron fist, striking all targets within $1 blocks, dealing $2 damage and knocking them into the air.");
-        setUsage("/skill ironfist");
+    public SkillTornadoKick(Heroes plugin) {
+        super(plugin, "TornadoKick");
+        setDescription("Unleash a Tornado Kick, dealing $1 damage and knocking nearby enemies within $2 blocks away from you.");
+        setUsage("/skill tornadokick");
         setArgumentRange(0, 0);
-        setIdentifiers("skill ironfist");
+        setIdentifiers("skill tornadokick");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
@@ -63,10 +63,10 @@ public class SkillIronFist extends ActiveSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.125));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(500));
-        node.set("horizontal-power", Double.valueOf(0.0));
-        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0));
-        node.set("vertical-power", Double.valueOf(0.4));
-        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.015));
+        node.set("horizontal-power", Double.valueOf(0.4));
+        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.015));
+        node.set("vertical-power", Double.valueOf(0.2));
+        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.0075));
         node.set("ncp-exemption-duration", Integer.valueOf(1000));
 
         return node;

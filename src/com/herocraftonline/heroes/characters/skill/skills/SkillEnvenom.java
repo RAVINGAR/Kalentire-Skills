@@ -54,7 +54,7 @@ public class SkillEnvenom extends ActiveSkill {
         String formattedDamage = Util.decFormat.format(damage);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedDuration).replace("$1", formattedDamage);
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamage);
     }
 
     @Override
@@ -102,7 +102,9 @@ public class SkillEnvenom extends ActiveSkill {
             }
 
             LivingEntity target = (LivingEntity) event.getEntity();
-            dealEnvenomDamage(hero, target);
+
+            if (hero.hasEffect("Envenom"))
+                dealEnvenomDamage(hero, target);
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

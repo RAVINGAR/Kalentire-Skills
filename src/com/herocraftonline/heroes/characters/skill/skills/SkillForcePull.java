@@ -64,7 +64,7 @@ public class SkillForcePull extends TargettedSkill {
         node.set("horizontal-power", Double.valueOf(0.3));
         node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0125));
         node.set("vertical-power", Double.valueOf(0.4));
-        node.set("ncp-exemption-duration", 1500);
+        node.set("ncp-exemption-duration", Integer.valueOf(1000));
         node.set("pull-delay", Double.valueOf(0.2));
 
         return node;
