@@ -116,6 +116,25 @@ public class SkillCurse extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
+    public class SkillEventListener implements Listener {
+
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.isCancelled() || event.getDamage() == 0) {
+                return;
+            }
+
+            CharacterTemplate character = event.getDamager();
+            if (character.hasEffect("Curse")) {
+                CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
+                if (Util.nextRand() < cEffect.missChance) {
+                    event.setCancelled(true);
+                    broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
+                }
+            }
+        }
+    }
+
     public class CurseEffect extends ExpirableEffect {
 
         private final double missChance;
@@ -158,25 +177,6 @@ public class SkillCurse extends TargettedSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
-        }
-    }
-
-    public class SkillEventListener implements Listener {
-
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0) {
-                return;
-            }
-
-            CharacterTemplate character = event.getDamager();
-            if (character.hasEffect("Curse")) {
-                CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
-                if (Util.nextRand() < cEffect.missChance) {
-                    event.setCancelled(true);
-                    broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
-                }
-            }
         }
     }
 }

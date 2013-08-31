@@ -1,15 +1,22 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.ChatColor;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import mc.alk.tracker.controllers.MessageController;
+
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -29,7 +36,7 @@ public class SkillFeignDeath extends ActiveSkill {
         setUsage("/skill feigndeath");
         setArgumentRange(0, 0);
         setIdentifiers("skill feigndeath");
-        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFFING);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BLINDING, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFFING);
     }
 
     public String getDescription(Hero hero) {
@@ -44,6 +51,8 @@ public class SkillFeignDeath extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(60000));
+        node.set("detection-range", Double.valueOf(1.0));
+        node.set("max-move-distance", Double.valueOf(1.0));
 
         return node;
     }
@@ -51,8 +60,8 @@ public class SkillFeignDeath extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You feign death!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You appear to be living!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You feign death!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You appear to be living!");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -60,33 +69,82 @@ public class SkillFeignDeath extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
 
+        // Feign Death
+        hero.addEffect(new InvisibleEffect(this, "FeignDeathed", player, duration, applyText, expireText));
+
         String playerName = player.getName();
         LivingEntity lastCombatTarget = hero.getCombatEffect().getLastCombatant();
         if (lastCombatTarget instanceof Player) {
+
             String targetName = ((Player) lastCombatTarget).getName();
-            String deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
+            String deathMessage = MessageController.getPvPMessage(false, targetName, playerName, ((Player) lastCombatTarget).getItemInHand());
+            //            String deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
             broadcast(player.getLocation(), deathMessage);
         }
         else {
             String targetName = Messaging.getLivingEntityName(lastCombatTarget);
-            String deathMessage = "[" + ChatColor.GREEN + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
+            String deathMessage = MessageController.getPvEMessage(false, targetName, playerName, null);
+            //            String deathMessage = "[" + ChatColor.GREEN + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
             broadcast(player.getLocation(), deathMessage);
         }
 
-        // Feign Death
-        hero.addEffect(new InvisibleEffect(this, "FeignDeathed", player, duration, "", ""));
-
         return SkillResult.NORMAL;
+    }
+    
+    public class FeignMoveChecker implements Runnable {
+
+        private Map<Hero, Location> oldLocations = new HashMap<Hero, Location>();
+        private Skill skill;
+
+        FeignMoveChecker(Skill skill) {
+            this.skill = skill;
+        }
+
+        @Override
+        public void run() {
+            Iterator<Entry<Hero, Location>> heroes = oldLocations.entrySet().iterator();
+            while (heroes.hasNext()) {
+                Entry<Hero, Location> entry = heroes.next();
+                Hero hero = entry.getKey();
+                Location oldLoc = entry.getValue();
+                if (!hero.hasEffect("FeignDeathed")) {
+                    heroes.remove();
+                    continue;
+                }
+
+                Location newLoc = hero.getPlayer().getLocation();
+                if (newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", Double.valueOf(1.0), false)) {
+                    hero.removeEffect(hero.getEffect("Invisible"));
+                    heroes.remove();
+                    continue;
+                }
+                double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", Double.valueOf(1.0), false);
+                List<Entity> nearEntities = hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange);
+                for (Entity entity : nearEntities) {
+                    if (entity instanceof Player) {
+                        hero.removeEffect(hero.getEffect("Invisible"));
+                        heroes.remove();
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void addHero(Hero hero) {
+            if (!hero.hasEffect("Invisible"))
+                return;
+
+            oldLocations.put(hero, hero.getPlayer().getLocation());
+        }
     }
 
     // Buff effect used to keep track of warmup time
-    public class FeignDeathEffect extends ExpirableEffect {
+    public class FeignDeathEffect extends InvisibleEffect {
 
         public FeignDeathEffect(Skill skill, Player applier, long duration) {
-            super(skill, "FeignDeathEffect", applier, duration);
+            super(skill, applier, duration, "", "");
 
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.INVIS);
+            addMobEffect(15, (int) ((duration / 1000) * 20), 1, false);             // Blind
         }
 
         @Override
@@ -94,13 +152,6 @@ public class SkillFeignDeath extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
-
-            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-                if (onlinePlayer.equals(player) || onlinePlayer.hasPermission("heroes.admin.seeinvis")) {
-                    continue;
-                }
-                onlinePlayer.hidePlayer(player);
-            }
 
             if (applyText != null && applyText.length() > 0)
                 Messaging.send(player, applyText);
@@ -111,12 +162,6 @@ public class SkillFeignDeath extends ActiveSkill {
             super.removeFromHero(hero);
 
             Player player = hero.getPlayer();
-            for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-                if (onlinePlayer.equals(player)) {
-                    continue;
-                }
-                onlinePlayer.showPlayer(player);
-            }
 
             if (expireText != null && expireText.length() > 0)
                 Messaging.send(player, expireText);

@@ -46,7 +46,7 @@ public class SkillFirewave extends ActiveSkill {
 
 	public SkillFirewave(Heroes plugin) {
 		super(plugin, "Firewave");
-        setDescription("Unleash of wave of fire around you, launching $1 fireballs in a circle, each dealing $1 fire damage.");
+        setDescription("Unleash of wave of fire around you, launching $1 fireballs in every direction. Each fireball deals $2 fire damage.");
 		setUsage("/skill firewave");
 		setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
