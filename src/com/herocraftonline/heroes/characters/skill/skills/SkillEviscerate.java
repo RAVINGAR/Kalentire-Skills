@@ -37,7 +37,7 @@ public class SkillEviscerate extends TargettedSkill {
 
         String formattedDamage = Util.decFormat.format(damage);
 
-        return getDescription().replace("$2", formattedDamage);
+        return getDescription().replace("$1", formattedDamage);
     }
 
     @Override

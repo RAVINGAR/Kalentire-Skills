@@ -167,7 +167,7 @@ public class SkillFireblast extends ActiveSkill {
                 }
 
                 target.setVelocity(new Vector(xDir, veticalPower, zDir));
-                continue;       // Only hit 1 target.
+                break;       // Only hit 1 target.
             }
 
             broadcastExecuteText(hero);

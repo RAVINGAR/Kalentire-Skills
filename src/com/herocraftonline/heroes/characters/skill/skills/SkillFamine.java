@@ -31,7 +31,7 @@ public class SkillFamine extends TargettedSkill {
 
     public SkillFamine(Heroes plugin) {
         super(plugin, "Famine");
-        setDescription("Cause a wave of famine to your target and all enemies within $1 blocks of that target. Famine causes the target to lose $2 stamina over $3 seconds.");
+        setDescription("Cause a wave of famine to your target and all enemies within $1 blocks of that target. Famine causes all affected targets to lose $2 stamina over $3 seconds.");
         setUsage("/skill famine");
         setArgumentRange(0, 0);
         setIdentifiers("skill famine");

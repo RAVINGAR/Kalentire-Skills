@@ -3,8 +3,12 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityTargetEvent;
 
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
@@ -22,6 +26,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillBecomeDeath extends ActiveSkill {
 
@@ -78,11 +83,6 @@ public class SkillBecomeDeath extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 120000, false);
         hero.addEffect(new BecomeDeathEffect(this, player, duration));
-        //        for (Effect e : hero.getEffects()) {
-        //            if (e.isType(EffectType.POISON) && e.isType(EffectType.HARMFUL)) {
-        //                hero.removeEffect(e);
-        //            }
-        //        }
 
         player.getWorld().playSound(player.getLocation(), Sound.CAT_MEOW, 1.0F, 1.0F);
 
@@ -90,23 +90,35 @@ public class SkillBecomeDeath extends ActiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-        //
-        //        @EventHandler(priority = EventPriority.HIGHEST)
-        //        public void onEntityTarget(EntityTargetEvent event) {
-        //            if (event.isCancelled() || !(event.getTarget() instanceof Player)) {
-        //                return;
-        //            }
-        //
-        //            if (!isUndead(event.getEntity())) {
-        //                return;
-        //            }
-        //
-        //            Hero hero = plugin.getCharacterManager().getHero((Player) event.getTarget());
-        //            if (hero.hasEffect("BecomeDeathEffect")) {
-        //                event.setCancelled(true);
-        //            }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onEntityTarget(EntityTargetEvent event) {
+            if (!(event.getEntity() instanceof LivingEntity) || !(event.getTarget() instanceof Player)) {
+                return;
+            }
+
+            if (!(Util.isUndead(plugin, (LivingEntity) event.getEntity()))) {
+                return;
+            }
+
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getTarget());
+            if (hero.hasEffect("BecomeDeath")) {
+                event.setCancelled(true);
+            }
+        }
+
+        //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        //        public void onSkillDamage(SkillDamageEvent event) {
+        //            
         //        }
         //
+        //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        //        public void onWeaponDamage(WeaponDamageEvent event) {
+        //                            Hero hero = plugin.getCharacterManager().getHero(event.get);
+        //                            if (hero.hasEffect("BecomeDeathEffect"))
+        //                                hero.removeEffect(hero.getEffect("BecomeDeathEffect"));
+        //        }
+
         //        @EventHandler(priority = EventPriority.MONITOR)
         //        public void onEntityDamage(EntityDamageEvent event) {
         //            if (event.isCancelled() || event.getDamage() == 0) {
