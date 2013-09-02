@@ -1,7 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -64,8 +62,6 @@ public class SkillDrainsoul extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-
-        Heroes.log(Level.INFO, "DrainSoul Skill Usage attempt. Are we seeing this?");
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);

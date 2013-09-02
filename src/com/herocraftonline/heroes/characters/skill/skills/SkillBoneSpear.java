@@ -56,10 +56,11 @@ public class SkillBoneSpear extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
         // node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.125));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(2));
         node.set("spear-move-delay", Integer.valueOf(2));
 
         return node;
@@ -88,13 +89,14 @@ public class SkillBoneSpear extends ActiveSkill {
         tempDamage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
         final double damage = tempDamage;
 
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
         int delay = SkillConfigManager.getUseSetting(hero, this, "spear-move-delay", 1, false);
+
+        final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
 
         int numBlocks = 0;
         while (iter.hasNext()) {
             tempBlock = iter.next();
-
-            numBlocks++;
 
             if ((Util.transparentBlocks.contains(tempBlock.getType())
             && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
@@ -104,21 +106,24 @@ public class SkillBoneSpear extends ActiveSkill {
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        List<Entity> targets = getNearbyEntities(targetLocation, 1, 1, 1);
-                        for (Entity entity : targets) {
+
+                        try {
+                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.AQUA).withFade(Color.WHITE).build());
+                        }
+                        catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        for (Entity entity : nearbyEntities) {
                             // Check to see if the entity can be damaged
-                            if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
+                            if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
                                 continue;
 
-                            try {
-                                fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.AQUA).withFade(Color.BLUE).build());
-                            }
-                            catch (IllegalArgumentException e) {
-                                e.printStackTrace();
-                            }
-                            catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            if (!damageCheck(player, (LivingEntity) entity))
+                                continue;
 
                             // Damage target
                             LivingEntity target = (LivingEntity) entity;
@@ -126,10 +131,16 @@ public class SkillBoneSpear extends ActiveSkill {
                             addSpellTarget(target, hero);
                             damageEntity(target, player, damage, DamageCause.MAGIC);
 
+                            nearbyEntities.remove(entity);      // Remove the entity from the list so we don't hit it more than once.
+
                             break;      // Only damage one target.
                         }
+
                     }
-                }, numBlocks + delay);
+
+                }, numBlocks * delay);
+
+                numBlocks++;
             }
             else
                 break;

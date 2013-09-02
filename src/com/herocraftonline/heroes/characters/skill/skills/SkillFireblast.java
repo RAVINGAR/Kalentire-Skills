@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -129,11 +128,13 @@ public class SkillFireblast extends ActiveSkill {
 
             // Loop through nearby targets and damage / knock back one of them
             int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
-            List<Entity> targets = getNearbyEntities(targetLocation, radius, radius, radius);
-            for (Entity entity : targets) {
-
+            final List<Entity> nearbyEntities = player.getNearbyEntities(distance, distance, distance);
+            for (Entity entity : nearbyEntities) {
                 // Check to see if the entity can be damaged
-                if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
+                if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
+                    continue;
+
+                if (!damageCheck(player, (LivingEntity) entity))
                     continue;
 
                 // Damage target
@@ -174,32 +175,6 @@ public class SkillFireblast extends ActiveSkill {
         }
 
         return SkillResult.NORMAL;
-    }
-
-    protected List<Entity> getNearbyEntities(Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-        List<Entity> entities = new ArrayList<Entity>();
-
-        for (Entity entity : targetLocation.getWorld().getEntities()) {
-            if (isInBorder(targetLocation, entity.getLocation(), radiusX, radiusY, radiusZ)) {
-                entities.add(entity);
-            }
-        }
-        return entities;
-    }
-
-    public boolean isInBorder(Location center, Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-        int x1 = center.getBlockX();
-        int y1 = center.getBlockY();
-        int z1 = center.getBlockZ();
-
-        int x2 = targetLocation.getBlockX();
-        int y2 = targetLocation.getBlockY();
-        int z2 = targetLocation.getBlockZ();
-
-        if (x2 >= (x1 + radiusX) || x2 <= (x1 - radiusX) || y2 >= (y1 + radiusY) || y2 <= (y1 - radiusY) || z2 >= (z1 + radiusZ) || z2 <= (z1 - radiusZ))
-            return false;
-
-        return true;
     }
 
     private class NCPExemptionEffect extends ExpirableEffect {
