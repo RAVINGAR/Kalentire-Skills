@@ -30,6 +30,8 @@ public class SkillFeignDeath extends ActiveSkill {
     private String applyText;
     private String expireText;
 
+    private FeignMoveChecker moveChecker;
+
     public SkillFeignDeath(Heroes plugin) {
         super(plugin, "FeignDeath");
         setDescription("You feign your death, displaying a deceptive message of death to nearby players. After feigning, you are invisible for $1 seconds. Moving will break the effect however.");
@@ -37,6 +39,8 @@ public class SkillFeignDeath extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill feigndeath");
         setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BLINDING, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFFING);
+
+        moveChecker = new FeignMoveChecker(this);
     }
 
     public String getDescription(Hero hero) {
@@ -87,6 +91,8 @@ public class SkillFeignDeath extends ActiveSkill {
             //            String deathMessage = "[" + ChatColor.GREEN + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
             broadcast(player.getLocation(), deathMessage);
         }
+
+        moveChecker.addHero(hero);
 
         return SkillResult.NORMAL;
     }

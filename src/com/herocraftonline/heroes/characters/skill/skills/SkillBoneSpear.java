@@ -108,7 +108,7 @@ public class SkillBoneSpear extends ActiveSkill {
                     public void run() {
 
                         try {
-                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.AQUA).withFade(Color.WHITE).build());
+                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
                         }
                         catch (IllegalArgumentException e) {
                             e.printStackTrace();

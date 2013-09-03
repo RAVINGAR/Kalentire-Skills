@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,11 +28,11 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillFireball extends ActiveSkill {
 
-    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
+    private Map<Fireball, Long> fireballs = new LinkedHashMap<Fireball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<Fireball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -44,6 +44,7 @@ public class SkillFireball extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill fireball");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -73,7 +74,7 @@ public class SkillFireball extends ActiveSkill {
         Player player = hero.getPlayer();
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        Snowball fireball = player.launchProjectile(Snowball.class);
+        Fireball fireball = player.launchProjectile(Fireball.class);
         fireball.setVelocity(fireball.getVelocity().multiply(mult));
         fireball.setFireTicks(100);
         fireballs.put(fireball, System.currentTimeMillis());
@@ -100,13 +101,17 @@ public class SkillFireball extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof Fireball) || !fireballs.containsKey(projectile)) {
                 return;
             }
 
+            event.setCancelled(true);
+
             fireballs.remove(projectile);
+
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((Snowball) projectile).getShooter();
+            Entity dmger = ((Fireball) projectile).getShooter();
+
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
@@ -126,7 +131,6 @@ public class SkillFireball extends ActiveSkill {
                 // Damage the target
                 addSpellTarget(targetLE, hero);
                 damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
-                event.setCancelled(true);
             }
         }
     }
