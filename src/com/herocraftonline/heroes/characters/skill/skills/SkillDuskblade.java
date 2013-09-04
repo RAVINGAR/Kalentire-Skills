@@ -78,8 +78,6 @@ public class SkillDuskblade extends TargettedSkill {
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());
 
-        broadcastExecuteText(hero, target);
-
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(),

@@ -46,46 +46,43 @@ public class SkillBackstab extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        // First get their agility
-        double agilityModifier = hero.getAttributeValue(AttributeType.AGILITY) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.02125D, false);
-
-        double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", -1D, false);
-        double backstabBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.65D, false);
-
-        // Modify backstab
-        backstabBonus += agilityModifier;
-        int backstabModifier = (int) backstabBonus * 100;
+        double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", Double.valueOf(-1.0), false);
+        double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", Double.valueOf(0.85), false);
+        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        backstabDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * backstabDamageModifierIncrease);
 
         String backstabString = "deal";
         if (backstabChance > -1)
-            backstabString = "have a " + backstabChance + "% chance to deal";
+            backstabString = "have a " + Util.decFormat.format(backstabChance) + "% chance to deal";
 
-        double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", -1D, false);
-        double ambushBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.325D, false);
-
-        // Modify ambush
-        ambushBonus += agilityModifier;
-        int ambushModifier = (int) ambushBonus * 100;
+        double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", Double.valueOf(-1.0), false);
+        double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", Double.valueOf(0.85), false);
+        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * ambushDamageModifierIncrease);
 
         String ambushString = "deal";
         if (ambushChance > -1)
-            backstabString = "have a " + ambushChance + "% chance to deal";
+            backstabString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
 
-        return getDescription().replace("$1", backstabString + "").replace("$2", backstabModifier + "").replace("$3", ambushString + "").replace("$4", ambushModifier + "");
+        String formattedBackstabDamageModifier = Util.decFormat.format(backstabDamageModifier * 100);
+        String formattedAmbushDamageModifier = Util.decFormat.format(ambushDamageModifier * 100);
+
+        return getDescription().replace("$1", backstabString + "").replace("$2", formattedBackstabDamageModifier).replace("$3", ambushString + "").replace("$4", formattedAmbushDamageModifier);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("weapons", Util.swords);
-        node.set("backstab-bonus", Double.valueOf(0.85D));
-        node.set("backstab-chance", Double.valueOf(-1D));
-        node.set("ambush-bonus", Double.valueOf(1.8D));
-        node.set("ambush-chance", Double.valueOf(-1D));
-        node.set(SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY.node(), Double.valueOf(0.02125D));
-        node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
         node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("backstab-text", "");
+        node.set("weapons", Util.swords);
+        node.set("backstab-chance", Double.valueOf(-1));
+        node.set("backstab-bonus", Double.valueOf(0.05));
+        node.set("backstab-bonus-increase-per-agility", Double.valueOf(0.04125));
+        node.set("ambush-chance", Double.valueOf(-1));
+        node.set("ambush-bonus", Double.valueOf(0.10));
+        node.set("ambush-bonus-increase-per-agility", Double.valueOf(0.06375));
+        node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
 
         return node;
     }
@@ -161,25 +158,31 @@ public class SkillBackstab extends ActiveSkill {
                 }
 
                 double chance = -1;
-                double bonusDamage = -1;
+                double damageModifier = -1;
 
                 // Sneak for ambush, nosneak for backstab.
                 boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
                 if (hero.hasEffect("Sneak") || (allowVanillaSneaking && player.isSneaking())) {
-                    chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1D, false);
-                    bonusDamage = 1 + SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 1.2D, false);
+                    chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", Double.valueOf(-1.0), false);
+
+                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", Double.valueOf(0.85), false);
+                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
+                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * damageModifierIncrease);
                 }
                 else {
-                    chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", -1D, false);
-                    bonusDamage = 1 + SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.65D, false);
+                    chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", Double.valueOf(-1.0), false);
+
+                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", Double.valueOf(0.85), false);
+                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus-increase-per-agility", Double.valueOf(0.85), false);
+                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * damageModifierIncrease);
                 }
 
                 boolean backstabbed = true;
                 if (chance < 0)		// If below 1, backstab every time.
-                    event.setDamage((event.getDamage() * bonusDamage));
+                    event.setDamage((event.getDamage() * damageModifier));
                 else {
                     if (Util.nextRand() < chance)
-                        event.setDamage((event.getDamage() * bonusDamage));
+                        event.setDamage((event.getDamage() * damageModifier));
                     else
                         backstabbed = false;
                 }

@@ -99,13 +99,8 @@ public class SkillWeb extends TargettedSkill {
 
     public class SkillBlockListener implements Listener {
 
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onBlockBreak(BlockBreakEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
-
-            // Check out mappings to see if this block was a changed block, if so lets deny breaking it.
             if (changedBlocks.contains(event.getBlock().getLocation())) {
                 event.setCancelled(true);
             }
@@ -116,7 +111,6 @@ public class SkillWeb extends TargettedSkill {
 
         private List<Location> locations = new ArrayList<Location>();
         private Location loc;
-        private Player applier;
 
         public WebEffect(Skill skill, Player applier, long webDuration, long rootDuration) {
             super(skill, "Web", applier, webDuration);
@@ -157,34 +151,34 @@ public class SkillWeb extends TargettedSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
 
-            removeWeb();
+            revertBlocks();
         }
 
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
 
-            removeWeb();
+            revertBlocks();
         }
 
         private void createWeb() {
-            changeBlock(loc);
+            attemptToChangeBlock(loc);
             Block block = loc.getBlock();
-            changeBlock(block.getRelative(BlockFace.DOWN).getLocation());
+            attemptToChangeBlock(block.getRelative(BlockFace.DOWN).getLocation());
             for (BlockFace face : BlockFace.values()) {
                 if (face.toString().contains("_") || face == BlockFace.UP || face == BlockFace.DOWN) {
                     continue;
                 }
                 Location blockLoc = block.getRelative(face).getLocation();
-                changeBlock(blockLoc);
+                attemptToChangeBlock(blockLoc);
                 blockLoc = block.getRelative(getClockwise(face)).getLocation();
-                changeBlock(blockLoc);
+                attemptToChangeBlock(blockLoc);
                 blockLoc = block.getRelative(face, 2).getLocation();
-                changeBlock(blockLoc);
+                attemptToChangeBlock(blockLoc);
             }
         }
 
-        private void removeWeb() {
+        private void revertBlocks() {
             for (Location location : locations) {
                 location.getBlock().setType(Material.AIR);
                 changedBlocks.remove(location);
@@ -193,7 +187,7 @@ public class SkillWeb extends TargettedSkill {
             locations.clear();
         }
 
-        private void changeBlock(Location location) {
+        private void attemptToChangeBlock(Location location) {
             Block block = location.getBlock();
             switch (block.getType()) {
                 case WATER:

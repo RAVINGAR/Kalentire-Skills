@@ -1,12 +1,20 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -26,6 +34,7 @@ public class SkillEarthWall extends ActiveSkill {
 
     private String applyText;
     private String expireText;
+    private static Set<Location> changedBlocks = new HashSet<Location>();
 
     public SkillEarthWall(Heroes plugin) {
         super(plugin, "Earthwall");
@@ -33,7 +42,9 @@ public class SkillEarthWall extends ActiveSkill {
         setUsage("/skill earthwall");
         setArgumentRange(0, 0);
         setIdentifiers("skill earthwall");
-        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.BLOCK_CREATING);
+        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCABLE, SkillType.BLOCK_CREATING);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -95,15 +106,25 @@ public class SkillEarthWall extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    public class SkillBlockListener implements Listener {
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockBreak(BlockBreakEvent event) {
+            if (changedBlocks.contains(event.getBlock().getLocation())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
     public class ShieldWallEffect extends ExpirableEffect {
         private final Block tBlock;
         private final int width;
         private final int height;
-        private HashSet<Block> wBlocks;
         private Material setter;
+        private List<Location> locations = new ArrayList<Location>();
 
         public ShieldWallEffect(Skill skill, Player applier, long duration, Block tBlock, int width, int height, Material setter) {
-            super(skill, "sheildWallEffect", applier, duration);
+            super(skill, "EarthWall", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
@@ -112,7 +133,6 @@ public class SkillEarthWall extends ActiveSkill {
             this.width = width;
             this.height = height;
             this.setter = setter;
-            this.wBlocks = new HashSet<Block>(width * height * 2);
         }
 
         public void applyToHero(Hero hero) {
@@ -123,10 +143,7 @@ public class SkillEarthWall extends ActiveSkill {
                 for (int yDir = 0; yDir < height; yDir++) {
                     for (int xDir = -width; xDir < width + 1; xDir++) {
                         Block chBlock = tBlock.getRelative(xDir, yDir, 0);
-                        if ((chBlock.getType() == Material.AIR) || (chBlock.getType() == Material.SNOW)) {
-                            chBlock.setType(setter);
-                            wBlocks.add(chBlock);
-                        }
+                        attemptToChangeBlock(chBlock.getLocation());
                     }
                 }
             }
@@ -134,10 +151,7 @@ public class SkillEarthWall extends ActiveSkill {
                 for (int yDir = 0; yDir < height; yDir++) {
                     for (int zDir = -width; zDir < width + 1; zDir++) {
                         Block chBlock = tBlock.getRelative(0, yDir, zDir);
-                        if ((chBlock.getType() == Material.AIR) || (chBlock.getType() == Material.SNOW)) {
-                            chBlock.setType(setter);
-                            wBlocks.add(chBlock);
-                        }
+                        attemptToChangeBlock(chBlock.getLocation());
                     }
                 }
             }
@@ -149,16 +163,35 @@ public class SkillEarthWall extends ActiveSkill {
             super.removeFromHero(hero);
 
             Player player = hero.getPlayer();
-            Iterator<Block> bIter = this.wBlocks.iterator();
 
-            while (bIter.hasNext()) {
-                Block bChange = (Block) bIter.next();
-                if (bChange.getType() == this.setter) {
-                    bChange.setType(Material.AIR);
-                }
-            }
+            revertBlocks();
 
             broadcast(player.getLocation(), expireText, player.getDisplayName());
+        }
+
+        private void attemptToChangeBlock(Location location) {
+            Block block = location.getBlock();
+            switch (block.getType()) {
+                case WATER:
+                case LAVA:
+                case SNOW:
+                case AIR:
+                    changedBlocks.add(location);
+                    locations.add(location);
+                    location.getBlock().setType(setter);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void revertBlocks() {
+            for (Location location : locations) {
+                location.getBlock().setType(Material.AIR);
+                changedBlocks.remove(location);
+            }
+
+            locations.clear();
         }
 
         private boolean is_X_Direction(Player player) {
@@ -168,7 +201,7 @@ public class SkillEarthWall extends ActiveSkill {
             double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
             double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
             double angle = Math.acos(u.dot(v) / (magU * magV));
-            angle = angle * 180.0D / 3.141592653589793D;
+            angle = angle * 180.0D / Math.PI;
             angle = Math.abs(angle - 180.0D);
 
             return (angle <= 45.0D) || (angle > 135.0D);
