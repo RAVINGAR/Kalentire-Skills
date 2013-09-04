@@ -20,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillChakra extends ActiveSkill {
     // This is for Firework Effects
@@ -27,7 +28,7 @@ public class SkillChakra extends ActiveSkill {
 
     public SkillChakra(Heroes plugin) {
         super(plugin, "Chakra");
-        setDescription("You restore $1 health and dispel negative effects from all party-members within $2 blocks.");
+        setDescription("You restore $1 health and dispel up to $2 negative effects from all party-members within $3 blocks.");
         setUsage("/skill chakra");
         setArgumentRange(0, 0);
         setIdentifiers("skill chakra");
@@ -36,26 +37,35 @@ public class SkillChakra extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 75, false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.875, false);
-        healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+        int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
-        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.125), false);
-        radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.125, false);
+        radius += (int) (wisdom * radiusIncrease);
 
-        return getDescription().replace("$1", healing + "").replace("$2", radius + "");
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
+        healing += (wisdom * healingIncrease);
+
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
+        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", Double.valueOf(0.05), false);
+        removals += Math.ceil((wisdom * removalsIncrease));     // Round down
+
+        String formattedHealing = Util.decFormat.format(healing);
+
+        return getDescription().replace("$1", formattedHealing).replace("$2", removals + "").replace("$3", radius + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), 5);
-        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.125);
-        node.set(SkillSetting.HEALING.node(), 75);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.875);
-        node.set("max-removals", 2);
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), Double.valueOf(0.125));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(75));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.875));
+        node.set("max-removals", Integer.valueOf(0));
+        node.set("max-removals-increase-per-wisdom", Double.valueOf(0.05));
 
         return node;
     }
@@ -65,16 +75,20 @@ public class SkillChakra extends ActiveSkill {
         Player player = hero.getPlayer();
         Location castLoc = player.getLocation().clone();
 
+        int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
+
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.125, false);
-        radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+        radius += (int) (wisdom * radiusIncrease);
         int radiusSquared = radius * radius;
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
-        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+        healing += (wisdom * healingIncrease);
 
-        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
+        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", Double.valueOf(0.05), false);
+        removals += Math.ceil((wisdom * removalsIncrease));     // Round down
 
         if (hero.hasParty()) {
             for (Hero p : hero.getParty().getMembers()) {

@@ -107,14 +107,14 @@ public class SkillBackstab extends ActiveSkill {
         double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
         ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * ambushDamageModifierIncrease);
 
-        int backstabDamage = 0;
-        int ambushDamage = 0;
+        double backstabDamage = 0;
+        double ambushDamage = 0;
         for (String weaponName : weapons) {
             Material weapon = Material.getMaterial(weaponName);
             int baseDamage = plugin.getDamageManager().getHighestItemDamage(weapon, player).intValue();
 
-            backstabDamage = (int) (baseDamage * backstabDamageModifier);
-            ambushDamage = (int) (baseDamage * ambushDamageModifier);
+            backstabDamage = baseDamage * backstabDamageModifier;
+            ambushDamage = baseDamage * ambushDamageModifier;
 
             weaponName = weaponName.replace("_", " ");
             weaponName = WordUtils.capitalizeFully(weaponName);
@@ -124,10 +124,10 @@ public class SkillBackstab extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private void displayWeaponDamage(Player player, String weaponName, int backstabDamage, int ambushDamage) {
+    private void displayWeaponDamage(Player player, String weaponName, double backstabDamage, double ambushDamage) {
         Messaging.send(player, ChatColor.GREEN + weaponName + ": "
-                + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + backstabDamage
-                + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + ambushDamage);
+                + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + Util.decFormat.format(backstabDamage)
+                + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + Util.decFormat.format(ambushDamage));
     }
 
     public class SkillHeroesListener implements Listener {

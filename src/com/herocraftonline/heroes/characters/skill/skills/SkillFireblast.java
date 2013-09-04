@@ -39,11 +39,11 @@ public class SkillFireblast extends ActiveSkill {
 
     public SkillFireblast(Heroes plugin) {
         super(plugin, "Fireblast");
-        setDescription("You strike a block within $1 blocks with a blast of fire. Enemies within $2 blocks of the target location will be dealt $3 damage and will be knocked away from the blast.");
+        setDescription("You strike a location within $1 blocks of you with a blast of fire. An enemy within $2 blocks of the explosion will be dealt $3 damage and will be knocked away from the blast.");
         setUsage("/skill fireblast");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireblast");
-        setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;
@@ -68,7 +68,7 @@ public class SkillFireblast extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
-        // node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.2));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
@@ -83,8 +83,8 @@ public class SkillFireblast extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-        //        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
-        //        distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
+        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
+        distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
 
         Block targetBlock = null;
         Block tempBlock;
