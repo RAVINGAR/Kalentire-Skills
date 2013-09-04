@@ -4,12 +4,12 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillWithering extends TargettedSkill {
 
@@ -26,7 +27,7 @@ public class SkillWithering extends TargettedSkill {
 
     public SkillWithering(Heroes plugin) {
         super(plugin, "Withering");
-        setDescription("You wither your target in darkness, causing nausea for $1 damage over $2 seconds and $3 damage as a finisher");
+        setDescription("Wither the soul of your target, causing confusion and nausea. Withered targets also take $1 damage over $2 seconds.");
         setUsage("/skill withering");
         setArgumentRange(0, 0);
         setIdentifiers("skill withering");
@@ -34,15 +35,31 @@ public class SkillWithering extends TargettedSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.4, false);
+        tickDamage += hero.getAttributeValue(AttributeType.INTELLECT) * tickDamageIncrease;
+
+        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration);
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), 6000);
-        node.set(SkillSetting.PERIOD.node(), 2000);
-        node.set("tick-damage", 2);
-        node.set("finish-damage", 20);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(19));
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.475));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s begins to wither away!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s is no longer withered!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s is no longer withering.");
 
         return node;
     }
@@ -52,18 +69,7 @@ public class SkillWithering extends TargettedSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target%'s begins to wither away!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target%'s is no longer withered!").replace("%target%", "$1");
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
-        int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
-
-        tickDamage *= duration / period;
-        return getDescription().replace("$1", tickDamage + "").replace("$2", duration / 1000 + "").replace("$3", finishDamage + "");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target%'s is no longer withering.").replace("%target%", "$1");
     }
 
     @Override
@@ -72,12 +78,16 @@ public class SkillWithering extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 2, false);
-        int finishDamage = SkillConfigManager.getUseSetting(hero, this, "finish-damage", 15, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new WitheringEffect(this, player, duration, period, tickDamage, finishDamage));
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.4, false);
+        tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        targetCT.addEffect(new WitheringEffect(this, player, period, duration, tickDamage));
+
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
@@ -85,64 +95,15 @@ public class SkillWithering extends TargettedSkill {
 
     public class WitheringEffect extends PeriodicDamageEffect {
 
-        private double finishDamage;
-
-        public WitheringEffect(Skill skill, Player applier, long duration, long period, double tickDamage, double finishDamage) {
-            super(skill, "Withering", applier, period, duration, tickDamage);
-
-            this.finishDamage = finishDamage;
+        public WitheringEffect(Skill skill, Player applier, long period, long duration, double tickDamage) {
+            super(skill, "Withering", applier, period, duration, tickDamage, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DARK);
             types.add(EffectType.WITHER);
-            types.add(EffectType.HARMFUL);
 
             addMobEffect(9, (int) ((duration + 4000) / 1000) * 20, 3, false);
             addMobEffect(20, (int) (duration / 1000) * 20, 1, false);
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-
-            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster));
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-
-            if (monster.getEntity().isDead())
-                return;
-
-            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
-            addSpellTarget(monster.getEntity(), applyHero);
-            damageEntity(monster.getEntity(), getApplier(), finishDamage, DamageCause.MAGIC);
-
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-            if (player.isDead())
-                return;
-
-            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
-            addSpellTarget(hero.getEntity(), applyHero);
-            damageEntity(player, getApplier(), finishDamage, DamageCause.MAGIC);
-
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
     }
 }
