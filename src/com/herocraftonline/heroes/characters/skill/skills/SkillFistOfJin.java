@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -111,10 +112,11 @@ public class SkillFistOfJin extends PassiveSkill {
                 return;
             }
 
-            Material item = player.getItemInHand().getType();
-
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
-                return;
+            if (!(event.getAttackerEntity() instanceof Arrow)) {
+                Material item = player.getItemInHand().getType();
+                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
+                    return;
+            }
 
             double selfHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-self", Integer.valueOf(8), false);
             double partyHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-party", Integer.valueOf(3), false);

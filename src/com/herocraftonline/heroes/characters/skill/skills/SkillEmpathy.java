@@ -94,7 +94,7 @@ public class SkillEmpathy extends TargettedSkill {
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "amplifier", 2, false);
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(new SlowEffect(this, player, slowDuration, amplifier, false, null, null));
+        targetCT.addEffect(new SlowEffect(this, player, slowDuration, amplifier, null, null));
 
         broadcastExecuteText(hero, target);
 

@@ -1,31 +1,22 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import net.minecraft.server.v1_6_R2.EntityLiving;
-import net.minecraft.server.v1_6_R2.MobEffectList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -96,11 +87,11 @@ public class SkillEntangle extends TargettedSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
 
         //EntangleEffect EntangleEffect = new EntangleEffect(this, hero.getPlayer(), duration);
-        EntangleEffect EntangleEffect = new EntangleEffect(this, player, period, duration);
+        RootEffect rootEffect = new RootEffect(this, player, period, duration, applyText, expireText);
 
         // Add root effect to the target
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(EntangleEffect);
+        targetCT.addEffect(rootEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_WOODBREAK, 0.8F, 1.0F);
 
@@ -213,106 +204,6 @@ public class SkillEntangle extends TargettedSkill {
         //            }
         //        }
         //    }
-    }
-
-    public class EntangleEffect extends PeriodicExpirableEffect {
-
-        private final Player applier;
-        private Location loc;
-
-        public EntangleEffect(Skill skill, Player applier, int period, int duration) {
-            super(skill, "Root", applier, period, duration);
-            this.applier = applier;
-
-            types.add(EffectType.ROOT);
-            types.add(EffectType.HARMFUL);
-            types.add(EffectType.MAGIC);
-            types.add(EffectType.DISPELLABLE);
-
-            addMobEffect(2, (int) (duration / 1000) * 20, 127, false);      // Max slowness is 127
-            addMobEffect(8, (int) (duration / 1000) * 20, 128, false);      // Max negative jump boost
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-
-            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            final Player player = hero.getPlayer();
-            loc = hero.getPlayer().getLocation();
-
-            // Don't allow an entangled player to sprint. If they are sprinting, turn it off.
-            final int currentHunger = player.getFoodLevel();
-            player.setFoodLevel(1);
-            player.setSprinting(false);
-
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
-                    player.setFoodLevel(currentHunger);
-                }
-            }, 0L);
-
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(final Hero hero) {
-
-            Player player = hero.getPlayer();
-            EntityLiving el = ((CraftLivingEntity) player).getHandle();
-            
-            if (el.hasEffect(MobEffectList.POISON) || el.hasEffect(MobEffectList.WITHER) || el.hasEffect(MobEffectList.HARM)) {
-                // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        EntangleEffect.super.removeFromHero(hero);
-                    }
-                }, (long) (0.2 * 20));
-            }
-            else
-                super.removeFromHero(hero);
-
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            final Location location = hero.getPlayer().getLocation();
-            if ((location.getX() != loc.getX()) || (location.getZ() != loc.getZ())) {
-
-                // If they have any velocity, we wish to remove it.
-                Player player = hero.getPlayer();
-                player.setVelocity(new Vector(0, 0, 0));
-
-                // Retain the player's Y position and facing directions
-                loc.setYaw(location.getYaw());
-                loc.setPitch(location.getPitch());
-                loc.setY(location.getY());
-
-                // Teleport the Player back into place.
-                player.teleport(loc);
-            }
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {}
-
     }
 
     // Below is the effect used for a "normal" root that doesn't use teleportation as a base. Kept here for future attempts to tweak the skill.

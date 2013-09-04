@@ -139,7 +139,7 @@ public class SkillIcebolt extends ActiveSkill {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, Integer.valueOf(4000), false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
                 
-                SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, false, applyText, expireText);
+                SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
                 LivingEntity target = (LivingEntity) event.getEntity();
                 plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
 

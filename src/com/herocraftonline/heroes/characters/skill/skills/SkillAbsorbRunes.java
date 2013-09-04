@@ -38,8 +38,10 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,7 +51,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -185,20 +186,20 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Player player = hero.getPlayer();
             LivingEntity target = (LivingEntity) event.getEntity();
 
+            // Check to see if we actually have a Runelist bound to this player
+            if (!heroRunes.containsKey(hero))
+                return;		// Player isn't on the hashmap. Do not continue
+
             // Make sure they are actually dealing damage to the target.
             if (!damageCheck(player, target)) {
                 return;
             }
 
-            // Check to see if we actually have a Runelist bound to this player
-            if (!heroRunes.containsKey(hero))
-                return;		// Player isn't on the hashmap. Do not continue
-
-            ItemStack item = player.getItemInHand();
-
-            // Ensure that they currently have a proper weapon in hand.
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name()))
-                return;
+            if (!(event.getAttackerEntity() instanceof Arrow)) {
+                Material item = player.getItemInHand().getType();
+                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
+                    return;
+            }
 
             // Check to see if the hero can apply runes to his target right now
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);

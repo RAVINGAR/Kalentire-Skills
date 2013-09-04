@@ -121,7 +121,7 @@ public class SkillReckoning extends ActiveSkill {
                 }
             }
 
-            targetCT.addEffect(new SlowEffect(this, player, duration, slowAmount, false, "", ""));
+            targetCT.addEffect(new SlowEffect(this, player, duration, slowAmount, "", ""));
 
             // Let's bypass the nocheat issues...
             if (ncpEnabled) {

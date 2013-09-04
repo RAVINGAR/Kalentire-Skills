@@ -160,7 +160,7 @@ public class SkillIceRune extends ActiveSkill {
                     String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
 
                     // Create the effect and slow the target
-                    SlowEffect sEffect = new SlowEffect(skill, player, duration, amplifier, false, applyText, expireText);
+                    SlowEffect sEffect = new SlowEffect(skill, player, duration, amplifier, applyText, expireText);
 
                     // Damage and slow the target
                     addSpellTarget((LivingEntity) targEnt, hero);

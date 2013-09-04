@@ -103,7 +103,7 @@ public class SkillImpale extends TargettedSkill {
         // Add the slow effect
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
-        SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, false, applyText, expireText);
+        SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
         plugin.getCharacterManager().getCharacter(target).addEffect(new ImpaleEffect(this, player, 300, sEffect));
 
         // Play sound

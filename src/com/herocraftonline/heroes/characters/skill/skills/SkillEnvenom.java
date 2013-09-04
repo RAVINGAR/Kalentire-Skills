@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +28,9 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillEnvenom extends ActiveSkill {
+
+    private String applyText;
+    private String expireText;
 
     public SkillEnvenom(Heroes plugin) {
         super(plugin, "Envenom");
@@ -61,8 +66,17 @@ public class SkillEnvenom extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(5));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has coated his weapons with a deadly poison.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s weapons are no longer poisoned.");
 
         return node;
+    }
+
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has coated his weapons with a deadly poison.");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s weapons are no longer poisoned.");
     }
 
     @Override
@@ -102,7 +116,15 @@ public class SkillEnvenom extends ActiveSkill {
                 return;
             }
 
-            dealEnvenomDamage(hero, target);
+
+            if (event.getAttackerEntity() instanceof Arrow) {
+                dealEnvenomDamage(hero, target);
+            }
+            else {
+                Material item = player.getItemInHand().getType();
+                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
+                    dealEnvenomDamage(hero, target);
+            }
         }
 
         //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -136,7 +158,7 @@ public class SkillEnvenom extends ActiveSkill {
     public class EnvenomEffect extends ExpirableEffect {
 
         public EnvenomEffect(Skill skill, Player applier, long duration) {
-            super(skill, "Envenom", applier, duration);
+            super(skill, "Envenom", applier, duration, applyText, expireText);
 
             types.add(EffectType.IMBUE);
             types.add(EffectType.BENEFICIAL);
@@ -160,7 +182,6 @@ public class SkillEnvenom extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Messaging.send(hero.getPlayer(), "Your weapons are no longer poisoned!");
         }
     }
 }
