@@ -99,13 +99,13 @@ public class SkillBackstab extends ActiveSkill {
 
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
-        double backstabBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.65D, false);
-        double ambushBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.325D, false);
+        double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", Double.valueOf(0.85), false);
+        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        backstabDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * backstabDamageModifierIncrease);
 
-        // Modify the damage modifier based on agility.
-        double agilityModifier = hero.getAttributeValue(AttributeType.AGILITY) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, 0.02125D, false);
-        backstabBonus += agilityModifier;
-        ambushBonus += agilityModifier;
+        double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", Double.valueOf(0.85), false);
+        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * ambushDamageModifierIncrease);
 
         int backstabDamage = 0;
         int ambushDamage = 0;
@@ -113,8 +113,8 @@ public class SkillBackstab extends ActiveSkill {
             Material weapon = Material.getMaterial(weaponName);
             int baseDamage = plugin.getDamageManager().getHighestItemDamage(weapon, player).intValue();
 
-            backstabDamage = (int) (baseDamage * backstabBonus);
-            ambushDamage = (int) (baseDamage * ambushBonus);
+            backstabDamage = (int) (baseDamage * backstabDamageModifier);
+            ambushDamage = (int) (baseDamage * ambushDamageModifier);
 
             weaponName = weaponName.replace("_", " ");
             weaponName = WordUtils.capitalizeFully(weaponName);
