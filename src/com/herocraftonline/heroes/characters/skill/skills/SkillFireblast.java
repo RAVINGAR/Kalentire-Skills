@@ -72,6 +72,9 @@ public class SkillFireblast extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.2));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
+        node.set("horizontal-power", Double.valueOf(1.2));
+        node.set("vertical-power", Double.valueOf(0.5));
+        node.set("ncp-exemption-duration", 500);
 
         return node;
     }

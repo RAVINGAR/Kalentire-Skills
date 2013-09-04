@@ -48,6 +48,7 @@ public class SkillFeignDeath extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BLINDING, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFFING);
 
         moveChecker = new FeignMoveChecker(this);
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("BattleTracker") != null) {
             battleTrackerEnabled = true;
@@ -84,62 +85,8 @@ public class SkillFeignDeath extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
 
-        String playerName = player.getName();
-
-        boolean isPVE = true;
-        LivingEntity lastCombatTarget = hero.getCombatEffect().getLastCombatant();
-        if (lastCombatTarget == null) {
-
-            String deathMessage = "";
-
-            if (battleTrackerEnabled) {
-                deathMessage = MessageController.getPvEMessage(false, null, playerName, null);
-            }
-            else
-                deathMessage = "[" + ChatColor.AQUA + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " choked on a pretzel.";
-
-            broadcast(player.getLocation(), deathMessage);
-        }
-        else if (lastCombatTarget instanceof Player) {
-            String targetName = ((Player) lastCombatTarget).getName();
-
-            String deathMessage = "";
-
-            if (battleTrackerEnabled) {
-                boolean melee = true;
-                ItemStack lastEnemyHeldItem = ((Player) lastCombatTarget).getItemInHand();
-                if (lastEnemyHeldItem.getType() == Material.BOW)
-                    melee = false;
-
-                deathMessage = MessageController.getPvPMessage(melee, targetName, playerName, lastEnemyHeldItem);
-            }
-            else
-                deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
-
-            isPVE = false;
-            broadcast(player.getLocation(), deathMessage);
-        }
-        else {
-            String targetName = Messaging.getLivingEntityName(lastCombatTarget);
-
-            String deathMessage = "";
-
-            if (battleTrackerEnabled) {
-            boolean melee = true;
-            if (lastCombatTarget instanceof Skeleton)
-                melee = false;
-
-                deathMessage = MessageController.getPvEMessage(melee, targetName, playerName, null);
-            }
-            else
-                deathMessage = "[" + ChatColor.AQUA + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
-
-            broadcast(player.getLocation(), deathMessage);
-        }
-
-
         // Feign Death
-        hero.addEffect(new FeignDeathEffect(this, player, duration, isPVE));
+        hero.addEffect(new FeignDeathEffect(this, player, duration));
 
         moveChecker.addHero(hero);
 
@@ -198,17 +145,69 @@ public class SkillFeignDeath extends ActiveSkill {
 
         private boolean isPVE;
 
-        public FeignDeathEffect(Skill skill, Player applier, long duration, boolean isPVE) {
+        public FeignDeathEffect(Skill skill, Player applier, long duration) {
             super(skill, applier, duration, applyText, expireText);
 
-            this.isPVE = isPVE;
-
-            addMobEffect(15, (int) ((duration / 1000) * 20), 1, false);             // Blind
+            addMobEffect(15, (int) ((duration / 1000) * 20), 0, false);             // Blind
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+            Player player = hero.getPlayer();
+
+            String playerName = player.getName();
+
+            isPVE = true;
+            LivingEntity lastCombatTarget = hero.getCombatEffect().getLastCombatant();
+            if (lastCombatTarget == null) {
+
+                String deathMessage = "";
+
+                if (battleTrackerEnabled) {
+                    deathMessage = MessageController.getPvEMessage(false, null, playerName, null);
+                }
+                else
+                    deathMessage = "[" + ChatColor.AQUA + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " choked on a pretzel.";
+
+                broadcast(player.getLocation(), deathMessage);
+            }
+            else if (lastCombatTarget instanceof Player) {
+                String targetName = ((Player) lastCombatTarget).getName();
+
+                String deathMessage = "";
+
+                if (battleTrackerEnabled) {
+                    boolean melee = true;
+                    ItemStack lastEnemyHeldItem = ((Player) lastCombatTarget).getItemInHand();
+                    if (lastEnemyHeldItem.getType() == Material.BOW)
+                        melee = false;
+
+                    deathMessage = MessageController.getPvPMessage(melee, targetName, playerName, lastEnemyHeldItem);
+                }
+                else
+                    deathMessage = "[" + ChatColor.GREEN + "PVP" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
+
+                isPVE = false;
+                broadcast(player.getLocation(), deathMessage);
+            }
+            else {
+                String targetName = Messaging.getLivingEntityName(lastCombatTarget);
+
+                String deathMessage = "";
+
+                if (battleTrackerEnabled) {
+                    boolean melee = true;
+                    if (lastCombatTarget instanceof Skeleton)
+                        melee = false;
+
+                    deathMessage = MessageController.getPvEMessage(melee, targetName, playerName, null);
+                }
+                else
+                    deathMessage = "[" + ChatColor.AQUA + "PVE" + ChatColor.DARK_GRAY + "]" + ChatColor.DARK_AQUA + playerName + ChatColor.DARK_GRAY + " was dominated by " + ChatColor.BLUE + targetName + ChatColor.DARK_GRAY + "!";
+
+                broadcast(player.getLocation(), deathMessage);
+            }
         }
 
         @Override

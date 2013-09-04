@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.material.Vine;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -38,7 +36,11 @@ public class SkillOvergrowth extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    private final BlockFace[] faces = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
+    private static final int VINE_NORTH = 0x4;
+    private static final int VINE_EAST = 0x8;
+    private static final int VINE_WEST = 0x2;
+    private static final int VINE_SOUTH = 0x1;
+
     private static Set<Location> changedBlocks = new HashSet<Location>();
 
     public SkillOvergrowth(Heroes plugin) {
@@ -82,25 +84,52 @@ public class SkillOvergrowth extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
+        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.75, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
+
+        List<Block> lastBlocks = player.getLastTwoTargetBlocks(null, maxDist);
+
+        if (lastBlocks.size() < 2)
+            return SkillResult.INVALID_TARGET;
+
+        // Must place on solid block.
+        switch (lastBlocks.get(1).getType()) {
+            case WATER:
+            case LAVA:
+            case SNOW:
+            case VINE:
+            case AIR:
+                return SkillResult.INVALID_TARGET;
+            default:
+                break;
+        }
+
+        // Can only grow on empty blocks.
+        Block placementBlock = lastBlocks.get(0);
+        switch (placementBlock.getType()) {
+            case SNOW:
+            case VINE:
+            case AIR:
+                break;
+            default:
+                return SkillResult.INVALID_TARGET;
+        }
+
+        // Check the first block below the target block to ensure we can grow at least a little bit.
+        switch (placementBlock.getRelative(BlockFace.DOWN).getType()) {
+            case SNOW:
+            case VINE:
+            case AIR:
+                break;
+            default:
+                return SkillResult.INVALID_TARGET;
+        }
 
         int maxGrowthDistance = SkillConfigManager.getUseSetting(hero, this, "max-growth-distance", 30, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
-        Block tBlock = player.getTargetBlock(null, maxDist);
-
-        BlockFace targetFace = faces[Math.round(player.getEyeLocation().getYaw() / 45f) & 0x7];
-
-        Block placementBlock = tBlock.getRelative(targetFace);
-
-        Heroes.log(Level.INFO, "Delf Debug: Overgrowth: targetface = " + targetFace.toString() + "Relative block: " + placementBlock.getType().toString());
-
-        if (placementBlock.getType() != Material.AIR) {
-            return SkillResult.INVALID_TARGET;
-        }
-
-        OvergrowthEffect oEffect = new OvergrowthEffect(this, player, duration, placementBlock, targetFace, maxGrowthDistance);
+        BlockFace placementFace = lastBlocks.get(0).getFace(lastBlocks.get(1));
+        OvergrowthEffect oEffect = new OvergrowthEffect(this, player, duration, placementBlock, placementFace, maxGrowthDistance);
         hero.addEffect(oEffect);
 
         return SkillResult.NORMAL;
@@ -126,7 +155,7 @@ public class SkillOvergrowth extends ActiveSkill {
             super(skill, "Overgrowth", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.MAGIC);
+            types.add(EffectType.EARTH);
 
             this.targetBlock = targetBlock;
             this.targetFace = targetFace;
@@ -158,27 +187,42 @@ public class SkillOvergrowth extends ActiveSkill {
             Block workingBlock = targetBlock;
             for (int i = 0; i < maxGrowth; i++) {
                 Location location = workingBlock.getLocation();
-                switch (targetBlock.getType()) {
-                    case WATER:
-                    case LAVA:
+                switch (workingBlock.getType()) {
                     case SNOW:
                     case AIR:
                         changedBlocks.add(location);
                         locations.add(location);
-                        workingBlock.setType(Material.VINE);
-                        ((Vine) workingBlock).putOnFace(targetFace);
+
+                        byte data = 0;
+                        if (targetFace == BlockFace.WEST) {
+                            data |= VINE_WEST;
+                        }
+                        else if (targetFace == BlockFace.NORTH) {
+                            data |= VINE_NORTH;
+                        }
+                        else if (targetFace == BlockFace.SOUTH) {
+                            data |= VINE_SOUTH;
+                        }
+                        else if (targetFace == BlockFace.EAST) {
+                            data |= VINE_EAST;
+                        }
+
+                        workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
 
                         location.getWorld().playSound(location, Sound.DIG_GRASS, 0.8F, 1.0F);
 
                         break;
+                    case VINE:
+                        break;      // Leave vines alone, and let the spell continue even with them.
                     default:
                         breakLoop = true;
                         break;
                 }
                 if (breakLoop)
                     break;
-                else
+                else {
                     workingBlock = workingBlock.getRelative(BlockFace.DOWN);
+                }
             }
         }
 
