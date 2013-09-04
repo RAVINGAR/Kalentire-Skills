@@ -69,6 +69,7 @@ public class SkillUndyingWill extends ActiveSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
         hero.addEffect(new UndyingWillEffect(this, player, duration));
+
         player.getWorld().playSound(player.getLocation(), Sound.WOLF_GROWL, 0.5F, 0.1F);
 
         return SkillResult.NORMAL;
@@ -78,11 +79,11 @@ public class SkillUndyingWill extends ActiveSkill {
         public SkillHeroListener() {
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
 
             // If our target isn't a Living Entity exit
-            if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0) {
+            if (!(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
@@ -94,7 +95,7 @@ public class SkillUndyingWill extends ActiveSkill {
                 Hero hero = plugin.getCharacterManager().getHero(player);
 
                 // Don't let them go below 1HP.
-                if (hero.hasEffect("UndyingWillEffect")) {
+                if (hero.hasEffect("UndyingWill")) {
                     double currentHealth = player.getHealth();
 
                     if (event.getDamage() > currentHealth) {
@@ -110,7 +111,7 @@ public class SkillUndyingWill extends ActiveSkill {
 
     public class UndyingWillEffect extends ExpirableEffect {
         public UndyingWillEffect(Skill skill, Player applifer, long duration) {
-            super(skill, "UndyingWillEffect", applifer, duration);
+            super(skill, "UndyingWill", applifer, duration);
 
             types.add(EffectType.PHYSICAL);
         }

@@ -27,7 +27,7 @@ public class SkillBlitz extends TargettedSkill {
         setUsage("/skill blitz");
         setArgumentRange(0, 0);
         setIdentifiers("skill blitz");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.STEALTHY, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
