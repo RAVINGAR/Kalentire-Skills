@@ -116,8 +116,8 @@ public class SkillReckoning extends ActiveSkill {
             if (targetCT instanceof Hero) {
                 Hero enemy = (Hero) targetCT;
                 if (enemy.getDelayedSkill() != null) {
-                    enemy.cancelDelayedSkill();
-                    enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
+                    if (enemy.cancelDelayedSkill())
+                        enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
                 }
             }
 

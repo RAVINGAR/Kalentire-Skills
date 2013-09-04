@@ -88,15 +88,27 @@ public class SkillMassPiggify extends ActiveSkill {
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 38, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
+        long currentTime = System.currentTimeMillis();
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
+
             LivingEntity target = (LivingEntity) entity;
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             if (!damageCheck(player, target)) {
                 continue;
             }
+
+            if (targetCT instanceof Hero) {
+                Hero enemy = (Hero) targetCT;
+                if (enemy.getDelayedSkill() != null) {
+                    if (enemy.cancelDelayedSkill())
+                        enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
+                }
+            }
+
             EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) ||
                     target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ?
                     EntityType.SQUID : EntityType.PIG);

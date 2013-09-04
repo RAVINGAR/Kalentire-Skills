@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
+import com.herocraftonline.heroes.api.events.HeroRegainStaminaEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -24,21 +25,23 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillManasong extends ActiveSkill {
+public class SkillBattlesong extends ActiveSkill {
 
     private Song skillSong;
 
-    public SkillManasong(Heroes plugin) {
-        super(plugin, "Manasong");
+    public SkillBattlesong(Heroes plugin) {
+        super(plugin, "Battlesong");
         setDescription("Play a song of mana for $1 seconds. While active, you restoreerate $2 mana for party members within $3 blocks every $4 seconds.");
         setArgumentRange(0, 0);
-        setUsage("/skill manasong");
-        setIdentifiers("skill manasong");
-        setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG, SkillType.UNINTERRUPTIBLE);
+        setUsage("/skill battlesong");
+        setIdentifiers("skill battlesong");
+        setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG, SkillType.UNINTERRUPTIBLE);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_PIANO, 0.8F, 1.0F, 0),
-                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 1)
+                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),
+                             new Note(Sound.NOTE_BASS, 1.0F, 0.7F, 1),
+                             new Note(Sound.NOTE_BASS, 1.2F, 0.4F, 2),
+                             new Note(Sound.NOTE_BASS, 0.8F, 0.2F, 3)
                 );
     }
 
@@ -48,14 +51,14 @@ public class SkillManasong extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
-        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
-        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
+        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        staminaRestoreTick += (int) (staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", manaRestoreTick + "").replace("$3", radius + "").replace("$4", formattedPeriod);
+        return getDescription().replace("$1", formattedDuration).replace("$2", staminaRestoreTick + "").replace("$3", radius + "").replace("$4", formattedPeriod);
     }
 
     @Override
@@ -63,8 +66,8 @@ public class SkillManasong extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-        node.set("mana-restore-tick", Integer.valueOf(8));
-        node.set("mana-restore-tick-increase-per-charisma", Double.valueOf(0.25));
+        node.set("stamina-restore-tick", Integer.valueOf(7));
+        node.set("stamina-restore-tick-increase-per-charisma", Double.valueOf(0.275));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
@@ -75,17 +78,17 @@ public class SkillManasong extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
 
-        hero.addEffect(new SoundEffect(this, "ManaSong", 100, skillSong));
+        hero.addEffect(new SoundEffect(this, "BattleSong", 100, skillSong));
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
-        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
-        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
+        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        staminaRestoreTick += (int) (staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
-        ManasongEffect mEffect = new ManasongEffect(this, hero.getPlayer(), period, duration, radius, manaRestoreTick);
+        BattlesongEffect mEffect = new BattlesongEffect(this, hero.getPlayer(), period, duration, radius, staminaRestoreTick);
         hero.addEffect(mEffect);
 
         broadcastExecuteText(hero);
@@ -93,21 +96,30 @@ public class SkillManasong extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-
-    public class ManasongEffect extends PeriodicExpirableEffect {
+    public class BattlesongEffect extends PeriodicExpirableEffect {
 
         private final int radius;
-        private final int manaRestore;
+        private final int staminaRestore;
 
-        public ManasongEffect(Skill skill, Player applier, int period, int duration, int radius, int manaRestore) {
-            super(skill, "Manasong", applier, period, duration);
+        public BattlesongEffect(Skill skill, Player applier, int period, int duration, int radius, int staminaRestore) {
+            super(skill, "Battlesong", applier, period, duration);
 
             this.radius = radius;
-            this.manaRestore = manaRestore;
+            this.staminaRestore = staminaRestore;
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
-            types.add(EffectType.MANA_INCREASING);
+            types.add(EffectType.STAMINA_INCREASING);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
         }
 
         @Override
@@ -124,7 +136,7 @@ public class SkillManasong extends ActiveSkill {
                     // Ensure the party member is close enough
                     if (memberLocation.getWorld().equals(playerLocation.getWorld())) {
                         if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, manaRestore, skill);
+                            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, staminaRestore, skill);
                             plugin.getServer().getPluginManager().callEvent(hrmEvent);
                             if (!hrmEvent.isCancelled()) {
                                 member.setMana(hrmEvent.getAmount() + member.getMana());
@@ -137,13 +149,13 @@ public class SkillManasong extends ActiveSkill {
                 }
             }
             else {
-                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
+                HeroRegainStaminaEvent hrmEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                 if (!hrmEvent.isCancelled()) {
-                    hero.setMana(hrmEvent.getAmount() + hero.getMana());
+                    hero.setStamina(hrmEvent.getAmount() + hero.getStamina());
 
                     if (hero.isVerbose())
-                        Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+                        Messaging.send(player, Messaging.createStaminaBar(hero.getStamina(), hero.getMaxStamina()));
                 }
             }
         }
