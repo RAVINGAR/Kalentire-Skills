@@ -98,7 +98,7 @@ public class SkillEnvenom extends ActiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
 
             // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, target) || hero.hasEffectType(EffectType.INVULNERABILITY)) {
+            if (!damageCheck(player, target)) {
                 return;
             }
 

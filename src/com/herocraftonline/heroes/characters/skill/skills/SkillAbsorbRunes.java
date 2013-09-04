@@ -59,7 +59,6 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -187,7 +186,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
 
             // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, target) || hero.hasEffectType(EffectType.INVULNERABILITY)) {
+            if (!damageCheck(player, target)) {
                 return;
             }
 

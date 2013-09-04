@@ -107,7 +107,7 @@ public class SkillFistOfJin extends PassiveSkill {
                 return;
 
             // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, (LivingEntity) event.getEntity()) || hero.hasEffectType(EffectType.INVULNERABILITY)) {
+            if (!damageCheck(player, (LivingEntity) event.getEntity())) {
                 return;
             }
 
