@@ -192,17 +192,19 @@ public class SkillPlague extends TargettedSkill {
             Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
             int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS.node(), 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
-                if (!(target instanceof LivingEntity) || target.equals(applier) || applyHero.getSummons().contains(target)) {
+                if (!(target instanceof LivingEntity)) {
                     continue;
                 }
 
                 if (!damageCheck(getApplier(), (LivingEntity) target)) {
                     continue;
                 }
+
                 CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) target);
                 if (character.hasEffect("Plague")) {
                     continue;
-                } else {
+                }
+                else {
                     character.addEffect(new PlagueEffect(this));
                 }
             }

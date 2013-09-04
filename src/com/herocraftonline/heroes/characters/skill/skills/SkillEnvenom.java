@@ -92,15 +92,17 @@ public class SkillEnvenom extends ActiveSkill {
             Hero hero = (Hero) event.getDamager();
             Player player = hero.getPlayer();
 
-            // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, (LivingEntity) event.getEntity())) {
+            if (!hero.hasEffect("Envenom"))
                 return;
-            }
 
             LivingEntity target = (LivingEntity) event.getEntity();
 
-            if (hero.hasEffect("Envenom"))
-                dealEnvenomDamage(hero, target);
+            // Make sure they are actually dealing damage to the target.
+            if (!damageCheck(player, target) || hero.hasEffectType(EffectType.INVULNERABILITY)) {
+                return;
+            }
+
+            dealEnvenomDamage(hero, target);
         }
 
         //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

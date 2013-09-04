@@ -40,15 +40,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -59,9 +55,11 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.ClassChangeEvent;
 import com.herocraftonline.heroes.api.events.HeroChangeLevelEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -178,50 +176,33 @@ public class SkillAbsorbRunes extends ActiveSkill {
             this.skill = skill;
         }
 
-        // Trigger the actual rune application on weapon damage hit.
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
-            // Ensure that the event is meant to happen
-            if (!(event instanceof EntityDamageByEntityEvent))
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
+            }
 
-            // If our target isn't a living entity, exit
-            if (!(event.getEntity() instanceof LivingEntity))
+            Hero hero = (Hero) event.getDamager();
+            Player player = hero.getPlayer();
+            LivingEntity target = (LivingEntity) event.getEntity();
+
+            // Make sure they are actually dealing damage to the target.
+            if (!damageCheck(player, target) || hero.hasEffectType(EffectType.INVULNERABILITY)) {
                 return;
-
-            // Make sure that this is actually a left click attack caused by a player
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (subEvent.getCause() != DamageCause.ENTITY_ATTACK || !(subEvent.getDamager() instanceof Player))
-                return;
-
-            // Get our hero's CT
-            CharacterTemplate heroCT = plugin.getCharacterManager().getCharacter((LivingEntity) subEvent.getDamager());
-
-            // Ensure attacker is actually a Hero
-            if (!(heroCT instanceof Hero))
-                return;
+            }
 
             // Check to see if we actually have a Runelist bound to this player
-            Hero hero = (Hero) heroCT;
             if (!heroRunes.containsKey(hero))
                 return;		// Player isn't on the hashmap. Do not continue
 
-            Player player = hero.getPlayer();
             ItemStack item = player.getItemInHand();
-
-            //            double currentHP = ((LivingEntity) event.getEntity()).getHealth();
-            //            if (currentHP - event.getDamage() < 1) {
-            //                Messaging.send(player, "Target would have too low of HP. Don't damage. (Absorb Runes)");
-            //                return;
-            //            }
 
             // Ensure that they currently have a proper weapon in hand.
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name()))
                 return;
 
             // Check to see if the hero can apply runes to his target right now
-            Entity target = event.getEntity();
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             String cdEffectName = hero.getName() + "_RuneApplicationCooldownEffect";
             if (targetCT.hasEffect(cdEffectName))
                 return;		// Rune application is on cooldown. Do not continue.

@@ -95,12 +95,13 @@ public class SkillReckoning extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         Location playerLoc = player.getLocation();
 
-        //        long currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
+
             LivingEntity target = (LivingEntity) entity;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 
@@ -112,13 +113,13 @@ public class SkillReckoning extends ActiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
 
-            //            if (character instanceof Hero) {
-            //                Hero enemy = (Hero) character;
-            //                if (enemy.getDelayedSkill() != null) {
-            //                    enemy.cancelDelayedSkill();
-            //                    enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
-            //                }
-            //            }
+            if (targetCT instanceof Hero) {
+                Hero enemy = (Hero) targetCT;
+                if (enemy.getDelayedSkill() != null) {
+                    enemy.cancelDelayedSkill();
+                    enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
+                }
+            }
 
             targetCT.addEffect(new SlowEffect(this, player, duration, slowAmount, false, "", ""));
 

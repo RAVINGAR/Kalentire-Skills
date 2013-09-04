@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -89,18 +90,29 @@ public class SkillBoastfulBellow extends TargettedSkill {
             e.printStackTrace();
         }
 
+        long currentTime = System.currentTimeMillis();
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
+
             LivingEntity newTarget = (LivingEntity) entity;
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 
             if (!damageCheck(player, newTarget))
                 continue;
 
             addSpellTarget(newTarget, hero);
             damageEntity(newTarget, player, damage, DamageCause.MAGIC);
+            
+            if (targetCT instanceof Hero) {
+                Hero enemy = (Hero) targetCT;
+                if (enemy.getDelayedSkill() != null) {
+                    enemy.cancelDelayedSkill();
+                    enemy.setCooldown("global", Heroes.properties.globalCooldown + currentTime);
+                }
+            }
         }
 
         return SkillResult.NORMAL;

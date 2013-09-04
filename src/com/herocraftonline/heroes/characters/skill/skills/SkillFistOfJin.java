@@ -100,16 +100,16 @@ public class SkillFistOfJin extends PassiveSkill {
             Hero hero = (Hero) event.getDamager();
             Player player = hero.getPlayer();
 
-            // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, (LivingEntity) event.getEntity())) {
-                return;
-            }
-
             if (!hero.canUseSkill(skill))
                 return;
 
             if (hero.hasEffect("FistOfJinCooldownEffect"))      // On cooldown, don't heal.
                 return;
+
+            // Make sure they are actually dealing damage to the target.
+            if (!damageCheck(player, (LivingEntity) event.getEntity()) || hero.hasEffectType(EffectType.INVULNERABILITY)) {
+                return;
+            }
 
             Material item = player.getItemInHand().getType();
 

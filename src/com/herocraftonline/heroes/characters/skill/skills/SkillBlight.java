@@ -172,13 +172,12 @@ public class SkillBlight extends TargettedSkill {
             Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
             int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS, 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
-                if (!(target instanceof LivingEntity) || target.equals(applier) || applyHero.getSummons().contains(target)) {
+                if (!(target instanceof LivingEntity)) {
                     continue;
                 }
 
                 LivingEntity lTarget = (LivingEntity) target;
 
-                // PvP Check
                 if (!damageCheck(applier, lTarget)) {
                     continue;
                 }
@@ -187,8 +186,8 @@ public class SkillBlight extends TargettedSkill {
                     continue;
                 }
 
-                addSpellTarget(target, applyHero);
-                Skill.damageEntity((LivingEntity) target, applier.getPlayer(), tickDamage, DamageCause.MAGIC);
+                addSpellTarget(lTarget, applyHero);
+                damageEntity(lTarget, applier, tickDamage, DamageCause.MAGIC);
             }
         }
     }
