@@ -86,7 +86,7 @@ public class SkillChaoticStrength extends ActiveSkill {
 
         try {
             Location playerLocation = player.getLocation();
-            fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.BLACK).withFade(Color.ORANGE).build());
+            fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.BLACK).withFade(Color.ORANGE).build());
         }
         catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -127,6 +127,9 @@ public class SkillChaoticStrength extends ActiveSkill {
 
             hero.addEffect(strBuff);
             hero.addEffect(intDebuff);
+
+            hero.rebuildAttribute(AttributeType.STRENGTH);
+            hero.rebuildAttribute(AttributeType.INTELLECT);
         }
 
         @Override
@@ -135,6 +138,9 @@ public class SkillChaoticStrength extends ActiveSkill {
 
             hero.removeEffect(hero.getEffect("ChaoticStrengthStrGain"));
             hero.removeEffect(hero.getEffect("ChaoticStrengthIntDrain"));
+
+            hero.rebuildAttribute(AttributeType.STRENGTH);
+            hero.rebuildAttribute(AttributeType.INTELLECT);
         }
     }
 }
