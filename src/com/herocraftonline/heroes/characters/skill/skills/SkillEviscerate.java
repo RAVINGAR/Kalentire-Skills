@@ -70,8 +70,8 @@ public class SkillEviscerate extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ANVIL_BREAK, 0.9F, 0.7F);
-        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.9F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_HIT, 0.4F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.4F, 2.0F);
 
         return SkillResult.NORMAL;
     }

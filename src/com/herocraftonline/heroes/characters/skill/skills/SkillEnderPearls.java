@@ -19,12 +19,11 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Util;
 
-public class SkillEnderPearlUsage extends PassiveSkill {
+public class SkillEnderPearls extends PassiveSkill {
 
-    public SkillEnderPearlUsage(Heroes plugin) {
-        super(plugin, "EnderPearlUsage");
+    public SkillEnderPearls(Heroes plugin) {
+        super(plugin, "EnderPearls");
         setDescription("You can throw ender pearls!");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE);
@@ -98,16 +97,17 @@ public class SkillEnderPearlUsage extends PassiveSkill {
                             event.setCancelled(true);
                             break;
                         default:
+                            event.setCancelled(false);
                             break;
 
                     }
-                    if (!Util.transparentBlocks.contains(teleportLocBlock)) {
-                        // Ender pearl has landed on an invalid block.
-                        event.setCancelled(true);
-                        return;
-                    }
-                    else
-                        event.setCancelled(false);
+                    //                    if (!Util.transparentBlocks.contains(teleportLocBlock)) {
+                    //                        // Ender pearl has landed on an invalid block.
+                    //                        event.setCancelled(true);
+                    //                        return;
+                    //                    }
+                    //                    else
+                    //                        event.setCancelled(false);
                 }
             }
         }

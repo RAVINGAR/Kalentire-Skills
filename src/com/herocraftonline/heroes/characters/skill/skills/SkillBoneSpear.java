@@ -131,8 +131,6 @@ public class SkillBoneSpear extends ActiveSkill {
                             addSpellTarget(target, hero);
                             damageEntity(target, player, damage, DamageCause.MAGIC);
 
-                            nearbyEntities.remove(entity);      // Remove the entity from the list so we don't hit it more than once.
-
                             break;      // Only damage one target.
                         }
 
