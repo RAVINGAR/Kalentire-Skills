@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unfinishedskills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 //http://pastie.org/private/oz5iqyfjto1vgoova1qn2g (original source)
 import java.util.LinkedHashMap;
 import java.util.Map;
