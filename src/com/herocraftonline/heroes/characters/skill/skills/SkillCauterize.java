@@ -46,8 +46,6 @@ public class SkillCauterize extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        broadcastExecuteText(hero);
-
         Player targetPlayer = (Player) target;
         Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
         ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
@@ -61,6 +59,8 @@ public class SkillCauterize extends TargettedSkill {
             Messaging.send(player, "Your target has nothing to Cauterize!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+
+        broadcastExecuteText(hero, target);
 
         targetPlayer.setFireTicks(0);
 
