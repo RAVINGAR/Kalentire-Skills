@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -29,8 +30,6 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillDragonsBreath extends ActiveSkill {
 
-    private final BlockFace[] faces = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
-
     public VisualEffect fplayer = new VisualEffect();
 
     public SkillDragonsBreath(Heroes plugin) {
@@ -56,11 +55,11 @@ public class SkillDragonsBreath extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.125));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
-        node.set("breath-travel-delay", Integer.valueOf(2));
+        node.set("breath-travel-delay", Integer.valueOf(1));
 
         return node;
     }
@@ -81,8 +80,7 @@ public class SkillDragonsBreath extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        final float yaw = player.getLocation().getYaw();
-        final BlockFace targetFace = faces[Math.round(yaw / 45f) & 0x7];
+        boolean isXDirection = is_X_Direction(player);
 
         double tempDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
@@ -104,17 +102,36 @@ public class SkillDragonsBreath extends ActiveSkill {
             && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
             || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
 
-                final Location targetCenterLocation = tempBlock.getLocation().clone().add(new Vector(.5, .5, .5));
-                final Location targetLeftLocation = targetCenterLocation.getBlock().getRelative(targetFace).getLocation().clone().add(new Vector(.5, .5, .5));
-                final Location targetRightLocation = targetCenterLocation.getBlock().getRelative(targetFace.getOppositeFace()).getLocation().clone().add(new Vector(.5, .5, .5));
+                final List<Location> locations = new ArrayList<Location>();
+                if (isXDirection) {
+                    for (int xDir = -1; xDir < 1 + 1; xDir++) {
+                        Block radiusBlocks = tempBlock.getRelative(xDir, 0, 0);
+
+                        if ((Util.transparentBlocks.contains(radiusBlocks.getType())
+                        && (Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.UP).getType())
+                        || Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.DOWN).getType())))) {
+                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, .5, .5)));
+                        }
+                    }
+                }
+                else {
+                    for (int zDir = -1; zDir < 1 + 1; zDir++) {
+                        Block radiusBlocks = tempBlock.getRelative(0, 0, zDir);
+
+                        if ((Util.transparentBlocks.contains(radiusBlocks.getType())
+                        && (Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.UP).getType())
+                        || Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.DOWN).getType())))) {
+                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, .5, .5)));
+                        }
+                    }
+                }
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-
                         try {
-                            fplayer.playFirework(targetCenterLocation.getWorld(), targetCenterLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
-                            fplayer.playFirework(targetLeftLocation.getWorld(), targetLeftLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
-                            fplayer.playFirework(targetRightLocation.getWorld(), targetRightLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                            for (Location location : locations) {
+                                fplayer.playFirework(location.getWorld(), location, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                            }
                         }
                         catch (IllegalArgumentException e) {
                             e.printStackTrace();
@@ -127,11 +144,16 @@ public class SkillDragonsBreath extends ActiveSkill {
                             if (!(entity instanceof LivingEntity))
                                 continue;
 
-                            if (entity.getLocation().distanceSquared(targetLeftLocation) > radiusSquared
-                            || entity.getLocation().distanceSquared(targetCenterLocation) > radiusSquared
-                            || entity.getLocation().distanceSquared(targetRightLocation) > radiusSquared) {
-                                continue;
+                            boolean exitLoop = true;
+                            for (Location location : locations) {
+                                if (entity.getLocation().distanceSquared(location) <= radiusSquared) {
+                                    exitLoop = false;
+                                    break;
+                                }
                             }
+
+                            if (exitLoop)
+                                continue;
                             
                             // Check to see if the entity can be damaged
                             if (!damageCheck(player, (LivingEntity) entity))
@@ -155,5 +177,18 @@ public class SkillDragonsBreath extends ActiveSkill {
         }
 
         return SkillResult.NORMAL;
+    }
+
+    private boolean is_X_Direction(Player player) {
+        Vector u = player.getLocation().getDirection();
+        u = new Vector(u.getX(), 0.0D, u.getZ()).normalize();
+        Vector v = new Vector(0, 0, -1);
+        double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
+        double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
+        double angle = Math.acos(u.dot(v) / (magU * magV));
+        angle = angle * 180.0D / Math.PI;
+        angle = Math.abs(angle - 180.0D);
+
+        return (angle <= 45.0D) || (angle > 135.0D);
     }
 }
