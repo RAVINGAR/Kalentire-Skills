@@ -21,8 +21,8 @@ public class SkillCauterize extends TargettedSkill {
     public SkillCauterize(Heroes plugin) {
         super(plugin, "Cauterize");
         setDescription("Cauterize the wounds of your target, extinguishing their fire ticks and removing bleeds.");
-        setUsage("/skill cauterize");
-        setArgumentRange(0, 0);
+        setUsage("/skill cauterize <target>");
+        setArgumentRange(0, 1);
         setIdentifiers("skill cauterize");
         setTypes(SkillType.SILENCABLE, SkillType.DISPELLING, SkillType.ABILITY_PROPERTY_FIRE);
     }

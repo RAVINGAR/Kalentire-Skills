@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-// src http://pastie.org/private/syyyftinqa5r1uv4ixka
 import net.minecraft.server.v1_6_R2.EntityLiving;
 import net.minecraft.server.v1_6_R2.MobEffectList;
 
@@ -80,12 +79,14 @@ public class SkillAccelerando extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.RADIUS.node(), 12);
         node.set("speed-multiplier", 2);
         node.set(SkillSetting.DURATION.node(), 3000);
+        node.set("stun-duration", 1500);
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% gained a burst of speed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% returned to normal speed!");
         node.set(SkillSetting.DELAY.node(), 1000);
-        node.set(SkillSetting.RADIUS.node(), 12);
-        node.set("apply-text", Messaging.getSkillDenoter() + "%hero% gained a burst of speed!");
-        node.set("expire-text", Messaging.getSkillDenoter() + "%hero% returned to normal speed!");
+        node.set(SkillSetting.COOLDOWN.node(), 1000);
 
         return node;
     }
@@ -100,17 +101,15 @@ public class SkillAccelerando extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        broadcastExecuteText(hero);
 
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
 
         hero.addEffect(new SoundEffect(this, "AccelarandoSong", 100, skillSong));
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
-        if (multiplier > 20) {
-            multiplier = 20;
-        }
 
         AccelerandoEffect accelEffect = new AccelerandoEffect(this, player, duration, multiplier, applyText, expireText);
 
@@ -122,47 +121,19 @@ public class SkillAccelerando extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
         int rSquared = radius * radius;
 
-        Location loc = player.getLocation();
+        Location playerLoc = player.getLocation();
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {
-            if (!tHero.getPlayer().getWorld().equals(player.getWorld())) {
+            if (!player.getWorld().equals(player.getWorld()))
                 continue;
-            }
 
-            if (loc.distanceSquared(tHero.getPlayer().getLocation()) > rSquared) {
+            if (playerLoc.distanceSquared(tHero.getPlayer().getLocation()) > rSquared)
                 continue;
-            }
 
             tHero.addEffect(accelEffect);
         }
         return SkillResult.NORMAL;
     }
-
-    //    //Added this
-    //    public class SkillSoundPlayer implements Runnable {
-    //        private final Player player;
-    //
-    //        public SkillSoundPlayer(Hero hero) {
-    //            this.player = hero.getPlayer();
-    //        }
-    //
-    //        public void run() {
-    //            World world = player.getWorld();
-    //            Location loc = player.getLocation();
-    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.2F);
-    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.5F);
-    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-    //            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-    //            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.9F);
-    //        }
-    //    }
 
     public class SkillEntityListener implements Listener {
         
@@ -172,17 +143,18 @@ public class SkillAccelerando extends ActiveSkill {
             this.skill = skill;
         }
         
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
                 return;
             }
 
             final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("Accelerando")) {
+                hero.removeEffect(hero.getEffect("Accelerando"));
+
                 int duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
                 hero.addEffect(new StunEffect(skill, hero.getPlayer(), duration));
-                hero.removeEffect(hero.getEffect("Accelerando"));
             }
         }
     }
@@ -217,7 +189,7 @@ public class SkillAccelerando extends ActiveSkill {
                     public void run() {
                         AccelerandoEffect.super.removeFromHero(hero);
                     }
-                }, (long) (0.2 * 20));
+                }, 2L);
             }
             else
                 super.removeFromHero(hero);
