@@ -107,6 +107,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
         // Skill usage configs
         node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% absorbs his Runes!");
+        node.set("weapons", Util.swords);
         node.set("conversion-rate", 0.35);
         node.set("fail-text-no-runes", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "You have no Runes to absorb!");
 
@@ -197,9 +198,12 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
             if (!(event.getAttackerEntity() instanceof Arrow)) {
                 Material item = player.getItemInHand().getType();
-                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
+                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.name())) {
                     return;
+                }
             }
+            else
+                return;     // Don't allow arrows.
 
             // Check to see if the hero can apply runes to his target right now
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
