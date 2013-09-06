@@ -174,8 +174,8 @@ public class SkillEnderPearls extends PassiveSkill {
                         event.setCancelled(true);
                         break;
                     default:
-                        event.setTo(teleportLoc);
-                        event.setCancelled(false);
+                        event.setCancelled(true);       // Cancel the event because we don't want players to be dealt "ender pearl damage"
+                        event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
                         break;
                 }
                 return;
