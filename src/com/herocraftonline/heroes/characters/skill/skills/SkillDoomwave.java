@@ -160,7 +160,7 @@ public class SkillDoomwave extends ActiveSkill {
                 }
 
                 // Check if entity is immune to further firewave hits
-                if (plugin.getCharacterManager().getCharacter(targetLE).hasEffect("FireWaveAntiMultiEffect")) {
+                if (plugin.getCharacterManager().getCharacter(targetLE).hasEffect("DoomWaveAntiMultiEffect")) {
                     event.setCancelled(true);
                     return;
                 }
