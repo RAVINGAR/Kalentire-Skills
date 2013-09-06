@@ -119,12 +119,14 @@ public class SkillGreatCombustion extends ActiveSkill {
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
             damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-            // Loop through nearby targets and damage / knock back one of them
             int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
+            int radiusSquared = radius * radius;
+
+            // Loop through nearby targets and damage / knock back one of them
             final List<Entity> nearbyEntities = player.getNearbyEntities(distance, distance, distance);
             for (Entity entity : nearbyEntities) {
                 // Check to see if the entity can be damaged
-                if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
+                if (!(entity instanceof LivingEntity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
                     continue;
 
                 if (!damageCheck(player, (LivingEntity) entity))
@@ -134,7 +136,7 @@ public class SkillGreatCombustion extends ActiveSkill {
                 LivingEntity target = (LivingEntity) entity;
 
                 addSpellTarget(target, hero);
-                damageEntity(target, player, damage, DamageCause.MAGIC);
+                damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
                 if (target instanceof Player) {
                     Hero targetHero = plugin.getCharacterManager().getHero((Player) target);

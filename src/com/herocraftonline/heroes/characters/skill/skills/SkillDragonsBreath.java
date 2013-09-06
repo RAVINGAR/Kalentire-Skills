@@ -20,11 +20,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -32,11 +28,14 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDragonsBreath extends ActiveSkill {
+
+    private final BlockFace[] faces = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
+
     public VisualEffect fplayer = new VisualEffect();
 
     public SkillDragonsBreath(Heroes plugin) {
         super(plugin, "DragonsBreath");
-        setDescription("You unleash the furious breath of a dragon for the next $1 seconds. Enemies caught in the line of fire are continuously dealt $2 damage.");
+        setDescription("You unleash the furious breath of a dragon in front of you, up to $1 blocks. Targets hit will will be dealt $2 fire damage.");
         setUsage("/skill dragonsbreath");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsbreath");
@@ -45,28 +44,23 @@ public class SkillDragonsBreath extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(5000), false);
+        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedDamage = Util.decFormat.format(damage);
-
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamage);
+        return getDescription().replace("$1", distance + "").replace("$2", damage + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(750));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(13));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.425));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.125));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
-        node.set("fire-spray-move-delay", Integer.valueOf(1));
+        node.set("breath-travel-delay", Integer.valueOf(2));
 
         return node;
     }
@@ -74,105 +68,92 @@ public class SkillDragonsBreath extends ActiveSkill {
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
+        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
+
+        Block tempBlock;
+        BlockIterator iter = null;
+        try {
+            iter = new BlockIterator(player, distance);
+        }
+        catch (IllegalStateException e) {
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(5000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(750), false);
+        final float yaw = player.getLocation().getYaw();
+        final BlockFace targetFace = faces[Math.round(yaw / 45f) & 0x7];
 
-        hero.addEffect(new DragonsBreathEffect(this, player, period, duration));
+        double tempDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
+        tempDamage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        final double damage = tempDamage;
 
-        return SkillResult.NORMAL;
-    }
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
+        final int radiusSquared = radius * radius;
 
-    public class DragonsBreathEffect extends PeriodicExpirableEffect {
+        int delay = SkillConfigManager.getUseSetting(hero, this, "breath-travel-delay", 1, false);
 
-        private int distance;
-        private int radius;
-        private int moveDelay;
+        final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
 
-        public DragonsBreathEffect(Skill skill, Player applier, int period, long duration) {
-            super(skill, "DragonsBreath", applier, period, duration, null, null);
+        int numBlocks = 0;
+        while (iter.hasNext()) {
+            tempBlock = iter.next();
 
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.FIRE);
-        }
+            if ((Util.transparentBlocks.contains(tempBlock.getType())
+            && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
+            || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
 
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
+                final Location targetCenterLocation = tempBlock.getLocation().clone().add(new Vector(.5, .5, .5));
+                final Location targetLeftLocation = targetCenterLocation.getBlock().getRelative(targetFace).getLocation().clone().add(new Vector(.5, .5, .5));
+                final Location targetRightLocation = targetCenterLocation.getBlock().getRelative(targetFace.getOppositeFace()).getLocation().clone().add(new Vector(.5, .5, .5));
 
-            distance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MAX_DISTANCE, 10, false);
-            radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 2, false);
-            moveDelay = SkillConfigManager.getUseSetting(hero, skill, "fire-spray-move-delay", 1, false);
-        }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
 
-        @Override
-        public void tickMonster(Monster monster) {}
-
-        @Override
-        public void tickHero(final Hero hero) {
-            final Player player = hero.getPlayer();
-
-            Block tempBlock;
-            BlockIterator iter = null;
-            try {
-                iter = new BlockIterator(player, distance);
-            }
-            catch (IllegalStateException e) {
-                return;
-            }
-
-            double tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
-            tempDamage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
-            final double damage = tempDamage;
-
-            int numBlocks = 0;
-            while (iter.hasNext()) {
-                tempBlock = iter.next();
-
-                if ((Util.transparentBlocks.contains(tempBlock.getType())
-                && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
-                || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
-
-                    final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, .5, .5));
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                        public void run() {
-                            try {
-                                fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
-                            }
-                            catch (IllegalArgumentException e) {
-                                e.printStackTrace();
-                            }
-                            catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance * 2, distance * 2);
-                            for (Entity entity : nearbyEntities) {
-                                // Check to see if the entity can be damaged
-                                if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
-                                    continue;
-
-                                if (!damageCheck(player, (LivingEntity) entity))
-                                    continue;
-
-                                // Damage target
-                                LivingEntity target = (LivingEntity) entity;
-
-                                addSpellTarget(target, hero);
-                                damageEntity(target, player, damage, DamageCause.MAGIC);
-                            }
+                        try {
+                            fplayer.playFirework(targetCenterLocation.getWorld(), targetCenterLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                            fplayer.playFirework(targetLeftLocation.getWorld(), targetLeftLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                            fplayer.playFirework(targetRightLocation.getWorld(), targetRightLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                        }
+                        catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
                         }
 
-                    }, numBlocks * moveDelay);
+                        for (Entity entity : nearbyEntities) {
+                            if (!(entity instanceof LivingEntity))
+                                continue;
 
-                    numBlocks++;
-                }
-                else
-                    break;
+                            if (entity.getLocation().distanceSquared(targetLeftLocation) > radiusSquared
+                            || entity.getLocation().distanceSquared(targetCenterLocation) > radiusSquared
+                            || entity.getLocation().distanceSquared(targetRightLocation) > radiusSquared) {
+                                continue;
+                            }
+                            
+                            // Check to see if the entity can be damaged
+                            if (!damageCheck(player, (LivingEntity) entity))
+                                continue;
+
+                            // Damage target
+                            LivingEntity target = (LivingEntity) entity;
+
+                            addSpellTarget(target, hero);
+                            damageEntity(target, player, damage, DamageCause.MAGIC);
+
+                            break;      // Only damage one target.
+                        }
+                    }
+                }, numBlocks * delay);
+
+                numBlocks++;
             }
+            else
+                break;
         }
+
+        return SkillResult.NORMAL;
     }
 }

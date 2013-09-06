@@ -30,6 +30,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillOvergrowth extends ActiveSkill {
 
@@ -93,16 +94,8 @@ public class SkillOvergrowth extends ActiveSkill {
             return SkillResult.INVALID_TARGET;
 
         // Must place on solid block.
-        switch (lastBlocks.get(1).getType()) {
-            case WATER:
-            case LAVA:
-            case SNOW:
-            case VINE:
-            case AIR:
-                return SkillResult.INVALID_TARGET;
-            default:
-                break;
-        }
+        if (Util.transparentBlocks.contains(lastBlocks.get(1).getType()))
+            return SkillResult.INVALID_TARGET;
 
         // Can only grow on empty blocks.
         Block placementBlock = lastBlocks.get(0);

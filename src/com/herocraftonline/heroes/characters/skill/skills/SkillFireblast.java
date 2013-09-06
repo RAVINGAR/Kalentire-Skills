@@ -39,7 +39,7 @@ public class SkillFireblast extends ActiveSkill {
 
     public SkillFireblast(Heroes plugin) {
         super(plugin, "Fireblast");
-        setDescription("You strike a location within $1 blocks of you with a blast of fire. An enemy within $2 blocks of the explosion will be dealt $3 damage and will be knocked away from the blast.");
+        setDescription("You strike a location within $1 blocks of you with a blast of fire. An enemy within the explosion will be dealt $2 damage and will be knocked away from the blast.");
         setUsage("/skill fireblast");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireblast");
@@ -51,8 +51,6 @@ public class SkillFireblast extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
-
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
         distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
@@ -61,7 +59,7 @@ public class SkillFireblast extends ActiveSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        return getDescription().replace("$1", distance + "").replace("$2", radius + "").replace("$3", damage + "");
+        return getDescription().replace("$1", distance + "").replace("$2", damage + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -124,17 +122,19 @@ public class SkillFireblast extends ActiveSkill {
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
-            damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
             double horizontalPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.1, false);
             double veticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
 
-            // Loop through nearby targets and damage / knock back one of them
             int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
+            int radiusSquared = radius * radius;
+
+            // Loop through nearby targets and damage / knock back one of them
             final List<Entity> nearbyEntities = player.getNearbyEntities(distance, distance, distance);
             for (Entity entity : nearbyEntities) {
                 // Check to see if the entity can be damaged
-                if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
+                if (!(entity instanceof LivingEntity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
                     continue;
 
                 if (!damageCheck(player, (LivingEntity) entity))
@@ -144,7 +144,7 @@ public class SkillFireblast extends ActiveSkill {
                 LivingEntity target = (LivingEntity) entity;
 
                 addSpellTarget(target, hero);
-                damageEntity(target, player, damage, DamageCause.MAGIC);
+                damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
                 // Do a knock up/back effect.
                 Location targetLoc = target.getLocation();

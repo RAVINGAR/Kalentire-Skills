@@ -43,8 +43,6 @@ public class SkillBoneSpear extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
-        distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
 
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
@@ -57,7 +55,6 @@ public class SkillBoneSpear extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
-        // node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.125));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(2));
@@ -70,8 +67,6 @@ public class SkillBoneSpear extends ActiveSkill {
         final Player player = hero.getPlayer();
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
-        //        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
-        //        distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
 
         Block tempBlock;
         BlockIterator iter = null;
@@ -89,7 +84,9 @@ public class SkillBoneSpear extends ActiveSkill {
         tempDamage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
         final double damage = tempDamage;
 
-        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
+        final int radiusSquared = radius * radius;
+
         int delay = SkillConfigManager.getUseSetting(hero, this, "spear-move-delay", 1, false);
 
         final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
@@ -119,7 +116,7 @@ public class SkillBoneSpear extends ActiveSkill {
 
                         for (Entity entity : nearbyEntities) {
                             // Check to see if the entity can be damaged
-                            if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
+                            if (!(entity instanceof LivingEntity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
                                 continue;
 
                             if (!damageCheck(player, (LivingEntity) entity))
@@ -133,9 +130,7 @@ public class SkillBoneSpear extends ActiveSkill {
 
                             break;      // Only damage one target.
                         }
-
                     }
-
                 }, numBlocks * delay);
 
                 numBlocks++;
