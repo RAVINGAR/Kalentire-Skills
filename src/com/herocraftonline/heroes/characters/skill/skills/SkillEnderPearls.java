@@ -26,6 +26,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -53,7 +54,9 @@ public class SkillEnderPearls extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("velocity-multiplier", Double.valueOf(0.75));
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "");
+        node.set("velocity-multiplier", Double.valueOf(0.85));
         node.set("toss-cooldown", Integer.valueOf(0));
 
         return node;
@@ -83,7 +86,6 @@ public class SkillEnderPearls extends PassiveSkill {
             ItemStack itemInHand = player.getItemInHand();
 
             if (itemInHand.getType() == Material.ENDER_PEARL) {
-
                 if (!hero.canUseSkill(skill)) {
                     event.setUseItemInHand(Result.DENY);
                     return;
@@ -140,11 +142,12 @@ public class SkillEnderPearls extends PassiveSkill {
         public void onPlayerTeleport(PlayerTeleportEvent event) {
             if (event.getCause() == TeleportCause.ENDER_PEARL) {
 
-                // Move our location to the block it landed on, and then center it.
+                // Store some of the original teleport location variables
                 Location teleportLoc = event.getTo();
                 float pitch = teleportLoc.getPitch();
                 float yaw = teleportLoc.getYaw();
 
+                // Move our location to the block it landed on, and center it. This fixes most exploit issues.
                 teleportLoc = teleportLoc.getBlock().getLocation().clone();
                 teleportLoc.add(new Vector(.5, 0, .5));
 
@@ -153,6 +156,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
                 Block teleportLocBlock = teleportLoc.getBlock();
 
+                // Some block types are still relatively exploitable however, so we should check against those.
                 switch (teleportLocBlock.getType()) {
                     case IRON_DOOR:
                     case IRON_DOOR_BLOCK:

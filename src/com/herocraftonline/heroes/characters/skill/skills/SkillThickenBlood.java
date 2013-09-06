@@ -51,7 +51,7 @@ public class SkillThickenBlood extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(75));
+        node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), Integer.valueOf(75));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood has thickened!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood returns to normal.");
 
@@ -79,8 +79,8 @@ public class SkillThickenBlood extends TargettedSkill {
 
         // Get Debuff values
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, Integer.valueOf(75), false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, Integer.valueOf(75), false);
+        duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
 
         // Famine the first target
         ThickenBloodEffect tbEffect = new ThickenBloodEffect(this, player, duration);

@@ -45,10 +45,6 @@ public class SkillQuantumLeap extends TargettedSkill {
 
         // Set the target location
         Location tLocation = targetPlayer.getLocation();
-
-        /*
-        
-        //Better Method that Kainzo hates for some reason. :(
         
         // Swap the locations yaw/pitch values
         pLocation.setYaw(targetPlayer.getLocation().getYaw());
@@ -56,9 +52,8 @@ public class SkillQuantumLeap extends TargettedSkill {
 
         tLocation.setYaw(player.getLocation().getYaw());
         tLocation.setPitch(player.getLocation().getPitch());
-        
-        */
 
+        
         // Teleport the player and his target
         player.teleport(tLocation);
         targetPlayer.teleport(pLocation);
