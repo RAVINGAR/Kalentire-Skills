@@ -107,11 +107,11 @@ public class SkillFireblast extends ActiveSkill {
         }
 
         if (targetBlock != null) {
-            Location targetLocation = targetBlock.getLocation().clone();
-            targetLocation.add(new Vector(.5, .5, .5));
+            Location blastLocation = targetBlock.getLocation().clone();
+            blastLocation.add(new Vector(.5, .5, .5));
             
             try {
-                fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+                fplayer.playFirework(blastLocation.getWorld(), blastLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
             }
             catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -134,7 +134,7 @@ public class SkillFireblast extends ActiveSkill {
             final List<Entity> nearbyEntities = player.getNearbyEntities(distance, distance, distance);
             for (Entity entity : nearbyEntities) {
                 // Check to see if the entity can be damaged
-                if (!(entity instanceof LivingEntity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
+                if (!(entity instanceof LivingEntity) || entity.getLocation().distanceSquared(blastLocation) > radiusSquared)
                     continue;
 
                 if (!damageCheck(player, (LivingEntity) entity))
@@ -149,8 +149,8 @@ public class SkillFireblast extends ActiveSkill {
                 // Do a knock up/back effect.
                 Location targetLoc = target.getLocation();
 
-                double xDir = targetBlock.getX() - targetLoc.getX();
-                double zDir = targetBlock.getZ() - targetLoc.getZ();
+                double xDir = targetLoc.getX() - blastLocation.getX();
+                double zDir = targetLoc.getZ() - blastLocation.getZ();
                 double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
 
                 xDir = xDir / magnitude * horizontalPower;
@@ -171,6 +171,7 @@ public class SkillFireblast extends ActiveSkill {
                 }
 
                 target.setVelocity(new Vector(xDir, veticalPower, zDir));
+
                 break;       // Only hit 1 target.
             }
 

@@ -93,6 +93,7 @@ public class SkillDragonsBreath extends ActiveSkill {
         int delay = SkillConfigManager.getUseSetting(hero, this, "breath-travel-delay", 1, false);
 
         final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
+        final List<Entity> hitEnemies = new ArrayList<Entity>();
 
         int numBlocks = 0;
         while (iter.hasNext()) {
@@ -141,7 +142,7 @@ public class SkillDragonsBreath extends ActiveSkill {
                         }
 
                         for (Entity entity : nearbyEntities) {
-                            if (!(entity instanceof LivingEntity))
+                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity))
                                 continue;
 
                             boolean exitLoop = true;
@@ -165,7 +166,7 @@ public class SkillDragonsBreath extends ActiveSkill {
                             addSpellTarget(target, hero);
                             damageEntity(target, player, damage, DamageCause.MAGIC);
 
-                            break;      // Only damage one target.
+                            hitEnemies.add(entity);
                         }
                     }
                 }, numBlocks * delay);

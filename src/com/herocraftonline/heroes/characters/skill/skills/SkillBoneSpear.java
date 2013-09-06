@@ -90,6 +90,7 @@ public class SkillBoneSpear extends ActiveSkill {
         int delay = SkillConfigManager.getUseSetting(hero, this, "spear-move-delay", 1, false);
 
         final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
+        final List<Entity> hitEnemies = new ArrayList<Entity>();
 
         int numBlocks = 0;
         while (iter.hasNext()) {
@@ -103,7 +104,6 @@ public class SkillBoneSpear extends ActiveSkill {
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-
                         try {
                             fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
                         }
@@ -116,7 +116,7 @@ public class SkillBoneSpear extends ActiveSkill {
 
                         for (Entity entity : nearbyEntities) {
                             // Check to see if the entity can be damaged
-                            if (!(entity instanceof LivingEntity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
+                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
                                 continue;
 
                             if (!damageCheck(player, (LivingEntity) entity))
@@ -128,7 +128,7 @@ public class SkillBoneSpear extends ActiveSkill {
                             addSpellTarget(target, hero);
                             damageEntity(target, player, damage, DamageCause.MAGIC);
 
-                            break;      // Only damage one target.
+                            hitEnemies.add(entity);
                         }
                     }
                 }, numBlocks * delay);
