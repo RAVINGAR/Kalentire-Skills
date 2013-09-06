@@ -79,10 +79,12 @@ public class SkillMelodicBinding extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(17));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_CHARISMA.node(), Double.valueOf(0.125));
         node.set("melodic-slow-duration", Integer.valueOf(1500));
-        node.set("slow-amplifier", 1);
+        node.set("slow-amplifier", Integer.valueOf(0));
+        node.set("slow-amplifier-increase-per-charisma", Double.valueOf(0.075));
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "");
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(1000));
 
         return node;
     }
@@ -103,10 +105,9 @@ public class SkillMelodicBinding extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", Integer.valueOf(3000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", Integer.valueOf(1500), false);
-        int amplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
 
-        hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius, amplifier));
+        hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
 
         return SkillResult.NORMAL;
     }
@@ -114,15 +115,13 @@ public class SkillMelodicBinding extends ActiveSkill {
     public class MelodicBindingEffect extends PeriodicExpirableEffect {
 
         private final int radius;
-        private final int amplifier;
 
-        public MelodicBindingEffect(SkillMelodicBinding skill, Player applier, int period, int duration, int radius, int amplifier) {
+        public MelodicBindingEffect(SkillMelodicBinding skill, Player applier, int period, int duration, int radius) {
             super(skill, "MelodicBindingSong", applier, period, duration);
 
-            this.radius = radius;
-            this.amplifier = amplifier;
-
             types.add(EffectType.BENEFICIAL);
+
+            this.radius = radius;
         }
 
         @Override
@@ -145,11 +144,17 @@ public class SkillMelodicBinding extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
+            int charisma = hero.getAttributeValue(AttributeType.CHARISMA);
+
+            int slowAmount = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier", Integer.valueOf(1), false);
+            double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier-increase-per-charisma", Double.valueOf(0.075), false);
+            slowAmount += Math.floor(slowAmountIncrease * charisma);
+
             int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "melodic-slow-duration", Integer.valueOf(1500), false);
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(17), false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, Double.valueOf(0.125), false);
-            damage += (damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+            damage += damageIncrease * charisma;
 
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
@@ -163,7 +168,7 @@ public class SkillMelodicBinding extends ActiveSkill {
                     damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
                 }
 
-                targetCT.addEffect(new SlowEffect(skill, player, slowDuration, amplifier, applyText, expireText));
+                targetCT.addEffect(new SlowEffect(skill, player, slowDuration, slowAmount, applyText, expireText));
             }
         }
 

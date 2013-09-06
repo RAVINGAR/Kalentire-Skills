@@ -88,7 +88,7 @@ public class SkillChakra extends ActiveSkill {
 
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
         double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", Double.valueOf(0.05), false);
-        removals += Math.ceil((wisdom * removalsIncrease));     // Round down
+        removals += Math.floor(wisdom * removalsIncrease);     // Round down
 
         if (hero.hasParty()) {
             for (Hero p : hero.getParty().getMembers()) {
