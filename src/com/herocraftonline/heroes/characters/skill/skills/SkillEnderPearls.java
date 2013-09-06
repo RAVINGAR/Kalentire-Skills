@@ -87,6 +87,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
             if (itemInHand.getType() == Material.ENDER_PEARL) {
                 if (!hero.canUseSkill(skill)) {
+                    Messaging.send(player, "You are not able to use Ender Pearls!");
                     event.setUseItemInHand(Result.DENY);
                     return;
                 }
@@ -103,18 +104,22 @@ public class SkillEnderPearls extends PassiveSkill {
                 // If the clicked block is null, we are clicking air. Air is a valid block that we do not need to validate
                 if (event.getClickedBlock() != null) {
 
-                    // VALIDATE NON-AIR BLOCK
-                    if (!(Util.interactableBlocks.contains(event.getClickedBlock().getType()))) {
+                    // NON-AIR BLOCK, VALIDATE USAGE
+                    if (Util.interactableBlocks.contains(event.getClickedBlock().getType())) {
+                        // Dealing with an interactable block. Let them interact with that block instead of throwing the ender pearl.
                         event.setUseItemInHand(Result.DENY);
                         return;
                     }
                     else {
+                        // The ender pearl will be used in this case. Let's add the cooldown effect to them.
                         CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                         hero.addEffect(cdEffect);
                     }
                 }
                 else {
-                    // AIR BLOCK. NO VALIDATION
+                    // AIR BLOCK. NO BLOCK VALIDATION
+
+                    // The ender pearl will be used in this case. Let's add the cooldown effect to them.
                     CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                     hero.addEffect(cdEffect);
                 }
