@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
@@ -54,8 +53,9 @@ public class SkillJump extends ActiveSkill {
 
         node.set("no-air-jump", false);
         node.set("horizontal-power", Double.valueOf(0.5));
+        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0125));
         node.set("vertical-power", Double.valueOf(0.5));
-        node.set(SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY.node(), Double.valueOf(0.0125));
+        node.set("vertical-power-increase-per-agility", Double.valueOf(0.00625));
         node.set("ncp-exemption-duration", Integer.valueOf(2000));
 
         return node;
@@ -88,10 +88,11 @@ public class SkillJump extends ActiveSkill {
         }
         float multiplier = (90f + pitch) / 50f;
 
+        int agility = hero.getAttributeValue(AttributeType.AGILITY);
+
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
-        double velocityIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, Double.valueOf(0.0125), false);
-        double calculatedIncrease = hero.getAttributeValue(AttributeType.AGILITY) * velocityIncrease;
-        vPower += calculatedIncrease;
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
+        vPower += agility * vPowerIncrease;
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -101,7 +102,8 @@ public class SkillJump extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        hPower += calculatedIncrease;
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
+        hPower += agility * hPowerIncrease;
         velocity.multiply(new Vector(hPower, vPower, hPower));
 
         // Jump!

@@ -122,7 +122,7 @@ public class SkillEnvenom extends ActiveSkill {
             }
             else {
                 Material item = player.getItemInHand().getType();
-                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
+                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.name()))
                     dealEnvenomDamage(hero, target);
             }
         }

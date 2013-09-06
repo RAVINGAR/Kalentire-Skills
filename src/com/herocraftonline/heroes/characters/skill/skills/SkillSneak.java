@@ -24,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSneak extends ActiveSkill {
@@ -76,8 +75,6 @@ public class SkillSneak extends ActiveSkill {
             return SkillResult.REMOVED_EFFECT;
         }
         else {
-            Messaging.send(hero.getPlayer(), "You are now sneaking");
-
             final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
             final int period = SkillConfigManager.getUseSetting(hero, this, "refresh-interval", 5000, true);
 

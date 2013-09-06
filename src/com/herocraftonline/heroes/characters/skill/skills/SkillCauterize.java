@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -12,6 +14,7 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillCauterize extends TargettedSkill {
 
@@ -45,15 +48,29 @@ public class SkillCauterize extends TargettedSkill {
 
         broadcastExecuteText(hero);
 
-        // Remove bleeds
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        Player targetPlayer = (Player) target;
+        Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
+        ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.BLEED) && effect.isType(EffectType.HARMFUL)) {
-                targetHero.removeEffect(effect);
+            if (effect.isType(EffectType.HARMFUL) && effect.isType(EffectType.BLEED)) {
+                possibleEffects.add(effect);
             }
         }
 
-        ((Player) target).setFireTicks(0);  // Clear fire ticks.
+        if (possibleEffects.isEmpty() && targetPlayer.getFireTicks() < 1) {
+            Messaging.send(player, "Your target has nothing to Cauterize!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
+        targetPlayer.setFireTicks(0);
+
+        // Remove bleeds
+        if (!possibleEffects.isEmpty()) {
+            for (int i = 0; i < possibleEffects.size(); i++) {
+                Effect removableEffect = possibleEffects.get(i);
+                targetHero.removeEffect(removableEffect);
+            }
+        }
 
         player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 2.0F, 1.2F);
 

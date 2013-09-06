@@ -10,6 +10,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -51,7 +52,10 @@ public class SkillSuperJump extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("jump-force", 3.0);
+        node.set("horizontal-power", Double.valueOf(0.0));
+        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0));
+        node.set("vertical-power", Double.valueOf(1.5));
+        node.set("vertical-power-increase-per-agility", Double.valueOf(0.0375));
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set("ncp-exemption-duration", Integer.valueOf(0));
 
@@ -74,14 +78,30 @@ public class SkillSuperJump extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        float jumpForce = (float) SkillConfigManager.getUseSetting(hero, this, "jump-force", 1.0, false);
-        Vector v1 = new Vector(0, jumpForce, 0);
-        Vector v = player.getVelocity().add(v1);
-        player.setVelocity(v);
+        int agility = hero.getAttributeValue(AttributeType.AGILITY);
+
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
+        vPower += agility * vPowerIncrease;
+        Vector velocity = player.getVelocity().setY(vPower);
+
+        Vector directionVector = player.getLocation().getDirection();
+        directionVector.setY(0);
+        directionVector.normalize();
+
+        velocity.add(directionVector);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
+        hPower += agility * hPowerIncrease;
+        velocity.multiply(new Vector(hPower, vPower, hPower));
+
+        // Super Jump!
+        player.setVelocity(velocity);
         player.setFallDistance(-8f);
 
         int duration = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
         hero.addEffect(new JumpEffect(this, player, duration));
+
         player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
 
         // this is our fireworks shit
