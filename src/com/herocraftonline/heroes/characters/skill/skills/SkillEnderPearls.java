@@ -172,6 +172,7 @@ public class SkillEnderPearls extends PassiveSkill {
                     case GLASS:
                         // Cancel immediately when dealing with exploitable blocks.
                         event.setCancelled(true);
+                        Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
                         break;
                     default:
                         event.setCancelled(true);       // Cancel the event because we don't want players to be dealt "ender pearl damage"

@@ -95,6 +95,8 @@ public class SkillDoomwave extends ActiveSkill {
         double numEnderPearlsIncrease = SkillConfigManager.getUseSetting(hero, this, "enderpearls-launched-per-intellect", 0.325, false);
         numEnderPearls += (int) (numEnderPearlsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
+        broadcastExecuteText(hero);
+
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (!player.isOp()) {
