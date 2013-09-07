@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -111,7 +112,7 @@ public class SkillAccelerando extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
 
-        AccelerandoEffect accelEffect = new AccelerandoEffect(this, player, duration, multiplier, applyText, expireText);
+        AccelerandoEffect accelEffect = new AccelerandoEffect(this, player, duration, multiplier);
 
         if (!hero.hasParty()) {
             hero.addEffect(accelEffect);
@@ -122,6 +123,7 @@ public class SkillAccelerando extends ActiveSkill {
         int rSquared = radius * radius;
 
         Location playerLoc = player.getLocation();
+
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {
             if (!player.getWorld().equals(player.getWorld()))
@@ -132,6 +134,7 @@ public class SkillAccelerando extends ActiveSkill {
 
             tHero.addEffect(accelEffect);
         }
+
         return SkillResult.NORMAL;
     }
 
@@ -149,7 +152,11 @@ public class SkillAccelerando extends ActiveSkill {
                 return;
             }
 
-            final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+            Player player = (Player) event.getEntity();
+            if (!damageCheck(player, (LivingEntity) event.getEntity()))
+                return;
+
+            final Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("Accelerando")) {
                 hero.removeEffect(hero.getEffect("Accelerando"));
 
@@ -161,8 +168,8 @@ public class SkillAccelerando extends ActiveSkill {
 
     public class AccelerandoEffect extends SpeedEffect {
 
-        public AccelerandoEffect(Skill skill, Player applier, int duration, int multiplier, String applyText, String expireText) {
-            super(skill, "Accelerando", applier, duration, multiplier, applyText, expireText);
+        public AccelerandoEffect(Skill skill, Player applier, int duration, int multiplier) {
+            super(skill, "Accelerando", applier, duration, multiplier, null, null);
 
             types.add(EffectType.DISPELLABLE);
         }

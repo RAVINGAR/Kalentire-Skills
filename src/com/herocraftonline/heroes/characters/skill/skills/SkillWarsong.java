@@ -31,6 +31,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillWarsong extends ActiveSkill {
 
     private Song skillSong;
+
     private String applyText;
     private String expireText;
 
@@ -111,12 +112,12 @@ public class SkillWarsong extends ActiveSkill {
                 }
             }
 
-            hero.addEffect(new SoundEffect(this, "WarSong", 100, skillSong));
+            hero.addEffect(new SoundEffect(this, "WarsongSong", 100, skillSong));
             broadcastExecuteText(hero);
             hero.addEffect(mEffect);
         }
         else {
-            hero.addEffect(new SoundEffect(this, "WarSong", 100, skillSong));
+            hero.addEffect(new SoundEffect(this, "WarsongSong", 100, skillSong));
 
             broadcastExecuteText(hero);
 
@@ -166,7 +167,7 @@ public class SkillWarsong extends ActiveSkill {
         private final double damageBonus;
 
         public WarsongEffect(Skill skill, Player applier, long duration, double damageBonus) {
-            super(skill, "Warsong", applier, duration);
+            super(skill, "Warsong", applier, duration, null, null);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
@@ -182,14 +183,18 @@ public class SkillWarsong extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+
             Player player = hero.getPlayer();
+
             Messaging.send(player, applyText);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+
             Player player = hero.getPlayer();
+
             Messaging.send(player, expireText);
         }
     }

@@ -29,6 +29,9 @@ public class SkillBattlesong extends ActiveSkill {
 
     private Song skillSong;
 
+    private String applyText;
+    private String expireText;
+
     public SkillBattlesong(Heroes plugin) {
         super(plugin, "Battlesong");
         setDescription("Play a song of mana for $1 seconds. While active, you restoreerate $2 mana for party members within $3 blocks every $4 seconds.");
@@ -70,15 +73,25 @@ public class SkillBattlesong extends ActiveSkill {
         node.set("stamina-restore-tick-increase-per-charisma", Double.valueOf(0.275));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are filled with ");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "You feel strength leave your body!");
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
 
         return node;
     }
 
     @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "Your muscles bulge with power!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You feel strength leave your body!");
+    }
+
+    @Override
     public SkillResult use(Hero hero, String[] args) {
 
-        hero.addEffect(new SoundEffect(this, "BattleSong", 100, skillSong));
+        hero.addEffect(new SoundEffect(this, "BattlesongSong", 100, skillSong));
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
@@ -102,24 +115,32 @@ public class SkillBattlesong extends ActiveSkill {
         private final int staminaRestore;
 
         public BattlesongEffect(Skill skill, Player applier, int period, int duration, int radius, int staminaRestore) {
-            super(skill, "Battlesong", applier, period, duration);
-
-            this.radius = radius;
-            this.staminaRestore = staminaRestore;
+            super(skill, "Battlesong", applier, period, duration, null, null);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
             types.add(EffectType.STAMINA_INCREASING);
+
+            this.radius = radius;
+            this.staminaRestore = staminaRestore;
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, applyText);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, expireText);
         }
 
         @Override

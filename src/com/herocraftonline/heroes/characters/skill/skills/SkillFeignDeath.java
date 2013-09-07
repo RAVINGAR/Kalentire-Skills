@@ -109,7 +109,7 @@ public class SkillFeignDeath extends ActiveSkill {
                 Entry<Hero, Location> entry = heroes.next();
                 Hero hero = entry.getKey();
                 Location oldLoc = entry.getValue();
-                if (!hero.hasEffect("FeignDeathed")) {
+                if (!hero.hasEffect("Invisible")) {
                     heroes.remove();
                     continue;
                 }

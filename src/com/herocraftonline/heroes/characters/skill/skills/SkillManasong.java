@@ -28,6 +28,9 @@ public class SkillManasong extends ActiveSkill {
 
     private Song skillSong;
 
+    private String applyText;
+    private String expireText;
+
     public SkillManasong(Heroes plugin) {
         super(plugin, "Manasong");
         setDescription("Play a song of mana for $1 seconds. While active, you restoreerate $2 mana for party members within $3 blocks every $4 seconds.");
@@ -73,9 +76,17 @@ public class SkillManasong extends ActiveSkill {
     }
 
     @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "Your muscles bulge with power!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You feel strength leave your body!");
+    }
+
+    @Override
     public SkillResult use(Hero hero, String[] args) {
 
-        hero.addEffect(new SoundEffect(this, "ManaSong", 100, skillSong));
+        hero.addEffect(new SoundEffect(this, "ManaSongSong", 100, skillSong));
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
@@ -93,14 +104,13 @@ public class SkillManasong extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-
     public class ManasongEffect extends PeriodicExpirableEffect {
 
         private final int radius;
         private final int manaRestore;
 
         public ManasongEffect(Skill skill, Player applier, int period, int duration, int radius, int manaRestore) {
-            super(skill, "Manasong", applier, period, duration);
+            super(skill, "Manasong", applier, period, duration, null, null);
 
             this.radius = radius;
             this.manaRestore = manaRestore;
@@ -108,6 +118,24 @@ public class SkillManasong extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
             types.add(EffectType.MANA_INCREASING);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, applyText);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, expireText);
         }
 
         @Override

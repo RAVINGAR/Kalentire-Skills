@@ -30,6 +30,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
     private String applyText;
     private String expireText;
+
     private Song skillSong;
 
     public SkillMelodicBinding(Heroes plugin) {
@@ -72,7 +73,7 @@ public class SkillMelodicBinding extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% releases Melodic Bindings!");
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("melodic-buff-duration", Integer.valueOf(3000));
         node.set("melodic-buff-period", Integer.valueOf(1500));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(6));
@@ -81,8 +82,8 @@ public class SkillMelodicBinding extends ActiveSkill {
         node.set("melodic-slow-duration", Integer.valueOf(1500));
         node.set("slow-amplifier", Integer.valueOf(0));
         node.set("slow-amplifier-increase-per-charisma", Double.valueOf(0.075));
-        node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% releases Melodic Bindings!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer binding enemies.");
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
         node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(1000));
 
@@ -117,27 +118,11 @@ public class SkillMelodicBinding extends ActiveSkill {
         private final int radius;
 
         public MelodicBindingEffect(SkillMelodicBinding skill, Player applier, int period, int duration, int radius) {
-            super(skill, "MelodicBindingSong", applier, period, duration);
+            super(skill, "MelodicBinding", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
 
             this.radius = radius;
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
         @Override
@@ -165,10 +150,10 @@ public class SkillMelodicBinding extends ActiveSkill {
 
                 if (damage > 0) {
                     addSpellTarget(entity, hero);
-                    damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
+                    damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
                 }
 
-                targetCT.addEffect(new SlowEffect(skill, player, slowDuration, slowAmount, applyText, expireText));
+                targetCT.addEffect(new SlowEffect(skill, player, slowDuration, slowAmount, null, null));
             }
         }
 

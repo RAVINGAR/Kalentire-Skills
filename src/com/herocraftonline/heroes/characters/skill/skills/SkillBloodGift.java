@@ -67,12 +67,6 @@ public class SkillBloodGift extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
-        // Don't allow self targeting
-        if (targetHero.equals(hero)) {
-            Messaging.send(player, "You cannot use this ability on yourself!");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-
         double targetHealth = target.getHealth();
 
         // Check to see if they are at full health
@@ -103,7 +97,7 @@ public class SkillBloodGift extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!", new Object[0]);
+            Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
 

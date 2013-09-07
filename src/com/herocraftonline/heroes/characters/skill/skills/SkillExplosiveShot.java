@@ -211,7 +211,6 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             // Loop through nearby targets and damage / knock them back
             for (Entity entity : targets) {
-
                 // Check to see if the entity can be damaged
                 if (!(entity instanceof LivingEntity) || !damageCheck(shooter, (LivingEntity) entity))
                     continue;
@@ -257,7 +256,6 @@ public class SkillExplosiveShot extends ActiveSkill {
                 catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
 
             return;

@@ -1,10 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -13,7 +18,6 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
@@ -29,9 +33,12 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDarkBolt extends ActiveSkill {
+
+    public VisualEffect fplayer = new VisualEffect();
 
     private String applyText;
     private String expireText;
@@ -53,14 +60,14 @@ public class SkillDarkBolt extends ActiveSkill {
         setIdentifiers("skill darkbolt");
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         return getDescription().replace("$1", damage + "");
     }
@@ -92,7 +99,9 @@ public class SkillDarkBolt extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        WitherSkull darkBolt = player.launchProjectile(WitherSkull.class);
+        final WitherSkull darkBolt = player.launchProjectile(WitherSkull.class);
+        darkBolts.put(darkBolt, System.currentTimeMillis());
+
         darkBolt.setShooter(player);
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
@@ -101,10 +110,15 @@ public class SkillDarkBolt extends ActiveSkill {
         darkBolt.setIsIncendiary(false);
         darkBolt.setYield(0.0F);
 
-        int ticksLived = SkillConfigManager.getUseSetting(hero, this, "ticks-lived", 2, false);
-        darkBolt.setTicksLived(ticksLived);
+        int ticksLived = SkillConfigManager.getUseSetting(hero, this, "ticks-lived", 20, false);
 
-        darkBolts.put(darkBolt, System.currentTimeMillis());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                if (!darkBolt.isDead()) {
+                    explodeDarkBolt(darkBolt);
+                }
+            }
+        }, ticksLived);
 
         broadcastExecuteText(hero);
 
@@ -113,67 +127,68 @@ public class SkillDarkBolt extends ActiveSkill {
 
     public class SkillEntityListener implements Listener {
 
-        private final Skill skill;
-
-        public SkillEntityListener(Skill skill) {
-            this.skill = skill;
-        }
+        public SkillEntityListener() {}
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
             if (!(event.getEntity() instanceof WitherSkull))
                 return;
 
-            final WitherSkull darkBolt = (WitherSkull) event.getEntity();
+            WitherSkull darkBolt = (WitherSkull) event.getEntity();
+            if ((!(darkBolt.getShooter() instanceof Player)))
+                return;
 
-            if (darkBolts.containsKey(darkBolt)) {
-                // Remove it so it doesn't interact with the world at all.
-                darkBolt.remove();
-            }
+            if (!(darkBolts.containsKey(darkBolt)))
+                return;
+
+            explodeDarkBolt(darkBolt);
+        }
+    }
+
+    private void explodeDarkBolt(WitherSkull darkBolt) {
+
+        Location darkBoltLoc = darkBolt.getLocation();
+
+        try {
+            fplayer.playFirework(darkBoltLoc.getWorld(), darkBoltLoc, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.BLACK).withFade(Color.PURPLE).build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
-                return;
-            }
+        Player player = (Player) darkBolt.getShooter();
+        Hero hero = plugin.getCharacterManager().getHero(player);
 
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof WitherSkull) || !darkBolts.containsKey(projectile)) {
-                return;
-            }
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(80), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.5), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-            LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetLE);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", Double.valueOf(0.15), false);
 
-            Entity dmger = ((WitherSkull) projectile).getShooter();
+        List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);
+        for (Entity entity : targets) {
+            // Check to see if the entity can be damaged
+            if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
+                continue;
 
-            if (dmger instanceof Player) {
-                Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
+            LivingEntity target = (LivingEntity) entity;
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 
-                if (!damageCheck((Player) dmger, targetLE)) {
-                    event.setCancelled(true);
-                    return;
-                }
+            // Damage the target
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 
-                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(80), false);
-                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.5), false);
-                damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-                // Damage the target
-                addSpellTarget(targetLE, hero);
-                damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
-
-                int duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 17500, false);
-                double healingReductionPercent = SkillConfigManager.getUseSetting(hero, skill, "healing-reduction-percent", Double.valueOf(0.15), false);
-
-                targetCT.addEffect(new WitheringEffect(skill, (Player) dmger, duration, healingReductionPercent));
-
-                darkBolts.remove(projectile);
-                event.setCancelled(true);
-            }
+            // Add withering effect to the target.
+            targetCT.addEffect(new WitheringEffect(this, player, duration, healingReductionPercent));
         }
+
+        darkBolt.remove();
+        darkBolts.remove(darkBolt);
     }
 
     public class WitheringEffect extends HealthRegainReductionEffect {
@@ -185,8 +200,21 @@ public class SkillDarkBolt extends ActiveSkill {
             types.add(EffectType.DARK);
             types.add(EffectType.WITHER);
 
-            addMobEffect(9, (int) ((duration + 4000) / 1000) * 20, 3, false);
-            addMobEffect(20, (int) (duration / 1000) * 20, 1, false);
+            addMobEffect(20, (int) (duration / 1000) * 20, 0, false);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            Heroes.log(Level.INFO, "Applied to the hero at least...");
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Heroes.log(Level.INFO, "Applied to the mob at least...");
         }
     }
 }
