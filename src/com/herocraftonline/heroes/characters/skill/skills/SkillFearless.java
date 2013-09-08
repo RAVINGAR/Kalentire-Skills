@@ -1,11 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +13,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.FormEffect;
@@ -23,52 +22,51 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillFearless extends ActiveSkill {
+    private String applyText;
     private String expireText;
 
     public SkillFearless(Heroes plugin) {
         super(plugin, "Fearless");
-        setDescription("You become fearless, gaining $1% more weapon damage. However, your wreckless behavior causes you to take an additional $2% damage from all sources!");
+        setDescription("You become fearless, gaining $1% increased damage. However, your wreckless behavior causes you to take an additional $2% damage from all sources!");
         setUsage("/skill fearless");
         setArgumentRange(0, 0);
         setIdentifiers("skill fearless");
-        setTypes(SkillType.BUFF, SkillType.PHYSICAL);
+        setTypes(SkillType.FORM_ALTERING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 
     public String getDescription(Hero hero) {
-        double incomingMultiplier = SkillConfigManager.getUseSetting(hero, this, "incoming-multiplier", 1.1D, false);
-        double outgoingMultiplier = SkillConfigManager.getUseSetting(hero, this, "outgoing-multiplier", 1.1D, false);
-        double multPerLevel = SkillConfigManager.getUseSetting(hero, this, "multiplier-per-level", 0.005D, false);
+        double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
+        double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.35), false);
 
-        int level = hero.getSkillLevel(this);
+        String formattedOutgoingIncrease = Util.decFormat.format((outgoingIncrease + 1.0) * 100);
+        String formattedIncomingIncrease = Util.decFormat.format((incomingIncrease + 1.0) * 100);
 
-        if (level < 0)
-            level = 0;
-
-        double levelMult = level * multPerLevel;
-        outgoingMultiplier = (outgoingMultiplier + levelMult - 1) * 100;
-        incomingMultiplier = (incomingMultiplier - 1) * 100;
-
-        return getDescription().replace("$1", outgoingMultiplier + "").replace("$2", incomingMultiplier + "");
+        return getDescription().replace("$1", formattedIncomingIncrease).replace("$2", formattedOutgoingIncrease);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("incoming-multiplier", Double.valueOf(1.1D));
-        node.set("outgoing-multiplier", Double.valueOf(1.1D));
-        node.set("multiplier-per-level", Double.valueOf(0.005D));
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% is fearless!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% is no longer fearless!");
+
+        node.set(SkillSetting.USE_TEXT.node(), "");
+        node.set("outgoing-damage-increase-percent", Double.valueOf(0.25));
+        node.set("incoming-damage-increase-percent", Double.valueOf(0.35));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is fearless!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer fearless!");
 
         return node;
     }
 
     public void init() {
         super.init();
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% is no longer fearless!").replace("%hero%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is fearless!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer fearless!").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -76,81 +74,102 @@ public class SkillFearless extends ActiveSkill {
             hero.removeEffect(hero.getEffect("FearlessEffect"));
             return SkillResult.REMOVED_EFFECT;
         }
+        else {
+            Player player = hero.getPlayer();
 
-        broadcastExecuteText(hero);
+            broadcastExecuteText(hero);
 
-        hero.addEffect(new FearlessEffect(this));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL, 0.5F, 0.1F);
+            double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.25), false);
+            double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
+            hero.addEffect(new FearlessEffect(this, incomingDamageIncrease, outgoingDamageIncrease));
+
+            player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 0.5F, 0.1F);
+        }
 
         return SkillResult.NORMAL;
     }
 
     public class SkillHeroListener implements Listener {
-        private Skill skill;
 
-        public SkillHeroListener(Skill skill) {
-            this.skill = skill;
-        }
+        public SkillHeroListener() {}
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
 
-            if ((event.getEntity() instanceof Player)) {
-                Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-                if (hero.hasEffect("FearlessEffect")) {
-                    double damageMult = SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", 1.1D, false);
-                    double newDamage = (damageMult * event.getDamage());
+            // Handle outgoing
+            CharacterTemplate attackerCT = event.getDamager();
+            if (attackerCT.hasEffect("Fearless")) {
+                FearlessEffect fEffect = (FearlessEffect) attackerCT.getEffect("Fearless");
 
-                    event.setDamage(newDamage);
-                }
+                double damageIncreasePercent = 1 + fEffect.getOutgoingDamageIncrease();
+                double newDamage = damageIncreasePercent * event.getDamage();
+                event.setDamage(newDamage);
             }
 
-            // FEARLESS SKILL DAMAGE INCREASE DISABLED
-            //            if ((event.getSkill().isType(SkillType.PHYSICAL)) && ((event.getDamager() instanceof Hero))) {
-            //            	Hero hero = (Hero) event.getDamager();
-            //            	if (hero.hasEffect("FearlessEffect")) {
-            //            		double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", 0.005D, false) * hero.getSkillLevel(skill);
-            //            		double damageMult = SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", 1.1D, false) + levelMult;
-            //            		int newDamage = (int) (damageMult * event.getDamage());
-            //            		event.setDamage(newDamage);
-            //            	}
-            //            }
+            // Handle incoming
+            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            if (defenderCT.hasEffect("Fearless")) {
+                FearlessEffect fEffect = (FearlessEffect) defenderCT.getEffect("Fearless");
+
+                double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
+                double newDamage = damageIncreasePercent * event.getDamage();
+                event.setDamage(newDamage);
+            }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
 
-            if ((event.getEntity() instanceof Player)) {
-                Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-                if (hero.hasEffect("FearlessEffect")) {
-                    event.setDamage((event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", 1.1D, false)));
-                }
+            // Handle outgoing
+            CharacterTemplate attackerCT = event.getDamager();
+            if (attackerCT.hasEffect("Fearless")) {
+                FearlessEffect fEffect = (FearlessEffect) attackerCT.getEffect("Fearless");
+
+                double damageIncreasePercent = 1 + fEffect.getOutgoingDamageIncrease();
+                double newDamage = damageIncreasePercent * event.getDamage();
+                event.setDamage(newDamage);
             }
 
-            if ((event.getDamager() instanceof Hero)) {
-                Hero hero = (Hero) event.getDamager();
-                if (hero.hasEffect("FearlessEffect")) {
-                    double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", 0.005D, false) * hero.getSkillLevel(skill);
-                    double newDamage = (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", 1.1D, false) + levelMult));
-                    event.setDamage(newDamage);
-                }
+            // Handle incoming
+            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            if (defenderCT.hasEffect("Fearless")) {
+                FearlessEffect fEffect = (FearlessEffect) defenderCT.getEffect("Fearless");
+
+                double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
+                double newDamage = damageIncreasePercent * event.getDamage();
+                event.setDamage(newDamage);
             }
         }
     }
 
     public class FearlessEffect extends FormEffect {
-        public FearlessEffect(Skill skill) {
-            super(skill, "FearlessEffect");
+        private double incomingDamageIncrease;
+        private double outgoingDamageIncrease;
+
+        public FearlessEffect(Skill skill, double incomingDamageIncrease, double outgoingDamageIncrease) {
+            super(skill, "Fearless", applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
+
+            this.incomingDamageIncrease = incomingDamageIncrease;
+            this.outgoingDamageIncrease = outgoingDamageIncrease;
         }
 
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+        public double getIncomingDamageIncrease() {
+            return incomingDamageIncrease;
+        }
+
+        public void setIncomingDamageIncrease(double incomingDamageIncrease) {
+            this.incomingDamageIncrease = incomingDamageIncrease;
+        }
+
+        public double getOutgoingDamageIncrease() {
+            return outgoingDamageIncrease;
+        }
+
+        public void setOutgoingDamageIncrease(double outgoingDamageIncrease) {
+            this.outgoingDamageIncrease = outgoingDamageIncrease;
         }
     }
 }
-*/
