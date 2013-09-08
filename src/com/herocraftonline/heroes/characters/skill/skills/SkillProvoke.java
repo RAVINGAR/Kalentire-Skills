@@ -34,7 +34,7 @@ public class SkillProvoke extends TargettedSkill {
         setUsage("/skill provoke");
         setArgumentRange(0, 0);
         setIdentifiers("skill provoke");
-        setTypes(SkillType.DEBUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING);
+        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
@@ -77,7 +77,7 @@ public class SkillProvoke extends TargettedSkill {
 
         Player player = hero.getPlayer();
 
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.25), false);
