@@ -21,7 +21,7 @@ public class SkillPiercingStrike extends TargettedSkill {
 
     public SkillPiercingStrike(Heroes plugin) {
         super(plugin, "PiercingStrike");
-        setDescription("Extend your weapon and deliver a piercing strike, dealing $1% of your weapon damage your target. This attack pierces the enemies armor.");
+        setDescription("Extend your weapon and deliver a piercing strike, dealing $1% of your weapon damage to the target. This attack will pierce armor.");
         setUsage("/skill piercingstrike");
         setArgumentRange(0, 0);
         setIdentifiers("skill piercingstrike");
@@ -62,7 +62,7 @@ public class SkillPiercingStrike extends TargettedSkill {
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
 
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.0F);
         broadcastExecuteText(hero, target);
