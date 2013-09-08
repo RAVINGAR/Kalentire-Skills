@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -25,17 +26,17 @@ import com.herocraftonline.heroes.util.Messaging;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
-public class SkillBackflip extends ActiveSkill {
+public class SkillFrontflip extends ActiveSkill {
 
     private boolean ncpEnabled = false;
 
-    public SkillBackflip(Heroes plugin) {
-        super(plugin, "Backflip");
-        setDescription("Backflip away from your enemies.$1Distance traveled is based on your Agility.$2");
-        setUsage("/skill backflip");
+    public SkillFrontflip(Heroes plugin) {
+        super(plugin, "Frontflip");
+        setDescription("Frontflip forwards into the air. Distance traveled is based on your Agility.$1");
+        setUsage("/skill frontflip");
         setArgumentRange(0, 0);
-        setIdentifiers("skill backflip");
-        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DAMAGING);
+        setIdentifiers("skill frontflip");
+        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;
@@ -46,16 +47,10 @@ public class SkillBackflip extends ActiveSkill {
     public String getDescription(Hero hero) {
         String description = getDescription();
 
-        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
-        if (throwShuriken)
-            description.replace("$1", " If you are able to currently throw Shuriken, you will do so as well. ");
+        if (hero.canUseSkill("Backflip"))
+            description.replace("$1", " This ability shares a cooldown with Backflip.");
         else
             description.replace("$1", "");
-
-        if (hero.canUseSkill("Frontflip"))
-            description.replace("$2", " This ability shares a cooldown with Frontflip.");
-        else
-            description.replace("$2", "");
 
         return description;
     }
@@ -64,9 +59,9 @@ public class SkillBackflip extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("no-air-backflip", false);
-        node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0125));
+        node.set("no-air-frontflip", false);
+        node.set("horizontal-power", Double.valueOf(0.4));
+        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.01));
         node.set("vertical-power", Double.valueOf(0.5));
         node.set("vertical-power-increase-per-agility", Double.valueOf(0.00625));
         node.set("ncp-exemption-duration", Integer.valueOf(2000));
@@ -78,8 +73,8 @@ public class SkillBackflip extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
-        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && nobackflipMaterials.contains(mat)) || player.isInsideVehicle()) {
-            Messaging.send(player, "You can't backflip while mid-air or from inside a vehicle!");
+        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-frontflip", true) && noFrontflipMaterials.contains(mat)) || player.isInsideVehicle()) {
+            Messaging.send(player, "You can't frontflip while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
 
@@ -88,7 +83,7 @@ public class SkillBackflip extends ActiveSkill {
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (!player.isOp()) {
-                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false);
+                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false);
                 if (duration > 0) {
                     NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
                     hero.addEffect(ncpExemptEffect);
@@ -96,7 +91,7 @@ public class SkillBackflip extends ActiveSkill {
             }
         }
 
-        // Calculate backflip values
+        // Calculate frontflip values
         float pitch = player.getEyeLocation().getPitch();
         if (pitch > 0) {
             pitch = -pitch;
@@ -123,26 +118,17 @@ public class SkillBackflip extends ActiveSkill {
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
         hPower += agility * hPowerIncrease;
-        velocity.multiply(new Vector(-hPower, 1, -hPower));
+        velocity.multiply(new Vector(hPower, 1, hPower));
 
-        // Backflip!
+        // Frontflip!
         player.setVelocity(velocity);
         player.setFallDistance(-8f);
 
-        // If they can use shuriken, let's make them throw a few after they backflip
-        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
-        if (throwShuriken) {
-            if (hero.canUseSkill("Shuriken")) {
-                SkillShuriken shurikenSkill = (SkillShuriken) plugin.getSkillManager().getSkill("Shuriken");
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
 
-                if (shurikenSkill != null)
-                    shurikenSkill.shurikenToss(player);
-            }
-        }
-
-        if (hero.canUseSkill("Frontflip")) {
+        if (hero.canUseSkill("Backflip")) {
             long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
-            hero.setCooldown("Frontflip", System.currentTimeMillis() + cooldown);
+            hero.setCooldown("Backflip", System.currentTimeMillis() + cooldown);
         }
 
         return SkillResult.NORMAL;
@@ -172,13 +158,13 @@ public class SkillBackflip extends ActiveSkill {
         }
     }
 
-    private static final Set<Material> nobackflipMaterials;
+    private static final Set<Material> noFrontflipMaterials;
     static {
-        nobackflipMaterials = new HashSet<Material>();
-        nobackflipMaterials.add(Material.WATER);
-        nobackflipMaterials.add(Material.AIR);
-        nobackflipMaterials.add(Material.LAVA);
-        nobackflipMaterials.add(Material.LEAVES);
-        nobackflipMaterials.add(Material.SOUL_SAND);
+        noFrontflipMaterials = new HashSet<Material>();
+        noFrontflipMaterials.add(Material.WATER);
+        noFrontflipMaterials.add(Material.AIR);
+        noFrontflipMaterials.add(Material.LAVA);
+        noFrontflipMaterials.add(Material.LEAVES);
+        noFrontflipMaterials.add(Material.SOUL_SAND);
     }
 }

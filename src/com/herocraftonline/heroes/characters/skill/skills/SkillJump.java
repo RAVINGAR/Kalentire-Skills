@@ -31,7 +31,7 @@ public class SkillJump extends ActiveSkill {
 
     public SkillJump(Heroes plugin) {
         super(plugin, "Jump");
-        setDescription("Jump forwards into the air. Distance traveled is affected by your Agility.");
+        setDescription("Jump forwards into the air. Distance traveled is based on your Agility.");
         setUsage("/skill jump");
         setArgumentRange(0, 0);
         setIdentifiers("skill jump");
@@ -124,23 +124,26 @@ public class SkillJump extends ActiveSkill {
     private class NCPExemptionEffect extends ExpirableEffect {
 
         public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration, null, null);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            final Player player = hero.getPlayer();
+            Player player = hero.getPlayer();
 
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+            if (ncpEnabled)
+                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
+            Player player = hero.getPlayer();
 
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            if (ncpEnabled)
+                NCPExemptionManager.unexempt(player, CheckType.MOVING);
+
         }
     }
 

@@ -74,13 +74,17 @@ public class SkillBloodRage extends PassiveSkill {
                 if (hero.hasEffect(getName())) {
                     Player player = hero.getPlayer();
 
-                    int hpPercent = (int) ((player.getHealth() / player.getMaxHealth()) * 100);
+                    int hpPercent = 100 - ((int) ((player.getHealth() / player.getMaxHealth()) * 100));
                     double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, skill, "damage-percent-increase-per-hp-percent", Double.valueOf(0.0075), false);
                     double damageModifier = 1 + (hpPercent * damageIncreasePerHPPercent);
 
+                    Heroes.log(Level.INFO, "BloodRage Attack: Damage Modifier: " + damageModifier);
+
                     double damageIncreaseThreshhold = 1 + SkillConfigManager.getUseSetting(hero, skill, "damage-percent-increase-threshhold", Double.valueOf(0.40), false);
-                    if (damageModifier > damageIncreaseThreshhold)
+                    if (damageModifier > damageIncreaseThreshhold) {
                         damageModifier = damageIncreaseThreshhold;
+                        Heroes.log(Level.INFO, "BloodRage Attack: Hit Threshhold. New Modifier: " + damageModifier);
+                    }
 
                     double newDamage = damageModifier * event.getDamage();
                     Heroes.log(Level.INFO, "BloodRage Attack: Original Damage: " + originalDamage + ", New Damage: " + newDamage);
@@ -105,9 +109,13 @@ public class SkillBloodRage extends PassiveSkill {
                     double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, skill, "damage-percent-increase-per-hp-percent", Double.valueOf(0.057), false);
                     double damageModifier = 1 + (hpPercent * damageIncreasePerHPPercent);
 
+                    Heroes.log(Level.INFO, "BloodRage Attack: Damage Modifier: " + damageModifier);
+
                     double damageIncreaseThreshhold = 1 + SkillConfigManager.getUseSetting(hero, skill, "damage-percent-increase-threshhold", Double.valueOf(0.40), false);
-                    if (damageModifier > damageIncreaseThreshhold)
+                    if (damageModifier > damageIncreaseThreshhold) {
                         damageModifier = damageIncreaseThreshhold;
+                        Heroes.log(Level.INFO, "BloodRage Attack: Hit Threshhold. New Modifier: " + damageModifier);
+                    }
 
                     double newDamage = damageModifier * event.getDamage();
                     Heroes.log(Level.INFO, "BloodRage Attack: Original Damage: " + originalDamage + ", New Damage: " + newDamage);

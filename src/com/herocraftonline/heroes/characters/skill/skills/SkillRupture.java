@@ -177,6 +177,8 @@ public class SkillRupture extends TargettedSkill {
                 addSpellTarget(hero.getEntity(), applierHero);
                 damageEntity(hero.getEntity(), applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             }
+
+            lastLoc = location;
         }
 
         @Override
@@ -189,12 +191,14 @@ public class SkillRupture extends TargettedSkill {
             if (distance > distancePerDamage) {
                 Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
 
-                double damage = distance * damagePerDistance;
+                double damage = (distance / distancePerDamage) * damagePerDistance;
 
                 // Damage the target
                 addSpellTarget(monsterLE, applierHero);
                 damageEntity(monsterLE, applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             }
+
+            lastLoc = location;
         }
 
         public Location getLastLoc() {

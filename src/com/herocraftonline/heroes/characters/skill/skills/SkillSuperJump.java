@@ -52,12 +52,12 @@ public class SkillSuperJump extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("horizontal-power", Double.valueOf(0.0));
-        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0));
-        node.set("vertical-power", Double.valueOf(1.5));
-        node.set("vertical-power-increase-per-agility", Double.valueOf(0.0375));
         node.set(SkillSetting.DURATION.node(), 5000);
-        node.set("ncp-exemption-duration", Integer.valueOf(0));
+        node.set("horizontal-power", Double.valueOf(0.5));
+        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0125));
+        node.set("vertical-power", Double.valueOf(0.5));
+        node.set("vertical-power-increase-per-agility", Double.valueOf(0.00625));
+        node.set("ncp-exemption-duration", Integer.valueOf(2000));
 
         return node;
     }
@@ -108,7 +108,7 @@ public class SkillSuperJump extends ActiveSkill {
         player.setFallDistance(-8f);
 
         int duration = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
-        hero.addEffect(new JumpEffect(this, player, duration));
+        hero.addEffect(new NCPCompatJumpEffect(this, player, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
 
@@ -131,29 +131,47 @@ public class SkillSuperJump extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class JumpEffect extends SafeFallEffect {
+    private class NCPCompatJumpEffect extends SafeFallEffect {
 
-        public JumpEffect(Skill skill, Player applier, int duration) {
-            super(skill, "SuperJump", applier, duration);
+        public NCPCompatJumpEffect(Skill skill, Player applier, long duration) {
+            super(skill, applier, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.JUMP_BOOST);
 
-            addMobEffect(8, duration / 1000 * 20, 5, false);
+            addMobEffect(8, (int) (duration / 1000 * 20), 5, false);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            Player player = hero.getPlayer();
+
+            if (ncpEnabled)
+                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING_NOFALL);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            Player player = hero.getPlayer();
+
+            if (ncpEnabled)
+                NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
         }
     }
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
         public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect", applier, duration);
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration, null, null);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            final Player player = hero.getPlayer();
+            Player player = hero.getPlayer();
 
             NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
         }
@@ -161,7 +179,7 @@ public class SkillSuperJump extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
+            Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
 
