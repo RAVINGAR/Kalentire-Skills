@@ -18,6 +18,7 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
@@ -116,6 +117,8 @@ public class SkillDarkBolt extends ActiveSkill {
             public void run() {
                 if (!darkBolt.isDead()) {
                     explodeDarkBolt(darkBolt);
+
+                    darkBolts.remove(darkBolt);
                 }
             }
         }, ticksLived);
@@ -134,7 +137,7 @@ public class SkillDarkBolt extends ActiveSkill {
             if (!(event.getEntity() instanceof WitherSkull))
                 return;
 
-            WitherSkull darkBolt = (WitherSkull) event.getEntity();
+            final WitherSkull darkBolt = (WitherSkull) event.getEntity();
             if ((!(darkBolt.getShooter() instanceof Player)))
                 return;
 
@@ -142,6 +145,29 @@ public class SkillDarkBolt extends ActiveSkill {
                 return;
 
             explodeDarkBolt(darkBolt);
+
+            // Delay the removal from the map so that we ensure that the damage event always catches each darkbolt.
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
+                    darkBolts.remove(darkBolt);
+                }
+            }, 2);
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (!(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
+                return;
+            }
+
+            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+            Entity projectile = subEvent.getDamager();
+            if (!(projectile instanceof WitherSkull) || !darkBolts.containsKey(projectile)) {
+                return;
+            }
+
+            darkBolts.remove(projectile);
+            event.setCancelled(true);
         }
     }
 
@@ -188,7 +214,6 @@ public class SkillDarkBolt extends ActiveSkill {
         }
 
         darkBolt.remove();
-        darkBolts.remove(darkBolt);
     }
 
     public class WitheringEffect extends HealthRegainReductionEffect {

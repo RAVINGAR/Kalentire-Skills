@@ -94,22 +94,9 @@ public class SkillFireball extends ActiveSkill {
             this.skill = skill;
         }
 
-        //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        //        public void onProjectileHit(ProjectileHitEvent event) {
-        //            if (!(event.getEntity() instanceof Snowball))
-        //                return;
-        //
-        //            final Snowball fireball = (Snowball) event.getEntity();
-        //
-        //            if (fireballs.containsKey(fireball)) {
-        //                // Remove it so it doesn't interact with the world at all.
-        //                fireball.remove();
-        //            }
-        //        }
-
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
+            if (!(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
