@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -76,6 +75,8 @@ public class SkillBackflip extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
+        broadcastExecuteText(hero);
+
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (!player.isOp()) {
@@ -94,10 +95,15 @@ public class SkillBackflip extends ActiveSkill {
         }
         float multiplier = (90f + pitch) / 50f;
 
+        int agility = hero.getAttributeValue(AttributeType.AGILITY);
+
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
-        double velocityIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EFFECTIVENESS_INCREASE_PER_AGILITY, Double.valueOf(0.0125), false);
-        double calculatedIncrease = hero.getAttributeValue(AttributeType.AGILITY) * velocityIncrease;
-        vPower += calculatedIncrease;
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
+        vPower += agility * vPowerIncrease;
+
+        if (vPower > 2.0)
+            vPower = 2.0;
+
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -107,8 +113,9 @@ public class SkillBackflip extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        hPower += calculatedIncrease;
-        velocity.multiply(new Vector(-hPower, vPower, -hPower));
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
+        hPower += agility * hPowerIncrease;
+        velocity.multiply(new Vector(-hPower, 1, -hPower));
 
         // Backflip!
         player.setVelocity(velocity);
@@ -124,9 +131,6 @@ public class SkillBackflip extends ActiveSkill {
                     shurikenSkill.shurikenToss(player);
             }
         }
-
-        player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 1.0F, 1.0F);
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }

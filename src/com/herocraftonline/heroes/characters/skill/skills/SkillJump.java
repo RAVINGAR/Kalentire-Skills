@@ -70,6 +70,8 @@ public class SkillJump extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
+        broadcastExecuteText(hero);
+
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (!player.isOp()) {
@@ -94,8 +96,8 @@ public class SkillJump extends ActiveSkill {
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
         vPower += agility * vPowerIncrease;
 
-        if (vPower > 1.5)
-            vPower = 1.5;
+        if (vPower > 2.0)
+            vPower = 2.0;
 
         Vector velocity = player.getVelocity().setY(vPower);
 
@@ -108,14 +110,13 @@ public class SkillJump extends ActiveSkill {
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
         hPower += agility * hPowerIncrease;
-        velocity.multiply(new Vector(hPower, vPower, hPower));
+        velocity.multiply(new Vector(hPower, 1, hPower));
 
         // Jump!
         player.setVelocity(velocity);
         player.setFallDistance(-8f);
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }

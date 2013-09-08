@@ -101,7 +101,7 @@ public class SkillSuperJump extends ActiveSkill {
         if (hPower > 8.0)
             hPower = 8.0;
 
-        velocity.multiply(new Vector(hPower, vPower, hPower));
+        velocity.multiply(new Vector(hPower, 1, hPower));
 
         // Super Jump!
         player.setVelocity(velocity);
