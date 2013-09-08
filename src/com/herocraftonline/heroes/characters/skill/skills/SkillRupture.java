@@ -171,7 +171,7 @@ public class SkillRupture extends TargettedSkill {
             if (distance > distancePerDamage) {
                 Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
 
-                double damage = distance * damagePerDistance;
+                double damage = (distance / distancePerDamage) * damagePerDistance;
 
                 // Damage the target
                 addSpellTarget(hero.getEntity(), applierHero);

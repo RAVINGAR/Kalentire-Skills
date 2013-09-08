@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -40,8 +41,9 @@ public class SkillBloodRitual extends TargettedSkill {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
-        node.set("blood-union-health-multiplier", 0.1);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set("blood-union-health-multiplier", Double.valueOf(0.0625));
+        node.set("blood-union-health-multiplier-increase-per-wisdom", Double.valueOf(0.0016));
 
         return node;
     }
@@ -76,8 +78,10 @@ public class SkillBloodRitual extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        // Increase healing based on blood union level
+        // Increase healing based on wisdom and blood union level
         double healthMultiplier = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false);
+        double healthMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier-increase-per-wisdom", 0.1, false);
+        healthMultiplier += hero.getAttributeValue(AttributeType.WISDOM) * healthMultiplierIncrease;
         healthMultiplier *= bloodUnionLevel;
 
         double healAmount = healthMultiplier * target.getMaxHealth();

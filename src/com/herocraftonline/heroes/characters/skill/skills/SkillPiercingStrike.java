@@ -62,7 +62,7 @@ public class SkillPiercingStrike extends TargettedSkill {
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
 
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.4F);
         broadcastExecuteText(hero, target);
