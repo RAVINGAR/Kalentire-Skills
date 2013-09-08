@@ -64,7 +64,7 @@ public class SkillPiercingStrike extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.4F);
         broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;

@@ -187,18 +187,6 @@ public class SkillDarkBolt extends ActiveSkill {
 
     private void explodeDarkBolt(WitherSkull darkBolt) {
 
-        Location darkBoltLoc = darkBolt.getLocation();
-
-        try {
-            fplayer.playFirework(darkBoltLoc.getWorld(), darkBoltLoc, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.BLACK).withFade(Color.PURPLE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
         Player player = (Player) darkBolt.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
 
@@ -226,6 +214,17 @@ public class SkillDarkBolt extends ActiveSkill {
 
             // Add withering effect to the target.
             targetCT.addEffect(new WitheringEffect(this, player, duration, witherLevel, healingReductionPercent));
+        }
+
+        Location darkBoltLoc = darkBolt.getLocation();
+        try {
+            fplayer.playFirework(darkBoltLoc.getWorld(), darkBoltLoc, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.CREEPER).withColor(Color.BLACK).withFade(Color.PURPLE).build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
         darkBolt.remove();

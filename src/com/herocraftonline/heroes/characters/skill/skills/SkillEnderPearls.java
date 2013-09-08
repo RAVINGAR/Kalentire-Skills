@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -46,6 +47,7 @@ public class SkillEnderPearls extends PassiveSkill {
         int cdDuration = SkillConfigManager.getUseSetting(hero, this, "toss-cooldown", Integer.valueOf(5000), false);
 
         String formattedCooldown = Util.decFormat.format(cdDuration / 1000.0);
+
         return getDescription().replace("$1", formattedCooldown);
     }
 
@@ -91,13 +93,11 @@ public class SkillEnderPearls extends PassiveSkill {
                     return;
                 }
 
-                long time = System.currentTimeMillis();
-                final Long expiry = hero.getCooldown(getName());
-                if ((expiry != null) && (time < expiry)) {
-                    final long remaining = expiry - time;
-                    String timeRemaining = Util.decFormat.format(remaining / 1000.0);
-                    Messaging.send(player, Messaging.getSkillDenoter() + "You must wait " + ChatColor.WHITE + timeRemaining + ChatColor.GRAY + "s before you can throw another Ender Pearl.");
+                if (hero.hasEffect("EnderPearlUsageCooldownEffect")) {
+                    long remainingTime = ((ExpirableEffect) hero.getEffect("EnderPearlUsageCooldownEffect")).getRemainingTime();
+                    Messaging.send(player, Messaging.getSkillDenoter() + "You must wait " + ChatColor.WHITE + Util.decFormat.format(remainingTime / 1000.0) + ChatColor.GRAY + "s before you can throw another Ender Pearl.");
                     event.setUseItemInHand(Result.DENY);
+                    return;
                 }
 
                 int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "toss-cooldown", Integer.valueOf(5000), false);
@@ -113,14 +113,16 @@ public class SkillEnderPearls extends PassiveSkill {
                     }
                     else {
                         // The ender pearl will be used in this case. Let's add the cooldown effect to them.
-                        hero.setCooldown(getName(), cdDuration);
+                        CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
+                        hero.addEffect(cdEffect);
                     }
                 }
                 else {
                     // AIR BLOCK. NO BLOCK VALIDATION
 
                     // The ender pearl will be used in this case. Let's add the cooldown effect to them.
-                    hero.setCooldown(getName(), cdDuration);
+                    CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
+                    hero.addEffect(cdEffect);
                 }
             }
         }
@@ -186,6 +188,13 @@ public class SkillEnderPearls extends PassiveSkill {
                 }
                 return;
             }
+        }
+    }
+
+    // Effect required for implementing an internal cooldown on healing
+    private class CooldownEffect extends ExpirableEffect {
+        public CooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, "EnderPearlUsageCooldownEffect", applier, duration);
         }
     }
 }

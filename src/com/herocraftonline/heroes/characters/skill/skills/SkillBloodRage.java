@@ -65,7 +65,7 @@ public class SkillBloodRage extends PassiveSkill {
 
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
-                Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
+                Hero hero = (Hero) event.getDamager();
 
                 if (hero.hasEffect(getName())) {
                     Player player = hero.getPlayer();
@@ -89,7 +89,7 @@ public class SkillBloodRage extends PassiveSkill {
 
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
-                Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
+                Hero hero = (Hero) event.getDamager();
 
                 if (hero.hasEffect(getName())) {
                     Player player = hero.getPlayer();

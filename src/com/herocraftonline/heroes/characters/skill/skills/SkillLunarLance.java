@@ -28,7 +28,7 @@ public class SkillLunarLance extends TargettedSkill {
 
     public SkillLunarLance(Heroes plugin) {
         super(plugin, "LunarLance");
-        setDescription("Strike the target with a Lunar Lance dealing $1 Light damage and burning $2 mana from the target.");
+        setDescription("Strike the target with a Lunar Lance dealing $1 physical damage and burning $2 mana from the target.");
         setUsage("/skill lunarlance");
         setArgumentRange(0, 0);
         setIdentifiers("skill lunarlance");
@@ -76,6 +76,13 @@ public class SkillLunarLance extends TargettedSkill {
         // Broadcast skill usage
         broadcastExecuteText(hero, target);
 
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+
         // If the target is a player, drain their mana
         if ((target instanceof Player)) {
             // Get the target hero
@@ -92,14 +99,10 @@ public class SkillLunarLance extends TargettedSkill {
                 // Burn all of their remaining mana
                 tHero.setMana(0);
             }
+
+            if (tHero.isVerbose())
+                Messaging.send(player, Messaging.createManaBar(tHero.getMana(), tHero.getMaxMana()));
         }
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         // Player Firework Effect
         try {

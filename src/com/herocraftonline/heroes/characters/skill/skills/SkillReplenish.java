@@ -39,7 +39,7 @@ public class SkillReplenish extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("mana-bonus", 0.75);
+        node.set("mana-bonus", Double.valueOf(0.75));
 
         return node;
     }
@@ -50,7 +50,7 @@ public class SkillReplenish extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 0.75, false);
+        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", Double.valueOf(0.75), false);
         int manaBonus = (int) (hero.getMaxMana() * manaGainPercent);
 
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);

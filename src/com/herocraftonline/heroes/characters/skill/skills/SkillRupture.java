@@ -45,6 +45,23 @@ public class SkillRupture extends TargettedSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+
+        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", Double.valueOf(10), false);
+
+        String formattedDamage = Util.decFormat.format(damage);
+        String formatteddamagePerDistance = Util.decFormat.format(damagePerDistance);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", formatteddamagePerDistance);
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
@@ -53,28 +70,12 @@ public class SkillRupture extends TargettedSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.0));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(7500));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(500));
-        node.set("damage-per-block-moved", Double.valueOf(10));
+        node.set("damage-per-distance-moved", Double.valueOf(10));
+        node.set("distance-per-damage", Double.valueOf(1.0));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is wounded deeply!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer wounded.");
 
         return node;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
-
-        double damagePerBlock = SkillConfigManager.getUseSetting(hero, this, "damage-per-block", Double.valueOf(10), false);
-
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedDamagePerBlock = Util.decFormat.format(damagePerBlock);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-
-        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", formattedDamagePerBlock);
     }
 
     @Override
@@ -103,9 +104,10 @@ public class SkillRupture extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
-        double damagePerBlock = SkillConfigManager.getUseSetting(hero, this, "damage-per-block", Double.valueOf(10), false);
+        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", Double.valueOf(10), false);
+        double distancePerDamage = SkillConfigManager.getUseSetting(hero, this, "distance-per-damage", Double.valueOf(2.0), false);
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new RuptureBleedEffect(this, player, period, duration, damagePerBlock));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new RuptureBleedEffect(this, player, period, duration, damagePerDistance, distancePerDamage));
 
         player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 1.2F, 0.4F);
 
@@ -129,10 +131,11 @@ public class SkillRupture extends TargettedSkill {
 
     public class RuptureBleedEffect extends PeriodicExpirableEffect {
 
-        private double damagePerBlock;
+        private double damagePerDistance;
+        private double distancePerDamage;
         private Location lastLoc;
 
-        public RuptureBleedEffect(Skill skill, Player applier, long period, long duration, double damagePerBlock) {
+        public RuptureBleedEffect(Skill skill, Player applier, long period, long duration, double damagePerDistance, double distancePerDamage) {
             super(skill, "RuptureBleed", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.BLEED);
@@ -140,7 +143,8 @@ public class SkillRupture extends TargettedSkill {
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.DAMAGING);
 
-            this.damagePerBlock = damagePerBlock;
+            this.damagePerDistance = damagePerDistance;
+            this.distancePerDamage = distancePerDamage;
         }
 
         @Override
@@ -164,14 +168,14 @@ public class SkillRupture extends TargettedSkill {
 
             int distance = (int) Math.ceil(getLastLoc().distance(location));
 
-            if (distance > 1) {
+            if (distance > distancePerDamage) {
                 Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
 
-                double damage = distance * damagePerBlock;
+                double damage = distance * damagePerDistance;
 
                 // Damage the target
                 addSpellTarget(hero.getEntity(), applierHero);
-                damageEntity(hero.getEntity(), applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                damageEntity(hero.getEntity(), applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             }
         }
 
@@ -182,14 +186,14 @@ public class SkillRupture extends TargettedSkill {
 
             int distance = (int) Math.ceil(getLastLoc().distance(location));
 
-            if (distance > 1) {
+            if (distance > distancePerDamage) {
                 Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
 
-                double damage = distance * damagePerBlock;
+                double damage = distance * damagePerDistance;
 
                 // Damage the target
                 addSpellTarget(monsterLE, applierHero);
-                damageEntity(monsterLE, applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                damageEntity(monsterLE, applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             }
         }
 
