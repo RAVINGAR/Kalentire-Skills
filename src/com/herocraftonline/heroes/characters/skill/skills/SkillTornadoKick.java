@@ -33,11 +33,11 @@ public class SkillTornadoKick extends ActiveSkill {
 
     public SkillTornadoKick(Heroes plugin) {
         super(plugin, "TornadoKick");
-        setDescription("Unleash a Tornado Kick, dealing $1 damage and knocking nearby enemies within $2 blocks away from you.");
+        setDescription("Unleash a Tornado Kick, dealing $1 physical damage and knocking nearby enemies within $2 blocks away from you.");
         setUsage("/skill tornadokick");
         setArgumentRange(0, 0);
         setIdentifiers("skill tornadokick");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;

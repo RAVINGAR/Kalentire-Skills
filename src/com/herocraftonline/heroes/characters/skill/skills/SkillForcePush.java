@@ -35,11 +35,11 @@ public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
-        setDescription("Deal $1 damage and force your target away from you. The push power is affected by your Intellect.");
+        setDescription("Deal $1 physical damage and force your target away from you. The push power is affected by your Intellect.");
         setUsage("/skill forcepush");
         setArgumentRange(0, 0);
         setIdentifiers("skill forcepush");
-        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;

@@ -33,7 +33,7 @@ public class SkillTremor extends ActiveSkill{
 
 	public SkillTremor(Heroes plugin) {
         super(plugin, "Tremor");
-        setDescription("Strike the ground with a powerful tremor, affecting all targets within $1 blocks. The tremor deals $2 damage and causes powerful knockback.");
+        setDescription("Strike the ground with a powerful tremor, affecting all targets within $1 blocks. All targets hit with the tremor are dealt $2 physical damage and knocked back a great distance.");
         setUsage("/skill tremor");
         setArgumentRange(0, 0);
         setIdentifiers("skill tremor");

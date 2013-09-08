@@ -64,7 +64,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);

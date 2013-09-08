@@ -41,7 +41,7 @@ public class SkillStealEssence extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% used %skill% and stole %effect% from %target%!");
-        node.set(SkillSetting.AMOUNT.node(), 3);
+        node.set("max-steals", Integer.valueOf(1));
 
         return node;
     }
@@ -74,7 +74,7 @@ public class SkillStealEssence extends TargettedSkill {
         }
 
         String stolenNames = "";
-        int numEffects = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT.node(), 3, false);
+        int numEffects = SkillConfigManager.getUseSetting(hero, this, "max-steals", 1, false);
         for (int i = 0; i < numEffects && possibleEffects.size() > 0; i++) {
             Effect stolenEffect = possibleEffects.get(Util.nextInt(possibleEffects.size()));
             tHero.removeEffect(stolenEffect);
@@ -89,7 +89,7 @@ public class SkillStealEssence extends TargettedSkill {
 
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), getName(), stolenNames, tHero.getPlayer().getDisplayName());
 
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 2.0F, 2.0F);
 
         return SkillResult.NORMAL;
     }

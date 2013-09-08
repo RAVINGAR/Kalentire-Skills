@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -28,7 +27,7 @@ public class SkillStrike extends TargettedSkill {
 
     public SkillStrike(Heroes plugin) {
         super(plugin, "Strike");
-        setDescription("You violently strike the target for $1 damage, and causing them to bleed out for $2 damage over $3 seconds!");
+        setDescription("You violently strike the target for $1 physical damage, and causing them to bleed out for $2 physical damage over $3 seconds!");
         setUsage("/skill strike");
         setArgumentRange(0, 0);
         setIdentifiers("skill strike");
@@ -112,35 +111,11 @@ public class SkillStrike extends TargettedSkill {
     public class StrikeBleedEffect extends PeriodicDamageEffect {
 
         public StrikeBleedEffect(Skill skill, Player applier, long period, long duration, double tickDamage) {
-            super(skill, "StrikeBleed", applier, period, duration, tickDamage);
+            super(skill, "StrikeBleed", applier, period, duration, tickDamage, applyText, expireText);
 
             types.add(EffectType.BLEED);
             types.add(EffectType.HARMFUL);
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            types.add(EffectType.PHYSICAL);
         }
     }
 }

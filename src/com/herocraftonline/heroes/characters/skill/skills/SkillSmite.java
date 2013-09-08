@@ -33,13 +33,15 @@ public class SkillSmite extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
+
+        int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
+
         int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_WISDOM, Double.valueOf(1.0), false);
-        undeadDamage += (damageIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        undeadDamage += damageIncrease * intellect;
 
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.WISDOM));
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+        damage += damageIncrease * intellect;
 
         String formattedUndeadDamage = Util.decFormat.format(undeadDamage);
         String formattedDamage = Util.decFormat.format(damage);
@@ -54,7 +56,7 @@ public class SkillSmite extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
         node.set("undead-damage", Integer.valueOf(80));
         node.set(SkillSetting.DAMAGE.node(), Double.valueOf(40));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
 
         return node;
     }
@@ -65,16 +67,18 @@ public class SkillSmite extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
+        int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
+
         double damage = 0;
         if (Util.isUndead(plugin, target)) {
             damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_WISDOM, Double.valueOf(1.0), false);
-            damage += (damageIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            damage += (damageIncrease * intellect);
         }
         else {
             damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_WISDOM, Double.valueOf(1.0), false);
-            damage += (damageIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            damage += (damageIncrease * intellect);
         }
 
         addSpellTarget(target, hero);

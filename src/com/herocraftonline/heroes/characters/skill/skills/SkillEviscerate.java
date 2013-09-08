@@ -22,7 +22,7 @@ public class SkillEviscerate extends TargettedSkill {
 
     public SkillEviscerate(Heroes plugin) {
         super(plugin, "Eviscerate");
-        setDescription("You eviscerate your target, piercing through their armor and dealing $1 damage.");
+        setDescription("You eviscerate your target, piercing through their armor and dealing $1 physical damage.");
         setUsage("/skill eviscerate");
         setArgumentRange(0, 0);
         setIdentifiers("skill eviscerate");

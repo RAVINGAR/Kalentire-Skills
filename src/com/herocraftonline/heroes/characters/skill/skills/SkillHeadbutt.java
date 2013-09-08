@@ -21,7 +21,7 @@ public class SkillHeadbutt extends TargettedSkill {
 
     public SkillHeadbutt(Heroes plugin) {
         super(plugin, "Headbutt");
-        setDescription("Headbutt your target, dealing $1 damage and stunning them for $2 seconds.");
+        setDescription("Headbutt your target, dealing $1 physical damage and stunning them for $2 seconds.");
         setUsage("/skill headbutt");
         setArgumentRange(0, 0);
         setIdentifiers("skill headbutt");

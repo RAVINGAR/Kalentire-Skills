@@ -83,6 +83,10 @@ public class SkillSuperJump extends ActiveSkill {
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
         vPower += agility * vPowerIncrease;
+
+        if (vPower > 4.0)
+            vPower = 4.0;
+
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -93,6 +97,10 @@ public class SkillSuperJump extends ActiveSkill {
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
         hPower += agility * hPowerIncrease;
+
+        if (hPower > 8.0)
+            hPower = 8.0;
+
         velocity.multiply(new Vector(hPower, vPower, hPower));
 
         // Super Jump!

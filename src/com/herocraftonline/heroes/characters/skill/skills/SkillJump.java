@@ -93,6 +93,10 @@ public class SkillJump extends ActiveSkill {
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
         vPower += agility * vPowerIncrease;
+
+        if (vPower > 1.5)
+            vPower = 1.5;
+
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();

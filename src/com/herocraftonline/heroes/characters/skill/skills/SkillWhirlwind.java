@@ -21,11 +21,11 @@ public class SkillWhirlwind extends ActiveSkill {
 
     public SkillWhirlwind(Heroes plugin) {
         super(plugin, "Whirlwind");
-        setDescription("Unleash a furious Whirlwind attack to all enemies within $1 blocks. Enemies struck are dealt $2 damage.");
+        setDescription("Unleash a furious Whirlwind attack to all enemies within $1 blocks. Enemies struck are dealt $2 physical damage.");
         setUsage("/skill whirlwind");
         setArgumentRange(0, 0);
         setIdentifiers("skill whirlwind");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
     @Override

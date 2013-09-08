@@ -31,19 +31,21 @@ public class SkillCleave extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double mult = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
+        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
 
-        return getDescription().replace("$1", mult * 100 + "");
+        String formattedDamageMultiplier = Util.decFormat.format(damageMultiplier * 100.0);
+
+        return getDescription().replace("$1", formattedDamageMultiplier);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
         node.set("weapons", Util.axes);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        node.set(SkillSetting.RADIUS.node(), 5);
-        node.set("damage-multiplier", 1.0);
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
+        node.set("damage-multiplier", Double.valueOf(0.75));
 
         return node;
     }

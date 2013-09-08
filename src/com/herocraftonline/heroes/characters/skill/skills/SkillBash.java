@@ -24,7 +24,7 @@ public class SkillBash extends TargettedSkill {
         setUsage("/skill bash");
         setArgumentRange(0, 0);
         setIdentifiers("skill bash");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.INTERRUPTING);
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
@@ -30,7 +31,7 @@ public class SkillProvoke extends TargettedSkill {
 
     public SkillProvoke(Heroes plugin) {
         super(plugin, "Provoke");
-        setDescription("Provoke your target for $1 seconds. Provoked targets gain $2% increased melee damage against you, but also take an additional $3% damage from all incoming melee attacks.");
+        setDescription("Provoke your target for $1 seconds. Provoked targets gain $2% increased damage against you, but also take an additional $3% damage from all incoming physical attacks.");
         setUsage("/skill provoke");
         setArgumentRange(0, 0);
         setIdentifiers("skill provoke");
@@ -95,6 +96,38 @@ public class SkillProvoke extends TargettedSkill {
     public class SkillHeroListener implements Listener {
 
         public SkillHeroListener() {}
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onSkillDamage(SkillDamageEvent event) {
+
+            // Handle outgoing
+            CharacterTemplate attackerCT = event.getDamager();
+            if (attackerCT.hasEffect("Provoked")) {
+                if (event.getEntity() instanceof Player) {
+                    Player defenderPlayer = (Player) event.getEntity();
+
+                    ProvokeEffect pEffect = (ProvokeEffect) attackerCT.getEffect("Provoked");
+
+                    if (pEffect.getApplier().equals(defenderPlayer)) {
+                        double damageIncreasePercent = 1 + pEffect.getOutgoingDamageIncrease();
+                        double newDamage = damageIncreasePercent * event.getDamage();
+                        event.setDamage(newDamage);
+                    }
+                }
+            }
+
+            // Handle incoming
+            if (event.getSkill().isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && event.getSkill().isType(SkillType.DAMAGING)) {
+                CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                if (defenderCT.hasEffect("Provoked")) {
+                    ProvokeEffect fEffect = (ProvokeEffect) defenderCT.getEffect("Provoked");
+
+                    double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
+                    double newDamage = damageIncreasePercent * event.getDamage();
+                    event.setDamage(newDamage);
+                }
+            }
+        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
