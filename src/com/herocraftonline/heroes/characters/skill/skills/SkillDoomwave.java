@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -105,15 +106,20 @@ public class SkillDoomwave extends ActiveSkill {
             }
         }
 
-        double diff = 2 * Math.PI / numEnderPearls;
         long time = System.currentTimeMillis();
-        for (double a = 0; a < 2 * Math.PI; a += diff) {
+        Random ranGen = new Random((int) ((time / 2.0) * 12));
+
+        double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", Double.valueOf(0.75), false);
+
+        for (double i = 0; i < numEnderPearls; i++) {
             EnderPearl doomPearl = player.launchProjectile(EnderPearl.class);
             doomPearl.setFireTicks(100);
 
-            Vector vel = new Vector(Math.cos(a), 0, Math.sin(a));
+            double randomX = ranGen.nextGaussian();
+            double randomY = ranGen.nextGaussian();
+            double randomZ = ranGen.nextGaussian();
 
-            double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", Double.valueOf(0.75), false);
+            Vector vel = new Vector(randomX, randomY, randomZ);
             doomPearl.setVelocity(vel.multiply(velocityMultiplier));
 
             doomPearls.put(doomPearl, time);
