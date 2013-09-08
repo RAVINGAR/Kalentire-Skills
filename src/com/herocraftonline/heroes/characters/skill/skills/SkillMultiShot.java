@@ -25,6 +25,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -69,6 +70,7 @@ public class SkillMultiShot extends ActiveSkill {
         node.set("max-arrows-per-shot", Integer.valueOf(5));
         node.set("degrees", Double.valueOf(10.0));
         node.set("velocity-multiplier", Double.valueOf(3.0));
+        node.set("stamina-cost-per-shot", Integer.valueOf(50));
 
         return node;
     }
@@ -113,10 +115,18 @@ public class SkillMultiShot extends ActiveSkill {
             if (!msEffect.shouldListenToBowShootEvents())
                 return;
 
+            Player player = hero.getPlayer();
+
+            int staminaCost = SkillConfigManager.getUseSetting(hero, skill, "stamina-cost-per-shot", Integer.valueOf(50), false);
+            if (hero.getStamina() < staminaCost) {
+                Messaging.send(player, Messaging.getSkillDenoter() + "You do not have enough stamina to continue shooting multiple arrows!");
+                hero.removeEffect(msEffect);
+                return;
+            }
+
             int maxArrowsToShoot = SkillConfigManager.getUseSetting(hero, skill, "max-arrows-per-shot", Integer.valueOf(5), false);
 
             // Ensure the player still has enough arrows in his inventory.
-            Player player = hero.getPlayer();
             PlayerInventory inventory = player.getInventory();
 
             Map<Integer, ? extends ItemStack> arrowSlots = inventory.all(Material.ARROW);
@@ -161,11 +171,11 @@ public class SkillMultiShot extends ActiveSkill {
             Arrow actualArrow = (Arrow) event.getProjectile();
             actualArrow.remove();
 
-            double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.6, false);
+            double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", Double.valueOf(1.6), false);
             velocityMultiplier = force * velocityMultiplier;    // Reduce the velocity based on how far back they pulled their bow.
 
             // Create arrow spread
-            double degrees = SkillConfigManager.getUseSetting(hero, skill, "degrees", 65.0, false);
+            double degrees = SkillConfigManager.getUseSetting(hero, skill, "degrees", Double.valueOf(65.0), false);
             double degreesRad = degrees * (Math.PI / 180);      // Convert degrees to radians
             double diff = degreesRad / (arrowsToShoot - 1);           // Create our difference for the spread
 
@@ -246,7 +256,7 @@ public class SkillMultiShot extends ActiveSkill {
             // Create our velocity direction based on where the player is facing.
             Vector vel = new Vector(Math.cos(yaw), 0, Math.sin(yaw));
             vel.multiply(pitchMultiplier * velocityMultiplier);
-            vel.setY(arrow.getVelocity().getY());
+            vel.setY(pitchMultiplier * arrow.getVelocity().getY());
 
             arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
 
@@ -271,16 +281,6 @@ public class SkillMultiShot extends ActiveSkill {
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
         }
 
         public int getMaxArrowsPerShot() {
