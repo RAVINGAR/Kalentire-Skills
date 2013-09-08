@@ -63,7 +63,7 @@ public class SkillBlind extends TargettedSkill {
         Player player = hero.getPlayer();
 
         if (!(target instanceof Player)) {
-            Messaging.send(player, "You must target a player!", new Object[0]);
+            Messaging.send(player, "You must target a player!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

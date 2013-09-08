@@ -37,6 +37,7 @@ public class SkillAccelerando extends ActiveSkill {
 
     private String applyText;
     private String expireText;
+
     private Song skillSong;
 
     public SkillAccelerando(Heroes plugin) {
