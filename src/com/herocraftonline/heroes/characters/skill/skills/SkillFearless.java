@@ -44,8 +44,8 @@ public class SkillFearless extends ActiveSkill {
         double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
         double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.35), false);
 
-        String formattedOutgoingIncrease = Util.decFormat.format((outgoingIncrease + 1.0) * 100);
-        String formattedIncomingIncrease = Util.decFormat.format((incomingIncrease + 1.0) * 100);
+        String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
+        String formattedIncomingIncrease = Util.decFormat.format(incomingIncrease * 100);
 
         return getDescription().replace("$1", formattedIncomingIncrease).replace("$2", formattedOutgoingIncrease);
     }

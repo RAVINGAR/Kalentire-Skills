@@ -47,8 +47,8 @@ public class SkillProvoke extends TargettedSkill {
         double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.35), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedOutgoingIncrease = Util.decFormat.format((outgoingIncrease + 1.0) * 100);
-        String formattedIncomingIncrease = Util.decFormat.format((incomingIncrease + 1.0) * 100);
+        String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
+        String formattedIncomingIncrease = Util.decFormat.format(incomingIncrease * 100);
 
         return getDescription().replace("$1", formattedDuration).replace("$2", formattedIncomingIncrease).replace("$3", formattedOutgoingIncrease);
     }

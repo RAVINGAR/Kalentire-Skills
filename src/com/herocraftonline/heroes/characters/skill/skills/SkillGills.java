@@ -13,6 +13,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillGills extends ActiveSkill {
 
@@ -30,8 +31,11 @@ public class SkillGills extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override

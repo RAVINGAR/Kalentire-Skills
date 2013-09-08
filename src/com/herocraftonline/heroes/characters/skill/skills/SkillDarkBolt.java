@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -36,6 +35,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillDarkBolt extends ActiveSkill {
 
@@ -55,7 +55,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
     public SkillDarkBolt(Heroes plugin) {
         super(plugin, "DarkBolt");
-        setDescription("Launch a Wither Skull imbued with dark energy. Enemies hit by the projectile will be damaged for $1 damage and succumb to withering for $2 seconds. Withering disrupts their sense of health and weakens incomming by $3%.");
+        setDescription("Launch a Wither Skull imbued with dark energy. The skull will explode shortly after launching, or after hitting an enemy. Enemies caught within $1 blocks of the explosion will be struk with the power of the bolt, dealing $2 damage and causing them to succumb to withering for $3 seconds. Withering disrupts their sense of health and weakens incomming healing by $4%.");
         setUsage("/skill darkbolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkbolt");
@@ -66,11 +66,22 @@ public class SkillDarkBolt extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        return getDescription().replace("$1", damage + "");
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+
+        double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", Double.valueOf(0.15), false);
+
+        String formattedDamage = Util.decFormat.format(damage);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedHealingReduction = Util.decFormat.format(healingReductionPercent * 100.0);
+
+        return getDescription().replace("$1", radius + "").replace("$2", formattedDamage).replace("$3", formattedDuration).replace("$4", formattedHealingReduction);
     }
 
     @Override
@@ -79,7 +90,10 @@ public class SkillDarkBolt extends ActiveSkill {
 
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
+        node.set("wither-level", Integer.valueOf(1));
+        node.set("healing-reduction-percent", Double.valueOf(0.15));
         node.set("velocity-multiplier", Double.valueOf(2.0));
         node.set("ticks-lived", Integer.valueOf(3));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s begins to wither away!");
@@ -194,6 +208,7 @@ public class SkillDarkBolt extends ActiveSkill {
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        int witherLevel = SkillConfigManager.getUseSetting(hero, this, "wither-level", 1, false);
         double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", Double.valueOf(0.15), false);
 
         List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);
@@ -210,7 +225,7 @@ public class SkillDarkBolt extends ActiveSkill {
             damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 
             // Add withering effect to the target.
-            targetCT.addEffect(new WitheringEffect(this, player, duration, healingReductionPercent));
+            targetCT.addEffect(new WitheringEffect(this, player, duration, witherLevel, healingReductionPercent));
         }
 
         darkBolt.remove();
@@ -218,28 +233,14 @@ public class SkillDarkBolt extends ActiveSkill {
 
     public class WitheringEffect extends HealthRegainReductionEffect {
 
-        public WitheringEffect(Skill skill, Player applier, long duration, double healingReductionPercent) {
+        public WitheringEffect(Skill skill, Player applier, long duration, int witherLevel, double healingReductionPercent) {
             super(skill, "DarkBoltWithering", applier, duration, healingReductionPercent, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DARK);
             types.add(EffectType.WITHER);
 
-            addMobEffect(20, (int) (duration / 1000) * 20, 0, false);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            Heroes.log(Level.INFO, "Applied to the hero at least...");
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Heroes.log(Level.INFO, "Applied to the mob at least...");
+            addMobEffect(20, (int) (duration / 1000) * 20, witherLevel, false);
         }
     }
 }
