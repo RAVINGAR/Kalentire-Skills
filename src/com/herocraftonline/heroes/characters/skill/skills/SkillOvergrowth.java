@@ -1,31 +1,19 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.TreeType;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -34,198 +22,81 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillOvergrowth extends ActiveSkill {
 
-    private String applyText;
-    private String expireText;
-
-    private static final int VINE_NORTH = 0x4;
-    private static final int VINE_EAST = 0x8;
-    private static final int VINE_WEST = 0x2;
-    private static final int VINE_SOUTH = 0x1;
-
-    private static Set<Location> changedBlocks = new HashSet<Location>();
-
     public SkillOvergrowth(Heroes plugin) {
         super(plugin, "Overgrowth");
-        setDescription("Create an overgrowth of vines at your target location.");
-        setUsage("/skill earthwall");
+        setDescription("You turn a sapling into a full grown tree.");
+        setUsage("/skill overgrowth");
         setArgumentRange(0, 0);
         setIdentifiers("skill overgrowth");
-        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCABLE, SkillType.BLOCK_CREATING);
-
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
+        setTypes(SkillType.ABILITY_PROPERTY_EARTH);
     }
 
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.2);
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
-        node.set("max-growth-distance", Integer.valueOf(30));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% creates an overgrowth of vines!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s vines have withered.");
-
-        return node;
-    }
-
+    @Override
     public String getDescription(Hero hero) {
-
         return getDescription();
     }
 
     @Override
-    public void init() {
-        super.init();
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% creates an overgrowth of vines!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s vines have withered.").replace("%hero%", "$1");
+        node.set(SkillSetting.MAX_DISTANCE.node(), 15);
+
+        return node;
     }
 
+    @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-
-        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.75, false);
-        maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
-
-        List<Block> lastBlocks = player.getLastTwoTargetBlocks(null, maxDist);
-
-        if (lastBlocks.size() < 2)
-            return SkillResult.INVALID_TARGET;
-
-        // Must place on solid block.
-        if (Util.transparentBlocks.contains(lastBlocks.get(1).getType()))
-            return SkillResult.INVALID_TARGET;
-
-        // Can only grow on empty blocks.
-        Block placementBlock = lastBlocks.get(0);
-        switch (placementBlock.getType()) {
-            case SNOW:
-            case VINE:
-            case AIR:
-                break;
-            default:
-                return SkillResult.INVALID_TARGET;
-        }
-
-        // Check the first block below the target block to ensure we can grow at least a little bit.
-        switch (placementBlock.getRelative(BlockFace.DOWN).getType()) {
-            case SNOW:
-            case VINE:
-            case AIR:
-                break;
-            default:
-                return SkillResult.INVALID_TARGET;
-        }
-
-        int maxGrowthDistance = SkillConfigManager.getUseSetting(hero, this, "max-growth-distance", 30, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-
-        BlockFace placementFace = lastBlocks.get(0).getFace(lastBlocks.get(1));
-        OvergrowthEffect oEffect = new OvergrowthEffect(this, player, duration, placementBlock, placementFace, maxGrowthDistance);
-        hero.addEffect(oEffect);
-
-        return SkillResult.NORMAL;
-    }
-
-    public class SkillBlockListener implements Listener {
-
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onBlockBreak(BlockBreakEvent event) {
-            if (changedBlocks.contains(event.getBlock().getLocation())) {
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    public class OvergrowthEffect extends ExpirableEffect {
-        private final Block targetBlock;
-        private final BlockFace targetFace;
-        private final int maxGrowth;
-        private List<Location> locations = new ArrayList<Location>();
-
-        public OvergrowthEffect(Skill skill, Player applier, long duration, Block targetBlock, BlockFace targetFace, int maxGrowth) {
-            super(skill, "Overgrowth", applier, duration);
-
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.EARTH);
-
-            this.targetBlock = targetBlock;
-            this.targetFace = targetFace;
-            this.maxGrowth = maxGrowth;
-        }
-
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            Player player = hero.getPlayer();
-
-            growVines();
-
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-
-            revertBlocks();
-
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
-        }
-
-        private void growVines() {
-            boolean breakLoop = false;
-            Block workingBlock = targetBlock;
-            for (int i = 0; i < maxGrowth; i++) {
-                Location location = workingBlock.getLocation();
-                switch (workingBlock.getType()) {
-                    case SNOW:
-                    case AIR:
-                        changedBlocks.add(location);
-                        locations.add(location);
-
-                        byte data = 0;
-                        if (targetFace == BlockFace.WEST) {
-                            data |= VINE_WEST;
-                        }
-                        else if (targetFace == BlockFace.NORTH) {
-                            data |= VINE_NORTH;
-                        }
-                        else if (targetFace == BlockFace.SOUTH) {
-                            data |= VINE_SOUTH;
-                        }
-                        else if (targetFace == BlockFace.EAST) {
-                            data |= VINE_EAST;
-                        }
-
-                        workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
-
-                        location.getWorld().playSound(location, Sound.DIG_GRASS, 0.8F, 1.0F);
-
-                        break;
-                    case VINE:
-                        break;      // Leave vines alone, and let the spell continue even with them.
-                    default:
-                        breakLoop = true;
-                        break;
-                }
-                if (breakLoop)
+        int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false);
+        Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, range);
+        Material mat = targetBlock.getType();
+        TreeType tType = null;
+        if (mat == Material.SAPLING) {
+            tType = null;
+            switch (targetBlock.getData()) {
+                case 0x0:
+                    if (Util.nextInt(2) == 0) {
+                        tType = TreeType.TREE;
+                    } else {
+                        tType = TreeType.BIG_TREE;
+                    }
                     break;
-                else {
-                    workingBlock = workingBlock.getRelative(BlockFace.DOWN);
-                }
-            }
+                case 0x1:
+                    if (Util.nextInt(2) == 0) {
+                        tType = TreeType.REDWOOD;
+                    } else {
+                        tType = TreeType.TALL_REDWOOD;
+                    }
+                    break;
+                case 0x2:
+                    tType = TreeType.BIRCH;
+                    break;
+                case 0x3:
+                    tType = TreeType.JUNGLE;
+                    break;
+                default:
+                    tType = TreeType.TREE;
+            };
+        } else if (mat == Material.RED_MUSHROOM) {
+            tType = TreeType.RED_MUSHROOM;
+        } else if (mat == Material.BROWN_MUSHROOM) {
+            tType = TreeType.BROWN_MUSHROOM;
+        } else {
+            Messaging.send(player, "Target is not a sapling!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
-
-        private void revertBlocks() {
-            for (Location location : locations) {
-                location.getBlock().setType(Material.AIR);
-                changedBlocks.remove(location);
-            }
-
-            locations.clear();
+        byte data = targetBlock.getData();
+        targetBlock.setType(Material.AIR);
+        if (!player.getWorld().generateTree(targetBlock.getLocation(), tType)) {
+            targetBlock.setTypeIdAndData(mat.getId(), data, false);
+            Messaging.send(player, "The spell fizzled!");
+            return SkillResult.FAIL;
         }
+        player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_RAIN , 0.8F, 1.0F);
+        broadcastExecuteText(hero);
+        return SkillResult.NORMAL;
+        
     }
 }
