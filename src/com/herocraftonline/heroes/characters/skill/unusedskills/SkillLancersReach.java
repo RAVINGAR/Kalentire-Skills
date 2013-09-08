@@ -1,4 +1,9 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
+
+
+// I'm pretty sure this skill doesn't work right, and it probably isn't very good to run it on the server due to the interact listener.
+// Back to the drawing board with this one, but I'll keep the code just in case.
+
 
 import java.util.HashSet;
 import java.util.List;
