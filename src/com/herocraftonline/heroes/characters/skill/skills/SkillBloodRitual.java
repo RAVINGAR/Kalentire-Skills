@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillBloodRitual extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
@@ -32,9 +33,13 @@ public class SkillBloodRitual extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        int healthMultiplier = (int) (SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false) * 100);
+        double healthMultiplier = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false);
+        double healthMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier-increase-per-wisdom", 0.1, false);
+        healthMultiplier += hero.getAttributeValue(AttributeType.WISDOM) * healthMultiplierIncrease;
 
-        return getDescription().replace("$1", healthMultiplier + "");
+        String formattedHealthMultiplier = Util.decFormat.format(healthMultiplier * 100);
+
+        return getDescription().replace("$1", formattedHealthMultiplier);
     }
 
     public ConfigurationSection getDefaultConfig() {
