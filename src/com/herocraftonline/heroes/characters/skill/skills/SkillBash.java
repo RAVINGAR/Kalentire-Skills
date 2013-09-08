@@ -20,7 +20,7 @@ public class SkillBash extends TargettedSkill {
 
     public SkillBash(Heroes plugin) {
         super(plugin, "Bash");
-        setDescription("You deal $1 physical damage to your target and interrupt any warmup ability they are currently using.");
+        setDescription("Deliver a strong bash to your target, dealing $1 physical damage and interrupting their casting.");
         setUsage("/skill bash");
         setArgumentRange(0, 0);
         setIdentifiers("skill bash");
@@ -35,7 +35,7 @@ public class SkillBash extends TargettedSkill {
 
         String formattedDamage = Util.decFormat.format(damage);
 
-        return getDescription().replace("$2", formattedDamage);
+        return getDescription().replace("$1", formattedDamage);
     }
 
     @Override
