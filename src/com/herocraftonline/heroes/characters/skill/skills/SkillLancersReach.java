@@ -7,7 +7,6 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,7 +28,6 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.WaterBreathingEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -56,11 +54,12 @@ public class SkillLancersReach extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
+        int reach = SkillConfigManager.getUseSetting(hero, this, "reach-distance", Integer.valueOf(7), false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedDuration);
+        return getDescription().replace("$1", reach + "").replace("$2", formattedDuration);
     }
 
     @Override
@@ -68,6 +67,7 @@ public class SkillLancersReach extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
+        node.set("reach-distance", Integer.valueOf(7));
         node.set("attack cooldown-duration", Integer.valueOf(500));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is reaching!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer reaching.");
@@ -89,9 +89,8 @@ public class SkillLancersReach extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(10000), false);
-        hero.addEffect(new WaterBreathingEffect(this, player, duration, applyText, expireText));
-
-        player.getWorld().playSound(player.getLocation(), Sound.SPLASH, 0.8F, 1.0F);
+        int reach = SkillConfigManager.getUseSetting(hero, this, "reach-distance", Integer.valueOf(7), false);
+        hero.addEffect(new LancersReachEffect(this, player, duration, reach));
 
         return SkillResult.NORMAL;
     }

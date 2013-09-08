@@ -70,8 +70,8 @@ public class SkillFearless extends ActiveSkill {
     }
 
     public SkillResult use(Hero hero, String[] args) {
-        if (hero.hasEffect("FearlessEffect")) {
-            hero.removeEffect(hero.getEffect("FearlessEffect"));
+        if (hero.hasEffect("Fearless")) {
+            hero.removeEffect(hero.getEffect("Fearless"));
             return SkillResult.REMOVED_EFFECT;
         }
         else {
