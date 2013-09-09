@@ -59,6 +59,8 @@ public class SkillBloodRage extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
+            if (event.getDamage() == 0)
+                return;
 
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
@@ -75,6 +77,8 @@ public class SkillBloodRage extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.getDamage() == 0)
+                return;
 
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
