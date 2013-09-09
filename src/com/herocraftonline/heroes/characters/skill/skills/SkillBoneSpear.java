@@ -141,30 +141,4 @@ public class SkillBoneSpear extends ActiveSkill {
 
         return SkillResult.NORMAL;
     }
-
-    protected List<Entity> getNearbyEntities(Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-        List<Entity> entities = new ArrayList<Entity>();
-
-        for (Entity entity : targetLocation.getWorld().getEntities()) {
-            if (isInBorder(targetLocation, entity.getLocation(), radiusX, radiusY, radiusZ)) {
-                entities.add(entity);
-            }
-        }
-        return entities;
-    }
-
-    public boolean isInBorder(Location center, Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-        int x1 = center.getBlockX();
-        int y1 = center.getBlockY();
-        int z1 = center.getBlockZ();
-
-        int x2 = targetLocation.getBlockX();
-        int y2 = targetLocation.getBlockY();
-        int z2 = targetLocation.getBlockZ();
-
-        if (x2 >= (x1 + radiusX) || x2 <= (x1 - radiusX) || y2 >= (y1 + radiusY) || y2 <= (y1 - radiusY) || z2 >= (z1 + radiusZ) || z2 <= (z1 - radiusZ))
-            return false;
-
-        return true;
-    }
 }

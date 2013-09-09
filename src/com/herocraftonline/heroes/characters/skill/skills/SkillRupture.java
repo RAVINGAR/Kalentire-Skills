@@ -176,9 +176,9 @@ public class SkillRupture extends TargettedSkill {
                 // Damage the target
                 addSpellTarget(hero.getEntity(), applierHero);
                 damageEntity(hero.getEntity(), applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
-            }
 
-            lastLoc = location;
+                lastLoc = location;
+            }
         }
 
         @Override
@@ -196,9 +196,9 @@ public class SkillRupture extends TargettedSkill {
                 // Damage the target
                 addSpellTarget(monsterLE, applierHero);
                 damageEntity(monsterLE, applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
-            }
 
-            lastLoc = location;
+                lastLoc = location;
+            }
         }
 
         public Location getLastLoc() {

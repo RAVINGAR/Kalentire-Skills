@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -76,6 +77,9 @@ public class SkillBlackjack extends TargettedSkill {
         // Deal damage
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+
+        player.getWorld().playSound(player.getLocation(), Sound.DOOR_CLOSE, 0.4F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.2F, 1.0F);
 
         // Stun, but only if they are a player.
         if (target instanceof Player) {

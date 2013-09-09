@@ -30,6 +30,7 @@ public class SkillHeadbutt extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
+
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
@@ -74,7 +75,8 @@ public class SkillHeadbutt extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE, 0.5F, 1.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.HURT, 0.8F, 0.5F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENDERDRAGON_GROWL, 1.0F, 2.0F);
 
         return SkillResult.NORMAL;
     }

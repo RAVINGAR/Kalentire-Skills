@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -113,6 +114,8 @@ public class SkillDarkBolt extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 2.0F);
 
         final WitherSkull darkBolt = player.launchProjectile(WitherSkull.class);
         darkBolts.put(darkBolt, System.currentTimeMillis());

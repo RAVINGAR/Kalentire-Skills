@@ -23,6 +23,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -48,11 +49,13 @@ public class SkillTornadoKick extends ActiveSkill {
     public String getDescription(Hero hero) {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.6), false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        return getDescription().replace("$1", radius + "").replace("$2", damage + "");
+        String formattedDamage = Util.decFormat.format(damage);
+        
+        return getDescription().replace("$2", radius + "").replace("$1", formattedDamage);
     }
 
     @Override
@@ -70,6 +73,12 @@ public class SkillTornadoKick extends ActiveSkill {
         node.set("ncp-exemption-duration", Integer.valueOf(1000));
 
         return node;
+    }
+
+    @Override
+    public void onWarmup(Hero hero) {
+        Player player = hero.getPlayer();
+        player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 1.2F, 0.4F);
     }
 
     @Override

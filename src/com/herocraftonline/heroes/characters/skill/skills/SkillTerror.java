@@ -85,7 +85,8 @@ public class SkillTerror extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(dEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.GHAST_SCREAM2, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.GHAST_SCREAM, 1.2F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.WOLF_HOWL, 0.4F, 1.8F);
 
         return SkillResult.NORMAL;
     }

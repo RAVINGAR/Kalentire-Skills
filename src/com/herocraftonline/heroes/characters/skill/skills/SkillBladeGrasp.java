@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -58,11 +59,12 @@ public class SkillBladeGrasp extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%target% was disarmed by %hero%!");
-        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has found his weapon again!");
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        node.set("focus-duration", Integer.valueOf(4000));
+        node.set("disarm-duration", Integer.valueOf(4000));
+        node.set("damage-increase-percent", Double.valueOf(0.2));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is focusing on %target%");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer focusing on %target%.");
 
         return node;
     }
@@ -71,8 +73,8 @@ public class SkillBladeGrasp extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% was disarmed by %hero%!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has found his weapon again!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is focusing on %target%").replace("%hero%", "$1").replace("%target%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer focusing on %target%.").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     @Override
@@ -82,15 +84,15 @@ public class SkillBladeGrasp extends TargettedSkill {
         if (!(target instanceof Player))
             return SkillResult.INVALID_TARGET;
 
+        broadcastExecuteText(hero, target);
+
         int focusDuration = SkillConfigManager.getUseSetting(hero, this, "focus-duration", Integer.valueOf(3000), false);
         int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", Integer.valueOf(3000), false);
         double damageIncreasePercent = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", Double.valueOf(0.20), false);
 
         hero.addEffect(new BladeGraspEffect(this, player, focusDuration, (Player) target, disarmDuration, damageIncreasePercent));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ANVIL_USE, 0.8F, 1.0F);
-
-        broadcastExecuteText(hero, target);
+        player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.7F, 2.0F);
 
         return SkillResult.NORMAL;
     }
@@ -142,7 +144,9 @@ public class SkillBladeGrasp extends TargettedSkill {
                         // Remove bladegrasp as it has ran it's course.
                         hero.removeEffect(bgEffect);
 
-                        player.getWorld().playSound(player.getLocation(), Sound.DIG_GRASS, 0.8F, 1.6F);
+                        damagerPlayer.getWorld().playEffect(damagerPlayer.getLocation(), Effect.EXTINGUISH, 3);
+                        damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+
                         player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 0.5F);
                     }
                 }

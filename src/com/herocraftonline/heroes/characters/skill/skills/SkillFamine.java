@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -112,6 +113,8 @@ public class SkillFamine extends TargettedSkill {
                 newTargCT.addEffect(tbEffect);
             }
         }
+
+        target.getWorld().playSound(target.getLocation(), Sound.BLAZE_BREATH, 0.7F, 2.0F);
 
         try {
             fplayer.playFirework(target.getWorld(),

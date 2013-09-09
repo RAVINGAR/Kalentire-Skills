@@ -72,7 +72,7 @@ public class SkillCauterize extends TargettedSkill {
             }
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 2.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 1.6F, 1.3F);
 
         return SkillResult.NORMAL;
     }

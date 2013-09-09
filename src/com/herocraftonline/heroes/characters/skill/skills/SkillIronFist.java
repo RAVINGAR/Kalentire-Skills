@@ -73,6 +73,12 @@ public class SkillIronFist extends ActiveSkill {
     }
 
     @Override
+    public void onWarmup(Hero hero) {
+        Player player = hero.getPlayer();
+        player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 1.2F, 0.4F);
+    }
+
+    @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 

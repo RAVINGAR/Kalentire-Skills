@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
-import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -113,8 +112,7 @@ public class SkillDespair extends ActiveSkill {
             }
         }
 
-        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.PORTAL, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.GHAST_SCREAM, 1.2F, 2.0F);
 
         // this is our fireworks shit
         try {
