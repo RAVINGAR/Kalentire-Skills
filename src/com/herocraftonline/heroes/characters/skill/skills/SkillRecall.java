@@ -211,10 +211,15 @@ public class SkillRecall extends ActiveSkill {
                                 }
                             }
 
+                            broadcastExecuteText(hero);
+
+                            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
                             // Teleport the player to the location
                             player.teleport(teleportLocation);
 
-                            broadcastExecuteText(hero);
+                            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
                             return SkillResult.NORMAL;
                         }
                         else {
@@ -277,9 +282,14 @@ public class SkillRecall extends ActiveSkill {
             }
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         broadcastExecuteText(hero);
+
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
         player.teleport(new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]));
+
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 

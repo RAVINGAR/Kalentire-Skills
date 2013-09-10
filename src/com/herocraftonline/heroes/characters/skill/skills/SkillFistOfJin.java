@@ -118,17 +118,19 @@ public class SkillFistOfJin extends PassiveSkill {
                     return;
             }
 
+            int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
+
             double selfHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-self", Integer.valueOf(8), false);
             double partyHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-party", Integer.valueOf(3), false);
 
             double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
-            double calculatedIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+            double calculatedIncrease = wisdom * healingIncrease;
             selfHeal += calculatedIncrease;
             partyHeal += calculatedIncrease;
 
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), false);
             double radiusIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.1), false);
-            radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+            radius += (int) Math.ceil(radiusIncrease * wisdom);
             int radiusSquared = radius * radius;
 
             int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "healing-internal-cooldown", Integer.valueOf(1000), false);

@@ -1,8 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -59,7 +57,7 @@ public class SkillToss extends TargettedSkill {
         node.set("vertical-power", Double.valueOf(0.5));
         node.set("vertical-power-increase-per-strength", Double.valueOf(0.0175));
         node.set("ncp-exemption-duration", 1500);
-        node.set("push-delay", Double.valueOf(0.2));
+        node.set("toss-delay", Double.valueOf(0.2));
 
         return node;
     }
@@ -100,35 +98,24 @@ public class SkillToss extends TargettedSkill {
         Vector pushUpVector = new Vector(0, vPower, 0);
         target.setVelocity(pushUpVector);
 
-        final double xDir = targetLoc.getX() - playerLoc.getX();
-        final double zDir = targetLoc.getZ() - playerLoc.getZ();
+        final double xDir = playerLoc.getX() - targetLoc.getX();
+        final double zDir = playerLoc.getZ() - targetLoc.getZ();
 
         double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", Double.valueOf(0.0375), false);
         tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
         final double hPower = tempHPower;
 
-        // Push them "up" first. THEN we can push them away.
-        double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.2, false);
+        // Push them "up" first. THEN toss them.
+        double delay = SkillConfigManager.getUseSetting(hero, this, "toss-delay", 0.2, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
-                // Push them away
-                //double yDir = player.getVelocity().getY();
                 Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
                 target.setVelocity(pushVector);
             }
         }, (long) (delay * 20));
 
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Play sound
 
         return SkillResult.NORMAL;
     }

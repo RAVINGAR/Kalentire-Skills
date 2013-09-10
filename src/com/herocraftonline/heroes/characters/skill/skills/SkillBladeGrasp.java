@@ -52,7 +52,7 @@ public class SkillBladeGrasp extends TargettedSkill {
         String formattedDisarmDuration = Util.decFormat.format(disarmDuration / 1000.0);
         String formattedDamageIncreasePercent = Util.decFormat.format(damageIncreasePercent * 100.0);
 
-        return getDescription().replace("$1", formattedFocusDuration).replace("$2", formattedDisarmDuration).replace("$1", formattedDamageIncreasePercent);
+        return getDescription().replace("$1", formattedFocusDuration).replace("$2", formattedDisarmDuration).replace("$3", formattedDamageIncreasePercent);
     }
 
     @Override

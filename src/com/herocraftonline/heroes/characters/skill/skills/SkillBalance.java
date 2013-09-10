@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -41,7 +42,7 @@ public class SkillBalance extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
-        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(60000));
+        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), Double.valueOf(0.005));
 
         return node;
     }
@@ -55,7 +56,6 @@ public class SkillBalance extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-
         HeroParty heroParty = hero.getParty();
 
         double maxHealthTotal = 0;
@@ -64,6 +64,8 @@ public class SkillBalance extends ActiveSkill {
         Location playerLocation = player.getLocation();
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
+        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.1), false);
+        radius += (int) Math.ceil(radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
         int radiusSquared = radius * radius;
 
         boolean skipRangeCheck = (radius == 0);						//0 for no maximum range

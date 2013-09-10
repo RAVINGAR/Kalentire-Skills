@@ -44,10 +44,12 @@ public class SkillFlyingKick extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
 
-        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 3);
-        defaultConfig.set(SkillSetting.DAMAGE.node(), 25);
+        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        defaultConfig.set(SkillSetting.DAMAGE.node(), 50);
+        defaultConfig.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.625));
         defaultConfig.set(SkillSetting.DURATION.node(), 3000);
-        defaultConfig.set("vertical-power", Double.valueOf(0.9));
+        defaultConfig.set("vertical-power", Double.valueOf(0.8));
+        defaultConfig.set("vertical-power-increase-per-intellect", Double.valueOf(0.005));
         defaultConfig.set("min-side-push", Double.valueOf(0.4));
         defaultConfig.set("max-side-push", Double.valueOf(1.0));
 
@@ -69,6 +71,9 @@ public class SkillFlyingKick extends TargettedSkill {
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
 
         double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.9), false);
+        double verticalPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.9), false);
+        verticalPower += hero.getAttributeValue(AttributeType.INTELLECT) * verticalPowerIncrease;
+
         double minSidePush = SkillConfigManager.getUseSetting(hero, this, "min-side-push", Double.valueOf(0.4), false);
         double maxSidePush = SkillConfigManager.getUseSetting(hero, this, "max-side-push", Double.valueOf(1.0), false);
         target.setVelocity(new Vector(Math.random() * maxSidePush - minSidePush, verticalPower, Math.random() * maxSidePush - minSidePush));

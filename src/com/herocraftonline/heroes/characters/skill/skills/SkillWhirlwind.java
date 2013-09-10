@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -29,7 +30,7 @@ public class SkillWhirlwind extends ActiveSkill {
 
     public SkillWhirlwind(Heroes plugin) {
         super(plugin, "Whirlwind");
-        setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you repeatedly strike all enemies within $2 blocks for $3 physical damage.");
+        setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you strike all enemies within $2 blocks ever $3 seconds for $4 physical damage.");
         setUsage("/skill whirlwind");
         setArgumentRange(0, 0);
         setIdentifiers("skill whirlwind");
@@ -40,6 +41,7 @@ public class SkillWhirlwind extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
@@ -48,9 +50,10 @@ public class SkillWhirlwind extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", radius + "").replace("$3", formattedDamage);
+        return getDescription().replace("$1", formattedDuration).replace("$2", radius + "").replace("$3", formattedPeriod).replace("$4", formattedDamage);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class SkillWhirlwind extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is unleashing a powerful whirlwind!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer whirlwinding!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer whirlwinding!").replace("%hero%", "$1");
     }
 
     @Override
@@ -123,6 +126,8 @@ public class SkillWhirlwind extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
+            player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 0.9F);
+
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
@@ -138,7 +143,9 @@ public class SkillWhirlwind extends ActiveSkill {
                     continue;
 
                 addSpellTarget(target, hero);
-                damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+                damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
+
+                target.getWorld().playSound(target.getLocation(), Sound.ANVIL_LAND, 0.6F, 1.6F);
             }
         }
 

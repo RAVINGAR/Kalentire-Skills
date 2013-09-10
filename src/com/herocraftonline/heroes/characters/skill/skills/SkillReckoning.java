@@ -69,6 +69,8 @@ public class SkillReckoning extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(40));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.5));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(8));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(750));
+        node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), Integer.valueOf(500));
         node.set("slow-amplifier", Integer.valueOf(0));
         node.set("slow-amplifier-increase-per-intellect", Double.valueOf(0.075));
         node.set("ncp-exemption-duration", Integer.valueOf(500));
@@ -88,11 +90,16 @@ public class SkillReckoning extends ActiveSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.5), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
+        int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
+
         int slowAmount = SkillConfigManager.getUseSetting(hero, this, "slow-amount", Integer.valueOf(1), false);
         double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, this, "slow-amount-increase-per-intellect", Double.valueOf(0.075), false);
-        slowAmount += Math.floor(slowAmountIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        slowAmount += Math.ceil(slowAmountIncrease * intellect);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(750), false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, Integer.valueOf(12), false);
+        duration += Math.ceil(durationIncrease * intellect);
+
         Location playerLoc = player.getLocation();
 
         long currentTime = System.currentTimeMillis();

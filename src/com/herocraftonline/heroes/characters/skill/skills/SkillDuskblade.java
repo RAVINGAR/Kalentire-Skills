@@ -73,7 +73,7 @@ public class SkillDuskblade extends TargettedSkill {
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
 
-        HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this, hero);
+        HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this);     // Bypass self heal as this can only be used on themself.
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());

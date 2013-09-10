@@ -68,7 +68,7 @@ public class SkillTumble extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOW)
+        @EventHandler(priority = EventPriority.LOWEST)
         public void onEntityDamage(EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;

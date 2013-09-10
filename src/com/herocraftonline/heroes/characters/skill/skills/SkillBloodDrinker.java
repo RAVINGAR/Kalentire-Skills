@@ -89,7 +89,8 @@ public class SkillBloodDrinker extends ActiveSkill {
 
         hero.addEffect(effect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 0.5F, 0.1F);
+        player.getWorld().playSound(player.getLocation(), Sound.BURP, 0.9F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.SPLASH, 0.5F, 2.0F);
 
         return SkillResult.NORMAL;
     }
@@ -147,16 +148,19 @@ public class SkillBloodDrinker extends ActiveSkill {
                     Heroes.log(Level.INFO, "BloodDrinker Debug: Hit Cap. New HealthToHeal: " + healing);
                 }
 
-                HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, this, hero);
+                HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, this);       // Bypass self heal nerf because this cannot be used on others.
                 Bukkit.getPluginManager().callEvent(healEvent);
                 if (!healEvent.isCancelled()) {
                     hero.heal(healEvent.getAmount());
+
+                    Player player = hero.getPlayer();
+                    player.getWorld().playSound(player.getLocation(), Sound.DRINK, 0.8F, 0.6F);
+
+                    bdEffect.setTotalHealthHealed(currentTotalHeal + healing);
+
+                    if (bdEffect.getTotalHealthHealed() >= maxHealing)
+                        hero.removeEffect(bdEffect);
                 }
-
-                bdEffect.setTotalHealthHealed(currentTotalHeal + healing);
-
-                if (bdEffect.getTotalHealthHealed() >= maxHealing)
-                    hero.removeEffect(bdEffect);
             }
         }
     }

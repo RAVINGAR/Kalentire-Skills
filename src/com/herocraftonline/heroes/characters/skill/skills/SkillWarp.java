@@ -1,4 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
+
 //oldsrc=http://pastie.org/private/hwkllkpsglhwd27qfhpqfg
 import java.util.ArrayList;
 import java.util.List;
@@ -43,34 +44,41 @@ public class SkillWarp extends ActiveSkill {
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        String defaultDestinationString = SkillConfigManager.getUseSetting(hero, this, "default-destination","world");
+        String defaultDestinationString = SkillConfigManager.getUseSetting(hero, this, "default-destination", "world");
         List<String> possibleDestinations = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "destinations"));
         Location destination = null;
         World world = player.getWorld();
         for (String arg : possibleDestinations) {
             if (world.getName().equalsIgnoreCase(arg)) {
-                String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+arg, "0,64,0").split(",");
-                if(destArgs.length == 3) {
+                String[] destArgs = SkillConfigManager.getUseSetting(hero, this, "destinations." + arg, "0,64,0").split(",");
+                if (destArgs.length == 3) {
                     // This means the destination should be valid
-                    destination = new Location(world,Double.parseDouble(destArgs[0]),Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
+                    destination = new Location(world, Double.parseDouble(destArgs[0]), Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
                     break;
                 }
-            } else {
+            }
+            else {
                 destination = null;
             }
         }
         if (destination == null) {
-            String[] dArgs = SkillConfigManager.getUseSetting(hero, this, "destinations."+defaultDestinationString,"0,64,0").split(",");
+            String[] dArgs = SkillConfigManager.getUseSetting(hero, this, "destinations." + defaultDestinationString, "0,64,0").split(",");
             destination = new Location(plugin.getServer().getWorld(defaultDestinationString), Double.parseDouble(dArgs[0]), Double.parseDouble(dArgs[1]), Double.parseDouble(dArgs[2]));
         }
         try {
+            broadcastExecuteText(hero);
+
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
+
             player.teleport(destination);
-        } catch (Exception e) {
+
+        }
+        catch (Exception e) {
             player.sendMessage(ChatColor.GRAY + "SkillWarp has an invalid config.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }
