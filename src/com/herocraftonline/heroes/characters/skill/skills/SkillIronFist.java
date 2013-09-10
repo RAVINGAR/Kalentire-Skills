@@ -75,7 +75,7 @@ public class SkillIronFist extends ActiveSkill {
     @Override
     public void onWarmup(Hero hero) {
         Player player = hero.getPlayer();
-        player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 1.2F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 0.7F, 0.4F);
     }
 
     @Override
@@ -90,11 +90,11 @@ public class SkillIronFist extends ActiveSkill {
 
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.4), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.015), false);
-        hPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        hPower += hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.0), false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0), false);
-        vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        vPower += vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         broadcastExecuteText(hero);
 

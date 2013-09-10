@@ -50,27 +50,25 @@ public class SkillDarkRitual extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+
         int manaGain = SkillConfigManager.getUseSetting(hero, this, "mana-gain", 150, false);
 
         if (hero.getMana() >= hero.getMaxMana()) {
-            Messaging.send(hero.getPlayer(), "You are already at full mana.");
+            Messaging.send(player, "You are already at full mana.");
             return SkillResult.FAIL;
         }
 
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaGain, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (hrmEvent.isCancelled()) {
+            Messaging.send(player, "You cannot regenerate mana right now!");
             return SkillResult.CANCELLED;
         }
-
-        Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
-        if (hero.isVerbose()) {
-            Messaging.send(hero.getPlayer(), Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
-        }
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.4F, 1.0F);
 

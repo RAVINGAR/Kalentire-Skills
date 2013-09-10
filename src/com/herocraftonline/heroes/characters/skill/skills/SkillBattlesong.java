@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.api.events.HeroRegainStaminaEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
@@ -99,7 +98,7 @@ public class SkillBattlesong extends ActiveSkill {
 
         int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
         double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
-        staminaRestoreTick += (int) (staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+        staminaRestoreTick += (int) Math.ceil((staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA)));
 
         BattlesongEffect mEffect = new BattlesongEffect(this, hero.getPlayer(), period, duration, radius, staminaRestoreTick);
         hero.addEffect(mEffect);
@@ -157,26 +156,20 @@ public class SkillBattlesong extends ActiveSkill {
                     // Ensure the party member is close enough
                     if (memberLocation.getWorld().equals(playerLocation.getWorld())) {
                         if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, staminaRestore, skill);
-                            plugin.getServer().getPluginManager().callEvent(hrmEvent);
-                            if (!hrmEvent.isCancelled()) {
-                                member.setMana(hrmEvent.getAmount() + member.getMana());
-
-                                if (member.isVerbose())
-                                    Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
+                            HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(member, staminaRestore, skill);
+                            plugin.getServer().getPluginManager().callEvent(hrsEvent);
+                            if (!hrsEvent.isCancelled()) {
+                                member.setStamina(hrsEvent.getAmount() + member.getStamina());
                             }
                         }
                     }
                 }
             }
             else {
-                HeroRegainStaminaEvent hrmEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
-                plugin.getServer().getPluginManager().callEvent(hrmEvent);
-                if (!hrmEvent.isCancelled()) {
-                    hero.setStamina(hrmEvent.getAmount() + hero.getStamina());
-
-                    if (hero.isVerbose())
-                        Messaging.send(player, Messaging.createStaminaBar(hero.getStamina(), hero.getMaxStamina()));
+                HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
+                plugin.getServer().getPluginManager().callEvent(hrsEvent);
+                if (!hrsEvent.isCancelled()) {
+                    hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
                 }
             }
         }

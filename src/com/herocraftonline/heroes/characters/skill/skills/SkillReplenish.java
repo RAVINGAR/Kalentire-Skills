@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillReplenish extends ActiveSkill {
@@ -51,15 +50,12 @@ public class SkillReplenish extends ActiveSkill {
         broadcastExecuteText(hero);
 
         double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", Double.valueOf(0.75), false);
-        int manaBonus = (int) (hero.getMaxMana() * manaGainPercent);
+        int manaBonus = (int) Math.ceil(hero.getMaxMana() * manaGainPercent);
 
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
             hero.setMana(hrmEvent.getAmount() + hero.getMana());
-
-            if (hero.isVerbose())
-                Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);

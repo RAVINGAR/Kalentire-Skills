@@ -211,7 +211,6 @@ public class SkillBeguile extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
-
         }
     }
 }

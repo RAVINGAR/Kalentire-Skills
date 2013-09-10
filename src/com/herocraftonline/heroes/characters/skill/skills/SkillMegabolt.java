@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.List;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -62,25 +64,31 @@ public class SkillMegabolt extends TargettedSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.75), false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
+        broadcastExecuteText(hero, target);
+
         // Damage the first target
         target.getWorld().strikeLightningEffect(target.getLocation());
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
-        // Damage the rest
-        for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
-            if (entity instanceof LivingEntity) {
-                if (!damageCheck(player, (LivingEntity) entity)) {
-                    continue;
-                }
-                
-                target.getWorld().strikeLightningEffect(target.getLocation());
-                addSpellTarget(target, hero);
-                damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
+        List<Entity> entities = target.getNearbyEntities(radius, radius, radius);
+        for (Entity entity : entities) {
+            if (!(entity instanceof LivingEntity)) {
+                continue;
             }
+
+            // Check if the target is damagable
+            if (!damageCheck(player, (LivingEntity) entity)) {
+                continue;
+            }
+
+            LivingEntity newTarget = (LivingEntity) entity;
+
+            // Damage the target
+            addSpellTarget(newTarget, hero);
+            damageEntity(newTarget, player, damage, DamageCause.MAGIC);
         }
 
-        broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 }

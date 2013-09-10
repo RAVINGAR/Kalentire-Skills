@@ -9,16 +9,18 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainStaminaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
 
-
-public class SkillEnergize extends ActiveSkill{
+public class SkillEnergize extends ActiveSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillEnergize(Heroes plugin) {
         super(plugin, "Energize");
         setDescription("Replenishes $1 points of your stamina.");
@@ -53,25 +55,36 @@ public class SkillEnergize extends ActiveSkill{
             return SkillResult.CANCELLED;
 
         int staminaGain = SkillConfigManager.getUseSetting(hero, this, "stamina-gain", 500, false);
-        hero.setStamina(hero.getStamina() + staminaGain);
+
+        HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaGain, this);
+        plugin.getServer().getPluginManager().callEvent(hrsEvent);
+
+        if (hrsEvent.isCancelled()) {
+            Messaging.send(player, "You cannot regenerate stamina right now!");
+            return SkillResult.FAIL;
+        }
+
+        broadcastExecuteText(hero);
+
+        hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.8F, 1.0F);
 
-        broadcastExecuteText(hero);
-
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		player.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.STAR)
-            		.withColor(Color.YELLOW)
-            		.withFade(Color.TEAL)
-            		.build());
-        } catch (IllegalArgumentException e) {
+            fplayer.playFirework(player.getWorld(),
+                                 player.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder().flicker(false).trail(false)
+                                               .with(FireworkEffect.Type.STAR)
+                                               .withColor(Color.YELLOW)
+                                               .withFade(Color.TEAL)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 

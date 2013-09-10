@@ -24,6 +24,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
@@ -67,6 +68,7 @@ public class SkillMultiShot extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("max-arrows-per-shot", Integer.valueOf(5));
         node.set("degrees", Double.valueOf(10.0));
         node.set("velocity-multiplier", Double.valueOf(3.0));
@@ -76,14 +78,15 @@ public class SkillMultiShot extends ActiveSkill {
     }
 
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
 
         if (hero.hasEffect("Multishot")) {
-
             hero.removeEffect(hero.getEffect("Multishot"));
+            Messaging.send(player, "You are no longer firing multiple arrows.");
             return SkillResult.REMOVED_EFFECT;
         }
         else {
-            broadcastExecuteText(hero);
+            Messaging.send(player, "You are now firing multiple arrows.");
             hero.addEffect(new MultiShotEffect(this));
             return SkillResult.NORMAL;
         }
@@ -123,6 +126,9 @@ public class SkillMultiShot extends ActiveSkill {
                 hero.removeEffect(msEffect);
                 return;
             }
+
+            // Reduce stamina
+            hero.setStamina(hero.getStamina() - staminaCost);
 
             int maxArrowsToShoot = SkillConfigManager.getUseSetting(hero, skill, "max-arrows-per-shot", Integer.valueOf(5), false);
 
@@ -256,7 +262,7 @@ public class SkillMultiShot extends ActiveSkill {
             // Create our velocity direction based on where the player is facing.
             Vector vel = new Vector(Math.cos(yaw), 0, Math.sin(yaw));
             vel.multiply(pitchMultiplier * velocityMultiplier);
-            vel.setY(pitchMultiplier * arrow.getVelocity().getY());
+            vel.setY(arrow.getVelocity().getY() * velocityMultiplier);
 
             arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
 

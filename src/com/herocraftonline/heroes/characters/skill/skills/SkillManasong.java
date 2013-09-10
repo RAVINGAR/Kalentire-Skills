@@ -157,7 +157,7 @@ public class SkillManasong extends ActiveSkill {
                             if (!hrmEvent.isCancelled()) {
                                 member.setMana(hrmEvent.getAmount() + member.getMana());
 
-                                if (member.isVerbose())
+                                if (member.isVerboseMana())
                                     Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
                             }
                         }
@@ -170,7 +170,7 @@ public class SkillManasong extends ActiveSkill {
                 if (!hrmEvent.isCancelled()) {
                     hero.setMana(hrmEvent.getAmount() + hero.getMana());
 
-                    if (hero.isVerbose())
+                    if (hero.isVerboseMana())
                         Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
                 }
             }

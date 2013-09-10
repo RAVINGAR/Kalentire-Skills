@@ -12,16 +12,24 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillWhirlwind extends ActiveSkill {
+    private String applyText;
+    private String expireText;
 
     public SkillWhirlwind(Heroes plugin) {
         super(plugin, "Whirlwind");
-        setDescription("Unleash a furious Whirlwind attack to all enemies within $1 blocks. Enemies struck are dealt $2 physical damage.");
+        setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you repeatedly strike all enemies within $2 blocks for $3 physical damage.");
         setUsage("/skill whirlwind");
         setArgumentRange(0, 0);
         setIdentifiers("skill whirlwind");
@@ -30,24 +38,42 @@ public class SkillWhirlwind extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        return getDescription().replace("$2", damage + "").replace("$1", radius + "");
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", radius + "").replace("$3", formattedDamage);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), 60);
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(60));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.0));
-        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(500));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
+        node.set("slow-amplifier", Integer.valueOf(1));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is unleashing a powerful whirlwind!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer whirlwinding!");
 
         return node;
+    }
+
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is unleashing a powerful whirlwind!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer whirlwinding!").replace("%hero%", "$1");
     }
 
     @Override
@@ -56,26 +82,67 @@ public class SkillWhirlwind extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+
+        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(1), false);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-        for (Entity entity : entities) {
-            if (!(entity instanceof LivingEntity)) {
-                continue;
-            }
+        WhirlwindEffect effect = new WhirlwindEffect(this, player, period, duration, slowAmplifier, radius);
 
-            LivingEntity target = (LivingEntity) entity;
-            if (!damageCheck(player, target))
-                continue;
-
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
-        }
+        hero.addEffect(effect);
 
         return SkillResult.NORMAL;
+    }
+
+    public class WhirlwindEffect extends PeriodicExpirableEffect {
+        private int radius;
+
+        public WhirlwindEffect(Skill skill, Player applier, long period, long duration, int slowAmplifier, int radius) {
+            super(skill, "Whirlwind", applier, period, duration, applyText, expireText);
+
+            types.add(EffectType.PHYSICAL);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.SLOW);
+
+            this.setRadius(radius);
+
+            addMobEffect(2, (int) ((duration / 1000) * 20), slowAmplifier, false);
+        }
+
+        public int getRadius() {
+            return radius;
+        }
+
+        public void setRadius(int radius) {
+            this.radius = radius;
+        }
+
+        @Override
+        public void tickHero(Hero hero) {
+            Player player = hero.getPlayer();
+
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+            damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+            List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+            for (Entity entity : entities) {
+                if (!(entity instanceof LivingEntity)) {
+                    continue;
+                }
+
+                LivingEntity target = (LivingEntity) entity;
+                if (!damageCheck(player, target))
+                    continue;
+
+                addSpellTarget(target, hero);
+                damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+            }
+        }
+
+        @Override
+        public void tickMonster(Monster monster) {}
     }
 }

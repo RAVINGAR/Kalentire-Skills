@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMeditate extends ActiveSkill {
@@ -57,27 +56,21 @@ public class SkillMeditate extends ActiveSkill {
         broadcastExecuteText(hero);
 
         double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 0.5, false);
-        int manaBonus = (int) (hero.getMaxMana() * manaGainPercent);
+        int manaBonus = (int) Math.ceil(hero.getMaxMana() * manaGainPercent);
 
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
             hero.setMana(hrmEvent.getAmount() + hero.getMana());
-
-            if (hero.isVerbose())
-                Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
         }
 
         double staminaGainPercent = SkillConfigManager.getUseSetting(hero, this, "stamina-bonus", 0.7, false);
-        int staminaBonus = (int) (hero.getMaxStamina() * staminaGainPercent);
+        int staminaBonus = (int) Math.ceil(hero.getMaxStamina() * staminaGainPercent);
 
         HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrsEvent);
         if (!hrsEvent.isCancelled()) {
             hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
-
-            if (hero.isVerbose())
-                Messaging.send(player, Messaging.createStaminaBar(hero.getStamina(), hero.getMaxStamina()));
         }
         
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);

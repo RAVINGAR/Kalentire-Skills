@@ -19,6 +19,7 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -112,15 +113,23 @@ public class SkillFauxBomb extends ActiveSkill {
                 sheep.damage(20000.0);
 
                 int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-                List<Entity> nearby = sheep.getNearbyEntities(radius, radius, radius);
 
-                for (Entity entity : nearby) {
-                    if (entity instanceof LivingEntity) {
-                        LivingEntity livingEntity = (LivingEntity) entity;
-                        if (hero != null) {
-                            plugin.getDamageManager().addSpellTarget(livingEntity, hero, this);
-                        }
-                        damageEntity(livingEntity, player, 0.0, EntityDamageEvent.DamageCause.MAGIC);
+                List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
+                for (Entity entity : entities) {
+                    if (!(entity instanceof LivingEntity)) {
+                        continue;
+                    }
+
+                    // Check if the target is damagable
+                    if (!damageCheck(player, (LivingEntity) entity)) {
+                        continue;
+                    }
+
+                    LivingEntity target = (LivingEntity) entity;
+
+                    if (hero != null) {
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, 0.0, DamageCause.MAGIC);
                     }
                 }
             }

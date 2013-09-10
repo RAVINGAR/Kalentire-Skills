@@ -51,7 +51,7 @@ public class SkillProvoke extends TargettedSkill {
         String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
         String formattedIncomingIncrease = Util.decFormat.format(incomingIncrease * 100);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedIncomingIncrease).replace("$3", formattedOutgoingIncrease);
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedOutgoingIncrease).replace("$3", formattedIncomingIncrease);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -86,7 +86,7 @@ public class SkillProvoke extends TargettedSkill {
 
         ProvokeEffect effect = new ProvokeEffect(this, player, duration, incomingDamageIncrease, outgoingDamageIncrease);
 
-        plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
+        plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 0.5F, 0.1F);
 

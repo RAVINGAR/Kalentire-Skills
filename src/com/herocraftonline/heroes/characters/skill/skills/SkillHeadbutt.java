@@ -31,17 +31,18 @@ public class SkillHeadbutt extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
+        String formattedDamage = Util.decFormat.format(damage);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration);
     }
 
     @Override
@@ -62,6 +63,8 @@ public class SkillHeadbutt extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        broadcastExecuteText(hero, target);
+        
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
@@ -76,7 +79,7 @@ public class SkillHeadbutt extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
 
         target.getWorld().playSound(target.getLocation(), Sound.HURT, 0.8F, 0.5F);
-        target.getWorld().playSound(target.getLocation(), Sound.ENDERDRAGON_GROWL, 1.0F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENDERDRAGON_GROWL, 0.7F, 2.0F);
 
         return SkillResult.NORMAL;
     }

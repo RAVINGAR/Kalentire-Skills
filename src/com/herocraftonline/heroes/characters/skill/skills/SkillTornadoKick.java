@@ -78,7 +78,7 @@ public class SkillTornadoKick extends ActiveSkill {
     @Override
     public void onWarmup(Hero hero) {
         Player player = hero.getPlayer();
-        player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 1.2F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 0.7F, 0.4F);
     }
 
     @Override

@@ -11,8 +11,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -27,7 +25,7 @@ public class SkillRenewal extends TargettedSkill {
 
     public SkillRenewal(Heroes plugin) {
         super(plugin, "Renewal");
-        setDescription("You restore $1 health to your target, curing disease.");
+        setDescription("You restore $1 health to your target.");
         setUsage("/skill renewal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill renewal");
@@ -89,13 +87,13 @@ public class SkillRenewal extends TargettedSkill {
 
         targetHero.heal(hrhEvent.getAmount());
 
-        for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
-                if (effect.isType(EffectType.DISEASE)) {
-                    targetHero.removeEffect(effect);
-                }
-            }
-        }
+        //        for (Effect effect : targetHero.getEffects()) {
+        //            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
+        //                if (effect.isType(EffectType.DISEASE)) {
+        //                    targetHero.removeEffect(effect);
+        //                }
+        //            }
+        //        }
 
         broadcastExecuteText(hero, target);
 

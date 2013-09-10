@@ -205,10 +205,10 @@ public class SkillShuriken extends PassiveSkill {
             // Damage the target
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 20, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 0.4, false);
-            damage += (int) (hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease);
+            damage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
 
-            skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.PROJECTILE, false);
 
             // Prevent arrow from dealing damage
             shuriken.remove();

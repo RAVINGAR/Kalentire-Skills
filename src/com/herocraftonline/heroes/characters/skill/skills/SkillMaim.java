@@ -69,13 +69,13 @@ public class SkillMaim extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        broadcastExecuteText(hero, target);
-
         Material item = player.getItemInHand().getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
             Messaging.send(player, "You can't use Maim with that weapon!", new Object[0]);
             return SkillResult.FAIL;
         }
+
+        broadcastExecuteText(hero, target);
 
         // Prep variables
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);

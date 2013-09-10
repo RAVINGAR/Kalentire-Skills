@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -37,7 +39,7 @@ public class SkillTumble extends PassiveSkill {
             ncpEnabled = true;
         }
     }
-    
+
     @Override
     public String getDescription(Hero hero) {
         int distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", Integer.valueOf(0), false);
@@ -57,16 +59,16 @@ public class SkillTumble extends PassiveSkill {
 
         return node;
     }
-    
+
     public class SkillEntityListener implements Listener {
 
-    	private Skill skill;
-    	
-    	SkillEntityListener(Skill skill) {
-    		this.skill = skill;
-    	}
-    	
-    	@EventHandler(priority = EventPriority.LOW)
+        private Skill skill;
+
+        SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.LOW)
         public void onEntityDamage(EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
@@ -91,10 +93,12 @@ public class SkillTumble extends PassiveSkill {
             distance += (int) (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease);
 
             double fallDistance = (event.getDamage() - 3) * 3;
+            Heroes.log(Level.INFO, "Tumble Fall Distance: " + distance + ", OriginalFallDistance: " + fallDistance);
             fallDistance -= distance;
             if (fallDistance <= 0) {
                 event.setCancelled(true);
-            } else {
+            }
+            else {
                 event.setDamage(3 + (fallDistance / 3));
             }
         }
@@ -103,7 +107,7 @@ public class SkillTumble extends PassiveSkill {
     private class NCPExemptionEffect extends ExpirableEffect {
 
         public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect", applier, duration);
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
         @Override

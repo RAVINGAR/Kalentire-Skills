@@ -100,7 +100,7 @@ public class SkillLunarLance extends TargettedSkill {
                 tHero.setMana(0);
             }
 
-            if (tHero.isVerbose())
+            if (tHero.isVerboseMana())
                 Messaging.send(player, Messaging.createManaBar(tHero.getMana(), tHero.getMaxMana()));
         }
 
