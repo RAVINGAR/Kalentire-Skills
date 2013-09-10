@@ -154,7 +154,7 @@ public class SkillBloodDrinker extends ActiveSkill {
                     hero.heal(healEvent.getAmount());
 
                     Player player = hero.getPlayer();
-                    player.getWorld().playSound(player.getLocation(), Sound.DRINK, 0.8F, 0.6F);
+                    player.getWorld().playSound(player.getLocation(), Sound.DRINK, 0.3F, 0.6F);
 
                     bdEffect.setTotalHealthHealed(currentTotalHeal + healing);
 

@@ -1,7 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -99,16 +97,16 @@ public class SkillBloodRage extends PassiveSkill {
         double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-per-hp-percent", Double.valueOf(0.0075), false);
         double damageModifier = 1 + (hpPercent * damageIncreasePerHPPercent);
 
-        Heroes.log(Level.INFO, "BloodRage Attack: Damage Modifier: " + damageModifier);
+        // Heroes.log(Level.INFO, "BloodRage Attack: Damage Modifier: " + damageModifier);
 
         double damageIncreaseThreshhold = 1 + SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-threshhold", Double.valueOf(0.40), false);
         if (damageModifier > damageIncreaseThreshhold) {
             damageModifier = damageIncreaseThreshhold;
-            Heroes.log(Level.INFO, "BloodRage Attack: Hit Threshhold. New Modifier: " + damageModifier);
+            // Heroes.log(Level.INFO, "BloodRage Attack: Hit Threshhold. New Modifier: " + damageModifier);
         }
 
         double newDamage = damageModifier * originalDamage;
-        Heroes.log(Level.INFO, "BloodRage Attack: Original Damage: " + originalDamage + ", New Damage: " + newDamage);
+        // Heroes.log(Level.INFO, "BloodRage Attack: Original Damage: " + originalDamage + ", New Damage: " + newDamage);
 
         return newDamage;
     }

@@ -126,12 +126,13 @@ public class SkillWhirlwind extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 0.9F);
+            player.getWorld().playSound(player.getLocation(), Sound.BAT_LOOP, 0.6F, 0.6F);
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
+            boolean hitTarget = false;
             List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
             for (Entity entity : entities) {
                 if (!(entity instanceof LivingEntity)) {
@@ -145,8 +146,11 @@ public class SkillWhirlwind extends ActiveSkill {
                 addSpellTarget(target, hero);
                 damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
 
-                target.getWorld().playSound(target.getLocation(), Sound.ANVIL_LAND, 0.6F, 1.6F);
+                hitTarget = true;
             }
+
+            if (hitTarget)
+                player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.3F, 1.6F);
         }
 
         @Override

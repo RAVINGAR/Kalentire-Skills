@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -107,12 +108,12 @@ public class SkillPlagueBomb extends ActiveSkill {
     private class SkillListener implements Listener {
         private SkillListener() {}
 
-        @EventHandler
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            Entity entity = event.getEntity();
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep))
+                return;
 
-            if (((entity instanceof Sheep)) && (event.getCause() != EntityDamageEvent.DamageCause.POISON))
-                explodeSheep((Sheep) entity);
+            explodeSheep((Sheep) event.getEntity());
         }
     }
 
