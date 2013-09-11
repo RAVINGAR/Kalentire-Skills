@@ -68,7 +68,7 @@ public class SkillTumble extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.LOW)
         public void onEntityDamage(EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
@@ -78,28 +78,28 @@ public class SkillTumble extends PassiveSkill {
                 return;
             }
 
-            // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                Player player = (Player) event.getEntity();
-                if (!player.isOp()) {
-                    long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", Integer.valueOf(100), false);
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, (Player) event.getEntity(), duration);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
-
             int distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", Integer.valueOf(0), false);
             double distanceIncrease = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
-            distance += (int) (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease);
+            distance += (int) Math.ceil(hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease);
 
-            double fallDistance = (event.getDamage() - 3) * 3;
-            Heroes.log(Level.INFO, "Tumble Fall Distance: " + distance + ", OriginalFallDistance: " + fallDistance);
+            double fallDistance = event.getDamage();
+            Heroes.log(Level.INFO, "OriginalFallDistance: " + fallDistance + ", Tumble Fall Distance: " + distance);
             fallDistance -= distance;
             if (fallDistance <= 0) {
                 event.setCancelled(true);
             }
             else {
-                event.setDamage(3 + (fallDistance / 3));
+                // Let's bypass the nocheat issues...
+                if (ncpEnabled) {
+                    Player player = (Player) event.getEntity();
+                    if (!player.isOp()) {
+                        long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", Integer.valueOf(100), false);
+                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, (Player) event.getEntity(), duration);
+                        hero.addEffect(ncpExemptEffect);
+                    }
+                }
+
+                event.setDamage(fallDistance);
             }
         }
     }
