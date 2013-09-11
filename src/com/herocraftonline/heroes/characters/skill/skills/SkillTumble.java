@@ -44,7 +44,7 @@ public class SkillTumble extends PassiveSkill {
     public String getDescription(Hero hero) {
         int distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", Integer.valueOf(0), false);
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
-        distance += (int) (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease);
+        distance += 3 + (int) Math.ceil(hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease);
 
         return getDescription().replace("$1", distance + "");
     }

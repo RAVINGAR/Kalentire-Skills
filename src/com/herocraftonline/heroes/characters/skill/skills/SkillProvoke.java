@@ -15,8 +15,9 @@ import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -26,8 +27,10 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillProvoke extends TargettedSkill {
+
     private String applyText;
     private String expireText;
+    private String provokeText;
 
     public SkillProvoke(Heroes plugin) {
         super(plugin, "Provoke");
@@ -51,7 +54,7 @@ public class SkillProvoke extends TargettedSkill {
         String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
         String formattedIncomingIncrease = Util.decFormat.format(incomingIncrease * 100);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedOutgoingIncrease).replace("$3", formattedIncomingIncrease);
+        return getDescription().replace("$1", formattedDuration).replace("$3", formattedOutgoingIncrease).replace("$2", formattedIncomingIncrease);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -63,6 +66,7 @@ public class SkillProvoke extends TargettedSkill {
         node.set("incoming-damage-increase-percent", Double.valueOf(0.20));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% was provoked by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer provoked!");
+        node.set("provoke-text", "%hero% is provoking you!");
 
         return node;
     }
@@ -72,6 +76,7 @@ public class SkillProvoke extends TargettedSkill {
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% was provoked by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer provoked!").replace("%target%", "$1").replace("%hero%", "$2");
+        provokeText = SkillConfigManager.getRaw(this, "provoke-text", "%hero% is provoking you!").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -160,12 +165,12 @@ public class SkillProvoke extends TargettedSkill {
         }
     }
 
-    public class ProvokeEffect extends ExpirableEffect {
+    public class ProvokeEffect extends PeriodicExpirableEffect {
         private double incomingDamageIncrease;
         private double outgoingDamageIncrease;
 
         public ProvokeEffect(Skill skill, Player applier, long duration, double incomingDamageIncrease, double outgoingDamageIncrease) {
-            super(skill, "Provoked", applier, duration, applyText, expireText);
+            super(skill, "Provoked", applier, 750, duration, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.HARMFUL);
@@ -173,6 +178,16 @@ public class SkillProvoke extends TargettedSkill {
             this.incomingDamageIncrease = incomingDamageIncrease;
             this.outgoingDamageIncrease = outgoingDamageIncrease;
         }
+
+        @Override
+        public void tickHero(Hero hero) {
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, provokeText, applier.getDisplayName());
+        }
+
+        @Override
+        public void tickMonster(Monster monster) {}
 
         public double getIncomingDamageIncrease() {
             return incomingDamageIncrease;

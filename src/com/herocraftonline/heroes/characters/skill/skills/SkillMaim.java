@@ -26,7 +26,7 @@ public class SkillMaim extends TargettedSkill {
 
     public SkillMaim(Heroes plugin) {
         super(plugin, "Maim");
-        setDescription("You Maim your target with your axe, dealing $1 physical damage and slowing them for $2 seconds.");
+        setDescription("You Maim your target with your axe, dealing $1 physical damage and slowing them for $2 second(s).");
         setUsage("/skill maim");
         setArgumentRange(0, 0);
         setIdentifiers("skill maim");

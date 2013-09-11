@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -72,8 +73,39 @@ public class SkillSmoke extends ActiveSkill {
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 4);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false);
-        hero.addEffect(new InvisibleEffect(this, player, duration, applyText, expireText));
+        hero.addEffect(new SmokeEffect(this, player, duration));
 
         return SkillResult.NORMAL;
+    }
+
+    public class SmokeEffect extends InvisibleEffect {
+
+        public SmokeEffect(Skill skill, Player applier, long duration) {
+            super(skill, applier, duration, null, null);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            Player player = hero.getPlayer();
+            if (applyText != null && applyText.length() > 0) {
+                // Override the standard invis effect message display so that we actually display a message to nearby players
+                //      even though we have a "silent actions" effect type.
+                Messaging.send(player, applyText, player.getDisplayName(), applier.getDisplayName());
+            }
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+            if (expireText != null && expireText.length() > 0) {
+                // Override the standard invis effect message display so that we actually display a message to nearby players
+                //      even though we have a "silent actions" effect type.
+                Messaging.send(player, expireText, player.getDisplayName(), applier.getDisplayName());
+            }
+        }
     }
 }

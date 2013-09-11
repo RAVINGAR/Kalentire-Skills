@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
+import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -35,6 +36,7 @@ public class SkillBattery extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int amount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 20, false);
+
         return getDescription().replace("$1", amount + "");
     }
 
@@ -50,41 +52,59 @@ public class SkillBattery extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-    	Player player = hero.getPlayer();
-        if (!(target instanceof Player) || player.equals(target))
-        	return SkillResult.INVALID_TARGET;
+        Player player = hero.getPlayer();
 
-        Hero tHero = plugin.getCharacterManager().getHero((Player) target);	
+        if (!(target instanceof Player) || player.equals(target))
+            return SkillResult.INVALID_TARGET;
+
+        Hero tHero = plugin.getCharacterManager().getHero((Player) target);
 
         int transferAmount = SkillConfigManager.getUseSetting(hero, this, "transfer-amount", 150, false);
         if (hero.getMana() > transferAmount) {
+            broadcastExecuteText(hero, target);
+
             if (tHero.getMana() + transferAmount > tHero.getMaxMana()) {
                 transferAmount = tHero.getMaxMana() - tHero.getMana();
             }
-            hero.setMana(hero.getMana() - transferAmount);
-            tHero.setMana(tHero.getMana() + transferAmount);
+
+            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(tHero, transferAmount, this);
+            plugin.getServer().getPluginManager().callEvent(hrmEvent);
+            if (hrmEvent.isCancelled()) {
+                return SkillResult.CANCELLED;
+            }
+
+            int finalTransferAmount = hrmEvent.getAmount();
+
+            hero.setMana(hero.getMana() - finalTransferAmount);
+            tHero.setMana(tHero.getMana() + finalTransferAmount);
+
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.5F, 1.0F); 
-            broadcastExecuteText(hero, target);
+            player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 1.0F);
+
             // this is our fireworks shit
             try {
-                fplayer.playFirework(player.getWorld(), 
-                		target.getLocation().add(0,1.5,0), 
-                		FireworkEffect.builder()
-                		.flicker(false)
-                		.trail(false)
-                		.with(FireworkEffect.Type.BURST)
-                		.withColor(Color.SILVER)
-                		.withFade(Color.NAVY)
-                		.build());
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
+                fplayer.playFirework(player.getWorld(),
+                                     target.getLocation().add(0, 1.5, 0),
+                                     FireworkEffect.builder()
+                                                   .flicker(false)
+                                                   .trail(false)
+                                                   .with(FireworkEffect.Type.BURST)
+                                                   .withColor(Color.SILVER)
+                                                   .withFade(Color.NAVY)
+                                                   .build());
+            }
+            catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return SkillResult.NORMAL;
-        } else {
+        }
+        else {
             Messaging.send(hero.getPlayer(), "You need at least $1 mana to transfer.", transferAmount);
+
             return new SkillResult(ResultType.LOW_MANA, false);
         }
     }

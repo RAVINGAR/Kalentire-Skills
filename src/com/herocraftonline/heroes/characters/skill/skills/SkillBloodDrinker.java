@@ -145,7 +145,6 @@ public class SkillBloodDrinker extends ActiveSkill {
             Heroes.log(Level.INFO, "BloodDrinker Debug: MaxHealing: " + maxHealing + ", Current Total Heal: " + currentTotalHeal);
 
             if (currentTotalHeal < maxHealing) {
-
                 double healing = damage * bdEffect.getDamageHealingPercent();
                 Heroes.log(Level.INFO, "BloodDrinker Debug: HealthToHeal: " + healing);
                 if (healing + currentTotalHeal > maxHealing) {
