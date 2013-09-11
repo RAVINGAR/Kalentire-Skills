@@ -115,7 +115,6 @@ public class SkillStrike extends TargettedSkill {
 
             types.add(EffectType.BLEED);
             types.add(EffectType.HARMFUL);
-            types.add(EffectType.PHYSICAL);
         }
     }
 }

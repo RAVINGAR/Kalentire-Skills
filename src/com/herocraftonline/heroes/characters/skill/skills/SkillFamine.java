@@ -53,7 +53,7 @@ public class SkillFamine extends TargettedSkill {
         String formattedStaminaDrain = Util.decFormat.format(staminaDrain * ((double) duration / (double) period));
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", radius + "").replace("$3", formattedStaminaDrain).replace("$2", formattedDuration);
+        return getDescription().replace("$1", radius + "").replace("$2", formattedStaminaDrain).replace("$3", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {

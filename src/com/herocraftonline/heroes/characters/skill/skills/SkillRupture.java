@@ -140,7 +140,6 @@ public class SkillRupture extends TargettedSkill {
 
             types.add(EffectType.BLEED);
             types.add(EffectType.HARMFUL);
-            types.add(EffectType.PHYSICAL);
             types.add(EffectType.DAMAGING);
 
             this.damagePerDistance = damagePerDistance;

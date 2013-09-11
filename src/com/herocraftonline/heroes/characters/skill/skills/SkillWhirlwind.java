@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -30,7 +31,7 @@ public class SkillWhirlwind extends ActiveSkill {
 
     public SkillWhirlwind(Heroes plugin) {
         super(plugin, "Whirlwind");
-        setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you strike all enemies within $2 blocks ever $3 seconds for $4 physical damage.");
+        setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you strike all enemies within $2 blocks ever $3 seconds for $4 physical damage. You are slowed while under the effect.");
         setUsage("/skill whirlwind");
         setArgumentRange(0, 0);
         setIdentifiers("skill whirlwind");
@@ -125,6 +126,13 @@ public class SkillWhirlwind extends ActiveSkill {
         @Override
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
+
+            for (Effect effect : hero.getEffects()) {
+                if (effect.isType(EffectType.STUN) || effect.isType(EffectType.DISABLE)) {
+                    hero.removeEffect(this);
+                    return;
+                }
+            }
 
             player.getWorld().playSound(player.getLocation(), Sound.BAT_LOOP, 0.6F, 0.6F);
 

@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -107,8 +108,10 @@ public class SkillBloodDrinker extends ActiveSkill {
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
                 Hero hero = (Hero) event.getDamager();
-
                 if (hero.hasEffect("BloodDrinking")) {
+                    if (!damageCheck(hero.getPlayer(), (LivingEntity) event.getEntity()))
+                        return;
+
                     bloodDrinkHeal(hero, event.getDamage());
                 }
             }
@@ -122,8 +125,10 @@ public class SkillBloodDrinker extends ActiveSkill {
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
                 Hero hero = (Hero) event.getDamager();
-
                 if (hero.hasEffect("BloodDrinking")) {
+                    if (!damageCheck(hero.getPlayer(), (LivingEntity) event.getEntity()))
+                        return;
+
                     bloodDrinkHeal(hero, event.getDamage());
                 }
             }
