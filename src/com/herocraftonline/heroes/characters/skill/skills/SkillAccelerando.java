@@ -16,9 +16,9 @@ import org.bukkit.event.Listener;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
@@ -148,17 +148,34 @@ public class SkillAccelerando extends ActiveSkill {
         }
         
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player))
                 return;
-            }
 
             Player player = (Player) event.getEntity();
-            if (!damageCheck(player, (LivingEntity) event.getEntity()))
-                return;
-
             final Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("Accelerando")) {
+                if (!damageCheck(player, (LivingEntity) event.getEntity()))
+                    return;
+
+                hero.removeEffect(hero.getEffect("Accelerando"));
+
+                int duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
+                hero.addEffect(new StunEffect(skill, hero.getPlayer(), duration));
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player))
+                return;
+
+            Player player = (Player) event.getEntity();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect("Accelerando")) {
+                if (!damageCheck(player, (LivingEntity) event.getEntity()))
+                    return;
+
                 hero.removeEffect(hero.getEffect("Accelerando"));
 
                 int duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
@@ -176,13 +193,13 @@ public class SkillAccelerando extends ActiveSkill {
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-        }
-
-        @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+
+            Player player = hero.getPlayer();
+            if (applyText != null && applyText.length() > 0) {
+                Messaging.send(player, applyText, player.getDisplayName(), applier.getDisplayName());
+            }
         }
 
         @Override
@@ -201,11 +218,10 @@ public class SkillAccelerando extends ActiveSkill {
             }
             else
                 super.removeFromHero(hero);
-        }
 
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
+            if (expireText != null && expireText.length() > 0) {
+                Messaging.send(player, expireText, player.getDisplayName(), applier.getDisplayName());
+            }
         }
     }
 }

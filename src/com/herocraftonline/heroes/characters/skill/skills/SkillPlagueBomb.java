@@ -21,6 +21,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -107,6 +108,19 @@ public class SkillPlagueBomb extends ActiveSkill {
 
     private class SkillListener implements Listener {
         private SkillListener() {}
+
+        @EventHandler(priority = EventPriority.NORMAL)
+        public void onEntityDeath(EntityDeathEvent event) {
+            LivingEntity living = event.getEntity();
+            if (living instanceof Sheep) {
+                Sheep sheep = (Sheep) living;
+                if (sheepMap.containsKey(sheep.getEntityId())) {
+                    event.setDroppedExp(0);
+                    event.getDrops().clear();
+                    sheep.remove();
+                }
+            }
+        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {

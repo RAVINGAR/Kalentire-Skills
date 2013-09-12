@@ -165,7 +165,7 @@ public class SkillRupture extends TargettedSkill {
             Player player = hero.getPlayer();
             Location location = player.getLocation();
 
-            int distance = (int) Math.ceil(getLastLoc().distance(location));
+            int distance = (int) Math.floor(getLastLoc().distance(location));
 
             if (distance > distancePerDamage) {
                 Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
@@ -185,7 +185,7 @@ public class SkillRupture extends TargettedSkill {
             LivingEntity monsterLE = monster.getEntity();
             Location location = monsterLE.getLocation();
 
-            int distance = (int) Math.ceil(getLastLoc().distance(location));
+            int distance = (int) Math.floor(getLastLoc().distance(location));
 
             if (distance > distancePerDamage) {
                 Hero applierHero = plugin.getCharacterManager().getHero(getApplier());

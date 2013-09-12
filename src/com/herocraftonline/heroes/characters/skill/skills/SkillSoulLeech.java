@@ -54,7 +54,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamage = Util.decFormat.format(damage * (duration / period));
-        String formattedHeal = Util.decFormat.format(healMult);
+        String formattedHeal = Util.decFormat.format(healMult * 100.0);
 
         return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", formattedHeal);
     }

@@ -98,7 +98,7 @@ public class SkillBattlesong extends ActiveSkill {
 
         int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
         double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
-        staminaRestoreTick += (int) Math.ceil((staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA)));
+        staminaRestoreTick += (int) Math.floor((staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA)));
 
         BattlesongEffect mEffect = new BattlesongEffect(this, hero.getPlayer(), period, duration, radius, staminaRestoreTick);
         hero.addEffect(mEffect);

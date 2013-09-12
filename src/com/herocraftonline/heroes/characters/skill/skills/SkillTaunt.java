@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -123,7 +124,7 @@ public class SkillTaunt extends ActiveSkill {
         public void onWeaponDamage(WeaponDamageEvent event) {
             CharacterTemplate damager = event.getDamager();
             if (damager.hasEffect("Taunted")) {
-                double damageModifier = ((TauntEffect) damager.getEffect("Taunt")).getDamageModifier();
+                double damageModifier = ((TauntEffect) damager.getEffect("Taunted")).getDamageModifier();
                 event.setDamage((event.getDamage() * damageModifier));
             }
         }
@@ -132,7 +133,7 @@ public class SkillTaunt extends ActiveSkill {
         public void onSkillDamage(SkillDamageEvent event) {
             CharacterTemplate damager = event.getDamager();
             if (damager.hasEffect("Taunted")) {
-                double damageModifier = ((TauntEffect) damager.getEffect("Taunt")).getDamageModifier();
+                double damageModifier = ((TauntEffect) damager.getEffect("Taunted")).getDamageModifier();
                 event.setDamage((event.getDamage() * damageModifier));
             }
         }
@@ -155,7 +156,7 @@ public class SkillTaunt extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            Messaging.send(player, tauntText, applier.getName());
+            Messaging.send(player, tauntText, ChatColor.BOLD + applier.getName() + ChatColor.RESET);
         }
 
         @Override

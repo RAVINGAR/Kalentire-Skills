@@ -46,7 +46,7 @@ public class SkillEnderPearls extends PassiveSkill {
     public String getDescription(Hero hero) {
         int cdDuration = SkillConfigManager.getUseSetting(hero, this, "toss-cooldown", Integer.valueOf(5000), false);
 
-        String formattedCooldown = Util.decFormat.format(cdDuration / 1000.0);
+        String formattedCooldown = Util.decFormatCDs.format(cdDuration / 1000.0);
 
         return getDescription().replace("$1", formattedCooldown);
     }

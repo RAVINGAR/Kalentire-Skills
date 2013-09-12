@@ -130,7 +130,7 @@ public class SkillFistOfJin extends PassiveSkill {
 
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), false);
             double radiusIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.1), false);
-            radius += (int) Math.ceil(radiusIncrease * wisdom);
+            radius += (int) Math.floor(radiusIncrease * wisdom);
             int radiusSquared = radius * radius;
 
             int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "healing-internal-cooldown", Integer.valueOf(1000), false);

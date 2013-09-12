@@ -97,8 +97,10 @@ public class SkillMagicWard extends ActiveSkill {
         @EventHandler
         public void onSkillDamage(SkillDamageEvent event) {
 
-            Skill skill = event.getSkill();
+            if (!(event.getEntity() instanceof Player))
+                return;
 
+            Skill skill = event.getSkill();
             if (skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL))
                 return;
 

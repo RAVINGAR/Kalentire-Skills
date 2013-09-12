@@ -65,7 +65,7 @@ public class SkillBalance extends ActiveSkill {
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
         double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.1), false);
-        radius += (int) Math.ceil(radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
+        radius += (int) Math.floor(radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
         int radiusSquared = radius * radius;
 
         boolean skipRangeCheck = (radius == 0);						//0 for no maximum range

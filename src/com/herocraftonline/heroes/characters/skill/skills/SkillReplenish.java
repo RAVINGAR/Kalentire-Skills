@@ -50,7 +50,7 @@ public class SkillReplenish extends ActiveSkill {
         broadcastExecuteText(hero);
 
         double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", Double.valueOf(0.75), false);
-        int manaBonus = (int) Math.ceil(hero.getMaxMana() * manaGainPercent);
+        int manaBonus = (int) Math.floor(hero.getMaxMana() * manaGainPercent);
 
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);

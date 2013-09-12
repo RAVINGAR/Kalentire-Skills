@@ -131,7 +131,7 @@ public class SkillDreadAura extends ActiveSkill {
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-            List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+            List<Entity> entities = player.getNearbyEntities(radius, radius, radius);
             for (Entity entity : entities) {
                 if (!(entity instanceof LivingEntity)) {
                     continue;

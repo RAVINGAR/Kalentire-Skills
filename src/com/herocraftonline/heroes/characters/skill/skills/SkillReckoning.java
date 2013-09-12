@@ -94,7 +94,7 @@ public class SkillReckoning extends ActiveSkill {
 
         int slowAmount = SkillConfigManager.getUseSetting(hero, this, "slow-amount", Integer.valueOf(1), false);
         double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, this, "slow-amount-increase-per-intellect", Double.valueOf(0.075), false);
-        slowAmount += Math.ceil(slowAmountIncrease * intellect);
+        slowAmount += Math.floor(slowAmountIncrease * intellect);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(750), false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, Integer.valueOf(12), false);
