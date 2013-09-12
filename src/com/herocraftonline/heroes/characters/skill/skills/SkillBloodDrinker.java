@@ -155,12 +155,13 @@ public class SkillBloodDrinker extends ActiveSkill {
                 HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, this);       // Bypass self heal nerf because this cannot be used on others.
                 Bukkit.getPluginManager().callEvent(healEvent);
                 if (!healEvent.isCancelled()) {
-                    hero.heal(healEvent.getAmount());
+                    double finalHealing = healEvent.getAmount();
+                    hero.heal(finalHealing);
 
                     Player player = hero.getPlayer();
                     player.getWorld().playSound(player.getLocation(), Sound.DRINK, 0.3F, 0.6F);
 
-                    bdEffect.setTotalHealthHealed(currentTotalHeal + healing);
+                    bdEffect.setTotalHealthHealed(currentTotalHeal + finalHealing);
 
                     if (bdEffect.getTotalHealthHealed() >= maxHealing)
                         hero.removeEffect(bdEffect);

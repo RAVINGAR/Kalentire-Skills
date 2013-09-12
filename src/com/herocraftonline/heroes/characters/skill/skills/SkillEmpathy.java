@@ -37,17 +37,18 @@ public class SkillEmpathy extends TargettedSkill {
     public String getDescription(Hero hero) {
         double maxDamage = SkillConfigManager.getUseSetting(hero, this, "max-damage", 152, false);
         double maxDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "max-damage-increase-per-intellect", 1.0, false);
-        maxDamage += (maxDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        maxDamage += maxDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double modifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1, false);
+        double modifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.5, false);
         double modifierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase-per-intellect", 0.0, false);
         modifier += (modifierIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 4000, false);
 
-        String formattedModifier = Util.decFormat.format(modifier);
+        String formattedModifier = Util.decFormat.format(modifier * 100.0);
+        String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
 
-        String description = getDescription().replace("$1", maxDamage + "").replace("$2", formattedModifier).replace("$3", slowDuration + "");
+        String description = getDescription().replace("$1", maxDamage + "").replace("$2", formattedModifier).replace("$3", formattedSlowDuration);
 
         return description;
     }
@@ -76,13 +77,13 @@ public class SkillEmpathy extends TargettedSkill {
 
         double maxDamage = SkillConfigManager.getUseSetting(hero, this, "max-damage", 152, false);
         double maxDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "max-damage-increase-per-intellect", 1.0, false);
-        maxDamage += (maxDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        maxDamage += maxDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         double modifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false);
         double modifierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase-per-intellect", 0.0, false);
-        modifier += (modifierIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        modifier += modifierIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double damage = ((player.getMaxHealth() - player.getHealth()) * modifier);
+        double damage = (player.getMaxHealth() - player.getHealth()) * modifier;
 
         if (damage > maxDamage)
             damage = maxDamage;

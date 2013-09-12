@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -66,6 +67,7 @@ public class SkillProvoke extends TargettedSkill {
         node.set("incoming-damage-increase-percent", Double.valueOf(0.20));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% was provoked by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer provoked!");
+        node.set("provoke-message-speed", Integer.valueOf(1000));
         node.set("provoke-text", "%hero% is provoking you!");
 
         return node;
@@ -86,10 +88,11 @@ public class SkillProvoke extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "provoke-message-speed", Integer.valueOf(1000), false);
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.25), false);
         double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
 
-        ProvokeEffect effect = new ProvokeEffect(this, player, duration, incomingDamageIncrease, outgoingDamageIncrease);
+        ProvokeEffect effect = new ProvokeEffect(this, player, period, duration, incomingDamageIncrease, outgoingDamageIncrease);
 
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
@@ -169,8 +172,8 @@ public class SkillProvoke extends TargettedSkill {
         private double incomingDamageIncrease;
         private double outgoingDamageIncrease;
 
-        public ProvokeEffect(Skill skill, Player applier, long duration, double incomingDamageIncrease, double outgoingDamageIncrease) {
-            super(skill, "Provoked", applier, 750, duration, applyText, expireText);
+        public ProvokeEffect(Skill skill, Player applier, long period, long duration, double incomingDamageIncrease, double outgoingDamageIncrease) {
+            super(skill, "Provoked", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.HARMFUL);
@@ -183,7 +186,7 @@ public class SkillProvoke extends TargettedSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            Messaging.send(player, provokeText, applier.getDisplayName());
+            Messaging.send(player, provokeText, ChatColor.BOLD + applier.getName() + ChatColor.RESET);
         }
 
         @Override

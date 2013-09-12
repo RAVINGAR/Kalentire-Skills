@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -54,7 +55,7 @@ public class SkillTaunt extends ActiveSkill {
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.85, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedDamageModifier = Util.decFormat.format(damageReduction * 100.0);
+        String formattedDamageModifier = Util.decFormat.format((1 - damageReduction) * 100.0);
 
         return getDescription().replace("$1", radius + "").replace("$2", formattedDamageModifier).replace("$3", formattedDuration);
     }
@@ -68,7 +69,8 @@ public class SkillTaunt extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% was taunted by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer taunted!");
-        node.set("provoke-text", "%hero% is provoking you!");
+        node.set("taunt-message-speed", Integer.valueOf(1000));
+        node.set("taunt-text", "%hero% is taunting you!");
 
         return node;
     }
@@ -78,7 +80,7 @@ public class SkillTaunt extends ActiveSkill {
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% was taunted by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer taunted!").replace("%target%", "$1").replace("%hero%", "$2");
-        tauntText = SkillConfigManager.getRaw(this, "provoke-text", "%hero% is taunting you!").replace("%hero%", "$1");
+        tauntText = SkillConfigManager.getRaw(this, "taunt-text", "%hero% is taunting you!").replace("%hero%", "$1");
     }
 
     @Override
@@ -88,11 +90,12 @@ public class SkillTaunt extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "taunt-message-speed", Integer.valueOf(1000), false);
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.85, false);
 
         broadcastExecuteText(hero);
 
-        TauntEffect tEffect = new TauntEffect(this, player, duration, damageModifier);
+        TauntEffect tEffect = new TauntEffect(this, player, period, duration, damageModifier);
 
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
@@ -140,8 +143,8 @@ public class SkillTaunt extends ActiveSkill {
 
         private double damageModifier;
 
-        public TauntEffect(Skill skill, Player applier, long duration, double damageModifier) {
-            super(skill, "Taunted", applier, 750, duration, applyText, expireText);
+        public TauntEffect(Skill skill, Player applier, long period, long duration, double damageModifier) {
+            super(skill, "Taunted", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.PHYSICAL);
@@ -153,7 +156,7 @@ public class SkillTaunt extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            Messaging.send(player, tauntText, applier.getDisplayName());
+            Messaging.send(player, tauntText, ChatColor.BOLD + applier.getName() + ChatColor.RESET);
         }
 
         @Override

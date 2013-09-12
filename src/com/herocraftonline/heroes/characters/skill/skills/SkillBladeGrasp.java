@@ -7,6 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -107,7 +108,7 @@ public class SkillBladeGrasp extends TargettedSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0)
+            if (event.getDamage() == 0 || event.getAttackerEntity() instanceof Projectile)
                 return;
 
             if (event.getEntity() instanceof Player && event.getDamager() instanceof Hero) {

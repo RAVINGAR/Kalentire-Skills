@@ -31,7 +31,7 @@ public class SkillWhirlwind extends ActiveSkill {
 
     public SkillWhirlwind(Heroes plugin) {
         super(plugin, "Whirlwind");
-        setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you strike all enemies within $2 blocks ever $3 seconds for $4 physical damage. You are slowed while under the effect.");
+        setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you strike all enemies within $2 blocks every $3 seconds for $4 physical damage. You are slowed while under the effect.");
         setUsage("/skill whirlwind");
         setArgumentRange(0, 0);
         setIdentifiers("skill whirlwind");

@@ -111,15 +111,9 @@ public class SkillUndyingWill extends ActiveSkill {
 
     public class UndyingWillEffect extends ExpirableEffect {
         public UndyingWillEffect(Skill skill, Player applifer, long duration) {
-            super(skill, "UndyingWill", applifer, duration);
+            super(skill, "UndyingWill", applifer, duration, null, expireText);
 
             types.add(EffectType.PHYSICAL);
-        }
-
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
     }
 }

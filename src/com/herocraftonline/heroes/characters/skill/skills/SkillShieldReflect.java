@@ -80,7 +80,7 @@ public class SkillShieldReflect extends ActiveSkill {
         switch (player.getItemInHand().getType()) {
             case IRON_DOOR:
             case WOOD_DOOR:
-
+            case TRAP_DOOR:
                 broadcastExecuteText(hero);
 
                 int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
@@ -123,11 +123,20 @@ public class SkillShieldReflect extends ActiveSkill {
                 switch (defenderPlayer.getItemInHand().getType()) {
                     case IRON_DOOR:
                     case WOOD_DOOR:
+                    case TRAP_DOOR:
                         double damageModifier = SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-damage-modifier", Double.valueOf(0.8), false);
                         double damage = event.getDamage() * damageModifier;
                         LivingEntity target = event.getDamager().getEntity();
+
+                        Skill skill = event.getSkill();
+
                         addSpellTarget(target, defenderHero);
-                        damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
+
+                        if (skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !skill.isType(SkillType.ARMOR_PIERCING))
+                            damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
+                        else
+                            damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC);
+
                     default:
                         return;
                 }
@@ -168,23 +177,9 @@ public class SkillShieldReflect extends ActiveSkill {
 
     public class ShieldReflectEffect extends ExpirableEffect {
         public ShieldReflectEffect(Skill skill, Player applier, long duration) {
-            super(skill, "ShieldReflect", applier, duration);
+            super(skill, "ShieldReflect", applier, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
     }
 }
