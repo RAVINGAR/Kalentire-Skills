@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -186,7 +185,7 @@ public class SkillProvoke extends TargettedSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            Messaging.send(player, provokeText, ChatColor.BOLD + applier.getName() + ChatColor.RESET);
+            Messaging.send(player, provokeText, applier.getName());
         }
 
         @Override

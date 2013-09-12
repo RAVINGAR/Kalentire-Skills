@@ -35,7 +35,7 @@ public class SkillRupture extends TargettedSkill {
 
     public SkillRupture(Heroes plugin) {
         super(plugin, "Rupture");
-        setDescription("Deal a mighty blow to your target, dealing $1 physical damage and causing them to be wounded for the next $2 seconds. Wounded targets will take $3 damage of bleeding damage for every block that they move during the duration.");
+        setDescription("Deal a mighty blow to your target, dealing $1 physical damage and causing them to be wounded for the next $2 seconds. Wounded targets will take $3 bleeding damage for every block that they move during the duration.");
         setUsage("/skill rupture");
         setArgumentRange(0, 0);
         setIdentifiers("skill rupture");
@@ -174,7 +174,7 @@ public class SkillRupture extends TargettedSkill {
 
                 // Damage the target
                 addSpellTarget(hero.getEntity(), applierHero);
-                damageEntity(hero.getEntity(), applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+                damageEntity(hero.getEntity(), applier, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
                 lastLoc = location;
             }
@@ -194,7 +194,7 @@ public class SkillRupture extends TargettedSkill {
 
                 // Damage the target
                 addSpellTarget(monsterLE, applierHero);
-                damageEntity(monsterLE, applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+                damageEntity(monsterLE, applier, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
                 lastLoc = location;
             }

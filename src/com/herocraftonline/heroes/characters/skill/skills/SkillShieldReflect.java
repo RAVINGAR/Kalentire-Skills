@@ -133,9 +133,9 @@ public class SkillShieldReflect extends ActiveSkill {
                         addSpellTarget(target, defenderHero);
 
                         if (skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !skill.isType(SkillType.ARMOR_PIERCING))
-                            damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
+                            damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
                         else
-                            damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC);
+                            damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC, false);
 
                     default:
                         return;
@@ -163,11 +163,12 @@ public class SkillShieldReflect extends ActiveSkill {
                 switch (defenderPlayer.getItemInHand().getType()) {
                     case IRON_DOOR:
                     case WOOD_DOOR:
+                    case TRAP_DOOR:
                         double damageModifier = SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-damage-modifier", Double.valueOf(0.8), false);
                         double damage = event.getDamage() * damageModifier;
                         LivingEntity target = event.getDamager().getEntity();
                         addSpellTarget(target, defenderHero);
-                        damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
+                        damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
                     default:
                         return;
                 }

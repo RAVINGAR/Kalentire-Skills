@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -156,7 +155,7 @@ public class SkillTaunt extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            Messaging.send(player, tauntText, ChatColor.BOLD + applier.getName() + ChatColor.RESET);
+            Messaging.send(player, tauntText, applier.getName());
         }
 
         @Override

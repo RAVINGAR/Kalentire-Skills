@@ -32,7 +32,7 @@ public class SkillDreadAura extends ActiveSkill {
 
     public SkillDreadAura(Heroes plugin) {
         super(plugin, "DreadAura");
-        setDescription("You emit an aura of dread for $1 seconds. While active, you damage all enemies within $2 blocks every $3 seconds for $4 dark damage, and are healed for $5% of damage dealt. You cannot heal more than $6% health from this effect.");
+        setDescription("You emit an aura of dread for $1 seconds. While active, you damage all enemies within $2 blocks every $3 seconds for $4 dark damage, and are healed for $5% of damage dealt. You cannot heal more than $6 health from this effect.");
         setUsage("/skill dreadaura");
         setArgumentRange(0, 0);
         setIdentifiers("skill dreadaura");
@@ -53,14 +53,14 @@ public class SkillDreadAura extends ActiveSkill {
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.1), false);
 
-        int maximumHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
+        int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
         String formattedHealMult = Util.decFormat.format(healMult * 100.0);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", radius + "").replace("$3", formattedPeriod).replace("$4", formattedDamage).replace("$5", formattedHealMult).replace("$6", maximumHealing + "");
+        return getDescription().replace("$1", formattedDuration).replace("$2", radius + "").replace("$3", formattedPeriod).replace("$4", formattedDamage).replace("$5", formattedHealMult).replace("$6", maxHealing + "");
     }
 
     @Override
@@ -75,7 +75,7 @@ public class SkillDreadAura extends ActiveSkill {
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1000));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is emitting an aura of dread!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer emitting an aura of dread.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer emitting an aura of dread.");
 
         return node;
     }
@@ -96,9 +96,10 @@ public class SkillDreadAura extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
+        int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        hero.addEffect(new DreadAuraEffect(this, player, period, duration, healMult, radius));
+        hero.addEffect(new DreadAuraEffect(this, player, period, duration, healMult, maxHealing, radius));
 
         return SkillResult.NORMAL;
     }
@@ -106,10 +107,10 @@ public class SkillDreadAura extends ActiveSkill {
     public class DreadAuraEffect extends PeriodicExpirableEffect {
         private double healMult;
         private int radius;
-        private double totalHealthHealed;
-        private int maximumHealing;
+        private double totalHealthHealed = 0.0;
+        private int maxHealing;
 
-        public DreadAuraEffect(Skill skill, Player applier, long period, long duration, double healMult, int radius) {
+        public DreadAuraEffect(Skill skill, Player applier, long period, long duration, double healMult, int maxHealing, int radius) {
             super(skill, "DreadAura", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.MAGIC);
@@ -119,6 +120,7 @@ public class SkillDreadAura extends ActiveSkill {
 
             this.radius = radius;
             this.healMult = healMult;
+            this.maxHealing = maxHealing;
         }
 
         @Override
@@ -144,10 +146,10 @@ public class SkillDreadAura extends ActiveSkill {
 
                 double healing = damage * healMult;
 
-                if (totalHealthHealed < maximumHealing) {
+                if (totalHealthHealed < maxHealing) {
                     Heroes.log(Level.INFO, "DreadAura Debug: HealthToHeal: " + healing);
-                    if (healing + totalHealthHealed > maximumHealing) {
-                        healing = maximumHealing - totalHealthHealed;
+                    if (healing + totalHealthHealed > maxHealing) {
+                        healing = maxHealing - totalHealthHealed;
                         Heroes.log(Level.INFO, "DreadAura Debug: Hit Cap. New HealthToHeal: " + healing);
                     }
 
@@ -181,11 +183,11 @@ public class SkillDreadAura extends ActiveSkill {
         }
 
         public int getMaximumHealing() {
-            return maximumHealing;
+            return maxHealing;
         }
 
-        public void setMaximumHealing(int maximumHealing) {
-            this.maximumHealing = maximumHealing;
+        public void setMaximumHealing(int maxHealing) {
+            this.maxHealing = maxHealing;
         }
 
         public double getTotalHealthHealed() {
