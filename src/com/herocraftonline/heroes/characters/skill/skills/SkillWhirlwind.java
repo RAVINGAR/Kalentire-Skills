@@ -88,9 +88,7 @@ public class SkillWhirlwind extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
-
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(1), false);
-
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
         WhirlwindEffect effect = new WhirlwindEffect(this, player, period, duration, slowAmplifier, radius);

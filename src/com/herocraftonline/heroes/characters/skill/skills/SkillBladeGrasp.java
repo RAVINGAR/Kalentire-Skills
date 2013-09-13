@@ -74,8 +74,8 @@ public class SkillBladeGrasp extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is focusing on %target%").replace("%hero%", "$1").replace("%target%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer focusing on %target%.").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is focusing on %target%").replace("%hero%", "$2").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer focusing on %target%.").replace("%hero%", "$2").replace("%target%", "$1");
     }
 
     @Override
@@ -130,6 +130,7 @@ public class SkillBladeGrasp extends TargettedSkill {
                         if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
                             return;
                         }
+
                         if (damagerHero.hasEffectType(EffectType.DISARM)) {
                             return;
                         }
