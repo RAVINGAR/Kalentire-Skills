@@ -96,9 +96,6 @@ public class SkillEarthWall extends ActiveSkill {
         Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "DIRT"));
 
         Block tBlock = player.getTargetBlock(null, maxDist);
-        if (tBlock.getType() == Material.AIR) {
-            return SkillResult.INVALID_TARGET;
-        }
 
         ShieldWallEffect swEffect = new ShieldWallEffect(this, player, duration, tBlock, width, height, setter);
         hero.addEffect(swEffect);

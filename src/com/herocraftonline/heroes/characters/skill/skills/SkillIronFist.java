@@ -16,8 +16,10 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -62,12 +64,14 @@ public class SkillIronFist extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.125));
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(500));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
+        node.set("slow-amplifier", Integer.valueOf(1));
         node.set("horizontal-power", Double.valueOf(0.0));
         node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0));
         node.set("vertical-power", Double.valueOf(0.4));
         node.set("vertical-power-increase-per-intellect", Double.valueOf(0.015));
         node.set("ncp-exemption-duration", Integer.valueOf(1000));
+        node.set(SkillSetting.DELAY.node(), Integer.valueOf(500));
 
         return node;
     }
@@ -95,6 +99,10 @@ public class SkillIronFist extends ActiveSkill {
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.0), false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0), false);
         vPower += vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+
+        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(1), false);
 
         broadcastExecuteText(hero);
 
@@ -140,6 +148,10 @@ public class SkillIronFist extends ActiveSkill {
             }
 
             target.setVelocity(new Vector(xDir, vPower, zDir));
+
+            SlowEffect sEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+            targetCT.addEffect(sEffect);
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);

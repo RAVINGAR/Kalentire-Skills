@@ -92,6 +92,7 @@ public class SkillDoomwave extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
         int numEnderPearls = SkillConfigManager.getUseSetting(hero, this, "enderpearls-launched", 12, false);
         double numEnderPearlsIncrease = SkillConfigManager.getUseSetting(hero, this, "enderpearls-launched-per-intellect", 0.325, false);
         numEnderPearls += (int) (numEnderPearlsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));

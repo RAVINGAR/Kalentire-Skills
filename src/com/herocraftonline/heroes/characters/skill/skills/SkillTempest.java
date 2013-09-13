@@ -71,7 +71,7 @@ public class SkillTempest extends ActiveSkill {
         // Create a cicle of firework locations, based on skill radius.
         List<Location> fireworkLocations = circle(player, player.getLocation(), radius, 1, true, false, height);
         int fireworksSize = fireworkLocations.size();
-        long ticksPerFirework = (int) (100.00 / ((double) fireworksSize));
+        long ticksPerFirework = (int) (100 / fireworksSize);
 
         // Play the firework effects in a sequence
         for (int i = 0; i < fireworksSize; i++) {

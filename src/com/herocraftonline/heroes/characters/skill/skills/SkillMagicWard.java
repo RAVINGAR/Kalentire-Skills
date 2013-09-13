@@ -43,7 +43,7 @@ public class SkillMagicWard extends ActiveSkill {
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", Double.valueOf(0.2), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedDamageReduction = Util.decFormat.format((1.0 - damageReduction) * 100);
+        String formattedDamageReduction = Util.decFormat.format(damageReduction * 100);
 
         return getDescription().replace("$1", formattedDuration).replace("$1", formattedDamageReduction);
     }
