@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -34,7 +36,7 @@ public class SkillSeikuken extends ActiveSkill {
 
     public SkillSeikuken(Heroes plugin) {
         super(plugin, "Seikuken");
-        setDescription("Hone your martial art skill to it's fullest extent for $1 seconds. During the duration, you control everything within your arms lengths and retaliate against all melee attacks, disarmimg them for $2 seconds, and dealing $3 physical damage.");
+        setDescription("Hone your martial art skill to it's fullest extent for $1 seconds. During the duration, you control everything within your arms lengths and retaliate against all melee attacks, disarmimg them for $2 seconds, and dealing $3% weapon damage.");
         setUsage("/skill seikuken");
         setArgumentRange(0, 0);
         setIdentifiers("skill seikuken");
@@ -49,25 +51,26 @@ public class SkillSeikuken extends ActiveSkill {
 
         int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", Integer.valueOf(3000), false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.5), false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(0.4), false);
+        double damageMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase-per-intellect", Double.valueOf(0.00875), false);
+        damageMultiplier += hero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDisarmDuration = Util.decFormat.format(disarmDuration / 1000.0);
-        String formattedDamage = Util.decFormat.format(damage);
+        String formattedDamageMultiplier = Util.decFormat.format(damageMultiplier * 100);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDisarmDuration).replace("$3", formattedDamage);
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDisarmDuration).replace("$3", formattedDamageMultiplier);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(45));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.625));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(7500));
-        node.set("slow-amplifier", Integer.valueOf(3));
+        node.set("damage-multiplier", Double.valueOf(0.4));
+        node.set("damage-multiplier-increase-per-intellect", Double.valueOf(0.00875));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
+        node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), Integer.valueOf(75));
+        node.set("slow-amplifier", Integer.valueOf(35));
         node.set("disarm-duration", Integer.valueOf(3000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has created a Seikuken!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Seikuken has faded.");
@@ -90,6 +93,9 @@ public class SkillSeikuken extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
+        duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
+
         int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", Integer.valueOf(3000), false);
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(3), false);
 
@@ -124,29 +130,31 @@ public class SkillSeikuken extends ActiveSkill {
 
                     SeikukenEffect bgEffect = (SeikukenEffect) hero.getEffect("Seikuken");
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.5), false);
-                    damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-                    //                    Location damagerPlayerLoc = damagerPlayer.getLocation();
-                    //                    Location originalLoc = player.getLocation();
-                    //                    Location flippedLoc = new Location(originalLoc.getWorld(), originalLoc.getX(), originalLoc.getY(), originalLoc.getZ(), damagerPlayerLoc.getYaw() * -1, damagerPlayerLoc.getPitch() * -1);
-                    //                    player.teleport(flippedLoc);
-
                     event.setCancelled(true);
-                    player.setNoDamageTicks(player.getMaximumNoDamageTicks());      // Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
 
-                    // Don't retaliate against ranged attacks.
-                    if (event.getAttackerEntity() instanceof Projectile)
-                        return;
-                    
-                    addSpellTarget((Player) damagerPlayer, hero);
-                    damageEntity((Player) damagerPlayer, player, damage, DamageCause.ENTITY_ATTACK);
+                    // Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
+                    ((CraftLivingEntity) player).setNoDamageTicks(((CraftLivingEntity) player).getMaximumNoDamageTicks());
 
-                    damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+                    // Don't retaliate against ranged attacks, throw the arrow instead! :O
+                    if (event.getAttackerEntity() instanceof Projectile) {
+                        Arrow arrow = player.launchProjectile(Arrow.class);
+                        arrow.setShooter(player);
+                        arrow.setVelocity(arrow.getVelocity().multiply(3));
+                    }
+                    else {
+                        double damageMultiplier = SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", Double.valueOf(0.4), false);
+                        double damageMultiplierIncrease = SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier-increase-per-intellect", Double.valueOf(0.00875), false);
+                        damageMultiplier += hero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
+
+                        double damage = plugin.getDamageManager().getHighestItemDamage(player.getItemInHand().getType(), player) * damageMultiplier;
+                        addSpellTarget((Player) damagerPlayer, hero);
+                        damageEntity((Player) damagerPlayer, player, damage, DamageCause.ENTITY_ATTACK);
+
+                        damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+                    }
 
                     // Disarm checks
-                    Material heldItem = damagerPlayer.getItemInHand().getType();                    
+                    Material heldItem = damagerPlayer.getItemInHand().getType();
                     if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
                         return;
                     }
@@ -175,7 +183,7 @@ public class SkillSeikuken extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
 
             this.disarmDuration = disarmDuration;
-            
+
             addMobEffect(2, (int) ((duration / 1000) * 20), slowAmplifier, false);
         }
 

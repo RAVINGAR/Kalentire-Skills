@@ -34,10 +34,10 @@ public class SkillIntervene extends TargettedSkill {
     public SkillIntervene(Heroes plugin) {
         super(plugin, "Intervene");
         setDescription("Mark your target for Intervention for the next $1 seconds. While active, if you are within $2 blocks of your target when they are attacked, you will intervene the attack, taking $3% of the damage for them.");
-        setUsage("/skill intervene");
-        setArgumentRange(0, 0);
+        setUsage("/skill intervene <Target>");
+        setArgumentRange(0, 1);
         setIdentifiers("skill intervene");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.NO_SELF_TARGETTING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
@@ -90,7 +90,8 @@ public class SkillIntervene extends TargettedSkill {
         double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", Double.valueOf(0.50), false);
         int distanceRequired = SkillConfigManager.getUseSetting(hero, this, "distance-required-for-intervene", Integer.valueOf(5), false);
 
-        hero.addEffect(new InterveneEffect(this, player, duration, damageSplitPercent, distanceRequired));
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        targetHero.addEffect(new InterveneEffect(this, player, duration, damageSplitPercent, distanceRequired));
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
 
