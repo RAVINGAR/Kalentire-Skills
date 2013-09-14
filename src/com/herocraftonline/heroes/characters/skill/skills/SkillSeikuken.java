@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -129,18 +128,22 @@ public class SkillSeikuken extends ActiveSkill {
                     double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.5), false);
                     damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-                    Location damagerPlayerLoc = damagerPlayer.getLocation();
-                    Location originalLoc = player.getLocation();
-                    Location flippedLoc = new Location(originalLoc.getWorld(), originalLoc.getX(), originalLoc.getY(), originalLoc.getZ(), damagerPlayerLoc.getYaw() * -1, damagerPlayerLoc.getPitch() * -1);
-                    player.teleport(flippedLoc);
+                    //                    Location damagerPlayerLoc = damagerPlayer.getLocation();
+                    //                    Location originalLoc = player.getLocation();
+                    //                    Location flippedLoc = new Location(originalLoc.getWorld(), originalLoc.getX(), originalLoc.getY(), originalLoc.getZ(), damagerPlayerLoc.getYaw() * -1, damagerPlayerLoc.getPitch() * -1);
+                    //                    player.teleport(flippedLoc);
 
                     event.setCancelled(true);
+                    player.setNoDamageTicks(player.getMaximumNoDamageTicks());      // Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
+
+                    // Don't retaliate against ranged attacks.
+                    if (event.getAttackerEntity() instanceof Projectile)
+                        return;
                     
                     addSpellTarget((Player) damagerPlayer, hero);
                     damageEntity((Player) damagerPlayer, player, damage, DamageCause.ENTITY_ATTACK);
 
                     damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
-                    damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
 
                     // Disarm checks
                     Material heldItem = damagerPlayer.getItemInHand().getType();                    
@@ -154,6 +157,8 @@ public class SkillSeikuken extends ActiveSkill {
                     // Disarm attacker
                     long disarmDuration = bgEffect.getDisarmDuration();
                     damagerHero.addEffect(new DisarmEffect(skill, player, disarmDuration));
+
+                    damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }
             }
         }

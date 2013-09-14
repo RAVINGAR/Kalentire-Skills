@@ -67,7 +67,7 @@ public class SkillFauxBomb extends ActiveSkill {
         Player player = hero.getPlayer();
         Vector pLoc = player.getLocation().toVector();
         Vector direction = player.getLocation().getDirection();
-        Vector spawnLoc = pLoc.add(direction);
+        Vector spawnLoc = pLoc;//.add(direction);
         World world = player.getWorld();
 
         final LivingEntity sheep = (LivingEntity) world.spawnEntity(spawnLoc.toLocation(world), EntityType.SHEEP);
@@ -95,7 +95,7 @@ public class SkillFauxBomb extends ActiveSkill {
     private class SkillListener implements Listener {
         private SkillListener() {}
 
-        @EventHandler(priority = EventPriority.NORMAL)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDeath(EntityDeathEvent event) {
             LivingEntity living = event.getEntity();
             if (living instanceof Sheep) {
@@ -108,12 +108,12 @@ public class SkillFauxBomb extends ActiveSkill {
             }
         }
 
-        @EventHandler
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            Entity entity = event.getEntity();
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep) || event.getCause() == EntityDamageEvent.DamageCause.POISON)
+                return;
 
-            if (((entity instanceof Sheep)) && (event.getCause() != EntityDamageEvent.DamageCause.POISON))
-                explodeSheep((Sheep) entity);
+            explodeSheep((Sheep) event.getEntity());
         }
     }
 

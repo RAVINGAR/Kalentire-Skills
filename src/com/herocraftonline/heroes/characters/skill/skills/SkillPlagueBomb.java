@@ -39,7 +39,7 @@ public class SkillPlagueBomb extends ActiveSkill {
 
     public SkillPlagueBomb(Heroes plugin) {
         super(plugin, "PlagueBomb");
-        setDescription("You spawn a diseased explosive sheep. The sheep will detonate after $1 seconds, or after taking non-poison based damage. Upon detonation, the sheep will deal $2 damage to all enemies within $3 blocks.");
+        setDescription("You spawn a diseased explosive sheep. The sheep will detonate after $1 seconds, or after taking damage. Upon detonation, the sheep will deal $2 damage to all enemies within $3 blocks.");
         setUsage("/skill plaguebomb");
         setArgumentRange(0, 0);
         setIdentifiers("skill plaguebomb");
@@ -82,7 +82,7 @@ public class SkillPlagueBomb extends ActiveSkill {
 
         Vector pLoc = player.getLocation().toVector();
         Vector direction = player.getLocation().getDirection();
-        Vector spawnLoc = pLoc.add(direction);
+        Vector spawnLoc = pLoc;//.add(direction);
         World world = player.getWorld();
 
         final LivingEntity sheep = (LivingEntity) world.spawnEntity(spawnLoc.toLocation(world), EntityType.SHEEP);
@@ -109,7 +109,7 @@ public class SkillPlagueBomb extends ActiveSkill {
     private class SkillListener implements Listener {
         private SkillListener() {}
 
-        @EventHandler(priority = EventPriority.NORMAL)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDeath(EntityDeathEvent event) {
             LivingEntity living = event.getEntity();
             if (living instanceof Sheep) {
@@ -124,7 +124,7 @@ public class SkillPlagueBomb extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep))
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep) || event.getCause() == EntityDamageEvent.DamageCause.POISON)
                 return;
 
             explodeSheep((Sheep) event.getEntity());
