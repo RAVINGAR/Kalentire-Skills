@@ -1,23 +1,25 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
@@ -36,7 +38,7 @@ public class SkillSeikuken extends ActiveSkill {
 
     public SkillSeikuken(Heroes plugin) {
         super(plugin, "Seikuken");
-        setDescription("Hone your martial art skill to it's fullest extent for $1 seconds. During the duration, you control everything within your arms lengths and retaliate against all melee attacks, disarmimg them for $2 seconds, and dealing $3% weapon damage.");
+        setDescription("Creative a protective barrier around yourself for $1 seconds. The barrier allows you to retaliate against all incoming melee attacks, disarmimg them for $2 seconds, and dealing $3% of your weapon damage to them.");
         setUsage("/skill seikuken");
         setArgumentRange(0, 0);
         setIdentifiers("skill seikuken");
@@ -115,43 +117,57 @@ public class SkillSeikuken extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0 || event.getAttackerEntity() instanceof Projectile)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (event.getDamage() == 0 || !(event instanceof EntityDamageByEntityEvent)) {
                 return;
+            }
 
-            if (event.getEntity() instanceof Player && event.getDamager() instanceof Hero) {
-                Player player = (Player) event.getEntity();
-                Hero hero = plugin.getCharacterManager().getHero(player);
+            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            Entity defender = edbe.getEntity();
+            Entity attacker = edbe.getDamager();
+            if (defender instanceof Player && attacker instanceof Player) {
+
+                // Make sure we're dealing with a melee attack.
+                if ((plugin.getDamageManager().isSpellTarget(defender))) {
+                    return;
+                }
+
+                Player defenderPlayer = (Player) defender;
+                Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
 
                 // Check if they are under the effects of Seikuken
-                if (hero.hasEffect("Seikuken")) {
-                    Hero damagerHero = (Hero) event.getDamager();
-                    Player damagerPlayer = damagerHero.getPlayer();
+                if (defenderHero.hasEffect("Seikuken")) {
+                    SeikukenEffect bgEffect = (SeikukenEffect) defenderHero.getEffect("Seikuken");
 
-                    SeikukenEffect bgEffect = (SeikukenEffect) hero.getEffect("Seikuken");
+                    Player damagerPlayer = (Player) attacker;
+                    Hero damagerHero = plugin.getCharacterManager().getHero(damagerPlayer);
 
+                    for (Effect effect : defenderHero.getEffects()) {
+                        if (effect.isType(EffectType.STUN) || effect.isType(EffectType.DISABLE)) {
+                            defenderHero.removeEffect(bgEffect);
+                            return;
+                        }
+                    }
+
+                    // This wasn't working right so I'm removing it for now.
                     event.setCancelled(true);
 
                     // Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
-                    ((CraftLivingEntity) player).setNoDamageTicks(((CraftLivingEntity) player).getMaximumNoDamageTicks());
+                    Heroes.log(Level.INFO, "NodamageTicks Player Pre: " + defenderPlayer.getNoDamageTicks());
+                    defenderPlayer.setNoDamageTicks(defenderPlayer.getMaximumNoDamageTicks());
+                    Heroes.log(Level.INFO, "NodamageTicks Player Post: " + defenderPlayer.getNoDamageTicks());
 
                     // Don't retaliate against ranged attacks, throw the arrow instead! :O
-                    if (event.getAttackerEntity() instanceof Projectile) {
-                        Arrow arrow = player.launchProjectile(Arrow.class);
-                        arrow.setShooter(player);
-                        arrow.setVelocity(arrow.getVelocity().multiply(3));
-                    }
-                    else {
-                        double damageMultiplier = SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", Double.valueOf(0.4), false);
-                        double damageMultiplierIncrease = SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier-increase-per-intellect", Double.valueOf(0.00875), false);
-                        damageMultiplier += hero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
+                    double damageMultiplier = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier", Double.valueOf(0.4), false);
+                    double damageMultiplierIncrease = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier-increase-per-intellect", Double.valueOf(0.00875), false);
+                    damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
-                        double damage = plugin.getDamageManager().getHighestItemDamage(player.getItemInHand().getType(), player) * damageMultiplier;
-                        addSpellTarget((Player) damagerPlayer, hero);
-                        damageEntity((Player) damagerPlayer, player, damage, DamageCause.ENTITY_ATTACK);
+                    Material item = defenderPlayer.getItemInHand().getType();
+                    double damage = plugin.getDamageManager().getHighestItemDamage(item, defenderPlayer) * damageMultiplier;
+                    addSpellTarget((Player) damagerPlayer, defenderHero);
+                    damageEntity((Player) damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 
-                        damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
-                    }
+                    damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
 
                     // Disarm checks
                     Material heldItem = damagerPlayer.getItemInHand().getType();
@@ -164,7 +180,7 @@ public class SkillSeikuken extends ActiveSkill {
 
                     // Disarm attacker
                     long disarmDuration = bgEffect.getDisarmDuration();
-                    damagerHero.addEffect(new DisarmEffect(skill, player, disarmDuration));
+                    damagerHero.addEffect(new DisarmEffect(skill, defenderPlayer, disarmDuration));
 
                     damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }
@@ -184,7 +200,9 @@ public class SkillSeikuken extends ActiveSkill {
 
             this.disarmDuration = disarmDuration;
 
-            addMobEffect(2, (int) ((duration / 1000) * 20), slowAmplifier, false);
+            int tickDuration = (int) ((duration / 1000) * 20);
+            addMobEffect(2, tickDuration, slowAmplifier, false);
+            addMobEffect(8, tickDuration, 254, false);
         }
 
         public long getDisarmDuration() {

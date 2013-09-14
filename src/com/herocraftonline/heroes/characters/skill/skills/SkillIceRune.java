@@ -38,6 +38,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -161,6 +162,7 @@ public class SkillIceRune extends ActiveSkill {
 
                     // Create the effect and slow the target
                     SlowEffect sEffect = new SlowEffect(skill, player, duration, amplifier, applyText, expireText);
+                    sEffect.types.add(EffectType.DISPELLABLE);
 
                     // Damage and slow the target
                     addSpellTarget((LivingEntity) targEnt, hero);

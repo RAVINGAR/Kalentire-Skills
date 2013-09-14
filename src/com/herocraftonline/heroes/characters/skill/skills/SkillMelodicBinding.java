@@ -153,7 +153,9 @@ public class SkillMelodicBinding extends ActiveSkill {
                     damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
                 }
 
-                targetCT.addEffect(new SlowEffect(skill, player, slowDuration, slowAmount, null, null));
+                SlowEffect sEffect = new SlowEffect(skill, player, slowDuration, slowAmount, null, null);
+                sEffect.types.add(EffectType.DISPELLABLE);
+                targetCT.addEffect(sEffect);
             }
         }
 

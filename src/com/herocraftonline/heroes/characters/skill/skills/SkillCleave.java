@@ -43,7 +43,7 @@ public class SkillCleave extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set("weapons", Util.axes);
+        node.set("weapons", Util.swords);
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
         node.set("damage-multiplier", Double.valueOf(0.75));
 
@@ -55,7 +55,7 @@ public class SkillCleave extends TargettedSkill {
         Player player = hero.getPlayer();
         
         Material item = player.getItemInHand().getType();
-        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
+        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't cleave with that weapon!");
             return SkillResult.FAIL;
         }
@@ -72,7 +72,7 @@ public class SkillCleave extends TargettedSkill {
                 continue;
             }
 
-            addSpellTarget(target, hero);
+            addSpellTarget((LivingEntity) entity, hero);
             damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
         }
 

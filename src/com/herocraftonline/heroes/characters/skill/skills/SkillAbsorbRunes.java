@@ -41,12 +41,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -56,7 +58,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.ClassChangeEvent;
 import com.herocraftonline.heroes.api.events.HeroChangeLevelEvent;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
@@ -178,32 +179,31 @@ public class SkillAbsorbRunes extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
                 return;
             }
 
-            Hero hero = (Hero) event.getDamager();
-            Player player = hero.getPlayer();
-            LivingEntity target = (LivingEntity) event.getEntity();
+            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            Entity defender = edbe.getEntity();
+            Entity attacker = edbe.getDamager();
+
+            if (!(attacker instanceof Player))
+                return;
+
+            Player player = (Player) attacker;
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
+            LivingEntity target = (LivingEntity) defender;
 
             // Check to see if we actually have a Runelist bound to this player
             if (!heroRunes.containsKey(hero))
                 return;		// Player isn't on the hashmap. Do not continue
 
-            // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, target)) {
+            Material item = player.getItemInHand().getType();
+            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.name())) {
                 return;
             }
-
-            if (!(event.getAttackerEntity() instanceof Arrow)) {
-                Material item = player.getItemInHand().getType();
-                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.name())) {
-                    return;
-                }
-            }
-            else
-                return;     // Don't allow arrows.
 
             // Check to see if the hero can apply runes to his target right now
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);

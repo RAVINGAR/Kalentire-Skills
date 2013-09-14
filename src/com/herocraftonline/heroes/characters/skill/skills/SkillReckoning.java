@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -128,7 +129,9 @@ public class SkillReckoning extends ActiveSkill {
                 }
             }
 
-            targetCT.addEffect(new SlowEffect(this, player, duration, slowAmount, "", ""));
+            SlowEffect sEffect = new SlowEffect(this, player, duration, slowAmount, "", "");
+            sEffect.types.add(EffectType.DISPELLABLE);
+            targetCT.addEffect(sEffect);
 
             // Let's bypass the nocheat issues...
             if (ncpEnabled) {

@@ -1,19 +1,22 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
@@ -98,60 +101,61 @@ public class SkillEnvenom extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
+        public void onEntityDamage(EntityDamageEvent event) {
+            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
                 return;
             }
 
-            Hero hero = (Hero) event.getDamager();
-            Player player = hero.getPlayer();
+            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
 
+            // Check for both arrow shots and left click attacks. Determine player based on which we're dealing with
+            boolean arrow = false;
+            Player player;
+            Entity damagingEntity = ((EntityDamageByEntityEvent) event).getDamager();
+            if (damagingEntity instanceof Arrow) {
+                if (!(((Projectile) damagingEntity).getShooter() instanceof Player))
+                    return;
+
+                player = (Player) ((Projectile) damagingEntity).getShooter();
+                arrow = true;
+            }
+            else {
+                LivingEntity target = (LivingEntity) event.getEntity();
+                if (!(plugin.getDamageManager().isSpellTarget(target))) {
+                    if (!(subEvent.getDamager() instanceof Player))
+                        return;
+
+                    player = (Player) subEvent.getDamager();
+                }
+                else
+                    return;
+            }
+
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect("Envenom"))
                 return;
 
             LivingEntity target = (LivingEntity) event.getEntity();
 
-            // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, target)) {
-                return;
-            }
-
-
-            if (event.getAttackerEntity() instanceof Arrow) {
-                dealEnvenomDamage(hero, target);
-            }
-            else {
-                Material item = player.getItemInHand().getType();
-                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.name()))
+            ItemStack item = player.getItemInHand();
+            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
+                if (arrow == true)
                     dealEnvenomDamage(hero, target);
             }
-        }
+            else
+                dealEnvenomDamage(hero, target);
 
-        //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        //        public void onEntityDamage(EntityDamageEvent event) {
-        //            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
-        //                return;
-        //            }
-        //
-        //            Entity projectile = ((EntityDamageByEntityEvent) event).getDamager();
-        //            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player))) {
-        //                return;
-        //            }
-        //            final Arrow arrow = (Arrow) projectile;
-        //
-        //            Hero hero = plugin.getCharacterManager().getHero((Player) arrow.getShooter());
-        //            if (hero.hasEffect("Envenom"))
-        //                dealEnvenomDamage(hero, (LivingEntity) event.getEntity());
-        //        }
+            return;
+        }
 
         private void dealEnvenomDamage(Hero hero, LivingEntity target) {
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(5), false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(2.0), false);
-            damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
             // Damage the target
             addSpellTarget(target, hero);
-            damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
+            damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
         }
     }
 

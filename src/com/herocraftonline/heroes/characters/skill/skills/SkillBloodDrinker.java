@@ -5,17 +5,19 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -118,19 +120,20 @@ public class SkillBloodDrinker extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
                 return;
+            }
 
+            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            Entity attacker = edbe.getDamager();
+            
             // Handle outgoing
-            if (event.getDamager() instanceof Hero) {
-                Hero hero = (Hero) event.getDamager();
-                if (hero.hasEffect("BloodDrinking")) {
-                    if (!damageCheck(hero.getPlayer(), (LivingEntity) event.getEntity()))
-                        return;
-
+            if (attacker instanceof Player) {
+                Player player = (Player) attacker;
+                Hero hero = plugin.getCharacterManager().getHero(player);
+                if (hero.hasEffect("BloodDrinking"))
                     bloodDrinkHeal(hero, event.getDamage());
-                }
             }
         }
     }
@@ -142,14 +145,11 @@ public class SkillBloodDrinker extends ActiveSkill {
             int maxHealing = bdEffect.getMaximumHealing();
             double currentTotalHeal = bdEffect.getTotalHealthHealed();
 
-            Heroes.log(Level.INFO, "BloodDrinker Debug: MaxHealing: " + maxHealing + ", Current Total Heal: " + currentTotalHeal);
-
             if (currentTotalHeal < maxHealing) {
                 double healing = damage * bdEffect.getDamageHealingPercent();
                 Heroes.log(Level.INFO, "BloodDrinker Debug: HealthToHeal: " + healing);
                 if (healing + currentTotalHeal > maxHealing) {
                     healing = maxHealing - currentTotalHeal;
-                    Heroes.log(Level.INFO, "BloodDrinker Debug: Hit Cap. New HealthToHeal: " + healing);
                 }
 
                 HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, this);       // Bypass self heal nerf because this cannot be used on others.

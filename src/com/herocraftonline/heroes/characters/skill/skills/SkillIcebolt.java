@@ -19,6 +19,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -140,6 +141,7 @@ public class SkillIcebolt extends ActiveSkill {
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
                 
                 SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
+                iceSlowEffect.types.add(EffectType.DISPELLABLE);
                 LivingEntity target = (LivingEntity) event.getEntity();
                 plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
 

@@ -4,17 +4,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -128,11 +130,10 @@ public class SkillShieldReflect extends ActiveSkill {
                         double damage = event.getDamage() * damageModifier;
                         LivingEntity target = event.getDamager().getEntity();
 
-                        Skill skill = event.getSkill();
+                        Skill eSkill = event.getSkill();
 
                         addSpellTarget(target, defenderHero);
-
-                        if (skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !skill.isType(SkillType.ARMOR_PIERCING))
+                        if (eSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !eSkill.isType(SkillType.ARMOR_PIERCING))
                             damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
                         else
                             damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC, false);
@@ -143,37 +144,44 @@ public class SkillShieldReflect extends ActiveSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (!(event.getEntity() instanceof Player))
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (!(event instanceof EntityDamageByEntityEvent)) {
                 return;
+            }
 
-            Hero defenderHero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (defenderHero.hasEffect("ShieldReflect")) {
-                CharacterTemplate attackerCT = event.getDamager();
-                if ((attackerCT instanceof Player)) {
-                    Player attackerPlayer = (Player) attackerCT;
-                    if (plugin.getCharacterManager().getHero(attackerPlayer).hasEffect(getName())) {
-                        event.setCancelled(true);
-                        return;
+            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            Entity defender = edbe.getEntity();
+            Entity attacker = edbe.getDamager();
+            if (((attacker instanceof LivingEntity)) && ((defender instanceof Player))) {
+                Player defenderPlayer = (Player) defender;
+                Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
+                if (defenderHero.hasEffect("ShieldReflect")) {
+                    if ((attacker instanceof Player)) {
+                        Player attackerPlayer = (Player) attacker;
+                        if (plugin.getCharacterManager().getHero(attackerPlayer).hasEffect(getName())) {
+                            event.setCancelled(true);
+                            return;
+                        }
                     }
-                }
 
-                Player defenderPlayer = defenderHero.getPlayer();
-                switch (defenderPlayer.getItemInHand().getType()) {
-                    case IRON_DOOR:
-                    case WOOD_DOOR:
-                    case TRAP_DOOR:
-                        double damageModifier = SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-damage-modifier", Double.valueOf(0.8), false);
-                        double damage = event.getDamage() * damageModifier;
-                        LivingEntity target = event.getDamager().getEntity();
-                        addSpellTarget(target, defenderHero);
-                        damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
-                    default:
-                        return;
+                    switch (defenderPlayer.getItemInHand().getType()) {
+                        case IRON_DOOR:
+                        case WOOD_DOOR:
+                        case TRAP_DOOR:
+                            double damageModifier = SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-damage-modifier", Double.valueOf(0.8), false);
+                            double damage = event.getDamage() * damageModifier;
+
+                            LivingEntity target = (LivingEntity) attacker;
+                            addSpellTarget(target, defenderHero);
+                            damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
+                        default:
+                            return;
+                    }
                 }
             }
         }
+
     }
 
     public class ShieldReflectEffect extends ExpirableEffect {

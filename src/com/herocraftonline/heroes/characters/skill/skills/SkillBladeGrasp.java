@@ -5,16 +5,17 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -107,20 +108,24 @@ public class SkillBladeGrasp extends TargettedSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0 || event.getAttackerEntity() instanceof Projectile)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (event.getDamage() == 0 || !(event instanceof EntityDamageByEntityEvent)) {
                 return;
+            }
 
-            if (event.getEntity() instanceof Player && event.getDamager() instanceof Hero) {
-                Player player = (Player) event.getEntity();
-                Hero hero = plugin.getCharacterManager().getHero(player);
+            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            Entity defender = edbe.getEntity();
+            Entity attacker = edbe.getDamager();
+            if (defender instanceof Player && attacker instanceof Player) {
+                Player defenderPlayer = (Player) defender;
+                Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
 
                 // Check if bladegrasping
-                if (hero.hasEffect("BladeGrasping")) {
-                    Hero damagerHero = (Hero) event.getDamager();
-                    Player damagerPlayer = damagerHero.getPlayer();
+                if (defenderHero.hasEffect("BladeGrasping")) {
+                    Player damagerPlayer = (Player) attacker;
+                    Hero damagerHero = plugin.getCharacterManager().getHero(damagerPlayer);
 
-                    BladeGraspEffect bgEffect = (BladeGraspEffect) hero.getEffect("BladeGrasping");
+                    BladeGraspEffect bgEffect = (BladeGraspEffect) defenderHero.getEffect("BladeGrasping");
 
                     // Compare attacker to bladegrasp target
                     if (bgEffect.getFocusedTarget().equals(damagerPlayer)) {
@@ -130,26 +135,25 @@ public class SkillBladeGrasp extends TargettedSkill {
                         if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
                             return;
                         }
-
                         if (damagerHero.hasEffectType(EffectType.DISARM)) {
                             return;
                         }
 
                         // Disarm attacker
                         long disarmDuration = bgEffect.getDisarmDuration();
-                        damagerHero.addEffect(new DisarmEffect(skill, player, disarmDuration));
+                        damagerHero.addEffect(new DisarmEffect(skill, defenderPlayer, disarmDuration));
 
                         // Modify damage;
                         double damageModifier = 1 + bgEffect.getDamageIncreasePercent();
                         event.setDamage(event.getDamage() * damageModifier);
 
                         // Remove bladegrasp as it has ran it's course.
-                        hero.removeEffect(bgEffect);
+                        defenderHero.removeEffect(bgEffect);
 
                         damagerPlayer.getWorld().playEffect(damagerPlayer.getLocation(), Effect.EXTINGUISH, 3);
                         damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
 
-                        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 0.5F);
+                        defenderPlayer.getWorld().playSound(defenderPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                     }
                 }
 

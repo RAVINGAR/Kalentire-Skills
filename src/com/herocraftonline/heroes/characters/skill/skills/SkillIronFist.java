@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -156,6 +157,7 @@ public class SkillIronFist extends ActiveSkill {
             target.setVelocity(new Vector(xDir, vPower, zDir));
 
             SlowEffect sEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
+            sEffect.types.add(EffectType.DISPELLABLE);
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             targetCT.addEffect(sEffect);
         }
