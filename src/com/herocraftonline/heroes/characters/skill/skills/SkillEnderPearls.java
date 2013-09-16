@@ -164,17 +164,38 @@ public class SkillEnderPearls extends PassiveSkill {
 
                 // Store some of the original teleport location variables
                 Location teleportLoc = event.getTo();
+                Block teleportLocBlock = teleportLoc.getBlock();
                 float pitch = teleportLoc.getPitch();
                 float yaw = teleportLoc.getYaw();
 
-                // Move our location to the block it landed on, and center it. This fixes most exploit issues.
+                boolean validLocation = false;
+                if (Util.transparentBlocks.contains(teleportLocBlock)) {
+                    if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
+                        validLocation = true;
+                    }
+                }
+
+                if (!validLocation) {
+                    // Give them one more block of wiggle room if we've got an invalid location.
+                    teleportLoc = teleportLoc.subtract(0, 1, 0);
+                    teleportLocBlock = teleportLoc.getBlock();
+
+                    if (Util.transparentBlocks.contains(teleportLocBlock.getType()) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType()))
+                        validLocation = true;
+                }
+
+                if (!validLocation) {
+                    Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
+                    return;
+                }
+
+                // Move our location to the block it landed on, and center it. This fixes several exploit issues.
                 teleportLoc = teleportLoc.getBlock().getLocation().clone();
                 teleportLoc.add(new Vector(.5, 0, .5));
+                teleportLocBlock = teleportLoc.getBlock();
 
                 teleportLoc.setPitch(pitch);
                 teleportLoc.setYaw(yaw);
-
-                Block teleportLocBlock = teleportLoc.getBlock();
 
                 // Some block types are still relatively exploitable however, so we should check against those.
                 switch (teleportLocBlock.getType()) {
@@ -189,14 +210,8 @@ public class SkillEnderPearls extends PassiveSkill {
                         Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
                         break;
                     default:
-                        if (!Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
-                            Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
-                            break;
-                        }
-                        else {
-                            event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
-                            break;
-                        }
+                        event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
+                        break;
                 }
                 return;
             }
