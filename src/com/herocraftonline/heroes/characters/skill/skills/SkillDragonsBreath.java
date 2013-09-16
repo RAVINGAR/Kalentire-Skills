@@ -8,7 +8,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -99,19 +98,14 @@ public class SkillDragonsBreath extends ActiveSkill {
         while (iter.hasNext()) {
             tempBlock = iter.next();
 
-            if ((Util.transparentBlocks.contains(tempBlock.getType())
-            && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
-            || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
-
+            if (Util.transparentBlocks.contains(tempBlock.getType())) {
                 final List<Location> locations = new ArrayList<Location>();
                 if (isXDirection) {
                     for (int xDir = -1; xDir < 1 + 1; xDir++) {
                         Block radiusBlocks = tempBlock.getRelative(xDir, 0, 0);
 
-                        if ((Util.transparentBlocks.contains(radiusBlocks.getType())
-                        && (Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.UP).getType())
-                        || Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.DOWN).getType())))) {
-                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, .5, .5)));
+                        if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
+                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
                         }
                     }
                 }
@@ -119,10 +113,8 @@ public class SkillDragonsBreath extends ActiveSkill {
                     for (int zDir = -1; zDir < 1 + 1; zDir++) {
                         Block radiusBlocks = tempBlock.getRelative(0, 0, zDir);
 
-                        if ((Util.transparentBlocks.contains(radiusBlocks.getType())
-                        && (Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.UP).getType())
-                        || Util.transparentBlocks.contains(radiusBlocks.getRelative(BlockFace.DOWN).getType())))) {
-                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, .5, .5)));
+                        if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
+                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
                         }
                     }
                 }

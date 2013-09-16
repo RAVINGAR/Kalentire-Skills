@@ -6,7 +6,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -91,11 +90,8 @@ public class SkillGreatCombustion extends ActiveSkill {
         while (iter.hasNext()) {
             tempBlock = iter.next();
 
-            if ((Util.transparentBlocks.contains(tempBlock.getType())
-            && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
-            || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
+            if (Util.transparentBlocks.contains(tempBlock.getType()))
                 targetBlock = tempBlock;
-            }
             else
                 break;
         }

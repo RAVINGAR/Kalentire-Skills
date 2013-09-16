@@ -7,7 +7,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -97,18 +96,15 @@ public class SkillFireblast extends ActiveSkill {
         while (iter.hasNext()) {
             tempBlock = iter.next();
 
-            if ((Util.transparentBlocks.contains(tempBlock.getType())
-            && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
-            || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
+            if (Util.transparentBlocks.contains(tempBlock.getType()))
                 targetBlock = tempBlock;
-            }
             else
                 break;
         }
 
         if (targetBlock != null) {
             Location blastLocation = targetBlock.getLocation().clone();
-            blastLocation.add(new Vector(.5, .5, .5));
+            blastLocation.add(new Vector(.5, 0, .5));
             
             try {
                 fplayer.playFirework(blastLocation.getWorld(), blastLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());

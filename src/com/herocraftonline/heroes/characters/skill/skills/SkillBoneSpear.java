@@ -7,8 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -95,12 +95,9 @@ public class SkillBoneSpear extends ActiveSkill {
         int numBlocks = 0;
         while (iter.hasNext()) {
             tempBlock = iter.next();
-
-            if ((Util.transparentBlocks.contains(tempBlock.getType())
-            && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
-            || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
-
-                final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, .5, .5));
+            Material tempBlockType = tempBlock.getType();
+            if (Util.transparentBlocks.contains(tempBlockType)) {
+                final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {

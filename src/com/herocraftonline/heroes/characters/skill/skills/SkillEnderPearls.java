@@ -1,10 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
@@ -22,6 +25,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -148,11 +152,15 @@ public class SkillEnderPearls extends PassiveSkill {
         public void onPlayerTeleport(PlayerTeleportEvent event) {
             if (event.getCause() == TeleportCause.ENDER_PEARL) {
 
+                event.setCancelled(true);       // Cancel the event because we don't want players to be dealt "ender pearl damage"
+
                 Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-                if (hero.hasEffect("Root")) {
-                    event.setCancelled(true);
+                if (hero.hasEffectType(EffectType.ROOT)) {
                     Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "You cannot teleport while rooted!");
+                    return;
                 }
+
+                Heroes.log(Level.INFO, "Loc: " + event.getTo().toVector().toString());
 
                 // Store some of the original teleport location variables
                 Location teleportLoc = event.getTo();
@@ -178,13 +186,17 @@ public class SkillEnderPearls extends PassiveSkill {
                     case THIN_GLASS:
                     case GLASS:
                         // Cancel immediately when dealing with exploitable blocks.
-                        event.setCancelled(true);
                         Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
                         break;
                     default:
-                        event.setCancelled(true);       // Cancel the event because we don't want players to be dealt "ender pearl damage"
-                        event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
-                        break;
+                        if (!Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
+                            Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
+                            break;
+                        }
+                        else {
+                            event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
+                            break;
+                        }
                 }
                 return;
             }

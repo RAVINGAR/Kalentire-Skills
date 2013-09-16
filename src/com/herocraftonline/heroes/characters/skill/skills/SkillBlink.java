@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -66,8 +67,9 @@ public class SkillBlink extends ActiveSkill {
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.15, false);
         distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
 
-        Block prev = null;
-        Block b;
+        Block validFinalBlock = null;
+        Block currentBlock;
+
         BlockIterator iter = null;
         try {
             iter = new BlockIterator(player, distance);
@@ -77,17 +79,33 @@ public class SkillBlink extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         while (iter.hasNext()) {
-            b = iter.next();
-            if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
-                prev = b;
+            currentBlock = iter.next();
+            Material currentBlockType = currentBlock.getType();
+
+            if (Util.transparentBlocks.contains(currentBlockType)) {
+                if (Util.transparentBlocks.contains(currentBlock.getRelative(BlockFace.UP).getType())) {
+                    validFinalBlock = currentBlock;
+                }
             }
             else {
                 break;
             }
         }
-        if (prev != null) {
-            Location teleport = prev.getLocation().clone();
-            teleport.add(new Vector(.5, .5, .5));
+
+        // Old Method
+        //        while (iter.hasNext()) {
+        //            b = iter.next();
+        //            if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
+        //                prev = b;
+        //            }
+        //            else {
+        //                break;
+        //            }
+        //        }
+
+        if (validFinalBlock != null) {
+            Location teleport = validFinalBlock.getLocation().clone();
+            teleport.add(new Vector(.5, 0, .5));
 
             // Set the blink location yaw/pitch to that of the player
             teleport.setPitch(loc.getPitch());
