@@ -20,7 +20,7 @@ public class SkillSummonBat extends ActiveSkill {
 
     public SkillSummonBat(Heroes plugin) {
         super(plugin, "SummonBat");
-        setDescription("100% chance to spawn 1 bat, $1% for 2, and $2% for 3.");
+        setDescription("100% chance to spawn 1 bat, $2% for 2, and $3% for 3.");
         setUsage("/skill bat");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonbat", "skill bat");

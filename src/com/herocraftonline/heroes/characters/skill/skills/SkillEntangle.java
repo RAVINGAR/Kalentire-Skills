@@ -117,11 +117,10 @@ public class SkillEntangle extends TargettedSkill {
         //            this.skill = skill;
         //        }
 
-        @EventHandler(priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0) {
+            if (event.getDamage() == 0)
                 return;
-            }
 
             if (!(event.getEntity() instanceof LivingEntity))
                 return;

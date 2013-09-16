@@ -21,7 +21,7 @@ public class SkillSummonCow extends ActiveSkill {
 
     public SkillSummonCow(Heroes plugin) {
         super(plugin, "SummonCow");
-        setDescription("100% chance to spawn 1 cow, $1% for 2, and $2% for 3.");
+        setDescription("100% chance to spawn 1 cow, $2% for 2, and $3% for 3.");
         setUsage("/skill cow");
         setArgumentRange(0, 0);
         setIdentifiers("skill summoncow", "skill cow");

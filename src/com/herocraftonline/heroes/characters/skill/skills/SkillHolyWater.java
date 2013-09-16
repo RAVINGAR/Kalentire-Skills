@@ -7,13 +7,9 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.ThrownPotion;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -146,7 +142,7 @@ public class SkillHolyWater extends ActiveSkill {
 
                 if (!(entity instanceof Player)) {
                     // If not, we need to check to see if they are undead
-                    if (!(isUndead((LivingEntity) entity)))
+                    if (!(Util.isUndead(plugin, (LivingEntity) entity)))
                         continue;
                     else {
                         // If they are undead, damage them.
@@ -181,9 +177,5 @@ public class SkillHolyWater extends ActiveSkill {
                 }
             }
         }
-    }
-
-    private boolean isUndead(Entity entity) {
-        return entity instanceof Zombie || entity instanceof Skeleton || entity instanceof PigZombie || entity instanceof Ghast;
     }
 }

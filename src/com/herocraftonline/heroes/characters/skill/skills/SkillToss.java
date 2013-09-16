@@ -36,7 +36,7 @@ public class SkillToss extends TargettedSkill {
         setUsage("/skill toss");
         setArgumentRange(0, 0);
         setIdentifiers("skill toss");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.INTERRUPTING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;

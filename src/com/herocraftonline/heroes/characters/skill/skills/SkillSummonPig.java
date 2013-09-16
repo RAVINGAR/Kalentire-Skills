@@ -20,7 +20,7 @@ public class SkillSummonPig extends ActiveSkill {
 
     public SkillSummonPig(Heroes plugin) {
         super(plugin, "SummonPig");
-        setDescription("100% chance to spawn 1 pig, $1% for 2, and $2% for 3.");
+        setDescription("100% chance to spawn 1 pig, $2% for 2, and $3% for 3.");
         setUsage("/skill pig");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonpig", "skill pig");

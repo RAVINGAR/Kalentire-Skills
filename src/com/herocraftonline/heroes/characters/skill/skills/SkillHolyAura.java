@@ -6,12 +6,8 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -205,7 +201,7 @@ public class SkillHolyAura extends ActiveSkill {
                 }
 
                 LivingEntity lETarget = (LivingEntity) entity;
-                if (!(isUndead(lETarget)))
+                if (!(Util.isUndead(plugin, lETarget)))
                     continue;
 
                 // Damage for 50% of heal value
@@ -216,9 +212,5 @@ public class SkillHolyAura extends ActiveSkill {
 
         @Override
         public void tickMonster(Monster monster) {}
-    }
-
-    private boolean isUndead(Entity entity) {
-        return entity instanceof Zombie || entity instanceof Skeleton || entity instanceof PigZombie || entity instanceof Ghast;
     }
 }

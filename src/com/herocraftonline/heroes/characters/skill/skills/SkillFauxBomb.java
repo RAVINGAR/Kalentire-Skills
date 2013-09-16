@@ -67,7 +67,7 @@ public class SkillFauxBomb extends ActiveSkill {
         Player player = hero.getPlayer();
         Vector pLoc = player.getLocation().toVector();
         Vector direction = player.getLocation().getDirection();
-        Vector spawnLoc = pLoc;//.add(direction);
+        Vector spawnLoc = pLoc.add(direction);
         World world = player.getWorld();
 
         final LivingEntity sheep = (LivingEntity) world.spawnEntity(spawnLoc.toLocation(world), EntityType.SHEEP);

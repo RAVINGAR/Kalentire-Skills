@@ -45,7 +45,7 @@ public class SkillMagicWard extends ActiveSkill {
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageReduction = Util.decFormat.format(damageReduction * 100);
 
-        return getDescription().replace("$1", formattedDuration).replace("$1", formattedDamageReduction);
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamageReduction);
     }
 
     @Override
