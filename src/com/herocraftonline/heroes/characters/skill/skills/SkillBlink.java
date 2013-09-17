@@ -63,9 +63,21 @@ public class SkillBlink extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
+        Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
+
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.15, false);
         distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
+
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                distance /= 2;
+                break;
+            default:
+                break;
+        }
 
         Block validFinalBlock = null;
         Block currentBlock;

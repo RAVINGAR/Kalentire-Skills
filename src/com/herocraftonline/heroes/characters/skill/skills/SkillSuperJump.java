@@ -3,7 +3,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -66,6 +68,8 @@ public class SkillSuperJump extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
+
         if (ncpEnabled) {
             if (!player.isOp()) {
                 long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
@@ -87,6 +91,16 @@ public class SkillSuperJump extends ActiveSkill {
         if (vPower > 4.0)
             vPower = 4.0;
 
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                vPower /= 2;
+                break;
+            default:
+                break;
+        }
+
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -100,6 +114,16 @@ public class SkillSuperJump extends ActiveSkill {
 
         if (hPower > 8.0)
             hPower = 8.0;
+
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                hPower /= 2;
+                break;
+            default:
+                break;
+        }
 
         velocity.multiply(new Vector(hPower, 1, hPower));
 

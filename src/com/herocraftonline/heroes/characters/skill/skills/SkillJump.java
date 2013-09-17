@@ -99,6 +99,16 @@ public class SkillJump extends ActiveSkill {
         if (vPower > 2.0)
             vPower = 2.0;
 
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                vPower /= 2;
+                break;
+            default:
+                break;
+        }
+
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -110,13 +120,24 @@ public class SkillJump extends ActiveSkill {
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
         hPower += agility * hPowerIncrease;
+
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                hPower /= 2;
+                break;
+            default:
+                break;
+        }
+
         velocity.multiply(new Vector(hPower, 1, hPower));
 
         // Jump!
         player.setVelocity(velocity);
         player.setFallDistance(-8f);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
 
         return SkillResult.NORMAL;
     }

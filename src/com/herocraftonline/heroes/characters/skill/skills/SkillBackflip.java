@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -112,6 +113,16 @@ public class SkillBackflip extends ActiveSkill {
         if (vPower > 2.0)
             vPower = 2.0;
 
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                vPower /= 2;
+                break;
+            default:
+                break;
+        }
+
         Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
@@ -123,6 +134,17 @@ public class SkillBackflip extends ActiveSkill {
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
         hPower += agility * hPowerIncrease;
+
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                hPower /= 2;
+                break;
+            default:
+                break;
+        }
+
         velocity.multiply(new Vector(-hPower, 1, -hPower));
 
         // Backflip!
@@ -139,6 +161,8 @@ public class SkillBackflip extends ActiveSkill {
                     shurikenSkill.shurikenToss(player);
             }
         }
+
+        player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
 
         if (hero.canUseSkill("Frontflip")) {
             long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
