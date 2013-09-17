@@ -3,10 +3,12 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -15,6 +17,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillRechargeRunestone extends ActiveSkill {
     public SkillRechargeRunestone(Heroes plugin) {
@@ -118,6 +121,10 @@ public class SkillRechargeRunestone extends ActiveSkill {
                             loreData.set(1, ChatColor.AQUA + "Uses: " + maxUses + "/" + maxUses);
                             metaData.setLore(loreData);
                             heldItem.setItemMeta(metaData);
+
+                            // Play Effects
+                            Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                            player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
                             broadcastExecuteText(hero);
 

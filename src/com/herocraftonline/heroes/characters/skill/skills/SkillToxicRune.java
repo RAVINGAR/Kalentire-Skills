@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -111,7 +112,8 @@ public class SkillToxicRune extends ActiveSkill {
         // Add the ToxicRune to the rune queue here
         Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, toxicRune));
 
-        // Play Sound
+        // Play Effects
+        Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
@@ -150,6 +152,8 @@ public class SkillToxicRune extends ActiveSkill {
                     if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
                         return;
 
+                    Player player = hero.getPlayer();
+
                     // Set the variables
                     long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 9000, false);
                     long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
@@ -168,8 +172,9 @@ public class SkillToxicRune extends ActiveSkill {
                     CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
                     targCT.addEffect(pEffect);
 
-                    // Play sound
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    // Play Effects
+                    Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                    player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
                 }
             }, (long) (0.1 * 20));
 

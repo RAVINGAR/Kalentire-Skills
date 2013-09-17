@@ -32,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -105,10 +106,8 @@ public class SkillVoidRune extends ActiveSkill {
         // Add the Rune to the RuneWord queue here
         Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, voidRune));
 
-        // Play Firework
-        // CODE HERE
-
-        // Play Sound
+        // Play Effects
+        Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
@@ -171,7 +170,8 @@ public class SkillVoidRune extends ActiveSkill {
                     // Announce that the player has been hit with the skill	
                     broadcast(targEnt.getLocation(), applyText, targCT.getName());
 
-                    // Play sound
+                    // Play Effects
+                    Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
                     player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
                 }
             }, (long) (0.1 * 20));

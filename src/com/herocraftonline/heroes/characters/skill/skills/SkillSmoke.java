@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -69,8 +68,6 @@ public class SkillSmoke extends ActiveSkill {
         broadcastExecuteText(hero);
 
         Player player = hero.getPlayer();
-
-        player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 4);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false);
         hero.addEffect(new SmokeEffect(this, player, duration));
