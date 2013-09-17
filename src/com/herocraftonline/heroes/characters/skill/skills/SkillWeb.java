@@ -113,15 +113,17 @@ public class SkillWeb extends TargettedSkill {
         private Location loc;
 
         public WebEffect(Skill skill, Player applier, long webDuration, long rootDuration) {
-            super(skill, "Web", applier, webDuration);
+            super(skill, "Web", applier, webDuration, applyText, null);
 
             types.add(EffectType.MAGIC);
             types.add(EffectType.HARMFUL);
 
             this.applier = applier;
 
-            addMobEffect(2, (int) ((rootDuration / 1000.0) * 20), 127, false);      // Max slowness is 127
-            addMobEffect(8, (int) ((rootDuration / 1000.0) * 20), 128, false);      // Max negative jump boost
+            if (rootDuration > 0) {
+                addMobEffect(2, (int) ((rootDuration / 1000.0) * 20), 127, false);      // Max slowness is 127
+                addMobEffect(8, (int) ((rootDuration / 1000.0) * 20), 128, false);      // Max negative jump boost
+            }
         }
 
         @Override
@@ -130,8 +132,6 @@ public class SkillWeb extends TargettedSkill {
 
             loc = monster.getEntity().getLocation();
 
-            broadcast(loc, applyText, applier.getDisplayName(), Messaging.getLivingEntityName(monster));
-
             createWeb();
         }
 
@@ -139,10 +139,7 @@ public class SkillWeb extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
 
-            Player player = hero.getPlayer();
-            loc = player.getLocation();
-
-            broadcast(loc, applyText, applier.getDisplayName(), player.getDisplayName());
+            loc = hero.getPlayer().getLocation();
 
             createWeb();
         }
@@ -166,15 +163,29 @@ public class SkillWeb extends TargettedSkill {
             Block block = loc.getBlock();
             attemptToChangeBlock(block.getRelative(BlockFace.DOWN).getLocation());
             for (BlockFace face : BlockFace.values()) {
-                if (face.toString().contains("_") || face == BlockFace.UP || face == BlockFace.DOWN) {
+                if (face == BlockFace.UP || face == BlockFace.DOWN) {
                     continue;
                 }
-                Location blockLoc = block.getRelative(face).getLocation();
-                attemptToChangeBlock(blockLoc);
-                blockLoc = block.getRelative(getClockwise(face)).getLocation();
-                attemptToChangeBlock(blockLoc);
-                blockLoc = block.getRelative(face, 2).getLocation();
-                attemptToChangeBlock(blockLoc);
+
+                Location currentFaceLoc = block.getRelative(face).getLocation();
+                attemptToChangeBlock(currentFaceLoc);
+
+                attemptToChangeBlock(currentFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
+                attemptToChangeBlock(currentFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
+
+                Location clockwiseFaceLoc = block.getRelative(getClockwise(face)).getLocation();
+                attemptToChangeBlock(clockwiseFaceLoc);
+
+                attemptToChangeBlock(clockwiseFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
+                attemptToChangeBlock(clockwiseFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
+
+                if (!(face.toString().contains("_"))) {
+                    Location sideBlock = block.getRelative(face, 2).getLocation();
+                    attemptToChangeBlock(sideBlock);
+
+                    attemptToChangeBlock(sideBlock.getBlock().getRelative(BlockFace.UP).getLocation());
+                    attemptToChangeBlock(sideBlock.getBlock().getRelative(BlockFace.DOWN).getLocation());
+                }
             }
         }
 
@@ -190,8 +201,6 @@ public class SkillWeb extends TargettedSkill {
         private void attemptToChangeBlock(Location location) {
             Block block = location.getBlock();
             switch (block.getType()) {
-                case WATER:
-                case LAVA:
                 case SNOW:
                 case AIR:
                     changedBlocks.add(location);

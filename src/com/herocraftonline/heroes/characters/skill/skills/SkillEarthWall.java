@@ -169,8 +169,6 @@ public class SkillEarthWall extends ActiveSkill {
         private void attemptToChangeBlock(Location location) {
             Block block = location.getBlock();
             switch (block.getType()) {
-                case WATER:
-                case LAVA:
                 case SNOW:
                 case AIR:
                     changedBlocks.add(location);

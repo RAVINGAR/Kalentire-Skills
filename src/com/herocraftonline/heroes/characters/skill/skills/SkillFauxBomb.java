@@ -110,10 +110,13 @@ public class SkillFauxBomb extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep) || event.getCause() == DamageCause.POISON)
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep))
                 return;
 
-            explodeSheep((Sheep) event.getEntity());
+            if (event.getCause() == EntityDamageEvent.DamageCause.POISON)
+                event.setCancelled(true);
+            else
+                explodeSheep((Sheep) event.getEntity());
         }
     }
 

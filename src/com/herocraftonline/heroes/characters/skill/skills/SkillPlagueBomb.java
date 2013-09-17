@@ -124,10 +124,13 @@ public class SkillPlagueBomb extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep) || event.getCause() == EntityDamageEvent.DamageCause.POISON)
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep))
                 return;
 
-            explodeSheep((Sheep) event.getEntity());
+            if (event.getCause() == EntityDamageEvent.DamageCause.POISON)
+                event.setCancelled(true);
+            else
+                explodeSheep((Sheep) event.getEntity());
         }
     }
 
@@ -151,14 +154,12 @@ public class SkillPlagueBomb extends ActiveSkill {
 
                 List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
                 for (Entity entity : entities) {
-                    if (!(entity instanceof LivingEntity)) {
+                    if (!(entity instanceof LivingEntity))
                         continue;
-                    }
 
                     // Check if the target is damagable
-                    if (!damageCheck(player, (LivingEntity) entity)) {
+                    if (!damageCheck(player, (LivingEntity) entity))
                         continue;
-                    }
 
                     LivingEntity target = (LivingEntity) entity;
 
@@ -166,7 +167,6 @@ public class SkillPlagueBomb extends ActiveSkill {
                         // Damage the target
                         addSpellTarget(target, hero);
                         damageEntity(target, player, damage, DamageCause.MAGIC);
-
                     }
                 }
             }
