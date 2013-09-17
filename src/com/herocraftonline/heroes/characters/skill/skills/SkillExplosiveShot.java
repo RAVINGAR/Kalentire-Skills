@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
@@ -222,7 +222,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                 // Damage target
                 LivingEntity target = (LivingEntity) entity;
                 addSpellTarget(target, hero);
-                damageEntity(target, shooter, damage, EntityDamageEvent.DamageCause.MAGIC);
+                damageEntity(target, shooter, damage, DamageCause.MAGIC);
 
                 // Do a knock up/back effect.
                 Location targetLoc = target.getLocation();

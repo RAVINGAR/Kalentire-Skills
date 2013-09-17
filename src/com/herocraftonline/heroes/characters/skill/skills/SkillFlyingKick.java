@@ -4,7 +4,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -68,7 +68,7 @@ public class SkillFlyingKick extends TargettedSkill {
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         addSpellTarget(target, hero);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+        damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK, false);
 
         double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.9), false);
         double verticalPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.9), false);

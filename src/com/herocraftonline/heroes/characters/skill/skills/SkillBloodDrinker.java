@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -121,7 +122,7 @@ public class SkillBloodDrinker extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent) || event.getCause() != DamageCause.ENTITY_ATTACK) {
                 return;
             }
 

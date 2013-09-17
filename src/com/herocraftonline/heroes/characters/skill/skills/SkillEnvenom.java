@@ -120,6 +120,9 @@ public class SkillEnvenom extends ActiveSkill {
                 arrow = true;
             }
             else {
+                if (event.getCause() != DamageCause.ENTITY_ATTACK)
+                    return;
+
                 LivingEntity target = (LivingEntity) event.getEntity();
                 if (!(plugin.getDamageManager().isSpellTarget(target))) {
                     if (!(subEvent.getDamager() instanceof Player))

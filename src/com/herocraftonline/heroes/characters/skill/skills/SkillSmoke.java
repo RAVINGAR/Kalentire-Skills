@@ -72,7 +72,7 @@ public class SkillSmoke extends ActiveSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false);
 
-        Util.playClientEffect(player, "largesmoke", new Vector(0, 0, 0), 1F, 10, true);
+        Util.playClientEffect(player, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
         hero.addEffect(new SmokeEffect(this, player, duration));
 
         return SkillResult.NORMAL;
@@ -92,7 +92,7 @@ public class SkillSmoke extends ActiveSkill {
             if (applyText != null && applyText.length() > 0) {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
-                broadcast(player.getLocation(), expireText, player.getDisplayName());
+                broadcast(player.getLocation(), applyText, player.getDisplayName());
             }
         }
 

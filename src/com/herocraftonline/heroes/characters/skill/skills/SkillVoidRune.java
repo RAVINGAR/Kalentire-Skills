@@ -31,7 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -161,7 +161,7 @@ public class SkillVoidRune extends ActiveSkill {
 
                     // Damage and silence the target
                     addSpellTarget((LivingEntity) targEnt, hero);
-                    damageEntity((LivingEntity) targEnt, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                    damageEntity((LivingEntity) targEnt, player, damage, DamageCause.MAGIC, false);
                     VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, player, duration, applyText, expireText);
 
                     // Add the effect to the target

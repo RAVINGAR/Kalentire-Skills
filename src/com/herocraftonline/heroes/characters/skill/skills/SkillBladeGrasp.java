@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -112,6 +113,9 @@ public class SkillBladeGrasp extends TargettedSkill {
             if (event.getDamage() == 0 || !(event instanceof EntityDamageByEntityEvent)) {
                 return;
             }
+
+            if (event.getCause() != DamageCause.ENTITY_ATTACK)
+                return;
 
             EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
             Entity defender = edbe.getEntity();

@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -133,7 +134,7 @@ public class SkillChaosOrb extends ActiveSkill {
                 damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                 addSpellTarget(entity, hero);
-                damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                damageEntity(entity, hero.getPlayer(), damage, DamageCause.MAGIC);
 
                 event.setCancelled(true);
             }

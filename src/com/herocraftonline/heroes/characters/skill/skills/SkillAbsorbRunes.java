@@ -49,6 +49,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -188,7 +189,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Entity defender = edbe.getEntity();
             Entity attacker = edbe.getDamager();
 
-            if (!(attacker instanceof Player))
+            if (!(attacker instanceof Player) || event.getCause() != DamageCause.ENTITY_ATTACK)
                 return;
 
             Player player = (Player) attacker;

@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -185,7 +186,7 @@ public class SkillDoomwave extends ActiveSkill {
 
                 // Damage the target
                 addSpellTarget(targetLE, hero);
-                damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                damageEntity(targetLE, hero.getPlayer(), damage, DamageCause.MAGIC);
                 event.setCancelled(true);
 
                 //Adds an Effect to Prevent Multihit

@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -130,7 +131,7 @@ public class SkillFireball extends ActiveSkill {
 
                 // Damage the target
                 addSpellTarget(targetLE, hero);
-                damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                damageEntity(targetLE, hero.getPlayer(), damage, DamageCause.MAGIC);
             }
         }
     }

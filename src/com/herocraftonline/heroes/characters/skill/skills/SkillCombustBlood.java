@@ -5,7 +5,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -98,7 +98,7 @@ public class SkillCombustBlood extends TargettedSkill {
 
         // Deal damage
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
 
         broadcastExecuteText(hero, target);
         try {

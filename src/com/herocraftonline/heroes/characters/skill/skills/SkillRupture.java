@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -174,7 +173,7 @@ public class SkillRupture extends TargettedSkill {
 
                 // Damage the target
                 addSpellTarget(hero.getEntity(), applierHero);
-                damageEntity(hero.getEntity(), applier, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                damageEntity(hero.getEntity(), applier, damage, DamageCause.MAGIC, false);
 
                 lastLoc = location;
             }
@@ -194,7 +193,7 @@ public class SkillRupture extends TargettedSkill {
 
                 // Damage the target
                 addSpellTarget(monsterLE, applierHero);
-                damageEntity(monsterLE, applier, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                damageEntity(monsterLE, applier, damage, DamageCause.MAGIC, false);
 
                 lastLoc = location;
             }

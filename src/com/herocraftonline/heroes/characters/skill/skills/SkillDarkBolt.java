@@ -20,6 +20,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import com.herocraftonline.heroes.Heroes;
@@ -213,7 +214,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
             // Damage the target
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
 
             // Add withering effect to the target.
             targetCT.addEffect(new WitheringEffect(this, player, duration, witherLevel, healingReductionPercent));

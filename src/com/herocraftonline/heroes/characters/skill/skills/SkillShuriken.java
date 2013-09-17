@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -208,7 +209,7 @@ public class SkillShuriken extends PassiveSkill {
             damage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
 
             // Prevent arrow from dealing damage
             shuriken.remove();

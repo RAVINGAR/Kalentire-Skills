@@ -31,7 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -149,7 +149,7 @@ public class SkillFireRune extends ActiveSkill {
 
                     // Damage the target
                     addSpellTarget((LivingEntity) targEnt, hero);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, false);
 
                     // Announce that the player has been hit with the skill 
                     broadcast(targEnt.getLocation(), applyText, targCT.getName());
