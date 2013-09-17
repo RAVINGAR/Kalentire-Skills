@@ -67,7 +67,7 @@ public class SkillFauxBomb extends ActiveSkill {
         Player player = hero.getPlayer();
         Vector pLoc = player.getLocation().toVector();
         Vector direction = player.getLocation().getDirection();
-        Vector spawnLoc = pLoc.add(direction);
+        Vector spawnLoc = pLoc; //.add(direction);
         World world = player.getWorld();
 
         final LivingEntity sheep = (LivingEntity) world.spawnEntity(spawnLoc.toLocation(world), EntityType.SHEEP);
@@ -113,46 +113,49 @@ public class SkillFauxBomb extends ActiveSkill {
             if (event.getDamage() == 0 || !(event.getEntity() instanceof Sheep))
                 return;
 
-            if (event.getCause() == EntityDamageEvent.DamageCause.POISON)
-                event.setCancelled(true);
-            else
-                explodeSheep((Sheep) event.getEntity());
+            LivingEntity sheep = (LivingEntity) event.getEntity();
+            int id = sheep.getEntityId();
+            if (sheepMap.containsKey(id)) {
+                if (event.getCause() == DamageCause.POISON) {
+                    sheep.setNoDamageTicks(0);
+                }
+                else
+                    explodeSheep(sheep);
+            }
         }
     }
 
     private void explodeSheep(LivingEntity sheep) {
         int id = sheep.getEntityId();
-        if (sheepMap.containsKey(id)) {
-            Player player = (Player) sheepMap.get(id);
-            Hero hero = plugin.getCharacterManager().getHero(player);
+        Player player = (Player) sheepMap.get(id);
+        Hero hero = plugin.getCharacterManager().getHero(player);
 
-            if (!sheep.isDead()) {
-                sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
-                sheep.damage(20000.0);
+        if (!sheep.isDead()) {
+            sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
+            sheep.damage(20000.0);
 
-                int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-                List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
-                for (Entity entity : entities) {
-                    if (!(entity instanceof LivingEntity)) {
-                        continue;
-                    }
+            List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
+            for (Entity entity : entities) {
+                if (!(entity instanceof LivingEntity)) {
+                    continue;
+                }
 
-                    // Check if the target is damagable
-                    if (!damageCheck(player, (LivingEntity) entity)) {
-                        continue;
-                    }
+                // Check if the target is damagable
+                if (!damageCheck(player, (LivingEntity) entity)) {
+                    continue;
+                }
 
-                    LivingEntity target = (LivingEntity) entity;
+                LivingEntity target = (LivingEntity) entity;
 
-                    if (hero != null) {
-                        addSpellTarget(target, hero);
-                        damageEntity(target, player, 0.0, DamageCause.MAGIC);
-                    }
+                if (hero != null) {
+                    addSpellTarget(target, hero);
+                    damageEntity(target, player, 0.0, DamageCause.MAGIC);
                 }
             }
-
-            sheepMap.remove(id);
         }
+
+        sheepMap.remove(id);
     }
 }

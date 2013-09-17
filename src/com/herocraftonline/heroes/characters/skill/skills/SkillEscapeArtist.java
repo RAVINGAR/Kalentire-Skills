@@ -24,7 +24,7 @@ public class SkillEscapeArtist extends ActiveSkill {
         setUsage("/skill escapeartist");
         setArgumentRange(0, 0);
         setIdentifiers("skill escapeartist", "skill eartist", "skill escape");
-        setTypes(SkillType.DISABLE_COUNTERING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
+        setTypes(SkillType.MOVEMENT_PREVENTION_COUNTERING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
     }
 
     @Override

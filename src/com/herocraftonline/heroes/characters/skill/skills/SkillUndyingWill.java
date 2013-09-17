@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -29,11 +30,11 @@ public class SkillUndyingWill extends ActiveSkill {
 
     public SkillUndyingWill(Heroes plugin) {
         super(plugin, "UndyingWill");
-        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 seconds.");
+        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 seconds. Removes all harmful movement preventing effects upon use.");
         setUsage("/skill undyingwill");
         setArgumentRange(0, 0);
         setIdentifiers("skill undyingwill");
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+        setTypes(SkillType.DISABLE_COUNTERING, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
@@ -114,6 +115,19 @@ public class SkillUndyingWill extends ActiveSkill {
             super(skill, "UndyingWill", applifer, duration, null, expireText);
 
             types.add(EffectType.PHYSICAL);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            for (Effect effect : hero.getEffects()) {
+                if (effect.isType(EffectType.HARMFUL)) {
+                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
+                        hero.removeEffect(effect);
+                    }
+                }
+            }
         }
     }
 }
