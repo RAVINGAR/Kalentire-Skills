@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -30,11 +29,11 @@ public class SkillFrenzy extends ActiveSkill {
 
     public SkillFrenzy(Heroes plugin) {
         super(plugin, "Frenzy");
-        setDescription("Enter a crazed Frenzy for $1 seconds. Removes all harmful movement preventing effects upon use. While Frenzied, you are much faster, but take $2% more damage and suffer from severe nausea.");
+        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you move much faster, but take $2% more damage from all attacks and suffer from severe nausea.");
         setUsage("/skill frenzy");
         setArgumentRange(0, 0);
         setIdentifiers("skill frenzy");
-        setTypes(SkillType.DISABLE_COUNTERING, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
     }
 
     @Override
@@ -134,19 +133,6 @@ public class SkillFrenzy extends ActiveSkill {
             int tickDuration = (int) ((duration / 1000) * 20);
             addMobEffect(1, tickDuration, speedAmplifier, false);
             addMobEffect(9, tickDuration, nauseaAmplifier, false);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            for (Effect effect : hero.getEffects()) {
-                if (effect.isType(EffectType.HARMFUL)) {
-                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
-                        hero.removeEffect(effect);
-                    }
-                }
-            }
         }
 
         public double getIncomingDamageIncrease() {

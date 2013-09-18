@@ -14,9 +14,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -30,7 +31,7 @@ public class SkillUndyingWill extends ActiveSkill {
 
     public SkillUndyingWill(Heroes plugin) {
         super(plugin, "UndyingWill");
-        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 seconds. Removes all harmful movement preventing effects upon use.");
+        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 seconds. While active, you shrug off disabling effects every $2 seconds.");
         setUsage("/skill undyingwill");
         setArgumentRange(0, 0);
         setIdentifiers("skill undyingwill");
@@ -40,17 +41,20 @@ public class SkillUndyingWill extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
 
         String actualDuration = Util.decFormat.format(duration / 1000.0);
+        String actualPeriod = Util.decFormat.format(period / 1000.0);
 
-        return getDescription().replace("$1", actualDuration);
+        return getDescription().replace("$1", actualDuration).replace("$2", actualPeriod);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4500));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(500));
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is overcome with an undying will!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s will returns to normal.");
 
@@ -69,7 +73,8 @@ public class SkillUndyingWill extends ActiveSkill {
         broadcastExecuteText(hero);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
-        hero.addEffect(new UndyingWillEffect(this, player, duration));
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        hero.addEffect(new UndyingWillEffect(this, player, period, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.WOLF_GROWL, 0.5F, 0.1F);
 
@@ -77,20 +82,16 @@ public class SkillUndyingWill extends ActiveSkill {
     }
 
     public class SkillHeroListener implements Listener {
-        public SkillHeroListener() {
-        }
+        public SkillHeroListener() {}
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
 
             // If our target isn't a Living Entity exit
-            if (!(event.getEntity() instanceof LivingEntity)) {
+            if (!(event.getEntity() instanceof LivingEntity))
                 return;
-            }
 
             Entity entity = event.getEntity();
-            //LivingEntity livingEntity = (LivingEntity) entity;
-
             if (entity instanceof Player) {
                 Player player = (Player) entity;
                 Hero hero = plugin.getCharacterManager().getHero(player);
@@ -110,9 +111,9 @@ public class SkillUndyingWill extends ActiveSkill {
         }
     }
 
-    public class UndyingWillEffect extends ExpirableEffect {
-        public UndyingWillEffect(Skill skill, Player applifer, long duration) {
-            super(skill, "UndyingWill", applifer, duration, null, expireText);
+    public class UndyingWillEffect extends PeriodicExpirableEffect {
+        public UndyingWillEffect(Skill skill, Player applifer, long period, long duration) {
+            super(skill, "UndyingWill", applifer, period, duration, null, expireText);
 
             types.add(EffectType.PHYSICAL);
         }
@@ -129,5 +130,19 @@ public class SkillUndyingWill extends ActiveSkill {
                 }
             }
         }
+
+        @Override
+        public void tickHero(Hero hero) {
+            for (Effect effect : hero.getEffects()) {
+                if (effect.isType(EffectType.HARMFUL)) {
+                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
+                        hero.removeEffect(effect);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void tickMonster(Monster monster) {}
     }
 }
