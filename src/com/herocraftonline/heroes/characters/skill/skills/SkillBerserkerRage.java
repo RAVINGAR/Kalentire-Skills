@@ -18,11 +18,11 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillBloodRage extends PassiveSkill {
+public class SkillBerserkerRage extends PassiveSkill {
 
-    public SkillBloodRage(Heroes plugin) {
-        super(plugin, "BloodRage");
-        setDescription("Passive: Your attacks are filled with unyielding rage. Your physical damage is increased by $1% for every 1% of health missing. The damage increase has a maximum threshhold of $2%.");
+    public SkillBerserkerRage(Heroes plugin) {
+        super(plugin, "BerserkerRage");
+        setDescription("Passive: Your attacks are filled with unyielding rage. Your physical damage is increased by $1% for every 1% of health missing. The damage increase has a maximum threshhold of $2%. Your current damage increase is $3%.");
         setArgumentRange(0, 0);
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING);
@@ -31,13 +31,22 @@ public class SkillBloodRage extends PassiveSkill {
     }
 
     public String getDescription(Hero hero) {
+        Player player = hero.getPlayer();
+
         double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-per-hp-percent", Double.valueOf(0.0075), false);
         double damageIncreaseThreshhold = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-threshhold", Double.valueOf(0.40), false);
 
+        int hpPercent = 100 - ((int) ((player.getHealth() / player.getMaxHealth()) * 100));
+        double currentDamageModifier = hpPercent * damageIncreasePerHPPercent;
+
+        if (currentDamageModifier > damageIncreaseThreshhold)
+            currentDamageModifier = damageIncreaseThreshhold;
+
         String formattedDamageIncreasePerHPPercent = Util.largeDecFormat.format(damageIncreasePerHPPercent * 100);
         String formattedDamageIncreaseThreshhold = Util.decFormat.format(damageIncreaseThreshhold * 100);
+        String formattedCurrentDamageModifier = Util.decFormat.format(currentDamageModifier * 100);
 
-        return getDescription().replace("$1", formattedDamageIncreasePerHPPercent).replace("$2", formattedDamageIncreaseThreshhold);
+        return getDescription().replace("$1", formattedDamageIncreasePerHPPercent).replace("$2", formattedDamageIncreaseThreshhold).replace("$3", formattedCurrentDamageModifier);
     }
 
     public ConfigurationSection getDefaultConfig() {
