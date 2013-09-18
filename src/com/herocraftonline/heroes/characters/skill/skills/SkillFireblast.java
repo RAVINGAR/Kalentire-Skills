@@ -127,7 +127,8 @@ public class SkillFireblast extends ActiveSkill {
             int radiusSquared = radius * radius;
 
             // Loop through nearby targets and damage / knock back one of them
-            final List<Entity> nearbyEntities = player.getNearbyEntities(distance, distance, distance);
+            int totalDistance = distance + radius;
+            final List<Entity> nearbyEntities = player.getNearbyEntities(totalDistance, totalDistance, totalDistance);
             for (Entity entity : nearbyEntities) {
                 // Check to see if the entity can be damaged
                 if (!(entity instanceof LivingEntity) || entity.getLocation().distanceSquared(blastLocation) > radiusSquared)
