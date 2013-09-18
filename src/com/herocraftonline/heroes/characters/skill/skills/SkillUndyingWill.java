@@ -42,7 +42,7 @@ public class SkillUndyingWill extends ActiveSkill {
 
     public String getDescription(Hero hero) {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
 
         String actualDuration = Util.decFormat.format(duration / 1000.0);
         String actualPeriod = Util.decFormat.format(period / 1000.0);
@@ -121,18 +121,18 @@ public class SkillUndyingWill extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-
-            for (Effect effect : hero.getEffects()) {
-                if (effect.isType(EffectType.HARMFUL)) {
-                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
-                        hero.removeEffect(effect);
-                    }
-                }
-            }
+            removeDisables(hero);
         }
 
         @Override
         public void tickHero(Hero hero) {
+            removeDisables(hero);
+        }
+
+        @Override
+        public void tickMonster(Monster monster) {}
+
+        private void removeDisables(Hero hero) {
             for (Effect effect : hero.getEffects()) {
                 if (effect.isType(EffectType.HARMFUL)) {
                     if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
@@ -141,8 +141,5 @@ public class SkillUndyingWill extends ActiveSkill {
                 }
             }
         }
-
-        @Override
-        public void tickMonster(Monster monster) {}
     }
 }
