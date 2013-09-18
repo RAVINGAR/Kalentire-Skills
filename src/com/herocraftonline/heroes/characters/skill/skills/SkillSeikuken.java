@@ -1,7 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -153,9 +151,7 @@ public class SkillSeikuken extends ActiveSkill {
                     event.setCancelled(true);
 
                     // Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
-                    Heroes.log(Level.INFO, "NodamageTicks Player Pre: " + defenderPlayer.getNoDamageTicks());
                     defenderPlayer.setNoDamageTicks(defenderPlayer.getMaximumNoDamageTicks());
-                    Heroes.log(Level.INFO, "NodamageTicks Player Post: " + defenderPlayer.getNoDamageTicks());
 
                     // Don't retaliate against ranged attacks, throw the arrow instead! :O
                     double damageMultiplier = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier", Double.valueOf(0.4), false);
