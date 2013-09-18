@@ -127,35 +127,37 @@ public class SkillFauxBomb extends ActiveSkill {
 
     private void explodeSheep(LivingEntity sheep) {
         int id = sheep.getEntityId();
-        Player player = (Player) sheepMap.get(id);
-        Hero hero = plugin.getCharacterManager().getHero(player);
+        if (sheepMap.containsKey(id)) {
+            Player player = (Player) sheepMap.get(id);
+            Hero hero = plugin.getCharacterManager().getHero(player);
 
-        if (!sheep.isDead()) {
-            sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
-            sheep.damage(20000.0);
+            if (!sheep.isDead()) {
+                sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
+                sheep.damage(20000.0);
 
-            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+                int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-            List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
-            for (Entity entity : entities) {
-                if (!(entity instanceof LivingEntity)) {
-                    continue;
-                }
+                List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
+                for (Entity entity : entities) {
+                    if (!(entity instanceof LivingEntity)) {
+                        continue;
+                    }
 
-                // Check if the target is damagable
-                if (!damageCheck(player, (LivingEntity) entity)) {
-                    continue;
-                }
+                    // Check if the target is damagable
+                    if (!damageCheck(player, (LivingEntity) entity)) {
+                        continue;
+                    }
 
-                LivingEntity target = (LivingEntity) entity;
+                    LivingEntity target = (LivingEntity) entity;
 
-                if (hero != null) {
-                    addSpellTarget(target, hero);
-                    damageEntity(target, player, 0.0, DamageCause.MAGIC);
+                    if (hero != null) {
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, 0.0, DamageCause.MAGIC);
+                    }
                 }
             }
-        }
 
-        sheepMap.remove(id);
+            sheepMap.remove(id);
+        }
     }
 }

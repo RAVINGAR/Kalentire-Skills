@@ -141,40 +141,42 @@ public class SkillPlagueBomb extends ActiveSkill {
 
     private void explodeSheep(LivingEntity sheep) {
         int id = sheep.getEntityId();
-        Player player = (Player) sheepMap.get(id);
-        Hero hero = plugin.getCharacterManager().getHero(player);
-        double damage = 1;
-        if (hero != null) {
-            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.75, false);
-            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-        }
+        if (sheepMap.containsKey(id)) {
+            Player player = (Player) sheepMap.get(id);
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            double damage = 1;
+            if (hero != null) {
+                damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.75, false);
+                damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+            }
 
-        if (!sheep.isDead()) {
-            sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
-            sheep.damage(20000.0);
+            if (!sheep.isDead()) {
+                sheep.getWorld().createExplosion(sheep.getLocation(), 0.0F, false);
+                sheep.damage(20000.0);
 
-            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+                int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-            List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
-            for (Entity entity : entities) {
-                if (!(entity instanceof LivingEntity))
-                    continue;
+                List<Entity> entities = sheep.getNearbyEntities(radius, radius, radius);
+                for (Entity entity : entities) {
+                    if (!(entity instanceof LivingEntity))
+                        continue;
 
-                // Check if the target is damagable
-                if (!damageCheck(player, (LivingEntity) entity))
-                    continue;
+                    // Check if the target is damagable
+                    if (!damageCheck(player, (LivingEntity) entity))
+                        continue;
 
-                LivingEntity target = (LivingEntity) entity;
+                    LivingEntity target = (LivingEntity) entity;
 
-                if (hero != null) {
-                    // Damage the target
-                    addSpellTarget(target, hero);
-                    damageEntity(target, player, damage, DamageCause.MAGIC);
+                    if (hero != null) {
+                        // Damage the target
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, damage, DamageCause.MAGIC);
+                    }
                 }
             }
-        }
 
-        sheepMap.remove(id);
+            sheepMap.remove(id);
+        }
     }
 }
