@@ -54,7 +54,7 @@ public class SkillFrenzy extends ActiveSkill {
         node.set("speed-amplifier", Integer.valueOf(2));
         node.set("nausea-amplifier", Integer.valueOf(3));
         node.set("incoming-damage-increase", Double.valueOf(0.5));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(7000));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has entered a frenzy!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer in a frenzy!");
 
@@ -130,9 +130,8 @@ public class SkillFrenzy extends ActiveSkill {
 
             this.incomingDamageIncrease = incomingDamageIncrease;
 
-            int tickDuration = (int) ((duration / 1000) * 20);
-            addMobEffect(1, tickDuration, speedAmplifier, false);
-            addMobEffect(9, tickDuration, nauseaAmplifier, false);
+            addMobEffect(1, (int) ((duration / 1000) * 20), speedAmplifier, false);
+            addMobEffect(9, (int) (((duration + 4000) / 1000) * 20), nauseaAmplifier, false);
         }
 
         public double getIncomingDamageIncrease() {
