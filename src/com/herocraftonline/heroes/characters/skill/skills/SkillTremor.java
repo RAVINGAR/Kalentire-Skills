@@ -5,7 +5,9 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -98,6 +100,20 @@ public class SkillTremor extends ActiveSkill{
 
             LivingEntity target = (LivingEntity) entity;
 
+            double individualHPower = hPower;
+            double individualVPower = vPower;
+            Material mat = target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
+            switch (mat) {
+                case WATER:
+                case LAVA:
+                case SOUL_SAND:
+                    individualHPower /= 2;
+                    individualVPower /= 2;
+                    break;
+                default:
+                    break;
+            }
+
             // Damage the target
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
@@ -110,8 +126,8 @@ public class SkillTremor extends ActiveSkill{
             double zDir = targetLoc.getZ() - playerLoc.getZ();
             double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
 
-            xDir = xDir / magnitude * hPower;
-            zDir = zDir / magnitude * hPower;
+            xDir = xDir / magnitude * individualHPower;
+            zDir = zDir / magnitude * individualHPower;
 
             // Let's bypass the nocheat issues...
             if (ncpEnabled) {
@@ -126,7 +142,7 @@ public class SkillTremor extends ActiveSkill{
                 }
             }
 
-            target.setVelocity(new Vector(xDir, vPower, zDir));
+            target.setVelocity(new Vector(xDir, individualVPower, zDir));
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);

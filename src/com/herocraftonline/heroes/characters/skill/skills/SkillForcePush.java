@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -104,9 +106,20 @@ public class SkillForcePush extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
+        Material mat = targetLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+
         double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0075), false);
         tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                tempVPower /= 2;
+                break;
+            default:
+                break;
+        }
         final double vPower = tempVPower;
 
         Vector pushUpVector = new Vector(0, vPower, 0);
@@ -117,7 +130,16 @@ public class SkillForcePush extends TargettedSkill {
 
         double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0375), false);
-        tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                tempHPower /= 2;
+                break;
+            default:
+                break;
+        }
         final double hPower = tempHPower;
 
         // Push them "up" first. THEN we can push them away.
@@ -141,6 +163,7 @@ public class SkillForcePush extends TargettedSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
+
         return SkillResult.NORMAL;
     }
 
