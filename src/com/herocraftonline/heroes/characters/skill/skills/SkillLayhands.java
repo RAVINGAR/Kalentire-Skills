@@ -22,7 +22,7 @@ public class SkillLayhands extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillLayhands(Heroes plugin) {
         super(plugin, "Layhands");
-        setDescription("You restore your target to full health. The maximum targetting range of this ability is increased by your Intellect.");
+        setDescription("You restore your target to full health. The maximum targetting range of this ability is increased by your Wisdom.");
         setUsage("/skill layhands <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill layhands");
@@ -38,7 +38,7 @@ public class SkillLayhands extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_WISDOM.node(), Double.valueOf(0.1));
         node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(900000));
 
         return node;

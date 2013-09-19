@@ -22,7 +22,7 @@ public class SkillSacredWord extends TargettedSkill {
 
     public SkillSacredWord(Heroes plugin) {
         super(plugin, "SacredWord");
-        setDescription("SacredWord relieves your target, restoring $1 of their health and removing any blind effects that they may have.");
+        setDescription("SacredWord relieves your target, restoring $1 of their health and removing any blind effects that they may have. You are only healed for $2 health from this ability.");
         setUsage("/skill sacredword <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredword");
@@ -36,8 +36,9 @@ public class SkillSacredWord extends TargettedSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing);
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override

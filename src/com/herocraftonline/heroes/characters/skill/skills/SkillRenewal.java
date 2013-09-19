@@ -25,7 +25,7 @@ public class SkillRenewal extends TargettedSkill {
 
     public SkillRenewal(Heroes plugin) {
         super(plugin, "Renewal");
-        setDescription("You restore $1 health to your target.");
+        setDescription("You restore $1 health to your target. You are only healed for $2 health from this ability.");
         setUsage("/skill renewal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill renewal");
@@ -39,8 +39,9 @@ public class SkillRenewal extends TargettedSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing);
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override

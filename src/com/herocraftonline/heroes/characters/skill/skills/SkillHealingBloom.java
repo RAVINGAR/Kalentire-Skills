@@ -18,7 +18,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillHealingBloom extends ActiveSkill {
     public SkillHealingBloom(Heroes plugin) {
         super(plugin, "HealingBloom");
-        setDescription("Apply a Healing Bloom to party members within $1 blocks, healing them for $2 health over $3 seconds.");
+        setDescription("Apply a Healing Bloom to party members within $1 blocks, healing them for $2 health over $3 seconds. You are only healed for $3 health from this effect.");
         setUsage("/skill healingbloom");
         setIdentifiers("skill healingbloom");
         setTypes(SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_EARTH);
@@ -36,9 +36,10 @@ public class SkillHealingBloom extends ActiveSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
+        String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedDuration);
+        return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedDuration).replace("$4", formattedSelfHealing);
     }
 
     public ConfigurationSection getDefaultConfig() {

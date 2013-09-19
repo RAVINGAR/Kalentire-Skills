@@ -29,7 +29,7 @@ public class SkillRejuvenate extends TargettedSkill {
 
     public SkillRejuvenate(Heroes plugin) {
         super(plugin, "Rejuvenate");
-        setDescription("You restore $1 health to the target over $2 seconds.");
+        setDescription("You restore $1 health to the target over $2 seconds. You are only healed for $3 health from this effect.");
         setUsage("/skill rejuvenate <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill rejuvenate");
@@ -45,9 +45,10 @@ public class SkillRejuvenate extends TargettedSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
+        String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedHealing).replace("$2", formattedDuration);
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedDuration).replace("$3", formattedSelfHealing);
     }
 
     public ConfigurationSection getDefaultConfig() {

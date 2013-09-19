@@ -27,7 +27,7 @@ public class SkillSacredTouch extends TargettedSkill {
 
     public SkillSacredTouch(Heroes plugin) {
         super(plugin, "SacredTouch");
-        setDescription("Apply a Sacred Touch to the target, restoring $1 of their health and extinquishing any fire effects present.");
+        setDescription("Apply a Sacred Touch to the target, restoring $1 of their health and extinquishing any fire effects present. You are only healed for $2 health from this ability.");
         setUsage("/skill sacredtouch <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredtouch");
@@ -41,8 +41,9 @@ public class SkillSacredTouch extends TargettedSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing);
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override

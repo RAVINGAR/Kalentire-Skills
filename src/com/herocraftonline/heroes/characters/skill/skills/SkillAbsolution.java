@@ -26,7 +26,7 @@ public class SkillAbsolution extends TargettedSkill {
 
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
-        setDescription("You restore $1 health to your target and remove Dark effects.");
+        setDescription("You restore $1 health to your target and remove Dark effects. Only heals for $2 if self targetted.");
         setUsage("/skill absolution <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill absolution");
@@ -40,8 +40,9 @@ public class SkillAbsolution extends TargettedSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing);
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override

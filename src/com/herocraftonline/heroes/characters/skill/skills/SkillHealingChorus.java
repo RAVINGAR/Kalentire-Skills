@@ -18,7 +18,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillHealingChorus extends ActiveSkill {
     public SkillHealingChorus(Heroes plugin) {
         super(plugin, "HealingChorus");
-        setDescription("You sing a chorus of healing, affecting party members within $1 blocks. The chorus heals them for $2 health over $3 seconds.");
+        setDescription("You sing a chorus of healing, affecting party members within $1 blocks. The chorus heals them for $2 health over $3 seconds. You are only healed for $4 health from this effect.");
         setUsage("/skill healingchorus");
         setIdentifiers("skill healingchorus");
         setTypes(SkillType.UNINTERRUPTIBLE, SkillType.AREA_OF_EFFECT, SkillType.BUFFING, SkillType.HEALING, SkillType.ABILITY_PROPERTY_SONG);
@@ -36,9 +36,10 @@ public class SkillHealingChorus extends ActiveSkill {
         healing += (hero.getAttributeValue(AttributeType.CHARISMA) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
+        String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedDuration);
+        return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedDuration).replace("$4", formattedSelfHealing);
     }
 
     public ConfigurationSection getDefaultConfig() {

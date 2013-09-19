@@ -28,7 +28,7 @@ public class SkillChakra extends ActiveSkill {
 
     public SkillChakra(Heroes plugin) {
         super(plugin, "Chakra");
-        setDescription("You restore $1 health and dispel up to $2 negative effects from all party-members within $3 blocks.");
+        setDescription("You restore $1 health and dispel up to $2 negative effects from all party-members within $3 blocks. You are only healed for $4 health from this ability however.");
         setUsage("/skill chakra");
         setArgumentRange(0, 0);
         setIdentifiers("skill chakra");
@@ -52,8 +52,9 @@ public class SkillChakra extends ActiveSkill {
         removals += Math.floor((wisdom * removalsIncrease));     // Round down
 
         String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing).replace("$2", removals + "").replace("$3", radius + "");
+        return getDescription().replace("$1", formattedHealing).replace("$2", removals + "").replace("$3", radius + "").replace("$4", formattedSelfHealing);
     }
 
     @Override

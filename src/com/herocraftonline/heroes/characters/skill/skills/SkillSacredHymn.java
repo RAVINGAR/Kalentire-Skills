@@ -24,7 +24,7 @@ public class SkillSacredHymn extends TargettedSkill {
 
     public SkillSacredHymn(Heroes plugin) {
         super(plugin, "SacredHymn");
-        setDescription("Bless your target with a Sacred Hymn, restoring $1 health to your target.");
+        setDescription("Bless your target with a Sacred Hymn, restoring $1 health to your target. You are only healed for $2 health from this ability.");
         setUsage("/skill sacredhymn <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredhymn");
@@ -38,8 +38,9 @@ public class SkillSacredHymn extends TargettedSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing);
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class SkillSoothe extends TargettedSkill {
 
     public SkillSoothe(Heroes plugin) {
         super(plugin, "Soothe");
-        setDescription("Soothes your target, restoring $1 health and curing withering effects.");
+        setDescription("Soothes your target, restoring $1 health and curing withering effects. You are only healed for $2 health from this ability.");
         setUsage("/skill soothe <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soothe");
@@ -37,8 +37,9 @@ public class SkillSoothe extends TargettedSkill {
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing);
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override
