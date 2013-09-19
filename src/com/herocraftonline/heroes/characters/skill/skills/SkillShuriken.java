@@ -177,10 +177,10 @@ public class SkillShuriken extends PassiveSkill {
                         projectile.remove();
                 }
 
-            }, (long) ((0.1) * 20));
+            }, 2L);
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
             if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
                 return;

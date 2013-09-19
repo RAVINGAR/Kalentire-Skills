@@ -178,7 +178,7 @@ public class SkillRupture extends TargettedSkill {
 
                 lastLoc = location;
 
-                Messaging.send(player, ChatColor.RED + "Your reckless movements are causing your wounds to rupture!");
+                Messaging.send(player, ChatColor.DARK_RED + "Your reckless movements are causing your wounds to rupture!");
             }
         }
 
