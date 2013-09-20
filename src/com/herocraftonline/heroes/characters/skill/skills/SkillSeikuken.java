@@ -147,13 +147,15 @@ public class SkillSeikuken extends ActiveSkill {
                         }
                     }
 
-                    // This wasn't working right so I'm removing it for now.
+                    if (damagerHero.hasEffect("Seikuken"))
+                        return;
+
+                    // Cancel the attack
                     event.setCancelled(true);
 
                     // Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
                     defenderPlayer.setNoDamageTicks(defenderPlayer.getMaximumNoDamageTicks());
 
-                    // Don't retaliate against ranged attacks, throw the arrow instead! :O
                     double damageMultiplier = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier", Double.valueOf(0.4), false);
                     double damageMultiplierIncrease = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier-increase-per-intellect", Double.valueOf(0.00875), false);
                     damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
