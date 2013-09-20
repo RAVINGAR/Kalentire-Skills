@@ -135,7 +135,9 @@ public class SkillUndyingWill extends ActiveSkill {
         private void removeDisables(Hero hero) {
             for (Effect effect : hero.getEffects()) {
                 if (effect.isType(EffectType.HARMFUL)) {
-                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
+                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) ||
+                            effect.isType(EffectType.VELOCITY_DECREASING) || effect.isType(EffectType.WALK_SPEED_DECREASING) ||
+                            effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
                         hero.removeEffect(effect);
                     }
                 }

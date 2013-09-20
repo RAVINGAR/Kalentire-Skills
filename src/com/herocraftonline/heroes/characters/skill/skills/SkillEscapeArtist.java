@@ -23,7 +23,7 @@ public class SkillEscapeArtist extends ActiveSkill {
         setDescription("You break free of any effects that impede your movement.");
         setUsage("/skill escapeartist");
         setArgumentRange(0, 0);
-        setIdentifiers("skill escapeartist", "skill eartist", "skill escape");
+        setIdentifiers("skill escapeartist");
         setTypes(SkillType.MOVEMENT_PREVENTION_COUNTERING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
     }
 
@@ -48,7 +48,7 @@ public class SkillEscapeArtist extends ActiveSkill {
 
         boolean removed = false;
         for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) || effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
+            if (effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING) || effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT)) {
                 removed = true;
                 hero.removeEffect(effect); 
             }
