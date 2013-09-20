@@ -94,8 +94,8 @@ public class SkillDeathMark extends ActiveSkill {
             if (event.getDamager() instanceof Hero && event.getEntity() instanceof Player) {
                 Hero hero = (Hero) event.getDamager();
 
-                if (hero.hasEffect("DeathMarked")) {
-                    DeathMarkingEffect dmEffect = (DeathMarkingEffect) hero.getEffect("DeathMarked");
+                if (hero.hasEffect("DeathMarking")) {
+                    DeathMarkingEffect dmEffect = (DeathMarkingEffect) hero.getEffect("DeathMarking");
 
                     if (dmEffect.getTarget().equals(((Player) event.getEntity()))) {
                         double damageIncreasePercent = dmEffect.getDamageIncreasePercent();
@@ -114,8 +114,8 @@ public class SkillDeathMark extends ActiveSkill {
             if (event.getDamager() instanceof Hero && event.getEntity() instanceof Player) {
                 Hero hero = (Hero) event.getDamager();
 
-                if (hero.hasEffect("DeathMarked")) {
-                    DeathMarkingEffect dmEffect = (DeathMarkingEffect) hero.getEffect("DeathMarked");
+                if (hero.hasEffect("DeathMarking")) {
+                    DeathMarkingEffect dmEffect = (DeathMarkingEffect) hero.getEffect("DeathMarking");
 
                     if (dmEffect.getTarget().equals(((Player) event.getEntity()))) {
                         double damageIncreasePercent = dmEffect.getDamageIncreasePercent();
