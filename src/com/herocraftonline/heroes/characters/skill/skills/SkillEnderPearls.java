@@ -169,19 +169,20 @@ public class SkillEnderPearls extends PassiveSkill {
                 int verticalLeniency = SkillConfigManager.getUseSetting(hero, skill, "vertical-leniency", Integer.valueOf(2), false);
 
                 boolean validLocation = false;
+                boolean headBlocked = true;
                 int i = 0;
                 do {
-                    // Heroes.log(Level.INFO, "Loc: " + event.getTo().toVector().toString() + ", BLOCK TYPE: " + teleportLocBlock.getType().toString());
-
-                    if (Util.transparentBlocks.contains(teleportLocBlockType) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
-                        // Heroes.log(Level.INFO, "Landing and Head locations are clear.");
-                        validLocation = true;
-                        break;
+                    if (Util.transparentBlocks.contains(teleportLocBlockType)) {
+                        if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
+                            validLocation = true;
+                            headBlocked = false;
+                            break;
+                        }
+                        else
+                            headBlocked = true;
                     }
 
-                    // Heroes.log(Level.INFO, "FAIL. Subtracting loc.");
-
-                    // Give them one more block of wiggle room if we've got an invalid location.
+                    // Give them a block of wiggle room if we've got an invalid location.
                     teleportLoc = teleportLoc.subtract(0, 1, 0);
                     teleportLocBlock = teleportLoc.getBlock();
                     teleportLocBlockType = teleportLocBlock.getType();
@@ -189,6 +190,25 @@ public class SkillEnderPearls extends PassiveSkill {
                     i++;
                 }
                 while (i <= verticalLeniency);
+
+                if (!validLocation && !headBlocked) {
+                    i = 0;
+                    do {
+                        if (Util.transparentBlocks.contains(teleportLocBlockType) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
+                            validLocation = true;
+                            break;
+                        }
+
+                        // Give them a block of wiggle room if we've got an invalid location.
+                        teleportLoc = teleportLoc.add(0, 1, 0);
+                        teleportLocBlock = teleportLoc.getBlock();
+                        teleportLocBlockType = teleportLocBlock.getType();
+
+                        i++;
+                    }
+                    while (i <= verticalLeniency);
+
+                }
 
                 if (!validLocation) {
                     Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
