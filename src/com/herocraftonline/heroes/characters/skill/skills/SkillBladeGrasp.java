@@ -76,7 +76,7 @@ public class SkillBladeGrasp extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is focusing on %target%").replace("%hero%", "$2").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is focusing on %target%").replace("%hero%", "$1").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer focusing on %target%.").replace("%hero%", "$2").replace("%target%", "$1");
     }
 
@@ -172,7 +172,7 @@ public class SkillBladeGrasp extends TargettedSkill {
         private double damageIncreasePercent;
 
         public BladeGraspEffect(Skill skill, Player applier, long duration, Player focusedTarget, long disarmDuration, double damageIncreasePercent) {
-            super(skill, "BladeGrasping", applier, duration, applyText, expireText);
+            super(skill, "BladeGrasping", applier, duration, null, null);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
@@ -180,6 +180,32 @@ public class SkillBladeGrasp extends TargettedSkill {
             this.focusedTarget = focusedTarget;
             this.disarmDuration = disarmDuration;
             this.damageIncreasePercent = damageIncreasePercent;
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            if (applyText != null && applyText.length() > 0) {
+                Player player = hero.getPlayer();
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, applyText, player.getDisplayName(), focusedTarget.getDisplayName());
+                else
+                    broadcast(player.getLocation(), applyText, player.getDisplayName(), focusedTarget.getDisplayName());
+            }
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            if (expireText != null && expireText.length() > 0) {
+                final Player player = hero.getPlayer();
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, expireText, player.getDisplayName(), focusedTarget.getDisplayName());
+                else
+                    broadcast(player.getLocation(), expireText, player.getDisplayName(), focusedTarget.getDisplayName());
+            }
         }
 
         public double getDamageIncreasePercent() {
