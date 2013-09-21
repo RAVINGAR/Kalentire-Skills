@@ -1,95 +1,136 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Util;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillFlyingKick extends TargettedSkill {
 
+    private boolean ncpEnabled = false;
+
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
+
     public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
-        setDescription("Deliver a Flying Kick to your target, knocking them upwards, dealing $1 damage, and silencing them for $2 seconds.");
+        setDescription("FlyingKick towards your target! Targetting distance for this ability is increased by your Agility.");
         setUsage("/skill flyingkick");
         setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
-        setTypes(SkillType.AGGRESSIVE, SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCING, SkillType.DAMAGING);
-    }
+        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
 
-    public String getDescription(Hero hero) {
-
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-
-        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
-    }
-
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection defaultConfig = super.getDefaultConfig();
-
-        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        defaultConfig.set(SkillSetting.DAMAGE.node(), 50);
-        defaultConfig.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.625));
-        defaultConfig.set(SkillSetting.DURATION.node(), 3000);
-        defaultConfig.set("vertical-power", Double.valueOf(0.8));
-        defaultConfig.set("vertical-power-increase-per-intellect", Double.valueOf(0.005));
-        defaultConfig.set("min-side-push", Double.valueOf(0.4));
-        defaultConfig.set("max-side-push", Double.valueOf(1.0));
-
-        return defaultConfig;
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
+            ncpEnabled = true;
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public String getDescription(Hero hero) {
+        return getDescription();
+    }
 
-        Player player = hero.getPlayer();
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.15));
+        node.set("horizontal-power", Double.valueOf(1.0));
+        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0));
+        node.set("vertical-power", Double.valueOf(0.4));
+        node.set("ncp-exemption-duration", Integer.valueOf(1500));
+        node.set("flyingkick-delay", Double.valueOf(0.2));
+
+        return node;
+    }
+
+    @Override
+    public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        player.getWorld().playSound(player.getLocation(), Sound.CREEPER_DEATH, 18.0F, 0.4F);
 
-        addSpellTarget(target, hero);
-        damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK, false);
-
-        double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.9), false);
-        double verticalPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.9), false);
-        verticalPower += hero.getAttributeValue(AttributeType.INTELLECT) * verticalPowerIncrease;
-
-        double minSidePush = SkillConfigManager.getUseSetting(hero, this, "min-side-push", Double.valueOf(0.4), false);
-        double maxSidePush = SkillConfigManager.getUseSetting(hero, this, "max-side-push", Double.valueOf(1.0), false);
-        target.setVelocity(new Vector(Math.random() * maxSidePush - minSidePush, verticalPower, Math.random() * maxSidePush - minSidePush));
-
-        if (target instanceof Player) {
-            Player targetPlayer = (Player) target;
-            Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
-
-            int silenceDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-            if (silenceDuration > 0) {
-                targetHero.addEffect(new SilenceEffect(this, player, silenceDuration));
+        // Let's bypass the nocheat issues...
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
+                if (duration > 0) {
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
+                    hero.addEffect(ncpExemptEffect);
+                }
             }
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
+        Location playerLoc = player.getLocation();
+        Location targetLoc = target.getLocation();
+
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
+        final double vPower = tempVPower;
+
+        Vector pushUpVector = new Vector(0, vPower, 0);
+        player.setVelocity(pushUpVector);
+
+        final double xDir = (targetLoc.getX() - playerLoc.getX()) / 3;
+        final double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 3;
+
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0), false);
+        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY);
+        final double hPower = tempHPower;
+
+        // push them "up" first. THEN flyingkick towards the target
+        double delay = SkillConfigManager.getUseSetting(hero, this, "flyingkick-delay", 0.2, false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                // Push them away
+                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
+                player.setVelocity(pushVector);
+            }
+        }, (long) (delay * 20));
 
         return SkillResult.NORMAL;
+    }
+
+    private class NCPExemptionEffect extends ExpirableEffect {
+
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.MOVING);
+        }
     }
 }
