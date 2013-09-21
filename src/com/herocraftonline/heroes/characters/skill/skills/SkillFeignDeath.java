@@ -7,12 +7,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mc.alk.tracker.controllers.MessageController;
+import net.minecraft.server.v1_6_R2.EntityLiving;
+import net.minecraft.server.v1_6_R2.MobEffectList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -92,7 +95,7 @@ public class SkillFeignDeath extends ActiveSkill {
 
         return SkillResult.NORMAL;
     }
-    
+
     public class FeignMoveChecker implements Runnable {
 
         private Map<Hero, Location> oldLocations = new HashMap<Hero, Location>();
@@ -214,7 +217,24 @@ public class SkillFeignDeath extends ActiveSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
 
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
+            EntityLiving el = ((CraftLivingEntity) player).getHandle();
+
+            if (el.hasEffect(MobEffectList.POISON) || el.hasEffect(MobEffectList.WITHER) || el.hasEffect(MobEffectList.HARM)) {
+                // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        expire(player);
+                    }
+                }, 2L);
+            }
+            else {
+                expire(player);
+            }
+        }
+
+        private void expire(Player player) {
             String playerName = player.getName();
 
             String feignDeathExpireText = "";
