@@ -27,7 +27,7 @@ public class SkillEnergize extends ActiveSkill {
         setUsage("/skill energize");
         setArgumentRange(0, 0);
         setIdentifiers("skill energize");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STAMINA_INCREASING);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STAMINA_INCREASING);
     }
 
     @Override

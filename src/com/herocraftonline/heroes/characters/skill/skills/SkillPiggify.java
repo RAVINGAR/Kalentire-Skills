@@ -233,7 +233,7 @@ public class SkillPiggify extends TargettedSkill {
                         creatures.remove(creature);
                         creature.remove();
                     }
-                }, (long) (0.2 * 20));
+                }, 2L);
             }
             else {
                 super.removeFromHero(hero);
