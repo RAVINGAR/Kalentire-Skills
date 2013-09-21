@@ -14,7 +14,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.WalkSpeedIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -29,7 +29,7 @@ public class SkillFrenzy extends ActiveSkill {
 
     public SkillFrenzy(Heroes plugin) {
         super(plugin, "Frenzy");
-        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you move much faster, but take $2% more damage from all attacks and suffer from severe nausea.");
+        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you take $1% less damagebut take $2% more damage from all attacks and suffer from severe nausea.");
         setUsage("/skill frenzy");
         setArgumentRange(0, 0);
         setIdentifiers("skill frenzy");
@@ -51,7 +51,7 @@ public class SkillFrenzy extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("speed-amplifier", Integer.valueOf(2));
+        node.set("walk-speed-increase", Double.valueOf(0.015));
         node.set("nausea-amplifier", Integer.valueOf(3));
         node.set("incoming-damage-increase", Double.valueOf(0.5));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
@@ -73,13 +73,13 @@ public class SkillFrenzy extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7000), false);
-        int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "speed-amplifier", Integer.valueOf(2), false);
+        double walkSpeedIncrease = SkillConfigManager.getUseSetting(hero, this, "walk-speed-increase", Double.valueOf(0.5), false);
         int nauseaAmplifier = SkillConfigManager.getUseSetting(hero, this, "nausea-amplifier", Integer.valueOf(3), false);
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", Double.valueOf(0.5), false);
 
         broadcastExecuteText(hero);
 
-        hero.addEffect(new FrenzyEffect(this, player, duration, incomingDamageIncrease, speedAmplifier, nauseaAmplifier));
+        hero.addEffect(new FrenzyEffect(this, player, duration, incomingDamageIncrease, walkSpeedIncrease, nauseaAmplifier));
 
         return SkillResult.NORMAL;
     }
@@ -117,20 +117,18 @@ public class SkillFrenzy extends ActiveSkill {
         }
     }
 
-    public class FrenzyEffect extends ExpirableEffect {
+    public class FrenzyEffect extends WalkSpeedIncreaseEffect {
         private double incomingDamageIncrease;
 
-        public FrenzyEffect(Skill skill, Player applier, long duration, double incomingDamageIncrease, int speedAmplifier, int nauseaAmplifier) {
-            super(skill, "Frenzy", applier, duration, applyText, expireText);
+        public FrenzyEffect(Skill skill, Player applier, long duration, double incomingDamageIncrease, double walkSpeedIncrease, int nauseaAmplifier) {
+            super(skill, "Frenzy", applier, duration, walkSpeedIncrease, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.SPEED);
             types.add(EffectType.NAUSEA);
 
             this.incomingDamageIncrease = incomingDamageIncrease;
 
-            addMobEffect(1, (int) ((duration / 1000) * 20), speedAmplifier, false);
             addMobEffect(9, (int) (((duration + 4000) / 1000) * 20), nauseaAmplifier, false);
         }
 

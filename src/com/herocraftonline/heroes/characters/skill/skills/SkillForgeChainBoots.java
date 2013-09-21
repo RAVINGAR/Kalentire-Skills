@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,8 +28,8 @@ public class SkillForgeChainBoots extends ActiveSkill {
         setDescription("You forge chain boots!");
         setUsage("/skill forgechainchest");
         setArgumentRange(0, 0);
-        setIdentifiers("skill forgechainboots", "skill chainboots");
-        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
+        setIdentifiers("skill forgechainboots");
+        setTypes(SkillType.ITEM_CREATION);
     }
 
     public String getDescription(Hero hero) {

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,8 +28,8 @@ public class SkillForgeChainChest extends ActiveSkill {
         setDescription("You forge a chain chestplate!");
         setUsage("/skill forgechainchest");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill forgechainchest", "skill chainchest" });
-        setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
+        setIdentifiers("skill forgechainchest");
+        setTypes(SkillType.ITEM_CREATION);
     }
 
     public String getDescription(Hero hero) {

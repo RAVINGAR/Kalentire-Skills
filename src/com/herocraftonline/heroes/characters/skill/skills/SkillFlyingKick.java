@@ -10,7 +10,6 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -53,11 +52,10 @@ public class SkillFlyingKick extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.15));
-        node.set("horizontal-power", Double.valueOf(1.0));
-        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0));
-        node.set("vertical-power", Double.valueOf(0.4));
+        node.set("horizontal-divider", Integer.valueOf(6));
+        node.set("vertical-divider", Integer.valueOf(8));
+        node.set("multiplier", Double.valueOf(1.0));
         node.set("ncp-exemption-duration", Integer.valueOf(1500));
-        node.set("flyingkick-delay", Double.valueOf(0.2));
 
         return node;
     }
@@ -84,29 +82,40 @@ public class SkillFlyingKick extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
-        final double vPower = tempVPower;
+        double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
+        double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
+        double xDir = (targetLoc.getX() - playerLoc.getX()) / horizontalDivider;
+        double yDir = (targetLoc.getY() - playerLoc.getY()) / verticalDivider;
+        double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
+        double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
 
-        Vector pushUpVector = new Vector(0, vPower, 0);
-        player.setVelocity(pushUpVector);
+        Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+        player.setVelocity(vec);
 
-        final double xDir = (targetLoc.getX() - playerLoc.getX()) / 3;
-        final double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 3;
-
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0), false);
-        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY);
-        final double hPower = tempHPower;
-
-        // push them "up" first. THEN flyingkick towards the target
-        double delay = SkillConfigManager.getUseSetting(hero, this, "flyingkick-delay", 0.2, false);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                // Push them away
-                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
-                player.setVelocity(pushVector);
-            }
-        }, (long) (delay * 20));
+        //        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
+        //        final double vPower = tempVPower;
+        //
+        //        Vector pushUpVector = new Vector(0, vPower, 0);
+        //        player.setVelocity(pushUpVector);
+        //
+        //        final double xDir = (targetLoc.getX() - playerLoc.getX()) / 3;
+        //        final double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 3;
+        //
+        //        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
+        //        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0), false);
+        //        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY);
+        //        final double hPower = tempHPower;
+        //
+        //        // push them "up" first. THEN flyingkick towards the target
+        //        double delay = SkillConfigManager.getUseSetting(hero, this, "flyingkick-delay", 0.2, false);
+        //        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        //            public void run() {
+        //                // Push them away
+        //                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
+        //                player.setVelocity(pushVector);
+        //                player.setFallDistance(-3f);
+        //            }
+        //        }, (long) (delay * 20));
 
         return SkillResult.NORMAL;
     }
