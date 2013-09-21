@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -55,7 +56,7 @@ public class SkillBeguile extends TargettedSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 125, false);
-        duration += durationIncrease;
+        duration += durationIncrease * hero.getAttributeValue(AttributeType.CHARISMA);
 
         String formattedDuration = Util.decFormat.format((double) duration / 1000.0);
 
@@ -95,7 +96,7 @@ public class SkillBeguile extends TargettedSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 125, false);
-        duration += durationIncrease;
+        duration += durationIncrease * hero.getAttributeValue(AttributeType.CHARISMA);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
 
