@@ -167,12 +167,10 @@ public class SkillBecomeDeath extends ActiveSkill {
                 if (dcAPI.isDisguised(player)) {
                     Disguise disguise = dcAPI.getDisguise(player).clone();
                     disguise.setType(DisguiseType.Zombie);
-                    disguise.mobNameData(player.getName());
                     dcAPI.changePlayerDisguise(player, disguise);
                 }
                 else {
                     Disguise disguise = new Disguise(dcAPI.newEntityID(), DisguiseType.Zombie);
-                    disguise.mobNameData(player.getName());
                     dcAPI.disguisePlayer(player, disguise);
                 }
             }
@@ -185,8 +183,10 @@ public class SkillBecomeDeath extends ActiveSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
 
-            if (dcAPI != null)
-                dcAPI.undisguisePlayer(player);
+            if (dcAPI != null) {
+                if (dcAPI.isDisguised(player))
+                    dcAPI.undisguisePlayer(player);
+            }
 
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }

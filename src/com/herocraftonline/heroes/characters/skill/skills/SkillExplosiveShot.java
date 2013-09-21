@@ -168,6 +168,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             // Add the projectile to the hashlist
             Arrow explosiveShot = (Arrow) event.getProjectile();
+            explosiveShot.setFireTicks(20);
             explosiveShots.put(explosiveShot, Long.valueOf(System.currentTimeMillis()));
         }
 

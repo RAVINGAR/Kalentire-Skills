@@ -91,7 +91,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
             if (itemInHand.getType() == Material.ENDER_PEARL) {
                 if (!hero.canUseSkill(skill)) {
-                    Messaging.send(player, "You are not able to use Ender Pearls!");
+                    Messaging.send(player, "You are trained to use Ender Pearls!");
                     event.setUseItemInHand(Result.DENY);
                     return;
                 }
@@ -169,45 +169,35 @@ public class SkillEnderPearls extends PassiveSkill {
                 int verticalLeniency = SkillConfigManager.getUseSetting(hero, skill, "vertical-leniency", Integer.valueOf(2), false);
 
                 boolean validLocation = false;
-                boolean headBlocked = true;
                 int i = 0;
                 do {
                     if (Util.transparentBlocks.contains(teleportLocBlockType)) {
                         if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
                             validLocation = true;
-                            headBlocked = false;
-                            break;
-                        }
-                        else
-                            headBlocked = true;
-                    }
-
-                    // Give them a block of wiggle room if we've got an invalid location.
-                    teleportLoc = teleportLoc.subtract(0, 1, 0);
-                    teleportLocBlock = teleportLoc.getBlock();
-                    teleportLocBlockType = teleportLocBlock.getType();
-
-                    i++;
-                }
-                while (i <= verticalLeniency);
-
-                if (!validLocation && !headBlocked) {
-                    i = 0;
-                    do {
-                        if (Util.transparentBlocks.contains(teleportLocBlockType) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
-                            validLocation = true;
                             break;
                         }
 
                         // Give them a block of wiggle room if we've got an invalid location.
-                        teleportLoc = teleportLoc.add(0, 1, 0);
-                        teleportLocBlock = teleportLoc.getBlock();
-                        teleportLocBlockType = teleportLocBlock.getType();
-
-                        i++;
+                        if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.DOWN).getType())) {
+                            teleportLoc = teleportLoc.subtract(0, 1, 0);
+                            teleportLocBlock = teleportLoc.getBlock();
+                            teleportLocBlockType = teleportLocBlock.getType();
+                        }
+                        else
+                            break;
                     }
-                    while (i <= verticalLeniency);
+                    i++;
+                }
+                while (i <= verticalLeniency);
 
+                if (!validLocation) {
+                    // Going up, we only ever need 1 block of vertical leniency, so just do a single block check.
+                    teleportLoc = event.getTo().add(0, 1, 0);
+                    teleportLocBlock = teleportLoc.getBlock();
+                    teleportLocBlockType = teleportLocBlock.getType();
+
+                    if (Util.transparentBlocks.contains(teleportLocBlockType) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType()))
+                        validLocation = true;
                 }
 
                 if (!validLocation) {
@@ -217,43 +207,13 @@ public class SkillEnderPearls extends PassiveSkill {
 
                 // Move our location to the block it landed on, and center it. This fixes several exploit issues.
                 teleportLoc = teleportLoc.getBlock().getLocation().clone();
-                teleportLoc.add(new Vector(.5, 0, .5));
+                teleportLoc.add(new Vector(.5, .5, .5));
                 teleportLocBlock = teleportLoc.getBlock();
 
                 teleportLoc.setPitch(pitch);
                 teleportLoc.setYaw(yaw);
 
-                // The new vertical leniency control method should make this unneeded now. Keeping it just in case however.
-                // If we ever see any exploit issues with the following blocks, just remove the commenting from this code.
-
-                //                // Some block types are still relatively exploitable however, so we should check against those.
-                //                switch (teleportLocBlock.getType()) {
-                //                    case IRON_DOOR:
-                //                    case IRON_DOOR_BLOCK:
-                //                    case WOODEN_DOOR:
-                //                    case IRON_FENCE:
-                //                    case FENCE:
-                //                    case THIN_GLASS:
-                //                    case GLASS:
-                //                        // Cancel immediately when dealing with exploitable blocks.
-                //                        Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
-                //                        break;
-                //                    default:
-                //                        if (!Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
-                //                            // Give them one more block of wiggle room if we've got an invalid location.
-                //                            teleportLoc = teleportLoc.subtract(0, 1, 0);
-                //                            teleportLocBlock = teleportLoc.getBlock();
-                //
-                //                            if (!(Util.transparentBlocks.contains(teleportLocBlock.getType()) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType()))) {
-                //                                Messaging.send(event.getPlayer(), Messaging.getSkillDenoter() + "A mysterious force prevents you from teleporting to your ender pearl location.");
-                //                                break;
-                //                            }
-                //                        }
-                //
                 event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
-                //                        break;
-                //                }
-                //                return;
             }
         }
     }
