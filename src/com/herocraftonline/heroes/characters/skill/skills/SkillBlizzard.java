@@ -143,13 +143,21 @@ public class SkillBlizzard extends ActiveSkill {
 
         // Play the firework effects in a sequence
         final World world = tBlock.getLocation().getWorld();
-        for (int i = 0; i < numIceBolts && i < numPossibleLaunchLocations; i++) {
-            final Location fLoc = possibleLaunchLocations.get(i);
+        int k = 0;
+        for (int i = 0; i < numIceBolts; i++) {
+            if (k > numPossibleLaunchLocations) {
+                k = 0;
+                Collections.shuffle(possibleLaunchLocations);
+            }
+
+            final Location fLoc = possibleLaunchLocations.get(k);
+            k++;
+
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
                     Util.playClientEffect(player, fLoc, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
-                    world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.2F, 1.0F);
+                    world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.1F, 1.0F);
 
                     double randomX = ranGen.nextGaussian() * velocityDeviation;
                     double randomZ = ranGen.nextGaussian() * velocityDeviation;

@@ -95,7 +95,7 @@ public class SkillIceVolley extends ActiveSkill {
         node.set("slow-multiplier", Integer.valueOf(1));
         node.set("slow-duration", Integer.valueOf(2500));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has loaded an array of Ice Arrows!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer firing a volley of arrows.");
         node.set("slow-apply-text", Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!");
         node.set("slow-expire-text", Messaging.getSkillDenoter() + "%target% is no longer slowed!");
 
@@ -358,7 +358,7 @@ public class SkillIceVolley extends ActiveSkill {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
                     Messaging.send(player, applyText, player.getDisplayName());
                 else
-                    broadcast(player.getLocation(), applyText);
+                    broadcast(player.getLocation(), applyText, player.getDisplayName());
             }
         }
 
@@ -372,7 +372,7 @@ public class SkillIceVolley extends ActiveSkill {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
                     Messaging.send(player, expireText, player.getDisplayName());
                 else
-                    broadcast(player.getLocation(), expireText);
+                    broadcast(player.getLocation(), expireText, player.getDisplayName());
             }
         }
 

@@ -303,7 +303,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
                     Messaging.send(player, applyText, player.getDisplayName());
                 else
-                    broadcast(player.getLocation(), applyText);
+                    broadcast(player.getLocation(), applyText, player.getDisplayName());
             }
         }
 
@@ -318,7 +318,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                     if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
                         Messaging.send(player, expireText, player.getDisplayName());
                     else
-                        broadcast(player.getLocation(), expireText);
+                        broadcast(player.getLocation(), expireText, player.getDisplayName());
                 }
             }
         }
