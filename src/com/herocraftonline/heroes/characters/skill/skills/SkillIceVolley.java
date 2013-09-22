@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -53,6 +54,9 @@ public class SkillIceVolley extends ActiveSkill {
 
     private String applyText;
     private String expireText;
+    private String shotText;
+    private String slowApplyText;
+    private String slowExpireText;
 
     public SkillIceVolley(Heroes plugin) {
         super(plugin, "IceVolley");
@@ -72,9 +76,7 @@ public class SkillIceVolley extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
-
         int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", Integer.valueOf(2500), false);
-
         int arrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", Integer.valueOf(5), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -92,8 +94,10 @@ public class SkillIceVolley extends ActiveSkill {
         node.set("velocity-multiplier", Double.valueOf(2.0));
         node.set("slow-multiplier", Integer.valueOf(1));
         node.set("slow-duration", Integer.valueOf(2500));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has loaded an array of Ice Arrows!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
+        node.set("slow-apply-text", Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!");
+        node.set("slow-expire-text", Messaging.getSkillDenoter() + "%target% is no longer slowed!");
 
         return node;
     }
@@ -102,8 +106,12 @@ public class SkillIceVolley extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has loaded an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer firing a volley of arrows.").replace("%hero%", "$1");
+        shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDenoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
+
+        slowApplyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
+        slowExpireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -211,6 +219,13 @@ public class SkillIceVolley extends ActiveSkill {
                 actualCenterDegreesRad = a;
             }
 
+            if (shotText != null && shotText.length() > 0) {
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, shotText, player.getDisplayName());
+                else
+                    broadcast(player.getLocation(), shotText, player.getDisplayName());
+            }
+
             // Let's bypass the nocheat issues...
             if (ncpEnabled) {
                 if (!player.isOp()) {
@@ -298,7 +313,7 @@ public class SkillIceVolley extends ActiveSkill {
             long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", Integer.valueOf(2000), false);
             int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", Integer.valueOf(1), false);
 
-            SlowEffect iceSlowEffect = new SlowEffect(skill, player, duration, amplifier, applyText, expireText);
+            SlowEffect iceSlowEffect = new SlowEffect(skill, player, duration, amplifier, slowApplyText, slowExpireText);
             iceSlowEffect.types.add(EffectType.DISPELLABLE);
             iceSlowEffect.types.add(EffectType.ICE);
 
@@ -315,12 +330,50 @@ public class SkillIceVolley extends ActiveSkill {
         private int maxArrowsPerShot;
 
         public IceVolleyShotEffect(Skill skill, Player applier, long duration, int maxArrowsPerShot) {
-            super(skill, "IceVolleyShot", applier, duration);
+            super(skill, "IceVolleyShot", applier, duration, slowApplyText, slowExpireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
 
             this.maxArrowsPerShot = maxArrowsPerShot;
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            for (final Effect effect : hero.getEffects()) {
+                if (effect.equals(this)) {
+                    continue;
+                }
+
+                if (effect.isType(EffectType.IMBUE)) {
+                    hero.removeEffect(effect);
+                }
+            }
+
+            Player player = hero.getPlayer();
+
+            if (applyText != null && applyText.length() > 0) {
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, applyText, player.getDisplayName());
+                else
+                    broadcast(player.getLocation(), applyText);
+            }
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+
+            if (expireText != null && expireText.length() > 0) {
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, expireText, player.getDisplayName());
+                else
+                    broadcast(player.getLocation(), expireText);
+            }
         }
 
         public int getMaxArrowsPerShot() {

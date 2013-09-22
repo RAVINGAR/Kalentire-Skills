@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,7 +44,7 @@ public class SkillBlizzard extends ActiveSkill {
 
         @Override
         protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
-            return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
+            return (size() > 7000 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
 
@@ -53,7 +53,7 @@ public class SkillBlizzard extends ActiveSkill {
 
     public SkillBlizzard(Heroes plugin) {
         super(plugin, "Blizzard");
-        setDescription("Summon a powerful Blizzard at your target location. You launch a ball of ice that deals $1 damage to your target and slows them for $2 seconds.");
+        setDescription("Summon a powerful Blizzard at your target location. The blizzard rains down several ice bolts at the target location, each dealing $1 damage and slowing any targets hit for $2 seconds.");
         setUsage("/skill blizzard");
         setArgumentRange(0, 0);
         setIdentifiers("skill blizzard");
@@ -64,15 +64,16 @@ public class SkillBlizzard extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
-
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        long duration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", Integer.valueOf(2000), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedDamage = Util.decFormat.format(damage);
 
-        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration);
     }
 
     @Override
@@ -81,10 +82,14 @@ public class SkillBlizzard extends ActiveSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(15));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.5));
         node.set("max-storm-height", Integer.valueOf(4));
+        node.set("velocity-deviation", Double.valueOf(0.5));
+        node.set("delay-between-firing", Double.valueOf(0.1));
+        node.set("icebolts-launched", Integer.valueOf(4));
+        node.set("icebolts-launched-per-intellect", Double.valueOf(0.5));
         node.set("slow duration", Integer.valueOf(1000));
         node.set("slow-multiplier", Integer.valueOf(1));
         node.set(SkillSetting.APPLY_TEXT.node(), "");
@@ -119,14 +124,14 @@ public class SkillBlizzard extends ActiveSkill {
 
         double delayBetween = SkillConfigManager.getUseSetting(hero, this, "delay-between-firing", 0.2, false);
         final double velocityDeviation = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.2, false);
-        final double yVelocity = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 1.0, false);
+        final double yVelocity = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.5, false);
 
         Block tBlock = player.getTargetBlock(null, maxDist);
 
         broadcastExecuteText(hero);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
-        List<Location> possibleLaunchLocations = circle(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
+        List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
         int numPossibleLaunchLocations = possibleLaunchLocations.size();
 
         //        long ticksPerIceBolt = (int) (100 / numPossibleLaunchLocations);
@@ -143,7 +148,8 @@ public class SkillBlizzard extends ActiveSkill {
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    Util.playClientEffect(player, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
+                    Util.playClientEffect(player, fLoc, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
+                    world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.2F, 1.0F);
 
                     double randomX = ranGen.nextGaussian() * velocityDeviation;
                     double randomZ = ranGen.nextGaussian() * velocityDeviation;
@@ -213,38 +219,5 @@ public class SkillBlizzard extends ActiveSkill {
                 event.setCancelled(true);
             }
         }
-    }
-
-    public boolean isInBorder(Location center, Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-        int x1 = center.getBlockX();
-        int y1 = center.getBlockY();
-        int z1 = center.getBlockZ();
-
-        int x2 = targetLocation.getBlockX();
-        int y2 = targetLocation.getBlockY();
-        int z2 = targetLocation.getBlockZ();
-
-        if (x2 >= (x1 + radiusX) || x2 <= (x1 - radiusX) || y2 >= (y1 + radiusY) || y2 <= (y1 - radiusY) || z2 >= (z1 + radiusZ) || z2 <= (z1 - radiusZ))
-            return false;
-
-        return true;
-    }
-
-    protected List<Location> circle(Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
-        List<Location> circleblocks = new ArrayList<Location>();
-        int cx = loc.getBlockX();
-        int cy = loc.getBlockY();
-        int cz = loc.getBlockZ();
-        for (int x = cx - r; x <= cx + r; x++)
-            for (int z = cz - r; z <= cz + r; z++)
-                for (int y = (sphere ? cy - r : cy); y < (sphere ? cy + r : cy + h); y++) {
-                    double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? (cy - y) * (cy - y) : 0);
-                    if (dist < r * r && !(hollow && dist < (r - 1) * (r - 1))) {
-                        Location l = new Location(loc.getWorld(), x, y + plus_y, z);
-                        circleblocks.add(l);
-                    }
-                }
-
-        return circleblocks;
     }
 }

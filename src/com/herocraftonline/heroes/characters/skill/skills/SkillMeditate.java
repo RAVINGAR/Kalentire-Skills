@@ -13,6 +13,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMeditate extends ActiveSkill {
@@ -62,6 +63,9 @@ public class SkillMeditate extends ActiveSkill {
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
             hero.setMana(hrmEvent.getAmount() + hero.getMana());
+            
+            if (hero.isVerboseMana())
+                Messaging.send(player, Messaging.createFullManaBar(hero.getMana(), hero.getMaxMana()));
         }
 
         double staminaGainPercent = SkillConfigManager.getUseSetting(hero, this, "stamina-bonus", 0.7, false);
@@ -71,6 +75,9 @@ public class SkillMeditate extends ActiveSkill {
         plugin.getServer().getPluginManager().callEvent(hrsEvent);
         if (!hrsEvent.isCancelled()) {
             hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
+            
+            if (hero.isVerboseStamina())
+                Messaging.send(player, Messaging.createFullStaminaBar(hero.getStamina(), hero.getMaxStamina()));
         }
         
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);

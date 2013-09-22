@@ -118,7 +118,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, "expire-text-fail", Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive.").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive.").replace("%hero%", "$1");
         shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDenoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
     }
 
@@ -274,7 +274,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         private boolean showExpireText = true;
 
         public ExplosiveShotBuffEffect(Skill skill, Player applier, long duration, int shotsLeft) {
-            super(skill, "ExplosiveShotBuffEffect", applier, duration);
+            super(skill, "ExplosiveShotBuffEffect", applier, duration, null, null);
 
             types.add(EffectType.IMBUE);
             types.add(EffectType.PHYSICAL);
@@ -298,7 +298,13 @@ public class SkillExplosiveShot extends ActiveSkill {
             }
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+
+            if (applyText != null && applyText.length() > 0) {
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, applyText, player.getDisplayName());
+                else
+                    broadcast(player.getLocation(), applyText);
+            }
         }
 
         @Override
@@ -307,8 +313,14 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            if (showExpireText)
-                broadcast(player.getLocation(), expireText, player.getDisplayName());
+            if (showExpireText) {
+                if (expireText != null && expireText.length() > 0) {
+                    if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                        Messaging.send(player, expireText, player.getDisplayName());
+                    else
+                        broadcast(player.getLocation(), expireText);
+                }
+            }
         }
 
         public int getShotsLeft() {

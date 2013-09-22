@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillReplenish extends ActiveSkill {
@@ -56,6 +57,9 @@ public class SkillReplenish extends ActiveSkill {
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
             hero.setMana(hrmEvent.getAmount() + hero.getMana());
+
+            if (hero.isVerboseMana())
+                Messaging.send(player, Messaging.createFullManaBar(hero.getMana(), hero.getMaxMana()));
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);

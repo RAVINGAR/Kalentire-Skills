@@ -2,22 +2,18 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
@@ -39,9 +35,9 @@ public class SkillDarkBlade extends ActiveSkill {
     public SkillDarkBlade(Heroes plugin) {
         super(plugin, "DarkBlade");
         setDescription("Enchant your blade with powerful dark magic for the next $1 seconds. While enchanted, your melee attacks will deal an additional $2 physical damage, and drain $3 mana from the target, returning it to you.");
-        setUsage("/skill envenom");
+        setUsage("/skill darkblade");
         setArgumentRange(0, 0);
-        setIdentifiers("skill envenom");
+        setIdentifiers("skill darkblade");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.MANA_DECREASING, SkillType.MANA_INCREASING, SkillType.BUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
@@ -52,14 +48,16 @@ public class SkillDarkBlade extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(10000), false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(5), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(2.0), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(6), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.3), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-hit", 10, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamage);
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamage).replace("$2", manaDrain + "");
     }
 
     @Override
@@ -67,11 +65,13 @@ public class SkillDarkBlade extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("weapons", Util.axes);
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(6));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.2));
+        node.set("mana-drain-per-hit", Integer.valueOf(10));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(2));
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has coated his weapons with a deadly poison.");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s weapons are no longer poisoned.");
+        node.set("internal-cooldown", Integer.valueOf(1000));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has enchanted his blade with dark energy.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s weapon is no longer emitting dark energy.");
 
         return node;
     }
@@ -79,8 +79,8 @@ public class SkillDarkBlade extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has coated his weapons with a deadly poison.").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s weapons are no longer poisoned.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has enchanted his blade with dark energy.").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s weapon is no longer emitting dark energy.").replace("%hero%", "$1");
     }
 
     @Override
@@ -102,64 +102,48 @@ public class SkillDarkBlade extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+            Hero hero = (Hero) event.getDamager();
+            Player player = hero.getPlayer();
 
-            // Check for both arrow shots and left click attacks. Determine player based on which we're dealing with
-            boolean arrow = false;
-            Player player;
-            Entity damagingEntity = ((EntityDamageByEntityEvent) event).getDamager();
-            if (damagingEntity instanceof Arrow) {
-                if (!(((Projectile) damagingEntity).getShooter() instanceof Player))
-                    return;
-
-                player = (Player) ((Projectile) damagingEntity).getShooter();
-                arrow = true;
-            }
-            else {
-                if (event.getCause() != DamageCause.ENTITY_ATTACK)
-                    return;
-
-                LivingEntity target = (LivingEntity) event.getEntity();
-                if (!(plugin.getDamageManager().isSpellTarget(target))) {
-                    if (!(subEvent.getDamager() instanceof Player))
-                        return;
-
-                    player = (Player) subEvent.getDamager();
-                }
-                else
-                    return;
-            }
-
-            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect("DarkBlade"))
+                return;
+
+            if (hero.hasEffect("DarkBladeCooldownEffect"))
+                return;
+
+            // Make sure they are actually dealing damage to the target.
+            if (!damageCheck(player, (LivingEntity) event.getEntity()))
                 return;
 
             LivingEntity target = (LivingEntity) event.getEntity();
 
             ItemStack item = player.getItemInHand();
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.axes).contains(item.getType().name())) {
-                if (arrow == true)
-                    darkBladeAttack(hero, target);
-            }
-            else
+            if (SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.axes).contains(item.getType().name())) {
                 darkBladeAttack(hero, target);
+
+                int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "internal-cooldown", Integer.valueOf(1000), false);
+                CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
+                hero.addEffect(cdEffect);
+            }
 
             return;
         }
 
         private void darkBladeAttack(Hero hero, LivingEntity target) {
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(5), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(2.0), false);
+            Player player = hero.getPlayer();
+
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(6), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.2), false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
             // Damage the target
             addSpellTarget(target, hero);
-            damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK, false);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
 
             if (target instanceof Player) {
                 Player targetPlayer = (Player) target;
@@ -167,12 +151,12 @@ public class SkillDarkBlade extends ActiveSkill {
                 Hero tHero = plugin.getCharacterManager().getHero((Player) target);
 
                 // Burn their mana
-                int manaBurn = SkillConfigManager.getUseSetting(hero, skill, "mana-burn-amount", 10, false);
+                int manaDrain = SkillConfigManager.getUseSetting(hero, skill, "mana-drain-per-hit", 10, false);
                 int burnedAmount = 0;
-                if (tHero.getMana() > manaBurn) {
+                if (tHero.getMana() > manaDrain) {
                     // Burn the target's mana
-                    int newMana = tHero.getMana() - manaBurn;
-                    burnedAmount = manaBurn;
+                    int newMana = tHero.getMana() - manaDrain;
+                    burnedAmount = manaDrain;
                     tHero.setMana(newMana);
                 }
                 else {
@@ -190,7 +174,7 @@ public class SkillDarkBlade extends ActiveSkill {
                     hero.setMana(hrmEvent.getAmount() + hero.getMana());
 
                     if (hero.isVerboseMana())
-                        Messaging.send(targetPlayer, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+                        Messaging.send(player, Messaging.createFullManaBar(hero.getMana(), hero.getMaxMana()));
                 }
             }
         }
@@ -225,6 +209,13 @@ public class SkillDarkBlade extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+        }
+    }
+
+    // Effect required for implementing an internal cooldown on healing
+    private class CooldownEffect extends ExpirableEffect {
+        public CooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, "DarkBladeCooldownEffect", applier, duration);
         }
     }
 }

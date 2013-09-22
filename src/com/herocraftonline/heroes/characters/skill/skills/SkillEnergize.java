@@ -67,6 +67,8 @@ public class SkillEnergize extends ActiveSkill {
         broadcastExecuteText(hero);
 
         hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
+        if (hero.isVerboseStamina())
+            Messaging.send(player, Messaging.createFullStaminaBar(hero.getStamina(), hero.getMaxStamina()));
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.8F, 1.0F);
