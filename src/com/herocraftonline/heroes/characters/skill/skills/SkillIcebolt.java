@@ -142,6 +142,8 @@ public class SkillIcebolt extends ActiveSkill {
                 
                 SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
                 iceSlowEffect.types.add(EffectType.DISPELLABLE);
+                iceSlowEffect.types.add(EffectType.ICE);
+
                 LivingEntity target = (LivingEntity) event.getEntity();
                 plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
 

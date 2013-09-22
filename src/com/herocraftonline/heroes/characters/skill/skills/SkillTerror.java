@@ -103,15 +103,5 @@ public class SkillTerror extends TargettedSkill {
 
             addMobEffect(2, (int) ((duration / 1000) * 20), amplifier, false);
         }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-        }
     }
 }

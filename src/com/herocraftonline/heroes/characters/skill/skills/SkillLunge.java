@@ -10,6 +10,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -50,12 +51,14 @@ public class SkillLunge extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.15));
+        node.set("vertical-power", Double.valueOf(1.0));
         node.set("horizontal-divider", Integer.valueOf(6));
         node.set("vertical-divider", Integer.valueOf(8));
         node.set("multiplier", Double.valueOf(1.0));
-        node.set("ncp-exemption-duration", Integer.valueOf(1500));
+        node.set("jump-delay", Double.valueOf(0.3));
+        node.set("ncp-exemption-duration", Integer.valueOf(2000));
 
         return node;
     }
@@ -79,18 +82,32 @@ public class SkillLunge extends TargettedSkill {
             }
         }
 
-        Location playerLoc = player.getLocation();
-        Location targetLoc = target.getLocation();
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0075), false);
+        vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY));
+        Vector pushUpVector = new Vector(0, vPower, 0);
+        player.setVelocity(pushUpVector);
 
-        double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
-        double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
-        double xDir = (targetLoc.getX() - playerLoc.getX()) / horizontalDivider;
-        double yDir = (targetLoc.getY() - playerLoc.getY()) / verticalDivider;
-        double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
-        double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
+        final double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
+        final double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
+        final double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
 
-        Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
-        player.setVelocity(vec);
+        double delay = SkillConfigManager.getUseSetting(hero, this, "jump-delay", 0.2, false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                Location newPlayerLoc = player.getLocation();
+                Location newTargetLoc = target.getLocation();
+
+                double xDir = (newTargetLoc.getX() - newPlayerLoc.getX()) / horizontalDivider;
+                double yDir = (newTargetLoc.getY() - newPlayerLoc.getY()) / verticalDivider;
+                double zDir = (newTargetLoc.getZ() - newPlayerLoc.getZ()) / horizontalDivider;
+
+                Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+                player.setVelocity(vec);
+                player.setFallDistance(-8f);
+            }
+        }, (long) (delay * 20));
+
 
         //        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
         //        final double vPower = tempVPower;

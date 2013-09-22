@@ -6,10 +6,12 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -18,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -31,7 +34,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
     public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
-        setDescription("FlyingKick towards your target! Targetting distance for this ability is increased by your Agility.");
+        setDescription("FlyingKick towards your target and deal $1 damage! Targetting distance for this ability is increased by your Agility.");
         setUsage("/skill flyingkick");
         setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
@@ -43,25 +46,35 @@ public class SkillFlyingKick extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDamage);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.DAMAGE.node(), 40);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.125));
+        node.set("vertical-power", Double.valueOf(1.0));
         node.set("horizontal-divider", Integer.valueOf(6));
         node.set("vertical-divider", Integer.valueOf(8));
         node.set("multiplier", Double.valueOf(1.0));
-        node.set("ncp-exemption-duration", Integer.valueOf(1500));
+        node.set("jump-delay", Double.valueOf(0.3));
+        node.set("ncp-exemption-duration", Integer.valueOf(2000));
 
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
+    public SkillResult use(final Hero hero, final LivingEntity target, String[] args) {
         final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
@@ -79,43 +92,39 @@ public class SkillFlyingKick extends TargettedSkill {
             }
         }
 
-        Location playerLoc = player.getLocation();
-        Location targetLoc = target.getLocation();
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0075), false);
+        vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY));
+        Vector pushUpVector = new Vector(0, vPower, 0);
+        player.setVelocity(pushUpVector);
 
-        double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
-        double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
-        double xDir = (targetLoc.getX() - playerLoc.getX()) / horizontalDivider;
-        double yDir = (targetLoc.getY() - playerLoc.getY()) / verticalDivider;
-        double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
-        double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
+        final double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
+        final double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
+        final double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
 
-        Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
-        player.setVelocity(vec);
+        final double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
 
-        //        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
-        //        final double vPower = tempVPower;
-        //
-        //        Vector pushUpVector = new Vector(0, vPower, 0);
-        //        player.setVelocity(pushUpVector);
-        //
-        //        final double xDir = (targetLoc.getX() - playerLoc.getX()) / 3;
-        //        final double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 3;
-        //
-        //        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        //        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0), false);
-        //        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY);
-        //        final double hPower = tempHPower;
-        //
-        //        // push them "up" first. THEN flyingkick towards the target
-        //        double delay = SkillConfigManager.getUseSetting(hero, this, "flyingkick-delay", 0.2, false);
-        //        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-        //            public void run() {
-        //                // Push them away
-        //                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
-        //                player.setVelocity(pushVector);
-        //                player.setFallDistance(-3f);
-        //            }
-        //        }, (long) (delay * 20));
+        double delay = SkillConfigManager.getUseSetting(hero, this, "jump-delay", 0.2, false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                Location newPlayerLoc = player.getLocation();
+                Location newTargetLoc = target.getLocation();
+
+                double xDir = (newTargetLoc.getX() - newPlayerLoc.getX()) / horizontalDivider;
+                double yDir = (newTargetLoc.getY() - newPlayerLoc.getY()) / verticalDivider;
+                double zDir = (newTargetLoc.getZ() - newPlayerLoc.getZ()) / horizontalDivider;
+
+                Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+                player.setVelocity(vec);
+                player.setFallDistance(-8f);
+
+                double damage = baseDamage + (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+
+                addSpellTarget(target, hero);
+                damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
+            }
+        }, (long) (delay * 20));
 
         return SkillResult.NORMAL;
     }

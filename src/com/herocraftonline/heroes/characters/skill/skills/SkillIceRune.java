@@ -167,6 +167,7 @@ public class SkillIceRune extends ActiveSkill {
                     // Create the effect and slow the target
                     SlowEffect sEffect = new SlowEffect(skill, player, duration, amplifier, applyText, expireText);
                     sEffect.types.add(EffectType.DISPELLABLE);
+                    sEffect.types.add(EffectType.ICE);
 
                     // Damage and slow the target
                     addSpellTarget((LivingEntity) targEnt, hero);

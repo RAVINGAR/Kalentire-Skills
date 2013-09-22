@@ -7,10 +7,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -21,21 +26,24 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
-public class SkillMultiShot extends ActiveSkill {
+public class SkillIceVolley extends ActiveSkill {
 
     private boolean ncpEnabled = false;
 
-    private Map<Arrow, Long> multiShots = new LinkedHashMap<Arrow, Long>(100) {
+    private Map<Arrow, Long> iceVolleyShots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
@@ -43,13 +51,16 @@ public class SkillMultiShot extends ActiveSkill {
         }
     };
 
-    public SkillMultiShot(Heroes plugin) {
-        super(plugin, "MultiShot");
-        setDescription("Enter Multi Shot Mode. While in Multi Shot Mode, you will your bow will launch up to $1 arrows at once! Multi Shot arrows are less powerful than normal ones however.");
-        setUsage("/skill multishot");
+    private String applyText;
+    private String expireText;
+
+    public SkillIceVolley(Heroes plugin) {
+        super(plugin, "IceVolley");
+        setDescription("Prepare an array of ice infused arrows. After use, your next next shot fired within $1 seconds will fire up to $2 arrows at once! Any target hit these arrows will be slowed for $3 seconds.");
+        setUsage("/skill icevolley");
         setArgumentRange(0, 0);
-        setIdentifiers("skill multishot");
-        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.BUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
+        setIdentifiers("skill icevolley");
+        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
@@ -60,36 +71,52 @@ public class SkillMultiShot extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
+
+        int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", Integer.valueOf(2500), false);
+
         int arrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", Integer.valueOf(5), false);
 
-        return getDescription().replace("$1", arrowsPerShot + "");
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", arrowsPerShot + "").replace("$3", formattedSlowDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.USE_TEXT.node(), "");
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
         node.set("max-arrows-per-shot", Integer.valueOf(5));
         node.set("degrees", Double.valueOf(10.0));
-        node.set("velocity-multiplier", Double.valueOf(3.0));
-        node.set("stamina-cost-per-shot", Integer.valueOf(50));
+        node.set("velocity-multiplier", Double.valueOf(2.0));
+        node.set("slow-multiplier", Integer.valueOf(1));
+        node.set("slow-duration", Integer.valueOf(2500));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
 
         return node;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        if (hero.hasEffect("Multishot")) {
-            hero.removeEffect(hero.getEffect("Multishot"));
-            Messaging.send(player, "You are no longer firing multiple arrows.");
-            return SkillResult.REMOVED_EFFECT;
-        }
-        else {
-            Messaging.send(player, "You are now firing multiple arrows.");
-            hero.addEffect(new MultiShotEffect(this));
-            return SkillResult.NORMAL;
-        }
+        int maxArrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", Integer.valueOf(5), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+
+        hero.addEffect(new IceVolleyShotEffect(this, player, duration, maxArrowsPerShot));
+
+        //target.getWorld().playSound(target.getLocation(), Sound.d, 0.7F, 2.0F);
+
+        return SkillResult.NORMAL;
     }
 
     public class SkillEntityListener implements Listener {
@@ -108,29 +135,15 @@ public class SkillMultiShot extends ActiveSkill {
             }
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (!hero.hasEffect("MultiShot"))
+            if (!hero.hasEffect("IceVolleyShot"))
                 return;
 
             // Get the effect from the player, and fire "up to" the set max arrows per shot.
-            MultiShotEffect msEffect = (MultiShotEffect) hero.getEffect("MultiShot");
-
-            // We're in the middle of shooting a multishot arrow, we don't want to listen to this event.
-            if (!msEffect.shouldListenToBowShootEvents())
-                return;
+            IceVolleyShotEffect msEffect = (IceVolleyShotEffect) hero.getEffect("IceVolleyShot");
 
             Player player = hero.getPlayer();
 
-            int staminaCost = SkillConfigManager.getUseSetting(hero, skill, "stamina-cost-per-shot", Integer.valueOf(50), false);
-            if (hero.getStamina() < staminaCost) {
-                Messaging.send(player, Messaging.getSkillDenoter() + "You do not have enough stamina to continue shooting multiple arrows!");
-                hero.removeEffect(msEffect);
-                return;
-            }
-
-            // Reduce stamina
-            hero.setStamina(hero.getStamina() - staminaCost);
-
-            int maxArrowsToShoot = SkillConfigManager.getUseSetting(hero, skill, "max-arrows-per-shot", Integer.valueOf(5), false);
+            int maxArrowsToShoot = msEffect.getMaxArrowsPerShot();
 
             // Ensure the player still has enough arrows in his inventory.
             PlayerInventory inventory = player.getInventory();
@@ -211,14 +224,13 @@ public class SkillMultiShot extends ActiveSkill {
 
             // Fire arrows from the center and move clockwise towards the end.
             ItemStack bow = event.getBow();
-            msEffect.setListenToBowShootEvents(false);      // Prevent the following bow events to be picked up by this method.
             for (double a = actualCenterDegreesRad; a <= degreesRad; a += diff) {
-                shootMultiShotArrow(player, bow, force, yaw + a, pitchMultiplier, velocityMultiplier);
+                shootIceVolleyArrow(player, bow, force, yaw + a, pitchMultiplier, velocityMultiplier);
             }
 
             // Fire arrows from the start and move clockwise towards the center
             for (double a = 0; a < actualCenterDegreesRad; a += diff) {
-                shootMultiShotArrow(player, bow, force, yaw + a, pitchMultiplier, velocityMultiplier);
+                shootIceVolleyArrow(player, bow, force, yaw + a, pitchMultiplier, velocityMultiplier);
             }
 
             // Let's bypass the nocheat issues...
@@ -228,9 +240,6 @@ public class SkillMultiShot extends ActiveSkill {
                         hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
                 }
             }
-
-            // Allow further bow events to be listened to.
-            msEffect.setListenToBowShootEvents(true);
 
             // Remove the arrows from the players inventory
             int removedArrows = 0;
@@ -255,7 +264,7 @@ public class SkillMultiShot extends ActiveSkill {
             player.updateInventory();
         }
 
-        private void shootMultiShotArrow(Player player, ItemStack bow, float force, double yaw, double pitchMultiplier, double velocityMultiplier) {
+        private void shootIceVolleyArrow(Player player, ItemStack bow, float force, double yaw, double pitchMultiplier, double velocityMultiplier) {
 
             Arrow arrow = player.launchProjectile(Arrow.class);
 
@@ -267,26 +276,51 @@ public class SkillMultiShot extends ActiveSkill {
             arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
 
             arrow.setShooter(player);
-            multiShots.put(arrow, Long.valueOf(System.currentTimeMillis()));
-            final EntityShootBowEvent fakeShootBowEvent = new EntityShootBowEvent(player, bow, arrow, force);
-            plugin.getServer().getPluginManager().callEvent(fakeShootBowEvent);
+            iceVolleyShots.put(arrow, Long.valueOf(System.currentTimeMillis()));
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity)))
+                return;
+
+            Entity projectile = ((EntityDamageByEntityEvent) event).getDamager();
+            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
+                return;
+
+            if (!(iceVolleyShots.containsKey((Arrow) projectile)))
+                return;
+
+            final Arrow iceArrow = (Arrow) projectile;
+            Player player = (Player) iceArrow.getShooter();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
+            long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", Integer.valueOf(2000), false);
+            int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", Integer.valueOf(1), false);
+
+            SlowEffect iceSlowEffect = new SlowEffect(skill, player, duration, amplifier, applyText, expireText);
+            iceSlowEffect.types.add(EffectType.DISPELLABLE);
+            iceSlowEffect.types.add(EffectType.ICE);
+
+            LivingEntity target = (LivingEntity) event.getEntity();
+            plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
+
+            iceVolleyShots.remove(iceArrow);
         }
     }
 
-    // Buff effect used to keep track of multishot functionality
-    public class MultiShotEffect extends Effect {
+    // Buff effect used to keep track of icevolley functionality
+    public class IceVolleyShotEffect extends ExpirableEffect {
 
         private int maxArrowsPerShot;
-        private boolean listenToBowShootEvents;
 
-        public MultiShotEffect(Skill skill) {
-            super(skill, "MultiShot");
-
-            setListenToBowShootEvents(true);
-            setMaxArrowsPerShot(maxArrowsPerShot);
+        public IceVolleyShotEffect(Skill skill, Player applier, long duration, int maxArrowsPerShot) {
+            super(skill, "IceVolleyShot", applier, duration);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
+
+            this.maxArrowsPerShot = maxArrowsPerShot;
         }
 
         public int getMaxArrowsPerShot() {
@@ -295,14 +329,6 @@ public class SkillMultiShot extends ActiveSkill {
 
         public void setMaxArrowsPerShot(int maxArrowsPerShot) {
             this.maxArrowsPerShot = maxArrowsPerShot;
-        }
-
-        public boolean shouldListenToBowShootEvents() {
-            return listenToBowShootEvents;
-        }
-
-        public void setListenToBowShootEvents(boolean listenToBowShootEvents) {
-            this.listenToBowShootEvents = listenToBowShootEvents;
         }
     }
 

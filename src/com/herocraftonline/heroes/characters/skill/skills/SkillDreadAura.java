@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -15,9 +16,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -27,40 +27,40 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDreadAura extends ActiveSkill {
+
     private String applyText;
     private String expireText;
 
     public SkillDreadAura(Heroes plugin) {
         super(plugin, "DreadAura");
-        setDescription("You emit an aura of dread for $1 seconds. While active, you damage all enemies within $2 blocks every $3 seconds for $4 dark damage, and are healed for $5% of damage dealt. You cannot heal more than $6 health from this effect.");
+        setDescription("Emit an aura of Dread. While active, every $1 seconds you damage all enemies within $2 blocks for $3 dark damage, and are healed for $4% of damage dealt. Requires $5 mana per tick to maintain this effect, and you cannot heal more than $6 health in a single instance.");
         setUsage("/skill dreadaura");
         setArgumentRange(0, 0);
         setIdentifiers("skill dreadaura");
-        setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_DARK, SkillType.HEALING, SkillType.BUFFING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_DARK, SkillType.HEALING, SkillType.BUFFING);
     }
 
     @Override
     public String getDescription(Hero hero) {
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.1), false);
 
-        int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
+        int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", Integer.valueOf(200), false);
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", Integer.valueOf(13), false);
+
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
         String formattedHealMult = Util.decFormat.format(healMult * 100.0);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", radius + "").replace("$3", formattedPeriod).replace("$4", formattedDamage).replace("$5", formattedHealMult).replace("$6", maxHealing + "");
+        return getDescription().replace("$1", formattedPeriod).replace("$2", radius + "").replace("$3", formattedDamage).replace("$4", formattedHealMult).replace("$5", manaTick + "").replace("$6", maxHealing + "");
     }
 
     @Override
@@ -70,7 +70,8 @@ public class SkillDreadAura extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(28));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.05));
-        node.set("maximum-healing", Integer.valueOf(125));
+        node.set("maximum-healing-per-tick", Double.valueOf(125));
+        node.set("mana-tick", Integer.valueOf(7));
         node.set("heal-mult", Double.valueOf(0.2));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1000));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
@@ -88,48 +89,102 @@ public class SkillDreadAura extends ActiveSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(Hero hero, String args[]) {
+        if (hero.hasEffect("DreadAura")) {
+            hero.removeEffect(hero.getEffect("DreadAura"));
+            return SkillResult.REMOVED_EFFECT;
+        }
 
-        broadcastExecuteText(hero);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.1), false);
+        int maxHealingPerTick = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", Integer.valueOf(200), false);
+        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", Integer.valueOf(13), false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
-        int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        hero.addEffect(new DreadAuraEffect(this, period, manaTick, radius, healMult, maxHealingPerTick));
 
-        hero.addEffect(new DreadAuraEffect(this, player, period, duration, healMult, maxHealing, radius));
-
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 
-    public class DreadAuraEffect extends PeriodicExpirableEffect {
-        private double healMult;
+    // Bloodbond effect
+    public class DreadAuraEffect extends PeriodicEffect {
+
+        private final int manaTick;
+        private boolean firstTime = true;
+
         private int radius;
-        private double totalHealthHealed = 0.0;
-        private int maxHealing;
+        private double healMult;
+        private double maxHealingPerTick;
 
-        public DreadAuraEffect(Skill skill, Player applier, long period, long duration, double healMult, int maxHealing, int radius) {
-            super(skill, "DreadAura", applier, period, duration, applyText, expireText);
+        public DreadAuraEffect(Skill skill, long period, int manaTick, int radius, double healMult, double maxHealingPerTick) {
+            super(skill, "DreadAura", period);
 
-            types.add(EffectType.MAGIC);
+            types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.AREA_OF_EFFECT);
+            types.add(EffectType.DAMAGING);
             types.add(EffectType.HEALING);
             types.add(EffectType.DARK);
 
-            this.radius = radius;
+            this.manaTick = manaTick;
             this.healMult = healMult;
-            this.maxHealing = maxHealing;
+            this.maxHealingPerTick = maxHealingPerTick;
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            firstTime = true;
+
+            if (applyText != null && applyText.length() > 0) {
+                Player player = hero.getPlayer();
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, applyText, player.getDisplayName());
+                else
+                    broadcast(player.getLocation(), applyText, player.getDisplayName());
+            }
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            if (expireText != null && expireText.length() > 0) {
+                final Player player = hero.getPlayer();
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, expireText, player.getDisplayName());
+                else
+                    broadcast(player.getLocation(), expireText, player.getDisplayName());
+            }
         }
 
         @Override
         public void tickHero(Hero hero) {
+            super.tickHero(hero);
+
+            if (firstTime)      // Don't drain mana on first tick
+                firstTime = false;
+            else {
+                // Remove the effect if they don't have enough mana
+                if (hero.getMana() < manaTick) {
+                    hero.removeEffect(this);
+                    return;
+                }
+                else {      // They have enough mana--continue
+                    // Drain the player's mana
+                    hero.setMana(hero.getMana() - manaTick);
+                }
+            }
+            
             Player player = hero.getPlayer();
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+            double totalHealthHealed = 0;
 
             List<Entity> entities = player.getNearbyEntities(radius, radius, radius);
             for (Entity entity : entities) {
@@ -146,10 +201,9 @@ public class SkillDreadAura extends ActiveSkill {
 
                 double healing = damage * healMult;
 
-                if (totalHealthHealed < maxHealing) {
-                    Heroes.log(Level.INFO, "DreadAura Debug: HealthToHeal: " + healing);
-                    if (healing + totalHealthHealed > maxHealing) {
-                        healing = maxHealing - totalHealthHealed;
+                if (totalHealthHealed < maxHealingPerTick) {
+                    if (healing + totalHealthHealed > maxHealingPerTick) {
+                        healing = maxHealingPerTick - totalHealthHealed;
                         Heroes.log(Level.INFO, "DreadAura Debug: Hit Cap. New HealthToHeal: " + healing);
                     }
 
@@ -162,9 +216,6 @@ public class SkillDreadAura extends ActiveSkill {
                 }
             }
         }
-
-        @Override
-        public void tickMonster(Monster monster) {}
 
         public int getRadius() {
             return radius;
@@ -182,20 +233,12 @@ public class SkillDreadAura extends ActiveSkill {
             this.healMult = healMult;
         }
 
-        public int getMaximumHealing() {
-            return maxHealing;
+        public double getMaxHealingPerTick() {
+            return maxHealingPerTick;
         }
 
-        public void setMaximumHealing(int maxHealing) {
-            this.maxHealing = maxHealing;
-        }
-
-        public double getTotalHealthHealed() {
-            return totalHealthHealed;
-        }
-
-        public void setTotalHealthHealed(double totalHealthHealed) {
-            this.totalHealthHealed = totalHealthHealed;
+        public void setMaxHealingPerTick(double maxHealingPerTick) {
+            this.maxHealingPerTick = maxHealingPerTick;
         }
     }
 }

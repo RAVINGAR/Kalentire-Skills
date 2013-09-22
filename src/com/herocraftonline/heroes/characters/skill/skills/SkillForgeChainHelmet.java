@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,18 +22,18 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillForgeChainLeggings extends ActiveSkill {
-    public SkillForgeChainLeggings(Heroes plugin) {
-        super(plugin, "ForgeChainLeggings");
-        setDescription("You forge a chain leggings!");
+public class SkillForgeChainHelmet extends ActiveSkill {
+    public SkillForgeChainHelmet(Heroes plugin) {
+        super(plugin, "ForgeChainHelmet");
+        setDescription("You forge a chain helmet!");
         setUsage("/skill forgechainchest");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill forgechainleggings", "skill chainleggings" });
-        setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
+        setIdentifiers(new String[] { "skill forgechainhelmet", "skill chainhelm" });
+        setTypes(SkillType.ITEM_CREATION);
     }
 
     public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
+        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 2, false);
 
         return getDescription().replace("$1", amount + "");
     }
@@ -49,7 +49,7 @@ public class SkillForgeChainLeggings extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_LEGGINGS, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
+        ItemStack forgedItem = new ItemStack(Material.CHAINMAIL_HELMET, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
         ItemMeta metaData = forgedItem.getItemMeta();
 
         // Add the "Forged by" message to the item.
@@ -74,4 +74,5 @@ public class SkillForgeChainLeggings extends ActiveSkill {
 
         return SkillResult.NORMAL;
     }
+
 }
