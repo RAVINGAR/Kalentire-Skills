@@ -122,7 +122,7 @@ public class SkillFlyingKick extends TargettedSkill {
                 double damage = baseDamage + (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
                 addSpellTarget(target, hero);
-                damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
+                damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
             }
         }, (long) (delay * 20));
 

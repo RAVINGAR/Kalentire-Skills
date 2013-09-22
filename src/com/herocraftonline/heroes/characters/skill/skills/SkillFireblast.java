@@ -54,11 +54,13 @@ public class SkillFireblast extends ActiveSkill {
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.1, false);
         distance += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * distanceIncrease);
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        return getDescription().replace("$1", distance + "").replace("$2", damage + "");
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", distance + "").replace("$2", formattedDamage);
     }
 
     public ConfigurationSection getDefaultConfig() {

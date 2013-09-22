@@ -73,7 +73,7 @@ public class SkillUndyingWill extends ActiveSkill {
         broadcastExecuteText(hero);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
         hero.addEffect(new UndyingWillEffect(this, player, period, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.WOLF_GROWL, 0.5F, 0.1F);

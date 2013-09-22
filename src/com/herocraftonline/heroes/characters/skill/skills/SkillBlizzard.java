@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -21,13 +22,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -111,8 +115,6 @@ public class SkillBlizzard extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
-        int stormHeight = SkillConfigManager.getUseSetting(hero, this, "max-storm-height", 10, false);
-
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
         double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
@@ -127,20 +129,49 @@ public class SkillBlizzard extends ActiveSkill {
         final double velocityDeviation = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.2, false);
         final double yVelocity = SkillConfigManager.getUseSetting(hero, this, "downward-velocity", 0.5, false);
 
+        int stormHeight = SkillConfigManager.getUseSetting(hero, this, "max-storm-height", 10, false);
+
         Block tBlock = player.getTargetBlock(null, maxDist);
+
+        Block validFinalBlock = null;
+        Block currentBlock;
+        BlockIterator iter = null;
+        try {
+            Location tLocation = tBlock.getLocation();
+            iter = new BlockIterator(tLocation.getWorld(), tLocation.toVector(), new Vector(0, 1, 0), 0, stormHeight);
+        }
+        catch (IllegalStateException e) {
+            Messaging.send(player, "There was an error summoning a blizzard at your target location!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
+        while (iter.hasNext()) {
+            currentBlock = iter.next();
+            Material currentBlockType = currentBlock.getType();
+
+            if (Util.transparentBlocks.contains(currentBlockType))
+                validFinalBlock = currentBlock;
+            else
+                break;
+        }
+
+        if (validFinalBlock == null) {
+            Messaging.send(player, "There was an error summoning a blizzard at your target location!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
         broadcastExecuteText(hero);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
-        List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
+        List<Location> possibleLaunchLocations = Util.getCircleLocationList(validFinalBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, 0);
         int numPossibleLaunchLocations = possibleLaunchLocations.size();
-
-        //        long ticksPerIceBolt = (int) (100 / numPossibleLaunchLocations);
 
         Collections.shuffle(possibleLaunchLocations);
 
         long time = System.currentTimeMillis();
         final Random ranGen = new Random((int) ((time / 2.0) * 12));
+
+        final boolean playedSound = false;
 
         // Play the firework effects in a sequence
         final World world = tBlock.getLocation().getWorld();
@@ -158,7 +189,8 @@ public class SkillBlizzard extends ActiveSkill {
                 @Override
                 public void run() {
                     Util.playClientEffect(player, fLoc, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
-                    world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.1F, 1.0F);
+                    if (!playedSound)
+                        world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.1F, 1.0F);
 
                     double randomX = ranGen.nextGaussian() * velocityDeviation;
                     double randomZ = ranGen.nextGaussian() * velocityDeviation;
@@ -170,7 +202,6 @@ public class SkillBlizzard extends ActiveSkill {
                     iceBolt.setVelocity(vel);
                     blizzardIceBolts.put(iceBolt, System.currentTimeMillis());
                 }
-
             }, (long) ((delayBetween * i) * 20));
         }
 
@@ -207,6 +238,14 @@ public class SkillBlizzard extends ActiveSkill {
                     return;
                 }
 
+                LivingEntity target = (LivingEntity) event.getEntity();
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                // Check if entity is immune to further firewave hits
+                if (targetCT.hasEffect("BlizzardAntiMultiEffect")) {
+                    event.setCancelled(true);
+                    return;
+                }
+
                 event.getEntity().setFireTicks(0);
 
                 double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(50), false);
@@ -219,8 +258,9 @@ public class SkillBlizzard extends ActiveSkill {
                 SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
                 iceSlowEffect.types.add(EffectType.DISPELLABLE);
                 iceSlowEffect.types.add(EffectType.ICE);
-                LivingEntity target = (LivingEntity) event.getEntity();
-                plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
+
+                targetCT.addEffect(iceSlowEffect);
+                targetCT.addEffect(new ExpirableEffect(skill, "BlizzardAntiMultiEffect", (Player) dmger, 500));
 
                 addSpellTarget((LivingEntity) event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);

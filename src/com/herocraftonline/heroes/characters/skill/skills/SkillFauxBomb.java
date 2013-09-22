@@ -117,7 +117,8 @@ public class SkillFauxBomb extends ActiveSkill {
             int id = sheep.getEntityId();
             if (sheepMap.containsKey(id)) {
                 if (event.getCause() == DamageCause.POISON) {
-                    sheep.setNoDamageTicks(0);
+                    event.setDamage(0.0);
+                    event.setCancelled(true);
                 }
                 else
                     explodeSheep(sheep);

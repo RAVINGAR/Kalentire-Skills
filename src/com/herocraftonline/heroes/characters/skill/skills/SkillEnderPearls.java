@@ -91,7 +91,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
             if (itemInHand.getType() == Material.ENDER_PEARL) {
                 if (!hero.canUseSkill(skill)) {
-                    Messaging.send(player, "You are trained to use Ender Pearls!");
+                    Messaging.send(player, "You are not trained to use Ender Pearls!");
                     event.setUseItemInHand(Result.DENY);
                     return;
                 }

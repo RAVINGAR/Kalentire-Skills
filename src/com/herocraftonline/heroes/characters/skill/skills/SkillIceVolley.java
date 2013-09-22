@@ -240,12 +240,12 @@ public class SkillIceVolley extends ActiveSkill {
             // Fire arrows from the center and move clockwise towards the end.
             ItemStack bow = event.getBow();
             for (double a = actualCenterDegreesRad; a <= degreesRad; a += diff) {
-                shootIceVolleyArrow(player, bow, force, yaw + a, pitchMultiplier, velocityMultiplier);
+                shootIceVolleyArrow(player, yaw + a, pitchMultiplier, velocityMultiplier);
             }
 
             // Fire arrows from the start and move clockwise towards the center
             for (double a = 0; a < actualCenterDegreesRad; a += diff) {
-                shootIceVolleyArrow(player, bow, force, yaw + a, pitchMultiplier, velocityMultiplier);
+                shootIceVolleyArrow(player, yaw + a, pitchMultiplier, velocityMultiplier);
             }
 
             // Let's bypass the nocheat issues...
@@ -277,9 +277,11 @@ public class SkillIceVolley extends ActiveSkill {
                 }
             }
             player.updateInventory();
+
+            hero.removeEffect(msEffect);
         }
 
-        private void shootIceVolleyArrow(Player player, ItemStack bow, float force, double yaw, double pitchMultiplier, double velocityMultiplier) {
+        private void shootIceVolleyArrow(Player player, double yaw, double pitchMultiplier, double velocityMultiplier) {
 
             Arrow arrow = player.launchProjectile(Arrow.class);
 

@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -64,10 +65,12 @@ public class SkillChaosOrb extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.5));
-        node.set("velocity-multiplier", 0.4);
-        node.set("fire-ticks", 50);
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(120));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.625));
+        node.set("velocity-multiplier", Double.valueOf(0.7));
+        node.set("ticks-before-drop", Integer.valueOf(5));
+        node.set("y-value-drop", Double.valueOf(0.35));
+        node.set("fire-ticks", Integer.valueOf(50));
 
         return node;
     }
@@ -78,13 +81,26 @@ public class SkillChaosOrb extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        EnderPearl pearl = player.launchProjectile(EnderPearl.class);
+        final EnderPearl pearl = player.launchProjectile(EnderPearl.class);
         pearl.setFireTicks(100);
         pearls.put(pearl, System.currentTimeMillis());
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.4, false);
-        pearl.setVelocity(pearl.getVelocity().multiply(mult));
+        Vector vel = pearl.getVelocity().multiply(mult);
+
+        pearl.setVelocity(vel);
         pearl.setShooter(player);
+
+        int ticksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "ticks-before-drop", 8, false);
+        final double yValue = SkillConfigManager.getUseSetting(hero, this, "y-value-drop", 0.4, false);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                if (!pearl.isDead()) {
+                    pearl.setVelocity(pearl.getVelocity().setY(-yValue));
+                }
+            }
+        }, ticksBeforeDrop);
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
         player.getWorld().playSound(player.getLocation(), Sound.SHOOT_ARROW, 0.5F, 1.0F);

@@ -130,6 +130,7 @@ public class SkillDreadAura extends ActiveSkill {
             this.manaTick = manaTick;
             this.healMult = healMult;
             this.maxHealingPerTick = maxHealingPerTick;
+            this.radius = radius;
         }
 
         @Override

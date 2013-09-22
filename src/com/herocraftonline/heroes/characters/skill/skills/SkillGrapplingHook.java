@@ -188,10 +188,8 @@ public class SkillGrapplingHook extends ActiveSkill {
 
             double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
                     if (!(grapplingHooks.containsKey(grapplingHook)) || grapplingHooksAttachedToPlayers.containsKey(grapplingHook))
                         return;
 
@@ -206,18 +204,15 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
+            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity)))
                 return;
-            }
 
             Entity projectile = ((EntityDamageByEntityEvent) event).getDamager();
-            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player))) {
+            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
                 return;
-            }
 
-            if (!(grapplingHooks.containsKey((Arrow) projectile))) {
+            if (!(grapplingHooks.containsKey((Arrow) projectile)))
                 return;
-            }
 
             final Arrow grapplingHook = (Arrow) projectile;
             Player player = (Player) grapplingHook.getShooter();
@@ -229,10 +224,8 @@ public class SkillGrapplingHook extends ActiveSkill {
 
             double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
                     // Grapple
                     grappleTargetToPlayer(hero, targetLE);
                     grapplingHooks.remove(grapplingHook);
