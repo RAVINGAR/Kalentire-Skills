@@ -102,8 +102,12 @@ public class SkillTremor extends ActiveSkill{
 
             double individualHPower = hPower;
             double individualVPower = vPower;
+
             Material mat = target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
+
             switch (mat) {
+                case STATIONARY_WATER:
+                case STATIONARY_LAVA:
                 case WATER:
                 case LAVA:
                 case SOUL_SAND:

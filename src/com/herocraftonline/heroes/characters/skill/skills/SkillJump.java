@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -64,8 +65,11 @@ public class SkillJump extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
-        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-jump", true) && noJumpMaterials.contains(mat)) || player.isInsideVehicle()) {
+
+        Location playerLoc = player.getLocation();
+        Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+
+        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-jump", true) && noJumpMaterials.contains(belowMat)) || player.isInsideVehicle()) {
             Messaging.send(player, "You can't jump while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
@@ -90,6 +94,19 @@ public class SkillJump extends ActiveSkill {
         }
         float multiplier = (90f + pitch) / 50f;
 
+        boolean weakenVelocity = false;
+        switch (belowMat) {
+            case STATIONARY_WATER:
+            case STATIONARY_LAVA:
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                weakenVelocity = true;
+                break;
+            default:
+                break;
+        }
+
         int agility = hero.getAttributeValue(AttributeType.AGILITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
@@ -99,15 +116,8 @@ public class SkillJump extends ActiveSkill {
         if (vPower > 2.0)
             vPower = 2.0;
 
-        switch (mat) {
-            case WATER:
-            case LAVA:
-            case SOUL_SAND:
-                vPower /= 2;
-                break;
-            default:
-                break;
-        }
+        if (weakenVelocity)
+            vPower /= 2;
 
         Vector velocity = player.getVelocity().setY(vPower);
 
@@ -121,15 +131,8 @@ public class SkillJump extends ActiveSkill {
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
         hPower += agility * hPowerIncrease;
 
-        switch (mat) {
-            case WATER:
-            case LAVA:
-            case SOUL_SAND:
-                hPower /= 2;
-                break;
-            default:
-                break;
-        }
+        if (weakenVelocity)
+            hPower /= 2;
 
         velocity.multiply(new Vector(hPower, 1, hPower));
 
@@ -171,9 +174,11 @@ public class SkillJump extends ActiveSkill {
     private static final Set<Material> noJumpMaterials;
     static {
         noJumpMaterials = new HashSet<Material>();
+        noJumpMaterials.add(Material.STATIONARY_WATER);
+        noJumpMaterials.add(Material.STATIONARY_LAVA);
         noJumpMaterials.add(Material.WATER);
-        noJumpMaterials.add(Material.AIR);
         noJumpMaterials.add(Material.LAVA);
+        noJumpMaterials.add(Material.AIR);
         noJumpMaterials.add(Material.LEAVES);
         noJumpMaterials.add(Material.SOUL_SAND);
     }

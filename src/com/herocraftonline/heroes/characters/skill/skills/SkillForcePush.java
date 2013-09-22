@@ -108,18 +108,26 @@ public class SkillForcePush extends TargettedSkill {
 
         Material mat = targetLoc.getBlock().getRelative(BlockFace.DOWN).getType();
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0075), false);
-        tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        boolean weakenVelocity = false;
         switch (mat) {
+            case STATIONARY_WATER:
+            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
-                tempVPower /= 2;
+                weakenVelocity = true;
                 break;
             default:
                 break;
         }
+
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0075), false);
+        tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        if (weakenVelocity)
+            tempVPower = 2.0;
+
         final double vPower = tempVPower;
 
         Vector pushUpVector = new Vector(0, vPower, 0);
@@ -131,15 +139,10 @@ public class SkillForcePush extends TargettedSkill {
         double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0375), false);
         tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-        switch (mat) {
-            case WATER:
-            case LAVA:
-            case SOUL_SAND:
-                tempHPower /= 2;
-                break;
-            default:
-                break;
-        }
+
+        if (weakenVelocity)
+            tempHPower /= 2;
+
         final double hPower = tempHPower;
 
         // Push them "up" first. THEN we can push them away.

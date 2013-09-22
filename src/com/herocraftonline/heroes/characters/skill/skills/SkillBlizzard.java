@@ -86,6 +86,7 @@ public class SkillBlizzard extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(15));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.5));
         node.set("max-storm-height", Integer.valueOf(4));
+        node.set("downward-velocity", Double.valueOf(0.8));
         node.set("velocity-deviation", Double.valueOf(0.5));
         node.set("delay-between-firing", Double.valueOf(0.1));
         node.set("icebolts-launched", Integer.valueOf(4));
@@ -124,7 +125,7 @@ public class SkillBlizzard extends ActiveSkill {
 
         double delayBetween = SkillConfigManager.getUseSetting(hero, this, "delay-between-firing", 0.2, false);
         final double velocityDeviation = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.2, false);
-        final double yVelocity = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.5, false);
+        final double yVelocity = SkillConfigManager.getUseSetting(hero, this, "downward-velocity", 0.5, false);
 
         Block tBlock = player.getTargetBlock(null, maxDist);
 
@@ -145,9 +146,9 @@ public class SkillBlizzard extends ActiveSkill {
         final World world = tBlock.getLocation().getWorld();
         int k = 0;
         for (int i = 0; i < numIceBolts; i++) {
-            if (k > numPossibleLaunchLocations) {
-                k = 0;
+            if (k >= numPossibleLaunchLocations) {
                 Collections.shuffle(possibleLaunchLocations);
+                k = 0;
             }
 
             final Location fLoc = possibleLaunchLocations.get(k);

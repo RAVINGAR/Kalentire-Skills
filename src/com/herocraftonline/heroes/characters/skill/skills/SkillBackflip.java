@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -78,8 +79,11 @@ public class SkillBackflip extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
-        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && nobackflipMaterials.contains(mat)) || player.isInsideVehicle()) {
+
+        Location playerLoc = player.getLocation();
+        Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+
+        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && nobackflipMaterials.contains(belowMat)) || player.isInsideVehicle()) {
             Messaging.send(player, "You can't backflip while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
@@ -104,6 +108,19 @@ public class SkillBackflip extends ActiveSkill {
         }
         float multiplier = (90f + pitch) / 50f;
 
+        boolean weakenVelocity = false;
+        switch (belowMat) {
+            case STATIONARY_WATER:
+            case STATIONARY_LAVA:
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                weakenVelocity = true;
+                break;
+            default:
+                break;
+        }
+
         int agility = hero.getAttributeValue(AttributeType.AGILITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
@@ -113,15 +130,8 @@ public class SkillBackflip extends ActiveSkill {
         if (vPower > 2.0)
             vPower = 2.0;
 
-        switch (mat) {
-            case WATER:
-            case LAVA:
-            case SOUL_SAND:
-                vPower /= 2;
-                break;
-            default:
-                break;
-        }
+        if (weakenVelocity)
+            vPower /= 2;
 
         Vector velocity = player.getVelocity().setY(vPower);
 
@@ -135,15 +145,8 @@ public class SkillBackflip extends ActiveSkill {
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
         hPower += agility * hPowerIncrease;
 
-        switch (mat) {
-            case WATER:
-            case LAVA:
-            case SOUL_SAND:
-                hPower /= 2;
-                break;
-            default:
-                break;
-        }
+        if (weakenVelocity)
+            hPower /= 2;
 
         velocity.multiply(new Vector(-hPower, 1, -hPower));
 
@@ -199,9 +202,11 @@ public class SkillBackflip extends ActiveSkill {
     private static final Set<Material> nobackflipMaterials;
     static {
         nobackflipMaterials = new HashSet<Material>();
+        nobackflipMaterials.add(Material.STATIONARY_WATER);
+        nobackflipMaterials.add(Material.STATIONARY_LAVA);
         nobackflipMaterials.add(Material.WATER);
-        nobackflipMaterials.add(Material.AIR);
         nobackflipMaterials.add(Material.LAVA);
+        nobackflipMaterials.add(Material.AIR);
         nobackflipMaterials.add(Material.LEAVES);
         nobackflipMaterials.add(Material.SOUL_SAND);
     }
