@@ -10,6 +10,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -136,11 +139,42 @@ public class SkillEarthWall extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
+
+            int maxDist = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MAX_DISTANCE, 12, false);
+            double maxDistIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
+            maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
+
+            List<Entity> entities = player.getNearbyEntities(maxDist * 2, maxDist * 2, maxDist * 2);
+            List<Entity> blockEntities = new ArrayList<Entity>();
+            for (Entity entity : entities) {
+                if (entity instanceof ItemFrame)
+                    blockEntities.add(entity);
+                else if (entity instanceof Painting)
+                    blockEntities.add(entity);
+            }
+
             if (is_X_Direction(player)) {
                 for (int yDir = 0; yDir < height; yDir++) {
                     for (int xDir = -width; xDir < width + 1; xDir++) {
                         Block chBlock = tBlock.getRelative(xDir, yDir, 0);
-                        attemptToChangeBlock(chBlock.getLocation());
+                        Location location = chBlock.getLocation();
+                        switch (chBlock.getType()) {
+                            case SNOW:
+                            case AIR:
+                                boolean isBlockEntityBlock = false;
+                                for (Entity blockEntity : blockEntities) {
+                                    if (blockEntity.getLocation().getBlock().equals(chBlock))
+                                        isBlockEntityBlock = true;
+                                }
+                                if (!isBlockEntityBlock) {
+                                    changedBlocks.add(location);
+                                    locations.add(location);
+                                    location.getBlock().setType(setter);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -148,7 +182,24 @@ public class SkillEarthWall extends ActiveSkill {
                 for (int yDir = 0; yDir < height; yDir++) {
                     for (int zDir = -width; zDir < width + 1; zDir++) {
                         Block chBlock = tBlock.getRelative(0, yDir, zDir);
-                        attemptToChangeBlock(chBlock.getLocation());
+                        Location location = chBlock.getLocation();
+                        switch (chBlock.getType()) {
+                            case SNOW:
+                            case AIR:
+                                boolean isBlockEntityBlock = false;
+                                for (Entity blockEntity : blockEntities) {
+                                    if (blockEntity.getLocation().getBlock().equals(chBlock))
+                                        isBlockEntityBlock = true;
+                                }
+                                if (!isBlockEntityBlock) {
+                                    changedBlocks.add(location);
+                                    locations.add(location);
+                                    location.getBlock().setType(setter);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -164,20 +215,6 @@ public class SkillEarthWall extends ActiveSkill {
             revertBlocks();
 
             broadcast(player.getLocation(), expireText, player.getDisplayName());
-        }
-
-        private void attemptToChangeBlock(Location location) {
-            Block block = location.getBlock();
-            switch (block.getType()) {
-                case SNOW:
-                case AIR:
-                    changedBlocks.add(location);
-                    locations.add(location);
-                    location.getBlock().setType(setter);
-                    break;
-                default:
-                    break;
-            }
         }
 
         private void revertBlocks() {

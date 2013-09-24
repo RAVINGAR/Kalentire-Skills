@@ -4,17 +4,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
@@ -115,30 +114,24 @@ public class SkillSeikuken extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (event.getDamage() == 0 || !(event instanceof EntityDamageByEntityEvent)) {
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.getDamage() == 0)
                 return;
-            }
 
-            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
-            Entity defender = edbe.getEntity();
-            Entity attacker = edbe.getDamager();
-            if (defender instanceof Player && attacker instanceof Player) {
+            // Handle outgoing
+            if (event.getDamager() instanceof Hero && event.getEntity() instanceof Player) {
 
-                // Make sure we're dealing with a melee attack.
-                if ((plugin.getDamageManager().isSpellTarget(defender))) {
-                    return;
-                }
-
-                Player defenderPlayer = (Player) defender;
+                Player defenderPlayer = (Player) event.getEntity();
                 Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
+                Player damagerPlayer = ((Hero) event.getDamager()).getPlayer();
+                Hero damagerHero = plugin.getCharacterManager().getHero(damagerPlayer);
+
+                if (!damageCheck(damagerPlayer, (LivingEntity) defenderPlayer))
+                    return;
 
                 // Check if they are under the effects of Seikuken
                 if (defenderHero.hasEffect("Seikuken")) {
                     SeikukenEffect bgEffect = (SeikukenEffect) defenderHero.getEffect("Seikuken");
-
-                    Player damagerPlayer = (Player) attacker;
-                    Hero damagerHero = plugin.getCharacterManager().getHero(damagerPlayer);
 
                     for (Effect effect : defenderHero.getEffects()) {
                         if (effect.isType(EffectType.STUN) || effect.isType(EffectType.DISABLE)) {

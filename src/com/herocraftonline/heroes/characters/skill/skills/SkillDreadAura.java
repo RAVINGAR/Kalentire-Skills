@@ -70,11 +70,10 @@ public class SkillDreadAura extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(28));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.05));
-        node.set("maximum-healing-per-tick", Double.valueOf(125));
+        node.set("maximum-healing-per-tick", Double.valueOf(25));
         node.set("mana-tick", Integer.valueOf(7));
         node.set("heal-mult", Double.valueOf(0.2));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1000));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(3000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is emitting an aura of dread!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer emitting an aura of dread.");
 
@@ -107,11 +106,9 @@ public class SkillDreadAura extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    // Bloodbond effect
     public class DreadAuraEffect extends PeriodicEffect {
 
         private final int manaTick;
-        private boolean firstTime = true;
 
         private int radius;
         private double healMult;
@@ -136,8 +133,6 @@ public class SkillDreadAura extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-
-            firstTime = true;
 
             if (applyText != null && applyText.length() > 0) {
                 Player player = hero.getPlayer();
@@ -165,18 +160,14 @@ public class SkillDreadAura extends ActiveSkill {
         public void tickHero(Hero hero) {
             super.tickHero(hero);
 
-            if (firstTime)      // Don't drain mana on first tick
-                firstTime = false;
-            else {
-                // Remove the effect if they don't have enough mana
-                if (hero.getMana() < manaTick) {
-                    hero.removeEffect(this);
-                    return;
-                }
-                else {      // They have enough mana--continue
-                    // Drain the player's mana
-                    hero.setMana(hero.getMana() - manaTick);
-                }
+            // Remove the effect if they don't have enough mana
+            if (hero.getMana() < manaTick) {
+                hero.removeEffect(this);
+                return;
+            }
+            else {      // They have enough mana--continue
+                // Drain the player's mana
+                hero.setMana(hero.getMana() - manaTick);
             }
             
             Player player = hero.getPlayer();

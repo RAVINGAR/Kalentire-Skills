@@ -38,7 +38,7 @@ public class SkillFlyingKick extends TargettedSkill {
         setUsage("/skill flyingkick");
         setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
-        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
+        setTypes(SkillType.VELOCITY_INCREASING, SkillType.DAMAGING, SkillType.INTERRUPTING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;

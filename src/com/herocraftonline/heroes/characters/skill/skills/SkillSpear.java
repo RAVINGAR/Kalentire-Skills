@@ -37,7 +37,7 @@ public class SkillSpear extends TargettedSkill {
         setUsage("/skill spear");
         setArgumentRange(0, 0);
         setIdentifiers("skill spear");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.INTERRUPTING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;

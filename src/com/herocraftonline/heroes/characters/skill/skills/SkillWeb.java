@@ -13,7 +13,10 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -132,16 +135,13 @@ public class SkillWeb extends TargettedSkill {
 
             loc = monster.getEntity().getLocation();
 
-            createWeb();
+            createWeb((Entity) monster);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-
-            loc = hero.getPlayer().getLocation();
-
-            createWeb();
+            createWeb((Entity) hero.getPlayer());
         }
 
         @Override
@@ -158,33 +158,45 @@ public class SkillWeb extends TargettedSkill {
             revertBlocks();
         }
 
-        private void createWeb() {
-            attemptToChangeBlock(loc);
+        private void createWeb(Entity placedOnEntity) {
+
+            loc = placedOnEntity.getLocation();
+
+            List<Entity> entities = placedOnEntity.getNearbyEntities(10, 10, 10);
+            List<Entity> blockEntities = new ArrayList<Entity>();
+            for (Entity entity : entities) {
+                if (entity instanceof ItemFrame)
+                    blockEntities.add(entity);
+                else if (entity instanceof Painting)
+                    blockEntities.add(entity);
+            }
+
+            attemptToChangeBlock(blockEntities, loc);
             Block block = loc.getBlock();
-            attemptToChangeBlock(block.getRelative(BlockFace.DOWN).getLocation());
+            attemptToChangeBlock(blockEntities, block.getRelative(BlockFace.DOWN).getLocation());
             for (BlockFace face : BlockFace.values()) {
                 if (face == BlockFace.UP || face == BlockFace.DOWN) {
                     continue;
                 }
 
                 Location currentFaceLoc = block.getRelative(face).getLocation();
-                attemptToChangeBlock(currentFaceLoc);
+                attemptToChangeBlock(blockEntities, currentFaceLoc);
 
-                attemptToChangeBlock(currentFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
-                attemptToChangeBlock(currentFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
+                attemptToChangeBlock(blockEntities, currentFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
+                attemptToChangeBlock(blockEntities, currentFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
 
                 Location clockwiseFaceLoc = block.getRelative(getClockwise(face)).getLocation();
-                attemptToChangeBlock(clockwiseFaceLoc);
+                attemptToChangeBlock(blockEntities, clockwiseFaceLoc);
 
-                attemptToChangeBlock(clockwiseFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
-                attemptToChangeBlock(clockwiseFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
+                attemptToChangeBlock(blockEntities, clockwiseFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
+                attemptToChangeBlock(blockEntities, clockwiseFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
 
                 if (!(face.toString().contains("_"))) {
                     Location sideBlock = block.getRelative(face, 2).getLocation();
-                    attemptToChangeBlock(sideBlock);
+                    attemptToChangeBlock(blockEntities, sideBlock);
 
-                    attemptToChangeBlock(sideBlock.getBlock().getRelative(BlockFace.UP).getLocation());
-                    attemptToChangeBlock(sideBlock.getBlock().getRelative(BlockFace.DOWN).getLocation());
+                    attemptToChangeBlock(blockEntities, sideBlock.getBlock().getRelative(BlockFace.UP).getLocation());
+                    attemptToChangeBlock(blockEntities, sideBlock.getBlock().getRelative(BlockFace.DOWN).getLocation());
                 }
             }
         }
@@ -198,14 +210,22 @@ public class SkillWeb extends TargettedSkill {
             locations.clear();
         }
 
-        private void attemptToChangeBlock(Location location) {
+        private void attemptToChangeBlock(List<Entity> blockEntities, Location location) {
             Block block = location.getBlock();
             switch (block.getType()) {
                 case SNOW:
                 case AIR:
-                    changedBlocks.add(location);
-                    locations.add(location);
-                    location.getBlock().setType(Material.WEB);
+                    boolean isBlockEntityBlock = false;
+                    for (Entity blockEntity : blockEntities) {
+                        if (blockEntity.getLocation().getBlock().equals(block))
+                            isBlockEntityBlock = true;
+                    }
+                    if (!isBlockEntityBlock) {
+                        changedBlocks.add(location);
+                        locations.add(location);
+                        location.getBlock().setType(Material.WEB);
+                    }
+                    break;
                 default:
             }
         }
