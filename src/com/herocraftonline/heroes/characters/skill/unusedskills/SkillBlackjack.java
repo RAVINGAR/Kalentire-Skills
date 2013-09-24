@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,7 +23,7 @@ public class SkillBlackjack extends TargettedSkill {
 
     public SkillBlackjack(Heroes plugin) {
         super(plugin, "Blackjack");
-        setDescription("Strike your target with a Blackjack, dealing $1 damage and stunning the target for $2 seconds. If you are invisible or sneaking, you will instead deal $3 damage.");
+        setDescription("Strike your target with a Blackjack, dealing $1 damage and stunning the target for $2 seconds. If you are invisible or sneaking, the stun will instead last $3 seconds.");
         setUsage("/skill blackjack");
         setArgumentRange(0, 0);
         setIdentifiers("skill blackjack");
@@ -33,37 +33,32 @@ public class SkillBlackjack extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        int str = hero.getAttributeValue(AttributeType.STRENGTH);
-
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
-        damage += str * damageIncrease;
-        double stealthyDamage = SkillConfigManager.getUseSetting(hero, this, "stealthy-damage", 60, false);
-        stealthyDamage += str * damageIncrease;
+        damage += (int) (hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease);
 
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 15, false);
         durationIncrease = hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
-        double duration = durationIncrease + SkillConfigManager.getUseSetting(hero, this, "stun-duration", 500, false);
+        double normalDuration = durationIncrease + SkillConfigManager.getUseSetting(hero, this, "normal-stun-duration", 500, false);
+        double stealthtyDuration = durationIncrease + SkillConfigManager.getUseSetting(hero, this, "stealthy-stun-duration", 1500, false);
 
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedStealthyDamage = Util.decFormat.format(stealthyDamage);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedNormalDuration = Util.decFormat.format(normalDuration / 1000.0);
+        String formattedStealthyDuration = Util.decFormat.format(stealthtyDuration / 1000.0);
 
-        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", formattedStealthyDamage);
+        return getDescription().replace("$1", damage + "").replace("$2", formattedNormalDuration).replace("$3", formattedStealthyDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(30));
-        node.set("stealthy-damage", Integer.valueOf(60));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Integer.valueOf(1));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(15));
-        node.set("stun-duration", Integer.valueOf(1250));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 60);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 15);
+        node.set("normal-stun-duration", 600);
+        node.set("stealthy-stun-duration", 1400);
 
         return node;
     }
@@ -75,39 +70,26 @@ public class SkillBlackjack extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int str = hero.getAttributeValue(AttributeType.STRENGTH);
-
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
-
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
-        damage += str * damageIncrease;
-        double stealthyDamage = SkillConfigManager.getUseSetting(hero, this, "stealthy-damage", 60, false);
-        stealthyDamage += str * damageIncrease;
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
+        damage += (hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease);
 
         // Deal damage
         addSpellTarget(target, hero);
-
-        boolean isStealthy = false;
-        for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.INVIS) || effect.isType(EffectType.SNEAK)) {
-                isStealthy = true;
-                break;
-            }
-        }
-
-        if (isStealthy)
-            damageEntity(target, player, stealthyDamage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
-        else
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
 
         player.getWorld().playSound(player.getLocation(), Sound.DOOR_CLOSE, 0.4F, 0.4F);
         player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.2F, 1.0F);
 
         // Stun, but only if they are a player.
         if (target instanceof Player) {
-            int duration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 500, false);
             int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 15, false);
-            duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+            int duration = hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
+            if (hero.hasEffect("Sneak") || hero.hasEffect("Invisible"))
+                duration += SkillConfigManager.getUseSetting(hero, this, "stealthy-stun-duration", 1500, false);
+            else
+                duration += SkillConfigManager.getUseSetting(hero, this, "normal-stun-duration", 500, false);
 
             Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
             targetHero.addEffect(new StunEffect(this, player, duration));
