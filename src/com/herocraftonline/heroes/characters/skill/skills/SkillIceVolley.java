@@ -332,7 +332,7 @@ public class SkillIceVolley extends ActiveSkill {
         private int maxArrowsPerShot;
 
         public IceVolleyShotEffect(Skill skill, Player applier, long duration, int maxArrowsPerShot) {
-            super(skill, "IceVolleyShot", applier, duration, slowApplyText, slowExpireText);
+            super(skill, "IceVolleyShot", applier, duration, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
@@ -352,29 +352,6 @@ public class SkillIceVolley extends ActiveSkill {
                 if (effect.isType(EffectType.IMBUE)) {
                     hero.removeEffect(effect);
                 }
-            }
-
-            Player player = hero.getPlayer();
-
-            if (applyText != null && applyText.length() > 0) {
-                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, applyText, player.getDisplayName());
-                else
-                    broadcast(player.getLocation(), applyText, player.getDisplayName());
-            }
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-
-            if (expireText != null && expireText.length() > 0) {
-                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, expireText, player.getDisplayName());
-                else
-                    broadcast(player.getLocation(), expireText, player.getDisplayName());
             }
         }
 
