@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -136,6 +137,17 @@ public class SkillRampartVine extends ActiveSkill {
                 event.setCancelled(true);
             }
         }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockSpread(BlockSpreadEvent event) {
+            Block sourceBlock = event.getSource();
+            Location sourceLocation = sourceBlock.getLocation();
+
+            if (sourceBlock.getType() == Material.VINE && changedBlocks.contains(sourceLocation)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 
     public class OvergrowthEffect extends ExpirableEffect {
@@ -178,8 +190,10 @@ public class SkillRampartVine extends ActiveSkill {
         private void growVines() {
             boolean breakLoop = false;
             Block workingBlock = targetBlock;
+            Location location = workingBlock.getLocation();
+            location.getWorld().playSound(location, Sound.DIG_GRASS, 0.8F, 1.0F);
+
             for (int i = 0; i < maxGrowth; i++) {
-                Location location = workingBlock.getLocation();
                 switch (workingBlock.getType()) {
                     case SNOW:
                     case AIR:
@@ -202,8 +216,6 @@ public class SkillRampartVine extends ActiveSkill {
 
                         workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
 
-                        location.getWorld().playSound(location, Sound.DIG_GRASS, 0.8F, 1.0F);
-
                         break;
                     case VINE:
                         break;      // Leave vines alone, and let the spell continue even with them.
@@ -215,6 +227,7 @@ public class SkillRampartVine extends ActiveSkill {
                     break;
                 else {
                     workingBlock = workingBlock.getRelative(BlockFace.DOWN);
+                    location = workingBlock.getLocation();
                 }
             }
         }

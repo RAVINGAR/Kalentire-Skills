@@ -37,6 +37,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillWeb extends TargettedSkill {
 
@@ -45,7 +46,7 @@ public class SkillWeb extends TargettedSkill {
 
     public SkillWeb(Heroes plugin) {
         super(plugin, "Web");
-        setDescription("You conjure a web around your target.");
+        setDescription("You conjure a web around your target that will hinder them and any nearby targets for $1 seconds..");
         setUsage("/skill web");
         setArgumentRange(0, 0);
         setIdentifiers("skill web");
@@ -56,7 +57,13 @@ public class SkillWeb extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
@@ -77,7 +84,7 @@ public class SkillWeb extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$2").replace("%target%", "$1");
     }
 
     @Override
@@ -135,7 +142,7 @@ public class SkillWeb extends TargettedSkill {
 
             loc = monster.getEntity().getLocation();
 
-            createWeb((Entity) monster);
+            createWeb(monster.getEntity());
         }
 
         @Override

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 
@@ -35,9 +36,9 @@ public class SkillQuantumLeap extends TargettedSkill {
         Player targetPlayer = (Player) target;
         Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
 
-        if (targetHero.hasEffect("Root") || targetHero.hasEffect("Stun") || targetHero.hasEffect("Piggify"))
+        if (targetHero.hasEffect("Root") || targetHero.hasEffectType(EffectType.STUN) || targetHero.hasEffect("Piggify"))
             return SkillResult.INVALID_TARGET;
-        else if (hero.hasEffect("Root") || hero.hasEffect("Stun") || hero.hasEffect("Piggify"))
+        else if (hero.hasEffect("Root") || hero.hasEffectType(EffectType.STUN) || hero.hasEffect("Piggify"))
             return SkillResult.INVALID_TARGET;
 
         // Set the player's location

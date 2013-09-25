@@ -1,7 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -99,7 +97,7 @@ public class SkillTumble extends PassiveSkill {
 
             double fallDistance = event.getDamage();
 
-            Heroes.log(Level.INFO, "OriginalFallDistance: " + fallDistance + ", Tumble Fall Reduction: " + distance);
+            // Heroes.log(Level.INFO, "OriginalFallDistance: " + fallDistance + ", Tumble Fall Reduction: " + distance);
 
             fallDistance -= distance;
 

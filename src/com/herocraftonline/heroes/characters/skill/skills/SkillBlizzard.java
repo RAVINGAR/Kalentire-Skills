@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -30,15 +31,15 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillBlizzard extends TargettedSkill {
+public class SkillBlizzard extends ActiveSkill {
 
     private Map<Snowball, Long> blizzardIceBolts = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4632858378318784263L;
@@ -109,7 +110,7 @@ public class SkillBlizzard extends TargettedSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
@@ -124,12 +125,16 @@ public class SkillBlizzard extends TargettedSkill {
 
         int stormHeight = SkillConfigManager.getUseSetting(hero, this, "max-storm-height", 10, false);
 
+        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
+        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
+        maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
+
         broadcastExecuteText(hero);
 
-        Location targetLoc = target.getLocation();
+        Block tBlock = player.getTargetBlock(null, maxDist);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
-        List<Location> possibleLaunchLocations = Util.getCircleLocationList(targetLoc.add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
+        List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
         int numPossibleLaunchLocations = possibleLaunchLocations.size();
 
         Collections.shuffle(possibleLaunchLocations);
@@ -138,7 +143,7 @@ public class SkillBlizzard extends TargettedSkill {
         final Random ranGen = new Random((int) ((time / 2.0) * 12));
 
         // Play the firework effects in a sequence
-        final World world = targetLoc.getWorld();
+        final World world = tBlock.getLocation().getWorld();
         int k = 0;
         for (int i = 0; i < numIceBolts; i++) {
             if (k >= numPossibleLaunchLocations) {
