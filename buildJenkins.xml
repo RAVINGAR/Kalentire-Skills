@@ -7,7 +7,7 @@
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
-    <property name="heroes" value="../../Heroes/workspace/target/" />
+    <property name="heroes" value="../../Heroes-dev/workspace/target/" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
