@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -104,3 +105,4 @@ public class SkillInversion extends TargettedSkill {
     }
 
 }
+*/

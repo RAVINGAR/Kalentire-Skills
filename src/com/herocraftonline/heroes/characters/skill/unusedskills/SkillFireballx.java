@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 // http://pastie.org/private/rnvrflwdxua3yyxo9poloa (Snowball no fire)
 import java.util.LinkedHashMap;
@@ -118,3 +119,4 @@ public class SkillFireballx extends ActiveSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.HashMap;
@@ -204,3 +205,4 @@ public class SkillMelodicBinding extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/

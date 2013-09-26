@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+/*package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -52,3 +52,4 @@ public class SkillHolyStrike extends TargettedSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
+*/

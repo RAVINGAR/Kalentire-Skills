@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Sound;
@@ -64,3 +65,4 @@ public class SkillImpermanence extends ActiveSkill {
         return getDescription();
     }
 }
+*/

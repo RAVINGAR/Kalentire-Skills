@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Bukkit;
@@ -139,3 +140,4 @@ public class SkillFireblade extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(chance * 100));
     }
 }
+*/

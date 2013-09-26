@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 //http://pastie.org/private/i04dtc6t4oannstqls6sq
 
@@ -122,3 +123,4 @@ public class SkillArcaneStorm extends ActiveSkill  {
 
 
 }
+*/

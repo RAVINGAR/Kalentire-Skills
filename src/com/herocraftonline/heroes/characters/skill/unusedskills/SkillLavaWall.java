@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.HashSet;
@@ -157,3 +158,4 @@ public class SkillLavaWall extends ActiveSkill {
 		}
 	}
 }
+*/

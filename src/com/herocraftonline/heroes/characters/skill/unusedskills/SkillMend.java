@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Bukkit;
@@ -92,3 +93,4 @@ public class SkillMend extends TargettedSkill {
         return getDescription().replace("$1", amount + "");
     }
 }
+*/

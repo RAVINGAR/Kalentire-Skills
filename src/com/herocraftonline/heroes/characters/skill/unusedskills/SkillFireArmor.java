@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.ArrayList;
@@ -108,3 +109,4 @@ public class SkillFireArmor extends PassiveSkill {
         return getDescription().replace("$1", chance * 100 + "");
     }
 }
+*/

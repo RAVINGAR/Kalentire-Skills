@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Color;
@@ -93,3 +94,4 @@ public class SkillDivineWord extends TargettedSkill {
         return getDescription().replace("$1", amount + "");
     }
 }
+*/

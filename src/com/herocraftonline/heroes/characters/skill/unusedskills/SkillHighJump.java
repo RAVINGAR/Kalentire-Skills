@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.HashSet;
@@ -77,3 +78,4 @@ public class SkillHighJump extends ActiveSkill {
         return getDescription();
     }
 }
+*/

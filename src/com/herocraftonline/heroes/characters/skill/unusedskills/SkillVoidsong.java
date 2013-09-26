@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Color;
@@ -121,14 +122,10 @@ public class SkillVoidsong extends ActiveSkill {
             //hit = true;
             
         }
-        /*if (!hit) {
-            Messaging.send(player, "No nearby targets!");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-        */
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH , 0.5F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 }
+*/

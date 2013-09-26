@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Effect;
@@ -114,3 +115,4 @@ public class SkillDisgrace extends TargettedSkill {
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }
+*/

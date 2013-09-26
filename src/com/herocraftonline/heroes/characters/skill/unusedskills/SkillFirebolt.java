@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.LinkedHashMap;
@@ -139,3 +140,4 @@ public class SkillFirebolt extends ActiveSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.LinkedHashMap;
@@ -489,3 +490,4 @@ public class SkillMultiShot extends ActiveSkill {
         }
     }
 }
+*/

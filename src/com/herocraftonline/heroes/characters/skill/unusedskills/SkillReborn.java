@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -128,3 +129,4 @@ public class SkillReborn extends ActiveSkill {
         }
     }
 }
+*/

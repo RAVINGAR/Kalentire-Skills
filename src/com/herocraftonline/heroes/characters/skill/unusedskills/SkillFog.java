@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Sound;
@@ -61,3 +62,4 @@ public class SkillFog extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/
