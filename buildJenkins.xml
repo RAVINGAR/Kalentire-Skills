@@ -50,6 +50,7 @@
         <antcall target="jar-skills" />
         <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
         <antcall target="zip" />
+        <delete dir="${dir.bin}"/>
     </target>
 
     <target name="jar-skills">
