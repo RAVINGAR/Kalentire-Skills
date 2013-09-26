@@ -54,7 +54,7 @@
     </target>
 
     <target name="jar-skills">
-        <foreach target="jar-skill" param="files" parallel="true">
+        <foreach target="jar-skill" param="files" parallel="false">
             <fileset dir="${dir.bin}/${dir.bin.skills}" includes="Skill*.class" excludes="Skill*$*.class" />
         </foreach>
         <delete file="${dir.bin}/skill.info" />
