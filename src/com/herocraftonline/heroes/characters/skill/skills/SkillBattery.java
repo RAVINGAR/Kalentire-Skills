@@ -29,7 +29,7 @@ public class SkillBattery extends TargettedSkill {
         setDescription("You grant $1 of your mana to your target.");
         setUsage("/skill battery");
         setArgumentRange(0, 1);
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MANA_DECREASING, SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_DARK);
+        setTypes(SkillType.SILENCABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MANA_DECREASING, SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_DARK);
         setIdentifiers("skill battery");
     }
 

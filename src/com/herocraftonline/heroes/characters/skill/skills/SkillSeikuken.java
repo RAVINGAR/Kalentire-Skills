@@ -6,6 +6,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -119,14 +120,14 @@ public class SkillSeikuken extends ActiveSkill {
                 return;
 
             // Handle outgoing
-            if (event.getDamager() instanceof Hero && event.getEntity() instanceof Player) {
+            if (event.getDamager() instanceof Hero && event.getEntity() instanceof Player && !(event.getAttackerEntity() instanceof Projectile)) {
 
                 Player defenderPlayer = (Player) event.getEntity();
                 Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
                 Player damagerPlayer = ((Hero) event.getDamager()).getPlayer();
                 Hero damagerHero = plugin.getCharacterManager().getHero(damagerPlayer);
 
-                if (!damageCheck(damagerPlayer, (LivingEntity) defenderPlayer))
+                if (!(damageCheck(defenderPlayer, (LivingEntity) damagerPlayer) && damageCheck(damagerPlayer, (LivingEntity) defenderPlayer)))
                     return;
 
                 // Check if they are under the effects of Seikuken
@@ -155,8 +156,8 @@ public class SkillSeikuken extends ActiveSkill {
 
                     Material item = defenderPlayer.getItemInHand().getType();
                     double damage = plugin.getDamageManager().getHighestItemDamage(item, defenderPlayer) * damageMultiplier;
-                    addSpellTarget((Player) damagerPlayer, defenderHero);
-                    damageEntity((Player) damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
+                    addSpellTarget(damagerPlayer, defenderHero);
+                    damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 
                     damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
 

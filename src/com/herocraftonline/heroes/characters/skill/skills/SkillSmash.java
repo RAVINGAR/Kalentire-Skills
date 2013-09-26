@@ -21,9 +21,9 @@ public class SkillSmash extends TargettedSkill {
     public SkillSmash(Heroes plugin) {
         super(plugin, "Smash");
         setDescription("Smash your target with your lute, dealing $1 physical damage and interrupting their casting.");
-        setUsage("/skill bash");
+        setUsage("/skill smash");
         setArgumentRange(0, 0);
-        setIdentifiers("skill bash");
+        setIdentifiers("skill smash");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.INTERRUPTING);
     }
 

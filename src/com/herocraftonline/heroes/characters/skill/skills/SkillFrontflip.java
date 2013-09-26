@@ -37,7 +37,7 @@ public class SkillFrontflip extends ActiveSkill {
         setUsage("/skill frontflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill frontflip");
-        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;
@@ -51,7 +51,7 @@ public class SkillFrontflip extends ActiveSkill {
         if (hero.canUseSkill("Backflip"))
             description.replace("$1", " This ability shares a cooldown with Backflip.");
         else
-            description.replace("$1", "");
+            description.replace("$1", " ");
 
         return description;
     }

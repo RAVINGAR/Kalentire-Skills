@@ -37,7 +37,7 @@ public class SkillBackflip extends ActiveSkill {
         setUsage("/skill backflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill backflip");
-        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DAMAGING);
+        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DAMAGING);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;
@@ -52,12 +52,12 @@ public class SkillBackflip extends ActiveSkill {
         if (throwShuriken)
             description.replace("$1", " If you are able to currently throw Shuriken, you will do so as well. ");
         else
-            description.replace("$1", "");
+            description.replace("$1", " ");
 
         if (hero.canUseSkill("Frontflip"))
             description.replace("$2", " This ability shares a cooldown with Frontflip.");
         else
-            description.replace("$2", "");
+            description.replace("$2", " ");
 
         return description;
     }

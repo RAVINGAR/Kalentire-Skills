@@ -36,7 +36,7 @@ public class SkillJump extends ActiveSkill {
         setUsage("/skill jump");
         setArgumentRange(0, 0);
         setIdentifiers("skill jump");
-        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;
