@@ -111,7 +111,7 @@ public class SkillBackstab extends ActiveSkill {
         double ambushDamage = 0;
         for (String weaponName : weapons) {
             Material weapon = Material.getMaterial(weaponName);
-            int baseDamage = plugin.getDamageManager().getHighestItemDamage(weapon, player).intValue();
+            int baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
 
             backstabDamage = baseDamage * backstabDamageModifier;
             ambushDamage = baseDamage * ambushDamageModifier;

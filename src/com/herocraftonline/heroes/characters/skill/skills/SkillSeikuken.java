@@ -158,7 +158,7 @@ public class SkillSeikuken extends ActiveSkill {
                     damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
                     Material item = defenderPlayer.getItemInHand().getType();
-                    double damage = plugin.getDamageManager().getHighestItemDamage(item, defenderPlayer) * damageMultiplier;
+                    double damage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item) * damageMultiplier;
                     addSpellTarget(damagerPlayer, defenderHero);
                     damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 

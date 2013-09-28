@@ -58,7 +58,7 @@ public class SkillPiercingStrike extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = plugin.getDamageManager().getHighestItemDamage(item, player);
+        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
 
         addSpellTarget(target, hero);

@@ -60,7 +60,7 @@ public class SkillCleave extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = plugin.getDamageManager().getHighestItemDamage(item, player);
+        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);

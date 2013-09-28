@@ -177,7 +177,7 @@ public class SkillLancersReach extends ActiveSkill {
 
             if (finalTarget != null) {
                 // Damage target
-                double damage = plugin.getDamageManager().getHighestItemDamage(itemType, player);
+                double damage = plugin.getDamageManager().getHighestItemDamage(hero, itemType);
 
                 addSpellTarget(finalTarget, hero);
                 damageEntity(finalTarget, player, damage, DamageCause.ENTITY_ATTACK);
