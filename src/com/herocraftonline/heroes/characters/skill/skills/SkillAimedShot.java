@@ -17,6 +17,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -27,6 +28,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillAimedShot extends TargettedSkill {
 
@@ -49,11 +51,13 @@ public class SkillAimedShot extends TargettedSkill {
     public String getDescription(Hero hero) {
 
         double gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 4000, false) / 1000;
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
-        double damagePerAgility = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
-        damage += (int) damagePerAgility;
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
+        damage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
 
-        return getDescription().replace("$1", gracePeriod + "").replace("$2", damage + "");
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", gracePeriod + "").replace("$2", formattedDamage);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -87,9 +91,8 @@ public class SkillAimedShot extends TargettedSkill {
 
         // Check line of sight, but only against other players.
         if (target instanceof Player) {
-
             Player targetPlayer = (Player) target;
-            if (!inLineOfSight(player, targetPlayer) || !player.canSee(targetPlayer)) {
+            if (inLineOfSight(player, targetPlayer)) {
                 hero.getPlayer().sendMessage("Your target is not within your line of sight!");
                 return SkillResult.FAIL;
             }

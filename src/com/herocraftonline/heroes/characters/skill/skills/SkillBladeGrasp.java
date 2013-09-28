@@ -110,11 +110,7 @@ public class SkillBladeGrasp extends TargettedSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.getDamage() == 0 || !(event instanceof EntityDamageByEntityEvent)) {
-                return;
-            }
-
-            if (event.getCause() != DamageCause.ENTITY_ATTACK)
+            if (event.getDamage() == 0 || !(event instanceof EntityDamageByEntityEvent) || event.getCause() != DamageCause.ENTITY_ATTACK)
                 return;
 
             EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;

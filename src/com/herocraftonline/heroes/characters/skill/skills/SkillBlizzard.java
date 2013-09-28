@@ -129,9 +129,13 @@ public class SkillBlizzard extends ActiveSkill {
         double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-        broadcastExecuteText(hero);
-
         Block tBlock = player.getTargetBlock(null, maxDist);
+
+        if (tBlock == null)
+            return SkillResult.INVALID_TARGET;
+
+        broadcastExecuteText(hero);
+        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.2F, 1.0F);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
         List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
