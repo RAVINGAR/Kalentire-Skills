@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -75,29 +74,14 @@ public class SkillThickenBlood extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(4), false);
-
         // Get Debuff values
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, Integer.valueOf(75), false);
         duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
 
-        // Famine the first target
         ThickenBloodEffect tbEffect = new ThickenBloodEffect(this, player, duration);
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(tbEffect);
-
-        // Famine the rest
-        for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
-            if (entity instanceof LivingEntity) {
-                if (!damageCheck(player, (LivingEntity) entity)) {
-                    continue;
-                }
-
-                CharacterTemplate newTargCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
-                newTargCT.addEffect(tbEffect);
-            }
-        }
 
         try {
             fplayer.playFirework(target.getWorld(),

@@ -1,7 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -148,7 +146,6 @@ public class SkillBloodDrinker extends ActiveSkill {
 
             if (currentTotalHeal < maxHealing) {
                 double healing = damage * bdEffect.getDamageHealingPercent();
-                Heroes.log(Level.INFO, "BloodDrinker Debug: HealthToHeal: " + healing);
                 if (healing + currentTotalHeal > maxHealing) {
                     healing = maxHealing - currentTotalHeal;
                 }

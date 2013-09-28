@@ -127,6 +127,9 @@ public class SkillSeikuken extends ActiveSkill {
                 Player damagerPlayer = ((Hero) event.getDamager()).getPlayer();
                 Hero damagerHero = plugin.getCharacterManager().getHero(damagerPlayer);
 
+                if ((((LivingEntity) defenderPlayer).getNoDamageTicks() > 10) || defenderPlayer.isDead() || defenderPlayer.getHealth() <= 0)
+                    return;
+
                 if (!(damageCheck(defenderPlayer, (LivingEntity) damagerPlayer) && damageCheck(damagerPlayer, (LivingEntity) defenderPlayer)))
                     return;
 

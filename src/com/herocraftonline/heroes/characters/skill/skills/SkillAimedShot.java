@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.Vector;
 
@@ -42,7 +42,7 @@ public class SkillAimedShot extends TargettedSkill {
         setUsage("/skill aimedshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill aimedshot");
-        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.STEALTHY);
+        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.ARMOR_PIERCING, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.STEALTHY);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -152,7 +152,7 @@ public class SkillAimedShot extends TargettedSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);
-                        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);  // Magic so it is armor piercing.
+                        damageEntity(target, player, damage, DamageCause.MAGIC);  // Magic so it is armor piercing.
                     }
                 }, travelTime * 20);	// make the damage happen 0.055 seconds later per block.
             }

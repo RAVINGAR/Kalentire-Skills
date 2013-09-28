@@ -62,8 +62,8 @@ public class SkillStrike extends TargettedSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.STRENGTH) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.4, false);
-        tickDamage += tickDamageIncrease;
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.4, false);
+        tickDamage += hero.getAttributeValue(AttributeType.STRENGTH) * tickDamageIncrease;
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedDoTDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
@@ -99,8 +99,8 @@ public class SkillStrike extends TargettedSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.STRENGTH) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.4, false);
-        tickDamage += tickDamageIncrease;
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.4, false);
+        tickDamage += hero.getAttributeValue(AttributeType.STRENGTH) * tickDamageIncrease;
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new StrikeBleedEffect(this, player, period, duration, tickDamage));
         player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
