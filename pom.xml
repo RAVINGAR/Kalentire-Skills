@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
