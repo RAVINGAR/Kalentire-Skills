@@ -92,7 +92,7 @@ public class SkillAimedShot extends TargettedSkill {
         // Check line of sight, but only against other players.
         if (target instanceof Player) {
             Player targetPlayer = (Player) target;
-            if (inLineOfSight(player, targetPlayer)) {
+            if (!inLineOfSight(player, targetPlayer)) {
                 hero.getPlayer().sendMessage("Your target is not within your line of sight!");
                 return SkillResult.FAIL;
             }

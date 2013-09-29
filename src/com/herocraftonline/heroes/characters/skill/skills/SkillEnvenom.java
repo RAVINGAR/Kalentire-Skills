@@ -151,14 +151,21 @@ public class SkillEnvenom extends ActiveSkill {
             return;
         }
 
-        private void dealEnvenomDamage(Hero hero, LivingEntity target) {
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(5), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(2.0), false);
-            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        private void dealEnvenomDamage(final Hero hero, final LivingEntity target) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
+                    if (!(damageCheck(hero.getPlayer(), target)))
+                        return;
 
-            // Damage the target
-            addSpellTarget(target, hero);
-            damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(5), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(2.0), false);
+                    damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+                    // Damage the target
+                    addSpellTarget(target, hero);
+                    damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+                }
+            }, 2L);
         }
     }
 

@@ -131,7 +131,6 @@ public class SkillIceRune extends ActiveSkill {
         public void onRuneApplication(RuneApplicationEvent event) {
             // Get Hero information
             final Hero hero = event.getHero();
-            final Player player = hero.getPlayer();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
             if (!(event.getRuneList().getHead().name == "IceRune"))
@@ -178,7 +177,7 @@ public class SkillIceRune extends ActiveSkill {
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
                     player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
                 }
-            }, (long) (0.1 * 20));
+            }, 2L);
 
             return;
         }

@@ -181,28 +181,8 @@ public class SkillVoidRune extends ActiveSkill {
     }
 
     private class VoidRuneSilenceEffect extends SilenceEffect {
-        private final String applyText;
-        private final String expireText;
-
         public VoidRuneSilenceEffect(Skill skill, Player applier, long duration, String applyText, String expireText) {
-            super(skill, applier, duration);
-
-            this.applyText = applyText;
-            this.expireText = expireText;
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            super(skill, applier, duration, applyText, expireText);
         }
     }
 }
