@@ -7,11 +7,9 @@
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
-    <property name="heroes" value="../../Heroes-Attributes/workspace/target/" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
-        <fileset dir="${heroes}" includes="**/*.jar" />
         <fileset dir="libs" includes="**/*.jar" />
         <fileset dir="${dir.maven.dependencies}" includes="**/*.jar" />
     </path>
@@ -45,7 +43,8 @@
         <mkdir dir="${dir.dist}/${dir.dist.skills}" />
         <mkdir dir="${dir.bin}" />
         <mkdir dir="${dir.bin}/${dir.dist.skills}" />
-        <javac srcdir="src" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false"/>
+
+        <javac srcdir="src/com/herocraftonline/heroes/characters/skill/skills" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes"/>
         <antcall target="jar-skills" />
         <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
         <antcall target="zip" />
@@ -71,7 +70,6 @@
     </target>
 
     <target name="zip">
-        <copy todir="${dir.dist}" file="${heroes}/Heroes.jar"/>
         <zip destfile="${dir.dist}/Heroes.zip">
             <fileset dir="${dir.dist}" includes="*.jar"/>
             <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
