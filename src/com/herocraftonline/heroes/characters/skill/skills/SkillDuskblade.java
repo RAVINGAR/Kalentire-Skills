@@ -25,17 +25,17 @@ public class SkillDuskblade extends TargettedSkill {
 
     public SkillDuskblade(Heroes plugin) {
         super(plugin, "Duskblade");
-        setDescription("Strike your target with a magical blade of dusk, dealing $1 damage, and restoring $2 of your own health.");
+        setDescription("Strike your target with a blade of dusk, dealing $1 physical damage, and restoring $2 of your own health.");
         setUsage("/skill duskblade");
         setArgumentRange(0, 0);
         setIdentifiers("skill duskblade");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
@@ -52,7 +52,7 @@ public class SkillDuskblade extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(85));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.75));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
         node.set("heal-mult", Double.valueOf(1.0));
 
         return node;
@@ -63,7 +63,7 @@ public class SkillDuskblade extends TargettedSkill {
         Player player = hero.getPlayer();
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         broadcastExecuteText(hero, target);
