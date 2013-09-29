@@ -74,6 +74,7 @@
             <fileset dir="${dir.dist}" includes="*.jar"/>
             <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
         </zip>
+        <delete dir="${dir.maven.dependencies}"/>
         <delete dir="${dir.dist}/${ant.project.name}"/>
     </target>
 </project>
