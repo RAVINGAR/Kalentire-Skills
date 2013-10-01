@@ -29,6 +29,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillChaosOrb extends ActiveSkill {
 
@@ -43,7 +44,7 @@ public class SkillChaosOrb extends ActiveSkill {
 
     public SkillChaosOrb(Heroes plugin) {
         super(plugin, "ChaosOrb");
-        setDescription("You throw an orb of chaos that deals $1 damage and ignites the target.");
+        setDescription("You throw an orb of chaos that deals $1 damage and ignites the target. If you are able to use Ender Pearls, you will teleport to the orb when it makes contact with an object.");
         setUsage("/skill chaosorb");
         setArgumentRange(0, 0);
         setIdentifiers("skill chaosorb");
@@ -54,11 +55,13 @@ public class SkillChaosOrb extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(90), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(90), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        return getDescription().replace("$1", damage + "");
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDamage);
     }
 
     @Override

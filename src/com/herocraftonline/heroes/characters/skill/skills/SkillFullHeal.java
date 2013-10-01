@@ -26,7 +26,7 @@ public class SkillFullHeal extends TargettedSkill {
 
     public SkillFullHeal(Heroes plugin) {
         super(plugin, "FullHeal");
-        setDescription("You restore your target to full health. However, this ability will only heal $1% of your max health if self-targetted.");
+        setDescription("You restore your target to full health. However, this ability will only heal you for $1% of your max health however.");
         setUsage("/skill fullheal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill fullheal");
@@ -66,11 +66,11 @@ public class SkillFullHeal extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent;
         if (player.equals(targetHero.getPlayer())) {
             double modifier = SkillConfigManager.getUseSetting(hero, this, "self-heal-modifier", Double.valueOf(0.5), false);
-            double healAmount = (target.getMaxHealth() - target.getHealth()) * modifier;
+            double healAmount = target.getMaxHealth() * modifier;
             hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this);
         }
         else {
-            double healAmount = target.getMaxHealth() - target.getHealth();
+            double healAmount = target.getMaxHealth();
             hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         }
 

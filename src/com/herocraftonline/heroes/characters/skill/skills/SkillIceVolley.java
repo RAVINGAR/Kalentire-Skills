@@ -238,7 +238,6 @@ public class SkillIceVolley extends ActiveSkill {
             double pitchMultiplier = Math.abs(Math.sin(Math.abs(pitch) - 90));
 
             // Fire arrows from the center and move clockwise towards the end.
-            ItemStack bow = event.getBow();
             for (double a = actualCenterDegreesRad; a <= degreesRad; a += diff) {
                 shootIceVolleyArrow(player, yaw + a, pitchMultiplier, velocityMultiplier);
             }
