@@ -11,7 +11,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.WitheringEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -70,6 +72,8 @@ public class SkillDarkBlade extends TargettedSkill {
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        targetCT.addEffect(new WitheringEffect(this, player, 500, 0, null, null));
 
         int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain", Integer.valueOf(100), false);
 
