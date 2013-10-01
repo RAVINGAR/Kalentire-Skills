@@ -13,8 +13,10 @@ import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.common.WalkSpeedIncreaseEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -29,7 +31,7 @@ public class SkillFrenzy extends ActiveSkill {
 
     public SkillFrenzy(Heroes plugin) {
         super(plugin, "Frenzy");
-        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you move much faster, but take $2% more damage from all attacks and suffer from severe nausea.");
+        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you deal $2% more damage, and shrug off disabling effects every $3 seconds. However, you take $4% more damage from all attacks, suffer from severe nausea.");
         setUsage("/skill frenzy");
         setArgumentRange(0, 0);
         setIdentifiers("skill frenzy");
@@ -39,12 +41,17 @@ public class SkillFrenzy extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7000), false);
-        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", Double.valueOf(0.5), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
 
+        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", Double.valueOf(0.5), false);
+        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", Double.valueOf(0.5), false);
+
+        String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedOutgoingDamageIncrease = Util.decFormat.format(outgoingDamageIncrease * 100);
         String formattedIncomingDamageIncrease = Util.decFormat.format(incomingDamageIncrease * 100);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedIncomingDamageIncrease);
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedOutgoingDamageIncrease).replace("$3", formattedPeriod).replace("$4", formattedIncomingDamageIncrease);
     }
 
     @Override
@@ -53,7 +60,8 @@ public class SkillFrenzy extends ActiveSkill {
 
         node.set("walk-speed-increase", Double.valueOf(0.015));
         node.set("nausea-amplifier", Integer.valueOf(3));
-        node.set("incoming-damage-increase", Double.valueOf(0.5));
+        node.set("incoming-damage-increase", Double.valueOf(0.25));
+        node.set("incoming-damage-increase", Double.valueOf(0.15));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has entered a frenzy!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer in a frenzy!");
@@ -73,13 +81,16 @@ public class SkillFrenzy extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7000), false);
-        double walkSpeedIncrease = SkillConfigManager.getUseSetting(hero, this, "walk-speed-increase", Double.valueOf(0.5), false);
-        int nauseaAmplifier = SkillConfigManager.getUseSetting(hero, this, "nausea-amplifier", Integer.valueOf(3), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
+
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", Double.valueOf(0.5), false);
+        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", Double.valueOf(0.5), false);
+
+        int nauseaAmplifier = SkillConfigManager.getUseSetting(hero, this, "nausea-amplifier", Integer.valueOf(3), false);
 
         broadcastExecuteText(hero);
 
-        hero.addEffect(new FrenzyEffect(this, player, duration, incomingDamageIncrease, walkSpeedIncrease, nauseaAmplifier));
+        hero.addEffect(new FrenzyEffect(this, player, period, duration, incomingDamageIncrease, outgoingDamageIncrease, nauseaAmplifier));
 
         return SkillResult.NORMAL;
     }
@@ -90,6 +101,16 @@ public class SkillFrenzy extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
+
+            // Handle outgoing
+            CharacterTemplate attackerCT = event.getDamager();
+            if (attackerCT.hasEffect("Frenzy")) {
+                FrenzyEffect fEffect = (FrenzyEffect) attackerCT.getEffect("Frenzy");
+
+                double damageIncreasePercent = 1 + fEffect.getOutgoingDamageIncrease();
+                double newDamage = damageIncreasePercent * event.getDamage();
+                event.setDamage(newDamage);
+            }
 
             // Handle incoming
             CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
@@ -105,6 +126,16 @@ public class SkillFrenzy extends ActiveSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
 
+            // Handle outgoing
+            CharacterTemplate attackerCT = event.getDamager();
+            if (attackerCT.hasEffect("Frenzy")) {
+                FrenzyEffect fEffect = (FrenzyEffect) attackerCT.getEffect("Frenzy");
+
+                double damageIncreasePercent = 1 + fEffect.getOutgoingDamageIncrease();
+                double newDamage = damageIncreasePercent * event.getDamage();
+                event.setDamage(newDamage);
+            }
+
             // Handle incoming
             CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (defenderCT.hasEffect("Frenzy")) {
@@ -117,19 +148,42 @@ public class SkillFrenzy extends ActiveSkill {
         }
     }
 
-    public class FrenzyEffect extends WalkSpeedIncreaseEffect {
+    public class FrenzyEffect extends PeriodicExpirableEffect {
         private double incomingDamageIncrease;
+        private double outgoingDamageIncrease;
 
-        public FrenzyEffect(Skill skill, Player applier, long duration, double incomingDamageIncrease, double walkSpeedIncrease, int nauseaAmplifier) {
-            super(skill, "Frenzy", applier, duration, walkSpeedIncrease, applyText, expireText);
+        public FrenzyEffect(Skill skill, Player applier, long period, long duration, double incomingDamageIncrease, double outgoingDamageIncrease, int nauseaAmplifier) {
+            super(skill, "Frenzy", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.NAUSEA);
 
             this.incomingDamageIncrease = incomingDamageIncrease;
+            this.outgoingDamageIncrease = outgoingDamageIncrease;
 
             addMobEffect(9, (int) (((duration + 4000) / 1000) * 20), nauseaAmplifier, false);
+        }
+
+        @Override
+        public void tickHero(Hero hero) {
+            removeDisables(hero);
+        }
+
+        @Override
+        public void tickMonster(Monster monster) {}
+
+        private void removeDisables(Hero hero) {
+            for (Effect effect : hero.getEffects()) {
+                if (effect.isType(EffectType.HARMFUL)) {
+                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) ||
+                            effect.isType(EffectType.VELOCITY_DECREASING) || effect.isType(EffectType.WALK_SPEED_DECREASING) ||
+                            effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
+
+                        hero.removeEffect(effect);
+                    }
+                }
+            }
         }
 
         public double getIncomingDamageIncrease() {
@@ -138,6 +192,14 @@ public class SkillFrenzy extends ActiveSkill {
 
         public void setIncomingDamageIncrease(double incomingDamageIncrease) {
             this.incomingDamageIncrease = incomingDamageIncrease;
+        }
+
+        public double getOutgoingDamageIncrease() {
+            return outgoingDamageIncrease;
+        }
+
+        public void setOutgoingDamageIncrease(double outgoingDamageIncrease) {
+            this.outgoingDamageIncrease = outgoingDamageIncrease;
         }
     }
 }

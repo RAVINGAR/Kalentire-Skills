@@ -14,10 +14,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -31,7 +29,7 @@ public class SkillUndyingWill extends ActiveSkill {
 
     public SkillUndyingWill(Heroes plugin) {
         super(plugin, "UndyingWill");
-        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 seconds. While active, you shrug off disabling effects every $2 seconds.");
+        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 seconds.");
         setUsage("/skill undyingwill");
         setArgumentRange(0, 0);
         setIdentifiers("skill undyingwill");
@@ -111,37 +109,11 @@ public class SkillUndyingWill extends ActiveSkill {
         }
     }
 
-    public class UndyingWillEffect extends PeriodicExpirableEffect {
+    public class UndyingWillEffect extends ExpirableEffect {
         public UndyingWillEffect(Skill skill, Player applifer, long period, long duration) {
-            super(skill, "UndyingWill", applifer, period, duration, null, expireText);
+            super(skill, "UndyingWill", applifer, duration, null, expireText);
 
             types.add(EffectType.PHYSICAL);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            removeDisables(hero);
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            removeDisables(hero);
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {}
-
-        private void removeDisables(Hero hero) {
-            for (Effect effect : hero.getEffects()) {
-                if (effect.isType(EffectType.HARMFUL)) {
-                    if (effect.isType(EffectType.DISABLE) || effect.isType(EffectType.SLOW) ||
-                            effect.isType(EffectType.VELOCITY_DECREASING) || effect.isType(EffectType.WALK_SPEED_DECREASING) ||
-                            effect.isType(EffectType.STUN) || effect.isType(EffectType.ROOT)) {
-                        hero.removeEffect(effect);
-                    }
-                }
-            }
         }
     }
 }
