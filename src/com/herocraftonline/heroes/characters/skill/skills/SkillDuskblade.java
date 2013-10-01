@@ -36,7 +36,7 @@ public class SkillDuskblade extends TargettedSkill {
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
 
@@ -64,12 +64,12 @@ public class SkillDuskblade extends TargettedSkill {
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         broadcastExecuteText(hero, target);
 
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
 

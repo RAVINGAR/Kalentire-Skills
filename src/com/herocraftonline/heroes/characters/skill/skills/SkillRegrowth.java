@@ -31,7 +31,7 @@ public class SkillRegrowth extends TargettedSkill {
 
     public SkillRegrowth(Heroes plugin) {
         super(plugin, "Regrowth");
-        setDescription("You instantly restore $1(" + ChatColor.RED + "$4" + ChatColor.GOLD + ") health to your target, and then restore an additional $2(" + ChatColor.RED + "$5" + ChatColor.GOLD + ") of their health over the course of $3 seconds. Self-heal numbers are highlighted in red.");
+        setDescription("You instantly restore $1(" + ChatColor.GRAY + "$4" + ChatColor.GOLD + ") health to your target, and then restore an additional $2(" + ChatColor.GRAY + "$5" + ChatColor.GOLD + ") of their health over the course of $3 seconds. Self-heal numbers are highlighted in gray.");
         setUsage("/skill regrowth <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill regrowth");

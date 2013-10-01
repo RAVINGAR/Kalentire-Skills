@@ -26,7 +26,7 @@ public class SkillSiphonBlood extends TargettedSkill {
 
     public SkillSiphonBlood(Heroes plugin) {
         super(plugin, "SiphonBlood");
-        setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4");
+        setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4.");
         setUsage("/skill siphonblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill siphonblood");
