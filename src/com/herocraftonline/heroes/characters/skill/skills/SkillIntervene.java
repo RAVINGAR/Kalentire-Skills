@@ -84,6 +84,12 @@ public class SkillIntervene extends TargettedSkill {
         if (!(target instanceof Player))
             return SkillResult.INVALID_TARGET;
 
+        Hero tHero = plugin.getCharacterManager().getHero((Player) target);
+        if (tHero.hasEffect("InterveneTarget")) {
+            Messaging.send(player, "You cannot intervene that target right now!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
         broadcastExecuteText(hero, target);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(8000), false);
