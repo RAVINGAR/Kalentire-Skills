@@ -23,7 +23,7 @@ public class SkillReplenish extends ActiveSkill {
         setUsage("/skill replenish");
         setArgumentRange(0, 0);
         setIdentifiers("skill replenish");
-        setTypes(SkillType.MANA_INCREASING);
+        setTypes(SkillType.BUFFING, SkillType.MANA_INCREASING);
     }
 
     @Override
