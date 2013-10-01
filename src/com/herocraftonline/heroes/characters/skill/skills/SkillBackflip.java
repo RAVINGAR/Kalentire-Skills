@@ -33,7 +33,7 @@ public class SkillBackflip extends ActiveSkill {
 
     public SkillBackflip(Heroes plugin) {
         super(plugin, "Backflip");
-        setDescription("Backflip away from your enemies.$1Distance traveled is based on your Agility.$2");
+        setDescription("Backflip away from your enemies.$1Distance traveled is based on your Agility. $2");
         setUsage("/skill backflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill backflip");
@@ -50,14 +50,14 @@ public class SkillBackflip extends ActiveSkill {
 
         boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
         if (throwShuriken)
-            description.replace("$1", " If you are able to currently throw Shuriken, you will do so as well. ");
+            description.replace("$1", "If you are able to currently throw Shuriken, you will do so as well. ");
         else
-            description.replace("$1", " ");
+            description.replace("$1", "");
 
         if (hero.canUseSkill("Frontflip"))
-            description.replace("$2", " This ability shares a cooldown with Frontflip.");
+            description.replace("$2", "This ability shares a cooldown with Frontflip.");
         else
-            description.replace("$2", " ");
+            description.replace("$2", "");
 
         return description;
     }

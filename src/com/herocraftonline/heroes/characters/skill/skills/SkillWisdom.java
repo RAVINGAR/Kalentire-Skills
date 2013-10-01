@@ -76,6 +76,10 @@ public class SkillWisdom extends ActiveSkill {
         manaRegen += (int) (manaRegenIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         WisdomEffect mEffect = new WisdomEffect(this, player, duration, manaRegen);
+
+        broadcastExecuteText(hero);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
         if (!hero.hasParty()) {
             if (hero.hasEffect("Wisdom")) {
                 if (((WisdomEffect) hero.getEffect("Wisdom")).getIncreaseValue() > mEffect.getIncreaseValue()) {
@@ -84,13 +88,9 @@ public class SkillWisdom extends ActiveSkill {
                 }
             }
 
-            broadcastExecuteText(hero);
-
             hero.addEffect(mEffect);
         }
         else {
-            broadcastExecuteText(hero);
-
             int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false), 2);
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();
@@ -103,7 +103,7 @@ public class SkillWisdom extends ActiveSkill {
                 }
 
                 if (pHero.hasEffect("Wisdom")) {
-                    if (((WisdomEffect) hero.getEffect("Wisdom")).getIncreaseValue() > mEffect.getIncreaseValue())
+                    if (((WisdomEffect) pHero.getEffect("Wisdom")).getIncreaseValue() > mEffect.getIncreaseValue())
                         continue;
                 }
 
@@ -111,15 +111,13 @@ public class SkillWisdom extends ActiveSkill {
             }
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
-
         return SkillResult.NORMAL;
     }
 
     public class WisdomEffect extends ManaRegenIncreaseEffect {
 
         public WisdomEffect(Skill skill, Player applier, long duration, int manaRegenIncrease) {
-            super(skill, "Wisdom", applier, duration, manaRegenIncrease, "", "");
+            super(skill, "Wisdom", applier, duration, manaRegenIncrease, null, null);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.MAGIC);

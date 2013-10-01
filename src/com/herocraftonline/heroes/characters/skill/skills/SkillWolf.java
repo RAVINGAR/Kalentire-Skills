@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -40,6 +42,22 @@ public class SkillWolf extends PassiveSkill {
 
         SkillEntityListener(SkillWolf skill) {
             this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onPlayerEntityInteract(PlayerInteractEntityEvent event) {
+            Player player = event.getPlayer();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            Material material = player.getItemInHand().getType();
+
+            Entity targetEntity = event.getRightClicked();
+
+            if (targetEntity instanceof Wolf) {
+                if (material == Material.BONE) {
+                    if (!hero.canUseSkill(skill.getName()))
+                        event.setCancelled(true);
+                }
+            }
         }
 
         @EventHandler(priority = EventPriority.HIGHEST)

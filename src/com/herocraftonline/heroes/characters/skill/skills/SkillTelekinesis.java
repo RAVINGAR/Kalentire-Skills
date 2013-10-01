@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import net.minecraft.server.v1_6_R3.EntityHuman;
 import net.minecraft.server.v1_6_R3.WorldServer;
@@ -39,7 +38,7 @@ import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillTelekinesis extends ActiveSkill {
 
-    private LWC lwc = null;
+    private boolean lwcEnabled = false;
     private boolean ncpEnabled = false;
 
     public SkillTelekinesis(Heroes plugin) {
@@ -50,18 +49,11 @@ public class SkillTelekinesis extends ActiveSkill {
         setIdentifiers("skill telekinesis");
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
+            ncpEnabled = true;
 
-            if (Bukkit.getServer().getPluginManager().getPlugin("LWC") != null) {
-                lwc = ((LWCPlugin) plugin.getServer().getPluginManager().getPlugin("LWC")).getLWC();
-            }
-        }
-        catch (Exception e) {
-            Heroes.log(Level.SEVERE, "Could not find LWC plugin. If this is a mistake and the LWC plugin is indeed present, the Telekinesis Skill will work on LWC'd objects.");
-        }
+        if (Bukkit.getServer().getPluginManager().getPlugin("LWC") != null)
+            lwcEnabled = true;
     }
 
     @Override
@@ -103,34 +95,26 @@ public class SkillTelekinesis extends ActiveSkill {
         Block tempBlock = null;
         while (iter.hasNext()) {
             tempBlock = iter.next();
-            // Messaging.send(player, "Iterating. CurrentBlock: " + tempBlock.getType().toString());        // DEBUG
 
             // Some "transparent" blocks are actually what we are looking for, so check those first.
             if (allowedBlocks.contains(tempBlock.getType().toString())) {
                 targetBlock = tempBlock;
-                // Messaging.send(player, "Stopped because we found a proper block");       // DEBUG
                 break;
             }
-            else if (!(Util.transparentBlocks.contains(tempBlock.getType())
-            && (Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.UP).getType())
-            || Util.transparentBlocks.contains(tempBlock.getRelative(BlockFace.DOWN).getType())))) {
-
+            else if (!Util.transparentBlocks.contains(tempBlock.getType())) {
                 // if the block is not transparent, it should become the new "target" block.
-                // Messaging.send(player, "Stopped because we hit a wall or something.");       // DEBUG
                 targetBlock = tempBlock;
                 break;
             }
         }
 
         Material blockMaterial = targetBlock.getType();
-        // Messaging.send(player, "BlockMaterial: " + blockMaterial.toString());        // DEBUG
 
         if (allowedBlocks.contains(blockMaterial.toString())) {
-            // Messaging.send(player, "Interacting with a " + blockMaterial.toString());        // DEBUG
-
             boolean canInteractWithBlock = true;
             boolean isLWCd = false;
-            if (lwc != null) {
+            if (lwcEnabled) {
+                LWC lwc = ((LWCPlugin) plugin.getServer().getPluginManager().getPlugin("LWC")).getLWC();
                 Protection protection = lwc.findProtection(targetBlock);
                 if (protection != null) {
                     if (!lwc.canAccessProtection(player, protection)) {
@@ -233,7 +217,6 @@ public class SkillTelekinesis extends ActiveSkill {
             }
         }
 
-        // Messaging.send(player, "You cannot interact with a " + blockMaterial.toString());       // DEBUG
         Messaging.send(player, "You cannot telekinetically interact with that object!");
         return SkillResult.INVALID_TARGET_NO_MSG;
 

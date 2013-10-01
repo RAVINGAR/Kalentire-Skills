@@ -37,7 +37,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
     public SkillEnderPearls(Heroes plugin) {
         super(plugin, "EnderPearls");
-        setDescription("You can throw ender pearls once every $1 seconds.");
+        setDescription("You can throw ender pearls! $1");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.TELEPORTING);
 
@@ -46,11 +46,16 @@ public class SkillEnderPearls extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int cdDuration = SkillConfigManager.getUseSetting(hero, this, "toss-cooldown", Integer.valueOf(5000), false);
+        boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, this, "cooldown-during-combat", Boolean.valueOf(true));
+        int cdDuration = SkillConfigManager.getUseSetting(hero, this, "combat-toss-cooldown", Integer.valueOf(60000), false);
 
-        String formattedCooldown = Util.decFormat.format(cdDuration / 1000.0);
+        String combatCooldownString = "";
+        if (hasCombatCooldown) {
+            String formattedCooldown = Util.decFormat.format(cdDuration / 1000.0);
+            combatCooldownString = "If you are in combat when throwing an ender pearl, you will not be able to throw another for " + formattedCooldown + " seconds.";
+        }
 
-        return getDescription().replace("$1", formattedCooldown);
+        return getDescription().replace("$1", combatCooldownString);
     }
 
     @Override
@@ -61,7 +66,8 @@ public class SkillEnderPearls extends PassiveSkill {
         node.set(SkillSetting.EXPIRE_TEXT.node(), "");
         node.set("vertical-leniency", Integer.valueOf(2));
         node.set("velocity-multiplier", Double.valueOf(0.85));
-        node.set("toss-cooldown", Integer.valueOf(0));
+        node.set("cooldown-during-combat", Boolean.valueOf(true));
+        node.set("combat-toss-cooldown", Integer.valueOf(60000));
 
         return node;
     }
@@ -103,7 +109,15 @@ public class SkillEnderPearls extends PassiveSkill {
                     return;
                 }
 
-                int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "toss-cooldown", Integer.valueOf(5000), false);
+                boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown-during-combat", Boolean.valueOf(true));
+                int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "combat-toss-cooldown", Integer.valueOf(5000), false);
+                boolean applyCooldown = false;
+                if (hasCombatCooldown) {
+                    if (hero.isInCombat())
+                        applyCooldown = true;
+                }
+
+                CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
 
                 // If the clicked block is null, we are clicking air. Air is a valid block that we do not need to validate
                 if (event.getClickedBlock() != null) {
@@ -115,17 +129,19 @@ public class SkillEnderPearls extends PassiveSkill {
                         return;
                     }
                     else {
-                        // The ender pearl will be used in this case. Let's add the cooldown effect to them.
-                        CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
-                        hero.addEffect(cdEffect);
+                        if (applyCooldown) {
+                            // The ender pearl will be used in this case. Let's add the cooldown effect to them.
+                            hero.addEffect(cdEffect);
+                        }
                     }
                 }
                 else {
                     // AIR BLOCK. NO BLOCK VALIDATION
 
-                    // The ender pearl will be used in this case. Let's add the cooldown effect to them.
-                    CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
-                    hero.addEffect(cdEffect);
+                    if (applyCooldown) {
+                        // The ender pearl will be used in this case. Let's add the cooldown effect to them.
+                        hero.addEffect(cdEffect);
+                    }
                 }
             }
         }
