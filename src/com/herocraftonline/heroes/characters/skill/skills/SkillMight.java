@@ -46,7 +46,10 @@ public class SkillMight extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double bonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.20, false);
-        return getDescription().replace("$1", Util.stringDouble((bonus - 1) * 100));
+
+        String formattedBonus = Util.decFormat.format((bonus - 1) * 100);
+
+        return getDescription().replace("$1", formattedBonus);
     }
 
     @Override

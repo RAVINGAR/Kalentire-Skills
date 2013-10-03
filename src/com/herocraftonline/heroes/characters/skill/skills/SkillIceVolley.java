@@ -110,8 +110,8 @@ public class SkillIceVolley extends ActiveSkill {
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer firing a volley of arrows.").replace("%hero%", "$1");
         shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDenoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
 
-        slowApplyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
-        slowExpireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
+        slowApplyText = SkillConfigManager.getRaw(this, "slow-apply-text", Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
+        slowExpireText = SkillConfigManager.getRaw(this, "slow-expire-text", Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -121,6 +121,8 @@ public class SkillIceVolley extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
         hero.addEffect(new IceVolleyShotEffect(this, player, duration, maxArrowsPerShot));
+
+        broadcastExecuteText(hero);
 
         //target.getWorld().playSound(target.getLocation(), Sound.d, 0.7F, 2.0F);
 

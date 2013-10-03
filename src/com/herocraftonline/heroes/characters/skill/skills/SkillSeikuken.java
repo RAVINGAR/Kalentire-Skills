@@ -130,12 +130,12 @@ public class SkillSeikuken extends ActiveSkill {
                 if ((((LivingEntity) defenderPlayer).getNoDamageTicks() > 10) || defenderPlayer.isDead() || defenderPlayer.getHealth() <= 0)
                     return;
 
-                if (!(damageCheck(defenderPlayer, (LivingEntity) damagerPlayer) && damageCheck(damagerPlayer, (LivingEntity) defenderPlayer)))
-                    return;
-
                 // Check if they are under the effects of Seikuken
                 if (defenderHero.hasEffect("Seikuken")) {
                     SeikukenEffect bgEffect = (SeikukenEffect) defenderHero.getEffect("Seikuken");
+
+                    if (!(damageCheck(defenderPlayer, (LivingEntity) damagerPlayer) && damageCheck(damagerPlayer, (LivingEntity) defenderPlayer)))
+                        return;
 
                     for (Effect effect : defenderHero.getEffects()) {
                         if (effect.isType(EffectType.STUN) || effect.isType(EffectType.DISABLE)) {

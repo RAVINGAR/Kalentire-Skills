@@ -33,7 +33,7 @@ public class SkillFrontflip extends ActiveSkill {
 
     public SkillFrontflip(Heroes plugin) {
         super(plugin, "Frontflip");
-        setDescription("Frontflip forwards into the air. Distance traveled is based on your Agility. $1");
+        setDescription("Frontflip forwards into the air. Distance traveled is based on your Agility.$1");
         setUsage("/skill frontflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill frontflip");
@@ -46,14 +46,12 @@ public class SkillFrontflip extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        String description = getDescription();
 
+        String backflipString = " ";
         if (hero.canUseSkill("Backflip"))
-            description.replace("$1", "This ability shares a cooldown with Backflip.");
-        else
-            description.replace("$1", "");
+            backflipString = "This ability shares a cooldown with Backflip.";
 
-        return description;
+        return getDescription().replace("$1", backflipString);
     }
 
     @Override

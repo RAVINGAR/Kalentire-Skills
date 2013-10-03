@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -146,7 +147,16 @@ public class SkillDeathMark extends ActiveSkill {
 
             player.setCompassTarget(target.getLocation());
 
-            Messaging.send(player, target.getName() + " has been marked for death!");
+            Messaging.send(player, ChatColor.WHITE + target.getName() + ChatColor.GRAY + " has been marked for death!");
+            double distance = player.getLocation().distance(target.getLocation());
+            if (distance > 1500)
+                Messaging.send(player, "You sense your target is a great distance away...");
+            else if (distance > 1000)
+                Messaging.send(player, "You sense your target is a good distance away...");
+            else if (distance > 500)
+                Messaging.send(player, "You sense your target is close by...");
+            else
+                Messaging.send(player, "Your target is very close!");
         }
 
         @Override

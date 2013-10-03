@@ -49,7 +49,7 @@ public class SkillRenewal extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_WISDOM.node(), Double.valueOf(0.15));
         node.set(SkillSetting.HEALING.node(), Integer.valueOf(100));
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.25));
 

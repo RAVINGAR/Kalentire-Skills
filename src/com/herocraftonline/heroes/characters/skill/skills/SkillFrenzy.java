@@ -58,10 +58,9 @@ public class SkillFrenzy extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("walk-speed-increase", Double.valueOf(0.015));
         node.set("nausea-amplifier", Integer.valueOf(3));
+        node.set("outgoing-damage-increase", Double.valueOf(0.15));
         node.set("incoming-damage-increase", Double.valueOf(0.25));
-        node.set("incoming-damage-increase", Double.valueOf(0.15));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has entered a frenzy!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer in a frenzy!");
