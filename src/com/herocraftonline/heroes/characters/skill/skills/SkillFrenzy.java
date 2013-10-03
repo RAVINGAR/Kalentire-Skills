@@ -31,7 +31,7 @@ public class SkillFrenzy extends ActiveSkill {
 
     public SkillFrenzy(Heroes plugin) {
         super(plugin, "Frenzy");
-        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you deal $2% more damage, and shrug off disabling effects every $3 seconds. However, you take $4% more damage from all attacks, suffer from severe nausea.");
+        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you deal $2% more damage and shrug off disabling effects every $3 seconds. However, during the effect, you also take $4% more damage from all sources and suffer from severe nausea.");
         setUsage("/skill frenzy");
         setArgumentRange(0, 0);
         setIdentifiers("skill frenzy");

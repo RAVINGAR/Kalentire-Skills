@@ -22,6 +22,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.skills.SkillShuriken;
 import com.herocraftonline.heroes.util.Messaging;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
@@ -54,7 +55,7 @@ public class SkillBackflip extends ActiveSkill {
 
         String frontFlipString = " ";
         if (hero.canUseSkill("Frontflip"))
-            frontFlipString = "This ability shares a cooldown with Frontflip.";
+            frontFlipString = " This ability shares a cooldown with Frontflip.";
 
         return getDescription().replace("$1", throwShurikenDescription).replace("$2", frontFlipString);
     }
