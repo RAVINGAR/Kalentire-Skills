@@ -109,8 +109,9 @@ public class SkillMassPiggify extends ActiveSkill {
                 }
             }
 
-            EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) ||
-                    target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ?
+            Material material = target.getLocation().getBlock().getType();
+            EntityType type = (material.equals(Material.WATER) ||
+                    material.equals(Material.STATIONARY_WATER) ?
                     EntityType.SQUID : EntityType.PIG);
 
             Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);

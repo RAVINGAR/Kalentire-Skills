@@ -33,11 +33,11 @@ public class SkillBattlesong extends ActiveSkill {
 
     public SkillBattlesong(Heroes plugin) {
         super(plugin, "Battlesong");
-        setDescription("Play a song of mana for $1 seconds. While active, you restoreerate $2 mana for party members within $3 blocks every $4 seconds.");
+        setDescription("Play a song of battle for $1 seconds. While active, you regenerate $2 stamina for party members within $3 blocks every $4 seconds.");
         setArgumentRange(0, 0);
         setUsage("/skill battlesong");
         setIdentifiers("skill battlesong");
-        setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG, SkillType.UNINTERRUPTIBLE);
+        setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
                              new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),

@@ -28,7 +28,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
     public SkillBoastfulBellow(Heroes plugin) {
         super(plugin, "BoastfulBellow");
-        setDescription("Unleash a Boastful Bellow, dealing $1 damage to nearby enemies and interrupting their casting.");
+        setDescription("Unleash a Boastful Bellow on your target, dealing $1 damage to them and all enemies within $2 blocks of them. Enemies hit with the ability will also have their casting interrupted.");
         setUsage("/skill boastfulbellow");
         setArgumentRange(0, 0);
         setIdentifiers("skill boastfulbellow");

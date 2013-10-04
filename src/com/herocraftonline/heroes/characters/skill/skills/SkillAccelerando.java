@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
-import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -43,11 +42,11 @@ public class SkillAccelerando extends ActiveSkill {
 
     public SkillAccelerando(Heroes plugin) {
         super(plugin, "Accelerando");
-        setDescription("You song boons movement speed boost to all nearby party members for $1 seconds. Players under the effects of Accelerando that are damaged are stunned for $2 seconds.");
+        setDescription("You song boons movement speed boost to all nearby party members for $1 seconds. The effect is removed on damage.");
         setUsage("/skill accelerando");
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerando");
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_SONG, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT, SkillType.UNINTERRUPTIBLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_SONG, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
@@ -85,7 +84,6 @@ public class SkillAccelerando extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), 12);
         node.set("speed-multiplier", 2);
         node.set(SkillSetting.DURATION.node(), 3000);
-        node.set("stun-duration", 1500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% gained a burst of speed!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% returned to normal speed!");
         node.set(SkillSetting.DELAY.node(), 1000);
@@ -160,9 +158,6 @@ public class SkillAccelerando extends ActiveSkill {
                     return;
 
                 hero.removeEffect(hero.getEffect("Accelerando"));
-
-                int duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
-                hero.addEffect(new StunEffect(skill, hero.getPlayer(), duration));
             }
         }
 
@@ -178,9 +173,6 @@ public class SkillAccelerando extends ActiveSkill {
                     return;
 
                 hero.removeEffect(hero.getEffect("Accelerando"));
-
-                int duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
-                hero.addEffect(new StunEffect(skill, hero.getPlayer(), duration));
             }
         }
     }

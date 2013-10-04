@@ -41,7 +41,7 @@ public class SkillWarsong extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill warsong");
         setIdentifiers("skill warsong");
-        setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG, SkillType.UNINTERRUPTIBLE);
+        setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
                              new Note(Sound.NOTE_BASS_DRUM, 0.8F, 2.0F, 0),
