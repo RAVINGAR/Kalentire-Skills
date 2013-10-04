@@ -111,6 +111,9 @@ public class SkillWeb extends TargettedSkill {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onBlockBreak(BlockBreakEvent event) {
+            if (event.getBlock().getType() != Material.WEB)
+                return;
+
             if (changedBlocks.contains(event.getBlock().getLocation())) {
                 event.setCancelled(true);
             }
