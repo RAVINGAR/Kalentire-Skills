@@ -60,6 +60,7 @@ public class SkillBandage extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         if (hero.isInCombat() || targetHero.isInCombat()) {
             Messaging.send(player, "You cannot use this ability while you or your target is in combat!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
