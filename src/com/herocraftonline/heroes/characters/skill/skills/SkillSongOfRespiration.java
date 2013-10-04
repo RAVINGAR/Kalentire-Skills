@@ -46,7 +46,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(225));
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
