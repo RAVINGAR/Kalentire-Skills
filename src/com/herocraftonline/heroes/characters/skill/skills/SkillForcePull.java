@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -103,7 +105,26 @@ public class SkillForcePull extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
+        Material mat = targetLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+
+        boolean weakenVelocity = false;
+        switch (mat) {
+            case STATIONARY_WATER:
+            case STATIONARY_LAVA:
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                weakenVelocity = true;
+                break;
+            default:
+                break;
+        }
+
         double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
+
+        if (weakenVelocity)
+            tempVPower /= 2;
+
         final double vPower = tempVPower;
 
         Vector pushUpVector = new Vector(0, vPower, 0);
@@ -115,6 +136,10 @@ public class SkillForcePull extends TargettedSkill {
         double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0125), false);
         tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        if (weakenVelocity)
+            tempHPower /= 2;
+
         final double hPower = tempHPower;
 
         // push them "up" first. THEN we can pull them to us.

@@ -126,7 +126,7 @@ public class SkillForcePush extends TargettedSkill {
         tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         if (weakenVelocity)
-            tempVPower = 2.0;
+            tempVPower /= 2;
 
         final double vPower = tempVPower;
 
