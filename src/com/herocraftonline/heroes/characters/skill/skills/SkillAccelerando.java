@@ -9,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -126,10 +125,11 @@ public class SkillAccelerando extends ActiveSkill {
 
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {
-            if (!player.getWorld().equals(player.getWorld()))
+            Player tPlayer = tHero.getPlayer();
+            if (!player.getWorld().equals(tPlayer.getWorld()))
                 continue;
 
-            if (playerLoc.distanceSquared(tHero.getPlayer().getLocation()) > rSquared)
+            if (playerLoc.distanceSquared(tPlayer.getLocation()) > rSquared)
                 continue;
 
             tHero.addEffect(accelEffect);
@@ -153,12 +153,8 @@ public class SkillAccelerando extends ActiveSkill {
 
             Player player = (Player) event.getEntity();
             final Hero hero = plugin.getCharacterManager().getHero(player);
-            if (hero.hasEffect("Accelerando")) {
-                if (!damageCheck(player, (LivingEntity) event.getEntity()))
-                    return;
-
+            if (hero.hasEffect("Accelerando"))
                 hero.removeEffect(hero.getEffect("Accelerando"));
-            }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -168,12 +164,8 @@ public class SkillAccelerando extends ActiveSkill {
 
             Player player = (Player) event.getEntity();
             final Hero hero = plugin.getCharacterManager().getHero(player);
-            if (hero.hasEffect("Accelerando")) {
-                if (!damageCheck(player, (LivingEntity) event.getEntity()))
-                    return;
-
+            if (hero.hasEffect("Accelerando"))
                 hero.removeEffect(hero.getEffect("Accelerando"));
-            }
         }
     }
 
