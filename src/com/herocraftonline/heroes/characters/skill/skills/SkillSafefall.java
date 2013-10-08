@@ -83,8 +83,13 @@ public class SkillSafefall extends ActiveSkill {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
 
-            if (ncpEnabled)
-                NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
+            if (ncpEnabled) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
+                    }
+                }, 2L);
+            }
         }
     }
 }
