@@ -5,9 +5,12 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
@@ -103,49 +106,44 @@ public class SkillBecomeDeath extends ActiveSkill {
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getTarget());
             if (hero.hasEffect("BecomeDeath")) {
-                event.setCancelled(true);
+                BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
+                if (!bdEffect.hasAttackedMobs())
+                    event.setCancelled(true);
             }
         }
 
-        //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        //        public void onSkillDamage(SkillDamageEvent event) {
-        //            
-        //        }
-        //
-        //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        //        public void onWeaponDamage(WeaponDamageEvent event) {
-        //                            Hero hero = plugin.getCharacterManager().getHero(event.get);
-        //                            if (hero.hasEffect("BecomeDeathEffect"))
-        //                                hero.removeEffect(hero.getEffect("BecomeDeathEffect"));
-        //        }
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity)) {
+                return;
+            }
 
-        //        @EventHandler(priority = EventPriority.MONITOR)
-        //        public void onEntityDamage(EntityDamageEvent event) {
-        //            if (event.isCancelled() || event.getDamage() == 0) {
-        //                return;
-        //            }
-        //
-        //            if (!Util.isUndead(event.getEntity()) || !(event instanceof EntityDamageByEntityEvent)) {
-        //                return;
-        //            }
-        //
-        //            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-        //            if (subEvent.getDamager() instanceof Player) {
-        //                Hero hero = plugin.getCharacterManager().getHero((Player) subEvent.getDamager());
-        //                if (hero.hasEffect("BecomeDeathEffect"))
-        //                    hero.removeEffect(hero.getEffect("BecomeDeathEffect"));
-        //            }
-        //            else if (subEvent.getDamager() instanceof Projectile) {
-        //                if (((Projectile) subEvent.getDamager()).getShooter() instanceof Player) {
-        //                    Hero hero = plugin.getCharacterManager().getHero((Player) ((Projectile) subEvent.getDamager()).getShooter());
-        //                    if (hero.hasEffect("BecomeDeathEffect"))
-        //                        hero.removeEffect(hero.getEffect("BecomeDeathEffect"));
-        //                }
-        //            }
-        //        }
+            if (!Util.isUndead(plugin, (LivingEntity) event.getEntity()) || !(event instanceof EntityDamageByEntityEvent)) {
+                return;
+            }
+
+            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+            if (subEvent.getDamager() instanceof Player) {
+                Hero hero = plugin.getCharacterManager().getHero((Player) subEvent.getDamager());
+                if (hero.hasEffect("BecomeDeath")) {
+                    BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
+                    bdEffect.setAttackedMobs(true);
+                }
+            }
+            else if (subEvent.getDamager() instanceof Projectile) {
+                if (((Projectile) subEvent.getDamager()).getShooter() instanceof Player) {
+                    Hero hero = plugin.getCharacterManager().getHero((Player) ((Projectile) subEvent.getDamager()).getShooter());
+                    if (hero.hasEffect("BecomeDeath")) {
+                        BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
+                        bdEffect.setAttackedMobs(true);
+                    }
+                }
+            }
+        }
     }
 
     public class BecomeDeathEffect extends ExpirableEffect {
+        private boolean attackedMobs = false;
 
         public BecomeDeathEffect(Skill skill, Player applier, long duration) {
             super(skill, "BecomeDeath", applier, duration);
@@ -189,6 +187,14 @@ public class SkillBecomeDeath extends ActiveSkill {
             }
 
             broadcast(player.getLocation(), expireText, player.getDisplayName());
+        }
+
+        public boolean hasAttackedMobs() {
+            return attackedMobs;
+        }
+
+        public void setAttackedMobs(boolean attackedMobs) {
+            this.attackedMobs = attackedMobs;
         }
     }
 }
