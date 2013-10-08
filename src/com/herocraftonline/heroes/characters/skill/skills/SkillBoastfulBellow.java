@@ -21,6 +21,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillBoastfulBellow extends TargettedSkill {
     // This is for Firework Effects
@@ -28,7 +29,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
     public SkillBoastfulBellow(Heroes plugin) {
         super(plugin, "BoastfulBellow");
-        setDescription("Unleash a Boastful Bellow on your target, dealing $1 damage to them and all enemies within $2 blocks of them. Enemies hit with the ability will also have their casting interrupted.");
+        setDescription("Unleash a Boastful Bellow on your target, dealing $1 damage and all enemies within $2 blocks of them. Enemies hit with the ability will also have their casting interrupted.");
         setUsage("/skill boastfulbellow");
         setArgumentRange(0, 0);
         setIdentifiers("skill boastfulbellow");
@@ -37,11 +38,15 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        return getDescription().replace("$1", damage + "");
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", radius + "");
     }
 
     @Override
@@ -59,10 +64,11 @@ public class SkillBoastfulBellow extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
+
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         broadcastExecuteText(hero, target);
 
