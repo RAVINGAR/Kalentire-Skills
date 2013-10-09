@@ -19,6 +19,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDarkBlade extends TargettedSkill {
@@ -73,14 +74,35 @@ public class SkillDarkBlade extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(new WitheringEffect(this, player, 500, 0, null, null));
+        targetCT.addEffect(new WitheringEffect(this, player, 1000, 0, null, null));
 
         int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain", Integer.valueOf(100), false);
 
+        // If the target is a player, drain their mana
+        if ((target instanceof Player)) {
+            // Get the target hero
+            Hero tHero = plugin.getCharacterManager().getHero((Player) target);
+
+            if (tHero.getMana() > manaDrain) {
+                int newMana = tHero.getMana() - manaDrain;
+                tHero.setMana(newMana);
+            }
+            else {
+                tHero.setMana(0);
+            }
+
+            if (tHero.isVerboseMana())
+                Messaging.send(player, Messaging.createManaBar(tHero.getMana(), tHero.getMaxMana()));
+        }
+
         HeroRegainManaEvent hrEvent = new HeroRegainManaEvent(hero, manaDrain, this);
         plugin.getServer().getPluginManager().callEvent(hrEvent);
-        if (!hrEvent.isCancelled())
+        if (!hrEvent.isCancelled()) {
             hero.setMana(hrEvent.getAmount() + hero.getMana());
+
+            if (hero.isVerboseMana())
+                Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+        }
 
         // this is our fireworks shit
         try {
