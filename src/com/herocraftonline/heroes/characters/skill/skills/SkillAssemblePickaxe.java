@@ -18,9 +18,9 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillSummonPickaxe extends ActiveSkill {
+public class SkillAssemblePickaxe extends ActiveSkill {
 
-    public SkillSummonPickaxe(Heroes plugin) {
+    public SkillAssemblePickaxe(Heroes plugin) {
         super(plugin, "AssemblePickaxe");
         setDescription("You gather spare parts and assemble a pickaxe.");
         setUsage("/skill assemblepickaxe");
