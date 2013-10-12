@@ -146,9 +146,9 @@ public class SkillAimedShot extends TargettedSkill {
                 target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
 
                 // Lower damage of shot based on how drawn back the bow is.
-                int tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 125, false);
+                double tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 125, false);
                 double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
-                tempDamage += (int) damageIncrease;
+                tempDamage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
 
                 final double damage = event.getForce() * tempDamage;
                 // Damage the target, but add a delay based on the distance from the target.
