@@ -49,7 +49,7 @@ public class SkillBackstab extends ActiveSkill {
         double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", Double.valueOf(-1.0), false);
         double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", Double.valueOf(0.85), false);
         double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-agility", Double.valueOf(0.85), false);
-        backstabDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * backstabDamageModifierIncrease);
+        backstabDamageModifier += hero.getAttributeValue(AttributeType.AGILITY) * backstabDamageModifierIncrease;
 
         String backstabString = "deal";
         if (backstabChance > -1)
@@ -58,7 +58,7 @@ public class SkillBackstab extends ActiveSkill {
         double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", Double.valueOf(-1.0), false);
         double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", Double.valueOf(0.85), false);
         double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
-        ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * ambushDamageModifierIncrease);
+        ambushDamageModifier += hero.getAttributeValue(AttributeType.AGILITY) * ambushDamageModifierIncrease;
 
         String ambushString = "deal";
         if (ambushChance > -1)
