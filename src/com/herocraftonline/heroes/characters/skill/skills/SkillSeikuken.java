@@ -36,7 +36,7 @@ public class SkillSeikuken extends ActiveSkill {
 
     public SkillSeikuken(Heroes plugin) {
         super(plugin, "Seikuken");
-        setDescription("Creative a protective barrier around yourself for $1 seconds. The barrier allows you to retaliate against all incoming melee attacks, disarmimg them for $2 seconds, and dealing $3% of your weapon damage to them.");
+        setDescription("Creative a protective barrier around yourself for $1 seconds. The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds, and dealing $3% of your weapon damage to them.");
         setUsage("/skill seikuken");
         setArgumentRange(0, 0);
         setIdentifiers("skill seikuken");
