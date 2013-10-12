@@ -84,6 +84,7 @@ public class SkillImbueRunestone extends ActiveSkill {
         }
 
         // Read the meta data (if it has any)
+        ItemMeta oldMetaData = heldItem.getItemMeta().clone();
         ItemMeta metaData = heldItem.getItemMeta();
         List<String> loreData = metaData.getLore();
 
@@ -128,7 +129,9 @@ public class SkillImbueRunestone extends ActiveSkill {
                     // We need to return their excess blocks to them.
                     PlayerInventory inventory = player.getInventory();
 
-                    HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1) });
+                    ItemStack extraRunestones = new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1);
+                    extraRunestones.setItemMeta(oldMetaData);
+                    HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { extraRunestones });
                     if (!leftOvers.isEmpty()) {
                         for (ItemStack leftOver : leftOvers.values()) {
                             player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
