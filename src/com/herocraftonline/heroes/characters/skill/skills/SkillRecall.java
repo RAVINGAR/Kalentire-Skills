@@ -37,6 +37,7 @@ public class SkillRecall extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill recall");
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORTING);
+
         //        try {
         //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
         //                herotowns = true;
