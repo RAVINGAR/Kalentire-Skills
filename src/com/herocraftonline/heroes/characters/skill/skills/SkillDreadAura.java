@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -196,7 +195,7 @@ public class SkillDreadAura extends ActiveSkill {
                 if (totalHealthHealed < maxHealingPerTick) {
                     if (healing + totalHealthHealed > maxHealingPerTick) {
                         healing = maxHealingPerTick - totalHealthHealed;
-                        Heroes.log(Level.INFO, "DreadAura Debug: Hit Cap. New HealthToHeal: " + healing);
+                        // Heroes.log(Level.INFO, "DreadAura Debug: Hit Cap. New HealthToHeal: " + healing);
                     }
 
                     HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, skill);       // Bypass self heal nerf because this cannot be used on others.
