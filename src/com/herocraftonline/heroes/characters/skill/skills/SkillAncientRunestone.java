@@ -29,9 +29,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -68,10 +65,10 @@ public class SkillAncientRunestone extends ActiveSkill {
         soulboundRunestones = new ConcurrentHashMap<Player, List<ItemStack>>();
 
         try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-                herotowns = true;
-                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            }
+            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+            //                herotowns = true;
+            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            //            }
             if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
             }
