@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,15 +37,15 @@ public class SkillRecall extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill recall");
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORTING);
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-                herotowns = true;
-                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            }
-        }
-        catch (Exception e) {
-            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
-        }
+        //        try {
+        //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+        //                herotowns = true;
+        //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+        //            }
+        //        }
+        //        catch (Exception e) {
+        //            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+        //        }
     }
 
     public String getDescription(Hero hero) {
