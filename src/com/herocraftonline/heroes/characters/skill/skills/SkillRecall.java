@@ -45,7 +45,7 @@ public class SkillRecall extends ActiveSkill {
             }
         }
         catch (Exception e) {
-            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
+            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
         }
     }
 
@@ -87,7 +87,7 @@ public class SkillRecall extends ActiveSkill {
                     String usesString = loreData.get(1);
                     usesString = usesString.toLowerCase();
 
-                    // Strip the usesString of the "Uses :" text.
+                    // Strip the usesString of the "Uses:" text.
                     int currentIndexLocation = usesString.indexOf(":", 0) + 2;  // Set the start point
                     int endIndexLocation = usesString.length();                 // Get the end point for grabbing remaining uses data
                     String currentUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
@@ -109,7 +109,7 @@ public class SkillRecall extends ActiveSkill {
 
                         // If it's empty, tell them to recharge it.
                         if (uses == 0) {
-                            Messaging.send(player, "Runestone is out of uses and needs to be recharged.", new Object[0]);
+                            Messaging.send(player, "Runestone is out of uses and needs to be recharged.");
                             return SkillResult.FAIL;
                         }
 
@@ -203,7 +203,6 @@ public class SkillRecall extends ActiveSkill {
 
                             // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
                             if (uses != -1) {
-
                                 if (maxUses != -1) {
                                     loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
                                     metaData.setLore(loreData);
@@ -218,22 +217,22 @@ public class SkillRecall extends ActiveSkill {
                             // Teleport the player to the location
                             player.teleport(teleportLocation);
 
-                            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+                            teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
 
                             return SkillResult.NORMAL;
                         }
                         else {
-                            broadcast(player.getLocation(), "Runestone Contains Invalid Location Data.", player.getDisplayName());
+                            Messaging.send(player, "Runestone Contains Invalid Location Data.", player.getDisplayName());
                             return SkillResult.FAIL;
                         }
                     }
                     else {
-                        broadcast(player.getLocation(), "Not a Valid Runestone Object. Uses Value is not Valid.", player.getDisplayName());
+                        Messaging.send(player, "Not a Valid Runestone Object. Uses Value is not Valid.", player.getDisplayName());
                         return SkillResult.FAIL;
                     }
                 }
                 else {
-                    broadcast(player.getLocation(), "Not a Valid Runestone Object. LoreData Size <= 0", player.getDisplayName());
+                    Messaging.send(player, "Not a Valid Runestone Object. LoreData Size <= 0", player.getDisplayName());
                     return SkillResult.FAIL;
                 }
             }
@@ -259,7 +258,7 @@ public class SkillRecall extends ActiveSkill {
             return SkillResult.FAIL;
         }
         if (hero.hasEffectType(EffectType.ROOT) || hero.hasEffectType(EffectType.STUN)) {
-            Messaging.send(player, "Teleport fizzled.", new Object[0]);
+            Messaging.send(player, "Teleport fizzled.");
             return SkillResult.FAIL;
         }
 
@@ -277,7 +276,7 @@ public class SkillRecall extends ActiveSkill {
         // Validate Herotowns
         if (herotowns) {
             if (!ht.getGlobalRegionManager().canBuild(player, recallLocation)) {
-                broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
+                Messaging.send(player, "Can not Recall to a town you have no access to!");
                 return SkillResult.FAIL;
             }
         }
@@ -286,9 +285,11 @@ public class SkillRecall extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
 
-        player.teleport(new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]));
+        Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
 
-        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        player.teleport(teleportLocation);
+
+        teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }
