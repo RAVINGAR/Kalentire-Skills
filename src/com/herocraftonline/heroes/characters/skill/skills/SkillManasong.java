@@ -33,7 +33,7 @@ public class SkillManasong extends ActiveSkill {
 
     public SkillManasong(Heroes plugin) {
         super(plugin, "Manasong");
-        setDescription("Play a song of mana for $1 seconds. While active, you restoreerate $2 mana for party members within $3 blocks every $4 seconds.");
+        setDescription("Play a song of mana for $1 seconds. While active, you restore $2 mana for party members within $3 blocks every $4 seconds.");
         setArgumentRange(0, 0);
         setUsage("/skill manasong");
         setIdentifiers("skill manasong");
@@ -70,6 +70,8 @@ public class SkillManasong extends ActiveSkill {
         node.set("mana-restore-tick-increase-per-charisma", Double.valueOf(0.25));
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with a song of mana!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "The manasong has ended.");
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
 
         return node;
@@ -79,8 +81,8 @@ public class SkillManasong extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "Your muscles bulge with power!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You feel strength leave your body!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You are gifted with a song of mana!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "The manasong has ended.");
     }
 
     @Override
@@ -152,26 +154,30 @@ public class SkillManasong extends ActiveSkill {
                     // Ensure the party member is close enough
                     if (memberLocation.getWorld().equals(playerLocation.getWorld())) {
                         if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, manaRestore, skill);
-                            plugin.getServer().getPluginManager().callEvent(hrmEvent);
-                            if (!hrmEvent.isCancelled()) {
-                                member.setMana(hrmEvent.getAmount() + member.getMana());
+                            if (member.getMana() < member.getMaxMana()) {
+                                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, manaRestore, skill);
+                                plugin.getServer().getPluginManager().callEvent(hrmEvent);
+                                if (!hrmEvent.isCancelled()) {
+                                    member.setMana(hrmEvent.getAmount() + member.getMana());
 
-                                if (member.isVerboseMana())
-                                    Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
+                                    if (member.isVerboseMana())
+                                        Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
+                                }
                             }
                         }
                     }
                 }
             }
             else {
-                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
-                plugin.getServer().getPluginManager().callEvent(hrmEvent);
-                if (!hrmEvent.isCancelled()) {
-                    hero.setMana(hrmEvent.getAmount() + hero.getMana());
+                if (hero.getMana() < hero.getMaxMana()) {
+                    HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
+                    plugin.getServer().getPluginManager().callEvent(hrmEvent);
+                    if (!hrmEvent.isCancelled()) {
+                        hero.setMana(hrmEvent.getAmount() + hero.getMana());
 
-                    if (hero.isVerboseMana())
-                        Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+                        if (hero.isVerboseMana())
+                            Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+                    }
                 }
             }
         }
