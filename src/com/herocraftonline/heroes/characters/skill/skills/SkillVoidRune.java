@@ -167,9 +167,6 @@ public class SkillVoidRune extends ActiveSkill {
                     // Add the effect to the target
                     targCT.addEffect(voidRuneSilenceEffect);
 
-                    // Announce that the player has been hit with the skill	
-                    broadcast(targEnt.getLocation(), applyText, targCT.getName());
-
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
                     player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
