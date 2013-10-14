@@ -68,17 +68,17 @@ public class SkillWarp extends ActiveSkill {
         try {
             broadcastExecuteText(hero);
 
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
 
             player.teleport(destination);
+
+            destination.getWorld().playSound(destination, Sound.WITHER_DEATH, 0.5F, 1.0F);
 
         }
         catch (Exception e) {
             player.sendMessage(ChatColor.GRAY + "SkillWarp has an invalid config.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }
