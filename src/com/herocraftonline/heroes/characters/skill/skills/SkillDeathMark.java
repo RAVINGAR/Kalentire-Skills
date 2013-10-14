@@ -149,14 +149,20 @@ public class SkillDeathMark extends ActiveSkill {
 
             Messaging.send(player, ChatColor.WHITE + target.getName() + ChatColor.GRAY + " has been marked for death!");
             double distance = player.getLocation().distance(target.getLocation());
-            if (distance > 1500)
-                Messaging.send(player, "You sense your target is a great distance away...");
-            else if (distance > 1000)
+
+            if (distance > 1000)
                 Messaging.send(player, "You sense your target is a good distance away...");
-            else if (distance > 500)
-                Messaging.send(player, "You sense your target is close by...");
             else
-                Messaging.send(player, "Your target is very close!");
+                Messaging.send(player, "You sense your target is close by...");
+
+            //            if (distance > 1500)
+            //                Messaging.send(player, "You sense your target is a great distance away...");
+            //            else if (distance > 1000)
+            //                Messaging.send(player, "You sense your target is a good distance away...");
+            //            else if (distance > 500)
+            //                Messaging.send(player, "You sense your target is close by...");
+            //            else
+            //                Messaging.send(player, "Your target is very close!");
         }
 
         @Override
