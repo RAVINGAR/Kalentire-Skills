@@ -66,7 +66,7 @@ public class SkillDeathMark extends ActiveSkill {
         if (target == null)
             return SkillResult.INVALID_TARGET;
         if (!target.getWorld().equals(player.getWorld())) {
-            Messaging.send(player, "$1 is in world: $2", target.getName(), target.getWorld().getName());
+            Messaging.send(player, "$1 is not in this world...", target.getName());
             return SkillResult.NORMAL;
         }
 
