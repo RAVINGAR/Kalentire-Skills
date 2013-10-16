@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillShuriken;
 import com.herocraftonline.heroes.util.Messaging;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
@@ -129,7 +128,7 @@ public class SkillBackflip extends ActiveSkill {
             vPower = 2.0;
 
         if (weakenVelocity)
-            vPower /= 2;
+            vPower *= 0.75;
 
         Vector velocity = player.getVelocity().setY(vPower);
 
@@ -144,7 +143,7 @@ public class SkillBackflip extends ActiveSkill {
         hPower += agility * hPowerIncrease;
 
         if (weakenVelocity)
-            hPower /= 2;
+            hPower *= 0.75;
 
         velocity.multiply(new Vector(-hPower, 1, -hPower));
 

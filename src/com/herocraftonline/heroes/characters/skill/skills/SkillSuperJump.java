@@ -95,7 +95,7 @@ public class SkillSuperJump extends ActiveSkill {
             case WATER:
             case LAVA:
             case SOUL_SAND:
-                vPower /= 2;
+                vPower *= 0.75;
                 break;
             default:
                 break;
@@ -119,7 +119,7 @@ public class SkillSuperJump extends ActiveSkill {
             case WATER:
             case LAVA:
             case SOUL_SAND:
-                hPower /= 2;
+                hPower *= 0.75;
                 break;
             default:
                 break;

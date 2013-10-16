@@ -123,7 +123,7 @@ public class SkillForcePull extends TargettedSkill {
         double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
 
         if (weakenVelocity)
-            tempVPower /= 2;
+            tempVPower *= 0.75;
 
         final double vPower = tempVPower;
 
@@ -138,7 +138,7 @@ public class SkillForcePull extends TargettedSkill {
         tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         if (weakenVelocity)
-            tempHPower /= 2;
+            tempHPower *= 0.75;
 
         final double hPower = tempHPower;
 

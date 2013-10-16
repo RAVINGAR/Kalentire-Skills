@@ -2,6 +2,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -90,9 +92,28 @@ public class SkillToss extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
+        Material mat = targetLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+
+        boolean weakenVelocity = false;
+        switch (mat) {
+            case STATIONARY_WATER:
+            case STATIONARY_LAVA:
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                weakenVelocity = true;
+                break;
+            default:
+                break;
+        }
+
         double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-strength", Double.valueOf(0.0075), false);
         tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+
+        if (weakenVelocity)
+            tempVPower *= 0.75;
+
         final double vPower = tempVPower;
 
         Vector pushUpVector = new Vector(0, vPower, 0);
@@ -104,6 +125,10 @@ public class SkillToss extends TargettedSkill {
         double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", Double.valueOf(0.0375), false);
         tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+
+        if (weakenVelocity)
+            tempHPower *= 0.75;
+
         final double hPower = tempHPower;
 
         // Push them "up" first. THEN toss them.

@@ -3,7 +3,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
@@ -135,8 +137,22 @@ public class SkillBeguile extends TargettedSkill {
             float xAdjustment = (float) (maxDrift * Math.cos(angle));
             float zAdjustment = (float) (maxDrift * Math.sin(angle));
 
-            velocity.add(new Vector(xAdjustment, 0f, zAdjustment));
-            velocity.setY(0);
+            Material belowMat = lEntity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
+            switch (belowMat) {
+                case STATIONARY_WATER:
+                case STATIONARY_LAVA:
+                case WATER:
+                case LAVA:
+                case SOUL_SAND:
+                    xAdjustment *= 0.75;
+                    zAdjustment *= 0.75;
+                    break;
+                default:
+                    break;
+            }
+
+            velocity.setX(xAdjustment);
+            velocity.setZ(zAdjustment);
             lEntity.setVelocity(velocity);
         }
 

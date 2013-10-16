@@ -74,7 +74,7 @@ public class SkillBlink extends ActiveSkill {
             case WATER:
             case LAVA:
             case SOUL_SAND:
-                distance /= 2;
+                distance *= 0.75;
                 break;
             default:
                 break;
