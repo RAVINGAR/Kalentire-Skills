@@ -1,12 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
@@ -49,10 +52,11 @@ public class SkillRechargeRunestone extends ActiveSkill {
         ItemStack heldItem = player.getInventory().getItemInHand();
 
         // Check to make sure it is a redstone block
-        ItemStack item = player.getItemInHand();
-        if (item.getType().name() != "REDSTONE_BLOCK") {
+        if (heldItem.getType() != Material.REDSTONE_BLOCK) {
             return SkillResult.INVALID_TARGET;
         }
+
+        ItemStack oldHeldItem = heldItem.clone();
 
         // Read the meta data (if it has any)
         ItemMeta metaData = heldItem.getItemMeta();
@@ -90,7 +94,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
 
                     if (uses == -1) {
                         // Runestone has unlimited uses, no need to recharge.
-                        Messaging.send(player, "Runestone has unlimited uses and does not need to be recharged.", new Object[0]);
+                        Messaging.send(player, "Runestone has unlimited uses and does not need to be recharged.");
                         return SkillResult.FAIL;
                     }
 
@@ -111,8 +115,14 @@ public class SkillRechargeRunestone extends ActiveSkill {
 
                             if (maxUses == -1) {
                                 // Somehow we're detecting "unlimited" for max uses. This shouldn't ever happen, but just in case...
-                                Messaging.send(player, "Runestone has unlimited uses and does not need to be recharged.", new Object[0]);
+                                Messaging.send(player, "Runestone has unlimited uses and does not need to be recharged.");
                                 return SkillResult.FAIL;
+                            }
+
+                            // Seperate 1 block from their current stack (if they have one)
+                            int actualAmount = heldItem.getAmount();
+                            if (actualAmount > 1) {
+                                heldItem.setAmount(1);      // Remove the excess blocks.
                             }
 
                             // We have a valid max uses value, let's set it.
@@ -128,30 +138,44 @@ public class SkillRechargeRunestone extends ActiveSkill {
 
                             broadcastExecuteText(hero);
 
+                            // We need to return their excess blocks to them.
+                            if (actualAmount > 1) {
+                                PlayerInventory inventory = player.getInventory();
+
+                                oldHeldItem.setAmount(oldHeldItem.getAmount() - 1);
+                                HashMap<Integer, ItemStack> leftOvers = inventory.addItem(oldHeldItem);
+                                if (!leftOvers.isEmpty()) {
+                                    for (ItemStack leftOver : leftOvers.values()) {
+                                        player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
+                                    }
+                                    Messaging.send(player, "Items have been dropped at your feet!");
+                                }
+                            }
+
                             return SkillResult.NORMAL;
                         }
                         else {
-                            Messaging.send(player, "Could not determine the maximum use limit for this Runestone. It has not been recharged.", new Object[0]);
+                            Messaging.send(player, "Could not determine the maximum use limit for this Runestone. It has not been recharged.");
                             return SkillResult.FAIL;
                         }
                     }
                     else {
-                        Messaging.send(player, "ERROR: INVALID USES. NOT UNLIMITED BUT CANNOT DETECT MAXIMUM USE VALUE.", new Object[0]);
+                        Messaging.send(player, "ERROR: INVALID USES. NOT UNLIMITED BUT CANNOT DETECT MAXIMUM USE VALUE.");
                         return SkillResult.FAIL;
                     }
                 }
                 else {
-                    Messaging.send(player, "ERROR: INVALID USES", new Object[0]);
+                    Messaging.send(player, "ERROR: INVALID USES");
                     return SkillResult.FAIL;
                 }
             }
             else {
-                Messaging.send(player, "ERROR: NOT ENOUGH LOREDATA", new Object[0]);
+                Messaging.send(player, "ERROR: NOT ENOUGH LOREDATA");
                 return SkillResult.FAIL;
             }
         }
         else {
-            Messaging.send(player, "This is not a Runestone. You can only recharge Runestone tables!", new Object[0]);
+            Messaging.send(player, "This is not a Runestone. You can only recharge Runestone tables!");
             return SkillResult.FAIL;
         }
     }
