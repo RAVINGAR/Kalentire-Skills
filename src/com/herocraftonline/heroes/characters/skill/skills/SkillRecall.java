@@ -65,7 +65,7 @@ public class SkillRecall extends ActiveSkill {
     }
 
     public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         // RUNESTONE RECALL FUNCTIONALITY
         ItemStack heldItem = player.getItemInHand();
@@ -173,10 +173,6 @@ public class SkillRecall extends ActiveSkill {
                             int y = Integer.parseInt(yString);
                             int z = Integer.parseInt(zString);
 
-                            // Crossworld teleporting seems to teleport you 5 blocks up. We don't want to do this.
-                            if (!player.getWorld().equals(world))
-                                y -= 5;
-
                             // Grab the players current location and store their pitch / yaw values.
                             Location currentLocation = player.getLocation();
                             float pitch = currentLocation.getPitch();
@@ -216,6 +212,15 @@ public class SkillRecall extends ActiveSkill {
 
                             // Teleport the player to the location
                             player.teleport(teleportLocation);
+
+                            final Location finalTeleportLocation = teleportLocation;
+                            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!player.getLocation().equals(finalTeleportLocation))
+                                        player.teleport(finalTeleportLocation);
+                                }
+                            }, 5L);
 
                             teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
 
