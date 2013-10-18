@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -32,6 +33,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -49,14 +51,14 @@ public class SkillGiganticRunestone extends ActiveSkill {
         setUsage("/skill giganticrunestone");
         setArgumentRange(0, 0);
         setIdentifiers("skill giganticrunestone");
-        setTypes(SkillType.TELEPORT, SkillType.ITEM, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
 
         try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-                herotowns = true;
-                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            }
+            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+            //                herotowns = true;
+            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            //            }
             if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
             }
@@ -174,8 +176,9 @@ public class SkillGiganticRunestone extends ActiveSkill {
             // Set the new metaData to the item
             heldItem.setItemMeta(metaData);
 
-            // Play sound
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
+            // Play Effects
+            Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+            player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
             broadcastExecuteText(hero);
 

@@ -1,15 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
@@ -26,29 +26,35 @@ public class SkillMaim extends TargettedSkill {
 
     public SkillMaim(Heroes plugin) {
         super(plugin, "Maim");
-        setDescription("You Maim your target with your axe, dealing $1 damage and slowing them for $2 seconds.");
+        setDescription("You Maim your target with your axe, dealing $1 physical damage and slowing them for $2 second(s).");
         setUsage("/skill maim");
         setArgumentRange(0, 0);
         setIdentifiers("skill maim");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.MOVEMENT, SkillType.INTERRUPT);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING);
     }
 
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75, false);
-        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false) / 1000;
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
         node.set("weapons", Util.axes);
         node.set("amplitude", Integer.valueOf(3));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(75));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been maimed by %hero%!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer slowed.");
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(60));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.0));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2500));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been maimed by %hero%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
 
         return node;
     }
@@ -56,8 +62,8 @@ public class SkillMaim extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been maimed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been maimed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -69,23 +75,27 @@ public class SkillMaim extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 4, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
-
-        // Create the effect and slow the target
-        SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
+        broadcastExecuteText(hero, target);
 
         // Prep variables
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
 
-        // Damage and silence the target
-        plugin.getDamageManager().addSpellTarget(target, hero, this);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+        // Damage the target and add the slow effect.
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+
+        // Create the effect and slow the target
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
+        SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
         targCT.addEffect(sEffect);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT, 0.8F, 1.0F);
-        broadcastExecuteText(hero, target);
+        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 }

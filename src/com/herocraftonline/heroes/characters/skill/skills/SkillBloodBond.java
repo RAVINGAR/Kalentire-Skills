@@ -24,6 +24,8 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillBloodBond extends ActiveSkill {
     public SkillBloodBond(Heroes plugin) {
@@ -32,18 +34,21 @@ public class SkillBloodBond extends ActiveSkill {
         setUsage("/skill bloodbond");
         setArgumentRange(0, 0);
         setIdentifiers("skill bloodbond");
-        setTypes(SkillType.BUFF, SkillType.SILENCABLE, SkillType.HEAL);
+        setTypes(SkillType.BUFFING, SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK);
+
         Bukkit.getServer().getPluginManager().registerEvents(new BloodBondListener(this), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double healPercent = SkillConfigManager.getUseSetting(hero, this, "heal-percent", 0.15, false);
-        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 8, false);
+        double healPercent = SkillConfigManager.getUseSetting(hero, this, "heal-percent", 0.25, false);
+        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 40, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 12, false);
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 25, false);
 
-        return getDescription().replace("$1", (int) (healPercent * 100) + "").replace("$2", radius + "").replace("$3", manaTick + "").replace("$4", healthCost + "");
+        String formattedHealPercent = Util.decFormat.format((healPercent * 100));
+
+        return getDescription().replace("$1", formattedHealPercent).replace("$2", radius + "").replace("$3", manaTick + "").replace("$4", healthCost + "");
     }
 
     @Override
@@ -52,10 +57,10 @@ public class SkillBloodBond extends ActiveSkill {
 
         node.set("heal-percent", 0.15);
         node.set(SkillSetting.RADIUS.node(), 12);
-        node.set("mana-tick", 8);
-        node.set("mana-tick-period", 3000);
-        node.set("toggle-on-text", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
-        node.set("toggle-off-text", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
+        node.set("mana-tick", 13);
+        node.set("mana-tick-period", 1000);
+        node.set("toggle-on-text", Messaging.getSkillDenoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
+        node.set("toggle-off-text", Messaging.getSkillDenoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
 
         return node;
     }
@@ -64,17 +69,16 @@ public class SkillBloodBond extends ActiveSkill {
     public SkillResult use(Hero hero, String args[]) {
         if (hero.hasEffect("BloodBond")) {
             hero.removeEffect(hero.getEffect("BloodBond"));
-
             return SkillResult.REMOVED_EFFECT;
         }
 
         // Get config values for the effect
-        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 8, false);
-        int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 3000, false);
+        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 13, false);
+        int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 1000, false);
 
         // Get config values for text values
-        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", Messaging.getSkillDenoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", Messaging.getSkillDenoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
 
         hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 
@@ -121,7 +125,7 @@ public class SkillBloodBond extends ActiveSkill {
             double healAmount = healPercent * d;
 
             // Set the distance variables 
-            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 20, false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 12, false);
             int radiusSquared = radius * radius;
 
             // Check if the hero has a party
@@ -171,7 +175,9 @@ public class SkillBloodBond extends ActiveSkill {
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.HEAL);
+            types.add(EffectType.MANA_DECREASING);
+            types.add(EffectType.AREA_OF_EFFECT);
+            types.add(EffectType.HEALING);
         }
 
         @Override
@@ -200,8 +206,7 @@ public class SkillBloodBond extends ActiveSkill {
                 if (hero.getMana() < manaTick) {
                     hero.removeEffect(this);
                 }
-                else    // They have enough mana--continue
-                {
+                else {      // They have enough mana--continue
                     // Drain the player's mana
                     hero.setMana(hero.getMana() - manaTick);
                 }

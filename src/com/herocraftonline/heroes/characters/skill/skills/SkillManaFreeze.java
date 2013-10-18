@@ -1,16 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -19,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillManaFreeze extends TargettedSkill {
 
@@ -31,24 +27,34 @@ public class SkillManaFreeze extends TargettedSkill {
         setUsage("/skill manafreeze");
         setArgumentRange(0, 0);
         setIdentifiers("skill manafreeze", "skill mfreeze");
-        setTypes(SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.MANA, SkillType.HARMFUL);
-        Bukkit.getServer().getPluginManager().registerEvents(new HeroListener(), plugin);
+        setTypes(SkillType.SILENCABLE, SkillType.DEBUFFING, SkillType.MANA_FREEZING, SkillType.AGGRESSIVE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has stopped regenerating mana!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is once again regenerating mana!");
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has stopped regenerating mana!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is once again regenerating mana!");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has stopped regenerating mana!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% is once again regenerating mana!").replace("%target%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has stopped regenerating mana!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is once again regenerating mana!").replace("%target%", "$1");
     }
 
     @Override
@@ -57,31 +63,20 @@ public class SkillManaFreeze extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero, target);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
+
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        targetHero.addEffect(new ManaFreezeEffect(this, duration));
+        targetHero.addEffect(new ManaFreezeEffect(this, hero.getPlayer(), duration));
+
         return SkillResult.NORMAL;
 
     }
 
-    public class HeroListener implements Listener {
-
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onHeroRegainMana(HeroRegainManaEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
-
-            if (event.getHero().hasEffect("ManaFreeze")) {
-                event.setCancelled(true);
-            }
-        }
-    }
-
     public class ManaFreezeEffect extends ExpirableEffect {
 
-        public ManaFreezeEffect(Skill skill, long duration) {
-            super(skill, "ManaFreeze", duration);
+        public ManaFreezeEffect(Skill skill, Player applier, long duration) {
+            super(skill, "ManaFreeze", applier, duration);
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.MAGIC);
@@ -101,11 +96,5 @@ public class SkillManaFreeze extends TargettedSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-    }
-    
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

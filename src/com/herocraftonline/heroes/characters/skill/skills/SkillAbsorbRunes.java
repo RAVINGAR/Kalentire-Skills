@@ -38,6 +38,7 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -53,7 +54,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -67,6 +67,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runeskills.Rune;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneApplicationEvent;
@@ -76,7 +77,7 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAbsorbRunes extends ActiveSkill {
-    // Runequeue Hashmap for holding all player RuneQueue objects
+    // Runequeue Hashmap for holding all player RuneQueue tables
     HashMap<Hero, RuneQueue> heroRunes;
 
     public SkillAbsorbRunes(Heroes plugin) {
@@ -85,6 +86,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         setDescription("Activate to absorb your weapon's imbued Runes and regain a portion of the mana spent at a $1% rate.");
         setUsage("/skill absorbrunes");
         setIdentifiers("skill absorbrunes");
+        setTypes(SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL);
         setArgumentRange(0, 0);
 
         // Start up the listener for Rune events
@@ -107,6 +109,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
         // Skill usage configs
         node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% absorbs his Runes!");
+        node.set("weapons", Util.swords);
         node.set("conversion-rate", 0.35);
         node.set("fail-text-no-runes", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "You have no Runes to absorb!");
 
@@ -176,50 +179,35 @@ public class SkillAbsorbRunes extends ActiveSkill {
             this.skill = skill;
         }
 
-        // Trigger the actual rune application on weapon damage hit.
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            // Ensure that the event is meant to happen
-            if (!(event instanceof EntityDamageByEntityEvent))
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
+                return;
+            }
+
+            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            Entity defender = edbe.getEntity();
+            Entity attacker = edbe.getDamager();
+
+            if (!(attacker instanceof Player) || event.getCause() != DamageCause.ENTITY_ATTACK)
                 return;
 
-            // If our target isn't a living entity, exit
-            if (!(event.getEntity() instanceof LivingEntity))
-                return;
+            Player player = (Player) attacker;
+            Hero hero = plugin.getCharacterManager().getHero(player);
 
-            // Make sure that this is actually a left click attack caused by a player
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (subEvent.getCause() != DamageCause.ENTITY_ATTACK || !(subEvent.getDamager() instanceof Player))
-                return;
-
-            // Get our hero's CT
-            CharacterTemplate heroCT = plugin.getCharacterManager().getCharacter((LivingEntity) subEvent.getDamager());
-
-            // Ensure attacker is actually a Hero
-            if (!(heroCT instanceof Hero))
-                return;
+            LivingEntity target = (LivingEntity) defender;
 
             // Check to see if we actually have a Runelist bound to this player
-            Hero hero = (Hero) heroCT;
             if (!heroRunes.containsKey(hero))
                 return;		// Player isn't on the hashmap. Do not continue
 
-            Player player = hero.getPlayer();
-            ItemStack item = player.getItemInHand();
-
-            //            double currentHP = ((LivingEntity) event.getEntity()).getHealth();
-            //            if (currentHP - event.getDamage() < 1) {
-            //                Messaging.send(player, "Target would have too low of HP. Don't damage. (Absorb Runes)");
-            //                return;
-            //            }
-
-            // Ensure that they currently have a proper weapon in hand.
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name()))
+            Material item = player.getItemInHand().getType();
+            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.name())) {
                 return;
+            }
 
             // Check to see if the hero can apply runes to his target right now
-            Entity target = event.getEntity();
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             String cdEffectName = hero.getName() + "_RuneApplicationCooldownEffect";
             if (targetCT.hasEffect(cdEffectName))
                 return;		// Rune application is on cooldown. Do not continue.
@@ -243,7 +231,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
                 // Add the "cooldown" effect to the hero so he can't immediately trigger another Rune Application Event here.
                 int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "rune-application-cooldown", 1000, false);
-                targetCT.addEffect(new RuneApplicationCooldownEffect(skill, cdEffectName, cdDuration));
+                targetCT.addEffect(new RuneApplicationCooldownEffect(skill, player, cdEffectName, cdDuration));
             }
 
             return;
@@ -502,8 +490,8 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
     // Effect required for implementing an internal cooldown on rune application
     private class RuneApplicationCooldownEffect extends ExpirableEffect {
-        public RuneApplicationCooldownEffect(Skill skill, String effectName, long duration) {
-            super(skill, effectName, duration);
+        public RuneApplicationCooldownEffect(Skill skill, Player applier, String effectName, long duration) {
+            super(skill, effectName, applier, duration);
         }
     }
 }

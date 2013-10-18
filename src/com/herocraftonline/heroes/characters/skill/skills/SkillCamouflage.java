@@ -67,7 +67,7 @@ public class SkillCamouflage extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill camouflage", "skill camo");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
-        setTypes(SkillType.ILLUSION, SkillType.BUFF, SkillType.COUNTER, SkillType.STEALTHY);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BUFFING, SkillType.STEALTHY);
 
         moveChecker = new CamoMoveChecker(this);
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);
@@ -140,7 +140,7 @@ public class SkillCamouflage extends ActiveSkill {
         }
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
-        hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
+        hero.addEffect(new InvisibleEffect(this, player, duration, applyText, expireText));
 
         // If any nearby monsters are targeting the player, force them to change their target.
         for (Entity entity : player.getNearbyEntities(50, 50, 50)) {
@@ -202,6 +202,7 @@ public class SkillCamouflage extends ActiveSkill {
         public void addHero(Hero hero) {
             if (!hero.hasEffect("Invisible"))
                 return;
+
             oldLocations.put(hero, hero.getPlayer().getLocation());
         }
     }

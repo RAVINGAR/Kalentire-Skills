@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.entity.Player;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -16,7 +17,12 @@ public class SkillGroupTeleport extends ActiveSkill {
         setUsage("/skill groupteleport");
         setArgumentRange(0, 0);
         setIdentifiers("skill groupteleport", "skill gteleport");
-        setTypes(SkillType.TELEPORT, SkillType.SILENCABLE, SkillType.UNBINDABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.UNBINDABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
@@ -34,10 +40,5 @@ public class SkillGroupTeleport extends ActiveSkill {
         }
         Messaging.send(player, "You must have a group to teleport your party members to you!");
         return SkillResult.FAIL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

@@ -3,22 +3,20 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillSmite extends TargettedSkill {
     // This is for Firework Effects
@@ -30,23 +28,35 @@ public class SkillSmite extends TargettedSkill {
         setUsage("/skill smite");
         setArgumentRange(0, 0);
         setIdentifiers("skill smite");
-        setTypes(SkillType.DAMAGING, SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(250), false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
 
-        return getDescription().replace("$2", undeadDamage + "").replace("$1", damage + "");
+        int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
+
+        int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        undeadDamage += damageIncrease * intellect;
+
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+        damage += damageIncrease * intellect;
+
+        String formattedUndeadDamage = Util.decFormat.format(undeadDamage);
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedUndeadDamage);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(60));
-        node.set("undead-damage", Integer.valueOf(250));
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
+        node.set("undead-damage", Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE.node(), Double.valueOf(40));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
 
         return node;
     }
@@ -55,15 +65,24 @@ public class SkillSmite extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        broadcastExecuteText(hero, target);
+
+        int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
+
         double damage = 0;
-        if (target instanceof Zombie || target instanceof Skeleton || target instanceof PigZombie || target instanceof Ghast)
-            damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(250), false);
-        else
-            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+        if (Util.isUndead(plugin, target)) {
+            damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            damage += (damageIncrease * intellect);
+        }
+        else {
+            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            damage += (damageIncrease * intellect);
+        }
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
-        broadcastExecuteText(hero, target);
 
         // this is our fireworks
         try {
@@ -75,6 +94,7 @@ public class SkillSmite extends TargettedSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
+
         return SkillResult.NORMAL;
     }
 }

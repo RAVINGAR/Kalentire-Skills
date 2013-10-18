@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillBowStrength extends PassiveSkill {
@@ -23,9 +24,8 @@ public class SkillBowStrength extends PassiveSkill {
         super(plugin, "BowStrength");
         setDescription("Your arrows fly much faster!");
         setArgumentRange(0, 0);
-        setTypes(SkillType.PHYSICAL, SkillType.ITEM);
-        setEffectTypes(EffectType.BENEFICIAL);
-        setEffectTypes(EffectType.PHYSICAL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_PROJECTILE);
+        setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBowListener(this), plugin);
     }
 
@@ -36,9 +36,13 @@ public class SkillBowStrength extends PassiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection section = super.getDefaultConfig();
-        section.set("velocity-multiplier", 1.4);
-        return section;
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        node.set("velocity-multiplier", 1.2);
+
+        return node;
     }
 
     public class SkillBowListener implements Listener {
@@ -55,7 +59,7 @@ public class SkillBowStrength extends PassiveSkill {
             }
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect(getName())) {
-                double mult = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.4, false);
+                double mult = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.2, false);
                 Projectile proj = (Projectile) event.getProjectile();
                 proj.setVelocity(proj.getVelocity().multiply(mult));
             }

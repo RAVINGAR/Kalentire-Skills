@@ -24,16 +24,20 @@ public class SkillAlchemy extends PassiveSkill {
         super(plugin, "Alchemy");
         setDescription("You are able to craft potions!");
         setArgumentRange(0, 0);
-        setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
+        setTypes(SkillType.ITEM_CREATION);
         setEffectTypes(EffectType.BENEFICIAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
     
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection section = super.getDefaultConfig();
-        section.set(SkillSetting.LEVEL.node(), 1);
-        return section;
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        node.set(SkillSetting.LEVEL.node(), 1);
+
+        return node;
     }
     
     public class SkillListener implements Listener {

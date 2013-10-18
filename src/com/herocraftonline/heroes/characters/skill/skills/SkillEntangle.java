@@ -1,32 +1,23 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import net.minecraft.server.v1_6_R3.EntityLiving;
-import net.minecraft.server.v1_6_R3.MobEffectList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -45,10 +36,10 @@ public class SkillEntangle extends TargettedSkill {
     public SkillEntangle(Heroes plugin) {
         // Heroes stuff
         super(plugin, "Entangle");
-        setDescription("Deals $1 damage and roots your target in place for $2 seconds. The effect breaks when the target takes damage.");
+        setDescription("Roots your target in place for $1 seconds. The effect breaks when the target takes damage.");
         setUsage("/skill entangle");
         setIdentifiers("skill entangle");
-        setTypes(SkillType.HARMFUL, SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.EARTH, SkillType.MOVEMENT);
+        setTypes(SkillType.AGGRESSIVE, SkillType.MOVEMENT_PREVENTING, SkillType.DEBUFFING, SkillType.INTERRUPTING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_EARTH);
         setArgumentRange(0, 0);
 
         // Start up the listener for root skill usage
@@ -57,22 +48,22 @@ public class SkillEntangle extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false) / 1000.0);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
+        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), 1);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
         node.set(SkillSetting.PERIOD.node(), 100);
-        node.set(SkillSetting.DURATION.node(), 4000);
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% used %skill% on %target%!");
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been rooted!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has broken free from the root!");
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% used %skill% on %target%!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been rooted!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has broken free from the root!");
 
         return node;
     }
@@ -80,23 +71,30 @@ public class SkillEntangle extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been rooted!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has broken free from the root!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been rooted!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has broken free from the root!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-
-        //deal  damage
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
         // Broadcast use text
         broadcastExecuteText(hero, target);
 
         // Play Sound
         Player player = hero.getPlayer();
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_WOODBREAK, 0.8F, 1.0F);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
+
+        //EntangleEffect EntangleEffect = new EntangleEffect(this, hero.getPlayer(), duration);
+        RootEffect rootEffect = new RootEffect(this, player, period, duration, applyText, expireText);
+
+        // Add root effect to the target
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        targetCT.addEffect(rootEffect);
+
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_WOODBREAK, 0.8F, 1.0F);
 
         // Play Effect
         try {
@@ -109,16 +107,6 @@ public class SkillEntangle extends TargettedSkill {
             e.printStackTrace();
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
-
-        //EntangleEffect EntangleEffect = new EntangleEffect(this, hero.getPlayer(), duration);
-        EntangleEffect EntangleEffect = new EntangleEffect(this, period, duration, hero.getPlayer());
-
-        // Add root effect to the target
-        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(EntangleEffect);
-
         return SkillResult.NORMAL;
     }
 
@@ -130,11 +118,10 @@ public class SkillEntangle extends TargettedSkill {
         //            this.skill = skill;
         //        }
 
-        @EventHandler(priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0) {
+            if (event.getDamage() == 0)
                 return;
-            }
 
             if (!(event.getEntity() instanceof LivingEntity))
                 return;
@@ -217,106 +204,6 @@ public class SkillEntangle extends TargettedSkill {
         //            }
         //        }
         //    }
-    }
-
-    public class EntangleEffect extends PeriodicExpirableEffect {
-
-        private final Player applier;
-        private Location loc;
-
-        public EntangleEffect(Skill skill, int period, int duration, Player applier) {
-            super(skill, "Root", period, duration);
-            this.applier = applier;
-
-            types.add(EffectType.ROOT);
-            types.add(EffectType.HARMFUL);
-            types.add(EffectType.MAGIC);
-            types.add(EffectType.DISPELLABLE);
-
-            addMobEffect(2, (int) (duration / 1000) * 20, 127, false);      // Max slowness is 127
-            addMobEffect(8, (int) (duration / 1000) * 20, 128, false);      // Max negative jump boost
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-
-            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            final Player player = hero.getPlayer();
-            loc = hero.getPlayer().getLocation();
-
-            // Don't allow an entangled player to sprint. If they are sprinting, turn it off.
-            final int currentHunger = player.getFoodLevel();
-            player.setFoodLevel(1);
-            player.setSprinting(false);
-
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
-                    player.setFoodLevel(currentHunger);
-                }
-            }, 0L);
-
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(final Hero hero) {
-
-            Player player = hero.getPlayer();
-            EntityLiving el = ((CraftLivingEntity) player).getHandle();
-            
-            if (el.hasEffect(MobEffectList.POISON) || el.hasEffect(MobEffectList.WITHER) || el.hasEffect(MobEffectList.HARM)) {
-                // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        EntangleEffect.super.removeFromHero(hero);
-                    }
-                }, (long) (0.2 * 20));
-            }
-            else
-                super.removeFromHero(hero);
-
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            final Location location = hero.getPlayer().getLocation();
-            if ((location.getX() != loc.getX()) || (location.getZ() != loc.getZ())) {
-
-                // If they have any velocity, we wish to remove it.
-                Player player = hero.getPlayer();
-                player.setVelocity(new Vector(0, 0, 0));
-
-                // Retain the player's Y position and facing directions
-                loc.setYaw(location.getYaw());
-                loc.setPitch(location.getPitch());
-                loc.setY(location.getY());
-
-                // Teleport the Player back into place.
-                player.teleport(loc);
-            }
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {}
-
     }
 
     // Below is the effect used for a "normal" root that doesn't use teleportation as a base. Kept here for future attempts to tweak the skill.

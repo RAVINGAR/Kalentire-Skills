@@ -27,13 +27,12 @@ public class SkillPort extends ActiveSkill {
 		setUsage("/skill port <location>");
 		setArgumentRange(1, 1);
 		setIdentifiers("skill port");
-		setTypes(SkillType.TELEPORT, SkillType.SILENCABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
-		radius += (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
 
 		return getDescription().replace("$1", radius + "");
 	}
@@ -42,7 +41,9 @@ public class SkillPort extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.RADIUS.node(), 10);
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(10));
+        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
+        node.set(SkillSetting.DELAY.node(), Integer.valueOf(10000));
 
 		return node;
 	}
@@ -90,8 +91,7 @@ public class SkillPort extends ActiveSkill {
 
 			broadcastExecuteText(hero);
 
-			int radiusInc = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0.0, false) * hero.getSkillLevel(this);
-            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false) + radiusInc;
+            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 			int radiusSquared = radius * radius;
 			Location loc = new Location(world, Double.parseDouble(splitArg[1]), Double.parseDouble(splitArg[2]), Double.parseDouble(splitArg[3]));
 

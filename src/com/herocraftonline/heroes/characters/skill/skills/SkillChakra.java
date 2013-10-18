@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -19,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillChakra extends ActiveSkill {
     // This is for Firework Effects
@@ -26,19 +28,46 @@ public class SkillChakra extends ActiveSkill {
 
     public SkillChakra(Heroes plugin) {
         super(plugin, "Chakra");
-        setDescription("You restore $1 health and dispel negative effects from all nearby party-members.");
+        setDescription("You restore $1 health and dispel up to $2 negative effects from all party-members within $3 blocks. You are only healed for $4 health from this ability however.");
         setUsage("/skill chakra");
         setArgumentRange(0, 0);
         setIdentifiers("skill chakra");
-        setTypes(SkillType.SILENCABLE, SkillType.HEAL, SkillType.LIGHT);
+        setTypes(SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.DISPELLING, SkillType.ABILITY_PROPERTY_LIGHT);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.125, false);
+        radius += (int) (wisdom * radiusIncrease);
+
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
+        healing += (wisdom * healingIncrease);
+
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
+        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", Double.valueOf(0.05), false);
+        removals += Math.floor((wisdom * removalsIncrease));     // Round down
+
+        String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
+
+        return getDescription().replace("$1", formattedHealing).replace("$2", removals + "").replace("$3", radius + "").replace("$4", formattedSelfHealing);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("heal-amount", 10);
-        node.set(SkillSetting.RADIUS.node(), 7);
-        node.set("max-removals", -1);
+
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), Double.valueOf(0.125));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(75));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.875));
+        node.set("max-removals", Integer.valueOf(0));
+        node.set("max-removals-increase-per-wisdom", Double.valueOf(0.05));
+
         return node;
     }
 
@@ -46,24 +75,37 @@ public class SkillChakra extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location castLoc = player.getLocation().clone();
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
+
+        int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.125, false);
+        radius += (int) (wisdom * radiusIncrease);
         int radiusSquared = radius * radius;
-        int healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
-        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", -1, true);
+
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
+        healing += (wisdom * healingIncrease);
+
+        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
+        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", Double.valueOf(0.05), false);
+        removals += Math.floor(wisdom * removalsIncrease);     // Round down
+
         if (hero.hasParty()) {
             for (Hero p : hero.getParty().getMembers()) {
                 if (!castLoc.getWorld().equals(p.getPlayer().getWorld())) {
                     continue;
                 }
                 if (castLoc.distanceSquared(p.getPlayer().getLocation()) <= radiusSquared) {
-                    healDispel(p, removals, healAmount, hero);
+                    healDispel(p, removals, healing, hero);
                 }
             }
         }
-        else {
-            healDispel(hero, removals, healAmount, hero);
-        }
+        else
+            healDispel(hero, removals, healing, hero);
+
         broadcastExecuteText(hero);
+
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
@@ -74,7 +116,9 @@ public class SkillChakra extends ActiveSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+
+        player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
@@ -104,11 +148,4 @@ public class SkillChakra extends ActiveSkill {
             }
         }
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, "heal-amount", 10, false);
-        return getDescription().replace("$1", amount + "");
-    }
-
 }

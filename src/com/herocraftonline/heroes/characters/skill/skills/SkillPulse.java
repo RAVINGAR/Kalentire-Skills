@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -24,37 +25,60 @@ public class SkillPulse extends ActiveSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillPulse(Heroes plugin) {
         super(plugin, "Pulse");
-        setDescription("You deal $1 force damage to all nearby enemies.");
+        setDescription("You deal $1 damage to all enemies within $2 blocks.");
         setUsage("/skill pulse");
         setArgumentRange(0, 0);
         setIdentifiers("skill pulse");
-        setTypes(SkillType.DAMAGING, SkillType.FORCE, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+
+        return getDescription().replace("$1", damage + "").replace("$2", radius + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 1);
+
+        node.set(SkillSetting.DAMAGE.node(), 60);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
         node.set(SkillSetting.RADIUS.node(), 5);
+
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
-            LivingEntity target = (LivingEntity) entity;
-            
 
+            LivingEntity target = (LivingEntity) entity;
             if (!damageCheck(player, target))
                 continue;
 
-            double damage = SkillConfigManager.getUseSetting(hero, this, "damage", 1, false);
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
+
             // this is our fireworks shit
             try {
                 fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
@@ -68,16 +92,9 @@ public class SkillPulse extends ActiveSkill {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
-        }
-        broadcastExecuteText(hero);
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
-        return getDescription().replace("$1", damage + "");
+        }
+
+        return SkillResult.NORMAL;
     }
 }

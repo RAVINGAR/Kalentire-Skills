@@ -28,8 +28,8 @@ public class SkillForgeChainLeggings extends ActiveSkill {
         setDescription("You forge a chain leggings!");
         setUsage("/skill forgechainchest");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill forgechainleggings", "skill chainleggings" });
-        setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
+        setIdentifiers("skill forgechainleggings");
+        setTypes(SkillType.ITEM_CREATION);
     }
 
     public String getDescription(Hero hero) {

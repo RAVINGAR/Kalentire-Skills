@@ -27,15 +27,19 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -45,6 +49,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runeskills.Rune;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneApplicationEvent;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillIceRune extends ActiveSkill {
     public SkillIceRune(Heroes plugin) {
@@ -53,37 +59,47 @@ public class SkillIceRune extends ActiveSkill {
         setDescription("Imbue your blade with the Rune of Ice. Upon Rune application, this Rune will deal $1 magic damage and slow the target for $2 seconds.");
         setUsage("/skill icerune");
         setIdentifiers("skill icerune");
-        setTypes(SkillType.HARMFUL, SkillType.DEBUFF, SkillType.INTERRUPT, SkillType.SILENCABLE);
+        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.DEBUFFING, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING, SkillType.SILENCABLE);
         setArgumentRange(0, 0);
 
-        // Start up the listener for skill usage
         Bukkit.getServer().getPluginManager().registerEvents(new IceRuneListener(this), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(35), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(35));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.75));
         node.set("speed-multiplier", 2);
-        node.set(SkillSetting.DAMAGE.node(), 40);
-        node.set(SkillSetting.DURATION.node(), 2000);
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% imbues his blade with a Rune of " + ChatColor.AQUA + "Ice.");
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been slowed by a Rune of Ice!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer slowed!");
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.AQUA + "Ice.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been slowed by a Rune of Ice!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
         node.set("rune-chat-color", ChatColor.AQUA.toString());
 
         return node;
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false) / 1000;
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
-    }
-
-    @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+
+        // Let the world know that the hero has activated a Rune.
+        broadcastExecuteText(hero);
+
         // Create the Rune
         int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 30, false);
         String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.AQUA.toString());
@@ -92,14 +108,9 @@ public class SkillIceRune extends ActiveSkill {
         // Add the Rune to the RuneWord queue here
         Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, iceRune));
 
-        // Play Firework
-        // CODE HERE
-
-        // Play sound
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
-
-        // Let the world know that the hero has activated a Rune.
-        broadcastExecuteText(hero);
+        // Play Effects
+        Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -137,29 +148,36 @@ public class SkillIceRune extends ActiveSkill {
                     if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
                         return;
 
+                    Player player = hero.getPlayer();
+
                     // Prep variables
                     CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
                     int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
                     long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 2000, false);
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
-                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
-                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer slowed!").replace("%target%", "$1");
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(35), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+                    damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
+                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
 
                     // Create the effect and slow the target
-                    SlowEffect sEffect = new SlowEffect(skill, duration, amplifier, false, applyText, expireText, hero);
+                    SlowEffect sEffect = new SlowEffect(skill, player, duration, amplifier, applyText, expireText);
+                    sEffect.types.add(EffectType.DISPELLABLE);
+                    sEffect.types.add(EffectType.ICE);
 
-                    // Damage and silence the target
-                    skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                    // Damage and slow the target
+                    addSpellTarget((LivingEntity) targEnt, hero);
+                    damageEntity((LivingEntity) targEnt, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
                     targCT.addEffect(sEffect);
 
-
-                    // Play sound
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    // Play Effects
+                    Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                    player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
                 }
-            }, (long) (0.1 * 20));
+            }, 2L);
 
             return;
         }

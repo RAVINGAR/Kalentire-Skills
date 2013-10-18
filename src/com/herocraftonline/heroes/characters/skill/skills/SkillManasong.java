@@ -1,18 +1,21 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -23,114 +26,163 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillManasong extends ActiveSkill {
 
+    private Song skillSong;
+
     private String applyText;
     private String expireText;
 
     public SkillManasong(Heroes plugin) {
         super(plugin, "Manasong");
-        setDescription("Your song boosts the party mana regeneration by $1%.");
+        setDescription("Play a song of mana for $1 seconds. While active, you restore $2 mana for party members within $3 blocks every $4 seconds.");
         setArgumentRange(0, 0);
         setUsage("/skill manasong");
         setIdentifiers("skill manasong");
-        setTypes(SkillType.BUFF, SkillType.MANA, SkillType.SILENCABLE);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
+        setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
+
+        skillSong = new Song(
+                             new Note(Sound.NOTE_PIANO, 0.8F, 1.0F, 0),
+                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 1)
+                );
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+
+        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
+        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+
+        String formattedPeriod = Util.decFormat.format(period / 1000.0);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", manaRestoreTick + "").replace("$3", radius + "").replace("$4", formattedPeriod);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("regen-multiplier", 1.2);
-        node.set(SkillSetting.RADIUS.node(), 10);
-        node.set(SkillSetting.DURATION.node(), 600000); // in Milliseconds - 10 minutes
+
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
+        node.set("mana-restore-tick", Integer.valueOf(8));
+        node.set("mana-restore-tick-increase-per-charisma", Double.valueOf(0.25));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with a song of mana!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "The manasong has ended.");
+        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        double manaMultiplier = SkillConfigManager.getUseSetting(hero, this, "regen-multiplier", 1.2, false);
+    public void init() {
+        super.init();
 
-        ManasongEffect mEffect = new ManasongEffect(this, duration, manaMultiplier);
-        if (!hero.hasParty()) {
-            if (hero.hasEffect("Manasong")) {
-                if (((ManasongEffect) hero.getEffect("Manasong")).getManaMultiplier() > mEffect.getManaMultiplier()) {
-                    Messaging.send(player, "You have a more powerful effect already!");
-                }
-            }
-            hero.addEffect(mEffect);
-        } else {
-            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false), 2);
-            for (Hero pHero : hero.getParty().getMembers()) {
-                Player pPlayer = pHero.getPlayer();
-                if (!pPlayer.getWorld().equals(player.getWorld())) {
-                    continue;
-                }
-                if (pPlayer.getLocation().distanceSquared(player.getLocation()) > rangeSquared) {
-                    continue;
-                }
-                if (pHero.hasEffect("Manasong")) {
-                    if (((ManasongEffect) pHero.getEffect("Manasong")).getManaMultiplier() > mEffect.getManaMultiplier()) {
-                        continue;
-                    }
-                }
-                pHero.addEffect(mEffect);
-            }
-        }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 1.0F);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_BASS, 0.8F, 1.0F);
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You are gifted with a song of mana!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "The manasong has ended.");
+    }
+
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+
+        hero.addEffect(new SoundEffect(this, "ManaSongSong", 100, skillSong));
+
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+
+        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
+        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+
+        ManasongEffect mEffect = new ManasongEffect(this, hero.getPlayer(), period, duration, radius, manaRestoreTick);
+        hero.addEffect(mEffect);
+
         broadcastExecuteText(hero);
+
         return SkillResult.NORMAL;
     }
 
-    public class SkillHeroListener implements Listener {
+    public class ManasongEffect extends PeriodicExpirableEffect {
 
-        @EventHandler()
-        public void onHeroRegainMana(HeroRegainManaEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
+        private final int radius;
+        private final int manaRestore;
 
-            if (event.getHero().hasEffect("Manasong")) {
-                event.setAmount((int) (event.getAmount() * ((ManasongEffect) event.getHero().getEffect("Manasong")).getManaMultiplier()));
-            }
-        }
-    }
+        public ManasongEffect(Skill skill, Player applier, int period, int duration, int radius, int manaRestore) {
+            super(skill, "Manasong", applier, period, duration, null, null);
 
-    public class ManasongEffect extends ExpirableEffect {
+            this.radius = radius;
+            this.manaRestore = manaRestore;
 
-        private final double manaMultiplier;
-
-        public ManasongEffect(Skill skill, long duration, double manaMultiplier) {
-            super(skill, "Manasong", duration);
-            this.manaMultiplier = manaMultiplier;
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.MAGIC);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
+            types.add(EffectType.MANA_INCREASING);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            Messaging.send(player, applyText);
-        }
 
-        public double getManaMultiplier() {
-            return manaMultiplier;
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, applyText);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+
             Player player = hero.getPlayer();
+
             Messaging.send(player, expireText);
         }
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        double mult = SkillConfigManager.getUseSetting(hero, this, "regen-multiplier", 1.2, false);
-        return getDescription().replace("$1", Util.stringDouble((mult - 1) * 100));
+        @Override
+        public void tickHero(Hero hero) {
+            Player player = hero.getPlayer();
+
+            if (hero.hasParty()) {
+                int radiusSquared = radius * radius;
+                Location playerLocation = player.getLocation();
+                // Loop through the player's party members and heal as necessary
+                for (Hero member : hero.getParty().getMembers()) {
+                    Location memberLocation = member.getPlayer().getLocation();
+
+                    // Ensure the party member is close enough
+                    if (memberLocation.getWorld().equals(playerLocation.getWorld())) {
+                        if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
+                            if (member.getMana() < member.getMaxMana()) {
+                                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, manaRestore, skill);
+                                plugin.getServer().getPluginManager().callEvent(hrmEvent);
+                                if (!hrmEvent.isCancelled()) {
+                                    member.setMana(hrmEvent.getAmount() + member.getMana());
+
+                                    if (member.isVerboseMana())
+                                        Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if (hero.getMana() < hero.getMaxMana()) {
+                    HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
+                    plugin.getServer().getPluginManager().callEvent(hrmEvent);
+                    if (!hrmEvent.isCancelled()) {
+                        hero.setMana(hrmEvent.getAmount() + hero.getMana());
+
+                        if (hero.isVerboseMana())
+                            Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void tickMonster(Monster monster) {}
     }
 }

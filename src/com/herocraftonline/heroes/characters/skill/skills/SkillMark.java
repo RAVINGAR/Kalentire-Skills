@@ -1,7 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -30,22 +28,34 @@ public class SkillMark extends ActiveSkill {
         setUsage("/skill mark <info|reset>");
         setArgumentRange(0, 1);
         setIdentifiers("skill mark");
-        setTypes(SkillType.TELEPORT);
+        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-                herotowns = true;
-                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            }
-        }
-        catch (Exception e) {
-            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
-        }
+        //        try {
+        //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+        //                herotowns = true;
+        //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+        //            }
+        //        }
+        //        catch (Exception e) {
+        //            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
+        //        }
     }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
+    }
+
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.NO_COMBAT_USE.node(), true);
+        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(3180000));
+        node.set(SkillSetting.DELAY.node(), Integer.valueOf(5000));
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(265));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+
         return node;
     }
 
@@ -160,10 +170,5 @@ public class SkillMark extends ActiveSkill {
         }
 
         return world;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

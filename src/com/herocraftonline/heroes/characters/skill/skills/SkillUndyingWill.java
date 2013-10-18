@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -22,6 +21,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillUndyingWill extends ActiveSkill {
@@ -33,26 +33,28 @@ public class SkillUndyingWill extends ActiveSkill {
         setUsage("/skill undyingwill");
         setArgumentRange(0, 0);
         setIdentifiers("skill undyingwill");
-        setTypes(SkillType.BUFF, SkillType.COUNTER, SkillType.PHYSICAL);
+        setTypes(SkillType.DISABLE_COUNTERING, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 
     public String getDescription(Hero hero) {
-        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
 
-        // Cast to float so we can get proper decimals.
-        String actualDuration = Util.formatDouble(duration / 1000.0) + "";
+        String actualDuration = Util.decFormat.format(duration / 1000.0);
+        String actualPeriod = Util.decFormat.format(period / 1000.0);
 
-        return getDescription().replace("$1", actualDuration + "");
+        return getDescription().replace("$1", actualDuration).replace("$2", actualPeriod);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4500));
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% is overcome with an undying will!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s will returns to normal.");
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(500));
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is overcome with an undying will!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s will returns to normal.");
 
         return node;
     }
@@ -60,41 +62,40 @@ public class SkillUndyingWill extends ActiveSkill {
     public void init() {
         super.init();
 
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s will returns to normal.").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s will returns to normal.").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
-
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
-        hero.addEffect(new UndyingWillEffect(this, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WOLF_GROWL, 0.5F, 0.1F);
+        Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
+
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4500), false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
+        hero.addEffect(new UndyingWillEffect(this, player, period, duration));
+
+        player.getWorld().playSound(player.getLocation(), Sound.WOLF_GROWL, 0.5F, 0.1F);
 
         return SkillResult.NORMAL;
     }
 
     public class SkillHeroListener implements Listener {
-        public SkillHeroListener() {
-        }
+        public SkillHeroListener() {}
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
 
             // If our target isn't a Living Entity exit
-            if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0) {
+            if (!(event.getEntity() instanceof LivingEntity))
                 return;
-            }
 
             Entity entity = event.getEntity();
-            //LivingEntity livingEntity = (LivingEntity) entity;
-
             if (entity instanceof Player) {
                 Player player = (Player) entity;
                 Hero hero = plugin.getCharacterManager().getHero(player);
 
                 // Don't let them go below 1HP.
-                if (hero.hasEffect("UndyingWillEffect")) {
+                if (hero.hasEffect("UndyingWill")) {
                     double currentHealth = player.getHealth();
 
                     if (event.getDamage() > currentHealth) {
@@ -109,16 +110,10 @@ public class SkillUndyingWill extends ActiveSkill {
     }
 
     public class UndyingWillEffect extends ExpirableEffect {
-        public UndyingWillEffect(Skill skill, long duration) {
-            super(skill, "UndyingWillEffect", duration);
+        public UndyingWillEffect(Skill skill, Player applifer, long period, long duration) {
+            super(skill, "UndyingWill", applifer, duration, null, expireText);
 
             types.add(EffectType.PHYSICAL);
-        }
-
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
     }
 }

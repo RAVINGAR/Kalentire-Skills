@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -9,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -17,27 +17,40 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillSoothe extends TargettedSkill {
 
     public SkillSoothe(Heroes plugin) {
         super(plugin, "Soothe");
-        setDescription("Soothes your target, restoring $1 health and curing Wither.");
+        setDescription("Soothes your target, restoring $1 health and curing withering effects. You are only healed for $2 health from this ability.");
         setUsage("/skill soothe <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soothe");
-        setTypes(SkillType.HEAL, SkillType.EARTH, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
+        String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
+
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection section = super.getDefaultConfig();
-        section.set(SkillSetting.HEALTH.node(), 5);
-        section.set(SkillSetting.HEALTH_INCREASE.node(), 0);
-        section.set(SkillSetting.MAX_DISTANCE.node(), 5);
-        section.set(SkillSetting.REAGENT.node(), 339);
-        section.set(SkillSetting.REAGENT_COST.node(), 1);
-        return section;
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(65));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.5));
+
+        return node;
     }
 
     @Override
@@ -48,10 +61,11 @@ public class SkillSoothe extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
-        hpPlus += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
-        double targetHealth = target.getHealth();
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(2.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
+        double targetHealth = target.getHealth();
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
@@ -62,12 +76,15 @@ public class SkillSoothe extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, hpPlus, this, hero);
-        Bukkit.getPluginManager().callEvent(hrhEvent);
+        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
+        plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
+
+        broadcastExecuteText(hero, target);
+
         targetHero.heal(hrhEvent.getAmount());
 
         // Soothe cures WITHER!
@@ -78,15 +95,9 @@ public class SkillSoothe extends TargettedSkill {
                 }
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 0.5F, 0.01F);
-        broadcastExecuteText(hero, target);
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        double amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
-        amount += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getSkillLevel(this));
-        return getDescription().replace("$1", amount + "");
+        player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 0.5F, 0.01F);
+
+        return SkillResult.NORMAL;
     }
 }

@@ -22,6 +22,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillLight extends ActiveSkill {
 
@@ -52,40 +53,46 @@ public class SkillLight extends ActiveSkill {
         super(plugin, "Light");
         setDescription("You glow brightly, illuminating blocks around you.");
         setArgumentRange(0, 0);
-        setTypes(SkillType.BUFF, SkillType.LIGHT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
         setUsage("/skill light");
         setIdentifiers("skill light");
     }
     
     @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 30000); // in milliseconds
         node.set(SkillSetting.PERIOD.node(), 200); // in milliseconds
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is lighting the way.");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer lighting the way");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is lighting the way.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer lighting the way");
         return node;
     }
     
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% is lighting the way.").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% is no longer lighting the way.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is lighting the way.").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer lighting the way.").replace("%hero%", "$1");
     }
     
     @Override
     public SkillResult use(Hero hero, String[] args) {
+
+        Player player = hero.getPlayer();
+        broadcastExecuteText(hero);
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
-        hero.addEffect(new LightEffect(this, period, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
+        hero.addEffect(new LightEffect(this, player, period, duration));
+        player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+
+        return SkillResult.NORMAL;
     }
 
     public class LightEffect extends PeriodicExpirableEffect {
@@ -94,8 +101,8 @@ public class SkillLight extends ActiveSkill {
         private Byte lastData = null;
         private Material lastMat = null;
 
-        public LightEffect(Skill skill, long period, long duration) {
-            super(skill, "Light", period, duration);
+        public LightEffect(Skill skill, Player applier, long period, long duration) {
+            super(skill, "Light", applier, period, duration);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.LIGHT);
             this.types.add(EffectType.MAGIC);

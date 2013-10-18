@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -19,6 +18,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlicker extends ActiveSkill {
@@ -32,25 +32,26 @@ public class SkillFlicker extends ActiveSkill {
         setUsage("/skill flicker");
         setArgumentRange(0, 0);
         setIdentifiers("skill flicker");
-        setTypes(SkillType.ILLUSION, SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BUFFING, SkillType.SILENCABLE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000.0);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", duration + "");
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.DURATION.node(), 7500);
         node.set(SkillSetting.PERIOD.node(), 1500);
         node.set("invis-duration", 500);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to flicker!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% is no longer flickering.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% begins to flicker!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer flickering.");
 
         return node;
     }
@@ -59,8 +60,8 @@ public class SkillFlicker extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to flicker!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% is no longer flickering.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% begins to flicker!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer flickering.").replace("%hero%", "$1");
     }
 
     @Override
@@ -68,9 +69,9 @@ public class SkillFlicker extends ActiveSkill {
         broadcastExecuteText(hero);
 
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         long invisDuration = SkillConfigManager.getUseSetting(hero, this, "invis-duration", 500, false);
-        hero.addEffect(new FlickerEffect(this, period, duration, invisDuration));
+        hero.addEffect(new FlickerEffect(this, hero.getPlayer(), period, duration, invisDuration));
 
         return SkillResult.NORMAL;
     }
@@ -79,8 +80,8 @@ public class SkillFlicker extends ActiveSkill {
 
         long invisDuration;
         
-        public FlickerEffect(Skill skill, long period, long duration, long invisDuration) {
-            super(skill, "Flicker", period, duration);
+        public FlickerEffect(Skill skill, Player applier, long period, long duration, long invisDuration) {
+            super(skill, "Flicker", applier, period, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
@@ -113,7 +114,7 @@ public class SkillFlicker extends ActiveSkill {
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
             player.getWorld().playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
-            InvisibleEffect customInvisEffect = new InvisibleEffect(skill, invisDuration, null, null);
+            InvisibleEffect customInvisEffect = new InvisibleEffect(skill, player, invisDuration, null, null);
             customInvisEffect.types.add(EffectType.UNBREAKABLE);
             hero.addEffect(customInvisEffect);
         }

@@ -1,21 +1,21 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -23,6 +23,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillCombustBlood extends TargettedSkill {
 
@@ -36,40 +37,54 @@ public class SkillCombustBlood extends TargettedSkill {
         setUsage("/skill combustblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill combustblood");
-        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DARK);
+        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), 100);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(95));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.75));
         node.set("blood-union-increase", 1);
         node.set("blood-union-required-for-dot", 3);
-        node.set(SkillSetting.DAMAGE_TICK.node(), 17);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 14);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.15);
         node.set(SkillSetting.PERIOD.node(), 2500);
         node.set(SkillSetting.DURATION.node(), 7500);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is bleeding from the effects of their Combusted Blood!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is no longer bleeding.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is bleeding from the effects of their Combusted Blood!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer bleeding.");
+
         return node;
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
         int bloodUnionReq = SkillConfigManager.getUseSetting(hero, this, "blood-union-required-for-dot", 3, false);
-        int damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false) / 1000;
-        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false) / 1000;
-        int dotDamage = (int) (damageTick * (duration / period));
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
 
-        return getDescription().replace("$1", damage + "").replace("$2", bloodUnionReq + "").replace("$3", dotDamage + "").replace("$4", duration + "");
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.75, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 14, false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.15, false);
+        tickDamage += (int) (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedDotDamage = Util.decFormat.format((tickDamage * ((double) duration / (double) period)));
+
+        return getDescription().replace("$1", damage + "").replace("$2", bloodUnionReq + "").replace("$3", formattedDotDamage).replace("$4", formattedDuration);
     }
 
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %target% is no longer bleeding.").replace("%target%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% is bleeding from the effects of their Combusted Blood!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer bleeding.").replace("%target%", "$1");
     }
 
     @Override
@@ -77,10 +92,13 @@ public class SkillCombustBlood extends TargettedSkill {
 
         Player player = hero.getPlayer();
 
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 70, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
+        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
         // Deal damage
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
 
         broadcastExecuteText(hero, target);
         try {
@@ -106,12 +124,15 @@ public class SkillCombustBlood extends TargettedSkill {
         if (bloodUnionLevel >= bloodUnionRequirement) {
 
             // Get DoT values
-            double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17, false);
+            double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 14, false);
+            double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.15, false);
+            tickDamage += tickDamageIncrease;
+
             int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
             int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
 
             // Add DoT effect
-            CombustingBloodEffect cbEffect = new CombustingBloodEffect(this, period, duration, tickDamage, hero.getPlayer());
+            CombustingBloodEffect cbEffect = new CombustingBloodEffect(this, player, period, duration, tickDamage);
             CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
             targCT.addEffect(cbEffect);
         }
@@ -127,20 +148,16 @@ public class SkillCombustBlood extends TargettedSkill {
                 buEffect.addBloodUnion(bloodUnionIncrease, false);
         }
 
-        // Finish
         return SkillResult.NORMAL;
     }
 
     public class CombustingBloodEffect extends PeriodicDamageEffect {
 
-        private final Player applier;
-
-        public CombustingBloodEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
-            super(skill, "CombustingBlood", period, duration, tickDamage, applier);
-
-            this.applier = applier;
+        public CombustingBloodEffect(Skill skill, Player applier, long period, long duration, double tickDamage) {
+            super(skill, "CombustingBlood", applier, period, duration, tickDamage);
 
             types.add(EffectType.BLEED);
+            types.add(EffectType.DARK);
             types.add(EffectType.HARMFUL);
         }
 

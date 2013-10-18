@@ -9,13 +9,16 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillBloodRitual extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
@@ -26,21 +29,26 @@ public class SkillBloodRitual extends TargettedSkill {
         setUsage("/skill bloodritual <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bloodritual");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.DARK);
+        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     public String getDescription(Hero hero) {
+        double healthMultiplier = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false);
+        double healthMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier-increase-per-wisdom", 0.1, false);
+        healthMultiplier += hero.getAttributeValue(AttributeType.WISDOM) * healthMultiplierIncrease;
 
-        int healthMultiplier = (int) (SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false) * 100);
+        String formattedHealthMultiplier = Util.decFormat.format(healthMultiplier * 100);
 
-        return getDescription().replace("$1", healthMultiplier + "");
+        return getDescription().replace("$1", formattedHealthMultiplier);
     }
 
     public ConfigurationSection getDefaultConfig() {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("blood-union-health-multiplier", 0.1);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set("blood-union-health-multiplier", Double.valueOf(0.0625));
+        node.set("blood-union-health-multiplier-increase-per-wisdom", Double.valueOf(0.0016));
 
         return node;
     }
@@ -57,7 +65,7 @@ public class SkillBloodRitual extends TargettedSkill {
 
         // Check to see if they are at full health
         if (targetHealth >= target.getMaxHealth()) {
-            Messaging.send(player, "Target is already at full health.", new Object[0]);
+            Messaging.send(player, "Target is already at full health.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -71,12 +79,14 @@ public class SkillBloodRitual extends TargettedSkill {
 
         if (bloodUnionLevel < 1) {
             // Display No Blood Union Error Text
-            Messaging.send(player, "You must have at least 1 Blood Union to use this ability!", new Object[0]);
+            Messaging.send(player, "You must have at least 1 Blood Union to use this ability!");
             return SkillResult.FAIL;
         }
 
-        // Increase healing based on blood union level
+        // Increase healing based on wisdom and blood union level
         double healthMultiplier = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier", 0.1, false);
+        double healthMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-health-multiplier-increase-per-wisdom", 0.1, false);
+        healthMultiplier += hero.getAttributeValue(AttributeType.WISDOM) * healthMultiplierIncrease;
         healthMultiplier *= bloodUnionLevel;
 
         double healAmount = healthMultiplier * target.getMaxHealth();
@@ -85,7 +95,7 @@ public class SkillBloodRitual extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!", new Object[0]);
+            Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
 

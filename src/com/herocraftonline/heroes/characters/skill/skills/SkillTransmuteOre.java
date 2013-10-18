@@ -29,13 +29,19 @@ public class SkillTransmuteOre extends ActiveSkill {
         setDescription("You can transmute ores into more valuable ones.");
         setUsage("/skill transmuteore");
         setArgumentRange(0, 0);
-        setIdentifiers("skill transmuteore", "skill xmuteore");
-        setTypes(SkillType.EARTH, SkillType.FIRE);
+        setIdentifiers("skill transmuteore");
+        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.ABILITY_PROPERTY_FIRE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set("COAL.product", "IRON_ORE");
         node.set("COAL." + SkillSetting.REAGENT_COST.node(), 5);
         node.set("COAL." + SkillSetting.LEVEL.node(), 1);
@@ -46,6 +52,7 @@ public class SkillTransmuteOre extends ActiveSkill {
         node.set("LAPIS_BLOCK." + SkillSetting.REAGENT_COST.node(), 1);
         node.set("LAPIS_BLOCK." + SkillSetting.LEVEL.node(), 1);
         node.set("require-furnace", false);
+
         return node;
     }
 
@@ -53,7 +60,7 @@ public class SkillTransmuteOre extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         ItemStack item = player.getItemInHand();
-        
+
         if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.FURNACE) {
             Messaging.send(player, "You must have a furnace targetted to transmute ores!");
             return SkillResult.FAIL;
@@ -64,24 +71,24 @@ public class SkillTransmuteOre extends ActiveSkill {
         for (SkillSetting set : SkillSetting.values()) {
             itemSet.remove(set.node());
         }
-        
+
         String itemName = item.getType().name();
         if (item == null || !itemSet.contains(itemName)) {
             Messaging.send(player, "You can't transmute that item!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        
+
         int level = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.LEVEL, 1, true);
         if (hero.getSkillLevel(this) < level) {
-        	return new SkillResult(ResultType.LOW_LEVEL, true, level);
+            return new SkillResult(ResultType.LOW_LEVEL, true, level);
         }
-        
+
         int cost = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.REAGENT_COST, 1, true);
         if (item.getAmount() < cost) {
             Messaging.send(player, "You need to be holding $1 of $2 to transmute.", cost, itemName);
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
-        
+
         Material finished = Material.matchMaterial(SkillConfigManager.getUseSetting(hero, this, itemName + ".product", ""));
         if (finished == null) {
             throw new IllegalArgumentException("Invalid product material defined for TransmuteOre node: " + itemName);
@@ -91,22 +98,17 @@ public class SkillTransmuteOre extends ActiveSkill {
         if (item.getAmount() == 0) {
             inventory.clear(inventory.getHeldItemSlot());
         }
-        
+
         HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(finished, 1));
-        
+
         if (!leftOvers.isEmpty()) {
             for (ItemStack leftOver : leftOvers.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
             }
             Messaging.send(player, "Items have been dropped at your feet!");
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP, 0.8F, 1.0F);
         Util.syncInventory(player, plugin);
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

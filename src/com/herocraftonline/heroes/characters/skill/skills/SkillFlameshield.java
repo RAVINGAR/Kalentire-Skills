@@ -17,6 +17,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlameshield extends ActiveSkill {
     // This is for Firework Effects
@@ -30,54 +32,71 @@ public class SkillFlameshield extends ActiveSkill {
         setUsage("/skill flameshield");
         setArgumentRange(0, 0);
         setIdentifiers("skill flameshield", "skill fshield");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.BUFFING);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% conjured a shield of flames!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his shield of flames!");
-        node.set("skill-block-text", "%name%'s flameshield has blocked %hero%'s %skill%.");
+
+        node.set(SkillSetting.DURATION.node(), 8000);
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% conjured a shield of flames!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% lost his shield of flames!");
+        node.set("skill-block-text", Messaging.getSkillDenoter() + "%name%'s flameshield has blocked %hero%'s %skill%.");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a shield of flames!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his shield of flames!").replace("%hero%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a shield of flames!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost his shield of flames!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        broadcastExecuteText(hero);
-        // this is our fireworks shit
         Player player = hero.getPlayer();
+        broadcastExecuteText(hero);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        hero.addEffect(new FlameshieldEffect(this, player, duration));
+
+        // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		player.getLocation().add(0,2,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.RED)
-            		.withFade(Color.MAROON)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(),
+                                 player.getLocation().add(0, 2, 0),
+                                 FireworkEffect.builder().flicker(false).trail(false)
+                                               .with(FireworkEffect.Type.CREEPER)
+                                               .withColor(Color.RED)
+                                               .withFade(Color.MAROON)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        hero.addEffect(new FlameshieldEffect(this, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_UNFECT , 0.4F, 1.0F); 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.4F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
     public class FlameshieldEffect extends ExpirableEffect {
 
-        public FlameshieldEffect(Skill skill, long duration) {
-            super(skill, "Flameshield", duration);
+        public FlameshieldEffect(Skill skill, Player applier, long duration) {
+            super(skill, "Flameshield", applier, duration);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
@@ -100,11 +119,5 @@ public class SkillFlameshield extends ActiveSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

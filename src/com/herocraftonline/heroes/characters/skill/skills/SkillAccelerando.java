@@ -7,43 +7,48 @@ import net.minecraft.server.v1_6_R3.MobEffectList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
+import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillAccelerando extends ActiveSkill {
 
     private String applyText;
     private String expireText;
+
     private Song skillSong;
 
     public SkillAccelerando(Heroes plugin) {
         super(plugin, "Accelerando");
-        setDescription("You song boons movement speed boost to all nearby party members for $1 seconds.");
+        setDescription("You song boons movement speed boost to all nearby party members for $1 seconds. The effect is removed on damage.");
         setUsage("/skill accelerando");
         setArgumentRange(0, 0);
-        setIdentifiers("skill accelerando", "skill accelerate");
-        setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
+        setIdentifiers("skill accelerando");
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_SONG, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+
         skillSong = new Song(
                              new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.2F, 0),
                              new Note(Sound.NOTE_BASS, 0.9F, 0.5F, 1),
@@ -61,126 +66,125 @@ public class SkillAccelerando extends ActiveSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int stunDuration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 1500, false);
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedStunDuration = Util.decFormat.format(stunDuration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedStunDuration);
+    }
+
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.RADIUS.node(), 12);
         node.set("speed-multiplier", 2);
-        node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.RADIUS.node(), 15);
-        node.set("apply-text", "%hero% gained a burst of speed!");
-        node.set("expire-text", "%hero% returned to normal speed!");
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% gained a burst of speed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% returned to normal speed!");
+        node.set(SkillSetting.DELAY.node(), 1000);
+        node.set(SkillSetting.COOLDOWN.node(), 1000);
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% gained a burst of speed!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% returned to normal speed!").replace("%hero%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% gained a burst of speed!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% returned to normal speed!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+
+        Player player = hero.getPlayer();
+
         broadcastExecuteText(hero);
-        //Removed sound playing here, see SkilSoundPlayer below
-        //Schedule a delayed task using the SkillSoundPlayer class to happen in 100 milliseconds (1 / 10 of a second)
-        //Substitute the name of the variable referring to a Heroes object for 'plugin'
-        //        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new SkillSoundPlayer(hero), 100);
+
         hero.addEffect(new SoundEffect(this, "AccelarandoSong", 100, skillSong));
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 300000, false);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
-        if (multiplier > 20) {
-            multiplier = 20;
-        }
-        QuickenEffect qEffect = new AccelerandoEffect(this, duration, multiplier, applyText, expireText);
+
+        AccelerandoEffect accelEffect = new AccelerandoEffect(this, player, duration, multiplier);
+
         if (!hero.hasParty()) {
-            hero.addEffect(qEffect);
+            hero.addEffect(accelEffect);
             return SkillResult.NORMAL;
         }
-        Player player = hero.getPlayer();
+
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
         int rSquared = radius * radius;
-        Location loc = player.getLocation();
+
+        Location playerLoc = player.getLocation();
+
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {
-            if (!tHero.getPlayer().getWorld().equals(player.getWorld())) {
+            Player tPlayer = tHero.getPlayer();
+            if (!player.getWorld().equals(tPlayer.getWorld()))
                 continue;
-            }
 
-            if (loc.distanceSquared(tHero.getPlayer().getLocation()) > rSquared) {
+            if (playerLoc.distanceSquared(tPlayer.getLocation()) > rSquared)
                 continue;
-            }
 
-            tHero.addEffect(qEffect);
+            tHero.addEffect(accelEffect);
         }
+
         return SkillResult.NORMAL;
     }
 
-    //Added this
-    public class SkillSoundPlayer implements Runnable {
-        private final Player player;
-
-        public SkillSoundPlayer(Hero hero) {
-            this.player = hero.getPlayer();
-        }
-
-        public void run() {
-            World world = player.getWorld();
-            Location loc = player.getLocation();
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.9F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.2F);
-            world.playSound(loc, Sound.NOTE_BASS_DRUM, 0.9F, 0.5F);
-            world.playSound(loc, Sound.NOTE_BASS, 0.9F, 0.9F);
-        }
-    }
-
     public class SkillEntityListener implements Listener {
-
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
+        
+        private Skill skill;
+        
+        public SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+        
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player))
                 return;
-            }
 
-            final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (hero.hasEffect(getName())) {
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        hero.removeEffect(hero.getEffect(getName()));
-                    }
-                }, (long) (0.1 * 20));
-            }
+            Player player = (Player) event.getEntity();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect("Accelerando"))
+                hero.removeEffect(hero.getEffect("Accelerando"));
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player))
+                return;
+
+            Player player = (Player) event.getEntity();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect("Accelerando"))
+                hero.removeEffect(hero.getEffect("Accelerando"));
         }
     }
 
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
-    }
+    public class AccelerandoEffect extends SpeedEffect {
 
-    public class AccelerandoEffect extends QuickenEffect {
+        public AccelerandoEffect(Skill skill, Player applier, int duration, int multiplier) {
+            super(skill, "Accelerando", applier, duration, multiplier, null, null);
 
-        public AccelerandoEffect(Skill skill, int duration, int multiplier, String applyText, String expireText) {
-            super(skill, "Accelerando", duration, multiplier, applyText, expireText);
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
+            types.add(EffectType.DISPELLABLE);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+
+            Player player = hero.getPlayer();
+            if (applyText != null && applyText.length() > 0) {
+                Messaging.send(player, applyText, player.getDisplayName(), applier.getDisplayName());
+            }
         }
 
         @Override
@@ -195,15 +199,14 @@ public class SkillAccelerando extends ActiveSkill {
                     public void run() {
                         AccelerandoEffect.super.removeFromHero(hero);
                     }
-                }, (long) (0.2 * 20));
+                }, 2L);
             }
             else
                 super.removeFromHero(hero);
-        }
 
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
+            if (expireText != null && expireText.length() > 0) {
+                Messaging.send(player, expireText, player.getDisplayName(), applier.getDisplayName());
+            }
         }
     }
 }

@@ -26,16 +26,27 @@ public class SkillCleave extends TargettedSkill {
         setUsage("/skill cleave");
         setArgumentRange(0, 0);
         setIdentifiers("skill cleave");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
+
+        String formattedDamageMultiplier = Util.decFormat.format(damageMultiplier * 100.0);
+
+        return getDescription().replace("$1", formattedDamageMultiplier);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("weapons", Util.axes);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 2);
-        node.set(SkillSetting.RADIUS.node(), 3);
-        node.set("damage-multiplier", 1.0);
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
+        node.set("weapons", Util.swords);
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
+        node.set("damage-multiplier", Double.valueOf(0.75));
+
         return node;
     }
 
@@ -44,12 +55,12 @@ public class SkillCleave extends TargettedSkill {
         Player player = hero.getPlayer();
         
         Material item = player.getItemInHand().getType();
-        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
+        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't cleave with that weapon!");
             return SkillResult.FAIL;
         }
 
-        double damage = plugin.getDamageManager().getItemDamage(item, player);
+        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);
@@ -61,18 +72,14 @@ public class SkillCleave extends TargettedSkill {
                 continue;
             }
 
-            addSpellTarget(target, hero);
+            addSpellTarget((LivingEntity) entity, hero);
             damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
-        broadcastExecuteText(hero, target);
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        double mult = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
-        return getDescription().replace("$1", mult * 100 + "");
+        broadcastExecuteText(hero, target);
+
+        return SkillResult.NORMAL;
     }
 }

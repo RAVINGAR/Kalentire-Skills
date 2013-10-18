@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -18,6 +19,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillSacredTouch extends TargettedSkill {
     // This is for Firework Effects
@@ -25,17 +27,33 @@ public class SkillSacredTouch extends TargettedSkill {
 
     public SkillSacredTouch(Heroes plugin) {
         super(plugin, "SacredTouch");
-        setDescription("Apply a Sacred Touch to the target, restoring $1 of their health and extinquishing any fire effects present.");
+        setDescription("Apply a Sacred Touch to the target, restoring $1 of their health and extinquishing any fire effects present. You are only healed for $2 health from this ability.");
         setUsage("/skill sacredtouch <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredtouch");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
+        String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
+
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALTH.node(), 5);
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(150));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(3.75));
+
         return node;
     }
 
@@ -47,9 +65,11 @@ public class SkillSacredTouch extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
-        double targetHealth = target.getHealth();
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(2.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
+        double targetHealth = target.getHealth();
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
@@ -60,14 +80,16 @@ public class SkillSacredTouch extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, hpPlus, this, hero);
+        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
+
         targetHero.heal(hrhEvent.getAmount());
 
+        targetHero.getPlayer().setFireTicks(0);
         for (Effect effect : targetHero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
@@ -88,12 +110,7 @@ public class SkillSacredTouch extends TargettedSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
-        return getDescription().replace("$1", amount + "");
+        return SkillResult.NORMAL;
     }
 }

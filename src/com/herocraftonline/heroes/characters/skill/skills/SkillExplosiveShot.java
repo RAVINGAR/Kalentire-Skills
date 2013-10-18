@@ -17,13 +17,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
@@ -35,6 +36,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
@@ -63,16 +65,12 @@ public class SkillExplosiveShot extends ActiveSkill {
         setUsage("/skill explosiveshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill explosiveshot");
-        setTypes(SkillType.HARMFUL, SkillType.DAMAGING, SkillType.FIRE, SkillType.FORCE);
+        setTypes(SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
-        }
-        catch (Exception e) {}
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
+            ncpEnabled = true;
     }
 
     public String getDescription(Hero hero) {
@@ -84,25 +82,33 @@ public class SkillExplosiveShot extends ActiveSkill {
         else
             numShotsString = "next shot";
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false) / 1000.0);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", duration + "").replace("$4", radius + "").replace("$5", damage + "");
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", formattedDuration).replace("$4", radius + "").replace("$5", formattedDamage);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("num-shots", Integer.valueOf(1));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(100));
-        node.set("horizontal-power", Double.valueOf(1.0));
-        node.set("vertical-power", Double.valueOf(0.6));
-        node.set("ncp-exemption-duration", 1500);
-        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
-        node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s arrows are no longer Explosive."));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.0));
+        node.set("horizontal-power", Double.valueOf(1.1));
+        node.set("vertical-power", Double.valueOf(0.5));
+        node.set("ncp-exemption-duration", 500);
+        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
+        node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive."));
 
 
         return node;
@@ -111,16 +117,16 @@ public class SkillExplosiveShot extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, "expire-text-fail", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero%'s arrows are no longer Explosive.").replace("%hero%", "$1");
-        shotText = SkillConfigManager.getRaw(this, "shot-text", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive.").replace("%hero%", "$1");
+        shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDenoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
-        hero.addEffect(new ExplosiveShotBuffEffect(this, duration, numShots));
+        hero.addEffect(new ExplosiveShotBuffEffect(this, hero.getPlayer(), duration, numShots));
 
         return SkillResult.NORMAL;
     }
@@ -162,6 +168,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             // Add the projectile to the hashlist
             Arrow explosiveShot = (Arrow) event.getProjectile();
+            explosiveShot.setFireTicks(20);
             explosiveShots.put(explosiveShot, Long.valueOf(System.currentTimeMillis()));
         }
 
@@ -184,7 +191,9 @@ public class SkillExplosiveShot extends ActiveSkill {
             explosiveShots.remove(projectile);
 
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4, false);
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 100, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 80, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
+            damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
             // Play an effect, but only if we actually hit a target.
             // Play explosion effect
@@ -202,12 +211,11 @@ public class SkillExplosiveShot extends ActiveSkill {
             // Prep some variables
             Location arrowLoc = projectile.getLocation();
             List<Entity> targets = projectile.getNearbyEntities(radius, radius, radius);
-            double horizontalPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", .7, false);
-            double veticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 1.1, false);
+            double horizontalPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", 1.1, false);
+            double veticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.5, false);
 
             // Loop through nearby targets and damage / knock them back
             for (Entity entity : targets) {
-
                 // Check to see if the entity can be damaged
                 if (!(entity instanceof LivingEntity) || !damageCheck(shooter, (LivingEntity) entity))
                     continue;
@@ -215,7 +223,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                 // Damage target
                 LivingEntity target = (LivingEntity) entity;
                 addSpellTarget(target, hero);
-                damageEntity(target, shooter, damage, EntityDamageEvent.DamageCause.FIRE);
+                damageEntity(target, shooter, damage, DamageCause.MAGIC);
 
                 // Do a knock up/back effect.
                 Location targetLoc = target.getLocation();
@@ -233,7 +241,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                         if (!targetPlayer.isOp()) {
                             long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
                             if (duration > 0) {
-                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, duration);
+                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, duration);
                                 CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                                 targetCT.addEffect(ncpExemptEffect);
                             }
@@ -253,7 +261,6 @@ public class SkillExplosiveShot extends ActiveSkill {
                 catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
 
             return;
@@ -266,13 +273,14 @@ public class SkillExplosiveShot extends ActiveSkill {
         private int shotsLeft = 1;
         private boolean showExpireText = true;
 
-        public ExplosiveShotBuffEffect(Skill skill, long duration, int shotsLeft) {
-            super(skill, "ExplosiveShotBuffEffect", duration);
-            this.shotsLeft = shotsLeft;
+        public ExplosiveShotBuffEffect(Skill skill, Player applier, long duration, int shotsLeft) {
+            super(skill, "ExplosiveShotBuffEffect", applier, duration, null, null);
 
             types.add(EffectType.IMBUE);
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
+
+            this.shotsLeft = shotsLeft;
         }
 
         @Override
@@ -290,7 +298,13 @@ public class SkillExplosiveShot extends ActiveSkill {
             }
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+
+            if (applyText != null && applyText.length() > 0) {
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                    Messaging.send(player, applyText, player.getDisplayName());
+                else
+                    broadcast(player.getLocation(), applyText, player.getDisplayName());
+            }
         }
 
         @Override
@@ -299,8 +313,14 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            if (showExpireText)
-                broadcast(player.getLocation(), expireText, player.getDisplayName());
+            if (showExpireText) {
+                if (expireText != null && expireText.length() > 0) {
+                    if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
+                        Messaging.send(player, expireText, player.getDisplayName());
+                    else
+                        broadcast(player.getLocation(), expireText, player.getDisplayName());
+                }
+            }
         }
 
         public int getShotsLeft() {
@@ -318,8 +338,8 @@ public class SkillExplosiveShot extends ActiveSkill {
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
         @Override

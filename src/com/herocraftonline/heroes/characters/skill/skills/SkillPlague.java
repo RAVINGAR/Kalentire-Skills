@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -22,6 +23,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillPlague extends TargettedSkill {
     // This is for Firework Effects
@@ -31,70 +33,106 @@ public class SkillPlague extends TargettedSkill {
 
     public SkillPlague(Heroes plugin) {
         super(plugin, "Plague");
-        setDescription("You infect your target with the plague, dealing $1 damage over $2 seconds.!");
+        setDescription("You infect your target with the plague, dealing $1 damage over $2 seconds. Enemies within $3 blocks of a plagued target will also be infected.");
         setUsage("/skill plague");
         setArgumentRange(0, 0);
         setIdentifiers("skill plague");
-        setTypes(SkillType.DARK, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_DISEASE, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 4, false);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), false);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", Integer.valueOf(17), false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.17), false);
+        tickDamage += tickDamageIncrease;
+
+        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", radius + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 21000);
-        node.set(SkillSetting.PERIOD.node(), 3000);
-        node.set("tick-damage", 1);
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
+        node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(10));
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.125));
         node.set(SkillSetting.RADIUS.node(), 4);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% is infected with the plague!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer infected with the plague!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is infected with the plague!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer infected with the plague!");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is infected with the plague!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer infected with the plague!").replace("%target%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% is infected with the plague!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer infected with the plague!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero, target);
+
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
+
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, Double.valueOf(17), false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.17), false);
+        tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, player, duration, period, tickDamage));
+
         // this is our fireworks
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BURST)
-            		.withColor(Color.GREEN)
-            		.withFade(Color.OLIVE)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder().flicker(false).trail(false)
+                                               .with(FireworkEffect.Type.BURST)
+                                               .withColor(Color.GREEN)
+                                               .withFade(Color.OLIVE)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 21000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
-        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, duration, period, tickDamage, player));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BAT_HURT , 0.8F, 1.0F); 
-        broadcastExecuteText(hero, target);
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        player.getWorld().playSound(player.getLocation(), Sound.BAT_HURT, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
     public class PlagueEffect extends PeriodicDamageEffect {
         private boolean jumped = false;
 
-        public PlagueEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
-            super(skill, "Plague", period, duration, tickDamage, applier);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.DISEASE);
+        public PlagueEffect(Skill skill, Player applier, long duration, long period, double tickDamage) {
+            super(skill, "Plague", applier, period, duration, tickDamage);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.DISEASE);
+
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
         }
 
         // Clone Constructor
         private PlagueEffect(PlagueEffect pEffect) {
-            super(pEffect.getSkill(), pEffect.getName(), pEffect.getPeriod(), pEffect.getRemainingTime(), pEffect.tickDamage, pEffect.applier);
+            super(pEffect.getSkill(), pEffect.getName(), pEffect.getApplier(), pEffect.getPeriod(), pEffect.getRemainingTime(), pEffect.tickDamage);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DISEASE);
@@ -151,30 +189,25 @@ public class SkillPlague extends TargettedSkill {
             if (jumped) {
                 return;
             }
+            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
             int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS.node(), 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
-                if (!(target instanceof LivingEntity) || target.equals(applier) || applyHero.getSummons().contains(target)) {
+                if (!(target instanceof LivingEntity)) {
                     continue;
                 }
 
                 if (!damageCheck(getApplier(), (LivingEntity) target)) {
                     continue;
                 }
+
                 CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) target);
                 if (character.hasEffect("Plague")) {
                     continue;
-                } else {
+                }
+                else {
                     character.addEffect(new PlagueEffect(this));
                 }
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        return getDescription().replace("$1", damage * duration / period + "").replace("$2", duration / 1000 + "");
     }
 }

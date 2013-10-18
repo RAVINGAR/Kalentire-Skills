@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -30,7 +31,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillBackstab extends ActiveSkill {
 
-    private String useText;
+    private String backstabText;
 
     public SkillBackstab(Heroes plugin) {
         super(plugin, "Backstab");
@@ -38,68 +39,82 @@ public class SkillBackstab extends ActiveSkill {
         setUsage("/skill backstab");
         setArgumentRange(0, 0);
         setIdentifiers("skill backstab");
-        setTypes(SkillType.KNOWLEDGE, SkillType.PHYSICAL, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.UNBINDABLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroesListener(this), plugin);
     }
 
     public String getDescription(Hero hero) {
-        double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", -1D, false);
-        int backstabPercent = (int) (SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.65D, false) * 100);
+
+        double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", Double.valueOf(-1.0), false);
+        double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", Double.valueOf(0.85), false);
+        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        backstabDamageModifier += hero.getAttributeValue(AttributeType.AGILITY) * backstabDamageModifierIncrease;
 
         String backstabString = "deal";
         if (backstabChance > -1)
-            backstabString = "have a " + backstabPercent + "% to deal";
+            backstabString = "have a " + Util.decFormat.format(backstabChance) + "% chance to deal";
 
-        double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", -1D, false);
-        int ambushPercent = (int) (SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.2D, false) * 100);
+        double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", Double.valueOf(-1.0), false);
+        double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", Double.valueOf(0.85), false);
+        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        ambushDamageModifier += hero.getAttributeValue(AttributeType.AGILITY) * ambushDamageModifierIncrease;
 
         String ambushString = "deal";
         if (ambushChance > -1)
-            backstabString = "have a " + ambushPercent + "% to deal";
+            backstabString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
 
-        return getDescription().replace("$1", backstabString + "").replace("$2", backstabPercent + "").replace("$3", ambushString + "").replace("$4", ambushPercent + "");
+        String formattedBackstabDamageModifier = Util.decFormat.format(backstabDamageModifier * 100);
+        String formattedAmbushDamageModifier = Util.decFormat.format(ambushDamageModifier * 100);
+
+        return getDescription().replace("$1", backstabString + "").replace("$2", formattedBackstabDamageModifier).replace("$3", ambushString + "").replace("$4", formattedAmbushDamageModifier);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(SkillSetting.USE_TEXT.node(), "");
+        node.set("backstab-text", "");
         node.set("weapons", Util.swords);
-        node.set("backstab-bonus", Double.valueOf(0.65D));
-        node.set("backstab-chance", Double.valueOf(-1D));
-        node.set("ambush-bonus", Double.valueOf(1.2D));
-        node.set("ambush-chance", Double.valueOf(-1D));
+        node.set("backstab-chance", Double.valueOf(-1));
+        node.set("backstab-bonus", Double.valueOf(0.05));
+        node.set("backstab-bonus-increase-per-agility", Double.valueOf(0.04125));
+        node.set("ambush-chance", Double.valueOf(-1));
+        node.set("ambush-bonus", Double.valueOf(0.10));
+        node.set("ambush-bonus-increase-per-agility", Double.valueOf(0.06375));
         node.set("allow-vanilla-sneaking", Boolean.valueOf(false));
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% backstabbed %target%!");
 
         return node;
     }
 
     public void init() {
         super.init();
-        useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% backstabbed %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        backstabText = SkillConfigManager.getRaw(this, "backstab-text", "").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
         Messaging.send(player, ChatColor.RED + "----------[ " + ChatColor.WHITE + "Backstab Damage " + ChatColor.RED + "]----------");
-        //Messaging.send(player, ""+ChatColor.WHITE+"Backstab is a passive skill.");
-        //Messaging.send(player, ""+ChatColor.WHITE+"Using this ability displays weapon damage when backstabbing.");
 
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
-        double backstabBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.65D, false);
-        double ambushBonus = 1 + SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 1.2D, false);
+        double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", Double.valueOf(0.85), false);
+        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        backstabDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * backstabDamageModifierIncrease);
 
-        int backstabDamage = 0;
-        int ambushDamage = 0;
+        double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", Double.valueOf(0.85), false);
+        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
+        ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * ambushDamageModifierIncrease);
+
+        double backstabDamage = 0;
+        double ambushDamage = 0;
         for (String weaponName : weapons) {
             Material weapon = Material.getMaterial(weaponName);
-            int baseDamage = plugin.getDamageManager().getItemDamage(weapon, player).intValue();
+            int baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
 
-            backstabDamage = (int) (baseDamage * backstabBonus);
-            ambushDamage = (int) (baseDamage * ambushBonus);
+            backstabDamage = baseDamage * backstabDamageModifier;
+            ambushDamage = baseDamage * ambushDamageModifier;
 
             weaponName = weaponName.replace("_", " ");
             weaponName = WordUtils.capitalizeFully(weaponName);
@@ -109,9 +124,10 @@ public class SkillBackstab extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private void displayWeaponDamage(Player player, String weaponName, int backstabDamage, int ambushDamage) {
-        Messaging.send(player, ChatColor.GREEN + weaponName + ": " + "" + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + backstabDamage
-                + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + ambushDamage);
+    private void displayWeaponDamage(Player player, String weaponName, double backstabDamage, double ambushDamage) {
+        Messaging.send(player, ChatColor.GREEN + weaponName + ": "
+                + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + Util.decFormat.format(backstabDamage)
+                + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + Util.decFormat.format(ambushDamage));
     }
 
     public class SkillHeroesListener implements Listener {
@@ -121,7 +137,7 @@ public class SkillBackstab extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
@@ -142,25 +158,31 @@ public class SkillBackstab extends ActiveSkill {
                 }
 
                 double chance = -1;
-                double bonusDamage = -1;
+                double damageModifier = -1;
 
                 // Sneak for ambush, nosneak for backstab.
                 boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
                 if (hero.hasEffect("Sneak") || (allowVanillaSneaking && player.isSneaking())) {
-                    chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1D, false);
-                    bonusDamage = 1 + SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 1.2D, false);
+                    chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", Double.valueOf(-1.0), false);
+
+                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", Double.valueOf(0.85), false);
+                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus-increase-per-agility", Double.valueOf(0.85), false);
+                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * damageModifierIncrease);
                 }
                 else {
-                    chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", -1D, false);
-                    bonusDamage = 1 + SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.65D, false);
+                    chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", Double.valueOf(-1.0), false);
+
+                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", Double.valueOf(0.85), false);
+                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus-increase-per-agility", Double.valueOf(0.85), false);
+                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.AGILITY) * damageModifierIncrease);
                 }
 
                 boolean backstabbed = true;
                 if (chance < 0)		// If below 1, backstab every time.
-                    event.setDamage((event.getDamage() * bonusDamage));
+                    event.setDamage((event.getDamage() * damageModifier));
                 else {
                     if (Util.nextRand() < chance)
-                        event.setDamage((event.getDamage() * bonusDamage));
+                        event.setDamage((event.getDamage() * damageModifier));
                     else
                         backstabbed = false;
                 }
@@ -168,9 +190,9 @@ public class SkillBackstab extends ActiveSkill {
                 if (backstabbed) {
                     Entity target = event.getEntity();
                     if (target instanceof Monster)
-                        broadcast(player.getLocation(), useText, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
+                        broadcast(player.getLocation(), backstabText, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
                     else if (target instanceof Player)
-                        broadcast(player.getLocation(), useText, player.getDisplayName(), ((Player) target).getDisplayName());
+                        broadcast(player.getLocation(), backstabText, player.getDisplayName(), ((Player) target).getDisplayName());
                 }
             }
         }

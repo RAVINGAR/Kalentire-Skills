@@ -27,6 +27,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -37,6 +38,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillPiggify extends TargettedSkill {
 
@@ -48,32 +50,51 @@ public class SkillPiggify extends TargettedSkill {
         setUsage("/skill piggify");
         setArgumentRange(0, 0);
         setIdentifiers("skill piggify");
-        setTypes(SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.INTERRUPT);
+        setTypes(SkillType.DISABLING, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 10000);
+
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
+
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        EntityType type = (target.getLocation().getBlock().getType().equals(Material.WATER) || target.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ? EntityType.SQUID : EntityType.PIG);
+        Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero, target);
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
+        Material material = target.getLocation().getBlock().getType();
+        EntityType type = (material.equals(Material.WATER) ||
+                material.equals(Material.STATIONARY_WATER) ?
+                EntityType.SQUID : EntityType.PIG);
 
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, duration, (Creature) creature));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_PIG_HURT, 0.8F, 1.0F);
-        broadcastExecuteText(hero, target);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, (Creature) creature));
+
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
@@ -159,8 +180,8 @@ public class SkillPiggify extends TargettedSkill {
         private final Creature creature;
         private Location loc;
 
-        public PigEffect(Skill skill, long duration, Creature creature) {
-            super(skill, "Piggify", 100, duration);
+        public PigEffect(Skill skill, Player applier, int duration, Creature creature) {
+            super(skill, "Piggify", applier, 100, duration);
             this.creature = creature;
 
             types.add(EffectType.DISPELLABLE);
@@ -216,7 +237,7 @@ public class SkillPiggify extends TargettedSkill {
                         creatures.remove(creature);
                         creature.remove();
                     }
-                }, (long) (0.2 * 20));
+                }, 2L);
             }
             else {
                 super.removeFromHero(hero);

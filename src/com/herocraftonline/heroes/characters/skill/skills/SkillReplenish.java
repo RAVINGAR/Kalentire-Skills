@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -22,43 +23,47 @@ public class SkillReplenish extends ActiveSkill {
         setUsage("/skill replenish");
         setArgumentRange(0, 0);
         setIdentifiers("skill replenish");
-        setTypes(SkillType.MANA);
+        setTypes(SkillType.BUFFING, SkillType.MANA_INCREASING);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double percent = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 1.0, false));
-        percent += Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "mana-bonus-per-level", 0.0, false) * hero.getSkillLevel(this));
-        int amount = (int) (hero.getMaxMana() * percent);
+        double manaPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 0.75, false);
+        int manaAmount = (int) (hero.getMaxMana() * manaPercent);
+        String formattedManaPercent = Util.decFormat.format(manaPercent * 100);
 
-        return getDescription().replace("$1", Util.stringDouble(percent * 100)).replace("$2", amount + "");
+        return getDescription().replace("$1", formattedManaPercent).replace("$2", manaAmount + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("mana-bonus", 1.0);
-        node.set("mana-bonus-per-level", 0.0);
+
+        node.set("mana-bonus", Double.valueOf(0.75));
+
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        double percent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 1.0, false);
-        percent += SkillConfigManager.getUseSetting(hero, this, "mana-bonus-per-level", 0.0, false) * hero.getSkillLevel(this);
-        int manaBonus = (int) (hero.getMaxMana() * percent);
+        Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
+
+        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", Double.valueOf(0.75), false);
+        int manaBonus = (int) Math.floor(hero.getMaxMana() * manaGainPercent);
+
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
-        if (hrmEvent.isCancelled()) {
-            return SkillResult.CANCELLED;
+        if (!hrmEvent.isCancelled()) {
+            hero.setMana(hrmEvent.getAmount() + hero.getMana());
+
+            if (hero.isVerboseMana())
+                Messaging.send(player, Messaging.createFullManaBar(hero.getMana(), hero.getMaxMana()));
         }
 
-        hero.setMana(hrmEvent.getAmount() + hero.getMana());
-        if (hero.isVerbose()) {
-            Messaging.send(hero.getPlayer(), Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
-        }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ORB_PICKUP , 0.8F, 1.0F); 
-        broadcastExecuteText(hero);
+        player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 }

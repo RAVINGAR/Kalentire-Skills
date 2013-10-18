@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -17,6 +18,7 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -27,50 +29,59 @@ public class SkillTumble extends PassiveSkill {
 
     public SkillTumble(Heroes plugin) {
         super(plugin, "Tumble");
-        setDescription("You are able to fall $1 blocks without taking damage.");
+        setDescription("");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
-        setTypes(SkillType.PHYSICAL, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
-    
+
     @Override
     public String getDescription(Hero hero) {
-        int dist = SkillConfigManager.getUseSetting(hero, this, "base-distance", 3, false);
-        double distlev = SkillConfigManager.getUseSetting(hero, this, "distance-per-level", .5, false);
-        int level = hero.getSkillLevel(this);
-        if (level < 0)
-            level = 0;
-        dist += (int) (distlev * level);
-        return getDescription().replace("$1", dist + "");
+
+        String description = "";
+
+        double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", Integer.valueOf(0), false);
+        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
+        distance += (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease) + 3;
+
+        String formattedDistance = Util.decFormat.format(distance);
+
+        if (distance == 3)
+            description = "You aren't very good at breaking your fall, and will take full fall damage when falling down a block height greater than 3.";
+        else if (distance > 0 && distance < 3)
+            description = "You are terrible at bracing yourself, and will take fall damage when falling down a block height greater than " + formattedDistance + "!";
+        else if (distance < 0)
+            description = "You are extremely terrible at bracing yourself, and will take an additional " + Util.decFormat.format(distance * -1) + " blocks of fall damage when falling down any number of blocks!";
+        else
+            description = "You are adept at bracing yourself, and will only take fall damage when falling down a block height greater than " + formattedDistance + "!";
+
+        return description;
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("distance-per-level", .5);
-        node.set("base-distance", 3);
-        node.set("ncp-exemption-duration", 500);
+        node.set("base-distance", Integer.valueOf(0));
+        node.set("distance-increase-per-agility-level", Double.valueOf(0.25));
+        node.set("ncp-exemption-duration", Integer.valueOf(100));
 
         return node;
     }
-    
+
     public class SkillEntityListener implements Listener {
 
-    	private Skill skill;
-    	
-    	SkillEntityListener(Skill skill) {
-    		this.skill = skill;
-    	}
-    	
-    	@EventHandler(priority = EventPriority.LOW)
+        private Skill skill;
+
+        SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.LOW)
         public void onEntityDamage(EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
@@ -80,31 +91,39 @@ public class SkillTumble extends PassiveSkill {
                 return;
             }
 
+            double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", Integer.valueOf(0), false);
+            double distanceIncrease = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
+            distance += hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease;
+
+            double fallDistance = event.getDamage();
+
+            // Heroes.log(Level.INFO, "OriginalFallDistance: " + fallDistance + ", Tumble Fall Reduction: " + distance);
+
+            fallDistance -= distance;
+
             // Let's bypass the nocheat issues...
             if (ncpEnabled) {
                 Player player = (Player) event.getEntity();
                 if (!player.isOp()) {
-                    long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, duration);
+                    long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", Integer.valueOf(100), false);
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, (Player) event.getEntity(), duration);
                     hero.addEffect(ncpExemptEffect);
                 }
             }
 
-            int distance = (int) (SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false) + (hero.getSkillLevel(skill) * SkillConfigManager.getUseSetting(hero, skill, "distance-per-level", .5, false)));
-            double fallDistance = (event.getDamage() - 3) * 3;
-            fallDistance -= distance;
             if (fallDistance <= 0) {
                 event.setCancelled(true);
-            } else {
-                event.setDamage(3 + (fallDistance / 3));
+            }
+            else {
+                event.setDamage(fallDistance);
             }
         }
     }
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
         @Override
@@ -121,7 +140,6 @@ public class SkillTumble extends PassiveSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
-
         }
     }
 }

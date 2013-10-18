@@ -1,23 +1,19 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -28,6 +24,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHolyAura extends ActiveSkill {
@@ -42,34 +39,47 @@ public class SkillHolyAura extends ActiveSkill {
         setDescription("You begin to radiate with a Holy Aura, healing all allies within $1 blocks (other than yourself) for $2 health every $3 seconds. Your aura dissipates after $4 seconds. Any undead targets within your Holy Aura will also be dealt $5 damage.");
         setUsage("/skill holyaura");
         setArgumentRange(0, 0);
-        setTypes(SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HEAL, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.HEALING, SkillType.BUFFING);
         setIdentifiers("skill holyaura");
     }
 
     @Override
     public String getDescription(Hero hero) {
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(4), false);
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Double.valueOf(15000), false) / 1000.0);
-        double period = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(5000), false) / 1000.0);
-        double tickHeal = SkillConfigManager.getUseSetting(hero, this, "tick-heal", Double.valueOf(50), false);
-        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Double.valueOf(25), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(16000), false);
 
-        return getDescription().replace("$1", radius + "").replace("$2", tickHeal + "").replace("$3", period + "").replace("$4", duration + "").replace("$5", undeadDamage + "");
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(17), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.15), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
+        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(20), false);
+        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", Double.valueOf(0.375), false);
+        undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
+
+        String formattedHealing = Util.decFormat.format(healing);
+        String formattedPeriod = Util.decFormat.format(period / 1000.0);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        String formattedDamage = Util.decFormat.format(undeadDamage);
+
+        return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedPeriod).replace("$4", formattedDuration).replace("$5", formattedDamage);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(5000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
-        node.set("tick-heal", Double.valueOf(50));
-        node.set("undead-damage", Double.valueOf(30));
-
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% begins to radiate a holy aura!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer holy!");
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(16000));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(17));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(6));
+        node.set("undead-damage", Integer.valueOf(20));
+        node.set("undead-damage-increase-per-wisdom", Double.valueOf(0.375));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% begins to radiate a holy aura!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has lost their holy aura!");
 
         return node;
     }
@@ -78,22 +88,28 @@ public class SkillHolyAura extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% begins to radiate a holy aura!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer holy!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% begins to radiate a holy aura!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has lost their holy aura!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(15000), false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(5000), false);
-        double tickheal = SkillConfigManager.getUseSetting(hero, this, "tick-heal", Double.valueOf(50), false);
-        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Double.valueOf(30), false);
-
-        hero.addEffect(new HolyAuraEffect(this, duration, period, tickheal, undeadDamage));
-
         broadcastExecuteText(hero);
+
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(16000), false);
+
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.15), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
+        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(20), false);
+        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", Double.valueOf(0.375), false);
+        undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
+
+        hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
 
         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
@@ -113,13 +129,14 @@ public class SkillHolyAura extends ActiveSkill {
         double tickHeal;
         double undeadDamage;
 
-        public HolyAuraEffect(Skill skill, long duration, long period, double tickHeal, double undeadDamage) {
-            super(skill, "HolyAuraEffect", period, duration);
+        public HolyAuraEffect(Skill skill, Player applier, long duration, long period, double tickHeal, double undeadDamage) {
+            super(skill, "HolyAuraEffect", applier, period, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.HEAL);
+            types.add(EffectType.HEALING);
             types.add(EffectType.LIGHT);
+            types.add(EffectType.AREA_OF_EFFECT);
 
             this.tickHeal = tickHeal;
             this.undeadDamage = undeadDamage;
@@ -148,7 +165,7 @@ public class SkillHolyAura extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4, false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(6), false);
             int radiusSquared = radius * radius;
 
             // Check if the hero has a party
@@ -184,7 +201,7 @@ public class SkillHolyAura extends ActiveSkill {
                 }
 
                 LivingEntity lETarget = (LivingEntity) entity;
-                if (!(isUndead(lETarget)))
+                if (!(Util.isUndead(plugin, lETarget)))
                     continue;
 
                 // Damage for 50% of heal value
@@ -194,12 +211,6 @@ public class SkillHolyAura extends ActiveSkill {
         }
 
         @Override
-        public void tickMonster(Monster monster) {
-
-        }
-    }
-
-    private boolean isUndead(Entity entity) {
-        return entity instanceof Zombie || entity instanceof Skeleton || entity instanceof PigZombie || entity instanceof Ghast;
+        public void tickMonster(Monster monster) {}
     }
 }

@@ -26,15 +26,21 @@ public class SkillHellgate extends ActiveSkill {
         setUsage("/skill hellgate");
         setArgumentRange(0, 0);
         setIdentifiers("skill hellgate");
-        setTypes(SkillType.SILENCABLE, SkillType.TELEPORT);
+        setTypes(SkillType.SILENCABLE, SkillType.TELEPORTING);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.RADIUS.node(), 10);
-        node.set("hell-world", "world_nether");
-        node.set("default-return", "world"); // default world the player return to if their location wasn't
+
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(10));
+        node.set("hell-world", "hell");
+        node.set("default-return", "bastion"); // default world the player return to if their location wasn't
                                                      // saved
         return node;
     }
@@ -133,10 +139,5 @@ public class SkillHellgate extends ActiveSkill {
             return location;
         }
 
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

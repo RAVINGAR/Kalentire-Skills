@@ -11,12 +11,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -27,46 +28,51 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillAimedShot extends TargettedSkill {
 
     private String applyText;
     private String expireTextFail;
-    private String expireTextBadShot;
     private String expireTextSuccess;
 
     public SkillAimedShot(Heroes plugin) {
         super(plugin, "AimedShot");
         setDescription("Hone your aim in on a target. Once completed, your next next shot fired within $1 seconds will land "
                 + ChatColor.BOLD + ChatColor.ITALIC+ "without question" + ChatColor.RESET
-                + ChatColor.GOLD + ". That shot will deal up to $2 damage to the target.");
+                + ChatColor.GOLD + ". That shot is armor piercing and will deal up to $2 damage to the target.");
         setUsage("/skill aimedshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill aimedshot");
-        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DAMAGING, SkillType.STEALTHY);
+        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.ARMOR_PIERCING, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.STEALTHY);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     public String getDescription(Hero hero) {
 
         double gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 4000, false) / 1000;
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
+        damage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
 
-        return getDescription().replace("$1", gracePeriod + "").replace("$2", damage + "");
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", gracePeriod + "").replace("$2", formattedDamage);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(250));
+        node.set(SkillSetting.USE_TEXT.node(), "");
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(125));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(3.1));
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(40));
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(3000));
-        node.set("grace-period", Integer.valueOf(2000));
-        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% is locked on!"));
-        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to hone in his aim on %target%"));
-        node.set("expire-text-fail", String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has lost sight of his target."));
-        node.set("expire-text-bad-shot", String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% did not put enough strength into his shot!"));
-        node.set("expire-text-success", String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!"));
+        node.set("grace-period", Integer.valueOf(4000));
+        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% is locked on!"));
+        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% begins to hone in his aim on %target%"));
+        node.set("expire-text-fail", String.valueOf(Messaging.getSkillDenoter() + "%hero% has lost sight of his target."));
+        node.set("expire-text-success", String.valueOf(Messaging.getSkillDenoter() + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!"));
 
         return node;
     }
@@ -74,10 +80,9 @@ public class SkillAimedShot extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% is locked on!").replace("%hero%", "$1");
-        expireTextFail = SkillConfigManager.getRaw(this, "expire-text-fail", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has lost sight of his target.").replace("%hero%", "$1");
-        expireTextBadShot = SkillConfigManager.getRaw(this, "expire-text-bad-shot", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% did not put enough strength into his shot!").replace("%hero%", "$1");
-        expireTextSuccess = SkillConfigManager.getRaw(this, "expire-text-success", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is locked on!").replace("%hero%", "$1");
+        expireTextFail = SkillConfigManager.getRaw(this, "expire-text-fail", Messaging.getSkillDenoter() + "%hero% has lost sight of his target.").replace("%hero%", "$1");
+        expireTextSuccess = SkillConfigManager.getRaw(this, "expire-text-success", Messaging.getSkillDenoter() + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!").replace("%hero%", "$1").replace("%target%", "$2");
     }
     
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -86,16 +91,15 @@ public class SkillAimedShot extends TargettedSkill {
 
         // Check line of sight, but only against other players.
         if (target instanceof Player) {
-
             Player targetPlayer = (Player) target;
-            if (!inLineOfSight(player, targetPlayer) || !player.canSee(targetPlayer)) {
+            if (!inLineOfSight(player, targetPlayer)) {
                 hero.getPlayer().sendMessage("Your target is not within your line of sight!");
                 return SkillResult.FAIL;
             }
         }
 
         int gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 2000, false);
-        hero.addEffect(new AimedShotBuffEffect(this, target, gracePeriod));
+        hero.addEffect(new AimedShotBuffEffect(this, player, target, gracePeriod));
 
         return SkillResult.NORMAL;
     }
@@ -121,14 +125,6 @@ public class SkillAimedShot extends TargettedSkill {
                 // Player released arrow too soon--skill failure.
                 AimedShotBuffEffect asEffect = (AimedShotBuffEffect) hero.getEffect("AimedShotBuffEffect");
 
-                //                if (event.getForce() < 1) {
-                //                    // Player released arrow too soon--skill failure.
-                //                    asEffect.setLostSight(false);
-                //                    asEffect.setBadShot(true);
-                //                    hero.removeEffect(asEffect);
-                //                    return;
-                //                }
-
                 // Tell the buff that we have a successful shot and then remove it
                 asEffect.setLostSight(false);
                 hero.removeEffect(asEffect);
@@ -150,13 +146,16 @@ public class SkillAimedShot extends TargettedSkill {
                 target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
 
                 // Lower damage of shot based on how drawn back the bow is.
-                final double damage = event.getForce() * SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 250, false);
+                double tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 125, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
+                tempDamage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
 
+                final double damage = event.getForce() * tempDamage;
                 // Damage the target, but add a delay based on the distance from the target.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);
-                        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+                        damageEntity(target, player, damage, DamageCause.MAGIC);  // Magic so it is armor piercing.
                     }
                 }, travelTime * 20);	// make the damage happen 0.055 seconds later per block.
             }
@@ -166,12 +165,11 @@ public class SkillAimedShot extends TargettedSkill {
     // Buff effect used to keep track of warmup time
     private class AimedShotBuffEffect extends ExpirableEffect {
 
-        private boolean badShot = false;
         private boolean lostSight = true;
         private LivingEntity target;
 
-        public AimedShotBuffEffect(Skill skill, LivingEntity target, long duration) {
-            super(skill, "AimedShotBuffEffect", duration);
+        public AimedShotBuffEffect(Skill skill, Player applier, LivingEntity target, long duration) {
+            super(skill, "AimedShotBuffEffect", applier, duration);
 
             types.add(EffectType.IMBUE);
             types.add(EffectType.PHYSICAL);
@@ -209,14 +207,10 @@ public class SkillAimedShot extends TargettedSkill {
                 return;
             }
 
-            if (badShot)
-                broadcast(player.getLocation(), expireTextBadShot, player.getDisplayName());
-            else {
-                if (target instanceof Monster)
-                    broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
-                else if (target instanceof Player)
-                    broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), ((Player) target).getDisplayName());
-            }
+            if (target instanceof Monster)
+                broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
+            else if (target instanceof Player)
+                broadcast(player.getLocation(), expireTextSuccess, player.getDisplayName(), ((Player) target).getDisplayName());
         }
 
         public void setLostSight(boolean lostSight) {

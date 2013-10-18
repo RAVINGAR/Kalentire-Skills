@@ -1,10 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
-import static com.herocraftonline.heroes.characters.skill.SkillType.ITEM;
-import static com.herocraftonline.heroes.characters.skill.SkillType.KNOWLEDGE;
-import static com.herocraftonline.heroes.characters.skill.SkillType.PHYSICAL;
-import static com.herocraftonline.heroes.characters.skill.SkillType.UNBINDABLE;
 
 import java.util.HashMap;
 
@@ -21,6 +17,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillSmeltIron extends ActiveSkill{
@@ -32,7 +29,7 @@ public class SkillSmeltIron extends ActiveSkill{
 		setUsage("/skill smeltiron");
 		setIdentifiers("skill smeltiron");
 		setArgumentRange(0, 0);
-		setTypes(KNOWLEDGE,PHYSICAL,ITEM,UNBINDABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.UNBINDABLE);
 	}
 	
 	private double calculateChance(Hero hero){

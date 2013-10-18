@@ -1,9 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -14,6 +13,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSmoke extends ActiveSkill {
@@ -30,25 +30,28 @@ public class SkillSmoke extends ActiveSkill {
         setNotes("Note: Interacting with anything removes the effect.");
         setNotes("Note: Taking damage removes the effect.");
         setNotes("Note: Using skills removes the effect.");
-        setTypes(SkillType.ILLUSION, SkillType.PHYSICAL, SkillType.BUFF, SkillType.STEALTHY);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.STEALTHY);
 
         //Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false) / 1000.0);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", duration + "");
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), 5500);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] Someone vanished in a cloud of smoke!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has reappeared!");
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5500));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "Someone vanished in a cloud of smoke!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has reappeared!");
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
 
         return node;
     }
@@ -57,8 +60,8 @@ public class SkillSmoke extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] Someone vanished in a cloud of smoke!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has reappeared!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "Someone vanished in a cloud of smoke!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% has reappeared!").replace("%hero%", "$1");
     }
 
     @Override
@@ -67,34 +70,42 @@ public class SkillSmoke extends ActiveSkill {
 
         Player player = hero.getPlayer();
 
-        player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 4);
-
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false);
-        hero.addEffect(new SmokeEffect(this, duration));
+
+        Util.playClientEffect(player, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
+        hero.addEffect(new SmokeEffect(this, player, duration));
 
         return SkillResult.NORMAL;
     }
 
     public class SmokeEffect extends InvisibleEffect {
 
-        public SmokeEffect(Skill skill, long duration) {
-            super(skill, duration, null, null);
+        public SmokeEffect(Skill skill, Player applier, long duration) {
+            super(skill, applier, duration, null, null);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
 
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            Player player = hero.getPlayer();
+            if (applyText != null && applyText.length() > 0) {
+                // Override the standard invis effect message display so that we actually display a message to nearby players
+                //      even though we have a "silent actions" effect type.
+                broadcast(player.getLocation(), applyText, player.getDisplayName());
+            }
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
 
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            Player player = hero.getPlayer();
+            if (expireText != null && expireText.length() > 0) {
+                // Override the standard invis effect message display so that we actually display a message to nearby players
+                //      even though we have a "silent actions" effect type.
+                broadcast(player.getLocation(), expireText, player.getDisplayName());
+            }
         }
     }
 }

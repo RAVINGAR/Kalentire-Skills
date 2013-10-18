@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -22,6 +22,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillImbueRunestone extends ActiveSkill {
     public SkillImbueRunestone(Heroes plugin) {
@@ -30,7 +31,7 @@ public class SkillImbueRunestone extends ActiveSkill {
         setUsage("/skill imbuerunestone <Text>");
         setArgumentRange(1, 99);
         setIdentifiers("skill imbuerunestone");
-        setTypes(SkillType.ITEM, SkillType.SILENCABLE, SkillType.UNBINDABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCABLE, SkillType.UNBINDABLE);
     }
 
     public String getDescription(Hero hero) {
@@ -52,7 +53,7 @@ public class SkillImbueRunestone extends ActiveSkill {
         Player player = hero.getPlayer();
 
         if (text.length == 0) {
-            Messaging.send(player, "/skill imbuerunestone <Text>", new Object[0]);
+            Messaging.send(player, "/skill imbuerunestone <Text>");
             return SkillResult.FAIL;
         }
 
@@ -63,21 +64,22 @@ public class SkillImbueRunestone extends ActiveSkill {
         int maxTextLength = SkillConfigManager.getUseSetting(hero, this, "max-message-length", 40, false);
         if (textString.length() > (maxTextLength + 2))		// Add 2 more characters to the check for color encoding
         {
-            Messaging.send(player, "You cannot imbue a message or note that is longer than " + maxTextLength + " characters.", new Object[0]);
+            Messaging.send(player, "You cannot imbue a message or note that is longer than " + maxTextLength + " characters.");
             return SkillResult.FAIL;
         }
 
         if (player.getItemInHand() == null) {
-            Messaging.send(player, "You must be holding an item in order to use this skill.", new Object[0]);
+            Messaging.send(player, "You must be holding an item in order to use this skill.");
             return SkillResult.FAIL;
         }
 
         ItemStack heldItem = player.getInventory().getItemInHand();
+        ItemStack oldHeldItem = heldItem.clone();
 
         // Check to make sure it is a redstone block
         ItemStack item = player.getItemInHand();
         if (item.getType().name() != "REDSTONE_BLOCK") {
-            Messaging.send(player, "You must be holding a Runestone Block to use this skill.", new Object[0]);
+            Messaging.send(player, "You must be holding a Runestone Block to use this skill.");
             return SkillResult.INVALID_TARGET;
         }
 
@@ -116,33 +118,35 @@ public class SkillImbueRunestone extends ActiveSkill {
                 // Set the new metaData to the item
                 heldItem.setItemMeta(metaData);
 
-                // Play sound
-                hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
+                // Play Effects
+                Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
                 broadcastExecuteText(hero);
 
+                // We need to return their excess blocks to them.
                 if (actualAmount > 1) {
-                    // We need to return their excess blocks to them.
                     PlayerInventory inventory = player.getInventory();
 
-                    HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1) });
+                    oldHeldItem.setAmount(oldHeldItem.getAmount() - 1);
+                    HashMap<Integer, ItemStack> leftOvers = inventory.addItem(oldHeldItem);
                     if (!leftOvers.isEmpty()) {
                         for (ItemStack leftOver : leftOvers.values()) {
                             player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
                         }
-                        Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+                        Messaging.send(player, "Items have been dropped at your feet!");
                     }
                 }
 
                 return SkillResult.NORMAL;
             }
             else {
-                Messaging.send(player, "You must be holding a Runestone Block to use this skill.", new Object[0]);
+                Messaging.send(player, "You must be holding a Runestone Block to use this skill.");
                 return SkillResult.FAIL;
             }
         }
         else {
-            Messaging.send(player, "You must be holding a Runestone Block to use this skill.", new Object[0]);
+            Messaging.send(player, "You must be holding a Runestone Block to use this skill.");
             return SkillResult.FAIL;
         }
     }

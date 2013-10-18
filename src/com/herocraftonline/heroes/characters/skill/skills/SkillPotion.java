@@ -33,26 +33,31 @@ public class SkillPotion extends PassiveSkill {
     public SkillPotion(Heroes plugin) {
         super(plugin, "Potion");
         setDescription("You are able to use potions!");
-        setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
+        setTypes(SkillType.ITEM_MODIFYING);
+
         Bukkit.getPluginManager().registerEvents(new PotionListener(this), plugin);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection section = super.getDefaultConfig();
-        section.set(SkillSetting.LEVEL.node(), 1);
-        section.set(SkillSetting.NO_COMBAT_USE.node(), false);
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        node.set(SkillSetting.LEVEL.node(), 1);
+        node.set(SkillSetting.NO_COMBAT_USE.node(), false);
+
         for (String potion : regularPotions.values()) {
-            section.set("allow." + potion, false);
-            section.set("cooldown." + potion, 10 * 60000);
+            node.set("allow." + potion, false);
+            node.set("cooldown." + potion, 10 * 60000);
         }
 
         for (String potion : splashPotions.values()) {
-            section.set("allow." + potion, false);
-            section.set("cooldown." + potion, 10 * 60000);
+            node.set("allow." + potion, false);
+            node.set("cooldown." + potion, 10 * 60000);
         }
 
-        return section;
+        return node;
     }
 
     @Override

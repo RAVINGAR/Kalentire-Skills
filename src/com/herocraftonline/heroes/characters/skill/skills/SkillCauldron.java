@@ -74,7 +74,7 @@ public class SkillCauldron extends PassiveSkill {
 		super(plugin, "Cauldron");
 		setDescription("You are able to use cauldrons to make cauldron recipes! Visit hc.to/cauldron for more info");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
+        setTypes(SkillType.ITEM_CREATION, SkillType.ITEM_MODIFYING);
 		setEffectTypes(EffectType.BENEFICIAL);
 		this.plugin = plugin;
 		loadCauldronRecipes();
@@ -83,9 +83,13 @@ public class SkillCauldron extends PassiveSkill {
 
 	@Override
 	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection section = super.getDefaultConfig();
-		section.set(SkillSetting.LEVEL.node(), 1);
-		return section;
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        node.set(SkillSetting.LEVEL.node(), 1);
+
+        return node;
 	}
 
 	public void loadCauldronConfig() {

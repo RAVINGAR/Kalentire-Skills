@@ -14,12 +14,10 @@ import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -29,18 +27,28 @@ public class SkillFishing extends PassiveSkill {
     public SkillFishing(Heroes plugin) {
         super(plugin, "Fishing");
         setDescription("You have a $1% chance of getting a bonus fish!");
-        setEffectTypes(EffectType.BENEFICIAL);
-        setTypes(SkillType.KNOWLEDGE, SkillType.EARTH, SkillType.BUFF);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillPlayerListener(this), plugin);
     }
 
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, "chance-per-level", .001, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 1)
+            level = 1;
+        return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
+    }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("chance-per-level", .001);
         node.set("leather-level", 5);
         node.set("enable-leather", false);
+
         return node;
     }
 
@@ -61,7 +69,7 @@ public class SkillFishing extends PassiveSkill {
             double chance = Util.nextRand();
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             Player player = hero.getPlayer();
-            if (chance < SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_LEVEL, .001, false) * hero.getSkillLevel(skill)){ //if the chance
+            if (chance < SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getSkillLevel(skill)) { //if the chance
 
                 int leatherlvl = SkillConfigManager.getUseSetting(hero, skill, "leather-level", 5, true);
                 if (hero.getLevel() >= leatherlvl && SkillConfigManager.getUseSetting(hero, skill, "enable-leather", false)){ //if fishing leather is enabled and have the level
@@ -122,14 +130,5 @@ public class SkillFishing extends PassiveSkill {
                 }   
             }           
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getUseSetting(hero, this, "chance-per-level", .001, false);
-        int level = hero.getSkillLevel(this);
-        if (level < 1)
-            level = 1;
-        return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
     }
 }

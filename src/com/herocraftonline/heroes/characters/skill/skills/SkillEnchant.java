@@ -33,7 +33,7 @@ public class SkillEnchant extends PassiveSkill {
         super(plugin, "Enchant");
         setDescription("You are able to enchant items.");
         setArgumentRange(0, 0);
-        setTypes(SkillType.KNOWLEDGE, SkillType.ITEM);
+        setTypes(SkillType.ITEM_MODIFYING);
         setEffectTypes(EffectType.BENEFICIAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEnchantListener(this), plugin);
     }

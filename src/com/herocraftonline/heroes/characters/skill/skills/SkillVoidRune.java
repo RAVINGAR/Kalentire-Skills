@@ -31,10 +31,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
@@ -46,6 +48,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runeskills.Rune;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneApplicationEvent;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillVoidRune extends ActiveSkill {
     public SkillVoidRune(Heroes plugin) {
@@ -54,36 +58,46 @@ public class SkillVoidRune extends ActiveSkill {
         setDescription("Imbue your blade with the Rune of Void. Upon Rune application, this Rune will damage the target for $1 damage and then silence them for $2 seconds.");
         setUsage("/skill voidrune");
         setIdentifiers("skill voidrune");
-        setTypes(SkillType.DEBUFF, SkillType.HARMFUL, SkillType.INTERRUPT, SkillType.DAMAGING, SkillType.SILENCABLE);
+        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING, SkillType.SILENCING, SkillType.DAMAGING, SkillType.SILENCABLE);
         setArgumentRange(0, 0);
 
-        // Start up the listener for runeword skill usage
         Bukkit.getServer().getPluginManager().registerEvents(new VoidRuneListener(this), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(35), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), 40);
-        node.set(SkillSetting.DURATION.node(), 1500);
-        node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% imbues his blade with a Rune of " + ChatColor.DARK_PURPLE + "Void.");
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been silenced by a Rune of Void!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer silenced!");
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(25));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.625));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(1500));
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.DARK_PURPLE + "Void.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been silenced by a Rune of Void!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer silenced!");
         node.set("rune-chat-color", ChatColor.DARK_PURPLE.toString());
 
         return node;
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false) / 1000;
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration + "");
-    }
-
-    @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+
+        // Let the world know that the hero has activated a Rune.
+        broadcastExecuteText(hero);
+
         // Create the Rune
         int manaCost = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 30, false));
         String runeChatColor = SkillConfigManager.getRaw(this, "rune-chat-color", ChatColor.DARK_PURPLE.toString());
@@ -92,14 +106,9 @@ public class SkillVoidRune extends ActiveSkill {
         // Add the Rune to the RuneWord queue here
         Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, voidRune));
 
-        // Play Firework
-        // CODE HERE
-
-        // Play Sound
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
-
-        // Let the world know that the hero has activated a Rune.
-        broadcastExecuteText(hero);
+        // Play Effects
+        Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -120,6 +129,7 @@ public class SkillVoidRune extends ActiveSkill {
         public void onRuneApplication(RuneApplicationEvent event) {
             // Get Hero information
             final Hero hero = event.getHero();
+            final Player player = hero.getPlayer();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
             if (!(event.getRuneList().getHead().name == "VoidRune"))
@@ -141,24 +151,25 @@ public class SkillVoidRune extends ActiveSkill {
                     CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
                     long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, false);
 
-                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% has been silenced by a Rune of Void!").replace("%target%", "$1");
-                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %target% is no longer silenced!").replace("%target%", "$1");
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(25), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+                    damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been silenced by a Rune of Void!").replace("%target%", "$1");
+                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer silenced!").replace("%target%", "$1");
 
                     // Damage and silence the target
-                    skill.plugin.getDamageManager().addSpellTarget(targEnt, hero, skill);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
-                    VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, duration, applyText, expireText);
+                    addSpellTarget((LivingEntity) targEnt, hero);
+                    damageEntity((LivingEntity) targEnt, player, damage, DamageCause.MAGIC, false);
+                    VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, player, duration, applyText, expireText);
 
                     // Add the effect to the target
                     targCT.addEffect(voidRuneSilenceEffect);
 
-                    // Announce that the player has been hit with the skill	
-                    broadcast(targEnt.getLocation(), applyText, targCT.getName());
-
-                    // Play sound
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    // Play Effects
+                    Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                    player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
                 }
             }, (long) (0.1 * 20));
 
@@ -167,28 +178,8 @@ public class SkillVoidRune extends ActiveSkill {
     }
 
     private class VoidRuneSilenceEffect extends SilenceEffect {
-        private final String applyText;
-        private final String expireText;
-
-        public VoidRuneSilenceEffect(Skill skill, long duration, String applyText, String expireText) {
-            super(skill, duration);
-
-            this.applyText = applyText;
-            this.expireText = expireText;
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+        public VoidRuneSilenceEffect(Skill skill, Player applier, long duration, String applyText, String expireText) {
+            super(skill, applier, duration, applyText, expireText);
         }
     }
 }

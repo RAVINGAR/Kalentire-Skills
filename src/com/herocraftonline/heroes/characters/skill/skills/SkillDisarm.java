@@ -29,24 +29,37 @@ public class SkillDisarm extends TargettedSkill {
         setDescription("You disarm your target for $1 seconds.");
         setUsage("/skill disarm");
         setArgumentRange(0, 0);
-        setTypes(SkillType.PHYSICAL, SkillType.DEBUFF, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
         setIdentifiers("skill disarm");
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%target% was disarmed by %hero%!");
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% was disarmed!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has found his weapon again!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has found his weapon again!");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has stopped regenerating mana!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is once again regenerating mana!").replace("%target%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% was disarmed by %hero%!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has found his weapon again!").replace("%target%", "$1");
     }
 
     @Override
@@ -61,7 +74,7 @@ public class SkillDisarm extends TargettedSkill {
         Material heldItem = tHero.getPlayer().getItemInHand().getType();
 
         if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
-            Messaging.send(player, "You cannot disarm bare hands!");
+            Messaging.send(player, "You cannot disarm that target!");
             return SkillResult.FAIL;
         }
 
@@ -70,17 +83,14 @@ public class SkillDisarm extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 500, false);
-        tHero.addEffect(new DisarmEffect(this, duration, applyText, expireText));
-        player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 0.8F, 1.0F);
-        broadcastExecuteText(hero, target);
-        return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
+        tHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
+
+        player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+
+        broadcastExecuteText(hero, target);
+
+        return SkillResult.NORMAL;
     }
 }

@@ -3,12 +3,14 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -21,7 +23,23 @@ public class SkillTeleport extends ActiveSkill {
         setUsage("/skill teleport <player>");
         setArgumentRange(1, 1);
         setIdentifiers("skill teleport");
-        setTypes(SkillType.TELEPORT, SkillType.SILENCABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(180000));
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(264));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+
+        return node;
     }
 
     @Override
@@ -41,19 +59,18 @@ public class SkillTeleport extends ActiveSkill {
             Messaging.send(player, "Sorry, that player isn't in your party!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+
+        broadcastExecuteText(hero);
+
         int level = hero.getSkillLevel(this);
         Location loc1 = targetPlayer.getLocation().add(Util.nextRand() * (-50 + level - (50 - level)), 0, Util.nextRand() * (-50 + level - (50 - level)));
         Double highestBlock = (double) targetPlayer.getWorld().getHighestBlockYAt(loc1);
         loc1.setY(highestBlock);
+
         player.teleport(loc1);
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL , 0.5F, 1.0F); 
-        broadcastExecuteText(hero);
-        return SkillResult.NORMAL;
-    }
+        player.getWorld().playSound(player.getLocation(), Sound.PORTAL_TRAVEL, 0.5F, 1.0F);
 
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
+        return SkillResult.NORMAL;
     }
 }

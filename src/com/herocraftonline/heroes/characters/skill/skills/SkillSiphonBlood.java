@@ -5,18 +5,20 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillSiphonBlood extends TargettedSkill {
 
@@ -24,41 +26,47 @@ public class SkillSiphonBlood extends TargettedSkill {
 
     public SkillSiphonBlood(Heroes plugin) {
         super(plugin, "SiphonBlood");
-        setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4");
+        setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4.");
         setUsage("/skill siphonblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill siphonblood");
-        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DARK);
-    }
-
-    @Override
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
-        node.set(SkillSetting.DAMAGE.node(), 95);
-        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.25);
-        node.set("heal-mult", 1.1);
-        node.set("blood-union-heal-mult-increase", 0.04);
-        node.set("blood-union-increase", 1);
-
-        return node;
+        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     @Override
     public String getDescription(Hero hero) {
 
         // Damage stuff
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-        damage = (int) (damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25, false) * hero.getSkillLevel(this));
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(80), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         // Heal mult stuff
-        int healMult = (int) (SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false) * 100);
-        int healMultIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.04, false) * 100);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false);
+        double healMultIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.04, false);
 
         int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
 
-        return getDescription().replace("$1", damage + "").replace("$2", healMult + "").replace("$3", healMultIncrease + "").replace("$4", bloodUnionIncrease + "");
+        String formattedDamage = Util.decFormat.format(damage);
+        String formattedHealMult = Util.decFormat.format(healMult * 100);
+        String formattedHealMultIncrease = Util.decFormat.format(healMultIncrease * 100);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedHealMult).replace("$3", formattedHealMultIncrease).replace("$4", bloodUnionIncrease + "");
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
+        node.set("heal-mult", Double.valueOf(1.1));
+        node.set("blood-union-heal-mult-increase", Double.valueOf(0.06));
+        node.set("blood-union-increase", Integer.valueOf(1));
+
+        return node;
     }
 
     @Override
@@ -69,8 +77,9 @@ public class SkillSiphonBlood extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // Calculate damage
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
-        damage = damage + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.25D, false) * hero.getSkillLevel(this);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false);
 
@@ -84,7 +93,7 @@ public class SkillSiphonBlood extends TargettedSkill {
 
         // Damage target
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
 
         // Increase health multiplier by blood union level
         double healIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.05, false);

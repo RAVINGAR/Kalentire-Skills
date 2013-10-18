@@ -36,7 +36,7 @@ public class SkillFade extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill fade");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
-        setTypes(SkillType.ILLUSION, SkillType.BUFF, SkillType.COUNTER, SkillType.STEALTHY);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BUFFING, SkillType.STEALTHY);
 
         moveChecker = new FadeMoveChecker(this);
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);
@@ -50,13 +50,15 @@ public class SkillFade extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.DURATION.node(), 30000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "You fade into the shadows");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "You come back into view");
-        node.set("fail-text", "It's too bright to fade");
-        node.set("detection-range", 1D);
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You fade into the shadows");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "You come back into view");
+        node.set("fail-text", Messaging.getSkillDenoter() + "It's too bright to fade");
+        node.set("detection-range", 0);
         node.set("max-light-level", 8);
-        node.set("max-move-distance", 1D);
+        node.set("max-move-distance", 1.0);
+
         return node;
     }
 
@@ -64,9 +66,9 @@ public class SkillFade extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "You fade into the shadows");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "You come back into view");
-        failText = SkillConfigManager.getRaw(this, "fail-text", "It's too bright to fade");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You fade into the shadows");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You come back into view");
+        failText = SkillConfigManager.getRaw(this, "fail-text", Messaging.getSkillDenoter() + "It's too bright to fade");
     }
 
     @Override
@@ -77,10 +79,11 @@ public class SkillFade extends ActiveSkill {
             Messaging.send(player, failText);
             return SkillResult.FAIL;
         }
+
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
-        hero.addEffect(new InvisibleEffect(this, duration, applyText, expireText));
+        hero.addEffect(new InvisibleEffect(this, player, duration, applyText, expireText));
 
         moveChecker.addHero(hero);
         return SkillResult.NORMAL;
@@ -107,7 +110,7 @@ public class SkillFade extends ActiveSkill {
                     continue;
                 }
                 Location newLoc = hero.getPlayer().getLocation();
-                if (newLoc.getWorld() != oldLoc.getWorld() || newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1D, false)) {
+                if (newLoc.getWorld() != oldLoc.getWorld() || newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1.0, false)) {
                     hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
@@ -118,7 +121,7 @@ public class SkillFade extends ActiveSkill {
                     heroes.remove();
                     continue;
                 }
-                double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", 1D, false);
+                double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", 0.0, false);
                 for (Entity entity : hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange)) {
                     if (entity instanceof Player) {
                         hero.removeEffect(hero.getEffect("Invisible"));
@@ -132,6 +135,7 @@ public class SkillFade extends ActiveSkill {
         public void addHero(Hero hero) {
             if (!hero.hasEffect("Invisible"))
                 return;
+
             oldLocations.put(hero, hero.getPlayer().getLocation());
         }
     }

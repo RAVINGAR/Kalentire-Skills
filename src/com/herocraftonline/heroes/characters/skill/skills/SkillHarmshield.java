@@ -23,11 +23,12 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillHarmshield extends ActiveSkill {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
-	private String applyText;
+    private String applyText;
     private String expireText;
 
     public SkillHarmshield(Heroes plugin) {
@@ -36,57 +37,111 @@ public class SkillHarmshield extends ActiveSkill {
         setUsage("/skill harmshield");
         setArgumentRange(0, 0);
         setIdentifiers("skill harmshield");
-        setTypes(SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.SILENCABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000;
+        float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(0.2), false);
+        damageReduction *= 100F;
+        damageReduction = 100F - damageReduction;
+
+        return getDescription().replace("$1", damageReduction + "").replace("$2", duration + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("damage-multiplier", 0.1D);
+
+        node.set(SkillSetting.USE_TEXT.node(), "");
+        node.set("damage-multiplier", Double.valueOf(0.2));
         node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is shielded from harm!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his harm shield!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is shielded from harm!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% lost his harm shield!");
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% is shielded from harm!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his harm shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is shielded from harm!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost his harm shield!").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        broadcastExecuteText(hero);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        hero.addEffect(new HarmShieldEffect(this, duration));
-        // this is our fireworks shit
         Player player = hero.getPlayer();
+        broadcastExecuteText(hero);
+
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        hero.addEffect(new HarmShieldEffect(this, player, duration));
+
+        // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.STAR)
-            		.withColor(Color.MAROON)
-            		.withFade(Color.YELLOW)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder().flicker(false).trail(false)
+                                               .with(FireworkEffect.Type.STAR)
+                                               .withColor(Color.MAROON)
+                                               .withFade(Color.YELLOW)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return SkillResult.NORMAL;
+    }
+
+    public class SkillHeroListener implements Listener {
+
+        private final Skill skill;
+
+        public SkillHeroListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.HIGH)
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
+                return;
+            }
+
+            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
+        }
+
+        @EventHandler(priority = EventPriority.HIGH)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
+                return;
+            }
+
+            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
+        }
+
+        private double getAdjustment(Player player, double d) {
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect("HarmShield"))
+                d *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", Double.valueOf(0.2), false);
+
+            return d;
+        }
     }
 
     public class HarmShieldEffect extends ExpirableEffect {
 
-        public HarmShieldEffect(Skill skill, long duration) {
-            super(skill, "HarmShield", duration);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.MAGIC);
+        public HarmShieldEffect(Skill skill, Player applier, long duration) {
+            super(skill, "HarmShield", applier, duration);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -102,50 +157,5 @@ public class SkillHarmshield extends ActiveSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-
     }
-
-    public class SkillHeroListener implements Listener {
-
-        private final Skill skill;
-        
-        public SkillHeroListener(Skill skill) {
-            this.skill = skill;
-        }
-        
-        @EventHandler(priority = EventPriority.HIGH)
-        public void onSkillDamage(SkillDamageEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
-                return;
-            }
-            
-            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
-        }
-
-        @EventHandler(priority = EventPriority.HIGH)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
-                return;
-            }
-            
-            event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
-        }
-
-        private double getAdjustment(Player player, double d) {
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (hero.hasEffect("HarmShield"))
-                d *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 0.1D, false);
-            return d;
-        }
-    }
-    
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000;
-        float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.1D, false);
-        damageReduction *= 100F;
-        damageReduction = 100F - damageReduction;
-        return getDescription().replace("$1", damageReduction + "").replace("$2", duration + "");
-    }
-    
 }

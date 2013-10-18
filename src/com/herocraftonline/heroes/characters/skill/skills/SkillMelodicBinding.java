@@ -1,206 +1,165 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillMelodicBinding extends ActiveSkill {
 
     private String applyText;
     private String expireText;
-    private static Map<Hero, Map<Location, Material>> changedBlocks = new HashMap<Hero, Map<Location, Material>>();
-    private static final Set<Material> allowedBlocks;
+
+    private Song skillSong;
 
     public SkillMelodicBinding(Heroes plugin) {
         super(plugin, "MelodicBinding");
-        setDescription("You resonate melodic bindings, slowing and damaging nearby enemies for $1 seconds.");
+        setDescription("You resonate melodic bindings, pulsing for $1 damage and slowing enemies within $2 blocks for $3 seconds. Your melodic bindings pulse every $4 seconds for the next $5 seconds.");
         setUsage("/skill melodicbinding");
         setArgumentRange(0, 0);
         setIdentifiers("skill melodicbinding");
-        setTypes(SkillType.DEBUFF, SkillType.MOVEMENT, SkillType.SILENCABLE, SkillType.HARMFUL);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
+        setTypes(SkillType.MOVEMENT_SLOWING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AGGRESSIVE);
+
+        skillSong = new Song(
+                             new Note(Sound.NOTE_PIANO, 0.8F, 6.0F, 0),
+                             new Note(Sound.NOTE_PIANO, 0.8F, 2.0F, 1),
+                             new Note(Sound.NOTE_PIANO, 0.8F, 8.0F, 2),
+                             new Note(Sound.NOTE_PIANO, 0.8F, 3.0F, 3)
+                );
+    }
+    
+    public String getDescription(Hero hero) {
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", Integer.valueOf(3000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", Integer.valueOf(1500), false);
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int slowDuration = SkillConfigManager.getUseSetting(hero, this, "melodic-slow-duration", Integer.valueOf(1500), false);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(17), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, Double.valueOf(0.125), false);
+        damage += (damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+
+        String formattedPeriod = Util.decFormat.format(period / 1000.0);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", radius + "").replace("$3", formattedSlowDuration).replace("$4", formattedPeriod).replace("$5", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.PERIOD.node(), 2000);
-        node.set("tick-damage", 1);
-        node.set(SkillSetting.RADIUS.node(), 10);
-        node.set("amplitude", 2);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is emitting ice!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% has stopped emitting ice!");
+
+        node.set(SkillSetting.USE_TEXT.node(), "");
+        node.set("melodic-buff-duration", Integer.valueOf(3000));
+        node.set("melodic-buff-period", Integer.valueOf(1500));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(6));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(17));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_CHARISMA.node(), Double.valueOf(0.125));
+        node.set("melodic-slow-duration", Integer.valueOf(1500));
+        node.set("slow-amplifier", Integer.valueOf(0));
+        node.set("slow-amplifier-increase-per-charisma", Double.valueOf(0.075));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% releases Melodic Bindings!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer binding enemies.");
+        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(1000));
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%hero% produces a binding melody").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero% stops producing a melody!").replace("%hero%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 500, true);
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10, false);
-        hero.addEffect(new MelodicBindingEffect(this, duration, period, tickDamage, range));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 6.0F); 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 2.0F); 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 8.0F); 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 3.0F);  
+        hero.addEffect(new SoundEffect(this, "MelodicBindingSong", 100, skillSong));
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", Integer.valueOf(3000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", Integer.valueOf(1500), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+
+        hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
+
         return SkillResult.NORMAL;
-    }
-
-    static {
-        allowedBlocks = new HashSet<Material>();
-        allowedBlocks.add(Material.STONE);
-        allowedBlocks.add(Material.SAND);
-        allowedBlocks.add(Material.SNOW);
-        allowedBlocks.add(Material.SNOW_BLOCK);
-        allowedBlocks.add(Material.DIRT);
-        allowedBlocks.add(Material.GRASS);
-        allowedBlocks.add(Material.SOIL);
-        allowedBlocks.add(Material.CLAY);
-        allowedBlocks.add(Material.WATER);
-        allowedBlocks.add(Material.STATIONARY_WATER);
-    }
-
-    public class SkillBlockListener implements Listener {
-
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onBlockBreak(BlockBreakEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
-
-            // Check out mappings to see if this block was a changed block, if so lets deny breaking it.
-            for (Map<Location, Material> blockMap : changedBlocks.values()) {
-                for (Location loc : blockMap.keySet())
-                    if (event.getBlock().getLocation().equals(loc)) {
-                        event.setCancelled(true);
-                    }
-            }
-        }
     }
 
     public class MelodicBindingEffect extends PeriodicExpirableEffect {
 
-        private final double tickDamage;
-        private final int range;
+        private final int radius;
 
-        public MelodicBindingEffect(SkillMelodicBinding skill, long duration, long period, double tickDamage, int range) {
-            super(skill, "MelodicBinding", period, duration);
-            this.tickDamage = tickDamage;
-            this.range = range;
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.ICE);
-        }
+        public MelodicBindingEffect(SkillMelodicBinding skill, Player applier, int period, int duration, int radius) {
+            super(skill, "MelodicBinding", applier, period, duration, applyText, expireText);
 
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
+            types.add(EffectType.BENEFICIAL);
 
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            if (changedBlocks.get(hero) != null) {
-                for (Entry<Location, Material> entry : changedBlocks.get(hero).entrySet()) {
-                    entry.getKey().getBlock().setType(entry.getValue());
-                }
-
-                // CleanUp
-                changedBlocks.get(hero).clear();
-                changedBlocks.remove(hero);
-            }
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            this.radius = radius;
         }
 
         @Override
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
-            Location loc = player.getLocation().clone();
-            loc.setY(loc.getY() - 1);
-            changeBlock(loc, hero);
 
-            int amplitude = SkillConfigManager.getUseSetting(hero, skill, "amplitude", 2, false);
-            SlowEffect sEffect = new SlowEffect(skill, this.getPeriod(), amplitude, true, null, null, hero);
-            for (Entity entity : player.getNearbyEntities(range, range, range)) {
-                if (entity instanceof LivingEntity) {
-                    LivingEntity lEntity = (LivingEntity) entity;
+            int charisma = hero.getAttributeValue(AttributeType.CHARISMA);
 
-                    // Check if the target is damagable
-                    if (!damageCheck(player, lEntity)) {
-                        continue;
-                    }
+            int slowAmount = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier", Integer.valueOf(1), false);
+            double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier-increase-per-charisma", Double.valueOf(0.075), false);
+            slowAmount += Math.floor(slowAmountIncrease * charisma);
 
-                    addSpellTarget(lEntity, hero);
-                    Skill.damageEntity(lEntity, player, tickDamage, DamageCause.MAGIC, false);
-                    loc = lEntity.getLocation().clone();
-                    loc.setY(loc.getY() - 1);
-                    changeBlock(loc, hero);
-                    plugin.getCharacterManager().getCharacter(lEntity).addEffect(sEffect);
+            int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "melodic-slow-duration", Integer.valueOf(1500), false);
+
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(17), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, Double.valueOf(0.125), false);
+            damage += damageIncrease * charisma;
+
+            for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+                if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
+                    continue;
                 }
-            }
-        }
 
-        private void changeBlock(Location loc, Hero hero) {
-            Map<Location, Material> heroChangedBlocks = changedBlocks.get(hero);
-            if (heroChangedBlocks == null) {
-                changedBlocks.put(hero, new HashMap<Location, Material>());
-            }
-            if (loc.getBlock().getType() != Material.ICE && allowedBlocks.contains(loc.getBlock().getTypeId())) {
-                changedBlocks.get(hero).put(loc, loc.getBlock().getType());
-                loc.getBlock().setType(Material.ICE);
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
+
+                if (damage > 0) {
+                    addSpellTarget(entity, hero);
+                    damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
+                }
+
+                SlowEffect sEffect = new SlowEffect(skill, player, slowDuration, slowAmount, null, null);
+                sEffect.types.add(EffectType.DISPELLABLE);
+                targetCT.addEffect(sEffect);
             }
         }
 
         @Override
-        public void tickMonster(Monster monster) { }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
+        public void tickMonster(Monster monster) {}
     }
 }

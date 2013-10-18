@@ -1,167 +1,94 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillHealingBloom extends ActiveSkill {
-	public SkillHealingBloom(Heroes plugin) {
-		super(plugin, "HealingBloom");
-		setDescription("Blooms your party, healing them for $1$2 per $3s for $4s");
-		setUsage("/skill healingbloom");
-		setIdentifiers(new String[] { "skill healingbloom" });
-		setTypes(new SkillType[] { SkillType.SILENCABLE, SkillType.HEAL, SkillType.LIGHT });
-		setArgumentRange(0, 0);
-	}
+    public SkillHealingBloom(Heroes plugin) {
+        super(plugin, "HealingBloom");
+        setDescription("Apply a Healing Bloom to party members within $1 blocks, healing them for $2 health over $3 seconds. You are only healed for $3 health from this effect.");
+        setUsage("/skill healingbloom");
+        setIdentifiers("skill healingbloom");
+        setTypes(SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_EARTH);
+        setArgumentRange(0, 0);
+    }
 
-	public SkillResult use(Hero hero, String[] args) {
-		Player player = hero.getPlayer();
-		
-		boolean amount = SkillConfigManager.getUseSetting(hero, this, "AmountMode", true);
-		boolean percentMax = SkillConfigManager.getUseSetting(hero, this, "PercentMaxHealthMode", true);
-		boolean percentMissing = SkillConfigManager.getUseSetting(hero, this, "PercentMissingHealthMode", true);
-		
-		int mode = 0;
-		if (percentMax) {
-			mode = 1;
-		}
-		if (percentMissing) {
-			mode = 2;
-		}
-		if (((!amount) && (!percentMax) && (!percentMissing)) || ((amount) && (percentMax)) || ((amount) && (percentMissing)) || ((percentMax) && (percentMissing))) {
-			mode = 0;
-			Bukkit.getServer().getLogger().log(Level.SEVERE, "[SkillHealingBloom] Invalid mode selection, defaulting to amount mode");
-		}
+    public String getDescription(Hero hero) {
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 150, false);
-		int radiusSquared = radius * radius;
-		double amountHealed = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
-		double period = SkillConfigManager.getUseSetting(hero, this, "period", 1000, false);
-		double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 30000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(20000), false);
 
-		broadcastExecuteText(hero);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.175), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-		// Check if the hero has a party
-		if (hero.hasParty()) {
-			Location playerLocation = player.getLocation();
-			// Loop through the player's party members and add the effect as necessary
-			for (Hero member : hero.getParty().getMembers()) {
-				// Ensure the party member is in the same world.
-				if (member.getPlayer().getLocation().getWorld().equals(playerLocation.getWorld())) {
-					// Check to see if they are close enough to the player to receive the buff
-					if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
-						// Add the effect
-						member.addEffect(new HealingBloomEffect(this, period, duration, mode, amountHealed));
-					}
-				}
-			}
-		}
-		else {
-			// Add the effect to just the player
-			hero.addEffect(new HealingBloomEffect(this, period, duration, mode, amountHealed));
-		}
+        String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
+        String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-		return SkillResult.NORMAL;
-	}
+        return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedDuration).replace("$4", formattedSelfHealing);
+    }
 
-	public String getDescription(Hero h) {
-		boolean amount = SkillConfigManager.getUseSetting(h, this, "AmountMode", true);
-		boolean percentMax = SkillConfigManager.getUseSetting(h, this, "PercentMaxHealthMode", false);
-		boolean percentMissing = SkillConfigManager.getUseSetting(h, this, "PercentMissingHealthMode", false);
-		int mode = 0;
-		if (percentMax) {
-			mode = 1;
-		}
-		if (percentMissing) {
-			mode = 2;
-		}
-		if (((!amount) && (!percentMax) && (!percentMissing)) || ((amount) && (percentMax)) || ((amount) && (percentMissing)) || ((percentMax) && (percentMissing))) {
-			mode = 0;
-			Bukkit.getServer().getLogger().log(Level.SEVERE, "[SkillHealingBloom] Invalid mode selection, defaulting to amount mode");
-		}
-		String modeOut = "ERROR: Skill getDescription() failed!";
-		switch (mode) {
-		case 0:
-			modeOut = " health";
-			break;
-		case 1:
-			modeOut = "% of their maximum health";
-			break;
-		case 2:
-			modeOut = "% of their missing health";
-		}
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
 
-		double amountHealed = SkillConfigManager.getUseSetting(h, this, "amount", 5, false);
-		double period = SkillConfigManager.getUseSetting(h, this, "period", 1000, false) * 0.001D;
-		double duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION.node(), 30000, false) * 0.001D;
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(15));
+        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(11));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.275));
 
-		return getDescription().replace("$1", amountHealed + "").replace("$2", modeOut).replace("$3", period + "").replace("$4", duration + "");
-	}
+        return node;
+    }
 
-	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
+    public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
 
-		node.set(SkillSetting.DURATION.node(), Integer.valueOf(30000));
-        node.set(SkillSetting.RADIUS.node(), 150);
-		node.set("period", Integer.valueOf(1000));
-		node.set("amount", Integer.valueOf(5));
-		node.set("AmountMode", Boolean.valueOf(true));
-		node.set("PercentMaxHealthMode", Boolean.valueOf(false));
-		node.set("PercentMissingHealthMode", Boolean.valueOf(false));
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
+        int radiusSquared = radius * radius;
 
-		return node;
-	}
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.175), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-	public class HealingBloomEffect extends PeriodicExpirableEffect {
-		int mode;
-		double amountHealed;
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(20000), false);
 
-		public HealingBloomEffect(Skill skill, double period, double duration, int mode, double amountHealed) {
-			super(skill, "HealingBloomEffect", (long) period, (long) duration);
-			this.mode = mode;
-			this.amountHealed = amountHealed;
+        broadcastExecuteText(hero);
 
-            types.add(EffectType.HEAL);
-            types.add(EffectType.MAGIC);
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.DISPELLABLE);
-		}
+        // Check if the hero has a party
+        if (hero.hasParty()) {
+            Location playerLocation = player.getLocation();
+            // Loop through the player's party members and add the effect as necessary
+            for (Hero member : hero.getParty().getMembers()) {
+                // Ensure the party member is in the same world.
+                if (member.getPlayer().getLocation().getWorld().equals(playerLocation.getWorld())) {
+                    // Check to see if they are close enough to the player to receive the buff
+                    if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
+                        // Add the effect
+                        member.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
+                    }
+                }
+            }
+        }
+        else {
+            // Add the effect to just the player
+            hero.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
+        }
 
-		public void tickHero(Hero hero) {
-			Player player = hero.getPlayer();
-			double amount = (int) amountHealed;
-			switch (this.mode) {
-			case 1:
-				amount = (int) (player.getMaxHealth() * amountHealed * 0.01D);
-				break;
-			case 2:
-				amount = (int) ((player.getMaxHealth() - player.getHealth()) * amountHealed * 0.01D);
-				break;
-			}
-
-			HeroRegainHealthEvent event = new HeroRegainHealthEvent(hero, amount, skill);
-			Bukkit.getPluginManager().callEvent(event);
-			if (!event.isCancelled())
-				hero.heal(event.getAmount());
-		}
-
-		public void tickMonster(Monster arg0) {
-		}
-	}
+        return SkillResult.NORMAL;
+    }
 }

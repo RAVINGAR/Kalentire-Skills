@@ -27,7 +27,7 @@ public class SkillSmeltGold extends ActiveSkill {
 		setUsage("/skill smeltgold");
 		setIdentifiers("skill smeltgold");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.KNOWLEDGE, SkillType.PHYSICAL, SkillType.ITEM, SkillType.UNBINDABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.UNBINDABLE);
 	}
 
 	public String getDescription(Hero hero) {

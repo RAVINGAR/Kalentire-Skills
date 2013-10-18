@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -18,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -25,6 +25,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
@@ -49,7 +50,7 @@ public class SkillShuriken extends PassiveSkill {
         super(plugin, "Shuriken");
         setDescription("Right click with a flint in hand to throw $1 $2 damage and can be thrown every $3 seconds.");
         setArgumentRange(0, 0);
-        setTypes(SkillType.HARMFUL, SkillType.DAMAGING, SkillType.ITEM, SkillType.PHYSICAL, SkillType.UNBINDABLE);
+        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.UNBINDABLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
@@ -63,21 +64,27 @@ public class SkillShuriken extends PassiveSkill {
             numShurikenText = "up to " + numShuriken + " Shuriken at once! Each Shuriken deals";
         else
             numShurikenText = "a Shuriken! Shuriken deal";
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
-        double cooldown = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1500, false) / 1000.0);
 
-        return getDescription().replace("$1", numShurikenText).replace("$2", damage + "").replace("$3", cooldown + "");
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 0.6, false);
+        damage += (int) (hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease);
+
+        int cooldown = SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1000, false);
+        String formattedCooldown = Util.decFormat.format(cooldown / 1000.0);
+
+        return getDescription().replace("$1", numShurikenText).replace("$2", damage + "").replace("$3", formattedCooldown);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(30));
-        node.set("stamina-cost", Integer.valueOf(2));
-        node.set("shuriken-toss-cooldown", Integer.valueOf(1500));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(20));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.4));
+        node.set(SkillSetting.STAMINA.node(), Integer.valueOf(100));
+        node.set("shuriken-toss-cooldown", Integer.valueOf(1000));
         node.set("num-shuriken", Integer.valueOf(3));
-        node.set("degrees", Double.valueOf(15));
-        node.set("interval", Double.valueOf(0.5));
+        node.set("degrees", Double.valueOf(10));
+        node.set("interval", Double.valueOf(0.15));
         node.set("velocity-multiplier", Double.valueOf(3.0));
 
         return node;
@@ -125,9 +132,9 @@ public class SkillShuriken extends PassiveSkill {
                 if (hero.hasEffect("ShurikenTossCooldownEffect"))
                     return;     // Shuriken Toss is on cooldown. Do not continue.
 
-                int staminaCost = SkillConfigManager.getUseSetting(hero, skill, "stamina-cost", 2, false);
-                if (player.getFoodLevel() < staminaCost) {
-                    Messaging.send(player, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are too fatigued!");
+                int staminaCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 100, false);
+                if (hero.getStamina() < staminaCost) {
+                    Messaging.send(player, Messaging.getSkillDenoter() + "You are too fatigued!");
                     return;
                 }
 
@@ -145,7 +152,7 @@ public class SkillShuriken extends PassiveSkill {
                 player.updateInventory();
 
                 // Reduce their stamina by the stamina cost value
-                player.setFoodLevel(Math.max(player.getFoodLevel() - staminaCost, 0));
+                hero.setStamina(hero.getStamina() - staminaCost);
             }
         }
 
@@ -170,10 +177,10 @@ public class SkillShuriken extends PassiveSkill {
                         projectile.remove();
                 }
 
-            }, (long) ((0.1) * 20));
+            }, 2L);
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
             if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
                 return;
@@ -184,9 +191,8 @@ public class SkillShuriken extends PassiveSkill {
                 return;
             }
 
-            if (!(shurikens.containsKey((Arrow) projectile))) {
+            if (!(shurikens.containsKey((Arrow) projectile)))
                 return;
-            }
 
             Arrow shuriken = (Arrow) projectile;
             Player player = (Player) shuriken.getShooter();
@@ -198,9 +204,12 @@ public class SkillShuriken extends PassiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
 
             // Damage the target
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 30, false);
-            skill.plugin.getDamageManager().addSpellTarget(target, hero, skill);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 20, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 0.4, false);
+            damage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
+
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
             // Prevent arrow from dealing damage
             shuriken.remove();
@@ -283,14 +292,14 @@ public class SkillShuriken extends PassiveSkill {
         }
 
         // Add the cooldown effect
-        int cdDuration = SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1500, false);
-        hero.addEffect(new ShurikenTossCooldownEffect(this, cdDuration));
+        int cdDuration = SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1000, false);
+        hero.addEffect(new ShurikenTossCooldownEffect(this, player, cdDuration));
     }
 
     // Effect required for implementing an internal cooldown
     private class ShurikenTossCooldownEffect extends ExpirableEffect {
-        public ShurikenTossCooldownEffect(Skill skill, long duration) {
-            super(skill, "ShurikenTossCooldownEffect", duration);
+        public ShurikenTossCooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, "ShurikenTossCooldownEffect", applier, duration);
         }
     }
 }

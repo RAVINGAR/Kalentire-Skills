@@ -41,65 +41,112 @@ public class SkillCurse extends TargettedSkill {
         setUsage("/skill curse");
         setArgumentRange(0, 0);
         setIdentifiers("skill curse");
-        setTypes(SkillType.DARK, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DEBUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", 0.5, false);
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedChance = Util.decFormat.format(chance * 100.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedChance);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 5000); // in milliseconds
-        node.set("miss-chance", .50); // decimal representation of miss-chance
-        node.set("miss-text", "%target% misses an attack!");
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!");
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set(SkillSetting.DURATION.node(), 7000);
+        node.set("miss-chance", 0.50);
+        node.set("miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!");
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(318));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        missText = SkillConfigManager.getRaw(this, "miss-text", "%target% misses an attack!").replace("%target%", "$1");
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!").replace("%target%", "$1");
+
+        missText = SkillConfigManager.getRaw(this, "miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+
+        Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero, target);
+
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, duration, missChance));
-        Player player = hero.getPlayer();
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_MOAN , 0.8F, 1.0F);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, player, duration, missChance));
+
+        player.getWorld().playSound(player.getLocation(), Sound.GHAST_MOAN, 0.8F, 1.0F);
+
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,2,0), 
-            		FireworkEffect.builder()
-            		.flicker(false).trail(true)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.PURPLE)
-            		.withFade(Color.GREEN)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(),
+                                 target.getLocation().add(0, 2, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(false).trail(true)
+                                               .with(FireworkEffect.Type.CREEPER)
+                                               .withColor(Color.PURPLE)
+                                               .withFade(Color.GREEN)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        return SkillResult.NORMAL;
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        return SkillResult.NORMAL;
+    }
+
+    public class SkillEventListener implements Listener {
+
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.isCancelled() || event.getDamage() == 0) {
+                return;
+            }
+
+            CharacterTemplate character = event.getDamager();
+            if (character.hasEffect("Curse")) {
+                CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
+                if (Util.nextRand() < cEffect.missChance) {
+                    event.setCancelled(true);
+                    broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
+                }
+            }
+        }
     }
 
     public class CurseEffect extends ExpirableEffect {
 
         private final double missChance;
 
-        public CurseEffect(Skill skill, long duration, double missChance) {
-            super(skill, "Curse", duration);
+        public CurseEffect(Skill skill, Player applier, long duration, double missChance) {
+            super(skill, "Curse", applier, duration);
+
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.MAGIC);
+
             this.missChance = missChance;
-            this.types.add(EffectType.HARMFUL);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -131,31 +178,5 @@ public class SkillCurse extends TargettedSkill {
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
-    }
-
-    public class SkillEventListener implements Listener {
-
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0) {
-                return;
-            }
-
-            CharacterTemplate character = event.getDamager();
-            if (character.hasEffect("Curse")) {
-                CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
-                if (Util.nextRand() < cEffect.missChance) {
-                    event.setCancelled(true);
-                    broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
-                }
-            }
-        }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .5, false);
-        return getDescription().replace("$1", duration / 1000 + "").replace("$2", chance * 100 + "");
     }
 }

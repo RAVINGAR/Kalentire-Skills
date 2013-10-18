@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -70,15 +69,12 @@ public class SkillGrapplingHook extends ActiveSkill {
         setUsage("/skill grapplinghook");
         setArgumentRange(0, 0);
         setIdentifiers("skill grapplinghook");
-        setTypes(SkillType.PHYSICAL, SkillType.BUFF, SkillType.FORCE);
+        setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.VELOCITY_INCREASING, SkillType.FORCE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     public String getDescription(Hero hero) {
@@ -102,15 +98,18 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         node.set("num-shots", Integer.valueOf(1));
         node.set("velocity-multiplier", Double.valueOf(0.5D));
-        node.set("max-distance", Integer.valueOf(35));
-        node.set("safe-fall-duration", Integer.valueOf(4000));
+        node.set("max-distance", Integer.valueOf(-1));
+        node.set("safe-fall-duration", Integer.valueOf(4500));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
         node.set("horizontal-divider", Integer.valueOf(6));
         node.set("vertical-divider", Integer.valueOf(8));
-        node.set("multiplier", Double.valueOf(1.2));
+        node.set("multiplier", Double.valueOf(1.0));
+        node.set("grapple-delay", Double.valueOf(0.5));
         node.set("ncp-exemption-duration", 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% readies his grappling hook!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% drops his grappling hook.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% readies his grappling hook!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% drops his grappling hook.");
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(287));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(2));
 
         return node;
     }
@@ -118,15 +117,15 @@ public class SkillGrapplingHook extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% readies his grappling hook!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% drops his grappling hook.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% readies his grappling hook!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% drops his grappling hook.").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
-        hero.addEffect(new GrapplingHookBuffEffect(this, duration, numShots));
+        hero.addEffect(new GrapplingHookBuffEffect(this, hero.getPlayer(), duration, numShots));
 
         return SkillResult.NORMAL;
     }
@@ -189,10 +188,8 @@ public class SkillGrapplingHook extends ActiveSkill {
 
             double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
                     if (!(grapplingHooks.containsKey(grapplingHook)) || grapplingHooksAttachedToPlayers.containsKey(grapplingHook))
                         return;
 
@@ -207,18 +204,15 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
+            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity)))
                 return;
-            }
 
             Entity projectile = ((EntityDamageByEntityEvent) event).getDamager();
-            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player))) {
+            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
                 return;
-            }
 
-            if (!(grapplingHooks.containsKey((Arrow) projectile))) {
+            if (!(grapplingHooks.containsKey((Arrow) projectile)))
                 return;
-            }
 
             final Arrow grapplingHook = (Arrow) projectile;
             Player player = (Player) grapplingHook.getShooter();
@@ -230,10 +224,8 @@ public class SkillGrapplingHook extends ActiveSkill {
 
             double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
                     // Grapple
                     grappleTargetToPlayer(hero, targetLE);
                     grapplingHooks.remove(grapplingHook);
@@ -298,7 +290,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         else {
             // As long as we have Y, give them safefall
             int safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);
-            hero.addEffect(new SafeFallEffect(this, safeFallDuration));
+            hero.addEffect(new JumpSafeFallEffect(this, player, safeFallDuration));
         }
 
         // Let's bypass the nocheat issues...
@@ -306,7 +298,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             if (!player.isOp()) {
                 long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
                 if (duration > 0) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
                     hero.addEffect(ncpExemptEffect);
                 }
             }
@@ -334,7 +326,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "You threw your hook to far and lost your grip!", new Object[0]);
+                Messaging.send(player, "You threw your hook to far and lost your grip!");
                 return;
             }
         }
@@ -353,7 +345,7 @@ public class SkillGrapplingHook extends ActiveSkill {
                 if (!targetPlayer.isOp()) {
                     long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
                     if (duration > 0) {
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
                         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                         targetCT.addEffect(ncpExemptEffect);
                     }
@@ -372,8 +364,8 @@ public class SkillGrapplingHook extends ActiveSkill {
         private int shotsLeft = 1;
         private boolean showExpireText = true;
 
-        public GrapplingHookBuffEffect(Skill skill, long duration, int numShots) {
-            super(skill, "GrapplingHookBuffEffect", duration);
+        public GrapplingHookBuffEffect(Skill skill, Player applier, long duration, int numShots) {
+            super(skill, "GrapplingHookBuffEffect", applier, duration);
             this.shotsLeft = numShots;
 
             types.add(EffectType.IMBUE);
@@ -422,10 +414,22 @@ public class SkillGrapplingHook extends ActiveSkill {
         }
     }
 
+    private class JumpSafeFallEffect extends SafeFallEffect {
+
+        public JumpSafeFallEffect(Skill skill, Player applier, int duration) {
+            super(skill, "GrappleJumpSafeFall", applier, duration);
+
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.JUMP_BOOST);
+
+            addMobEffect(8, duration / 1000 * 20, 5, false);
+        }
+    }
+
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect", applier, duration);
         }
 
         @Override

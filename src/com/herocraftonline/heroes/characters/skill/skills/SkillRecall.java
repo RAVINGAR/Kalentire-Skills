@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,16 +36,17 @@ public class SkillRecall extends ActiveSkill {
         setUsage("/skill recall");
         setArgumentRange(0, 0);
         setIdentifiers("skill recall");
-        setTypes(SkillType.SILENCABLE, SkillType.TELEPORT);
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-                herotowns = true;
-                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            }
-        }
-        catch (Exception e) {
-            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
-        }
+        setTypes(SkillType.SILENCABLE, SkillType.TELEPORTING);
+
+        //        try {
+        //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+        //                herotowns = true;
+        //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+        //            }
+        //        }
+        //        catch (Exception e) {
+        //            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+        //        }
     }
 
     public String getDescription(Hero hero) {
@@ -58,12 +58,14 @@ public class SkillRecall extends ActiveSkill {
 
         node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
         node.set(SkillSetting.DELAY.node(), 10000);
+        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(331));
+        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(10));
 
         return node;
     }
 
     public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         // RUNESTONE RECALL FUNCTIONALITY
         ItemStack heldItem = player.getItemInHand();
@@ -85,7 +87,7 @@ public class SkillRecall extends ActiveSkill {
                     String usesString = loreData.get(1);
                     usesString = usesString.toLowerCase();
 
-                    // Strip the usesString of the "Uses :" text.
+                    // Strip the usesString of the "Uses:" text.
                     int currentIndexLocation = usesString.indexOf(":", 0) + 2;  // Set the start point
                     int endIndexLocation = usesString.length();                 // Get the end point for grabbing remaining uses data
                     String currentUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
@@ -107,7 +109,7 @@ public class SkillRecall extends ActiveSkill {
 
                         // If it's empty, tell them to recharge it.
                         if (uses == 0) {
-                            Messaging.send(player, "Runestone is out of uses and needs to be recharged.", new Object[0]);
+                            Messaging.send(player, "Runestone is out of uses and needs to be recharged.");
                             return SkillResult.FAIL;
                         }
 
@@ -171,10 +173,6 @@ public class SkillRecall extends ActiveSkill {
                             int y = Integer.parseInt(yString);
                             int z = Integer.parseInt(zString);
 
-                            // Crossworld teleporting seems to teleport you 5 blocks up. We don't want to do this.
-                            if (!player.getWorld().equals(world))
-                                y -= 5;
-
                             // Grab the players current location and store their pitch / yaw values.
                             Location currentLocation = player.getLocation();
                             float pitch = currentLocation.getPitch();
@@ -201,7 +199,6 @@ public class SkillRecall extends ActiveSkill {
 
                             // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
                             if (uses != -1) {
-
                                 if (maxUses != -1) {
                                     loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
                                     metaData.setLore(loreData);
@@ -209,24 +206,38 @@ public class SkillRecall extends ActiveSkill {
                                 }
                             }
 
+                            broadcastExecuteText(hero);
+
+                            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
                             // Teleport the player to the location
                             player.teleport(teleportLocation);
 
-                            broadcastExecuteText(hero);
+                            final Location finalTeleportLocation = teleportLocation;
+                            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!player.getLocation().equals(finalTeleportLocation))
+                                        player.teleport(finalTeleportLocation);
+                                }
+                            }, 5L);
+
+                            teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
                             return SkillResult.NORMAL;
                         }
                         else {
-                            broadcast(player.getLocation(), "Runestone Contains Invalid Location Data.", player.getDisplayName());
+                            Messaging.send(player, "Runestone Contains Invalid Location Data.", player.getDisplayName());
                             return SkillResult.FAIL;
                         }
                     }
                     else {
-                        broadcast(player.getLocation(), "Not a Valid Runestone Object. Uses Value is not Valid.", player.getDisplayName());
+                        Messaging.send(player, "Not a Valid Runestone Object. Uses Value is not Valid.", player.getDisplayName());
                         return SkillResult.FAIL;
                     }
                 }
                 else {
-                    broadcast(player.getLocation(), "Not a Valid Runestone Object. LoreData Size <= 0", player.getDisplayName());
+                    Messaging.send(player, "Not a Valid Runestone Object. LoreData Size <= 0", player.getDisplayName());
                     return SkillResult.FAIL;
                 }
             }
@@ -252,7 +263,7 @@ public class SkillRecall extends ActiveSkill {
             return SkillResult.FAIL;
         }
         if (hero.hasEffectType(EffectType.ROOT) || hero.hasEffectType(EffectType.STUN)) {
-            Messaging.send(player, "Teleport fizzled.", new Object[0]);
+            Messaging.send(player, "Teleport fizzled.");
             return SkillResult.FAIL;
         }
 
@@ -270,14 +281,21 @@ public class SkillRecall extends ActiveSkill {
         // Validate Herotowns
         if (herotowns) {
             if (!ht.getGlobalRegionManager().canBuild(player, recallLocation)) {
-                broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
+                Messaging.send(player, "Can not Recall to a town you have no access to!");
                 return SkillResult.FAIL;
             }
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         broadcastExecuteText(hero);
-        player.teleport(new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]));
+
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
+        Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
+
+        player.teleport(teleportLocation);
+
+        teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 

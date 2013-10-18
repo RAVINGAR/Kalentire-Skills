@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -27,20 +28,28 @@ public class SkillStealEssence extends TargettedSkill {
         setUsage("/skill stealessence");
         setArgumentRange(0, 0);
         setIdentifiers("skill stealessence", "skill sessence");
-        setTypes(SkillType.DEBUFF, SkillType.KNOWLEDGE, SkillType.BUFF, SkillType.HARMFUL, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.DISPELLING, SkillType.AGGRESSIVE, SkillType.SILENCABLE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% used %skill% and stole %effect% from %target%!");
-        node.set(SkillSetting.AMOUNT.node(), 3);
+        node.set("max-steals", Integer.valueOf(1));
+
         return node;
     }
 
     @Override
     public void init() {
         super.init();
+
         this.setUseText(SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% used %skill% and stole %effect%from %target%!").replace("%hero%", "$1").replace("%skill%", "$2").replace("%effect%", "$3").replace("%target%", "$4"));
     }
 
@@ -65,22 +74,23 @@ public class SkillStealEssence extends TargettedSkill {
         }
 
         String stolenNames = "";
-        int numEffects = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT.node(), 3, false);
+        int numEffects = SkillConfigManager.getUseSetting(hero, this, "max-steals", 1, false);
         for (int i = 0; i < numEffects && possibleEffects.size() > 0; i++) {
             Effect stolenEffect = possibleEffects.get(Util.nextInt(possibleEffects.size()));
             tHero.removeEffect(stolenEffect);
+
+            if (stolenEffect instanceof ExpirableEffect)
+                ((ExpirableEffect) stolenEffect).setApplier(player);
+
             hero.addEffect(stolenEffect);
             possibleEffects.remove(stolenEffect);
             stolenNames += stolenEffect.getName() + " ";
         }
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
+
         broadcast(player.getLocation(), getUseText(), player.getDisplayName(), getName(), stolenNames, tHero.getPlayer().getDisplayName());
+
+        player.getWorld().playSound(player.getLocation(), Sound.BAT_LOOP, 0.8F, 2.0F);
+
         return SkillResult.NORMAL;
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
-    }
-
 }

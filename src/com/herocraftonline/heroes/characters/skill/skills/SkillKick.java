@@ -8,55 +8,71 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillKick extends TargettedSkill {
 
     public SkillKick(Heroes plugin) {
         super(plugin, "Kick");
-        setDescription("Damages your target for $1 damage, and making them unable to use skills for $2 seconds.");
+        setDescription("Kick your target, dealing $1 physical damage, interrupting their casting, and silencing them for $2 seconds.");
         setUsage("/skill kick");
         setArgumentRange(0, 0);
         setIdentifiers("skill kick");
-        setTypes(SkillType.DEBUFF, SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.INTERRUPT);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.SILENCING, SkillType.INTERRUPTING);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.75), false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.DAMAGE.node(), 4);
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer silenced!");
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(40));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
+
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
+        Player player = hero.getPlayer();
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.75), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         addSpellTarget(target, hero);
-        damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         if (target instanceof Player) {
-            SilenceEffect sEffect = new SilenceEffect(this, duration);
+            SilenceEffect sEffect = new SilenceEffect(this, player, duration);
             plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
+
         return SkillResult.NORMAL;
     }
 }

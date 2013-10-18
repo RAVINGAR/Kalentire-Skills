@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -18,23 +19,41 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillAbsolution extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
+
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
-        setDescription("You restore $1 health to your target and negate Dark effects.");
+        setDescription("You restore $1 health to your target and remove Dark effects. Only heals for $2 if self targetted.");
         setUsage("/skill absolution <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill absolution");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
+        String formattedHealing = Util.decFormat.format(healing);
+        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
+
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedSelfHealing);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALTH.node(), 10);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 25);
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(125));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0));
+
         return node;
     }
 
@@ -46,25 +65,30 @@ public class SkillAbsolution extends TargettedSkill {
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
-        double targetHealth = target.getHealth();
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(2.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
+        double targetHealth = target.getHealth();
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
                 Messaging.send(player, "You are already at full health.");
-            } else {
+            }
+            else {
                 Messaging.send(player, "Target is already fully healed.");
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, hpPlus, this, hero);
+        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
+
         targetHero.heal(hrhEvent.getAmount());
+
         for (Effect effect : targetHero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.DARK)) {
@@ -72,29 +96,28 @@ public class SkillAbsolution extends TargettedSkill {
                 }
             }
         }
+
         broadcastExecuteText(hero, target);
+
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(false)
-            		.with(FireworkEffect.Type.BURST)
-            		.withColor(Color.MAROON)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            fplayer.playFirework(player.getWorld(),
+                                 target.getLocation().add(0, 1.5, 0),
+                                 FireworkEffect.builder()
+                                               .flicker(false)
+                                               .trail(false)
+                                               .with(FireworkEffect.Type.BURST)
+                                               .withColor(Color.MAROON)
+                                               .withFade(Color.WHITE)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        return SkillResult.NORMAL;
-    }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    @Override
-    public String getDescription(Hero hero) {
-        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
-        return getDescription().replace("$1", health + "");
+        return SkillResult.NORMAL;
     }
 }

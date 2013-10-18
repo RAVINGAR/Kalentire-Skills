@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 
@@ -27,7 +26,6 @@ public class SkillGift extends TargettedSkill {
         setUsage("/skill gift <player> [amount]");
         setArgumentRange(0, 3);
         setIdentifiers("skill gift");
-        setTypes(SkillType.TELEPORT, SkillType.ITEM);
     }
 
     @Override

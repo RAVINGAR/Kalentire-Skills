@@ -21,11 +21,11 @@ public class SkillSummonCow extends ActiveSkill {
 
     public SkillSummonCow(Heroes plugin) {
         super(plugin, "SummonCow");
-        setDescription("100% chance to spawn 1 cow, $1% for 2, and $2% for 3.");
+        setDescription("100% chance to spawn 1 cow, $2% for 2, and $3% for 3.");
         setUsage("/skill cow");
         setArgumentRange(0, 0);
         setIdentifiers("skill summoncow", "skill cow");
-        setTypes(SkillType.SUMMON, SkillType.SILENCABLE, SkillType.EARTH);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SkillSummonCow extends ActiveSkill {
         broadcastExecuteText(hero);
         double chance2x = SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-2x-per-level", 0.0, false) * hero.getSkillLevel(this);
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
-        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false) + (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
         EntityType cType = wTargetBlock.getType() == Material.HUGE_MUSHROOM_1 || 
                 wTargetBlock.getType() == Material.HUGE_MUSHROOM_2 || 

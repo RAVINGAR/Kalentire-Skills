@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -21,42 +22,57 @@ public class SkillEviscerate extends TargettedSkill {
 
     public SkillEviscerate(Heroes plugin) {
         super(plugin, "Eviscerate");
-        setDescription("You eviscerate your target for $1 damage, this attack ignores armor.");
+        setDescription("You eviscerate your target, piercing through their armor and dealing $1 physical damage.");
         setUsage("/skill eviscerate");
         setArgumentRange(0, 0);
         setIdentifiers("skill eviscerate");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.6), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDamage);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 25);
-        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.0);
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(100));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(3.75));
+
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
+
         Material item = player.getItemInHand().getType();
         if(!Util.swords.contains(item.name())) {
             Messaging.send(player, "You can't use eviscerate with that weapon!");
             return SkillResult.FAIL;
         }
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
+
+        broadcastExecuteText(hero, target);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.125), false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.9F, 1.0F);
-        broadcastExecuteText(hero, target);
-        return SkillResult.NORMAL;
-    }
 
-    @Override
-    public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this));
-        return getDescription().replace("$1", damage + "");
+        player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_HIT, 0.4F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.4F, 2.0F);
+
+        return SkillResult.NORMAL;
     }
 }

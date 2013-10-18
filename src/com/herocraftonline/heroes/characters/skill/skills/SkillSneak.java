@@ -24,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSneak extends ActiveSkill {
@@ -39,15 +38,12 @@ public class SkillSneak extends ActiveSkill {
         setUsage("/skill stealth");
         setArgumentRange(0, 0);
         setIdentifiers("skill sneak");
-        setTypes(SkillType.BUFF, SkillType.PHYSICAL, SkillType.STEALTHY);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     @Override
@@ -79,15 +75,14 @@ public class SkillSneak extends ActiveSkill {
             return SkillResult.REMOVED_EFFECT;
         }
         else {
-            Messaging.send(hero.getPlayer(), "You are now sneaking");
-
             final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
             final int period = SkillConfigManager.getUseSetting(hero, this, "refresh-interval", 5000, true);
 
-            if (hero.getPlayer().isSneaking())
-                hero.addEffect(new NCPCompatSneakEffect(this, period, duration, true));
+            Player player = hero.getPlayer();
+            if (player.isSneaking())
+                hero.addEffect(new NCPCompatSneakEffect(this, player, period, duration, true));
             else
-                hero.addEffect(new NCPCompatSneakEffect(this, period, duration, false));
+                hero.addEffect(new NCPCompatSneakEffect(this, player, period, duration, false));
         }
         return SkillResult.NORMAL;
     }
@@ -184,14 +179,14 @@ public class SkillSneak extends ActiveSkill {
 
     private class NCPCompatSneakEffect extends SneakEffect {
 
-        public NCPCompatSneakEffect(Skill skill, int period, long duration, boolean isVanillaSneaking) {
-            super(skill, period, duration, isVanillaSneaking);
+        public NCPCompatSneakEffect(Skill skill, Player applier, int period, long duration, boolean isVanillaSneaking) {
+            super(skill, applier, period, duration, isVanillaSneaking);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            final Player player = hero.getPlayer();
+            //            final Player player = hero.getPlayer();
 
             //            if (ncpEnabled)
             //                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING_SURVIVALFLY);
@@ -200,7 +195,7 @@ public class SkillSneak extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
+            //            final Player player = hero.getPlayer();
 
             //            if (ncpEnabled)
             //                NCPExemptionManager.unexempt(player, CheckType.MOVING_SURVIVALFLY);

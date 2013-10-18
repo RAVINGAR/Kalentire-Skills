@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BlindEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -25,46 +26,56 @@ public class SkillBlind extends TargettedSkill {
         setDescription("You blind the target for $1 seconds.");
         setUsage("/skill blind");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill blind" });
-        setTypes(new SkillType[] { SkillType.DEBUFF, SkillType.ILLUSION, SkillType.HARMFUL, SkillType.DAMAGING });
+        setIdentifiers("skill blind");
+        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
     }
 
     public String getDescription(Hero hero) {
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false) / 1000.0);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
-        return getDescription().replace("$1", duration + "");
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", formattedDuration);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!");
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(62));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been blinded!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% can see again!");
+
         return node;
     }
 
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been blinded!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% can see again!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been blinded!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% can see again!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         if (!(target instanceof Player)) {
-            Messaging.send(player, "You must target a player!", new Object[0]);
+            Messaging.send(player, "You must target a player!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        BlindEffect effect = new BlindEffect(this, duration, applyText, expireText);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
+        BlindEffect effect = new BlindEffect(this, player, duration, applyText, expireText);
 
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_IDLE, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_IDLE, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

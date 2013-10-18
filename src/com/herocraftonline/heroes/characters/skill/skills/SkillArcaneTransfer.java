@@ -9,13 +9,14 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
@@ -29,20 +30,25 @@ public class SkillArcaneTransfer extends TargettedSkill {
         setUsage("/skill arcanetransfer");
         setArgumentRange(0, 0);
         setIdentifiers("skill arcanetransfer");
-        setTypes(SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int removals = SkillConfigManager.getUseSetting(hero, this, "max-transfers", 2, false);
-        return getDescription().replace("$1", removals + "");
+        int maxTransfers = SkillConfigManager.getUseSetting(hero, this, "max-transfers", 2, false);
+        double maxTransfersIncrease = SkillConfigManager.getUseSetting(hero, this, "max-transfers-increase-per-intellect", 2, false);
+        maxTransfers += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxTransfersIncrease);
+
+        return getDescription().replace("$1", maxTransfers + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("max-transfers", 2);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set("max-transfers", Integer.valueOf(1));
+        node.set("max-transfers-increase-per-intellect", Double.valueOf(0.025));
 
         return node;
     }
@@ -65,10 +71,14 @@ public class SkillArcaneTransfer extends TargettedSkill {
 
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
 
-        // Transfer fire ticks
+
         int maxTransfers = SkillConfigManager.getUseSetting(hero, this, "max-transfers", 2, false);
+        double maxTransfersIncrease = SkillConfigManager.getUseSetting(hero, this, "max-transfers-increase-per-intellect", 2, false);
+        maxTransfers += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxTransfersIncrease);
+
         int removedEffects = 0;
         if (player.getFireTicks() > 0 && maxTransfers > 0) {
+            // Transfer fire ticks
             int fireTicks = player.getFireTicks();
             player.setFireTicks(0);
             target.setFireTicks(fireTicks);
@@ -80,11 +90,8 @@ public class SkillArcaneTransfer extends TargettedSkill {
             Effect stolenEffect = possibleEffects.get(Util.nextInt(possibleEffects.size()));
             hero.removeEffect(stolenEffect);
 
-            if (stolenEffect instanceof PeriodicDamageEffect) {
-                ((PeriodicDamageEffect) stolenEffect).setApplierHero(hero);
-            }
-            else if (stolenEffect instanceof PeriodicHealEffect) {
-                ((PeriodicHealEffect) stolenEffect).setApplierHero(hero);
+            if (stolenEffect instanceof ExpirableEffect) {
+                ((ExpirableEffect) stolenEffect).setApplier(player);
             }
 
             targCT.addEffect(stolenEffect);

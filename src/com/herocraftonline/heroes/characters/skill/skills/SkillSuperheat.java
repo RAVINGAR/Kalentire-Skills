@@ -33,22 +33,31 @@ public class SkillSuperheat extends ActiveSkill {
         setUsage("/skill superheat");
         setArgumentRange(0, 0);
         setIdentifiers("skill superheat");
-        setTypes(SkillType.FIRE, SkillType.EARTH, SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_EARTH, SkillType.BUFFING, SkillType.SILENCABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillPlayerListener(), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
+
         section.set(SkillSetting.DURATION.node(), 20000);
         section.set(SkillSetting.APPLY_TEXT.node(), "%hero%'s pick has become superheated!");
         section.set(SkillSetting.EXPIRE_TEXT.node(), "%hero%'s pick has cooled down!");
+
         return section;
     }
 
     @Override
     public void init() {
         super.init();
+
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s pick has become superheated!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s pick has cooled down!").replace("%hero%", "$1");
     }
@@ -58,7 +67,7 @@ public class SkillSuperheat extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        hero.addEffect(new SuperheatEffect(this, duration));
+        hero.addEffect(new SuperheatEffect(this, hero.getPlayer(), duration));
 
         return SkillResult.NORMAL;
     }
@@ -104,12 +113,13 @@ public class SkillSuperheat extends ActiveSkill {
 
     public class SuperheatEffect extends ExpirableEffect {
 
-        public SuperheatEffect(Skill skill, long duration) {
-            super(skill, "Superheat", duration);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            this.types.add(EffectType.FIRE);
-            this.types.add(EffectType.MAGIC);
+        public SuperheatEffect(Skill skill, Player applier, long duration) {
+            super(skill, "Superheat", applier, duration);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.FIRE);
+            types.add(EffectType.MAGIC);
         }
 
         @Override
@@ -127,11 +137,4 @@ public class SkillSuperheat extends ActiveSkill {
         }
 
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
-    }
-
 }

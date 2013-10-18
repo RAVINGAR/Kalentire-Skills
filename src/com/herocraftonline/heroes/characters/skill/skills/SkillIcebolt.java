@@ -17,13 +17,17 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillIcebolt extends ActiveSkill {
 
@@ -44,28 +48,45 @@ public class SkillIcebolt extends ActiveSkill {
         setUsage("/skill icebolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill icebolt");
-        setTypes(SkillType.ICE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
+
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+
+        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 3);
-        node.set("slow-duration", 5000); // 5 seconds
-        node.set("speed-multiplier", 2);
-        node.set("velocity-multiplier", 1.1);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been slowed by %hero%!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% is no longer slowed!");
+
+        node.set(SkillSetting.DAMAGE.node(), 50);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
+        node.set("slow-multiplier", Integer.valueOf(1));
+        node.set("velocity-multiplier", Double.valueOf(1.2));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been slowed by %hero%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
+
         return node;
-        
     }
+
     @Override
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
     }
     
     @Override
@@ -73,7 +94,7 @@ public class SkillIcebolt extends ActiveSkill {
         Player player = hero.getPlayer();
         
         Snowball snowball = player.launchProjectile(Snowball.class);
-        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.1, false);
+        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", Double.valueOf(1.1), false);
         snowball.setVelocity(snowball.getVelocity().multiply(mult));
         snowballs.put(snowball, System.currentTimeMillis());
 
@@ -111,26 +132,26 @@ public class SkillIcebolt extends ActiveSkill {
                     return;
                 }
                 event.getEntity().setFireTicks(0);
-                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 3, false);
                 
-                long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 10000, false);
-                int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+                damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+                long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, Integer.valueOf(4000), false);
+                int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
                 
-                SlowEffect iceSlowEffect = new SlowEffect(skill, duration, amplifier, false, applyText, expireText, hero);
+                SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
+                iceSlowEffect.types.add(EffectType.DISPELLABLE);
+                iceSlowEffect.types.add(EffectType.ICE);
+
                 LivingEntity target = (LivingEntity) event.getEntity();
                 plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
 
                 addSpellTarget((LivingEntity) event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+
                 event.setCancelled(true);
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 4, false);
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }

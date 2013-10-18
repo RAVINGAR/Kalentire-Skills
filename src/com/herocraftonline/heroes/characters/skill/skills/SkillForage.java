@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -31,7 +30,6 @@ public class SkillForage extends ActiveSkill {
         setUsage("/skill forage");
         setArgumentRange(0, 0);
         setIdentifiers("skill forage");
-        setTypes(SkillType.ITEM, SkillType.EARTH, SkillType.KNOWLEDGE);
     }
 
     @Override

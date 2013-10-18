@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -8,13 +7,9 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.ThrownPotion;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,12 +21,14 @@ import org.bukkit.metadata.MetadataValue;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillHolyWater extends ActiveSkill {
 
@@ -41,24 +38,36 @@ public class SkillHolyWater extends ActiveSkill {
         setUsage("/skill holywater");
         setArgumentRange(0, 0);
         setIdentifiers("skill holywater");
-        setTypes(SkillType.LIGHT, SkillType.HEAL, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.SILENCABLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     public String getDescription(Hero hero) {
-        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 100, false);
-        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 50, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(8), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0), false);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        return getDescription().replace("$1", healing + "").replace("$2", undeadDamage + "");
+        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(45), false);
+        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", Double.valueOf(0.625), false);
+        undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
+
+        String formattedHealing = Util.decFormat.format(healing);
+        String formattedDamage = Util.decFormat.format(undeadDamage);
+
+        return getDescription().replace("$1", formattedHealing).replace("$2", formattedDamage);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.HEALTH.node(), 100);
-        node.set("undead-damage", 50);
-        node.set("velocity-multiplier", 1.5D);
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(75));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.875));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
+        node.set("undead-damage", Integer.valueOf(45));
+        node.set("undead-damage-increase-per-wisdom", Double.valueOf(0.625));
+        node.set("velocity-multiplier", Double.valueOf(1.5));
+
         return node;
     }
 
@@ -69,7 +78,7 @@ public class SkillHolyWater extends ActiveSkill {
 
         ThrownPotion pot = (ThrownPotion) player.launchProjectile(ThrownPotion.class);
         pot.setMetadata("SkillAmpul", new FixedMetadataValue(plugin, (Boolean) true));
-        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 2.5D, false);
+        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", Double.valueOf(1.5), false);
         pot.setVelocity(pot.getVelocity().multiply(mult));
 
         return SkillResult.NORMAL;
@@ -110,29 +119,40 @@ public class SkillHolyWater extends ActiveSkill {
             Player player = (Player) shooter;
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            double healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALTH, 100, false);
-            double undeadDamage = SkillConfigManager.getUseSetting(hero, skill, "undead-damage", 50, false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(7), false);
+
+            double healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING.node(), Integer.valueOf(85), false);
+            double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0), false);
+            healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+
+            double undeadDamage = SkillConfigManager.getUseSetting(hero, skill, "undead-damage", Integer.valueOf(45), false);
+            double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, "undead-damage-increase-per-wisdom", Double.valueOf(0.625), false);
+            undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
             Set<Hero> partyMembers = null;
             if (hero.hasParty())
                 partyMembers = hero.getParty().getMembers();
 
-            Collection<LivingEntity> entities = event.getAffectedEntities();
-            for (LivingEntity lEntity : entities) {
-                // Check to see if entity is a player
-                if (!(lEntity instanceof Player)) {
+            // We could just grab the affected entities by the splash, but the radius is reeeaally small, so we're just gonna use our own radius.
+            List<Entity> entities = event.getEntity().getNearbyEntities(radius, radius, radius);
+            for (Entity entity : entities) {
+                if (!(entity instanceof LivingEntity)) {
+                    continue;
+                }
+
+                if (!(entity instanceof Player)) {
                     // If not, we need to check to see if they are undead
-                    if (!(isUndead(lEntity)))
+                    if (!(Util.isUndead(plugin, (LivingEntity) entity)))
                         continue;
                     else {
                         // If they are undead, damage them.
-                        addSpellTarget(lEntity, hero);
-                        Skill.damageEntity(lEntity, shooter, undeadDamage, DamageCause.MAGIC);
+                        addSpellTarget((LivingEntity) entity, hero);
+                        Skill.damageEntity((LivingEntity) entity, shooter, undeadDamage, DamageCause.MAGIC);
                     }
                 }
                 else {
                     // If we found a player, check to see if they are in the shooter's party.
-                    Hero targetHero = plugin.getCharacterManager().getHero(((Player) lEntity));
+                    Hero targetHero = plugin.getCharacterManager().getHero(((Player) entity));
                     if (partyMembers == null) {
                         // They do not have a party. Check to see if they hit themselves with the potion.
                         if (hero.equals(targetHero)) {
@@ -157,9 +177,5 @@ public class SkillHolyWater extends ActiveSkill {
                 }
             }
         }
-    }
-
-    private boolean isUndead(Entity entity) {
-        return entity instanceof Zombie || entity instanceof Skeleton || entity instanceof PigZombie || entity instanceof Ghast;
     }
 }

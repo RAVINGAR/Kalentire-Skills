@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -28,14 +29,11 @@ public class SkillSafefallOther extends TargettedSkill {
         setUsage("/skill safefallother <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill safefallother");
-        setTypes(SkillType.MOVEMENT, SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_AIR, SkillType.BUFFING, SkillType.SILENCABLE);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     @Override
@@ -48,28 +46,28 @@ public class SkillSafefallOther extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has gained safefall!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has lost safefall!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has gained safefall!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has lost safefall!");
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         if (!(target instanceof Player) || hero.getPlayer().equals(target))
-        	return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET;
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         broadcastExecuteText(hero, target);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        targetHero.addEffect(new NCPCompatSafeFallEffect(this, duration));
+        targetHero.addEffect(new NCPCompatSafeFallEffect(this, hero.getPlayer(), duration));
 
         return SkillResult.NORMAL;
     }
 
     private class NCPCompatSafeFallEffect extends SafeFallEffect {
 
-        public NCPCompatSafeFallEffect(Skill skill, long duration) {
-            super(skill, duration);
+        public NCPCompatSafeFallEffect(Skill skill, Player applier, long duration) {
+            super(skill, applier, duration);
         }
 
         @Override

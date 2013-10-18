@@ -29,7 +29,7 @@ public class SkillForgeChainHelmet extends ActiveSkill {
         setUsage("/skill forgechainchest");
         setArgumentRange(0, 0);
         setIdentifiers(new String[] { "skill forgechainhelmet", "skill chainhelm" });
-        setTypes(new SkillType[] { SkillType.ITEM, SkillType.SUMMON, SkillType.SILENCABLE });
+        setTypes(SkillType.ITEM_CREATION);
     }
 
     public String getDescription(Hero hero) {

@@ -27,14 +27,21 @@ public class SkillOvergrowth extends ActiveSkill {
         setDescription("You turn a sapling into a full grown tree.");
         setUsage("/skill overgrowth");
         setArgumentRange(0, 0);
-        setIdentifiers("skill overgrowth", "skill ogrowth");
-        setTypes(SkillType.SILENCABLE, SkillType.EARTH);
+        setIdentifiers("skill overgrowth");
+        setTypes(SkillType.ABILITY_PROPERTY_EARTH);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return getDescription();
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.MAX_DISTANCE.node(), 15);
+
         return node;
     }
 
@@ -92,10 +99,4 @@ public class SkillOvergrowth extends ActiveSkill {
         return SkillResult.NORMAL;
         
     }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
-    }
-
 }

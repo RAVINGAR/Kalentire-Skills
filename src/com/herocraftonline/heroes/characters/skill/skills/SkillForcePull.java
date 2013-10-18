@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +14,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -34,30 +37,37 @@ public class SkillForcePull extends TargettedSkill {
 
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
-        setDescription("Forces your target toward you.");
+        setDescription("Deal $1 physical damage and force your target towards you. The targetting distance of this ability is affected by your Intellect.");
         setUsage("/skill forcepull");
         setArgumentRange(0, 0);
-        setIdentifiers("skill forcepull", "skill fpull");
-        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
+        setIdentifiers("skill forcepull");
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.INTERRUPTING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;
-        }
     }
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+
+        return getDescription().replace("$1", damage + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(0));
-        node.set("horizontal-power", Double.valueOf(3.0));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("ncp-exemption-duration", 1500);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.6));
+        node.set("horizontal-power", Double.valueOf(0.3));
+        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0125));
+        node.set("vertical-power", Double.valueOf(0.4));
+        node.set("ncp-exemption-duration", Integer.valueOf(1000));
+        node.set("pull-delay", Double.valueOf(0.2));
 
         return node;
     }
@@ -68,7 +78,10 @@ public class SkillForcePull extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
         if (damage > 0) {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
@@ -81,7 +94,7 @@ public class SkillForcePull extends TargettedSkill {
                 if (!targetPlayer.isOp()) {
                     long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
                     if (duration > 0) {
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, duration);
+                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, duration);
                         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                         targetCT.addEffect(ncpExemptEffect);
                     }
@@ -92,16 +105,45 @@ public class SkillForcePull extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        final double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 1.0, false);
+        Material mat = targetLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+
+        boolean weakenVelocity = false;
+        switch (mat) {
+            case STATIONARY_WATER:
+            case STATIONARY_LAVA:
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                weakenVelocity = true;
+                break;
+            default:
+                break;
+        }
+
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
+
+        if (weakenVelocity)
+            tempVPower *= 0.75;
+
+        final double vPower = tempVPower;
+
         Vector pushUpVector = new Vector(0, vPower, 0);
         target.setVelocity(pushUpVector);
 
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
         final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
-        final double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 3.0, false);
+
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0125), false);
+        tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        if (weakenVelocity)
+            tempHPower *= 0.75;
+
+        final double hPower = tempHPower;
 
         // push them "up" first. THEN we can pull them to us.
-        double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.5, false);
+        double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
                 // Push them away
@@ -121,13 +163,14 @@ public class SkillForcePull extends TargettedSkill {
         catch (Exception e) {
             e.printStackTrace();
         }
+
         return SkillResult.NORMAL;
     }
 
     private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPExemptionEffect(Skill skill, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", duration);
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
         @Override

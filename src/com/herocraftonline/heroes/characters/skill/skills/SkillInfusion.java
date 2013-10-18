@@ -9,10 +9,11 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.uncommon.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -29,26 +30,33 @@ public class SkillInfusion extends TargettedSkill {
         setUsage("/skill infusion <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill infusion");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
     }
 
     public String getDescription(Hero hero) {
 
-        int health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 115, false);
-        int healthcost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 50, false);
-        int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 10, false);
-        int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.02, false) * 100);
+        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(130), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.8), false);
+        healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        return getDescription().replace("$1", health + "").replace("$2", healIncrease + "").replace("$3", healthcost + "").replace("$4", manacost + "");
+        int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), Integer.valueOf(85), false);
+        int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), Integer.valueOf(110), false);
+
+        int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", Double.valueOf(0.04), false) * 100);
+
+        return getDescription().replace("$1", healing + "").replace("$2", healIncrease + "").replace("$3", healthCost + "").replace("$4", manacost + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("health-increase-percent-per-blood-union", 0.02);
-        node.set(SkillSetting.HEALTH.node(), 10);
-        node.set(SkillSetting.MANA.node(), 25);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
+        node.set("health-increase-percent-per-blood-union", Double.valueOf(0.03));
+        node.set(SkillSetting.HEALING.node(), Integer.valueOf(75));
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0));
+        node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(35));
+        node.set(SkillSetting.MANA.node(), Integer.valueOf(80));
 
         return node;
     }
@@ -66,15 +74,19 @@ public class SkillInfusion extends TargettedSkill {
         // Check to see if they are at full health
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer()))
-                Messaging.send(player, "You are already at full health.", new Object[0]);
+                Messaging.send(player, "You are already at full health.");
             else {
-                Messaging.send(player, "Target is already at full health.", new Object[0]);
+                Messaging.send(player, "Target is already at full health.");
             }
 
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
+        broadcastExecuteText(hero, target);
+
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(75), false);
+        double wisHealIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0), false));
+        healAmount += wisHealIncrease;
 
         // Get Blood Union Level
         int bloodUnionLevel = 0;
@@ -85,7 +97,7 @@ public class SkillInfusion extends TargettedSkill {
         }
 
         // Increase healing based on blood union level
-        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.02, false);
+        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", Double.valueOf(0.03), false);
         healIncrease = 1 + (healIncrease *= bloodUnionLevel);
         healAmount *= healIncrease;
 
@@ -96,8 +108,6 @@ public class SkillInfusion extends TargettedSkill {
             Messaging.send(player, "Unable to heal your target at this time!", new Object[0]);
             return SkillResult.CANCELLED;
         }
-
-        broadcastExecuteText(hero, target);
 
         // Heal target
         targetHero.heal(hrhEvent.getAmount());

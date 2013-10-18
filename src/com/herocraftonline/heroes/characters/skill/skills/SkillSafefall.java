@@ -28,42 +28,45 @@ public class SkillSafefall extends ActiveSkill {
         setUsage("/skill safefall");
         setArgumentRange(0, 0);
         setIdentifiers("skill safefall");
-        setTypes(SkillType.MOVEMENT, SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_AIR, SkillType.BUFFING, SkillType.SILENCABLE);
 
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
         }
-        catch (Exception e) {}
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 20000);
+
+        node.set(SkillSetting.DURATION.node(), 6000);
+
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        hero.addEffect(new NCPCompatSafeFallEffect(this, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BAT_LOOP , 1.0F, 1.0F); 
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        hero.addEffect(new NCPCompatSafeFallEffect(this, player, duration));
+
+        player.getWorld().playSound(player.getLocation(), Sound.BAT_LOOP, 1.0F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 
     private class NCPCompatSafeFallEffect extends SafeFallEffect {
 
-        public NCPCompatSafeFallEffect(Skill skill, long duration) {
-            super(skill, duration);
+        public NCPCompatSafeFallEffect(Skill skill, Player applier, long duration) {
+            super(skill, applier, duration);
         }
 
         @Override
@@ -80,8 +83,13 @@ public class SkillSafefall extends ActiveSkill {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
 
-            if (ncpEnabled)
-                NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
+            if (ncpEnabled) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
+                    }
+                }, 2L);
+            }
         }
     }
 }
