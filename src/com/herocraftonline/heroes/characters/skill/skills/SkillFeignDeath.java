@@ -26,6 +26,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
+import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -127,6 +128,21 @@ public class SkillFeignDeath extends ActiveSkill {
                 List<Entity> nearEntities = hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange);
                 for (Entity entity : nearEntities) {
                     if (entity instanceof Player) {
+                        if (hero.hasParty()) {
+                            Hero nearHero = plugin.getCharacterManager().getHero((Player) entity);
+                            HeroParty heroParty = hero.getParty();
+                            boolean isPartyMember = false;
+                            for (Hero partyMember : heroParty.getMembers()) {
+                                if (nearHero.equals(partyMember)) {
+                                    isPartyMember = true;
+                                    break;
+                                }
+                            }
+
+                            if (isPartyMember)
+                                return;
+                        }
+
                         hero.removeEffect(hero.getEffect("Invisible"));
                         heroes.remove();
                         break;
