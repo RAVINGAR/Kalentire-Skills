@@ -299,7 +299,15 @@ public class SkillRecall extends ActiveSkill {
         // Validate Herotowns
         if (herotowns) {
             if (!ht.getGlobalRegionManager().canBuild(player, recallLocation)) {
-                Messaging.send(player, "Can not Recall to a town you have no access to!");
+                Messaging.send(player, "You cannot Recall to a Town you have no access to!");
+                return SkillResult.FAIL;
+            }
+        }
+
+        // Validate WorldGuard
+        if (worldguard) {
+            if (!wgp.canBuild(player, recallLocation)) {
+                Messaging.send(player, "You cannot Recall to a Region you have no access to!");
                 return SkillResult.FAIL;
             }
         }
