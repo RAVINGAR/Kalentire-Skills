@@ -10,12 +10,18 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHealingChorus extends ActiveSkill {
+
+    private String applyText;
+    private String expireText;
+
     public SkillHealingChorus(Heroes plugin) {
         super(plugin, "HealingChorus");
         setDescription("You sing a chorus of healing, affecting party members within $1 blocks. The chorus heals them for $2 health over $3 seconds. You are only healed for $4 health from this effect.");
@@ -50,9 +56,19 @@ public class SkillHealingChorus extends ActiveSkill {
         node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
         node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(17));
         node.set(SkillSetting.HEALING_INCREASE_PER_CHARISMA.node(), Double.valueOf(0.175));
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with %hero%'s chorus of healing.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s chorus of healing has ended.");
         node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
 
         return node;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -79,16 +95,41 @@ public class SkillHealingChorus extends ActiveSkill {
                     // Check to see if they are close enough to the player to receive the buff
                     if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
                         // Add the effect
-                        member.addEffect(new PeriodicHealEffect(this, "HealingChorus", player, period, duration, healing));
+                        member.addEffect(new HealingChorusEffect(this, player, period, duration, healing));
                     }
                 }
             }
         }
         else {
             // Add the effect to just the player
-            hero.addEffect(new PeriodicHealEffect(this, "HealingChorus", player, period, duration, healing));
+            hero.addEffect(new HealingChorusEffect(this, player, period, duration, healing));
         }
 
         return SkillResult.NORMAL;
+    }
+
+    public class HealingChorusEffect extends PeriodicHealEffect {
+
+        public HealingChorusEffect(Skill skill, Player applier, long period, long duration, double healing) {
+            super(skill, "HealingChorus", applier, period, duration, healing, null, null);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, applyText);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, expireText);
+        }
     }
 }
