@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -16,11 +18,14 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.HeroTowns;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillMark extends ActiveSkill {
 
     private boolean herotowns = false;
     private HeroTowns ht;
+    private WorldGuardPlugin wgp;
+    private boolean worldguard = false;
 
     public SkillMark(Heroes plugin) {
         super(plugin, "Mark");
@@ -30,15 +35,20 @@ public class SkillMark extends ActiveSkill {
         setIdentifiers("skill mark");
         setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
 
-        //        try {
-        //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-        //                herotowns = true;
-        //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-        //            }
-        //        }
-        //        catch (Exception e) {
-        //            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
-        //        }
+        try {
+            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+            //                herotowns = true;
+            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            //            }
+            //        }
+            if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+                worldguard = true;
+                wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+            }
+        }
+        catch (Exception e) {
+            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+        }
     }
 
     @Override
@@ -90,7 +100,15 @@ public class SkillMark extends ActiveSkill {
             // Validate Herotowns
             if (herotowns) {
                 if (!ht.getGlobalRegionManager().canBuild(player, loc)) {
-                    broadcast(player.getLocation(), "Can not use Mark in a town you have no access to!");
+                    Messaging.send(player, "You cannot Mark in a Town you have no access to!");
+                    return SkillResult.FAIL;
+                }
+            }
+
+            // Validate WorldGuard
+            if (worldguard) {
+                if (!wgp.canBuild(player, loc)) {
+                    Messaging.send(player, "You cannot Mark in a Region you have no access to!");
                     return SkillResult.FAIL;
                 }
             }

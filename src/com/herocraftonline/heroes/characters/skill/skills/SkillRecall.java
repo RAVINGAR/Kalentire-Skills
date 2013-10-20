@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,11 +25,14 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.townships.HeroTowns;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillRecall extends ActiveSkill {
 
     private boolean herotowns = false;
     private HeroTowns ht;
+    private WorldGuardPlugin wgp;
+    private boolean worldguard = false;
 
     public SkillRecall(Heroes plugin) {
         super(plugin, "Recall");
@@ -38,15 +42,20 @@ public class SkillRecall extends ActiveSkill {
         setIdentifiers("skill recall");
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORTING);
 
-        //        try {
-        //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-        //                herotowns = true;
-        //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-        //            }
-        //        }
-        //        catch (Exception e) {
-        //            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
-        //        }
+        try {
+            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+            //                herotowns = true;
+            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            //            }
+            //        }
+            if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+                worldguard = true;
+                wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+            }
+        }
+        catch (Exception e) {
+            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+        }
     }
 
     public String getDescription(Hero hero) {
@@ -192,7 +201,15 @@ public class SkillRecall extends ActiveSkill {
                             // Validate Herotowns
                             if (herotowns) {
                                 if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
-                                    broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
+                                    Messaging.send(player, "You cannot Recall to a Town you have no access to!");
+                                    return SkillResult.FAIL;
+                                }
+                            }
+                            
+                            // Validate WorldGuard
+                            if (worldguard) {
+                                if (!wgp.canBuild(player, teleportLocation)) {
+                                    Messaging.send(player, "You cannot Recall to a Region you have no access to!");
                                     return SkillResult.FAIL;
                                 }
                             }
@@ -213,14 +230,15 @@ public class SkillRecall extends ActiveSkill {
                             // Teleport the player to the location
                             player.teleport(teleportLocation);
 
-                            final Location finalTeleportLocation = teleportLocation;
-                            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!player.getLocation().equals(finalTeleportLocation))
-                                        player.teleport(finalTeleportLocation);
-                                }
-                            }, 5L);
+                            // Removed for now until I have time to properly test it.
+                            //                            final Location finalTeleportLocation = teleportLocation;
+                            //                            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                            //                                @Override
+                            //                                public void run() {
+                            //                                    if (!player.getLocation().equals(finalTeleportLocation))
+                            //                                        player.teleport(finalTeleportLocation);
+                            //                                }
+                            //                            }, 5L);
 
                             teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
 

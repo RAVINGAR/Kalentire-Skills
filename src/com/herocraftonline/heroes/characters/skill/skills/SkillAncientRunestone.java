@@ -115,7 +115,7 @@ public class SkillAncientRunestone extends ActiveSkill {
         // Check to make sure it is a redstone block
         ItemStack item = player.getItemInHand();
         if (item.getType().name() != "REDSTONE_BLOCK") {
-            Messaging.send(player, "You must be holding a Redstone Block in order to imbue Runestones.", new Object[0]);
+            Messaging.send(player, "You must be holding a Redstone Block in order to imbue Runestones.");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
 
@@ -135,7 +135,7 @@ public class SkillAncientRunestone extends ActiveSkill {
                 if (residence != null) {
                     ResidencePermissions perm = residence.getPermissions();
                     if (!(perm.playerHas(player.getName(), "build", false))) {
-                        Messaging.send(player, "You cannot imbue a Runestone within a residence you do not have access to!", new Object[0]);
+                        Messaging.send(player, "You cannot imbue a Runestone within a residence you do not have access to!");
                         return SkillResult.FAIL;
                     }
                 }
@@ -144,15 +144,15 @@ public class SkillAncientRunestone extends ActiveSkill {
             // Validate Herotowns
             if (herotowns) {
                 if (!(ht.getGlobalRegionManager().canBuild(player, location))) {
-                    Messaging.send(player, "You cannot imbue a Runestone within a town you do not have access to!", new Object[0]);
+                    Messaging.send(player, "You cannot imbue a Runestone within a town you do not have access to!");
                     return SkillResult.FAIL;
                 }
             }
 
             // Validate WorldGuard
             if (worldguard) {
-                if (!(wgp.canBuild(player, player.getLocation()))) {
-                    broadcast(player.getLocation(), "Can not set a Runestone in a Region you have no access to!");
+                if (!wgp.canBuild(player, location)) {
+                    Messaging.send(player, "You cannot imbue a Runestone in a Region you have no access to!");
                     return SkillResult.FAIL;
                 }
             }
@@ -200,14 +200,14 @@ public class SkillAncientRunestone extends ActiveSkill {
                 HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1) });
                 for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
                     player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-                    Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+                    Messaging.send(player, "Items have been dropped at your feet!");
                 }
             }
 
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "You cannot imbue a Rune to that item!", new Object[0]);
+            Messaging.send(player, "You cannot imbue a Rune to that item!");
             return SkillResult.FAIL;
         }
     }
