@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -28,18 +29,22 @@ public class SkillReplenish extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double manaPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 0.75, false);
-        int manaAmount = (int) (hero.getMaxMana() * manaPercent);
-        String formattedManaPercent = Util.decFormat.format(manaPercent * 100);
+        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-gain-percent", 0.15, false);
+        double manaGainPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-gain-percent-increase-per-wisdom", 0.015, false);
+        manaGainPercent += manaGainPercentIncrease * hero.getAttributeValue(AttributeType.WISDOM);
 
-        return getDescription().replace("$1", formattedManaPercent).replace("$2", manaAmount + "");
+        int manaIncreaseAmount = (int) (hero.getMaxMana() * manaGainPercent);
+        String formattedManaPercent = Util.decFormat.format(manaGainPercent * 100);
+
+        return getDescription().replace("$1", formattedManaPercent).replace("$2", manaIncreaseAmount + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("mana-bonus", Double.valueOf(0.75));
+        node.set("mana-gain-percent", Double.valueOf(0.20));
+        node.set("mana-gain-percent-increase-per-wisdom", Double.valueOf(0.015));
 
         return node;
     }
@@ -50,10 +55,13 @@ public class SkillReplenish extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", Double.valueOf(0.75), false);
-        int manaBonus = (int) Math.floor(hero.getMaxMana() * manaGainPercent);
+        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-gain-percent", 0.15, false);
+        double manaGainPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-gain-percent-increase-per-wisdom", 0.015, false);
+        manaGainPercent += manaGainPercentIncrease * hero.getAttributeValue(AttributeType.WISDOM);
 
-        HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
+        int manaIncreaseAmount = (int) (hero.getMaxMana() * manaGainPercent);
+
+        HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaIncreaseAmount, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
             hero.setMana(hrmEvent.getAmount() + hero.getMana());
