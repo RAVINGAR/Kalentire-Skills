@@ -159,7 +159,8 @@ public class SkillEnderPearls extends PassiveSkill {
 
             double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", Double.valueOf(0.75), false);
             EnderPearl enderPearl = (EnderPearl) event.getEntity();
-            enderPearl.setVelocity(enderPearl.getVelocity().multiply(velocityMultiplier));
+            double yVel = enderPearl.getVelocity().getY();
+            enderPearl.setVelocity(enderPearl.getVelocity().multiply(velocityMultiplier).setY(yVel));
         }
 
         // Ender pearls are rather...exploity. This event will watch the teleports and moderate them.
