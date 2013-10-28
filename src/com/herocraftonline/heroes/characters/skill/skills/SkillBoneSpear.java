@@ -99,8 +99,10 @@ public class SkillBoneSpear extends ActiveSkill {
             if (Util.transparentBlocks.contains(tempBlockType)) {
                 final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
 
+                // Schedule the action in advance
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
+                        // Play effect
                         try {
                             fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
                         }
@@ -111,20 +113,22 @@ public class SkillBoneSpear extends ActiveSkill {
                             e.printStackTrace();
                         }
 
+                        // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {
-                            // Check to see if the entity can be damaged
+                            // Ensure that we have a valid entity
                             if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
                                 continue;
 
+                            // Check to see if the entity can be damaged
                             if (!damageCheck(player, (LivingEntity) entity))
                                 continue;
 
                             // Damage target
                             LivingEntity target = (LivingEntity) entity;
-
                             addSpellTarget(target, hero);
                             damageEntity(target, player, damage, DamageCause.MAGIC);
 
+                            // Add the target to the hitEntity map to ensure we don't ever hit them again with this specific BoneSpear
                             hitEnemies.add(entity);
                         }
                     }
