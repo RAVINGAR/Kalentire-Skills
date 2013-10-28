@@ -245,7 +245,6 @@ public class SkillDarkBolt extends ActiveSkill {
             super(skill, "DarkBoltWithering", applier, duration, healingReductionPercent, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.DARK);
             types.add(EffectType.WITHER);
 
             addMobEffect(20, (int) (duration / 1000) * 20, witherLevel, false);
