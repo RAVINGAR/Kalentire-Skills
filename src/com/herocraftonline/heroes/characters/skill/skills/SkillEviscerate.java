@@ -47,6 +47,7 @@ public class SkillEviscerate extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(100));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(3.75));
+        node.set("weapons", Util.swords);
 
         return node;
     }
@@ -56,8 +57,8 @@ public class SkillEviscerate extends TargettedSkill {
         Player player = hero.getPlayer();
 
         Material item = player.getItemInHand().getType();
-        if(!Util.swords.contains(item.name())) {
-            Messaging.send(player, "You can't use eviscerate with that weapon!");
+        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
+            Messaging.send(player, "You can't Eviscerate with that weapon!");
             return SkillResult.FAIL;
         }
 
