@@ -25,7 +25,7 @@ public class SkillAssemblePickaxe extends ActiveSkill {
         setDescription("You gather spare parts and assemble a pickaxe.");
         setUsage("/skill assemblepickaxe");
         setArgumentRange(0, 0);
-        setIdentifiers("skill assemblepickaxe", "skill pickaxe");
+        setIdentifiers("skill assemblepickaxe", "skill summonpickaxe", "skill pickaxe");
         setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
     }
 
@@ -50,14 +50,17 @@ public class SkillAssemblePickaxe extends ActiveSkill {
 
         int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
 
+        broadcastExecuteText(hero);
+
         PlayerInventory inventory = player.getInventory();
         HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.STONE_PICKAXE, amount) });
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+            Messaging.send(player, "Items have been dropped at your feet!");
         }
+
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
-        broadcastExecuteText(hero);
+
         return SkillResult.NORMAL;
     }
 }
