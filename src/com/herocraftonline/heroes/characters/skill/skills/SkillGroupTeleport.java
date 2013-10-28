@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -8,6 +9,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillGroupTeleport extends ActiveSkill {
 
@@ -29,16 +31,27 @@ public class SkillGroupTeleport extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         if (hero.getParty() != null && hero.getParty().getMembers().size() != 1) {
-            for (Hero partyMember : hero.getParty().getMembers()) {
-                if (!partyMember.getPlayer().getWorld().equals(player.getWorld())) {
+            
+            broadcastExecuteText(hero);
+            
+            for (Hero partyHero : hero.getParty().getMembers()) {
+                Player partyPlayer = partyHero.getPlayer();
+                if (partyHero.equals(hero) || !partyPlayer.getWorld().equals(player.getWorld())) {
                     continue;
                 }
-                partyMember.getPlayer().teleport(player);
+                
+                Util.playClientEffect(partyPlayer, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                Util.playClientEffect(partyPlayer, "portal", new Vector(0, 0, 0), 1F, 10, true);
+                Util.playClientEffect(partyPlayer, "bubble", new Vector(0, 0, 0), 1F, 10, true);
+
+                partyPlayer.teleport(player);
             }
-            broadcastExecuteText(hero);
+            
             return SkillResult.NORMAL;
         }
-        Messaging.send(player, "You must have a group to teleport your party members to you!");
+        
+        Messaging.send(player, "You must actually have party members to teleport them to you!");
+        
         return SkillResult.FAIL;
     }
 }

@@ -131,8 +131,6 @@ public class SkillWeb extends TargettedSkill {
             types.add(EffectType.MAGIC);
             types.add(EffectType.HARMFUL);
 
-            this.applier = applier;
-
             if (rootDuration > 0) {
                 addMobEffect(2, (int) ((rootDuration / 1000.0) * 20), 127, false);      // Max slowness is 127
                 addMobEffect(8, (int) ((rootDuration / 1000.0) * 20), 128, false);      // Max negative jump boost
