@@ -83,8 +83,8 @@ public class SkillBattlesong extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "Your muscles bulge with power!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You feel strength leave your body!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "Your muscles bulge with power!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You feel strength leave your body!").replace("%hero%", "$1");
     }
 
     @Override
@@ -130,7 +130,7 @@ public class SkillBattlesong extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, applyText);
+            Messaging.send(player, applyText, player.getDisplayName());
         }
 
         @Override
@@ -139,7 +139,7 @@ public class SkillBattlesong extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, expireText);
+            Messaging.send(player, expireText, player.getDisplayName());
         }
 
         @Override
