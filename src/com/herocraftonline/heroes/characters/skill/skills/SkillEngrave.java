@@ -1,6 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -18,10 +18,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 public class SkillEngrave extends ActiveSkill {
-
-    private HashSet<Material> mats = new HashSet<Material>();
 
     public SkillEngrave(Heroes plugin) {
         super(plugin, "Engrave");
@@ -34,81 +33,51 @@ public class SkillEngrave extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
+
         double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
         chance = chance > 0 ? chance : 0;
         String description = getDescription().replace("$1", chance + "%");
+
         return description;
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+
         node.set(SkillSetting.CHANCE.node(), 1.0);
         node.set(SkillSetting.CHANCE_PER_LEVEL.node(), 0.0);
-        mats.add(Material.WOOD_AXE);
-        mats.add(Material.WOOD_HOE);
-        mats.add(Material.WOOD_PICKAXE);
-        mats.add(Material.WOOD_SPADE);
-        mats.add(Material.WOOD_SWORD);
-        mats.add(Material.STONE_AXE);
-        mats.add(Material.STONE_HOE);
-        mats.add(Material.STONE_PICKAXE);
-        mats.add(Material.STONE_SPADE);
-        mats.add(Material.STONE_SWORD);
-        mats.add(Material.IRON_AXE);
-        mats.add(Material.IRON_HOE);
-        mats.add(Material.IRON_PICKAXE);
-        mats.add(Material.IRON_SPADE);
-        mats.add(Material.IRON_SWORD);
-        mats.add(Material.GOLD_AXE);
-        mats.add(Material.GOLD_HOE);
-        mats.add(Material.GOLD_PICKAXE);
-        mats.add(Material.GOLD_SPADE);
-        mats.add(Material.GOLD_SWORD);
-        mats.add(Material.DIAMOND_AXE);
-        mats.add(Material.DIAMOND_HOE);
-        mats.add(Material.DIAMOND_PICKAXE);
-        mats.add(Material.DIAMOND_SPADE);
-        mats.add(Material.DIAMOND_SWORD);
-        mats.add(Material.LEATHER_HELMET);
-        mats.add(Material.LEATHER_CHESTPLATE);
-        mats.add(Material.LEATHER_LEGGINGS);
-        mats.add(Material.LEATHER_BOOTS);
-        mats.add(Material.IRON_HELMET);
-        mats.add(Material.IRON_CHESTPLATE);
-        mats.add(Material.IRON_LEGGINGS);
-        mats.add(Material.IRON_BOOTS);
-        mats.add(Material.GOLD_HELMET);
-        mats.add(Material.GOLD_CHESTPLATE);
-        mats.add(Material.GOLD_LEGGINGS);
-        mats.add(Material.GOLD_BOOTS);
-        mats.add(Material.DIAMOND_HELMET);
-        mats.add(Material.DIAMOND_CHESTPLATE);
-        mats.add(Material.DIAMOND_LEGGINGS);
-        mats.add(Material.DIAMOND_BOOTS);
-        mats.add(Material.BOW);
-        mats.add(Material.FISHING_ROD);
-        mats.add(Material.SHEARS);
-        mats.add(Material.BLAZE_ROD);
-        mats.add(Material.STICK);
-        mats.add(Material.GREEN_RECORD);
-        mats.add(Material.GOLD_RECORD);
-        mats.add(Material.RECORD_3);
-        mats.add(Material.RECORD_4);
-        mats.add(Material.RECORD_5);
-        mats.add(Material.RECORD_6);
-        mats.add(Material.RECORD_7);
-        mats.add(Material.RECORD_8);
-        mats.add(Material.RECORD_9);
-        mats.add(Material.RECORD_10);
-        mats.add(Material.RECORD_12);
-        mats.add(Material.RECORD_11);
+
+        List<String> itemList = Util.weapons;
+        itemList.addAll(Util.armors);
+        itemList.addAll(Util.tools);
+        itemList.add(Material.NOTE_BLOCK.toString());
+        itemList.add(Material.JUKEBOX.toString());
+        itemList.add(Material.RECORD_3.toString());
+        itemList.add(Material.RECORD_4.toString());
+        itemList.add(Material.RECORD_5.toString());
+        itemList.add(Material.RECORD_6.toString());
+        itemList.add(Material.RECORD_7.toString());
+        itemList.add(Material.RECORD_8.toString());
+        itemList.add(Material.RECORD_9.toString());
+        itemList.add(Material.RECORD_10.toString());
+        itemList.add(Material.RECORD_11.toString());
+        itemList.add(Material.RECORD_12.toString());
+        itemList.add(Material.GREEN_RECORD.toString());
+        itemList.add(Material.GOLD_RECORD.toString());
+        itemList.add(Material.STICK.toString());
+        itemList.add(Material.RAW_FISH.toString());
+        itemList.add(Material.BLAZE_ROD.toString());
+
+        node.set("possible-items", itemList);
+
         return node;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] text) {
         Player player = hero.getPlayer();
+
         if (text.length == 0) {
             Messaging.send(player, "/skill engrave <Text>");
             return SkillResult.CANCELLED;
@@ -118,26 +87,33 @@ public class SkillEngrave extends ActiveSkill {
             Messaging.send(player, "You must be holding an item in order to use this skill.");
             return SkillResult.CANCELLED;
         }
-        ItemStack is = player.getItemInHand();
 
-        for (Material mat : mats) {
-            if (is.getType().equals(mat)) {
-                double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this)));
-                chance = chance > 0 ? chance : 0;
-                if (Math.random() <= chance) {
-                    String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy
-                    ItemMeta im = is.getItemMeta();
-                    im.setDisplayName(str);
-                    is.setItemMeta(im);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND, 0.6F, 1.0F);
-                    broadcastExecuteText(hero);
-                    return SkillResult.NORMAL;
-                }
-                else
-                    return SkillResult.FAIL;
-            }
+        ItemStack item = player.getItemInHand();
+        Material type = item.getType();
+        if (!SkillConfigManager.getUseSetting(hero, this, "possible-items", Util.weapons).contains(type.name())) {
+            Messaging.send(player, "You cannot engrave that item!");
+            return SkillResult.FAIL;
         }
-        Messaging.send(player, "You must be holding a tool or an armor in order to use this skill.");
-        return SkillResult.CANCELLED;
+
+        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this)));
+        chance = chance > 0 ? chance : 0;
+        if (Math.random() <= chance) {
+
+            String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy
+            ItemMeta im = item.getItemMeta();
+
+            im.setDisplayName(str);
+            item.setItemMeta(im);
+
+            player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.6F, 1.0F);
+
+            broadcastExecuteText(hero);
+
+            return SkillResult.NORMAL;
+        }
+        else {
+            Messaging.send(player, "You failed to engrave that item!");
+            return SkillResult.FAIL;
+        }
     }
 }
