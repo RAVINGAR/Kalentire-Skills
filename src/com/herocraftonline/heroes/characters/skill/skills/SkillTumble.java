@@ -29,7 +29,7 @@ public class SkillTumble extends PassiveSkill {
 
     public SkillTumble(Heroes plugin) {
         super(plugin, "Tumble");
-        setDescription("");
+        setDescription("PASSIVE: $1");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
@@ -42,22 +42,20 @@ public class SkillTumble extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        String description = "";
+        String description = getDescription();
 
         double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", Integer.valueOf(0), false);
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
         distance += (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease) + 3;
 
-        String formattedDistance = Util.decFormat.format(distance);
-
         if (distance == 3)
-            description = "You aren't very good at breaking your fall, and will take full fall damage when falling down a block height greater than 3.";
+            description.replace("$1", "You aren't very good at breaking your fall, and will take full fall damage when falling down a block height greater than 3.");
         else if (distance > 0 && distance < 3)
-            description = "You are terrible at bracing yourself, and will take fall damage when falling down a block height greater than " + formattedDistance + "!";
+            description.replace("$1", "You are terrible at bracing yourself, and will take " + Util.decFormat.format(distance) + " additional blocks of fall damage when falling down a block height greater than 3!");
         else if (distance < 0)
-            description = "You are extremely terrible at bracing yourself, and will take an additional " + Util.decFormat.format(distance * -1) + " blocks of fall damage when falling down any number of blocks!";
+            description.replace("$1", "You are extremely terrible at bracing yourself, and will take an additional " + Util.decFormat.format(3 + (distance * -1)) + " blocks of fall damage when falling down a block height greater than 3!");
         else
-            description = "You are adept at bracing yourself, and will only take fall damage when falling down a block height greater than " + formattedDistance + "!";
+            description.replace("$1", "You are adept at bracing yourself, and will only take fall damage when falling down a block height greater than " + Util.decFormat.format(distance) + "!");
 
         return description;
     }
@@ -87,7 +85,7 @@ public class SkillTumble extends PassiveSkill {
                 return;
             }
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (!hero.hasEffect("Tumble")) {
+            if (!hero.hasEffect("Tumble") || hero.hasEffectType(EffectType.SAFEFALL)) {
                 return;
             }
 
