@@ -97,7 +97,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
         }
 
         long currentTime = System.currentTimeMillis();
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+        List<Entity> entities = target.getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;

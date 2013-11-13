@@ -58,6 +58,11 @@ public class SkillBalance extends ActiveSkill {
 
         HeroParty heroParty = hero.getParty();
 
+        if (heroParty.getMembers().size() < 2) {
+            player.sendMessage(ChatColor.GRAY + "You must have other players in your party to use this ability!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
         double maxHealthTotal = 0;
         double currentHealthTotal = 0;
         Iterator<Hero> partyMembers = heroParty.getMembers().iterator();
@@ -79,7 +84,7 @@ public class SkillBalance extends ActiveSkill {
         }
 
         if (maxHealthTotal == player.getMaxHealth()) {
-            Messaging.send(player, "There is noone in range to balance with!");
+            Messaging.send(player, "There is nobody in range to balance with!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
