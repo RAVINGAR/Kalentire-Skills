@@ -40,10 +40,10 @@ public class SkillSuperJump extends ActiveSkill {
         setIdentifiers("skill superjump");
         setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
-       /* if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;
         }
-    }*/
+    }
 
     @Override
     public String getDescription(Hero hero) {
