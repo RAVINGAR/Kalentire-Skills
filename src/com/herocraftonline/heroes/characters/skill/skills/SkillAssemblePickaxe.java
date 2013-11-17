@@ -56,7 +56,7 @@ public class SkillAssemblePickaxe extends ActiveSkill {
         HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.STONE_PICKAXE, amount) });
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            Messaging.send(player, "Items have been dropped at your feet!");
+            Messaging.send(player, "Item(s) have been dropped at your feet!");
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
