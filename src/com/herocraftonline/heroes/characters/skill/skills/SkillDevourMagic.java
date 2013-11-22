@@ -119,26 +119,12 @@ public class SkillDevourMagic extends ActiveSkill {
 
     public class DevourMagicEffect extends ExpirableEffect {
         public DevourMagicEffect(Skill skill, Player applier, long duration) {
-            super(skill, "DevourMagic", applier, duration);
+            super(skill, "DevourMagic", applier, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DARK);
             types.add(EffectType.MAGIC);
             types.add(EffectType.DISPELLABLE);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
     }
 }

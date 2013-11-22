@@ -81,30 +81,13 @@ public class SkillFlicker extends ActiveSkill {
         long invisDuration;
         
         public FlickerEffect(Skill skill, Player applier, long period, long duration, long invisDuration) {
-            super(skill, "Flicker", applier, period, duration);
+            super(skill, "Flicker", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
             types.add(EffectType.DISPELLABLE);
             
             this.invisDuration = invisDuration;
-        }
-        
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            Player player = hero.getPlayer();
-
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
         }
 
         @Override

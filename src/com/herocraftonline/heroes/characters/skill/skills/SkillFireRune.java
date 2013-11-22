@@ -151,7 +151,7 @@ public class SkillFireRune extends ActiveSkill {
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, false);
 
-                    // Announce that the player has been hit with the skill 
+                    // Announce that the player has been hit with the skill
                     broadcast(targEnt.getLocation(), applyText, targCT.getName());
 
                     // Play Effects
