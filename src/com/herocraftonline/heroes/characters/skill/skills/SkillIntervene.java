@@ -1,19 +1,22 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -84,8 +87,8 @@ public class SkillIntervene extends TargettedSkill {
         if (!(target instanceof Player))
             return SkillResult.INVALID_TARGET;
 
-        Hero tHero = plugin.getCharacterManager().getHero((Player) target);
-        if (tHero.hasEffect("InterveneTarget")) {
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        if (targetHero.hasEffect("InterveneTarget")) {
             Messaging.send(player, "You cannot intervene that target right now!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -96,7 +99,6 @@ public class SkillIntervene extends TargettedSkill {
         double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", Double.valueOf(0.50), false);
         int distanceRequired = SkillConfigManager.getUseSetting(hero, this, "distance-required-for-intervene", Integer.valueOf(5), false);
 
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         targetHero.addEffect(new InterveneEffect(this, player, duration, damageSplitPercent, distanceRequired));
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
@@ -128,10 +130,13 @@ public class SkillIntervene extends TargettedSkill {
                     LivingEntity damagerLE = event.getDamager().getEntity();
                     Player interveningPlayer = bgEffect.getApplier();
 
-                    int distance = bgEffect.getDistanceRequired();
-                    int distanceSquared = distance * distance;
+                    int distanceRequired = bgEffect.getDistanceRequired();
+                    int distanceRequiredSquared = distanceRequired * distanceRequired;
 
-                    if (interveningPlayer.getLocation().distanceSquared(defenderPlayer.getLocation()) > distanceSquared)
+                    Location interveningPlayerLocation = interveningPlayer.getLocation();
+                    Location defenderPlayerLocation = defenderPlayer.getLocation();
+
+                    if (!interveningPlayerLocation.getWorld().equals(defenderPlayerLocation.getWorld()) || interveningPlayerLocation.distanceSquared(defenderPlayerLocation) > distanceRequiredSquared)
                         return;
 
                     if (!damageCheck(damagerLE, defenderPlayer) || !damageCheck(damagerLE, interveningPlayer))
@@ -140,18 +145,19 @@ public class SkillIntervene extends TargettedSkill {
                     // Modify damage;
                     double damageSplitPercent = bgEffect.getDamageSplitPercent();
 
-                    double targetDamageModifier = 1.0 - damageSplitPercent;
-                    double targetDamage = event.getDamage() * targetDamageModifier;
+                    double defenderDamageModifier = 1.0 - damageSplitPercent;
+                    double defenderDamage = event.getDamage() * defenderDamageModifier;
 
-                    double intervenerDamageModifier = 1.0 - targetDamageModifier;
+                    double intervenerDamageModifier = 1.0 - defenderDamageModifier;
                     double intervenerDamage = event.getDamage() * intervenerDamageModifier;
 
-                    event.setDamage(targetDamage);
+                    event.setDamage(defenderDamage);
 
-                    CharacterTemplate damagerCT = plugin.getCharacterManager().getCharacter(damagerLE);
+                    CharacterTemplate damagerCT = event.getDamager();
                     addSpellTarget((LivingEntity) interveningPlayer, (Hero) damagerCT);
 
-                    if (skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !skill.isType(SkillType.ARMOR_PIERCING))
+                    Skill eSkill = event.getSkill();
+                    if (eSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !eSkill.isType(SkillType.ARMOR_PIERCING))
                         damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.ENTITY_ATTACK, false);
                     else
                         damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.MAGIC, false);
@@ -163,11 +169,15 @@ public class SkillIntervene extends TargettedSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
                 return;
+            }
 
-            if (event.getEntity() instanceof Player && event.getDamager().getEntity() instanceof Player) {
+            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            Entity damager = edbe.getDamager();
+
+            if (event.getEntity() instanceof Player && damager instanceof Player) {
                 Player defenderPlayer = (Player) event.getEntity();
                 Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
 
@@ -175,13 +185,16 @@ public class SkillIntervene extends TargettedSkill {
                 if (defenderHero.hasEffect("InterveneTarget")) {
                     InterveneEffect bgEffect = (InterveneEffect) defenderHero.getEffect("InterveneTarget");
 
-                    LivingEntity damagerLE = event.getDamager().getEntity();
+                    LivingEntity damagerLE = (LivingEntity) damager;
                     Player interveningPlayer = bgEffect.getApplier();
 
-                    int distance = bgEffect.getDistanceRequired();
-                    int distanceSquared = distance * distance;
+                    int distanceRequired = bgEffect.getDistanceRequired();
+                    int distanceRequiredSquared = distanceRequired * distanceRequired;
 
-                    if (interveningPlayer.getLocation().distanceSquared(defenderPlayer.getLocation()) > distanceSquared)
+                    Location interveningPlayerLocation = interveningPlayer.getLocation();
+                    Location defenderPlayerLocation = defenderPlayer.getLocation();
+
+                    if (!interveningPlayerLocation.getWorld().equals(defenderPlayerLocation.getWorld()) || interveningPlayerLocation.distanceSquared(defenderPlayerLocation) > distanceRequiredSquared)
                         return;
 
                     if (!damageCheck(damagerLE, defenderPlayer) || !damageCheck(damagerLE, interveningPlayer))
@@ -190,21 +203,21 @@ public class SkillIntervene extends TargettedSkill {
                     // Modify damage;
                     double damageSplitPercent = bgEffect.getDamageSplitPercent();
 
-                    double targetDamageModifier = 1.0 - damageSplitPercent;
-                    double targetDamage = event.getDamage() * targetDamageModifier;
+                    double defenderDamageModifier = 1.0 - damageSplitPercent;
+                    double defenderDamage = event.getDamage() * defenderDamageModifier;
 
-                    double intervenerDamageModifier = 1.0 - targetDamageModifier;
+                    double intervenerDamageModifier = 1.0 - defenderDamageModifier;
                     double intervenerDamage = event.getDamage() * intervenerDamageModifier;
 
-                    event.setDamage(targetDamage);
+                    event.setDamage(defenderDamage);
 
                     CharacterTemplate damagerCT = plugin.getCharacterManager().getCharacter(damagerLE);
                     addSpellTarget((LivingEntity) interveningPlayer, (Hero) damagerCT);
+
                     damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.ENTITY_ATTACK, false);
 
                     interveningPlayer.getWorld().playSound(interveningPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }
-
             }
         }
     }
