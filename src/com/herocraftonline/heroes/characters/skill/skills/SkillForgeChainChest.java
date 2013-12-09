@@ -52,7 +52,7 @@ public class SkillForgeChainChest extends ActiveSkill {
         ItemMeta metaData = forgedItem.getItemMeta();
 
         // Add the "Forged by" message to the item.
-        String imbuedByInformation = ChatColor.DARK_PURPLE + "Forged by " + player.getDisplayName();
+        String imbuedByInformation = ChatColor.DARK_PURPLE + "Forged by " + player.getName();
         List<String> newLore = Arrays.asList(imbuedByInformation);
         metaData.setLore(newLore);
 
