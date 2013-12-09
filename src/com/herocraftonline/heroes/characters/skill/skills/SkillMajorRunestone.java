@@ -161,7 +161,7 @@ public class SkillMajorRunestone extends ActiveSkill {
             else
                 runestoneUsesInformation = ChatColor.AQUA + "Uses: Unlimited";
 
-            String imbuedByInformation = ChatColor.DARK_PURPLE + "Imbued by " + player.getDisplayName();
+            String imbuedByInformation = ChatColor.DARK_PURPLE + "Imbued by " + player.getName();
             List<String> newLore = Arrays.asList(locationInformation, runestoneUsesInformation, imbuedByInformation);
             metaData.setLore(newLore);
 
