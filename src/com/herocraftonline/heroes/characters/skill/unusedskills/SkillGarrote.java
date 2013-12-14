@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/kynltfteef0dwm55hwzmg - old src
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
