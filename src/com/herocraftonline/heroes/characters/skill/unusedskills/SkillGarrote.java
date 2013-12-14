@@ -1,3 +1,5 @@
+package com.herocraftonline.heroes.characters.skill.unusedskills;
+
 /*package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/kynltfteef0dwm55hwzmg - old src
 import org.bukkit.Material;
