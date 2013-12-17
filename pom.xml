@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.4.0-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
@@ -56,27 +56,23 @@
             <id>md_5</id>
             <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>Genesis-MC</id>
-            <url>http://jenkins.genesis-mc.com/plugin/repository/everything/</url>
-        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.6.4-R0.1-SNAPSHOT</version>
+            <version>1.7.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.6.4-R0.1-SNAPSHOT</version>
+            <version>1.7.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -89,12 +85,6 @@
             <artifactId>Vault</artifactId>
             <version>1.2.26-SNAPSHOT</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>me.desht</groupId>
-            <artifactId>scrollingmenusign</artifactId>
-            <version>2.1.2</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>

@@ -84,8 +84,8 @@ public class SkillConfuse extends TargettedSkill {
             Vector velocity = lEntity.getVelocity();
 
             float angle = random.nextFloat() * 2 * 3.14159f;
-            float xAdjustment = maxDrift * net.minecraft.server.v1_6_R3.MathHelper.cos(angle);
-            float zAdjustment = maxDrift * net.minecraft.server.v1_6_R3.MathHelper.sin(angle);
+            float xAdjustment = maxDrift * net.minecraft.server.v1_7_R1.MathHelper.cos(angle);
+            float zAdjustment = maxDrift * net.minecraft.server.v1_7_R1.MathHelper.sin(angle);
 
             velocity.add(new Vector(xAdjustment, 0f, zAdjustment));
             velocity.setY(0);
