@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -96,7 +95,7 @@ public class SkillImpale extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(sEffect);
 
         // Play sound
-        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

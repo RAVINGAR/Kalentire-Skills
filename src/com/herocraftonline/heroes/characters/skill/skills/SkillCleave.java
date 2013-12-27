@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -76,7 +75,7 @@ public class SkillCleave extends TargettedSkill {
             damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
 
         broadcastExecuteText(hero, target);
 

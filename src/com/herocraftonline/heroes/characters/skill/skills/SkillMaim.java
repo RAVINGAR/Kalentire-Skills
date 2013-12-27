@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -94,7 +93,7 @@ public class SkillMaim extends TargettedSkill {
         SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
         targCT.addEffect(sEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -72,7 +72,7 @@ public class SkillEviscerate extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_HIT, 0.4F, 2.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.4F, 2.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.4F, 2.0F);
 
         return SkillResult.NORMAL;
     }

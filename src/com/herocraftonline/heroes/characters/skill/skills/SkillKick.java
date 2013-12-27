@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -70,7 +69,7 @@ public class SkillKick extends TargettedSkill {
             plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;

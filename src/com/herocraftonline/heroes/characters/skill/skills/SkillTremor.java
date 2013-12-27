@@ -149,7 +149,7 @@ public class SkillTremor extends ActiveSkill{
             target.setVelocity(new Vector(xDir, individualVPower, zDir));
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
         player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);

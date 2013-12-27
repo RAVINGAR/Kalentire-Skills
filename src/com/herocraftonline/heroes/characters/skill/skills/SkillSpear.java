@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -128,7 +127,7 @@ public class SkillSpear extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

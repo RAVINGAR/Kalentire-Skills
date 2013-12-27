@@ -162,7 +162,7 @@ public class SkillIntervene extends TargettedSkill {
                     else
                         damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.MAGIC, false);
 
-                    interveningPlayer.getWorld().playSound(interveningPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
+                    //interveningPlayer.getWorld().playSound(interveningPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }
 
             }
@@ -216,7 +216,7 @@ public class SkillIntervene extends TargettedSkill {
 
                     damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.ENTITY_ATTACK, false);
 
-                    interveningPlayer.getWorld().playSound(interveningPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
+                    //interveningPlayer.getWorld().playSound(interveningPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }
             }
         }

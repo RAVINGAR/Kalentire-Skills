@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -69,7 +68,7 @@ public class SkillLunge extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 0.4F);
+        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 0.4F);
         
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {

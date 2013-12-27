@@ -177,7 +177,7 @@ public class SkillSeikuken extends ActiveSkill {
                     long disarmDuration = bgEffect.getDisarmDuration();
                     damagerHero.addEffect(new DisarmEffect(skill, defenderPlayer, disarmDuration));
 
-                    damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
+                    //damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }
             }
         }

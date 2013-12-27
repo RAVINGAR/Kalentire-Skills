@@ -78,7 +78,7 @@ public class SkillHeadbutt extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
 
-        target.getWorld().playSound(target.getLocation(), Sound.HURT, 0.8F, 0.5F);
+        //target.getWorld().playSound(target.getLocation(), Sound.HURT, 0.8F, 0.5F);
         target.getWorld().playSound(target.getLocation(), Sound.ENDERDRAGON_GROWL, 0.7F, 2.0F);
 
         return SkillResult.NORMAL;
