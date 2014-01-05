@@ -15,10 +15,10 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillSummonMooshroomCow extends ActiveSkill {
+public class SkillSummonMooshroom extends ActiveSkill {
     
-    public SkillSummonMooshroomCow(Heroes plugin) {
-        super(plugin, "SummonMooshroomCow");
+    public SkillSummonMooshroom(Heroes plugin) {
+        super(plugin, "SummonMooshroom");
         setDescription("100% chance to spawn 1 mooshroom cow, $2% for 2, and $3% for 3.");
         setUsage("/skill mushroomcow");
         setArgumentRange(0, 0);
