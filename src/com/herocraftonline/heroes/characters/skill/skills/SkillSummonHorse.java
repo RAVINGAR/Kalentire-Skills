@@ -61,7 +61,7 @@ public class SkillSummonHorse extends ActiveSkill {
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.HORSE);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HORSE_SOFT , 0.8F, 1.0F);
+        //hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HORSE_SOFT , 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
