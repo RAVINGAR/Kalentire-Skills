@@ -61,7 +61,7 @@ public class SkillSummonVillager extends ActiveSkill {
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.VILLAGER);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.VILLAGER_HAGGLE , 0.8F, 1.0F);
+        //hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.VILLAGER_HAGGLE , 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
