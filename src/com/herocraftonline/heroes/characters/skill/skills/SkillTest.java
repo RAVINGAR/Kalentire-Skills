@@ -28,10 +28,6 @@ public class SkillTest extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-    }
-
-    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.MAX_DISTANCE.node(), 20);
