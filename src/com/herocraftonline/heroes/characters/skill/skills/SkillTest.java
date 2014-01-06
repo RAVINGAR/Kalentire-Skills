@@ -18,7 +18,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillTest extends ActiveSkill {
 
-    public SkillEnderCrystal(Heroes plugin) {
+    public SkillTest(Heroes plugin) {
         super(plugin, "Test");
         setDescription("I am become death");
         setUsage("/skill test");
