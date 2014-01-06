@@ -16,14 +16,14 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillSummonPig extends ActiveSkill {
+public class SkillEnderCrystal extends ActiveSkill {
 
-    public SkillSummonPig(Heroes plugin) {
-        super(plugin, "SummonPig");
-        setDescription("100% chance to spawn 1 pig, $2% for 2, and $3% for 3.");
-        setUsage("/skill pig");
+    public SkillEnderCrystal(Heroes plugin) {
+        super(plugin, "EnderCrystal");
+        setDescription("I am become death");
+        setUsage("/skill endercrystal");
         setArgumentRange(0, 0);
-        setIdentifiers("skill summonpig", "skill pig");
+        setIdentifiers("skill endercrystal", "skill crystal");
         setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
     }
 
@@ -52,15 +52,15 @@ public class SkillSummonPig extends ActiveSkill {
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
+        player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.ENDER_CRYSTAL);
         double chance = Util.nextRand();
         if (chance <= chance3x) {
-            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
-            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.ENDER_CRYSTAL);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.ENDER_CRYSTAL);
         } else if (chance <= chance2x) {
-            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.ENDER_CRYSTAL);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_IDLE , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_STARE , 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

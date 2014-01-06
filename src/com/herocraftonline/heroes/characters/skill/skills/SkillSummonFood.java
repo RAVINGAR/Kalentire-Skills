@@ -18,10 +18,10 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 
-public class SkillSummonfood extends ActiveSkill {
+public class SkillSummonFood extends ActiveSkill {
 
-    public SkillSummonfood(Heroes plugin) {
-        super(plugin, "Summonfood");
+    public SkillSummonFood(Heroes plugin) {
+        super(plugin, "SummonFood");
         setDescription("You summon $1 $2 at your feet.");
         setUsage("/skill summonfood");
         setArgumentRange(0, 0);
@@ -63,7 +63,6 @@ public class SkillSummonfood extends ActiveSkill {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
             Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
         }
-
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BURP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;

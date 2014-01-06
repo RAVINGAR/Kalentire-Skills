@@ -16,14 +16,14 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillSummonPig extends ActiveSkill {
+public class SkillSummonVillager extends ActiveSkill {
 
-    public SkillSummonPig(Heroes plugin) {
-        super(plugin, "SummonPig");
-        setDescription("100% chance to spawn 1 pig, $2% for 2, and $3% for 3.");
-        setUsage("/skill pig");
+    public SkillSummonVillager(Heroes plugin) {
+        super(plugin, "SummonVillager");
+        setDescription("100% chance to spawn 1 villager, $2% for 2, and $3% for 3.");
+        setUsage("/skill villager");
         setArgumentRange(0, 0);
-        setIdentifiers("skill summonpig", "skill pig");
+        setIdentifiers("skill summonvillager", "skill villager");
         setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
     }
 
@@ -52,15 +52,15 @@ public class SkillSummonPig extends ActiveSkill {
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
         Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
+        player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.VILLAGER);
         double chance = Util.nextRand();
         if (chance <= chance3x) {
-            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
-            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.VILLAGER);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.VILLAGER);
         } else if (chance <= chance2x) {
-            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PIG);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.VILLAGER);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PIG_IDLE , 0.8F, 1.0F); 
+        //hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.VILLAGER_HAGGLE , 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
