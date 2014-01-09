@@ -25,7 +25,7 @@ public class SkillAssemblePickaxe extends ActiveSkill {
         setDescription("You gather spare parts and assemble a pickaxe.");
         setUsage("/skill assemblepickaxe");
         setArgumentRange(0, 0);
-        setIdentifiers("skill assemblepickaxe", "skill summonpickaxe", "skill pickaxe");
+        setIdentifiers("skill assemblepickaxe");
         setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
     }
 
