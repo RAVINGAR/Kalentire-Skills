@@ -156,6 +156,9 @@ public class SkillProvoke extends TargettedSkill {
                 }
             }
 
+            if (!(event.getEntity() instanceof LivingEntity))
+                return;
+
             // Handle incoming
             CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (defenderCT.hasEffect("Provoked")) {
