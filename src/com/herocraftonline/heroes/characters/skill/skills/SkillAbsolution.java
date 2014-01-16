@@ -26,7 +26,7 @@ public class SkillAbsolution extends TargettedSkill {
 
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
-        setDescription("You restore $1 health to your target and remove Dark effects. Only heals for $2 if self targetted.");
+        setDescription("You restore $1 health to your target and remove DARK effects. Only heals for $2 if self targetted.");
         setUsage("/skill absolution <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill absolution");
