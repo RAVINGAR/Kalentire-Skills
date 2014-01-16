@@ -30,7 +30,7 @@ public class SkillHolySteed extends ActiveSkill {
         setUsage("/skill holysteed");
         setArgumentRange(0, 0);
         setTypes(SkillType.SUMMONING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
-        //new HolySteedListener(plugin);
+        new HolySteedListener(plugin);
     }
 
     @Override
