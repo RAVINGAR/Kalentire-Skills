@@ -77,7 +77,7 @@ public class SkillDarkRitual extends ActiveSkill {
             fplayer.playFirework(player.getWorld(),
                                  player.getLocation().add(0, 3, 0),
                                  FireworkEffect.builder()
-                                               .flicker(false).trail(true)
+                                               .flicker(false).trail(false)
                                                .with(FireworkEffect.Type.BALL_LARGE)
                                                .withColor(Color.BLACK)
                                                .withFade(Color.GRAY)

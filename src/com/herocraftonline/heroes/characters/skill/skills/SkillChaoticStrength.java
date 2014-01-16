@@ -86,7 +86,7 @@ public class SkillChaoticStrength extends ActiveSkill {
 
         try {
             Location playerLocation = player.getLocation();
-            fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.BLACK).withFade(Color.ORANGE).build());
+            fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.BLACK).withFade(Color.ORANGE).build());
         }
         catch (IllegalArgumentException e) {
             e.printStackTrace();

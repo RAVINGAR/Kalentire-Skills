@@ -100,7 +100,7 @@ public class SkillCurse extends TargettedSkill {
             fplayer.playFirework(player.getWorld(),
                                  target.getLocation().add(0, 2, 0),
                                  FireworkEffect.builder()
-                                               .flicker(false).trail(true)
+                                               .flicker(false).trail(false)
                                                .with(FireworkEffect.Type.CREEPER)
                                                .withColor(Color.PURPLE)
                                                .withFade(Color.GREEN)

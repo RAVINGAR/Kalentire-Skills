@@ -65,7 +65,7 @@ public class SkillArcaneblast extends TargettedSkill {
             fplayer.playFirework(target.getWorld(),
                                  target.getLocation().add(0, 3, 0),
                                  FireworkEffect.builder()
-                                               .flicker(false).trail(true)
+                                               .flicker(false).trail(false)
                                                .with(FireworkEffect.Type.BALL_LARGE)
                                                .withColor(Color.AQUA)
                                                .withFade(Color.PURPLE)
