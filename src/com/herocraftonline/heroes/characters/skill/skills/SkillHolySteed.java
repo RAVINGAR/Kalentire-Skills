@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 
@@ -29,7 +30,7 @@ public class SkillHolySteed extends ActiveSkill {
         setIdentifiers("skill holysteed");
         setUsage("/skill holysteed");
         setArgumentRange(0, 0);
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.STEALTHY, SkillType.SILENCABLE);
         new HolySteedListener(plugin);
     }
 
