@@ -28,6 +28,7 @@ public class SkillDreadSteed extends ActiveSkill {
         setIdentifiers("skill dreadsteed");
         setUsage("/skill dreadsteed");
         setArgumentRange(0,0);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_DARK);
         //new DreadSteedListener(plugin);
     }
 

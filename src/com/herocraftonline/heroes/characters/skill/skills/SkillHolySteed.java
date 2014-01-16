@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -27,7 +28,8 @@ public class SkillHolySteed extends ActiveSkill {
         setDescription("Summons a ridable holy steed for $1 seconds");
         setIdentifiers("skill holysteed");
         setUsage("/skill holysteed");
-        setArgumentRange(0,0);
+        setArgumentRange(0, 0);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
         //new HolySteedListener(plugin);
     }
 
