@@ -24,11 +24,11 @@ public class SkillHolySteed extends ActiveSkill {
 
     public SkillHolySteed(Heroes plugin) {
         super(plugin, "HolySteed");
-        setDescription("Summons an undead steed for $1 seconds that tramples nearby enemies");
+        setDescription("Summons a ridable holy steed for $1 seconds");
         setIdentifiers("skill holysteed");
         setUsage("/skill holysteed");
         setArgumentRange(0,0);
-        new HolySteedListener(plugin);
+        //new HolySteedListener(plugin);
     }
 
     @Override

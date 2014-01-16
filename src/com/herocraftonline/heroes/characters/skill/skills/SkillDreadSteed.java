@@ -24,11 +24,11 @@ public class SkillDreadSteed extends ActiveSkill {
 
     public SkillDreadSteed(Heroes plugin) {
         super(plugin, "DreadSteed");
-        setDescription("Summons an undead steed for $1 seconds that tramples nearby enemies");
+        setDescription("Summons a ridable undead steed for $1 seconds");
         setIdentifiers("skill dreadsteed");
         setUsage("/skill dreadsteed");
         setArgumentRange(0,0);
-        new DreadSteedListener(plugin);
+        //new DreadSteedListener(plugin);
     }
 
     @Override
