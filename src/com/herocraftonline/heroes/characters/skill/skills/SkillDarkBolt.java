@@ -223,8 +223,8 @@ public class SkillDarkBolt extends ActiveSkill {
         Location darkBoltLoc = darkBolt.getLocation();
         try {
             fplayer.playFirework(darkBoltLoc.getWorld(), darkBoltLoc, FireworkEffect.builder()
-                                                                                    .flicker(true)
-                                                                                    .trail(false)
+                                                                                    .flicker(false)
+                                                                                    .trail(true)
                                                                                     .with(FireworkEffect.Type.CREEPER)
                                                                                     .withColor(Color.BLACK)
                                                                                     .withFade(Color.PURPLE).build());
