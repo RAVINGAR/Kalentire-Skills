@@ -1,60 +1,105 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
+import org.bukkit.Color;
+import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillTest extends ActiveSkill {
+public class SkillTest extends TargettedSkill {
+    // This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();
 
     public SkillTest(Heroes plugin) {
         super(plugin, "Test");
-        setDescription("I am become death");
+        setDescription("You test the target, dealing $1 light damage to the target. Will instead deal $2 damage if the target is undead.");
         setUsage("/skill test");
         setArgumentRange(0, 0);
-        setIdentifiers("skill test", "skill testes");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setIdentifiers("skill test");
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int chance2x = (int) (SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false) * 100 + SkillConfigManager.getUseSetting(hero, this, "chance-2x-per-level", 0.0, false) * hero.getLevel());
-        int chance3x = (int) (SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) * 100 + SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getLevel());
-        return getDescription().replace("$2", chance2x + "").replace("$3", chance3x + "");
+
+        int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
+
+        int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        undeadDamage += damageIncrease * intellect;
+
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+        damage += damageIncrease * intellect;
+
+        String formattedUndeadDamage = Util.decFormat.format(undeadDamage);
+        String formattedDamage = Util.decFormat.format(damage);
+
+        return getDescription().replace("$1", formattedDamage).replace("$2", formattedUndeadDamage);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("chance-2x", 0.2);
-        node.set("chance-3x", 0.1);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 20);
-        node.set("chance-2x-per-level", 0.0);
-        node.set("chance-3x-per-level", 0.0);
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
+        node.set("undead-damage", Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE.node(), Double.valueOf(40));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
+
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        double chance2x = SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-2x-per-level", 0.0, false) * hero.getSkillLevel(this);
-        double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
-        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
-        Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
-        player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.PRIMED_TNT);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_STARE , 0.8F, 1.0F);
-        broadcastExecuteText(hero);
+
+        broadcastExecuteText(hero, target);
+
+        int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
+
+        double damage = 0;
+        if (Util.isUndead(plugin, target)) {
+            damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            damage += (damageIncrease * intellect);
+        }
+        else {
+            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            damage += (damageIncrease * intellect);
+        }
+
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
+        /* This is the new Particle API system for Spigot - the first few ints are offsetX/Y/Z, speed, count, radius)
+        * offset controls how spread out the particles are
+        * */
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.5, 0), Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+
+        /* this is our fireworks
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.SILVER).withFade(Color.NAVY).build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
         return SkillResult.NORMAL;
     }
 }
