@@ -1,11 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -18,7 +20,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 
@@ -26,17 +27,21 @@ public class SkillHolySteed extends ActiveSkill {
 
     public SkillHolySteed(Heroes plugin) {
         super(plugin, "HolySteed");
-        setDescription("Summons a ridable holy steed for $1 seconds");
+        setDescription("Summons a holy steed for $1");
         setIdentifiers("skill holysteed");
         setUsage("/skill holysteed");
-        setArgumentRange(0, 0);
-        setTypes(SkillType.STEALTHY, SkillType.SILENCABLE);
+        setArgumentRange(0,0);
         new HolySteedListener(plugin);
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        Location loc = hero.getPlayer().getLocation();
+        Player heroP = hero.getPlayer();
+        if(heroP.isInsideVehicle()) {
+            heroP.sendMessage(ChatColor.RED + "Cannot use while mounted!");
+            return SkillResult.FAIL;
+        }
+        Location loc = heroP.getLocation();
         Horse horse = loc.getWorld().spawn(loc, Horse.class);
         Monster m = plugin.getCharacterManager().getMonster(horse);
         m.setMaxHealth(1000D);
@@ -46,10 +51,11 @@ public class SkillHolySteed extends ActiveSkill {
         hInv.setSaddle(new ItemStack(Material.SADDLE));
         horse.setTamed(true);
         horse.setVariant(Variant.HORSE);
-        horse.setPassenger(hero.getPlayer());
+        horse.setColor(Color.WHITE);
+        horse.setPassenger(heroP);
 
         int summonDuration = SkillConfigManager.getUseSetting(hero, this, "summon-duration", Integer.valueOf(60),false);
-        m.addEffect(new ExpirableEffect(this, plugin, "HorseExpiry", hero.getPlayer(), summonDuration*1000) {
+        m.addEffect(new ExpirableEffect(this, plugin, "HorseExpiry", heroP, summonDuration*1000) {
             @Override
             public void removeFromMonster(Monster m) {
                 m.getEntity().remove();
