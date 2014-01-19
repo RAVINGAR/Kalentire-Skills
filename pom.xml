@@ -52,10 +52,6 @@
             <id>heroes-repo</id>
             <url>http://nexus.theyeticave.net/content/groups/herocraft/</url>
         </repository>
-        <repository>
-            <id>md_5</id>
-            <url>http://repo.md-5.net/content/groups/public/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -63,11 +59,6 @@
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
             <version>1.6.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.7.2-R0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
