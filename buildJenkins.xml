@@ -8,6 +8,7 @@
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="heroes" value="../../Heroes-dev/workspace/target/" />
+    <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -45,7 +46,7 @@
         <mkdir dir="${dir.dist}/${dir.dist.skills}" />
         <mkdir dir="${dir.bin}" />
         <mkdir dir="${dir.bin}/${dir.dist.skills}" />
-        <javac srcdir="src" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false"/>
+        <javac srcdir="src" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" excludes="src/${unused}"/>
         <antcall target="jar-skills" />
         <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
         <antcall target="zip" />
