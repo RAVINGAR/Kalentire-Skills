@@ -80,8 +80,9 @@ public class SkillTest extends TargettedSkill {
         /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
         * offset controls how spread out the particles are
         * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
-        * */
+        *
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.5, 0), Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        */
 
         /* this is our fireworks
         try {
