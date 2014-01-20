@@ -1,6 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -164,4 +162,3 @@ public class SkillBladegrasp extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(chance * level * 100)).replace("$2", duration / 1000 + "");
     }
 }
-*/
