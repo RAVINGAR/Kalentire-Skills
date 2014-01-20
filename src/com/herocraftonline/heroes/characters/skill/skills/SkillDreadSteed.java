@@ -7,8 +7,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.HorseInventory;
@@ -39,6 +41,7 @@ public class SkillDreadSteed extends ActiveSkill {
         Player heroP = hero.getPlayer();
         if(heroP.isInsideVehicle()) {
             heroP.sendMessage(ChatColor.RED + "Cannot use while mounted!");
+            heroP.getVehicle().remove();
             return SkillResult.FAIL;
         }
         Location loc = heroP.getLocation();
@@ -70,15 +73,25 @@ public class SkillDreadSteed extends ActiveSkill {
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
         }
 
-        @EventHandler
+        @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
         public void onVehicleExit(VehicleExitEvent event) {
             if(event.getVehicle().getType() == EntityType.HORSE) {
                 Monster m = plugin.getCharacterManager().getMonster((Horse) event.getVehicle());
                 if(m.hasEffect("HorseExpiry")) {
                     // Remove horse on unmount
                     Effect e = m.getEffect("HorseExpiry");
+                    final LivingEntity exited = event.getExited();
                     if(e instanceof ExpirableEffect) {
                         ((ExpirableEffect) e).expire();
+                        if(exited instanceof Player) {
+                            // Since sneaking is exiting, occasional glitch with staying sneaked. This helps prevent that.
+                            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                                public void run() {
+                                    ((Player) exited).setSneaking(false);
+                                }
+                            });
+                        }
+                        event.setCancelled(true);
                     }
                 }
             }
