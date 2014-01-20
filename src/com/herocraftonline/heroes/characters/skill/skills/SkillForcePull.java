@@ -147,7 +147,20 @@ public class SkillForcePull extends TargettedSkill {
                 Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
                 target.setVelocity(pushVector);
             }
-        }, (long) (delay * 20));
+        }, (long) (delay * 20));=
+        /* this is our fireworks
+
+        /* this is our fireworks shit
+        try {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
@@ -163,20 +176,8 @@ public class SkillForcePull extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.8, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.9, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 2.0, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        /* this is our fireworks
 
-        /* this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return SkillResult.NORMAL;*/
+        return SkillResult.NORMAL;
     }
 
     private class NCPExemptionEffect extends ExpirableEffect {
