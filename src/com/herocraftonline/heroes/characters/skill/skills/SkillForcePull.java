@@ -1,10 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -32,8 +28,8 @@ public class SkillForcePull extends TargettedSkill {
 
     private boolean ncpEnabled = false;
 
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+    /* This is for Firework Effects
+    public VisualEffect fplayer = new VisualEffect();*/
 
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
@@ -152,8 +148,24 @@ public class SkillForcePull extends TargettedSkill {
                 target.setVelocity(pushVector);
             }
         }, (long) (delay * 20));
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.2, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.3, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.4, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.6, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.7, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.8, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.9, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 2.0, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        /* this is our fireworks
 
-        // this is our fireworks shit
+        /* this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
         }
@@ -164,7 +176,7 @@ public class SkillForcePull extends TargettedSkill {
             e.printStackTrace();
         }
 
-        return SkillResult.NORMAL;
+        return SkillResult.NORMAL;*/
     }
 
     private class NCPExemptionEffect extends ExpirableEffect {
