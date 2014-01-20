@@ -73,7 +73,7 @@ public class SkillForcePull extends TargettedSkill {
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
-        
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
