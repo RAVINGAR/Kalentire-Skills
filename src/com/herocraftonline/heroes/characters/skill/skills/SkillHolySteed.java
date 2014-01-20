@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
@@ -30,7 +31,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 
 public class SkillHolySteed extends ActiveSkill {
 
-    // BlockFace[] faces = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
+    BlockFace[] faces = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
     
     public SkillHolySteed(Heroes plugin) {
         super(plugin, "HolySteed");
@@ -50,15 +51,12 @@ public class SkillHolySteed extends ActiveSkill {
         }
         Location loc = heroP.getLocation();
         // Basic no spawn check, denies if there's a block in a 2 radius horizontally. Inconvenient to players, but failsafe in case suffocation listener fails
-        /*for(BlockFace face: faces) {
-            if(loc.getBlock().getRelative(face).getType() != Material.AIR || 
-                    loc.getBlock().getRelative(face).getRelative(BlockFace.UP).getType() != Material.AIR ||
-                    loc.getBlock().getRelative(face, 2).getType() != Material.AIR ||
-                    loc.getBlock().getRelative(face, 2).getRelative(BlockFace.UP).getType() != Material.AIR) {
+        for(BlockFace face: faces) {
+            if(loc.getBlock().getRelative(face).getType() != Material.AIR || loc.getBlock().getRelative(face).getRelative(BlockFace.UP).getType() != Material.AIR) {
                 heroP.sendMessage(ChatColor.RED + "A steed needs breathing room!");
                 return SkillResult.FAIL;
             }
-        }*/
+        }
         Horse horse = loc.getWorld().spawn(loc, Horse.class);
         Monster m = plugin.getCharacterManager().getMonster(horse);
         m.setMaxHealth(1000D);
