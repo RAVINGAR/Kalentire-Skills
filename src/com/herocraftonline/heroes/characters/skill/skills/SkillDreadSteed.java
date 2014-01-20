@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
@@ -30,7 +31,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 
 public class SkillDreadSteed extends ActiveSkill {
 
-    // BlockFace[] faces = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
+    BlockFace[] faces = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
     
     public SkillDreadSteed(Heroes plugin) {
         super(plugin, "DreadSteed");
@@ -49,16 +50,13 @@ public class SkillDreadSteed extends ActiveSkill {
             return SkillResult.FAIL;
         }
         Location loc = heroP.getLocation();
-        // Basic no spawn check, denies if there's a block in a 2 radius horizontally. Inconvenient to players, but failsafe in case suffocation listener fails
-        /*for(BlockFace face: faces) {
-            if(loc.getBlock().getRelative(face).getType() != Material.AIR || 
-                    loc.getBlock().getRelative(face).getRelative(BlockFace.UP).getType() != Material.AIR ||
-                    loc.getBlock().getRelative(face, 2).getType() != Material.AIR ||
-                    loc.getBlock().getRelative(face, 2).getRelative(BlockFace.UP).getType() != Material.AIR) {
+        // Basic no spawn check, denies if there's a block in a 1 radius horizontally. Inconvenient to players, but should work better at least...
+        for(BlockFace face: faces) {
+            if(loc.getBlock().getRelative(face).getType() != Material.AIR || loc.getBlock().getRelative(face).getRelative(BlockFace.UP).getType() != Material.AIR) {
                 heroP.sendMessage(ChatColor.RED + "A steed needs breathing room!");
                 return SkillResult.FAIL;
             }
-        }*/
+        }
         Horse horse = loc.getWorld().spawn(loc, Horse.class);
         Monster m = plugin.getCharacterManager().getMonster(horse);
         m.setMaxHealth(1000D);
@@ -123,7 +121,7 @@ public class SkillDreadSteed extends ActiveSkill {
         @EventHandler
         public void onPlayerQuit(PlayerQuitEvent event) {
             Player player = event.getPlayer();
-            if(player.isInsideVehicle() || player.getVehicle().getType() != EntityType.HORSE) {
+            if(player.isInsideVehicle() && player.getVehicle().getType() == EntityType.HORSE) {
                 Monster m = plugin.getCharacterManager().getMonster((Horse) player.getVehicle());
                 if(m.hasEffect("HorseExpiry")) {
                     Effect e = m.getEffect("HorseExpiry");
