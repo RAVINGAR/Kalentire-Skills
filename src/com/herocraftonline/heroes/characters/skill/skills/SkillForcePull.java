@@ -147,7 +147,7 @@ public class SkillForcePull extends TargettedSkill {
                 Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
                 target.setVelocity(pushVector);
             }
-        }, (long) (delay * 20));=
+        }, (long) (delay * 20));
         /* this is our fireworks
 
         /* this is our fireworks shit
