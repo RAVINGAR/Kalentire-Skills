@@ -123,7 +123,7 @@ public class SkillHolySteed extends ActiveSkill {
         @EventHandler
         public void onPlayerQuit(PlayerQuitEvent event) {
             Player player = event.getPlayer();
-            if(player.isInsideVehicle() || player.getVehicle().getType() != EntityType.HORSE) {
+            if(player.isInsideVehicle() && player.getVehicle().getType() == EntityType.HORSE) {
                 Monster m = plugin.getCharacterManager().getMonster((Horse) player.getVehicle());
                 if(m.hasEffect("HorseExpiry")) {
                     Effect e = m.getEffect("HorseExpiry");
