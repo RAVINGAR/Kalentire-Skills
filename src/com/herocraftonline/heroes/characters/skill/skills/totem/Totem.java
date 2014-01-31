@@ -34,6 +34,8 @@ public class Totem {
         if(materials.length != 5)
             return false;
 
+        // Used to check if any block of the Totem is grounded, so it can't be in the air but it works on tall grass.
+        boolean isGrounded = false;
         World world = loc.getWorld();
 
         blocks.add(world.getBlockAt(loc));
@@ -56,8 +58,8 @@ public class Totem {
             }
 
             if(i < 5) {
-                if(block.getRelative(BlockFace.DOWN).getType().equals(Material.AIR)) {
-                    return false;
+                if(!block.getRelative(BlockFace.DOWN).getType().equals(Material.AIR)) {
+                    isGrounded = true;
                 }
 
                 if(SkillBaseTotem.totemExistsInRadius(blocks.get(0), 5)) {
@@ -66,7 +68,7 @@ public class Totem {
             }
         }
         
-        return true;
+        return isGrounded;
     }
     
     public void createTotem(Material[] materials) {

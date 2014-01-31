@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.server.PluginDisableEvent;
 
 import java.util.Iterator;
@@ -65,10 +67,12 @@ public class TotemListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent e) {
-        if(!((e.getEntity() instanceof EnderCrystal) && SkillBaseTotem.isTotemCrystal((EnderCrystal) e.getEntity()))) {
-            return;
+        if((e.getEntity() instanceof EnderCrystal) && SkillBaseTotem.isTotemCrystal((EnderCrystal) e.getEntity())) {
+            e.setCancelled(true);
         }
-        e.setCancelled(true);
+        if((e.getEntity() instanceof LivingEntity) && e.getCause() == DamageCause.SUFFOCATION && SkillBaseTotem.isTotemBlock(((LivingEntity) e.getEntity()).getEyeLocation().getBlock())) {
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
