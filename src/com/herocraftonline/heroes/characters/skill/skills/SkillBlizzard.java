@@ -16,11 +16,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -205,7 +207,10 @@ public class SkillBlizzard extends ActiveSkill {
             event.setCancelled(true);
             blizzardIceBolts.remove(projectile);
 
-            Entity dmger = ((Snowball) subEvent.getDamager()).getShooter();
+            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            if (!(source instanceof LivingEntity))
+                return;
+            Entity dmger = (LivingEntity) source;
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 

@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import java.util.Iterator;
@@ -151,8 +152,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
             event.setCancelled(true);
 
             LivingEntity targetLE = (LivingEntity)event.getEntity();
-            LivingEntity dmger = ((SmallFireball)projectile).getShooter();
-
+            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            if (!(source instanceof Entity))
+                return;
+            Entity dmger = (LivingEntity) source;
             if ((dmger instanceof Player)) {
                 Hero hero = skill.plugin.getCharacterManager().getHero((Player)dmger);
                 Player player = (Player) dmger;

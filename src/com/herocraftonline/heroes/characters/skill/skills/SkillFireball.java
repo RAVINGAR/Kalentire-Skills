@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.projectiles.ProjectileSource;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -111,7 +113,10 @@ public class SkillFireball extends ActiveSkill {
             event.setCancelled(true);
 
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((Snowball) projectile).getShooter();
+            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            if (!(source instanceof Entity))
+                return;
+            Entity dmger = (LivingEntity) source;
 
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);

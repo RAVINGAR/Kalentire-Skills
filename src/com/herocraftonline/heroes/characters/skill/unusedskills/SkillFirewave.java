@@ -9,11 +9,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -143,7 +145,10 @@ public class SkillFirewave extends ActiveSkill {
 
             fireballs.remove(projectile);
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((Snowball) projectile).getShooter();
+            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            if (!(source instanceof Entity))
+                return;
+            Entity dmger = (LivingEntity) source;
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
