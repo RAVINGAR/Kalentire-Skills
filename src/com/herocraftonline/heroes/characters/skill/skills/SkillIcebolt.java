@@ -125,7 +125,7 @@ public class SkillIcebolt extends ActiveSkill {
             }
             snowballs.remove(projectile);
 
-            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof Entity))
                 return;
             Entity dmger = (LivingEntity) source;

@@ -114,7 +114,7 @@ public class SkillHolyWater extends ActiveSkill {
             }
             event.getPotion().removeMetadata("SkillAmpul", plugin);
 
-            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            ProjectileSource source = event.getPotion().getShooter();
             if (!(source instanceof Entity))
                 return;
             Entity shooter = (LivingEntity) source;

@@ -106,7 +106,7 @@ public class SkillDecimation extends ActiveSkill {
             }
             fireballs.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
-            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof Entity))
                 return;
             Entity dmger = (LivingEntity) source;

@@ -145,7 +145,7 @@ public class SkillFirewave extends ActiveSkill {
 
             fireballs.remove(projectile);
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
-            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof Entity))
                 return;
             Entity dmger = (LivingEntity) source;

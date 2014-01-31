@@ -135,7 +135,7 @@ public class SkillChaosOrb extends ActiveSkill {
 
             pearls.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
-            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof LivingEntity))
                 return;
             Entity dmger = (LivingEntity) source;
