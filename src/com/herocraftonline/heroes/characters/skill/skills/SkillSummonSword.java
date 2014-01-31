@@ -59,7 +59,6 @@ public class SkillSummonSword extends ActiveSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
-
         return SkillResult.NORMAL;
     }
 }
