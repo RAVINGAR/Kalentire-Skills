@@ -9,6 +9,8 @@
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
 
+    <property name="totem.lib" value="totem" />
+
     <!--Classpath used by javac compiler-->
     <path id="classpath">
         <fileset dir="libs" includes="**/*.jar" />
@@ -47,8 +49,11 @@
 
         <javac srcdir="src/com/herocraftonline/heroes/characters/skill/skills" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" excludes="src/${unused}"/>
         <antcall target="jar-skills" />
+        <antcall target="jar-totem-lib" />
         <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
         <antcall target="zip" />
+        <!--Make sure to remove the Library Jar file-->
+        <delete dir="${dir.dist.skills}" includes="TotemRecall.jar" />
         <delete dir="${dir.bin}"/>
     </target>
 
@@ -64,6 +69,17 @@
         <echo message="${basename}" />
         <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${basename}" />
         <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info">
+            <manifest>
+                <attribute name="Class-Path" value="../../Heroes.jar" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jar-totem-lib">
+        <basename file="SkillTotemRecall" suffix=".class" property="basename" />
+        <echo message="${basename}" />
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${basename}" />
+        <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info ${dir.bin.skills}/${totem.lib}/*.class">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>

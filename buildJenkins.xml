@@ -10,6 +10,8 @@
     <property name="heroes" value="../../Heroes-dev/workspace/target/" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
 
+    <property name="totem.lib" value="totem" />
+
     <!--Classpath used by javac compiler-->
     <path id="classpath">
         <fileset dir="${heroes}" includes="**/*.jar" />
@@ -48,8 +50,10 @@
         <mkdir dir="${dir.bin}/${dir.dist.skills}" />
         <javac srcdir="src" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" excludes="src/${unused}"/>
         <antcall target="jar-skills" />
+        <antcall target="jar-totem-lib" />
         <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
         <antcall target="zip" />
+        <delete dir="${dir.dist.skills}" includes="TotemRecall.jar" />
         <delete dir="${dir.bin}"/>
     </target>
 
@@ -65,6 +69,17 @@
         <echo message="${basename}" />
         <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${basename}" />
         <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info">
+            <manifest>
+                <attribute name="Class-Path" value="../../Heroes.jar" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jar-totem-lib">
+        <basename file="SkillTotemRecall" suffix=".class" property="basename" />
+        <echo message="${basename}" />
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${basename}" />
+        <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info ${dir.bin.skills}/${totem.lib}/*.class ${dir.bin.skills}/${totem.lib}/tasks/*.class">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>
