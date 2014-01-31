@@ -99,7 +99,7 @@ public class SkillAbsolution extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        // this is our fireworks shit
+        /* this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(),
                                  target.getLocation().add(0, 1.5, 0),
@@ -116,8 +116,9 @@ public class SkillAbsolution extends TargettedSkill {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
     }
 }
