@@ -1,9 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.StunEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,17 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.StunEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Util;
+import java.util.List;
 
 public class SkillGreatCombustion extends ActiveSkill {
     public VisualEffect fplayer = new VisualEffect();
@@ -100,7 +94,14 @@ public class SkillGreatCombustion extends ActiveSkill {
             Location targetLocation = targetBlock.getLocation().clone();
             targetLocation.add(new Vector(.5, .5, .5));
 
-            try {
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.5, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 25, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(1, 1.5, 1), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 25, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.6, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 25, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.4, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 25, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.3, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 25, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.2, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 25, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.1, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 25, 16);
+            /*try {
                 fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.RED).withFade(Color.ORANGE).build());
                 fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.ORANGE).withFade(Color.RED).build());
             }
@@ -109,7 +110,7 @@ public class SkillGreatCombustion extends ActiveSkill {
             }
             catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
