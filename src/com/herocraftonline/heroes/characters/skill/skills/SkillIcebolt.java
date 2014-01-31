@@ -9,11 +9,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.projectiles.ProjectileSource;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -122,8 +124,11 @@ public class SkillIcebolt extends ActiveSkill {
                 return;
             }
             snowballs.remove(projectile);
-            
-            Entity dmger = ((Snowball) subEvent.getDamager()).getShooter();
+
+            ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
+            if (!(source instanceof Entity))
+                return;
+            Entity dmger = (LivingEntity) source;
             if (dmger instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 

@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.projectiles.ProjectileSource;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -112,7 +114,10 @@ public class SkillHolyWater extends ActiveSkill {
             }
             event.getPotion().removeMetadata("SkillAmpul", plugin);
 
-            LivingEntity shooter = event.getPotion().getShooter();
+            ProjectileSource source = event.getPotion().getShooter();
+            if (!(source instanceof Entity))
+                return;
+            Entity shooter = (LivingEntity) source;
             if (!(shooter instanceof Player))
                 return;
 
@@ -147,7 +152,7 @@ public class SkillHolyWater extends ActiveSkill {
                     else {
                         // If they are undead, damage them.
                         addSpellTarget((LivingEntity) entity, hero);
-                        Skill.damageEntity((LivingEntity) entity, shooter, undeadDamage, DamageCause.MAGIC);
+                        Skill.damageEntity((LivingEntity) entity, (LivingEntity) shooter, undeadDamage, DamageCause.MAGIC);
                     }
                 }
                 else {
