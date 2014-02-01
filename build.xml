@@ -7,6 +7,7 @@
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
+    <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
 
     <property name="totem.lib" value="totem" />
@@ -47,7 +48,7 @@
         <mkdir dir="${dir.bin}" />
         <mkdir dir="${dir.bin}/${dir.dist.skills}" />
 
-        <javac srcdir="src/com/herocraftonline/heroes/characters/skill/skills" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" excludes="src/${unused}"/>
+        <javac srcdir="src/${used}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" excludes="src/${unused}"/>
         <antcall target="jar-skills" />
         <antcall target="jar-totem-lib" />
         <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
