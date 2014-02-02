@@ -77,7 +77,8 @@ public class TotemListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityExplode(EntityExplodeEvent e) {
-        if(!((e.getEntity() instanceof EnderCrystal) && SkillBaseTotem.isTotemCrystal((EnderCrystal) e.getEntity()))) {
+        //if(!((e.getEntity() instanceof EnderCrystal) && SkillBaseTotem.isTotemCrystal((EnderCrystal) e.getEntity()))) {
+        if(!(e.getEntity() instanceof EnderCrystal)) {
             return;
         }
         e.setCancelled(true);
@@ -85,7 +86,8 @@ public class TotemListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        if(!((e.getDamager() instanceof EnderCrystal) && SkillBaseTotem.isTotemCrystal((EnderCrystal) e.getDamager()))) {
+        //if(!((e.getDamager() instanceof EnderCrystal) && SkillBaseTotem.isTotemCrystal((EnderCrystal) e.getDamager()))) {
+        if(!(e.getDamager() instanceof EnderCrystal)) {
             return;
         }
         e.setCancelled(true);
