@@ -79,7 +79,7 @@ public class SkillPrimalTotem extends SkillBaseTotem {
                 oldEffect.setExpireText(null);
             }
             else {
-                final Player memberP = hero.getPlayer();
+                final Player memberP = member.getPlayer();
                 new BukkitRunnable() {
 
                     private Location location = memberP.getLocation();
