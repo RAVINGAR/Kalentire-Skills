@@ -37,11 +37,11 @@ public class SkillShockTotem extends SkillBaseTotem {
     @Override
     public Material[] getMaterials() {
         return new Material[] {
-                Material.NETHER_FENCE,
-                Material.NETHER_FENCE,
-                Material.NETHER_FENCE,
-                Material.NETHER_FENCE,
-                Material.NETHER_FENCE,
+                Material.NETHER_BRICK,
+                Material.NETHER_BRICK,
+                Material.NETHER_BRICK,
+                Material.NETHER_BRICK,
+                Material.NETHER_BRICK,
         };
     }
 
