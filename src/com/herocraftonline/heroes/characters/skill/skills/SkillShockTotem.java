@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -48,11 +49,13 @@ public class SkillShockTotem extends SkillBaseTotem {
     public void usePower(Hero hero, Totem totem) {
 
         Player heroP = hero.getPlayer();
+        // Sound is up here because it makes sense to hear it just before it happens in MC (where it's simultaneous)
+        heroP.getWorld().playSound(heroP.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
         for(LivingEntity entity : totem.getTargets(hero)) {
             if(!damageCheck(heroP, entity)) {
                 continue;
             }
-            entity.getWorld().strikeLightningEffect(entity.getLocation());
+            // Lightning effect would be here, but it's not very nice.
             plugin.getDamageManager().addSpellTarget(entity, hero, this);
             damageEntity(entity, heroP, getDamage(hero));
             /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
