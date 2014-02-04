@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -191,12 +192,24 @@ public class SkillChainLightning extends TargettedSkill {
             return;
         }
         
-        targetLE.getWorld().strikeLightningEffect(targetLE.getLocation());
+        // Lightning effect is now a sound and particle effect. Because lightning is annoying.
+        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
         plugin.getDamageManager().addSpellTarget(targetLE, hero, this);
         damageEntity(targetLE, player, getDamage(hero));
         snowball.setMetadata("ChainLightningHitTarget", new FixedMetadataValue(plugin, 1));
         targets.put(hero, targetLE);
         hitTargets.get(hero).add(targetLE);
+        
+        /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
+         * offset controls how spread out the particles are
+         * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
+         * */
+        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
+        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.7, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
+        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.9, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
+        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.0, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
+        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.1, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
+        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.2, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);        
     }
 
     // Keeps the logic running
