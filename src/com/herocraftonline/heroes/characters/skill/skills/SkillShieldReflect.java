@@ -119,6 +119,10 @@ public class SkillShieldReflect extends ActiveSkill {
                         event.setCancelled(true);
                         return;
                     }
+                    if (attackerPlayer.getName().equalsIgnoreCase(defenderHero.getPlayer().getName())) {
+                        event.setCancelled(true);
+                        return;
+                    }
                 }
 
                 Player defenderPlayer = defenderHero.getPlayer();
