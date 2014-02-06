@@ -63,7 +63,8 @@ public class SkillHealingTotem extends SkillBaseTotem {
         }
         
         for(Hero member : party) {
-            if(member.getPlayer().getLocation().distanceSquared(totemLoc) > rangeSquared) {
+            Location memberLoc = member.getPlayer().getLocation();
+            if(memberLoc.getWorld() != totemLoc.getWorld() || memberLoc.distanceSquared(totemLoc) > rangeSquared) {
                 continue;
             }
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(member, getHealing(hero), this, hero);

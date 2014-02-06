@@ -66,7 +66,8 @@ public class SkillPrimalTotem extends SkillBaseTotem {
         }
 
         for(Hero member : party) {
-            if(member.getPlayer().getLocation().distanceSquared(totemLoc) > rangeSquared) {
+            Location memberLoc = member.getPlayer().getLocation();
+            if(memberLoc.getWorld() != totemLoc.getWorld() || memberLoc.distanceSquared(totemLoc) > rangeSquared) {
                 continue;
             }
             AttributeIncreaseEffect mEffect = new AttributeIncreaseEffect(this, "PrimalTotemStrengthEffect", heroP, getStrengthDuration(hero), AttributeType.STRENGTH, (int)getStrengthIncrease(hero), getApplyText(), getExpireText());
