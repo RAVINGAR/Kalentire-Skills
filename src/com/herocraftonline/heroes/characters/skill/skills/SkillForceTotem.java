@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.BlindEffect;
 import com.herocraftonline.heroes.characters.effects.common.NauseaEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -119,7 +118,6 @@ public class SkillForceTotem extends SkillBaseTotem {
                 damageEntity(entity, heroP, damage);
             }
             character.addEffect(new NauseaEffect(this, "ForceTotemNauseaEffect", heroP, getDisorientationDuration(hero), getDisorientationLevel(hero), null, getUnapplyText()));
-            character.addEffect(new BlindEffect(this, "ForceTotemBlindEffect", heroP, getDisorientationDuration(hero), null, null));
             entity.setVelocity(new Vector(0, getLaunch(hero), 0));
             entity.setFallDistance(-512);
         }
