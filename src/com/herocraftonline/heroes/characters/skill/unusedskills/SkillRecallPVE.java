@@ -1,8 +1,7 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,37 +24,29 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.townships.HeroTowns;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
-public class SkillRecall extends ActiveSkill {
+public class SkillRecallPVE extends ActiveSkill {
 
     private boolean herotowns = false;
     private HeroTowns ht;
-    private WorldGuardPlugin wgp;
-    private boolean worldguard = false;
 
-    public SkillRecall(Heroes plugin) {
-        super(plugin, "Recall");
+    public SkillRecallPVE(Heroes plugin) {
+        super(plugin, "RecallPVE");
         setDescription("You recall to your marked location. If you are holding a Runestone, you recall to its stored location instead.");
         setUsage("/skill recall");
         setArgumentRange(0, 0);
-        setIdentifiers("skill recall");
+        setIdentifiers("skill recall", "skill recallpve");
         setTypes(SkillType.SILENCABLE, SkillType.TELEPORTING);
 
-        try {
-            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-            //                herotowns = true;
-            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            //            }
-            //        }
-            if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
-                worldguard = true;
-                wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-            }
-        }
-        catch (Exception e) {
-            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
-        }
+        //        try {
+        //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+        //                herotowns = true;
+        //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+        //            }
+        //        }
+        //        catch (Exception e) {
+        //            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+        //        }
     }
 
     public String getDescription(Hero hero) {
@@ -201,15 +192,7 @@ public class SkillRecall extends ActiveSkill {
                             // Validate Herotowns
                             if (herotowns) {
                                 if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
-                                    Messaging.send(player, "You cannot Recall to a Town you have no access to!");
-                                    return SkillResult.FAIL;
-                                }
-                            }
-                            
-                            // Validate WorldGuard
-                            if (worldguard) {
-                                if (!wgp.canBuild(player, teleportLocation)) {
-                                    Messaging.send(player, "You cannot Recall to a Region you have no access to!");
+                                    broadcast(player.getLocation(), "Can not use Recall to a Town you have no access to!");
                                     return SkillResult.FAIL;
                                 }
                             }
@@ -230,15 +213,14 @@ public class SkillRecall extends ActiveSkill {
                             // Teleport the player to the location
                             player.teleport(teleportLocation);
 
-                            // Removed for now until I have time to properly test it.
-                            //                            final Location finalTeleportLocation = teleportLocation;
-                            //                            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                            //                                @Override
-                            //                                public void run() {
-                            //                                    if (!player.getLocation().equals(finalTeleportLocation))
-                            //                                        player.teleport(finalTeleportLocation);
-                            //                                }
-                            //                            }, 5L);
+                            final Location finalTeleportLocation = teleportLocation;
+                            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!player.getLocation().equals(finalTeleportLocation))
+                                        player.teleport(finalTeleportLocation);
+                                }
+                            }, 5L);
 
                             teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
 
@@ -276,7 +258,7 @@ public class SkillRecall extends ActiveSkill {
         }
 
         ConfigurationSection skillSettings = hero.getSkillSettings(this);
-        World world = SkillMark.validateLocation(skillSettings, player);
+        World world = SkillMarkPVE.validateLocation(skillSettings, player);
         if (world == null) {
             return SkillResult.FAIL;
         }
@@ -287,27 +269,19 @@ public class SkillRecall extends ActiveSkill {
 
         double[] xyzyp = null;
         try {
-            xyzyp = SkillMark.getStoredData(skillSettings);
+            xyzyp = SkillMarkPVE.getStoredData(skillSettings);
         }
         catch (IllegalArgumentException e) {
             Messaging.send(player, "Your recall location is improperly set!", new Object[0]);
             return SkillResult.SKIP_POST_USAGE;
         }
 
-        Location recallLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
+        Location recallpveLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
 
         // Validate Herotowns
         if (herotowns) {
-            if (!ht.getGlobalRegionManager().canBuild(player, recallLocation)) {
-                Messaging.send(player, "You cannot Recall to a Town you have no access to!");
-                return SkillResult.FAIL;
-            }
-        }
-
-        // Validate WorldGuard
-        if (worldguard) {
-            if (!wgp.canBuild(player, recallLocation)) {
-                Messaging.send(player, "You cannot Recall to a Region you have no access to!");
+            if (!ht.getGlobalRegionManager().canBuild(player, recallpveLocation)) {
+                Messaging.send(player, "Can not Recall to a town you have no access to!");
                 return SkillResult.FAIL;
             }
         }
