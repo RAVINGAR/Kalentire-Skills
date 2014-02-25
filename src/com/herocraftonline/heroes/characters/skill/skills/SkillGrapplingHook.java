@@ -388,7 +388,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             }
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getName());
         }
 
         @Override
@@ -398,7 +398,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             Player player = hero.getPlayer();
 
             if (showExpireText)
-                broadcast(player.getLocation(), expireText, player.getDisplayName());
+                broadcast(player.getLocation(), expireText, player.getName());
         }
 
         public int getShotsLeft() {

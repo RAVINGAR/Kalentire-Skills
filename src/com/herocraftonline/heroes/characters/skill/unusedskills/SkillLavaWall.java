@@ -125,7 +125,7 @@ public class SkillLavaWall extends ActiveSkill {
 				}
 			}
 
-			broadcast(player.getLocation(), applyText, player.getDisplayName());
+			broadcast(player.getLocation(), applyText, player.getName());
 		}
 
 		public void removeFromHero(Hero hero) {
@@ -141,7 +141,7 @@ public class SkillLavaWall extends ActiveSkill {
 				}
 			}
 
-			broadcast(player.getLocation(), expireText, player.getDisplayName());
+			broadcast(player.getLocation(), expireText, player.getName());
 		}
 
 		private boolean is_X_Direction(Player player) {

@@ -251,14 +251,14 @@ public class SkillEntangle extends TargettedSkill {
     //                }, 0L);
     //            }
     //
-    //            broadcast(player.getLocation(), applyText, player.getDisplayName());
+    //            broadcast(player.getLocation(), applyText, player.getName());
     //        }
     //
     //        @Override
     //        public void removeFromHero(Hero hero) {
     //            super.removeFromHero(hero);
     //            final Player player = hero.getPlayer();
-    //            broadcast(player.getLocation(), expireText, player.getDisplayName());
+    //            broadcast(player.getLocation(), expireText, player.getName());
     //        }
     //
     //        @Override

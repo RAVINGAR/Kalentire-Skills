@@ -137,7 +137,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getName());
         }
 
         @Override
@@ -153,7 +153,7 @@ public class SkillMelodicBinding extends ActiveSkill {
                 changedBlocks.get(hero).clear();
                 changedBlocks.remove(hero);
             }
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getName());
         }
 
         @Override

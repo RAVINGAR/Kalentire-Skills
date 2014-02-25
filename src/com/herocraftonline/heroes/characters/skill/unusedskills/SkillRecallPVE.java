@@ -227,17 +227,17 @@ public class SkillRecallPVE extends ActiveSkill {
                             return SkillResult.NORMAL;
                         }
                         else {
-                            Messaging.send(player, "Runestone Contains Invalid Location Data.", player.getDisplayName());
+                            Messaging.send(player, "Runestone Contains Invalid Location Data.", player.getName());
                             return SkillResult.FAIL;
                         }
                     }
                     else {
-                        Messaging.send(player, "Not a Valid Runestone Object. Uses Value is not Valid.", player.getDisplayName());
+                        Messaging.send(player, "Not a Valid Runestone Object. Uses Value is not Valid.", player.getName());
                         return SkillResult.FAIL;
                     }
                 }
                 else {
-                    Messaging.send(player, "Not a Valid Runestone Object. LoreData Size <= 0", player.getDisplayName());
+                    Messaging.send(player, "Not a Valid Runestone Object. LoreData Size <= 0", player.getName());
                     return SkillResult.FAIL;
                 }
             }
@@ -309,7 +309,7 @@ public class SkillRecallPVE extends ActiveSkill {
             return true;
         }
         catch (Exception ex) {
-            broadcast(player.getLocation(), "Tried to parse an invalid integar. Not valid.", player.getDisplayName());  // DEBUG
+            broadcast(player.getLocation(), "Tried to parse an invalid integar. Not valid.", player.getName());  // DEBUG
             return false;
         }
     }

@@ -190,9 +190,9 @@ public class SkillBackstab extends ActiveSkill {
                 if (backstabbed) {
                     Entity target = event.getEntity();
                     if (target instanceof Monster)
-                        broadcast(player.getLocation(), backstabText, player.getDisplayName(), Messaging.getLivingEntityName((Monster) target));
+                        broadcast(player.getLocation(), backstabText, player.getName(), Messaging.getLivingEntityName((Monster) target));
                     else if (target instanceof Player)
-                        broadcast(player.getLocation(), backstabText, player.getDisplayName(), ((Player) target).getDisplayName());
+                        broadcast(player.getLocation(), backstabText, player.getName(), ((Player) target).getName());
                 }
             }
         }

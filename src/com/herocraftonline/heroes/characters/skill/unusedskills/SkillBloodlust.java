@@ -74,13 +74,13 @@ public class SkillBloodlust extends ActiveSkill {
         public void apply(Hero hero) {
             super.apply(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), this.applyText, new Object[] { player.getDisplayName() });
+            broadcast(player.getLocation(), this.applyText, new Object[] { player.getName() });
         }
 
         public void remove(Hero hero) {
             super.remove(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), this.expireText, new Object[] { player.getDisplayName() });
+            broadcast(player.getLocation(), this.expireText, new Object[] { player.getName() });
         }
     }
 }

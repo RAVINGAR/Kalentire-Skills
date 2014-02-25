@@ -211,10 +211,10 @@ public class SkillMajorRunestone extends ActiveSkill {
             ItemStack item = event.getItemInHand();
             ItemMeta metaData = item.getItemMeta();
 
-            if (metaData == null || metaData.getDisplayName() == null)
+            if (metaData == null || metaData.getName() == null)
                 return;
 
-            if (!(metaData.getDisplayName().contains("Major Runestone")))
+            if (!(metaData.getName().contains("Major Runestone")))
                 return;
 
             Messaging.send(event.getPlayer(), "You cannot place Runestone blocks!");

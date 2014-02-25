@@ -185,14 +185,14 @@ public class SkillBloodBond extends ActiveSkill {
             firstTime = true;
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName(), "BloodBond");
+            broadcast(player.getLocation(), applyText, player.getName(), "BloodBond");
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName(), "BloodBond");
+            broadcast(player.getLocation(), expireText, player.getName(), "BloodBond");
         }
 
         @Override

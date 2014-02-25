@@ -228,10 +228,10 @@ public class SkillAncientRunestone extends ActiveSkill {
             ItemStack item = event.getItemInHand();
             ItemMeta metaData = item.getItemMeta();
 
-            if (metaData == null || metaData.getDisplayName() == null)
+            if (metaData == null || metaData.getName() == null)
                 return;
 
-            if (!(metaData.getDisplayName().contains("Ancient Runestone")))
+            if (!(metaData.getName().contains("Ancient Runestone")))
                 return;
 
             Messaging.send(event.getPlayer(), "You cannot place Runestone blocks!");
@@ -308,10 +308,10 @@ public class SkillAncientRunestone extends ActiveSkill {
 
                 ItemMeta metaData = item.getItemMeta();
 
-                if (metaData == null || metaData.getDisplayName() == null)
+                if (metaData == null || metaData.getName() == null)
                     continue;
 
-                if (!(metaData.getDisplayName().contains("Ancient Runestone")))
+                if (!(metaData.getName().contains("Ancient Runestone")))
                     continue;
 
                 // We have a runestone. Remove it from the drops, and get ready to place it back on the player

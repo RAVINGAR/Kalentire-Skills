@@ -211,10 +211,10 @@ public class SkillMinorRunestone extends ActiveSkill {
             ItemStack item = event.getItemInHand();
             ItemMeta metaData = item.getItemMeta();
 
-            if (metaData == null || metaData.getDisplayName() == null)
+            if (metaData == null || metaData.getName() == null)
                 return;
 
-            if (!(metaData.getDisplayName().contains("Minor Runestone")))
+            if (!(metaData.getName().contains("Minor Runestone")))
                 return;
 
             Messaging.send(event.getPlayer(), "You cannot place Runestone blocks!");

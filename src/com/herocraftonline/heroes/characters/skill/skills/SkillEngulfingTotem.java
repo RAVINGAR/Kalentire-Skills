@@ -70,10 +70,10 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
             if(!character.hasEffect("EngulfingTotemAgilityEffect")) {
                 String name;
                 if(player != null) {
-                    name = player.getDisplayName();
+                    name = player.getName();
                 }
                 else name = Messaging.getLivingEntityName(character);
-                broadcast(entity.getLocation(), getApplyText(), name, heroP.getDisplayName());
+                broadcast(entity.getLocation(), getApplyText(), name, heroP.getName());
             }
             else {
                 ((EngulfingTotemAgilityEffect)character.getEffect("EngulfingTotemAgilityEffect")).setExpireText(null);

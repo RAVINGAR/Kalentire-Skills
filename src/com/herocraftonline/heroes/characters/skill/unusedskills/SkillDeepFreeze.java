@@ -120,7 +120,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             y = location.getY();
             z = location.getZ();
 
-            broadcast(location, applyText, player.getDisplayName());
+            broadcast(location, applyText, player.getName());
         }
 
         public Hero getApplier() {
@@ -150,7 +150,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getName());
         }
 
         @Override

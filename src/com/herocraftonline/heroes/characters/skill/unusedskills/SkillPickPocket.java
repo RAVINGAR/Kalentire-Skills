@@ -73,9 +73,9 @@ public class SkillPickPocket extends TargettedSkill {
 
         if (Util.nextRand() >= chance) {
             if (Util.nextRand() >= chance) {
-                broadcast(player.getLocation(), failMessage, player.getDisplayName(), tPlayer.getDisplayName());
+                broadcast(player.getLocation(), failMessage, player.getName(), tPlayer.getName());
             }
-            Messaging.send(player, "You failed to steal anything from $1", tPlayer.getDisplayName());
+            Messaging.send(player, "You failed to steal anything from $1", tPlayer.getName());
             return SkillResult.NORMAL;
         }
 
@@ -85,7 +85,7 @@ public class SkillPickPocket extends TargettedSkill {
         int slot = Util.nextInt(27) + 9;
         Set<String> disallowed = new HashSet<String>(SkillConfigManager.getUseSetting(hero, this, "disallowed-items", new ArrayList<String>()));
         if (items[slot] == null || items[slot].getType() == Material.AIR || disallowed.contains(items[slot].getType().name())) {
-            Messaging.send(player, "You failed to steal anything from $1", tPlayer.getDisplayName());
+            Messaging.send(player, "You failed to steal anything from $1", tPlayer.getName());
             return SkillResult.NORMAL;
         }
         // Lets make sure we don't have any setting limits.
@@ -114,7 +114,7 @@ public class SkillPickPocket extends TargettedSkill {
         }
         player.updateInventory();
         if (Math.random() >= chance)
-            broadcast(player.getLocation(), noisySuccessMessage, player.getDisplayName(), tPlayer.getDisplayName(), items[slot].getType().name().replace("_", " ").toLowerCase());
+            broadcast(player.getLocation(), noisySuccessMessage, player.getName(), tPlayer.getName(), items[slot].getType().name().replace("_", " ").toLowerCase());
 
         return SkillResult.NORMAL;
         //and that's all folks!

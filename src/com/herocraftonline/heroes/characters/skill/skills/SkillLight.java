@@ -112,7 +112,7 @@ public class SkillLight extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player p = hero.getPlayer();
-            broadcast(p.getLocation(), applyText, p.getDisplayName());
+            broadcast(p.getLocation(), applyText, p.getName());
             Block thisBlock = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
             if (allowedBlocks.contains(thisBlock.getType())) {
                 lastLoc = thisBlock.getLocation();
@@ -145,7 +145,7 @@ public class SkillLight extends ActiveSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player p = hero.getPlayer();
-            broadcast(p.getLocation(), expireText, p.getDisplayName());
+            broadcast(p.getLocation(), expireText, p.getName());
             if (lastLoc != null) {
                 p.sendBlockChange(lastLoc, lastMat, lastData);
             }

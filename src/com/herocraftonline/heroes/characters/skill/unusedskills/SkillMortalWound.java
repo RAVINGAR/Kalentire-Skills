@@ -122,13 +122,13 @@ public class SkillMortalWound extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getName(), applier.getName());
         }
 
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getDisplayName());
+            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getName());
         }
 
         @Override
@@ -136,7 +136,7 @@ public class SkillMortalWound extends TargettedSkill {
             super.removeFromHero(hero);
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getName());
         }
     }
 

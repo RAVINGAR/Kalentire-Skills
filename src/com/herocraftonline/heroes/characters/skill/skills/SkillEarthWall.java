@@ -204,7 +204,7 @@ public class SkillEarthWall extends ActiveSkill {
                 }
             }
 
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getName());
         }
 
         public void removeFromHero(Hero hero) {
@@ -214,7 +214,7 @@ public class SkillEarthWall extends ActiveSkill {
 
             revertBlocks();
 
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getName());
         }
 
         private void revertBlocks() {

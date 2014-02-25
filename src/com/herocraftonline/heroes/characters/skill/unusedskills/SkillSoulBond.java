@@ -183,7 +183,7 @@ public class SkillSoulBond extends TargettedSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
             plugin.getCharacterManager().getCharacter(target).removeEffect(bondEffect);
-            broadcast(player.getLocation(), expireText, Messaging.getLivingEntityName(target), player.getDisplayName());
+            broadcast(player.getLocation(), expireText, Messaging.getLivingEntityName(target), player.getName());
         }
     }
 

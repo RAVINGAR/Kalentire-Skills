@@ -77,14 +77,14 @@ public class SkillBladegrasp extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getDisplayName());
+            broadcast(player.getLocation(), applyText, player.getName());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText, player.getName());
         }
 
     }
@@ -113,7 +113,7 @@ public class SkillBladegrasp extends ActiveSkill {
                 }
 
                 event.setCancelled(true);
-                String message = Messaging.parameterizeMessage(parryText, player.getDisplayName());
+                String message = Messaging.parameterizeMessage(parryText, player.getName());
                 Messaging.send(player, message);
                 if (event.getDamager() instanceof Hero) {
                     Messaging.send(((Hero) event.getDamager()).getPlayer(), message);
@@ -137,7 +137,7 @@ public class SkillBladegrasp extends ActiveSkill {
                 }
 
                 event.setCancelled(true);
-                String message = Messaging.parameterizeMessage(parrySkillText, player.getDisplayName(), Messaging.getLivingEntityName(event.getDamager()), event.getSkill().getName());
+                String message = Messaging.parameterizeMessage(parrySkillText, player.getName(), Messaging.getLivingEntityName(event.getDamager()), event.getSkill().getName());
                 Messaging.send(player, message);
                 if (event.getDamager() instanceof Hero) {
                     Messaging.send(((Hero) event.getDamager()).getPlayer(), message);

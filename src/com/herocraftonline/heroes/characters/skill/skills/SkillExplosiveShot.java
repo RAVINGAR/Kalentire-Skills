@@ -164,7 +164,7 @@ public class SkillExplosiveShot extends ActiveSkill {
             }
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), shotText, player.getDisplayName());
+            broadcast(player.getLocation(), shotText, player.getName());
 
             // Add the projectile to the hashlist
             Arrow explosiveShot = (Arrow) event.getProjectile();
@@ -301,9 +301,9 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             if (applyText != null && applyText.length() > 0) {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, applyText, player.getDisplayName());
+                    Messaging.send(player, applyText, player.getName());
                 else
-                    broadcast(player.getLocation(), applyText, player.getDisplayName());
+                    broadcast(player.getLocation(), applyText, player.getName());
             }
         }
 
@@ -316,9 +316,9 @@ public class SkillExplosiveShot extends ActiveSkill {
             if (showExpireText) {
                 if (expireText != null && expireText.length() > 0) {
                     if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                        Messaging.send(player, expireText, player.getDisplayName());
+                        Messaging.send(player, expireText, player.getName());
                     else
-                        broadcast(player.getLocation(), expireText, player.getDisplayName());
+                        broadcast(player.getLocation(), expireText, player.getName());
                 }
             }
         }

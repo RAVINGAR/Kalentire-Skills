@@ -90,10 +90,10 @@ public class SkillForceTotem extends SkillBaseTotem {
             if(!character.hasEffect("ForceTotemNauseaEffect")) {
                 String name;
                 if(player != null) {
-                    name = player.getDisplayName();
+                    name = player.getName();
                 }
                 else name = Messaging.getLivingEntityName(character);
-                broadcast(entity.getLocation(), getApplyText(), new Object[] { name, heroP.getDisplayName() });
+                broadcast(entity.getLocation(), getApplyText(), new Object[] { name, heroP.getName() });
             }
             else {
                 ((ExpirableEffect)character.getEffect("ForceTotemNauseaEffect")).setExpireText(null);

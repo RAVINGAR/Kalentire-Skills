@@ -130,7 +130,7 @@ public class SkillBattlesong extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, applyText, player.getDisplayName());
+            Messaging.send(player, applyText, player.getName());
         }
 
         @Override
@@ -139,7 +139,7 @@ public class SkillBattlesong extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, expireText, player.getDisplayName());
+            Messaging.send(player, expireText, player.getName());
         }
 
         @Override

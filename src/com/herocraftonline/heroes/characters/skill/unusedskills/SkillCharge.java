@@ -127,8 +127,8 @@ public class SkillCharge extends TargettedSkill {
                     if (stunDuration > 0)
                         tHero.addEffect(new StunEffect(skill, stunDuration));
                     if (slowDuration > 0)
-                        tHero.addEffect(new SlowEffect(skill, slowDuration, 2, true, p.getDisplayName() + " has been slowed by " + player.getDisplayName(),
-                                p.getDisplayName() + " is no longer slowed by " + player.getDisplayName(), hero));
+                        tHero.addEffect(new SlowEffect(skill, slowDuration, 2, true, p.getName() + " has been slowed by " + player.getName(),
+                                p.getName() + " is no longer slowed by " + player.getName(), hero));
                     if (rootDuration > 0)
                         tHero.addEffect(new RootEffect(skill, rootDuration));
                     if (silenceDuration > 0)
@@ -140,8 +140,8 @@ public class SkillCharge extends TargettedSkill {
                 } else if (e instanceof LivingEntity) {
                     Monster monster = plugin.getCharacterManager().getMonster((LivingEntity) e);
                     if (slowDuration > 0)
-                        monster.addEffect(new SlowEffect(skill, slowDuration, 2, true, Messaging.getLivingEntityName(le) + " has been slowed by " + player.getDisplayName(),
-                                Messaging.getLivingEntityName(le) + " is no longer slowed by " + player.getDisplayName(), hero));
+                        monster.addEffect(new SlowEffect(skill, slowDuration, 2, true, Messaging.getLivingEntityName(le) + " has been slowed by " + player.getName(),
+                                Messaging.getLivingEntityName(le) + " is no longer slowed by " + player.getName(), hero));
                     if (rootDuration > 0)
                        monster.addEffect(new RootEffect(skill, rootDuration));
                 }

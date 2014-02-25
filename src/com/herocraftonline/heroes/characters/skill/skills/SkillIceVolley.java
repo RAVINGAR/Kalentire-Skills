@@ -223,9 +223,9 @@ public class SkillIceVolley extends ActiveSkill {
 
             if (shotText != null && shotText.length() > 0) {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, shotText, player.getDisplayName());
+                    Messaging.send(player, shotText, player.getName());
                 else
-                    broadcast(player.getLocation(), shotText, player.getDisplayName());
+                    broadcast(player.getLocation(), shotText, player.getName());
             }
 
             // Let's bypass the nocheat issues...

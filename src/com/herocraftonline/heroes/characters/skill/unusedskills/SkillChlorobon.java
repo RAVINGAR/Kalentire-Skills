@@ -103,13 +103,13 @@ public class SkillChlorobon extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), SkillChlorobon.this.applyText, new Object[] { player.getDisplayName() });
+            broadcast(player.getLocation(), SkillChlorobon.this.applyText, new Object[] { player.getName() });
         }
 
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), SkillChlorobon.this.expireText, new Object[] { player.getDisplayName() });
+            broadcast(player.getLocation(), SkillChlorobon.this.expireText, new Object[] { player.getName() });
         }
     }
 }
