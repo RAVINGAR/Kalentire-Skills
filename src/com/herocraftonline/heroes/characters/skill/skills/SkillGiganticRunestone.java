@@ -214,10 +214,10 @@ public class SkillGiganticRunestone extends ActiveSkill {
             ItemStack item = event.getItemInHand();
             ItemMeta metaData = item.getItemMeta();
 
-            if (metaData == null || metaData.getName() == null)
+            if (metaData == null || metaData.getDisplayName() == null)
                 return;
 
-            if (!(metaData.getName().contains("Gigantic Runestone")))
+            if (!(metaData.getDisplayName().contains("Gigantic Runestone")))
                 return;
 
             Messaging.send(event.getPlayer(), "You cannot place Runestone blocks!");
