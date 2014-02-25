@@ -210,7 +210,7 @@ public class SkillToxicRune extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
-            broadcasgetLocation(), "    " + applyText,pplyText, player.getName());
+            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
