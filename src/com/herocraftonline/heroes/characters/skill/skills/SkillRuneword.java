@@ -113,7 +113,7 @@ public class SkillRuneword extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            this.broadcast(player.getLocation(), applyText, player.getName());
+            this.broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         public double getDamageBonus() {
@@ -124,7 +124,7 @@ public class SkillRuneword extends TargettedSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            this.broadcast(player.getLocation(), expireText, player.getName());
+            this.broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
 }

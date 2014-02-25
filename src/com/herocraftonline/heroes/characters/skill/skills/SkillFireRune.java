@@ -152,7 +152,7 @@ public class SkillFireRune extends ActiveSkill {
                     damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, false);
 
                     // Announce that the player has been hit with the skill
-                    broadcast(targEnt.getLocation(), applyText, targCT.getName());
+                    broadcast(targEnt.getLocation(), "    " + applyText, targCT.getName());
 
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);

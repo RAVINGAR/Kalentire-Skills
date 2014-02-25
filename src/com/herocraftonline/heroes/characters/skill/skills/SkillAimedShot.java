@@ -193,7 +193,7 @@ public class SkillAimedShot extends TargettedSkill {
             }
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getName());
+            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override

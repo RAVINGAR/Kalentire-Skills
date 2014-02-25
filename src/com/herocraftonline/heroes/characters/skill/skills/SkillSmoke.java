@@ -92,7 +92,7 @@ public class SkillSmoke extends ActiveSkill {
             if (applyText != null && applyText.length() > 0) {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
-                broadcast(player.getLocation(), applyText, player.getName());
+                broadcast(player.getLocation(), "    " + applyText, player.getName());
             }
         }
 
@@ -104,7 +104,7 @@ public class SkillSmoke extends ActiveSkill {
             if (expireText != null && expireText.length() > 0) {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
-                broadcast(player.getLocation(), expireText, player.getName());
+                broadcast(player.getLocation(), "    " + expireText, player.getName());
             }
         }
     }

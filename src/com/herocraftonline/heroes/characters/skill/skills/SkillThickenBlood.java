@@ -131,7 +131,7 @@ public class SkillThickenBlood extends TargettedSkill {
             this.originalStamina = hero.getStamina();
             hero.setStamina(0);
 
-            broadcast(player.getLocation(), applyText, player.getName());
+            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
@@ -144,7 +144,7 @@ public class SkillThickenBlood extends TargettedSkill {
 
             hero.setStamina(originalStamina);
 
-            broadcast(player.getLocation(), expireText, player.getName());
+            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
 }

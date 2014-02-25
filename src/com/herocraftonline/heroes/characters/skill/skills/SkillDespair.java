@@ -145,14 +145,14 @@ public class SkillDespair extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getName(), applier.getName(), "Despair");
+            broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName(), "Despair");
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getName(), applier.getName(), "Despair");
+            broadcast(player.getLocation(), "    " + expireText, player.getName(), applier.getName(), "Despair");
         }
     }
 }

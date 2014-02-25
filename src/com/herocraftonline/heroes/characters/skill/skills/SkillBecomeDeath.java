@@ -173,7 +173,7 @@ public class SkillBecomeDeath extends ActiveSkill {
                 }
             }
 
-            broadcast(player.getLocation(), applyText, player.getName());
+            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
@@ -186,7 +186,7 @@ public class SkillBecomeDeath extends ActiveSkill {
                     dcAPI.undisguisePlayer(player);
             }
 
-            broadcast(player.getLocation(), expireText, player.getName());
+            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
 
         public boolean hasAttackedMobs() {

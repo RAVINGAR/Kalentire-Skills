@@ -138,7 +138,7 @@ public class SkillDreadAura extends ActiveSkill {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
                     Messaging.send(player, applyText, player.getName());
                 else
-                    broadcast(player.getLocation(), applyText, player.getName());
+                    broadcast(player.getLocation(), "    " + applyText, player.getName());
             }
         }
 
@@ -151,7 +151,7 @@ public class SkillDreadAura extends ActiveSkill {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
                     Messaging.send(player, expireText, player.getName());
                 else
-                    broadcast(player.getLocation(), expireText, player.getName());
+                    broadcast(player.getLocation(), "    " + expireText, player.getName());
             }
         }
 

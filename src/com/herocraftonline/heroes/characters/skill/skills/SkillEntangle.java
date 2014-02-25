@@ -228,7 +228,7 @@ public class SkillEntangle extends TargettedSkill {
     //        @Override
     //        public void applyToMonster(Monster monster) {
     //            super.applyToMonster(monster);
-    //            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster));
+    //            broadcast(monster.getEntity().getLocation(), "    " + applyText, Messaging.getLivingEntityName(monster));
     //        }
     //
     //        @Override
@@ -251,20 +251,20 @@ public class SkillEntangle extends TargettedSkill {
     //                }, 0L);
     //            }
     //
-    //            broadcast(player.getLocation(), applyText, player.getName());
+    //            broadcast(player.getLocation(), "    " + applyText, player.getName());
     //        }
     //
     //        @Override
     //        public void removeFromHero(Hero hero) {
     //            super.removeFromHero(hero);
     //            final Player player = hero.getPlayer();
-    //            broadcast(player.getLocation(), expireText, player.getName());
+    //            broadcast(player.getLocation(), "    " + expireText, player.getName());
     //        }
     //
     //        @Override
     //        public void removeFromMonster(Monster monster) {
     //            super.removeFromMonster(monster);
-    //            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
+    //            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster));
     //        }
     //
     //        public Player getApplier() {

@@ -85,25 +85,25 @@ public class SkillShock extends TargettedSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            broadcast(hero.getPlayer().getLocation(), applyText, hero.getName());
+            broadcast(hero.getPlayer().getLocation(), "    " + applyText, hero.getName());
         }
         
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            this.broadcast(hero.getPlayer().getLocation(), expireText, hero.getName());
+            this.broadcast(hero.getPlayer().getLocation(), "    " + expireText, hero.getName());
         }
         
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getgetLocation(), "    " + applyText,pplyText, Messaging.getLivingEntityName(monster));
         }
         
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster));
         }
         
         @Override

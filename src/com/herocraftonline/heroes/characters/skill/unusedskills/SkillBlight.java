@@ -140,20 +140,20 @@ public class SkillBlight extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), applyText, player.getName(), applier.getName());
+            broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
         }
 
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getName());
+            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getName());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), expireText, player.getName(), applier.getName());
+            broadcast(player.getLocation(), "    " + expireText, player.getName(), applier.getName());
         }
 
         @Override

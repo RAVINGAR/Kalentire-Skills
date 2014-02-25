@@ -72,7 +72,7 @@ public class SkillEndurance extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            broadcast(hero.getPlayer().getLocation(), expireText, hero.getPlayer().getName());
+            broadcast(hero.getPlayer().getLocation(), "    " + expireText, hero.getPlayer().getName());
         }
     }
 

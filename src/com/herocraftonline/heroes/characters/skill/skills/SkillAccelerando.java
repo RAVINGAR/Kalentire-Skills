@@ -183,7 +183,7 @@ public class SkillAccelerando extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (applyText != null && applyText.length() > 0) {
-                Messaging.send(player, applyText, player.getName(), applier.getName());
+                Messaging.send(player, "    " + applyText, player.getName(), applier.getName());
             }
         }
 
