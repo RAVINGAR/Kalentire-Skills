@@ -203,14 +203,14 @@ public class SkillAimedShot extends TargettedSkill {
             Player player = hero.getPlayer();
 
             if (isLostSight()) {
-                broadcast(player.getLocation(), expireTextFail, player.getName());
+                broadcast(player.getLocation(), "    " + expireTextFail, player.getName());
                 return;
             }
 
             if (target instanceof Monster)
-                broadcast(player.getLocation(), expireTextSuccess, player.getName(), Messaging.getLivingEntityName((Monster) target));
+                broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), Messaging.getLivingEntityName((Monster) target));
             else if (target instanceof Player)
-                broadcast(player.getLocation(), expireTextSuccess, player.getName(), ((Player) target).getName());
+                broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), ((Player) target).getName());
         }
 
         public void setLostSight(boolean lostSight) {
