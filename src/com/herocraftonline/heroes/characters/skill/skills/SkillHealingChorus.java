@@ -120,7 +120,7 @@ public class SkillHealingChorus extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, applyText, player.getName());
+            Messaging.send(player, "    " + applyText, player.getName());
         }
 
         @Override
@@ -129,7 +129,7 @@ public class SkillHealingChorus extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, expireText, player.getName());
+            Messaging.send(player, "    " + expireText, player.getName());
         }
     }
 }

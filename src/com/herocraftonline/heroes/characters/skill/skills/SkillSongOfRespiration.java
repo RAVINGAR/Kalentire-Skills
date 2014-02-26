@@ -113,7 +113,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (applyText != null && applyText.length() > 0) {
-                Messaging.send(player, applyText, player.getName(), applier.getName());
+                Messaging.send(player, "    " + applyText, player.getName(), applier.getName());
             }
         }
 
@@ -123,7 +123,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (expireText != null && expireText.length() > 0) {
-                Messaging.send(player, expireText, player.getName(), applier.getName());
+                Messaging.send(player, "    " + expireText, player.getName(), applier.getName());
             }
         }
     }

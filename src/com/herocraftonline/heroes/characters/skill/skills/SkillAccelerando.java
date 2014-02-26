@@ -205,7 +205,7 @@ public class SkillAccelerando extends ActiveSkill {
                 super.removeFromHero(hero);
 
             if (expireText != null && expireText.length() > 0) {
-                Messaging.send(player, expireText, player.getName(), applier.getName());
+                Messaging.send(player, "    " + expireText, player.getName(), applier.getName());
             }
         }
     }

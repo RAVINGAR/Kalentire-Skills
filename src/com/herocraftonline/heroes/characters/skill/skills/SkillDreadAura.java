@@ -136,7 +136,7 @@ public class SkillDreadAura extends ActiveSkill {
             if (applyText != null && applyText.length() > 0) {
                 Player player = hero.getPlayer();
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, applyText, player.getName());
+                    Messaging.send(player, "    " + applyText, player.getName());
                 else
                     broadcast(player.getLocation(), "    " + applyText, player.getName());
             }
@@ -149,7 +149,7 @@ public class SkillDreadAura extends ActiveSkill {
             if (expireText != null && expireText.length() > 0) {
                 final Player player = hero.getPlayer();
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, expireText, player.getName());
+                    Messaging.send(player, "    " + expireText, player.getName());
                 else
                     broadcast(player.getLocation(), "    " + expireText, player.getName());
             }
