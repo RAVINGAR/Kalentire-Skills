@@ -41,7 +41,7 @@ public class SkillMortalWound extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill mortalwound", "skill mwound");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
+        //Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     @Override
@@ -93,14 +93,14 @@ public class SkillMortalWound extends TargettedSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
+        //plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
         
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
 
-    public class MortalWound extends PeriodicDamageEffect {
+    /*public class MortalWound extends PeriodicDamageEffect {
 
         private final double healMultiplier;
 
@@ -161,5 +161,5 @@ public class SkillMortalWound extends TargettedSkill {
                 event.setAmount((event.getAmount() * mEffect.healMultiplier));
             }
         }
-    }
+    }*/
 }
