@@ -40,6 +40,11 @@ public class SkillGroupTeleport extends ActiveSkill {
                 if (partyHero.equals(hero) || !partyPlayer.getWorld().equals(player.getWorld())) {
                     continue;
                 }
+                if (partyHero.isInCombat()) {
+                    Messaging.send(player, Messaging.getSkillDenoter() + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
+                    Messaging.send(partyPlayer, Messaging.getSkillDenoter() + player.getName() + " attempted to teleport you, but you are in combat!");
+                    continue;
+                }
                 
                 Util.playClientEffect(partyPlayer, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
                 Util.playClientEffect(partyPlayer, "largeexplode", new Vector(0, 0, 0), 1F, 10, true);
