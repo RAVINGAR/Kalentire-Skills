@@ -40,7 +40,7 @@ public class SkillCourage extends TargettedSkill {
         
         return getDescription()
                 .replace("$1", conIncrease + "")
-                .replace("$2", duration / 10000 + "");
+                .replace("$2", duration / 60000 + "");
     }
 
     @Override

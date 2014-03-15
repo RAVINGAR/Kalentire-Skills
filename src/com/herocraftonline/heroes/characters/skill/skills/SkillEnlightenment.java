@@ -39,7 +39,7 @@ public class SkillEnlightenment extends TargettedSkill {
         
         return getDescription()
                 .replace("$1", attributeIncrease + "")
-                .replace("$2", duration / 10000 + "");
+                .replace("$2", duration / 60000 + "");
     }
 
     @Override

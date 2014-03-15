@@ -39,7 +39,7 @@ public class SkillSplendor extends TargettedSkill {
         
         return getDescription()
                 .replace("$1", chaIncrease + "")
-                .replace("$2", duration / 10000 + "");
+                .replace("$2", duration / 60000 + "");
     }
 
     @Override

@@ -39,7 +39,7 @@ public class SkillAlacrity extends TargettedSkill {
         
         return getDescription()
                 .replace("$1", agiIncrease + "")
-                .replace("$2", duration / 10000 + "");
+                .replace("$2", duration / 60000 + "");
     }
 
     @Override
