@@ -183,7 +183,7 @@ public class SkillTelekinesis extends ActiveSkill {
                     int blockID = blockMaterial.getId();
                     WorldServer worldServer = ((CraftWorld) targetBlock.getWorld()).getHandle();
                     EntityHuman entityHuman = ((CraftPlayer) player).getHandle();
-                    net.minecraft.server.v1_7_R1.Block block = net.minecraft.server.v1_7_R1.Block.b(Integer.toString(blockID));
+                    net.minecraft.server.v1_7_R2.Block block = net.minecraft.server.v1_7_R2.Block.b(Integer.toString(blockID));
 
                     block.interact(worldServer, targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), entityHuman, 0, 0, 0, 0);
 
