@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.server.v1_7_R1.EntityLiving;
-import net.minecraft.server.v1_7_R1.MobEffect;
+import net.minecraft.server.v1_7_R2.EntityLiving;
+import net.minecraft.server.v1_7_R2.MobEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_7_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;

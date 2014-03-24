@@ -3,8 +3,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.v1_7_R1.EntityHuman;
-import net.minecraft.server.v1_7_R1.WorldServer;
+import net.minecraft.server.v1_7_R2.EntityHuman;
+import net.minecraft.server.v1_7_R2.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,8 +12,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Jukebox;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
