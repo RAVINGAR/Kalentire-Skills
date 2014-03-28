@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -16,6 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
 
 public class SkillBladegrasp extends ActiveSkill {
 
@@ -41,7 +43,7 @@ public class SkillBladegrasp extends ActiveSkill {
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% tightened his grip!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
         node.set("parry-text", "%hero% parried an attack!");
-        node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
+        //node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
         node.set(SkillSetting.CHANCE_PER_LEVEL.node(), .02);
         return node;
     }
@@ -52,7 +54,7 @@ public class SkillBladegrasp extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% tightened his grip!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% loosened his grip!").replace("%hero%", "$1");
         parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!").replace("%hero%", "$1");
-        parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.").replace("$1","%hero$").replace("$2","%target%").replace("$3","%skill");
+        //parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.").replace("$1","%hero$").replace("$2","%target%").replace("$3","%skill");
     }
 
     @Override
