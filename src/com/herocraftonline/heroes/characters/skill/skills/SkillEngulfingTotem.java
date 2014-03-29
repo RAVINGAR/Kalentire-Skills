@@ -46,9 +46,9 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     public Material[] getMaterials() {
         return new Material[] {
                 Material.SOUL_SAND,
-                //Material.SOUL_SAND,
-                //Material.SOUL_SAND,
-                //Material.SOUL_SAND,
+                Material.SOUL_SAND,
+                Material.SOUL_SAND,
+                Material.SOUL_SAND,
                 Material.SOUL_SAND,
         };
     }
