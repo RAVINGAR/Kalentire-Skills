@@ -175,7 +175,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
                      * offset controls how spread out the particles are
                      * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                      * */
-                    entity.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
+                    //entity.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
                     fEntity.getWorld().playSound(location, Sound.DIG_GRAVEL, 0.1F, 1.0F);
                     
                     time += 0.01;
