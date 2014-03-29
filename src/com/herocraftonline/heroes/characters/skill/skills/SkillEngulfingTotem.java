@@ -151,7 +151,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
 
         private void setEffect(final LivingEntity entity) {
             
-            /*final LivingEntity fEntity = entity;;
+            final LivingEntity fEntity = entity;;
             effect = new BukkitRunnable() {
 
                 private Location location = fEntity.getLocation();
@@ -170,17 +170,17 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
                         time = 0.0;
                     }
 
-                    entity.getLocation(location).add(0.7 * Math.sin(time * 16), 0, 0.7 * Math.cos(time * 16));
+                    //entity.getLocation(location).add(0.7 * Math.sin(time * 16), 0, 0.7 * Math.cos(time * 16));
                     /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
                      * offset controls how spread out the particles are
                      * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
-                     * *
-                    entity.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
-                    fEntity.getWorld().playSound(location, Sound.DIG_GRAVEL, 0.1F, 1.0F);
+                     * */
+                    //entity.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
+                    //fEntity.getWorld().playSound(location, Sound.DIG_GRAVEL, 0.1F, 1.0F);
                     
                     time += 0.01;
                 }
-            }.runTaskTimer(plugin, 0, 1);*/
+            }.runTaskTimer(plugin, 0, 1);
         }
 
     }
