@@ -46,9 +46,9 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     public Material[] getMaterials() {
         return new Material[] {
                 Material.SOUL_SAND,
-                Material.SOUL_SAND,
-                Material.SOUL_SAND,
-                Material.SOUL_SAND,
+                //Material.SOUL_SAND,
+                //Material.SOUL_SAND,
+                //Material.SOUL_SAND,
                 Material.SOUL_SAND,
         };
     }
@@ -170,7 +170,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
                         time = 0.0;
                     }
 
-                    entity.getLocation(location).add(0.7 * Math.sin(time * 16), 0, 0.7 * Math.cos(time * 16));
+                    //entity.getLocation(location).add(0.7 * Math.sin(time * 16), 0, 0.7 * Math.cos(time * 16)); #temp removal for lag until we can figure out why its lingering.
                     /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
                      * offset controls how spread out the particles are
                      * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
