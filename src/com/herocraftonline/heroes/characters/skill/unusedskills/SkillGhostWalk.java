@@ -1,4 +1,4 @@
-
+/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import com.herocraftonline.heroes.Heroes;
@@ -55,3 +55,4 @@ public class SkillGhostWalk extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
+*/
