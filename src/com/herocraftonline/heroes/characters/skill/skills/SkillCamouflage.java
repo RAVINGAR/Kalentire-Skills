@@ -8,15 +8,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.minecraft.server.v1_7_R2.EntityCreature;
-import net.minecraft.server.v1_7_R2.EntityPlayer;
+import net.minecraft.server.v1_7_R3.EntityCreature;
+import net.minecraft.server.v1_7_R3.EntityPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftCreature;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftCreature;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 

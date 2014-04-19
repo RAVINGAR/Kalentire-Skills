@@ -3,8 +3,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.v1_7_R2.EntityHuman;
-import net.minecraft.server.v1_7_R2.WorldServer;
+import net.minecraft.server.v1_7_R3.EntityHuman;
+import net.minecraft.server.v1_7_R3.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,8 +12,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Jukebox;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -183,7 +183,7 @@ public class SkillTelekinesis extends ActiveSkill {
                     int blockID = blockMaterial.getId();
                     WorldServer worldServer = ((CraftWorld) targetBlock.getWorld()).getHandle();
                     EntityHuman entityHuman = ((CraftPlayer) player).getHandle();
-                    net.minecraft.server.v1_7_R2.Block block = net.minecraft.server.v1_7_R2.Block.b(Integer.toString(blockID));
+                    net.minecraft.server.v1_7_R3.Block block = net.minecraft.server.v1_7_R3.Block.b(Integer.toString(blockID));
 
                     block.interact(worldServer, targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), entityHuman, 0, 0, 0, 0);
 
