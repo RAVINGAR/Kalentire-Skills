@@ -31,7 +31,7 @@ public class TotemEffect extends PeriodicExpirableEffect {
     @Override
     public void applyToHero(Hero hero) {
         totem.setEffect(this);
-        totem.createTotem(totemSkill.getMaterials());
+        totem.createTotem(totemSkill.getMaterial());
         SkillBaseTotem.totems.add(totem);
         super.applyToHero(hero);
     }

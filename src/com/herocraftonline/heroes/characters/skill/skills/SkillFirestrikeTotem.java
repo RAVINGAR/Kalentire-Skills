@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class SkillFirestrikeTotem extends SkillBaseTotem {
-
+    
     private final Map<SmallFireball, LivingEntity> homingFireballs = new LinkedHashMap<SmallFireball, LivingEntity>();
     private final Map<SmallFireball, Double> fireballVelocities = new LinkedHashMap<SmallFireball, Double>();
     // Order of the faces matters, don't reorder them :(
@@ -44,6 +44,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
         setIdentifiers("skill firestriketotem");
         setDescription("Places a firestrike totem at target location that shoots fireballs at entities in a $1 radius dealing $2 damage. Lasts for $3 seconds.");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        material = Material.NETHERRACK;
         plugin.getServer().getPluginManager().registerEvents(new FirestrikeEntityListener(this), plugin);
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new FirestrikeFireballTask(), 0, 1);
     }
@@ -54,17 +55,6 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 .replace("$1", getRange(h) + "")
                 .replace("$2", getDamage(h) + "")
                 .replace("$3", getDuration(h)*0.001 + "");
-    }
-
-    @Override
-    public Material[] getMaterials() {
-        return new Material[] {
-                Material.NETHERRACK,
-                Material.NETHERRACK,
-                Material.NETHERRACK,
-                Material.NETHERRACK,
-                Material.NETHERRACK,
-        };
     }
 
     @Override

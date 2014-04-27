@@ -30,25 +30,17 @@ public class Totem {
         setFireOnNaturalRemove(fireOnNaturalRemove);
     }
 
-    public boolean canCreateTotem(Material[] materials) {
-        if(materials.length != 5)
-            return false;
+    public boolean canCreateTotem(Material material) {
 
         // Used to check if any block of the Totem is grounded, so it can't be in the air but it works on tall grass.
         boolean isGrounded = false;
         World world = loc.getWorld();
 
         blocks.add(world.getBlockAt(loc));
-        blocks.add(world.getBlockAt(loc).getRelative(BlockFace.NORTH));
-        blocks.add(world.getBlockAt(loc).getRelative(BlockFace.EAST));
-        blocks.add(world.getBlockAt(loc).getRelative(BlockFace.SOUTH));
-        blocks.add(world.getBlockAt(loc).getRelative(BlockFace.WEST));
         blocks.add(world.getBlockAt(loc).getRelative(BlockFace.UP));
         blocks.add(world.getBlockAt(loc).getRelative(BlockFace.UP, 2));
-        blocks.add(world.getBlockAt(loc).getRelative(BlockFace.UP, 3));
-        // So much height checked because with just +1 the crystal is black and +2 it goes into the block
 
-        for(int i = 0; i < 8; i++) {
+        for(int i = 0; i < 3; i++) {
 
             Block block = blocks.get(i);
 
@@ -57,7 +49,7 @@ public class Totem {
                 return false;
             }
 
-            if(i < 5) {
+            if(i < 2) {
                 if(!block.getRelative(BlockFace.DOWN).getType().equals(Material.AIR)) {
                     isGrounded = true;
                 }
@@ -71,24 +63,20 @@ public class Totem {
         return isGrounded;
     }
     
-    public void createTotem(Material[] materials) {
-
-        if(materials.length != 5){
-            return;
-        }
+    public void createTotem(Material material) {
 
         World world = loc.getWorld();
 
-        for(int i = 0; i < 5; i++) {
-            blocks.get(i).setType(materials[i]);
+        for(int i = 0; i < 2; i++) {
+            blocks.get(i).setType(material);
         }
-        crystal = (EnderCrystal) world.spawnEntity(blocks.get(0).getLocation().add(.5, .75, .5), EntityType.ENDER_CRYSTAL);
+        crystal = (EnderCrystal) world.spawnEntity(blocks.get(1).getLocation().add(.5, .75, .5), EntityType.ENDER_CRYSTAL);
         return;
     }
 
     public void destroyTotem() {
 
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < 2; i++) {
 
             Block block = blocks.get(i);
 
@@ -98,8 +86,9 @@ public class Totem {
             }
 
             block.setType(Material.AIR);
-            crystal.remove();
         }
+        
+        crystal.remove();
         
         return;
     }
