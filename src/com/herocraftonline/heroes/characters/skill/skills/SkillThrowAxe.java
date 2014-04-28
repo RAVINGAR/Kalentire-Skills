@@ -7,12 +7,15 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 /**
  * Created by Matt 'The Yeti' Burnett on 4/27/2014.
@@ -68,11 +71,15 @@ public class SkillThrowAxe extends TargettedSkill {
             }
         }
 
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        Vector vector  = target.getLocation().toVector().subtract(player.getLocation().toVector());
+        Entity axe = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_AXE, 1));
+        axe.setVelocity(vector);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
