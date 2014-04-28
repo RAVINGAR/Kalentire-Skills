@@ -44,7 +44,7 @@ public class SkillGills extends ActiveSkill {
 
         node.set(SkillSetting.DURATION.node(), 60000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has grown a set of gills!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% lost his gills!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% lost their gills!");
 
         return node;
     }
@@ -54,7 +54,7 @@ public class SkillGills extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has grown a set of gills!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost his gills!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost their gills!").replace("%hero%", "$1");
     }
 
     @Override
