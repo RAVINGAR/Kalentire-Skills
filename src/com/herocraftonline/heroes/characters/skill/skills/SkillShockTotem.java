@@ -24,6 +24,7 @@ public class SkillShockTotem extends SkillBaseTotem {
         setIdentifiers("skill shocktotem");
         setDescription("Places a shock totem at target location that strikes lightning on entities in a $1 radius dealing $2 damage. Lasts for $3 seconds.");
         setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        material = Material.NETHER_BRICK;
     }
 
     @Override
@@ -32,17 +33,6 @@ public class SkillShockTotem extends SkillBaseTotem {
                 .replace("$1", getRange(h) + "")
                 .replace("$2", getDamage(h) + "")
                 .replace("$3", getDuration(h)*0.001 + "");
-    }
-
-    @Override
-    public Material[] getMaterials() {
-        return new Material[] {
-                Material.NETHER_BRICK,
-                Material.NETHER_BRICK,
-                Material.NETHER_BRICK,
-                Material.NETHER_BRICK,
-                Material.NETHER_BRICK,
-        };
     }
 
     @Override

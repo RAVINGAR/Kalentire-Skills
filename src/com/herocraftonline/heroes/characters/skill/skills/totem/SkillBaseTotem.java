@@ -21,6 +21,8 @@ import java.util.ArrayList;
 
 public abstract class SkillBaseTotem extends ActiveSkill {
 
+    public Material material = Material.BEDROCK;
+    
     public static ArrayList<Totem> totems = new ArrayList<Totem>();
 
     // Register the events in TOtemListener
@@ -79,7 +81,7 @@ public abstract class SkillBaseTotem extends ActiveSkill {
             return SkillResult.CANCELLED;
         }
         
-        if(!totem.canCreateTotem(getMaterials())) {
+        if(!totem.canCreateTotem(material)) {
             hero.getPlayer().sendMessage(ChatColor.RED + "Invalid totem location!");
             return SkillResult.CANCELLED;
         }
@@ -119,8 +121,10 @@ public abstract class SkillBaseTotem extends ActiveSkill {
         return SkillConfigManager.getUseSetting(hero, this, "fireOnNaturalRemove", true);
     }
 
-    public abstract Material[] getMaterials();
-
+    public Material getMaterial() {
+        return material;
+    }
+    
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
         return node;
     }

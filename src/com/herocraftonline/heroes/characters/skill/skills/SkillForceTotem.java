@@ -35,6 +35,7 @@ public class SkillForceTotem extends SkillBaseTotem {
         setIdentifiers("skill forcetotem");
         setDescription("Places a force totem at target location that throws non-partied entites in a $1 radius into the air, dealing $2 damage and disorienting them. Lasts for $3 seconds.");
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        material = Material.QUARTZ_BLOCK;
         
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;
@@ -47,17 +48,6 @@ public class SkillForceTotem extends SkillBaseTotem {
                 .replace("$1", getRange(h) + "")
                 .replace("$2", getDamage(h) + "")
                 .replace("$3", getDuration(h)*0.001 + "");
-    }
-
-    @Override
-    public Material[] getMaterials() {
-        return new Material[] {
-                Material.QUARTZ_BLOCK,
-                Material.QUARTZ_BLOCK,
-                Material.QUARTZ_BLOCK,
-                Material.QUARTZ_BLOCK,
-                Material.QUARTZ_BLOCK,
-        };
     }
 
     @Override

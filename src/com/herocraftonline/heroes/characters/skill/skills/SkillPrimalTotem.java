@@ -30,6 +30,7 @@ public class SkillPrimalTotem extends SkillBaseTotem {
         setIdentifiers("skill primaltotem");
         setDescription("Places a primal totem at target location that hones the strength of party members in a $1 radius, increasing it by $2. Lasts for $3 seconds.");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCABLE);
+        material = Material.MOSSY_COBBLESTONE;
     }
 
     @Override
@@ -38,17 +39,6 @@ public class SkillPrimalTotem extends SkillBaseTotem {
                 .replace("$1", getRange(h) + "")
                 .replace("$2", getStrengthIncrease(h) + "")
                 .replace("$3", getDuration(h)*0.001 + "");
-    }
-
-    @Override
-    public Material[] getMaterials() {
-        return new Material[] {
-                Material.MOSSY_COBBLESTONE,
-                Material.MOSSY_COBBLESTONE,
-                Material.MOSSY_COBBLESTONE,
-                Material.MOSSY_COBBLESTONE,
-                Material.MOSSY_COBBLESTONE,
-        };
     }
 
     @Override
