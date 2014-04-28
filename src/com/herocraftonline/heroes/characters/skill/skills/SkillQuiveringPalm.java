@@ -105,7 +105,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    private class QuiveringPalmListener implements Listener {
+    public class QuiveringPalmListener implements Listener {
 
         public QuiveringPalmListener() {}
 
@@ -139,7 +139,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
     }
 
     // Effect required for implementing an internal cooldown on rune application
-    private class QuiveringPalmEffect extends ExpirableEffect {
+    public class QuiveringPalmEffect extends ExpirableEffect {
 
         private final double damageMultiplier;
 
