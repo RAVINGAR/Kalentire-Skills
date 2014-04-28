@@ -8,20 +8,17 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Sound;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Matt 'The Yeti' Burnett on 4/27/2014.
  * Copyright 2014 HeroCraft Online
  */
 public class SkillThrowAxe extends TargettedSkill {
-    public VisualEffect fPlayer = new VisualEffect();
 
     public SkillThrowAxe(Heroes plugin) {
         super(plugin, "ThrowAxe");
@@ -79,14 +76,6 @@ public class SkillThrowAxe extends TargettedSkill {
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
-
-        try {
-            fPlayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().trail(true).flicker(false).with(FireworkEffect.Type.STAR).withColor(Color.RED).withFade(Color.MAROON).build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 3);
         player.getWorld().playSound(player.getLocation(), Sound.SHOOT_ARROW, 0.8F, 1.0F);
