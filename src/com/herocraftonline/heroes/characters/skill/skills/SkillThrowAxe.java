@@ -7,13 +7,19 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -78,8 +84,13 @@ public class SkillThrowAxe extends TargettedSkill {
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         Vector vector  = target.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
-        Entity axe = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_AXE, 1));
-        axe.setVelocity(vector.multiply(2));
+        final Entity axe = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_AXE, 1, (short) 1));
+        axe.setVelocity(vector.multiply(4));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                axe.remove();
+            }
+        }, 10);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
