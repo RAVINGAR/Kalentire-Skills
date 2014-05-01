@@ -85,7 +85,7 @@ public class SkillThrowAxe extends TargettedSkill {
 
         Vector vector  = target.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
         final Entity axe = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_AXE, 1, (short) 1));
-        axe.setVelocity(vector.multiply(2.5));
+        axe.setVelocity(vector.multiply(3));
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
                 axe.remove();
