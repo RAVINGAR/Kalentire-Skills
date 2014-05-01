@@ -77,9 +77,9 @@ public class SkillThrowAxe extends TargettedSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        Vector vector  = target.getLocation().toVector().subtract(player.getLocation().toVector());
+        Vector vector  = target.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
         Entity axe = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_AXE, 1));
-        axe.setVelocity(vector);
+        axe.setVelocity(vector.multiply(2));
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
