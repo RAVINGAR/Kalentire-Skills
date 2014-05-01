@@ -44,6 +44,7 @@ public class SkillThrowAxe extends TargettedSkill {
 
         node.set("weapons", Util.axes);
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.5));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
 
@@ -94,6 +95,8 @@ public class SkillThrowAxe extends TargettedSkill {
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+
+        broadcastExecuteText(hero, target);
 
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 3);
         player.getWorld().playSound(player.getLocation(), Sound.SHOOT_ARROW, 0.8F, 1.0F);
