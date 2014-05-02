@@ -1,28 +1,24 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.*;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.Vector;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-
+import com.herocraftonline.heroes.characters.skill.*;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
 public class SkillForcePull extends TargettedSkill {
 
@@ -167,15 +163,6 @@ public class SkillForcePull extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.2, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.3, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.4, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.6, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.7, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.8, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.9, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 2.0, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
 
         return SkillResult.NORMAL;
     }
