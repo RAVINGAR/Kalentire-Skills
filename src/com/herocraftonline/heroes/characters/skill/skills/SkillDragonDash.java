@@ -1,10 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-        import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-        import com.herocraftonline.heroes.characters.skill.*;
-        import org.bukkit.Effect;
+import com.herocraftonline.heroes.characters.skill.*;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,14 +13,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
-public class SkillShoulderCharge extends TargettedSkill {
+public class SkillDragonDash extends TargettedSkill {
 
-    public SkillShoulderCharge(Heroes plugin) {
-        super(plugin, "ShoulderCharge");
+    public SkillDragonDash(Heroes plugin) {
+        super(plugin, "DragonDash");
         setDescription("Charge your opponent, damaging for $1 and knocking them back.");
-        setUsage("/skill shouldercharge");
+        setUsage("/skill dragondash");
         setArgumentRange(0, 0);
-        setIdentifiers("skill shouldercharge");
+        setIdentifiers("skill dragondash");
         setTypes(SkillType.MOVEMENT_INCREASING, SkillType.FORCE);
     }
 
