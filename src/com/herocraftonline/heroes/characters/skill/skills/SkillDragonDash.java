@@ -4,13 +4,10 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-
 import org.bukkit.Effect;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
@@ -31,11 +28,10 @@ public class SkillDragonDash extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DAMAGE.node(), 1);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 0.1);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
-        node.set(SkillSetting.MANA.node(), 10);
-        node.set(SkillSetting.COOLDOWN.node(), 12000);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set(SkillSetting.STAMINA.node(), 300);
         node.set("particle-power", 0.5);
-        node.set("particle-amount", 100);
+        node.set("particle-amount", 25);
         return node;
     }
 
@@ -83,11 +79,11 @@ public class SkillDragonDash extends TargettedSkill {
                 + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 0.1, false) * hero.getLevel();
 
 
-        // Do not damage players in creative
+        /* Do not damage players in creative
         if (target instanceof Player) {
             if (((Player) target).getGameMode() == GameMode.CREATIVE)
                 return SkillResult.INVALID_TARGET;
-        }
+        }*/
 
         // Check if you can damage target
         if (Skill.damageCheck(hero.getPlayer(), target)) {
