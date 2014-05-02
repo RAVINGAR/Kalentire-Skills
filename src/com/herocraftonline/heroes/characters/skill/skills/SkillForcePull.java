@@ -33,7 +33,7 @@ public class SkillForcePull extends TargettedSkill {
         setUsage("/skill forcepull");
         setArgumentRange(0, 0);
         setIdentifiers("skill forcepull");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.INTERRUPTING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;
@@ -54,7 +54,7 @@ public class SkillForcePull extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.6));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.6));
         node.set("horizontal-power", Double.valueOf(0.3));
         node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0125));
         node.set("vertical-power", Double.valueOf(0.4));
@@ -71,8 +71,8 @@ public class SkillForcePull extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         if (damage > 0) {
             addSpellTarget(target, hero);
