@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
+
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -21,7 +22,8 @@ public class SkillDragonDash extends TargettedSkill {
         setUsage("/skill dragondash");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragondash");
-        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.FORCE);
+        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.MOVEMENT_INCREASING, SkillType.FORCE);
+        //setTypes(SkillType.MOVEMENT_INCREASING, SkillType.FORCE);
     }
 
     @Override
