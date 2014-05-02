@@ -95,7 +95,8 @@ public class SkillChaoticVisions extends ActiveSkill {
                     public void run() {
                         // Play effect
                         try {
-                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.PURPLE).withFade(Color.GREEN).build());
+                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
+                                    .flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.PURPLE).withFade(Color.BLACK).build());
                         }
                         catch (IllegalArgumentException e) {
                             e.printStackTrace();
