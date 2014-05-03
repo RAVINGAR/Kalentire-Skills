@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,6 +44,7 @@ public class SkillTempest extends ActiveSkill {
         node.set(SkillSetting.DELAY.node(), 5000);
         node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed a powerful " + ChatColor.BOLD + "Tempest!");
         node.set("effect-height", 4);
+        node.set("lightning-volume", 0.0F);
 
         return node;
     }
@@ -65,6 +67,8 @@ public class SkillTempest extends ActiveSkill {
         final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 300, false);
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
         final int height = SkillConfigManager.getUseSetting(hero, this, "effect-height", 5, false);
+        
+        final float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);
 
         broadcastExecuteText(hero);
 
@@ -108,7 +112,10 @@ public class SkillTempest extends ActiveSkill {
                     // Damage the target
                     addSpellTarget((LivingEntity) entity, hero);
                     damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
-                    player.getWorld().strikeLightningEffect(entity.getLocation());
+                    // Lightning like this is too annoying.
+                    // entity.getWorld().strikeLightningEffect(entity.getLocation());
+                    entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
+                    entity.getWorld().playSound(entity.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
                 }
             }
 

@@ -10,7 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Effect;
+// import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,7 +48,8 @@ public class SkillShockingStrike extends TargettedSkill {
         node.set("weapons", Util.axes);
         node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(30));
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.7));
-
+        node.set("lightning-volume", 0.0F);
+        
         return node;
     }
 
@@ -66,17 +67,24 @@ public class SkillShockingStrike extends TargettedSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.7), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
+        float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);
+        
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
+        // Strike some lightning
+        target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
+        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
+        
+        // We have actual lightning now, so the effect isn't needed.
         /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
          * offset controls how spread out the particles are
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
+        /*player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);        
         
-        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.7F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.7F, 1.0F);*/
         broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;

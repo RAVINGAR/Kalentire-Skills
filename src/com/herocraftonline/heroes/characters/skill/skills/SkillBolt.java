@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -49,6 +50,7 @@ public class SkillBolt extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
         node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
         node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set("lightning-volume", 0.0F);
 
         return node;
     }
@@ -60,8 +62,13 @@ public class SkillBolt extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(180), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.4), false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
-
-        target.getWorld().strikeLightningEffect(target.getLocation());
+        
+        float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);
+        
+        // Lightning like this is too annoying.
+        // target.getWorld().strikeLightningEffect(target.getLocation());
+        target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
+        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 

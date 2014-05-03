@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -68,6 +69,7 @@ public class SkillChainLightning extends TargettedSkill {
         node.set("max-targets-per-level", 0.04D);
         node.set("velocity", 0.5D);
         node.set("error-correction-hit-range", 1D);
+        node.set("lightning-volume", 0.0F);
         return node;
     }
 
@@ -92,6 +94,10 @@ public class SkillChainLightning extends TargettedSkill {
         return SkillConfigManager.getUseSetting(hero, this, "error-correction-hit-range", 1D, false);
     }
 
+    public float getLightningVolume(Hero h) {
+    	return (float) SkillConfigManager.getUseSetting(h, this, "lightning-volume", 0.0F, false);
+    }
+    
     // And now, back to your regularly scheduled code.
     // Checks for active chain, spawns initial snowball, sets up map data.
     @Override
@@ -192,24 +198,29 @@ public class SkillChainLightning extends TargettedSkill {
             return;
         }
         
-        // Lightning effect is now a sound and particle effect. Because lightning is annoying.
-        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
+        // Piece of the old method of faking lightning that involved the effects below. No longer needed
+        //player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
         plugin.getDamageManager().addSpellTarget(targetLE, hero, this);
         damageEntity(targetLE, player, getDamage(hero));
         snowball.setMetadata("ChainLightningHitTarget", new FixedMetadataValue(plugin, 1));
         targets.put(hero, targetLE);
         hitTargets.get(hero).add(targetLE);
         
+        targetLE.getWorld().spigot().strikeLightningEffect(targetLE.getLocation(), true);
+        targetLE.getWorld().playSound(targetLE.getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(hero), 1.0F);
+        
+        // We have lightning, so we don't need this
         /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
          * offset controls how spread out the particles are
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
-        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
+        /*targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
         targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.7, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
         targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.9, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
         targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.0, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
         targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.1, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
-        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.2, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);        
+        targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.2, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);   
+        */     
     }
 
     // Keeps the logic running

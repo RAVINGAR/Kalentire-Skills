@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -50,6 +51,7 @@ public class SkillMegabolt extends TargettedSkill {
         node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
         node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
         node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(2));
+        node.set("lightning-volume", 0.0F);
 
         return node;
     }
@@ -64,10 +66,15 @@ public class SkillMegabolt extends TargettedSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.75), false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
+        float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);
+        
         broadcastExecuteText(hero, target);
 
-        // Damage the first target
-        target.getWorld().strikeLightningEffect(target.getLocation());
+        // Damage the first target      
+        // Lightning like this is too annoying.
+        // target.getWorld().strikeLightningEffect(target.getLocation());
+        target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
+        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
