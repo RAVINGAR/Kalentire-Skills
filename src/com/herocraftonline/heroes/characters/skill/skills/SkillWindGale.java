@@ -54,6 +54,7 @@ public class SkillWindGale extends ActiveSkill {
         }
     }
 
+    @Override
     public String getDescription(Hero hero) {
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
@@ -65,6 +66,7 @@ public class SkillWindGale extends ActiveSkill {
         return getDescription().replace("$1", distance + "").replace("$2", damage + "");
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
@@ -83,6 +85,7 @@ public class SkillWindGale extends ActiveSkill {
         return node;
     }
 
+    @Override
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
