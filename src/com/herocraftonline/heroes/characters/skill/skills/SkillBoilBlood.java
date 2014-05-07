@@ -129,9 +129,6 @@ public class SkillBoilBlood extends ActiveSkill {
 
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
 
-        // Create DoT effect
-        BoilingBloodEffect bbEffect = new BoilingBloodEffect(this, player, period, duration, tickDamage, applyText, expireText);
-
         int targetsHit = 0;
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (maxTargets > 0 && targetsHit >= maxTargets)
@@ -156,9 +153,9 @@ public class SkillBoilBlood extends ActiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);
 
-            // Add DoT effect to target
+            // Create and add DoT effect to target
             CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
-            targCT.addEffect(bbEffect);
+            targCT.addEffect(new BoilingBloodEffect(this, player, period, duration, tickDamage, applyText, expireText));
 
             // Increase counter
             targetsHit++;
