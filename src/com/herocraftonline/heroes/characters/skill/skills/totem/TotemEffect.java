@@ -41,6 +41,7 @@ public class TotemEffect extends PeriodicExpirableEffect {
         if(!forcedExpire && totem.getFireOnNaturalRemove()) {
             totemSkill.usePower(hero, totem);
         }
+        totemSkill.totemDestroyed(hero, totem);
         totem.destroyTotem();
         SkillBaseTotem.totems.remove(totem);
         super.removeFromHero(hero);

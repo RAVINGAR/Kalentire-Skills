@@ -69,6 +69,10 @@ public abstract class SkillBaseTotem extends ActiveSkill {
     // The actual Skill code
     public abstract void usePower(Hero hero, Totem totem);
 
+    public void totemDestroyed(Hero hero, Totem totem) {
+        // Nothing to do here in this class...
+    }
+     
     @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(Hero hero, String[] args) {
