@@ -62,6 +62,7 @@ public class SkillDreadSteed extends ActiveSkill {
         m.setMaxHealth(1000D);
         m.getEntity().setCustomName(hero.getName() + "'s DreadSteed");
         // m.addEffect(new DreadSteedEffect(this.plugin));
+        horse.setAdult();
         HorseInventory hInv = horse.getInventory();
         hInv.setSaddle(new ItemStack(Material.SADDLE));
         horse.setTamed(true);

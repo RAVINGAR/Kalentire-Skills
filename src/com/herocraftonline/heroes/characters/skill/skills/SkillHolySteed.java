@@ -62,6 +62,7 @@ public class SkillHolySteed extends ActiveSkill {
         m.setMaxHealth(1000D);
         m.getEntity().setCustomName(hero.getName() + "'s HolySteed");
         // m.addEffect(new HolySteedEffect(this.plugin));
+        horse.setAdult();
         HorseInventory hInv = horse.getInventory();
         hInv.setSaddle(new ItemStack(Material.SADDLE));
         horse.setTamed(true);
