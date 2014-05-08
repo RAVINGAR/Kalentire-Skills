@@ -81,7 +81,7 @@ public class SkillSmite extends TargettedSkill {
             damage += (damageIncrease * intellect);
         }
 
-        addSpellTarget(target, hero);
+        //addSpellTarget(target, hero); //Temp remove this to test blast
         damageEntity(target, player, damage, DamageCause.ENTITY_EXPLOSION);
 
         // this is our fireworks
