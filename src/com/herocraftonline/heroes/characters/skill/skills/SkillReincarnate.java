@@ -23,7 +23,7 @@ public class SkillReincarnate extends ActiveSkill {
         setUsage("/skill reincarnate <target>");
         setArgumentRange(1, 1);
         setIdentifiers("skill reincarnate");
-        setTypes(SkillType.RESURRECTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.RESURRECTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
     }
 
     @Override

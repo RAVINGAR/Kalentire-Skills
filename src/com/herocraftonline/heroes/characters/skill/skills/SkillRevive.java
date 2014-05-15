@@ -23,7 +23,7 @@ public class SkillRevive extends ActiveSkill {
         setUsage("/skill revive <target>");
         setArgumentRange(1, 1);
         setIdentifiers("skill revive");
-        setTypes(SkillType.RESURRECTING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE);
+        setTypes(SkillType.RESURRECTING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE);
     }
 
     @Override

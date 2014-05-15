@@ -25,7 +25,7 @@ public class SkillAwaken extends ActiveSkill {
         setUsage("/skill awaken <target>");
         setArgumentRange(1, 1);
         setIdentifiers("skill awaken");
-        setTypes(SkillType.RESURRECTING, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.RESURRECTING, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
     }
 
     @Override

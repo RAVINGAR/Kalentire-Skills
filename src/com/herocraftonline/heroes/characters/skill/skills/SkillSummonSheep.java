@@ -26,7 +26,7 @@ public class SkillSummonSheep extends ActiveSkill {
         setUsage("/skill sheep");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonsheep", "skill sheep");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

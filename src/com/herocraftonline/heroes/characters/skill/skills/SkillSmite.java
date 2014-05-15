@@ -28,7 +28,7 @@ public class SkillSmite extends TargettedSkill {
         setUsage("/skill smite");
         setArgumentRange(0, 0);
         setIdentifiers("skill smite");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override

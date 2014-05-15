@@ -25,7 +25,7 @@ public class SkillSummonSword extends ActiveSkill {
         setUsage("/skill summonsword");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonsword");
-        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCEABLE);
     }
 
     @Override

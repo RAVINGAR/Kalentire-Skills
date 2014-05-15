@@ -29,7 +29,7 @@ public class SkillCourage extends TargettedSkill {
         setUsage("/skill Courage <target>");
         setIdentifiers("skill courage");
         setDescription("Encourage the target, granting them Courage that increases their Constitution by $1 for $2 minutes");
-        setTypes(SkillType.MAX_HEALTH_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.MAX_HEALTH_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
     @Override

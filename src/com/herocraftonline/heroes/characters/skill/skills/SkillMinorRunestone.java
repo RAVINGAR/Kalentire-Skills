@@ -51,7 +51,7 @@ public class SkillMinorRunestone extends ActiveSkill {
         setUsage("/skill minorrunestone");
         setArgumentRange(0, 0);
         setIdentifiers("skill minorrunestone");
-        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
 
         try {

@@ -43,7 +43,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
         setUsage("/skill firestriketotem");
         setIdentifiers("skill firestriketotem");
         setDescription("Places a firestrike totem at target location that shoots fireballs at entities in a $1 radius dealing $2 damage. Lasts for $3 seconds.");
-        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
         material = Material.NETHERRACK;
         plugin.getServer().getPluginManager().registerEvents(new FirestrikeEntityListener(this), plugin);
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new FirestrikeFireballTask(), 0, 1);

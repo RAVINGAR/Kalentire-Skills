@@ -47,7 +47,7 @@ public class SkillBeguile extends TargettedSkill {
         setUsage("/skill beguile");
         setArgumentRange(0, 0);
         setIdentifiers("skill beguile");
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AGGRESSIVE);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;

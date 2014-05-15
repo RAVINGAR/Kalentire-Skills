@@ -27,7 +27,7 @@ public class SkillPort extends ActiveSkill {
 		setUsage("/skill port <location>");
 		setArgumentRange(1, 1);
 		setIdentifiers("skill port");
-        setTypes(SkillType.TELEPORTING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
 	}
 
 	@Override

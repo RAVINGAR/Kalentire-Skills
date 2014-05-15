@@ -23,7 +23,7 @@ public class SkillClarity extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill clarity");
         setIdentifiers("skill clarity");
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
     @Override

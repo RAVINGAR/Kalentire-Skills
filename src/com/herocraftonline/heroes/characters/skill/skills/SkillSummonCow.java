@@ -25,7 +25,7 @@ public class SkillSummonCow extends ActiveSkill {
         setUsage("/skill cow");
         setArgumentRange(0, 0);
         setIdentifiers("skill summoncow", "skill cow");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

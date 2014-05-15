@@ -51,7 +51,7 @@ public class SkillGiganticRunestone extends ActiveSkill {
         setUsage("/skill giganticrunestone");
         setArgumentRange(0, 0);
         setIdentifiers("skill giganticrunestone");
-        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
 
         try {

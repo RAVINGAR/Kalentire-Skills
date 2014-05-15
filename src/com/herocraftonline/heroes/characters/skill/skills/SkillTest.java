@@ -22,7 +22,7 @@ public class SkillTest extends TargettedSkill {
         setUsage("/skill test");
         setArgumentRange(0, 0);
         setIdentifiers("skill test");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override

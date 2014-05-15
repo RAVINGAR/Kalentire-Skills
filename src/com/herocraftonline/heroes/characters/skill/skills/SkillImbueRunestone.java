@@ -31,7 +31,7 @@ public class SkillImbueRunestone extends ActiveSkill {
         setUsage("/skill imbuerunestone <Text>");
         setArgumentRange(1, 99);
         setIdentifiers("skill imbuerunestone");
-        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCABLE, SkillType.UNBINDABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE, SkillType.UNBINDABLE);
     }
 
     public String getDescription(Hero hero) {

@@ -20,7 +20,7 @@ public class SkillGroupTeleport extends ActiveSkill {
         setUsage("/skill groupteleport");
         setArgumentRange(0, 0);
         setIdentifiers("skill groupteleport", "skill gteleport");
-        setTypes(SkillType.TELEPORTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.UNBINDABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.UNBINDABLE);
     }
 
     @Override

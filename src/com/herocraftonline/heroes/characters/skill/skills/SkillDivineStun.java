@@ -25,7 +25,7 @@ public class SkillDivineStun extends TargettedSkill {
         setUsage("/skill divinestun");
         setArgumentRange(0, 0);
         setIdentifiers("skill divinestun");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.DISABLING, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.DISABLING, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class SkillGills extends ActiveSkill {
         setUsage("/skill gills");
         setArgumentRange(0, 0);
         setIdentifiers("skill gills");
-        setTypes(SkillType.SILENCABLE, SkillType.BUFFING);
+        setTypes(SkillType.SILENCEABLE, SkillType.BUFFING);
     }
 
     @Override

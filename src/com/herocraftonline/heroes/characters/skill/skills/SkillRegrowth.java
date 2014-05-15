@@ -35,7 +35,7 @@ public class SkillRegrowth extends TargettedSkill {
         setUsage("/skill regrowth <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill regrowth");
-        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     public String getDescription(Hero hero) {

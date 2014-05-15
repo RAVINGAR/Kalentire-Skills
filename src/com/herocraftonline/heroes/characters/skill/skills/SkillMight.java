@@ -39,7 +39,7 @@ public class SkillMight extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill might");
         setIdentifiers("skill might");
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 

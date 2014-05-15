@@ -20,7 +20,7 @@ public class SkillQuantumLeap extends TargettedSkill {
         setUsage("/skill quantumleap");
         setArgumentRange(0, 0);
         setIdentifiers("skill quantumleap");
-        setTypes(SkillType.SILENCABLE, SkillType.NO_SELF_TARGETTING, SkillType.MULTI_GRESSIVE, SkillType.TELEPORTING);
+        setTypes(SkillType.SILENCEABLE, SkillType.NO_SELF_TARGETTING, SkillType.MULTI_GRESSIVE, SkillType.TELEPORTING);
     }
 
     public String getDescription(Hero hero) {

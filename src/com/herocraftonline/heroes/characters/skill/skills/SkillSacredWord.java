@@ -26,7 +26,7 @@ public class SkillSacredWord extends TargettedSkill {
         setUsage("/skill sacredword <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredword");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

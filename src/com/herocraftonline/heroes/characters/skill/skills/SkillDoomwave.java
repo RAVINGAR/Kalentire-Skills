@@ -54,7 +54,7 @@ public class SkillDoomwave extends ActiveSkill {
         setDescription("Unleash a wave of doom around you. Doomwave will launch $1 fiery ender pearls in all directions around you. Each pearl will deal $2 damage to targets hit, and teleport you to each location.");
         setUsage("/skill doomwave");
         setArgumentRange(0, 0);
-        setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_FIRE, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE);
+        setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_FIRE, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
         setIdentifiers("skill doomwave");
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 

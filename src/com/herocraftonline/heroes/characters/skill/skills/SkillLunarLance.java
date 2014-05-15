@@ -32,7 +32,7 @@ public class SkillLunarLance extends TargettedSkill {
         setUsage("/skill lunarlance");
         setArgumentRange(0, 0);
         setIdentifiers("skill lunarlance");
-        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.MANA_DECREASING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.MANA_DECREASING, SkillType.AGGRESSIVE);
     }
 
     @Override

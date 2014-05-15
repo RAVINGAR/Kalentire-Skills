@@ -32,7 +32,7 @@ public class SkillDarkBlade extends TargettedSkill {
         setUsage("/skill darkblade");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkblade");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MANA_INCREASING, SkillType.MANA_DECREASING);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MANA_INCREASING, SkillType.MANA_DECREASING);
     }
 
     @Override

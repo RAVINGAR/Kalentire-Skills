@@ -30,7 +30,7 @@ public class SkillFullHeal extends TargettedSkill {
         setUsage("/skill fullheal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill fullheal");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

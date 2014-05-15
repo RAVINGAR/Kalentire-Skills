@@ -24,7 +24,7 @@ public class SkillSummonHorse extends ActiveSkill {
         setUsage("/skill horse");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonhorse", "skill horse");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

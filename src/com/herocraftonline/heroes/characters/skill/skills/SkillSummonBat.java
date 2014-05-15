@@ -24,7 +24,7 @@ public class SkillSummonBat extends ActiveSkill {
         setUsage("/skill bat");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonbat", "skill bat");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

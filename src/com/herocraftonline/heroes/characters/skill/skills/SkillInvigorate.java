@@ -22,7 +22,7 @@ public class SkillInvigorate extends TargettedSkill{
         setUsage("/skill invigorate <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill invigorate");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_EARTH, SkillType.STAMINA_INCREASING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_EARTH, SkillType.STAMINA_INCREASING);
     }
 
     @Override

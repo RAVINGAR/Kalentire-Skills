@@ -29,7 +29,7 @@ public class SkillGreatCombustion extends ActiveSkill {
         setUsage("/skill greatcombustion");
         setArgumentRange(0, 0);
         setIdentifiers("skill greatcombustion");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {

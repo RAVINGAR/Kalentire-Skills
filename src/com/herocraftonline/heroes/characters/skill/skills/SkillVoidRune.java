@@ -58,7 +58,7 @@ public class SkillVoidRune extends ActiveSkill {
         setDescription("Imbue your blade with the Rune of Void. Upon Rune application, this Rune will damage the target for $1 damage and then silence them for $2 seconds.");
         setUsage("/skill voidrune");
         setIdentifiers("skill voidrune");
-        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING, SkillType.SILENCING, SkillType.DAMAGING, SkillType.SILENCABLE);
+        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING, SkillType.SILENCING, SkillType.DAMAGING, SkillType.SILENCEABLE);
         setArgumentRange(0, 0);
 
         Bukkit.getServer().getPluginManager().registerEvents(new VoidRuneListener(this), plugin);

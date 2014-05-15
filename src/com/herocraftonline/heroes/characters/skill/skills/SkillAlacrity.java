@@ -28,7 +28,7 @@ public class SkillAlacrity extends TargettedSkill {
         setUsage("/skill Alacrity <target>");
         setIdentifiers("skill alacrity");
         setDescription("Prepare the target, granting them Alacrity that increases their Agility by $1 for $2 minutes");
-        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
     @Override

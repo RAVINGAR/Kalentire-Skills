@@ -33,7 +33,7 @@ public class SkillRuneword extends TargettedSkill {
         setArgumentRange(0, 0);
         setUsage("/skill runeword");
         setIdentifiers("skill runeword");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DEBUFFING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }

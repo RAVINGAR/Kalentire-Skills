@@ -26,7 +26,7 @@ public class SkillSummonArrow extends ActiveSkill {
         setUsage("/skill summonarrow");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonarrow");
-        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCEABLE);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class SkillSummonCat extends ActiveSkill {
         setUsage("/skill cat");
         setArgumentRange(0, 0);
         setIdentifiers("skill summoncat", "skill cat");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

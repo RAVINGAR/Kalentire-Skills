@@ -34,7 +34,7 @@ public class SkillThickenBlood extends TargettedSkill {
         setUsage("/skill thickenblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill thickenblood");
-        setTypes(SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.STAMINA_FREEZING, SkillType.DEBUFFING);
+        setTypes(SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.STAMINA_FREEZING, SkillType.DEBUFFING);
     }
 
     public String getDescription(Hero hero) {

@@ -26,7 +26,7 @@ public class SkillSummonFood extends ActiveSkill {
         setUsage("/skill summonfood");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonfood");
-        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCEABLE);
     }
 
     @Override

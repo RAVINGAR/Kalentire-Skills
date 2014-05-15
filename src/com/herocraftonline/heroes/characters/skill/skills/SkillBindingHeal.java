@@ -20,7 +20,7 @@ public class SkillBindingHeal extends  TargettedSkill {
         setUsage("/skill bindingheal");
         setArgumentRange(0, 0);
         setIdentifiers("skill bindingheal");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

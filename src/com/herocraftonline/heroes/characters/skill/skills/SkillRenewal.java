@@ -29,7 +29,7 @@ public class SkillRenewal extends TargettedSkill {
         setUsage("/skill renewal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill renewal");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override

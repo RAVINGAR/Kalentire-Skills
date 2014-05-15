@@ -47,7 +47,7 @@ public class SkillFireball extends ActiveSkill {
         setUsage("/skill fireball");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireball");
-        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }

@@ -28,7 +28,7 @@ public class SkillBolt extends TargettedSkill {
         setUsage("/skill bolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill bolt");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override

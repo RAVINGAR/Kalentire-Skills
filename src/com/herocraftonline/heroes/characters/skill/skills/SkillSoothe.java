@@ -27,7 +27,7 @@ public class SkillSoothe extends TargettedSkill {
         setUsage("/skill soothe <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soothe");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

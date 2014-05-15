@@ -42,7 +42,7 @@ public class SkillFireblast extends ActiveSkill {
         setUsage("/skill fireblast");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireblast");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;

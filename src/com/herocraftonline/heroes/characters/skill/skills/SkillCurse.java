@@ -41,7 +41,7 @@ public class SkillCurse extends TargettedSkill {
         setUsage("/skill curse");
         setArgumentRange(0, 0);
         setIdentifiers("skill curse");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
     }

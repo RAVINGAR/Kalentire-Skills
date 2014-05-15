@@ -59,7 +59,7 @@ public class SkillToxicRune extends ActiveSkill {
         setDescription("Imbue your blade with the Rune of Toxicity. Upon Rune application, this Rune will poison the target causing $1 damage over $2 seconds.");
         setUsage("/skill toxicrune");
         setIdentifiers("skill toxicrune");
-        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.SILENCABLE);
+        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.SILENCEABLE);
         setArgumentRange(0, 0);
 
         // Start up the listener for runeword skill usage

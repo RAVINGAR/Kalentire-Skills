@@ -23,7 +23,7 @@ public class SkillSummonMooshroom extends ActiveSkill {
         setUsage("/skill mushroomcow");
         setArgumentRange(0, 0);
         setIdentifiers("skill mushroomc", "skill mushroomcow", "skill mcow", "skill mooshroom", "skill summonmushroomcow", "skill mushroomcow");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

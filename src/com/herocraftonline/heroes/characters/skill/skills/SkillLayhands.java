@@ -26,7 +26,7 @@ public class SkillLayhands extends TargettedSkill {
         setUsage("/skill layhands <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill layhands");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

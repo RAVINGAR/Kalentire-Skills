@@ -27,7 +27,7 @@ public class SkillManaFreeze extends TargettedSkill {
         setUsage("/skill manafreeze");
         setArgumentRange(0, 0);
         setIdentifiers("skill manafreeze", "skill mfreeze");
-        setTypes(SkillType.SILENCABLE, SkillType.DEBUFFING, SkillType.MANA_FREEZING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.MANA_FREEZING, SkillType.AGGRESSIVE);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class SkillInfusion extends TargettedSkill {
         setUsage("/skill infusion <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill infusion");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
     }
 
     public String getDescription(Hero hero) {

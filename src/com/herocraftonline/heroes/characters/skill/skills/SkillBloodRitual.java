@@ -29,7 +29,7 @@ public class SkillBloodRitual extends TargettedSkill {
         setUsage("/skill bloodritual <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bloodritual");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_DARK);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     public String getDescription(Hero hero) {

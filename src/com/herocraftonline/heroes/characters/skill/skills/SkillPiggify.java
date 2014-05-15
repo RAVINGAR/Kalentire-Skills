@@ -50,7 +50,7 @@ public class SkillPiggify extends TargettedSkill {
         setUsage("/skill piggify");
         setArgumentRange(0, 0);
         setIdentifiers("skill piggify");
-        setTypes(SkillType.DISABLING, SkillType.SILENCABLE, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
+        setTypes(SkillType.DISABLING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 

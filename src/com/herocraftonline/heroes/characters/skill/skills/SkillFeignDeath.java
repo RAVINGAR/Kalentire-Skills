@@ -49,7 +49,7 @@ public class SkillFeignDeath extends ActiveSkill {
         setUsage("/skill feigndeath");
         setArgumentRange(0, 0);
         setIdentifiers("skill feigndeath");
-        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BLINDING, SkillType.SILENCABLE, SkillType.STEALTHY, SkillType.BUFFING);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BLINDING, SkillType.SILENCEABLE, SkillType.STEALTHY, SkillType.BUFFING);
 
         moveChecker = new FeignMoveChecker(this);
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 1, 1);

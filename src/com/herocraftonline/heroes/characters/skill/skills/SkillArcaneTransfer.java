@@ -30,7 +30,7 @@ public class SkillArcaneTransfer extends TargettedSkill {
         setUsage("/skill arcanetransfer");
         setArgumentRange(0, 0);
         setIdentifiers("skill arcanetransfer");
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE);
     }
 
     @Override

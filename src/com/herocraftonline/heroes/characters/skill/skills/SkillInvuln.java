@@ -28,7 +28,7 @@ public class SkillInvuln extends ActiveSkill {
         setUsage("/skill invuln");
         setArgumentRange(0, 0);
         setIdentifiers("skill invuln");
-        setTypes(SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.SILENCEABLE);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class SkillSplendor extends TargettedSkill {
         setUsage("/skill Splendor <target>");
         setIdentifiers("skill splendor");
         setDescription("Grant the target Splendor which increases their Charisma by $1 for $2 minutes");
-        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
     @Override

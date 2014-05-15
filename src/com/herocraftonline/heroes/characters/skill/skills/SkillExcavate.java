@@ -34,7 +34,7 @@ public class SkillExcavate extends ActiveSkill {
         setUsage("/skill excavate");
         setArgumentRange(0, 0);
         setIdentifiers("skill excavate");
-        setTypes(SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 

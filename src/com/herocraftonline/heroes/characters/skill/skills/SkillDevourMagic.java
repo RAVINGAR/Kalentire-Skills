@@ -34,7 +34,7 @@ public class SkillDevourMagic extends ActiveSkill {
         setUsage("/skill devourmagic");
         setArgumentRange(0, 0);
         setIdentifiers("skill devourmagic");
-        setTypes(SkillType.MANA_INCREASING, SkillType.SILENCABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK);
+        setTypes(SkillType.MANA_INCREASING, SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK);
 
         Bukkit.getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }

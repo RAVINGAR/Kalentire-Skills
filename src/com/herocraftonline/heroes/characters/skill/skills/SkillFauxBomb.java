@@ -41,7 +41,7 @@ public class SkillFauxBomb extends ActiveSkill {
         setUsage("/skill fauxbomb");
         setArgumentRange(0, 0);
         setIdentifiers("skill fauxbomb");
-        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SUMMONING, SkillType.SILENCEABLE);
 
         Bukkit.getPluginManager().registerEvents(new SkillListener(), plugin);
     }

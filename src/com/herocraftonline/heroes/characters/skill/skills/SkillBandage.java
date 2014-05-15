@@ -24,7 +24,7 @@ public class SkillBandage extends TargettedSkill {
         setUsage("/skill bandage <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bandage");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

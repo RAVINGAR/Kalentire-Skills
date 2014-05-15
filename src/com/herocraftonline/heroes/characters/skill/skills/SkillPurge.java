@@ -24,7 +24,7 @@ public class SkillPurge extends TargettedSkill {
         setUsage("/skill purge");
         setArgumentRange(0, 0);
         setIdentifiers("skill purge");
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE, SkillType.DISPELLING);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE, SkillType.DISPELLING);
     }
 
     @Override

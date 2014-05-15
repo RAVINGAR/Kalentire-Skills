@@ -24,7 +24,7 @@ public class SkillCauterize extends TargettedSkill {
         setUsage("/skill cauterize <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill cauterize");
-        setTypes(SkillType.SILENCABLE, SkillType.DISPELLING, SkillType.ABILITY_PROPERTY_FIRE);
+        setTypes(SkillType.SILENCEABLE, SkillType.DISPELLING, SkillType.ABILITY_PROPERTY_FIRE);
     }
 
     @Override

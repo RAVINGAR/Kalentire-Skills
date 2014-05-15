@@ -36,7 +36,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
         setUsage("/skill tremortotem");
         setArgumentRange(0, 0);
         setIdentifiers("skill tremortotem");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
         material = Material.QUARTZ_BLOCK;
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {

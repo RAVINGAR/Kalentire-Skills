@@ -1,11 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
@@ -13,13 +7,12 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class SkillAbsolution extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
@@ -30,7 +23,7 @@ public class SkillAbsolution extends TargettedSkill {
         setUsage("/skill absolution <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill absolution");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override

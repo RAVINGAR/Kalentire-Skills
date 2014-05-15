@@ -41,7 +41,7 @@ public class SkillForcePush extends TargettedSkill {
         setUsage("/skill forcepush");
         setArgumentRange(0, 0);
         setIdentifiers("skill forcepush");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;

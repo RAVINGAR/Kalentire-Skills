@@ -24,7 +24,7 @@ public class SkillSummonChicken extends ActiveSkill {
         setUsage("/skill chicken");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonchicken", "skill chicken");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

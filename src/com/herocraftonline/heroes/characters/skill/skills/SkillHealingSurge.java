@@ -25,7 +25,7 @@ public class SkillHealingSurge extends TargettedSkill {
         setUsage("/skill healingsurge <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill healingsurge");
-        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.MANA_INCREASING, SkillType.STAMINA_INCREASING, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.MANA_INCREASING, SkillType.STAMINA_INCREASING, SkillType.SILENCEABLE);
     }
 
     public String getDescription(Hero hero) {

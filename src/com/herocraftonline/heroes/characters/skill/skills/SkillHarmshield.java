@@ -37,7 +37,7 @@ public class SkillHarmshield extends ActiveSkill {
         setUsage("/skill harmshield");
         setArgumentRange(0, 0);
         setIdentifiers("skill harmshield");
-        setTypes(SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 

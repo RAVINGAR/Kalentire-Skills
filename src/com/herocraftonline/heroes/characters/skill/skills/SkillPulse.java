@@ -29,7 +29,7 @@ public class SkillPulse extends ActiveSkill {
         setUsage("/skill pulse");
         setArgumentRange(0, 0);
         setIdentifiers("skill pulse");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override

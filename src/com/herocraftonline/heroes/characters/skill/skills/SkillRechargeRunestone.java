@@ -29,7 +29,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
         setUsage("/skill rechargerunestone");
         setArgumentRange(0, 0);
         setIdentifiers("skill rechargerunestone");
-        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
     }
 
     public String getDescription(Hero hero) {

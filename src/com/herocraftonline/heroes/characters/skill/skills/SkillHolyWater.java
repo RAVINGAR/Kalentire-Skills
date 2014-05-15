@@ -40,7 +40,7 @@ public class SkillHolyWater extends ActiveSkill {
         setUsage("/skill holywater");
         setArgumentRange(0, 0);
         setIdentifiers("skill holywater");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.SILENCEABLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }

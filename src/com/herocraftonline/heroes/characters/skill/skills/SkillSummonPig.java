@@ -24,7 +24,7 @@ public class SkillSummonPig extends ActiveSkill {
         setUsage("/skill pig");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonpig", "skill pig");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

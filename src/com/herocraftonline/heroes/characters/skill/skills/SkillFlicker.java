@@ -32,7 +32,7 @@ public class SkillFlicker extends ActiveSkill {
         setUsage("/skill flicker");
         setArgumentRange(0, 0);
         setIdentifiers("skill flicker");
-        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
 
     @Override

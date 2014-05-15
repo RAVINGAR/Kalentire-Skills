@@ -32,7 +32,7 @@ public class SkillMagicWard extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill magicward");
         setIdentifiers("skill magicward", "skill rayshield");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DEBUFFING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }

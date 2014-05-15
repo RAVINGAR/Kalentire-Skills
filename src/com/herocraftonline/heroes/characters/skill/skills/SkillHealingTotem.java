@@ -26,7 +26,7 @@ public class SkillHealingTotem extends SkillBaseTotem {
         setUsage("/skill healingtotem");
         setIdentifiers("skill healingtotem");
         setDescription("Places a healing totem at target location that heals allied players for $1 HP per second in a $2 radius. Lasts for $3 seconds.");
-        setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
         material = Material.MYCEL;
     }
 

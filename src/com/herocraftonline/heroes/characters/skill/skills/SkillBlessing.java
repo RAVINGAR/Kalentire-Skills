@@ -28,7 +28,7 @@ public class SkillBlessing extends TargettedSkill {
         setUsage("/skill Blessing <target>");
         setIdentifiers("skill blessing");
         setDescription("Bless the target, increasing their attributes by $1 for $2 minutes");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
     @Override

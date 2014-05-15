@@ -48,7 +48,7 @@ public class SkillMassPiggify extends ActiveSkill {
         setUsage("/skill masspiggify");
         setArgumentRange(0, 0);
         setIdentifiers("skill masspiggify");
-        setTypes(SkillType.DISABLING, SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.INTERRUPTING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DISABLING, SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.INTERRUPTING, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 

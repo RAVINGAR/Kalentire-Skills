@@ -59,7 +59,7 @@ public class SkillIceRune extends ActiveSkill {
         setDescription("Imbue your blade with the Rune of Ice. Upon Rune application, this Rune will deal $1 magic damage and slow the target for $2 seconds.");
         setUsage("/skill icerune");
         setIdentifiers("skill icerune");
-        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.DEBUFFING, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING, SkillType.SILENCABLE);
+        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.DEBUFFING, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING, SkillType.SILENCEABLE);
         setArgumentRange(0, 0);
 
         Bukkit.getServer().getPluginManager().registerEvents(new IceRuneListener(this), plugin);

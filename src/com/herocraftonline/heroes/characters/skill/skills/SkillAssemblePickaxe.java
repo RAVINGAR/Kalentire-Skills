@@ -26,7 +26,7 @@ public class SkillAssemblePickaxe extends ActiveSkill {
         setUsage("/skill assemblepickaxe");
         setArgumentRange(0, 0);
         setIdentifiers("skill assemblepickaxe");
-        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCEABLE);
     }
 
     @Override

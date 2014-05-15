@@ -39,7 +39,7 @@ public class SkillEntangle extends TargettedSkill {
         setDescription("Roots your target in place for $1 seconds. The effect breaks when the target takes damage.");
         setUsage("/skill entangle");
         setIdentifiers("skill entangle");
-        setTypes(SkillType.AGGRESSIVE, SkillType.MOVEMENT_PREVENTING, SkillType.DEBUFFING, SkillType.INTERRUPTING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_EARTH);
+        setTypes(SkillType.AGGRESSIVE, SkillType.MOVEMENT_PREVENTING, SkillType.DEBUFFING, SkillType.INTERRUPTING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_EARTH);
         setArgumentRange(0, 0);
 
         // Start up the listener for root skill usage

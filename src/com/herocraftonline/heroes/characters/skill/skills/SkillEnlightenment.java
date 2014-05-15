@@ -28,7 +28,7 @@ public class SkillEnlightenment extends TargettedSkill {
         setUsage("/skill Enlightenment <target>");
         setIdentifiers("skill enlightenment");
         setDescription("Prepare the target, granting them Enlightenment that increases their Intellect and Wisdom by $1 for $2 minutes");
-        setTypes(SkillType.MAX_MANA_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.MAX_MANA_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
     @Override

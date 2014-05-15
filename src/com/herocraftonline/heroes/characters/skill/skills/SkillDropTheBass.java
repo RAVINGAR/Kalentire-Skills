@@ -36,7 +36,7 @@ public class SkillDropTheBass extends ActiveSkill {
         setUsage("/skill dropthebass");
         setArgumentRange(0, 0);
         setIdentifiers("skill dropthebass");
-        setTypes(SkillType.ABILITY_PROPERTY_SONG, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_SONG, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
 
         skillSong = new Song(
                              new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),

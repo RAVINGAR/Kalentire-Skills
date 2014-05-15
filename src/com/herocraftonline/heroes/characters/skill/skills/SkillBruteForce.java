@@ -28,7 +28,7 @@ public class SkillBruteForce extends TargettedSkill {
         setUsage("/skill BruteForce <target>");
         setIdentifiers("skill bruteforce");
         setDescription("Grant the target BruteForce which increases their Strength by $1 for $2 minutes");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
     @Override

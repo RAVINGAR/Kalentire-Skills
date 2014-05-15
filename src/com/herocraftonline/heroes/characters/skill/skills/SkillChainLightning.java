@@ -44,7 +44,7 @@ public class SkillChainLightning extends TargettedSkill {
         setUsage("/skill chainlightning");
         setIdentifiers("skill chainlightning");
         setDescription("Start a ChainLighting chain aimed at the target, bolting hit targets for $1 damage and spreading to a random target within $2 blocks, up to $3 targets.");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
         plugin.getServer().getPluginManager().registerEvents(new ChainLightningListener(this), plugin);
 
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new ChainLightningRunnable(), 0, 1);

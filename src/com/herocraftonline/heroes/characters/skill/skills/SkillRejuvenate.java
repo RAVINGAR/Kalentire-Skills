@@ -33,7 +33,7 @@ public class SkillRejuvenate extends TargettedSkill {
         setUsage("/skill rejuvenate <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill rejuvenate");
-        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     public String getDescription(Hero hero) {

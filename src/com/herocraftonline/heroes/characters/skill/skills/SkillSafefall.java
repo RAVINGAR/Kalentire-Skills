@@ -28,7 +28,7 @@ public class SkillSafefall extends ActiveSkill {
         setUsage("/skill safefall");
         setArgumentRange(0, 0);
         setIdentifiers("skill safefall");
-        setTypes(SkillType.ABILITY_PROPERTY_AIR, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_AIR, SkillType.BUFFING, SkillType.SILENCEABLE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;

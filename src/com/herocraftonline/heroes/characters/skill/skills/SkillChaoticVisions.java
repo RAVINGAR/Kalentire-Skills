@@ -28,7 +28,7 @@ public class SkillChaoticVisions extends ActiveSkill {
         setUsage("/skill chaoticvisions");
         setArgumentRange(0, 0);
         setIdentifiers("skill chaoticvisions");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {

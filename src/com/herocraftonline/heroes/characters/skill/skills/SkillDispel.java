@@ -23,7 +23,7 @@ public class SkillDispel extends TargettedSkill {
         setUsage("/skill dispel <Target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill dispel");
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.DISPELLING);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.DISPELLING);
     }
 
     @Override

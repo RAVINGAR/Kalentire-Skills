@@ -26,7 +26,7 @@ public class SkillUltravision extends ActiveSkill {
         setUsage("/skill ultravision");
         setArgumentRange(0, 0);
         setIdentifiers("skill ultravision");
-        setTypes(SkillType.SILENCABLE, SkillType.BUFFING);
+        setTypes(SkillType.SILENCEABLE, SkillType.BUFFING);
     }
 
     @Override

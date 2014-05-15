@@ -26,7 +26,7 @@ public class SkillWarp extends ActiveSkill {
         setUsage("/skill warp");
         setArgumentRange(0, 0);
         setIdentifiers("skill warp");
-        setTypes(SkillType.TELEPORTING, SkillType.SILENCABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.SILENCEABLE);
     }
 
     public String getDescription(Hero hero) {

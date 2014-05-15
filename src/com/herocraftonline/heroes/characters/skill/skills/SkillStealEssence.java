@@ -28,7 +28,7 @@ public class SkillStealEssence extends TargettedSkill {
         setUsage("/skill stealessence");
         setArgumentRange(0, 0);
         setIdentifiers("skill stealessence", "skill sessence");
-        setTypes(SkillType.BUFFING, SkillType.DISPELLING, SkillType.AGGRESSIVE, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.DISPELLING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
     }
 
     @Override

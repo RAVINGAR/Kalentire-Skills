@@ -40,7 +40,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 		setArgumentRange(0,0);
 		executors = new LinkedHashMap<Player, PlayerExecuteData>(100);
 		setIdentifiers("skill enchantingbook");
-        setTypes(SkillType.SILENCABLE);
+        setTypes(SkillType.SILENCEABLE);
 	}
 
 	@SuppressWarnings("deprecation")

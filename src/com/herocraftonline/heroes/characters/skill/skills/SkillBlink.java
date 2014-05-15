@@ -30,7 +30,7 @@ public class SkillBlink extends ActiveSkill {
         setUsage("/skill blink");
         setArgumentRange(0, 0);
         setIdentifiers("skill blink");
-        setTypes(SkillType.SILENCABLE, SkillType.MOVEMENT_INCREASING, SkillType.TELEPORTING);
+        setTypes(SkillType.SILENCEABLE, SkillType.MOVEMENT_INCREASING, SkillType.TELEPORTING);
     }
 
     @Override

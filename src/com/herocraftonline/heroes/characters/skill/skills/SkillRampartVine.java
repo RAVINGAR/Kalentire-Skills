@@ -51,7 +51,7 @@ public class SkillRampartVine extends ActiveSkill {
         setUsage("/skill rampartvine");
         setArgumentRange(0, 0);
         setIdentifiers("skill rampartvine");
-        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCABLE, SkillType.BLOCK_CREATING);
+        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }

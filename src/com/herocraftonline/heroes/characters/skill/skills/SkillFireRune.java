@@ -57,7 +57,7 @@ public class SkillFireRune extends ActiveSkill {
         setDescription("Imbue your blade with the Rune of Fire. Upon Rune application, this Rune will deal $1 fire damage to the target.");
         setUsage("/skill firerune");
         setIdentifiers("skill firerune");
-        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.SILENCEABLE);
         setArgumentRange(0, 0);
 
         Bukkit.getServer().getPluginManager().registerEvents(new FireRuneListener(this), plugin);

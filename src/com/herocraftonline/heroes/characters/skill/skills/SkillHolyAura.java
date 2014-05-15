@@ -39,7 +39,7 @@ public class SkillHolyAura extends ActiveSkill {
         setDescription("You begin to radiate with a Holy Aura, healing all allies within $1 blocks (other than yourself) for $2 health every $3 seconds. Your aura dissipates after $4 seconds. Any undead targets within your Holy Aura will also be dealt $5 damage.");
         setUsage("/skill holyaura");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.HEALING, SkillType.BUFFING);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.HEALING, SkillType.BUFFING);
         setIdentifiers("skill holyaura");
     }
 

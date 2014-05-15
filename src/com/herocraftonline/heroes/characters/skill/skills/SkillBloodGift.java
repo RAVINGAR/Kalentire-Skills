@@ -28,7 +28,7 @@ public class SkillBloodGift extends TargettedSkill {
         setUsage("/skill bloodgift <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bloodgift");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.NO_SELF_TARGETTING, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NO_SELF_TARGETTING, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     public String getDescription(Hero hero) {

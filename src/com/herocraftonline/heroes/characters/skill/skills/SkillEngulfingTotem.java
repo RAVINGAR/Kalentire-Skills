@@ -40,7 +40,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
         setUsage("/skill engulfingtotem");
         setIdentifiers("skill engulfingtotem");
         setDescription("Places an engulfing totem at target location that reduces the agility of non-partied entites in a $1 radius by $2. Lasts for $3 seconds.");
-        setTypes(SkillType.MOVEMENT_SLOWING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.MOVEMENT_SLOWING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
         material = Material.SOUL_SAND;
         afflictedTargets = new HashMap<Hero, List<LivingEntity>>();
     }

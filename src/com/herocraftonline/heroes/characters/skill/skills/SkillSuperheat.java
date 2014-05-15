@@ -33,7 +33,7 @@ public class SkillSuperheat extends ActiveSkill {
         setUsage("/skill superheat");
         setArgumentRange(0, 0);
         setIdentifiers("skill superheat");
-        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_EARTH, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_EARTH, SkillType.BUFFING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillPlayerListener(), plugin);
     }
 

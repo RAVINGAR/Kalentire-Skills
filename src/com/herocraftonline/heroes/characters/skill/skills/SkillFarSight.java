@@ -22,7 +22,7 @@ public class SkillFarSight extends ActiveSkill {
         setUsage("/skill farsight");
         setArgumentRange(0, 1);
         setIdentifiers("skill farsight", "skill fsight");
-        setTypes(SkillType.BUFFING, SkillType.SILENCABLE, SkillType.STEALTHY);
+        setTypes(SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.STEALTHY);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class SkillBoneSpear extends ActiveSkill {
         setUsage("/skill bonespear");
         setArgumentRange(0, 0);
         setIdentifiers("skill bonespear");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {

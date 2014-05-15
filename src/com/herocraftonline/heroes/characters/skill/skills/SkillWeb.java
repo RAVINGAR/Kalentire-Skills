@@ -50,7 +50,7 @@ public class SkillWeb extends TargettedSkill {
         setUsage("/skill web");
         setArgumentRange(0, 0);
         setIdentifiers("skill web");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }

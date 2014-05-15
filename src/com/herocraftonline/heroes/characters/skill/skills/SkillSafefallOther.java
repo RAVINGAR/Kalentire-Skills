@@ -29,7 +29,7 @@ public class SkillSafefallOther extends TargettedSkill {
         setUsage("/skill safefallother <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill safefallother");
-        setTypes(SkillType.ABILITY_PROPERTY_AIR, SkillType.BUFFING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_AIR, SkillType.BUFFING, SkillType.SILENCEABLE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;

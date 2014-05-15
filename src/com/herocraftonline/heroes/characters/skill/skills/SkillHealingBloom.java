@@ -21,7 +21,7 @@ public class SkillHealingBloom extends ActiveSkill {
         setDescription("Apply a Healing Bloom to party members within $1 blocks, healing them for $2 health over $3 seconds. You are only healed for $3 health from this effect.");
         setUsage("/skill healingbloom");
         setIdentifiers("skill healingbloom");
-        setTypes(SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_EARTH);
+        setTypes(SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_EARTH);
         setArgumentRange(0, 0);
     }
 

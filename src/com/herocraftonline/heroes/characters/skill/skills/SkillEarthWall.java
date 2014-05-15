@@ -45,7 +45,7 @@ public class SkillEarthWall extends ActiveSkill {
         setUsage("/skill earthwall");
         setArgumentRange(0, 0);
         setIdentifiers("skill earthwall");
-        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCABLE, SkillType.BLOCK_CREATING);
+        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }

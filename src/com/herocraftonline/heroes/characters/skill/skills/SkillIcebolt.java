@@ -50,7 +50,7 @@ public class SkillIcebolt extends ActiveSkill {
         setUsage("/skill icebolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill icebolt");
-        setTypes(SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }

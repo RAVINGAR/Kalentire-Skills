@@ -22,7 +22,7 @@ public class SkillGuardianAngel extends ActiveSkill {
         setUsage("/skill guardianangel");
         setArgumentRange(0, 0);
         setIdentifiers("skill guardianangel", "skill gangel");
-        setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
     @Override

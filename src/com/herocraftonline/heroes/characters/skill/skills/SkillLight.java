@@ -53,7 +53,7 @@ public class SkillLight extends ActiveSkill {
         super(plugin, "Light");
         setDescription("You glow brightly, illuminating blocks around you.");
         setArgumentRange(0, 0);
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
         setUsage("/skill light");
         setIdentifiers("skill light");
     }

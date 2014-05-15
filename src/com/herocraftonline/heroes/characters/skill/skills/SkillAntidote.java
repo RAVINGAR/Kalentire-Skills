@@ -25,7 +25,7 @@ public class SkillAntidote extends TargettedSkill {
         setUsage("/skill antidote <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill antidote");
-        setTypes(SkillType.SILENCABLE, SkillType.DISPELLING);
+        setTypes(SkillType.SILENCEABLE, SkillType.DISPELLING);
     }
 
     @Override

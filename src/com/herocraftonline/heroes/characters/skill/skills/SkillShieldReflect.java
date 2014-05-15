@@ -39,7 +39,7 @@ public class SkillShieldReflect extends ActiveSkill {
         setUsage("/skill shieldreflect");
         setArgumentRange(0, 0);
         setIdentifiers("skill shieldreflect");
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_PHYSICAL);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         Bukkit.getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }

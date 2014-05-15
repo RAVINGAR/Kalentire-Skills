@@ -32,7 +32,7 @@ public class SkillChakra extends ActiveSkill {
         setUsage("/skill chakra");
         setArgumentRange(0, 0);
         setIdentifiers("skill chakra");
-        setTypes(SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.DISPELLING, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.DISPELLING, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override

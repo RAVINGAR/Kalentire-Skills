@@ -34,7 +34,7 @@ public class SkillBloodBond extends ActiveSkill {
         setUsage("/skill bloodbond");
         setArgumentRange(0, 0);
         setIdentifiers("skill bloodbond");
-        setTypes(SkillType.BUFFING, SkillType.SILENCABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK);
+        setTypes(SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK);
 
         Bukkit.getServer().getPluginManager().registerEvents(new BloodBondListener(this), plugin);
     }

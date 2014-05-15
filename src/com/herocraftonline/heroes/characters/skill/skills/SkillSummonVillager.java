@@ -28,7 +28,7 @@ public class SkillSummonVillager extends ActiveSkill {
         setUsage("/skill villager [profession]");
         setArgumentRange(0, 1);
         setIdentifiers("skill summonvillager", "skill villager");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

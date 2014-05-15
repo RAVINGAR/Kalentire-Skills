@@ -43,7 +43,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         setUsage("/skill plaguebomb");
         setArgumentRange(0, 0);
         setIdentifiers("skill plaguebomb");
-        setTypes(SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.DAMAGING, SkillType.SILENCABLE);
+        setTypes(SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.DAMAGING, SkillType.SILENCEABLE);
 
         Bukkit.getPluginManager().registerEvents(new SkillListener(), plugin);
     }

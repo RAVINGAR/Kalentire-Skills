@@ -44,7 +44,7 @@ public class SkillDecimation extends ActiveSkill {
         setDescription("You let lose Withering Skulls that deals $1 dark damage in all directions.");
         setUsage("/skill decimation");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         setIdentifiers("skill decimation");
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }

@@ -47,7 +47,7 @@ public class SkillWindGale extends ActiveSkill {
         setUsage("/skill windgale");
         setArgumentRange(0, 0);
         setIdentifiers("skill windgale");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_AIR, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_AIR, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
         
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
             ncpEnabled = true;

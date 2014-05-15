@@ -28,7 +28,7 @@ public class SkillSacredHymn extends TargettedSkill {
         setUsage("/skill sacredhymn <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredhymn");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

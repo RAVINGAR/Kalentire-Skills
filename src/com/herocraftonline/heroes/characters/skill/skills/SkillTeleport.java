@@ -23,7 +23,7 @@ public class SkillTeleport extends ActiveSkill {
         setUsage("/skill teleport <player>");
         setArgumentRange(1, 1);
         setIdentifiers("skill teleport");
-        setTypes(SkillType.TELEPORTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
     }
 
     @Override
