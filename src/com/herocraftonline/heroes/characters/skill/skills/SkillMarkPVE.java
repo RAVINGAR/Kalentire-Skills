@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -28,7 +28,7 @@ public class SkillMarkPVE extends ActiveSkill {
         setUsage("/skill markpve <info|reset>");
         setArgumentRange(0, 1);
         setIdentifiers("skill mark", "skill markpve");
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
 
         //        try {
         //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {

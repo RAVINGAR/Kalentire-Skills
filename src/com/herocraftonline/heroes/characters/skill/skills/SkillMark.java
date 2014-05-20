@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.logging.Level;
 
@@ -33,7 +33,7 @@ public class SkillMark extends ActiveSkill {
         setUsage("/skill mark <info|reset>");
         setArgumentRange(0, 1);
         setIdentifiers("skill mark");
-        setTypes(SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
 
         try {
             //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {

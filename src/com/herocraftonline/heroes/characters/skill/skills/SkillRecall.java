@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class SkillRecall extends ActiveSkill {
         setUsage("/skill recall");
         setArgumentRange(0, 0);
         setIdentifiers("skill recall");
-        setTypes(SkillType.SILENCABLE, SkillType.TELEPORTING);
+        setTypes(SkillType.SILENCEABLE, SkillType.TELEPORTING);
 
         try {
             //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
