@@ -27,8 +27,8 @@ public class SkillStealEssence extends TargettedSkill {
         setDescription("You steal beneficial effects from your target.");
         setUsage("/skill stealessence");
         setArgumentRange(0, 0);
-        setIdentifiers("skill stealessence", "skill sessence");
-        setTypes(SkillType.BUFFING, SkillType.DISPELLING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
+        setIdentifiers("skill stealessence");
+        setTypes(SkillType.DISPELLING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
     }
 
     @Override
