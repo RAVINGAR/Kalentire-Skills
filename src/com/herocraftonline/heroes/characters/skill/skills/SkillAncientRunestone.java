@@ -257,8 +257,8 @@ public class SkillAncientRunestone extends ActiveSkill {
             // He's saved to the file now, don't need to keep him in the map anymore.
             soulboundRunestones.remove(player);
 
-            // Save just in case
-            plugin.getCharacterManager().saveHero(hero, true);
+            // Save just in case - we're now removing this due to skillSettings being saved more efficiently.
+            //plugin.getCharacterManager().saveHero(hero, true);
         }
 
         @EventHandler(priority = EventPriority.HIGH)
@@ -283,7 +283,7 @@ public class SkillAncientRunestone extends ActiveSkill {
 
                 if (i > 0) {
                     // Save just in case
-                    plugin.getCharacterManager().saveHero(hero, true);
+                    //plugin.getCharacterManager().saveHero(hero, true);
                 }
             }
             catch (NumberFormatException e) {

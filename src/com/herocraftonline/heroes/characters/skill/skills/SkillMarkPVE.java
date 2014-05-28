@@ -104,7 +104,7 @@ public class SkillMarkPVE extends ActiveSkill {
             Object[] obj = new Object[] { loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() };
             Messaging.send(player, "You have marked a new location on $1 at: $2, $3, $4", obj);
 
-            plugin.getCharacterManager().saveHero(hero, false);
+            //plugin.getCharacterManager().saveHero(hero, false);
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
             return SkillResult.NORMAL;
         }
