@@ -29,9 +29,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.ResidencePermissions;
+//import com.bekvon.bukkit.residence.Residence;
+//import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+//import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -52,7 +52,7 @@ public class SkillAncientRunestone extends ActiveSkill {
 
     private boolean herotowns = false;
     private HeroTowns ht;
-    private boolean residence = false;
+    //private boolean residence = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
 
@@ -72,9 +72,9 @@ public class SkillAncientRunestone extends ActiveSkill {
             //                herotowns = true;
             //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             //            }
-            if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
-            }
+            }*/
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -130,7 +130,7 @@ public class SkillAncientRunestone extends ActiveSkill {
             Location location = player.getLocation();
 
             // Validate Residences
-            if (residence) {
+            /*if (residence) {
                 ClaimedResidence residence = Residence.getResidenceManager().getByLoc(location);
                 if (residence != null) {
                     ResidencePermissions perm = residence.getPermissions();
@@ -139,7 +139,7 @@ public class SkillAncientRunestone extends ActiveSkill {
                         return SkillResult.FAIL;
                     }
                 }
-            }
+            }*/
 
             // Validate Herotowns
             if (herotowns) {

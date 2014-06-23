@@ -41,7 +41,7 @@ public class SkillMajorRunestone extends ActiveSkill {
 
     private boolean herotowns = false;
     private HeroTowns ht;
-    private boolean residence = false;
+    //private boolean residence = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
 
@@ -59,9 +59,9 @@ public class SkillMajorRunestone extends ActiveSkill {
             //                herotowns = true;
             //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             //            }
-            if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
-            }
+            }*/
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -117,7 +117,7 @@ public class SkillMajorRunestone extends ActiveSkill {
             Location location = player.getLocation();
 
             // Validate Residences
-            if (residence) {
+            /*if (residence) {
                 ClaimedResidence residence = Residence.getResidenceManager().getByLoc(location);
                 if (residence != null) {
                     ResidencePermissions perm = residence.getPermissions();
@@ -126,7 +126,7 @@ public class SkillMajorRunestone extends ActiveSkill {
                         return SkillResult.FAIL;
                     }
                 }
-            }
+            }*/
 
             // Validate Herotowns
             if (herotowns) {
