@@ -26,7 +26,7 @@ public class SkillMagicMissile extends ActiveSkill {
         setUsage("/skill magicmissile");
         setArgumentRange(0, 0);
         setIdentifiers("skill magicmissile");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.DAMAGING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.DAMAGING);
 
         // Register event
         Bukkit.getServer().getPluginManager().registerEvents(new SkillMagicMissileListener(), plugin);

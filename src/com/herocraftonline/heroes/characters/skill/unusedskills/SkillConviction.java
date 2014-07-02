@@ -38,7 +38,7 @@ public class SkillConviction extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill conviction");
         setIdentifiers("skill conviction");
-        setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 

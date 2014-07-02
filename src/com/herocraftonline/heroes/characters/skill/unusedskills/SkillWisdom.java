@@ -28,7 +28,7 @@ public class SkillWisdom extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill wisdom");
         setIdentifiers("skill wisdom");
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
     @Override

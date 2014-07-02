@@ -42,7 +42,7 @@ public class SkillIntervene extends TargettedSkill {
         setIdentifiers("skill intervene");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.NO_SELF_TARGETTING);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     @Override
@@ -107,12 +107,6 @@ public class SkillIntervene extends TargettedSkill {
     }
 
     public class SkillEntityListener implements Listener {
-
-        private Skill skill;
-
-        SkillEntityListener(Skill skill) {
-            this.skill = skill;
-        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
