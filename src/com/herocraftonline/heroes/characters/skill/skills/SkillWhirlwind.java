@@ -112,7 +112,7 @@ public class SkillWhirlwind extends ActiveSkill {
 
             int tickDuration = (int) ((duration / 1000) * 20);
             addMobEffect(2, tickDuration, slowAmplifier, false);
-            addMobEffect(8, tickDuration, 254, false);
+            //addMobEffect(8, tickDuration, 254, false);
         }
 
         public int getRadius() {
