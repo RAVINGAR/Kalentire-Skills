@@ -35,7 +35,7 @@ public class SkillPoison extends TargettedSkill {
         setUsage("/skill poison");
         setArgumentRange(0, 0);
         setIdentifiers("skill poison");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_POISON, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_POISON, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override

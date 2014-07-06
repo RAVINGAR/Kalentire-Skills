@@ -36,7 +36,7 @@ public class SkillChaoticIntellect extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill chaoticintellect");
         setIdentifiers("skill chaoticintellect");
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
     }
 
     @Override

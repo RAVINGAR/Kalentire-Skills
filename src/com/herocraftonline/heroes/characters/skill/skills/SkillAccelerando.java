@@ -47,7 +47,7 @@ public class SkillAccelerando extends ActiveSkill {
         setIdentifiers("skill accelerando");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_SONG, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
         skillSong = new Song(
                              new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.2F, 0),
@@ -139,12 +139,6 @@ public class SkillAccelerando extends ActiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-        
-        private Skill skill;
-        
-        public SkillEntityListener(Skill skill) {
-            this.skill = skill;
-        }
         
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {

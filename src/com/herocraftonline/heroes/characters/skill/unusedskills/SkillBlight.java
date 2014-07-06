@@ -37,7 +37,7 @@ public class SkillBlight extends TargettedSkill {
         setDescription("You disease your target, dealing $1 dark damage over $2 seconds, enemies that get too close will also be damaged.");
         setUsage("/skill blight");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         setIdentifiers("skill blight");
     }
 

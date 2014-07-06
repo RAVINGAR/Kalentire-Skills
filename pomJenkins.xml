@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.4.0-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
@@ -39,14 +39,11 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                    <excludes>
-                        <exclude>com/herocraftonline/heroes/characters/skill/skills/*.java</exclude>
-                        <exclude>com/herocraftonline/heroes/characters/skill/unusedskills/*.java</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
     <repositories>
         <repository>
             <id>heroes-repo</id>
@@ -60,14 +57,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.7.9-R0.1-SNAPSHOT</version>
+            <groupId>com.herocraftonline.heroes</groupId>
+            <artifactId>Heroes</artifactId>
+            <version>1.7.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.7.9-R0.1-SNAPSHOT</version>
+            <artifactId>spigot-api</artifactId>
+            <version>1.7.9-R0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -77,8 +74,8 @@
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.2.26-SNAPSHOT</version>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.4</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -96,6 +93,42 @@
             <groupId>fr.neatmonster</groupId>
             <artifactId>ncpcore</artifactId>
             <version>static</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mc.alk.tracker</groupId>
+            <artifactId>BattleTracker</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/BattleTracker.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>pgDev.bukkit.DisguiseCraft</groupId>
+            <artifactId>DisguiseCraft</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/DisguiseCraft.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.herocraftonline.townships</groupId>
+            <artifactId>HeroTowns</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/HeroTowns.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.griefcraft.lwc</groupId>
+            <artifactId>LWC</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/LWC.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.bekvon.bukkit.residence</groupId>
+            <artifactId>Residence</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/Residence.jar</systemPath>
         </dependency>
 
     </dependencies>

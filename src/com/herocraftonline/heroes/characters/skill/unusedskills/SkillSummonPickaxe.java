@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.HashMap;
 
@@ -26,7 +26,7 @@ public class SkillSummonPickaxe extends ActiveSkill {
         setUsage("/skill summonpickaxe");
         setArgumentRange(0, 0);
         setIdentifiers("skill summonpickaxe", "skill pickaxe");
-        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCABLE);
+        setTypes(SkillType.ITEM_CREATION, SkillType.SILENCEABLE);
     }
 
     @Override

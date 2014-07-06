@@ -189,7 +189,6 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
 
                 private double time = 0;
 
-                @SuppressWarnings("deprecation")
                 @Override
                 public void run() {
                     if(!fEntity.isValid()) {

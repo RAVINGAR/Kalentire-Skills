@@ -24,7 +24,7 @@ public class SkillEnderCrystal extends ActiveSkill {
         setUsage("/skill endercrystal");
         setArgumentRange(0, 0);
         setIdentifiers("skill endercrystal", "skill crystal");
-        setTypes(SkillType.SUMMONING, SkillType.SILENCABLE);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
     @Override

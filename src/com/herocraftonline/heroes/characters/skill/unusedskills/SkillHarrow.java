@@ -31,7 +31,7 @@ public class SkillHarrow extends TargettedSkill {
         setUsage("/skill harrow");
         setArgumentRange(0, 0);
         setIdentifiers("skill harrow");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
