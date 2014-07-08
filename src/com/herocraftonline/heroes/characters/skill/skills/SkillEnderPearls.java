@@ -46,7 +46,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, this, "cooldown-during-combat", Boolean.valueOf(true));
+        boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, this, "cooldown-during-combat", true);
         int cdDuration = SkillConfigManager.getUseSetting(hero, this, "combat-toss-cooldown", Integer.valueOf(60000), false);
 
         String combatCooldownString = "";
@@ -64,10 +64,10 @@ public class SkillEnderPearls extends PassiveSkill {
 
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "");
-        node.set("vertical-leniency", Integer.valueOf(2));
-        node.set("velocity-multiplier", Double.valueOf(0.85));
-        node.set("cooldown-during-combat", Boolean.valueOf(true));
-        node.set("combat-toss-cooldown", Integer.valueOf(60000));
+        node.set("vertical-leniency", 2);
+        node.set("velocity-multiplier", 0.85);
+        node.set("cooldown-during-combat", true);
+        node.set("combat-toss-cooldown", 60000);
 
         return node;
     }
@@ -109,7 +109,7 @@ public class SkillEnderPearls extends PassiveSkill {
                     return;
                 }
 
-                boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown-during-combat", Boolean.valueOf(true));
+                boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown-during-combat", true);
                 int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "combat-toss-cooldown", Integer.valueOf(5000), false);
                 boolean applyCooldown = false;
                 if (hasCombatCooldown) {
@@ -126,7 +126,6 @@ public class SkillEnderPearls extends PassiveSkill {
                     if (Util.interactableBlocks.contains(event.getClickedBlock().getType())) {
                         // Dealing with an interactable block. Let them interact with that block instead of throwing the ender pearl.
                         event.setUseItemInHand(Result.DENY);
-                        return;
                     }
                     else {
                         if (applyCooldown) {
@@ -157,7 +156,7 @@ public class SkillEnderPearls extends PassiveSkill {
             Player player = (Player) event.getEntity().getShooter();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", Double.valueOf(0.75), false);
+            double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.75, false);
             EnderPearl enderPearl = (EnderPearl) event.getEntity();
             double yVel = enderPearl.getVelocity().getY();
             enderPearl.setVelocity(enderPearl.getVelocity().multiply(velocityMultiplier).setY(yVel));

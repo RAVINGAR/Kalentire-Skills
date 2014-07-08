@@ -98,12 +98,9 @@ public class SkillEntangle extends TargettedSkill {
 
         // Play Effect
         try {
-            this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(true).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.OLIVE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder()
+                    .flicker(true).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.OLIVE).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

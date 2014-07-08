@@ -35,7 +35,7 @@ public class SkillFullHeal extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double modifier = SkillConfigManager.getUseSetting(hero, this, "self-heal-modifier", Double.valueOf(0.5), false);
+        double modifier = SkillConfigManager.getUseSetting(hero, this, "self-heal-modifier", 0.5, false);
 
         String formattedModifier = Util.decFormat.format(modifier * 100);
 
@@ -46,9 +46,9 @@ public class SkillFullHeal extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
-        node.set("self-heal-modifier", Double.valueOf(0.5));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
+        node.set("self-heal-modifier", 0.5);
 
         return node;
     }
@@ -65,7 +65,7 @@ public class SkillFullHeal extends TargettedSkill {
 
         HeroRegainHealthEvent hrhEvent;
         if (player.equals(targetHero.getPlayer())) {
-            double modifier = SkillConfigManager.getUseSetting(hero, this, "self-heal-modifier", Double.valueOf(0.5), false);
+            double modifier = SkillConfigManager.getUseSetting(hero, this, "self-heal-modifier", 0.5, false);
             double healAmount = target.getMaxHealth() * modifier;
             hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this);
         }
@@ -92,8 +92,6 @@ public class SkillFullHeal extends TargettedSkill {
             		.withColor(Color.FUCHSIA)
             		.withFade(Color.WHITE)
             		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

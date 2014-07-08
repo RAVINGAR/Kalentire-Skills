@@ -83,7 +83,7 @@ public class SkillForceTotem extends SkillBaseTotem {
                     name = player.getName();
                 }
                 else name = Messaging.getLivingEntityName(character);
-                broadcast(entity.getLocation(), getApplyText(), new Object[] { name, heroP.getName() });
+                broadcast(entity.getLocation(), getApplyText(), name, heroP.getName());
             }
             else {
                 ((ExpirableEffect)character.getEffect("ForceTotemNauseaEffect")).setExpireText(null);
@@ -117,13 +117,13 @@ public class SkillForceTotem extends SkillBaseTotem {
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "$1 is disoriented by a totem's power!");
         node.set(SkillSetting.UNAPPLY_TEXT.node(), Messaging.getSkillDenoter() + "$1 is no longer disoriented by a totem's power.");
-        node.set(SkillSetting.DAMAGE.node(), Double.valueOf(50.0));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(5.0));
-        node.set("base-launch", Double.valueOf(1.0));
-        node.set("launch-per-wisdom", Double.valueOf(0.01));
-        node.set("disorientation-level", Integer.valueOf(1));
-        node.set("disorientation-duration", Integer.valueOf(5000));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set(SkillSetting.DAMAGE.node(), 50.0);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5.0);
+        node.set("base-launch", 1.0);
+        node.set("launch-per-wisdom", 0.01);
+        node.set("disorientation-level", 1);
+        node.set("disorientation-duration", 5000);
+        node.set("ncp-exemption-duration", 2000);
         return node;
     }
 

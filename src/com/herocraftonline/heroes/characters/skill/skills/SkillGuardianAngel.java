@@ -37,8 +37,8 @@ public class SkillGuardianAngel extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.RADIUS.node(), 7);
+        node.set(SkillSetting.DURATION.node(), 3000);
 
         return node;
     }

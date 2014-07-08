@@ -52,14 +52,14 @@ public class SkillForcePull extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.6));
-        node.set("horizontal-power", Double.valueOf(0.3));
-        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0125));
-        node.set("vertical-power", Double.valueOf(0.4));
-        node.set("ncp-exemption-duration", Integer.valueOf(1000));
-        node.set("pull-delay", Double.valueOf(0.2));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set(SkillSetting.DAMAGE.node(), 50);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.6);
+        node.set("horizontal-power", 0.3);
+        node.set("horizontal-power-increase-per-intellect", 0.0125);
+        node.set("vertical-power", 0.4);
+        node.set("ncp-exemption-duration", 1000);
+        node.set("pull-delay", 0.2);
 
         return node;
     }
@@ -112,7 +112,7 @@ public class SkillForcePull extends TargettedSkill {
                 break;
         }
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
 
         if (weakenVelocity)
             tempVPower *= 0.75;
@@ -125,8 +125,8 @@ public class SkillForcePull extends TargettedSkill {
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
         final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
 
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0125), false);
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.0125, false);
         tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         if (weakenVelocity)

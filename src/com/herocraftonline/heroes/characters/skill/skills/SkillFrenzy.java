@@ -43,8 +43,8 @@ public class SkillFrenzy extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
 
-        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", Double.valueOf(0.5), false);
-        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", Double.valueOf(0.5), false);
+        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", 0.5, false);
+        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", 0.5, false);
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -58,10 +58,10 @@ public class SkillFrenzy extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("nausea-amplifier", Integer.valueOf(3));
-        node.set("outgoing-damage-increase", Double.valueOf(0.15));
-        node.set("incoming-damage-increase", Double.valueOf(0.25));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
+        node.set("nausea-amplifier", 3);
+        node.set("outgoing-damage-increase", 0.15);
+        node.set("incoming-damage-increase", 0.25);
+        node.set(SkillSetting.DURATION.node(), 8000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has entered a frenzy!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer in a frenzy!");
 
@@ -82,8 +82,8 @@ public class SkillFrenzy extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
 
-        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", Double.valueOf(0.5), false);
-        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", Double.valueOf(0.5), false);
+        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", 0.5, false);
+        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", 0.5, false);
 
         int nauseaAmplifier = SkillConfigManager.getUseSetting(hero, this, "nausea-amplifier", Integer.valueOf(3), false);
 

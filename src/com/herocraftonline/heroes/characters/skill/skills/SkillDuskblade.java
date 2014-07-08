@@ -35,10 +35,10 @@ public class SkillDuskblade extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.77, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedHeal = Util.decFormat.format(damage * healMult);
@@ -50,10 +50,10 @@ public class SkillDuskblade extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(85));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
-        node.set("heal-mult", Double.valueOf(1.0));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.DAMAGE.node(), 85);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.75);
+        node.set("heal-mult", 1.0);
 
         return node;
     }
@@ -63,7 +63,7 @@ public class SkillDuskblade extends TargettedSkill {
         Player player = hero.getPlayer();
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         broadcastExecuteText(hero, target);
@@ -71,7 +71,7 @@ public class SkillDuskblade extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.77, false);
 
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this);     // Bypass self heal as this can only be used on themself.
         plugin.getServer().getPluginManager().callEvent(hrEvent);
@@ -88,11 +88,7 @@ public class SkillDuskblade extends TargettedSkill {
                                                .withColor(Color.GREEN)
                                                .withFade(Color.PURPLE)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

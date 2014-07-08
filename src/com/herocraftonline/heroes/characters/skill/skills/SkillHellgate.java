@@ -38,7 +38,7 @@ public class SkillHellgate extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(10));
+        node.set(SkillSetting.RADIUS.node(), 10);
         node.set("hell-world", "hell");
         node.set("default-return", "bastion"); // default world the player return to if their location wasn't
                                                      // saved
@@ -51,7 +51,8 @@ public class SkillHellgate extends ActiveSkill {
 
         String defaultWorld = SkillConfigManager.getUseSetting(hero, this, "default-return", "world");
         String hellWorld = SkillConfigManager.getUseSetting(hero, this, "hell-world", "world_nether");
-        World world = null;
+        //World world = null;
+        World world;
         Location teleportLocation = null;
         Location castLocation = player.getLocation().clone();
 

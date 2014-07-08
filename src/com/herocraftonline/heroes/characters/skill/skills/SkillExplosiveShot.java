@@ -40,7 +40,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -88,13 +88,13 @@ public class SkillExplosiveShot extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set("num-shots", Integer.valueOf(1));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.0));
-        node.set("horizontal-power", Double.valueOf(1.1));
-        node.set("vertical-power", Double.valueOf(0.5));
+        node.set("num-shots", 1);
+        node.set(SkillSetting.DURATION.node(), 4000);
+        node.set(SkillSetting.RADIUS.node(), 4);
+        node.set(SkillSetting.DAMAGE.node(), 80);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2.0);
+        node.set("horizontal-power", 1.1);
+        node.set("vertical-power", 0.5);
         node.set("ncp-exemption-duration", 500);
         node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
         node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive."));
@@ -158,7 +158,7 @@ public class SkillExplosiveShot extends ActiveSkill {
             // Add the projectile to the hashlist
             Arrow explosiveShot = (Arrow) event.getProjectile();
             //explosiveShot.setFireTicks(20);
-            explosiveShots.put(explosiveShot, Long.valueOf(System.currentTimeMillis()));
+            explosiveShots.put(explosiveShot, System.currentTimeMillis());
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -188,12 +188,9 @@ public class SkillExplosiveShot extends ActiveSkill {
             // Play explosion effect
             projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
             try {
-                fplayer.playFirework(projectile.getWorld(), projectile.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-            }
-            catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            catch (Exception e) {
+                fplayer.playFirework(projectile.getWorld(), projectile.getLocation(), FireworkEffect.builder().flicker(false)
+                        .trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -242,17 +239,13 @@ public class SkillExplosiveShot extends ActiveSkill {
 
                 // Play effect
                 try {
-                    fplayer.playFirework(target.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-                }
-                catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                }
-                catch (Exception e) {
+                    fplayer.playFirework(target.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false)
+                            .trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-            return;
         }
     }
 

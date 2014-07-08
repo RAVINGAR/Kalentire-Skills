@@ -32,7 +32,7 @@ public class SkillHealingBloom extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(20000), false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.175), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.175, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
@@ -45,11 +45,11 @@ public class SkillHealingBloom extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(15));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(11));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.275));
+        node.set(SkillSetting.DURATION.node(), 20000);
+        node.set(SkillSetting.RADIUS.node(), 15);
+        node.set(SkillSetting.PERIOD.node(), 2000);
+        node.set(SkillSetting.HEALING_TICK.node(), 11);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.275);
 
         return node;
     }
@@ -61,7 +61,7 @@ public class SkillHealingBloom extends ActiveSkill {
         int radiusSquared = radius * radius;
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.175), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.175, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);

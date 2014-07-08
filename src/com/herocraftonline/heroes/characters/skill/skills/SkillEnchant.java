@@ -1,9 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.classes.HeroClass;
+import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -15,17 +18,9 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.classes.HeroClass;
-import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class SkillEnchant extends PassiveSkill {
 
@@ -94,7 +89,6 @@ public class SkillEnchant extends PassiveSkill {
                 // if for some reason we don't have an enchanting class also cancel the event
                 Messaging.send(hero.getPlayer(), "You aren't an enchanter!");
                 event.setCancelled(true);
-                return;
             }
         }
 

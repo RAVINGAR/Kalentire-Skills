@@ -1,9 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -19,17 +22,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Util;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
 public class SkillHolyWater extends ActiveSkill {
 
@@ -46,11 +41,11 @@ public class SkillHolyWater extends ActiveSkill {
 
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(8), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(45), false);
-        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", Double.valueOf(0.625), false);
+        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", 0.625, false);
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
@@ -62,12 +57,12 @@ public class SkillHolyWater extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(75));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.875));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
-        node.set("undead-damage", Integer.valueOf(45));
-        node.set("undead-damage-increase-per-wisdom", Double.valueOf(0.625));
-        node.set("velocity-multiplier", Double.valueOf(1.5));
+        node.set(SkillSetting.HEALING.node(), 75);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.875);
+        node.set(SkillSetting.RADIUS.node(), 7);
+        node.set("undead-damage", 45);
+        node.set("undead-damage-increase-per-wisdom", 0.625);
+        node.set("velocity-multiplier", 1.5);
 
         return node;
     }
@@ -77,9 +72,9 @@ public class SkillHolyWater extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        ThrownPotion pot = (ThrownPotion) player.launchProjectile(ThrownPotion.class);
-        pot.setMetadata("SkillAmpul", new FixedMetadataValue(plugin, (Boolean) true));
-        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", Double.valueOf(1.5), false);
+        ThrownPotion pot = player.launchProjectile(ThrownPotion.class);
+        pot.setMetadata("SkillAmpul", new FixedMetadataValue(plugin, true));
+        double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         pot.setVelocity(pot.getVelocity().multiply(mult));
 
         return SkillResult.NORMAL;
@@ -105,7 +100,7 @@ public class SkillHolyWater extends ActiveSkill {
                 return;
             }
             else {
-                if (meta.get(0).asBoolean() != true) {
+                if (!meta.get(0).asBoolean()) {
                     event.getPotion().removeMetadata("SkillAmpul", plugin);
                     return;
                 }
@@ -126,11 +121,11 @@ public class SkillHolyWater extends ActiveSkill {
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(7), false);
 
             double healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING.node(), Integer.valueOf(85), false);
-            double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0), false);
+            double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.0, false);
             healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
             double undeadDamage = SkillConfigManager.getUseSetting(hero, skill, "undead-damage", Integer.valueOf(45), false);
-            double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, "undead-damage-increase-per-wisdom", Double.valueOf(0.625), false);
+            double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, "undead-damage-increase-per-wisdom", 0.625, false);
             undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
             Set<Hero> partyMembers = null;
@@ -150,7 +145,7 @@ public class SkillHolyWater extends ActiveSkill {
                         continue;
                     else {
                         // If they are undead, damage them.
-                        addSpellTarget((LivingEntity) entity, hero);
+                        addSpellTarget(entity, hero);
                         Skill.damageEntity((LivingEntity) entity, (LivingEntity) shooter, undeadDamage, DamageCause.MAGIC);
                     }
                 }

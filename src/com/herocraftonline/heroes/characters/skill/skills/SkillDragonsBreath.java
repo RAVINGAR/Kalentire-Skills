@@ -1,8 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -16,16 +19,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Util;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillDragonsBreath extends ActiveSkill {
 
@@ -54,11 +49,11 @@ public class SkillDragonsBreath extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.125));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
-        node.set("breath-travel-delay", Integer.valueOf(1));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.DAMAGE.node(), 80);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.125);
+        node.set(SkillSetting.RADIUS.node(), 3);
+        node.set("breath-travel-delay", 1);
 
         return node;
     }
@@ -69,7 +64,7 @@ public class SkillDragonsBreath extends ActiveSkill {
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
 
         Block tempBlock;
-        BlockIterator iter = null;
+        BlockIterator iter;
         try {
             iter = new BlockIterator(player, distance);
         }
@@ -92,14 +87,14 @@ public class SkillDragonsBreath extends ActiveSkill {
         int delay = SkillConfigManager.getUseSetting(hero, this, "breath-travel-delay", 1, false);
 
         final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
-        final List<Entity> hitEnemies = new ArrayList<Entity>();
+        final List<Entity> hitEnemies = new ArrayList<>();
 
         int numBlocks = 0;
         while (iter.hasNext()) {
             tempBlock = iter.next();
 
             if (Util.transparentBlocks.contains(tempBlock.getType())) {
-                final List<Location> locations = new ArrayList<Location>();
+                final List<Location> locations = new ArrayList<>();
                 if (isXDirection) {
                     for (int xDir = -1; xDir < 1 + 1; xDir++) {
                         Block radiusBlocks = tempBlock.getRelative(xDir, 0, 0);
@@ -125,11 +120,7 @@ public class SkillDragonsBreath extends ActiveSkill {
                             for (Location location : locations) {
                                 fplayer.playFirework(location.getWorld(), location, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
                             }
-                        }
-                        catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 

@@ -38,7 +38,7 @@ public class SkillHealingChorus extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(3000), false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, Double.valueOf(0.175), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, 0.175, false);
         healing += (hero.getAttributeValue(AttributeType.CHARISMA) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
@@ -51,14 +51,14 @@ public class SkillHealingChorus extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
-        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(17));
-        node.set(SkillSetting.HEALING_INCREASE_PER_CHARISMA.node(), Double.valueOf(0.175));
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.RADIUS.node(), 12);
+        node.set(SkillSetting.PERIOD.node(), 1500);
+        node.set(SkillSetting.HEALING_TICK.node(), 17);
+        node.set(SkillSetting.HEALING_INCREASE_PER_CHARISMA.node(), 0.175);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with %hero%'s chorus of healing.");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s chorus of healing has ended.");
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
     }
@@ -77,7 +77,7 @@ public class SkillHealingChorus extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
         int radiusSquared = radius * radius;
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, Double.valueOf(0.175), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, 0.175, false);
         healing += (hero.getAttributeValue(AttributeType.CHARISMA) * healingIncrease);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);

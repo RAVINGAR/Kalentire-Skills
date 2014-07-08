@@ -1,7 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,20 +18,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.List;
 
 public class SkillDreadAura extends ActiveSkill {
 
@@ -44,12 +39,12 @@ public class SkillDreadAura extends ActiveSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.1), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.1, false);
 
         int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", Integer.valueOf(200), false);
 
@@ -66,13 +61,13 @@ public class SkillDreadAura extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(28));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.05));
-        node.set("maximum-healing-per-tick", Double.valueOf(25));
-        node.set("mana-tick", Integer.valueOf(7));
-        node.set("heal-mult", Double.valueOf(0.2));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.RADIUS.node(), 7);
+        node.set(SkillSetting.DAMAGE.node(), 28);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.05);
+        node.set("maximum-healing-per-tick", (double) 25);
+        node.set("mana-tick", 7);
+        node.set("heal-mult", 0.2);
+        node.set(SkillSetting.PERIOD.node(), 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is emitting an aura of dread!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer emitting an aura of dread.");
 
@@ -95,7 +90,7 @@ public class SkillDreadAura extends ActiveSkill {
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.1), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.1, false);
         int maxHealingPerTick = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", Integer.valueOf(200), false);
         int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", Integer.valueOf(13), false);
 
@@ -172,7 +167,7 @@ public class SkillDreadAura extends ActiveSkill {
             Player player = hero.getPlayer();
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
             double totalHealthHealed = 0;

@@ -1,10 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,13 +16,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class SkillForage extends ActiveSkill {
 
@@ -35,34 +34,34 @@ public class SkillForage extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("forest.items", Arrays.asList(new String[] { "APPLE" }));
+        node.set("forest.items", Arrays.asList("APPLE"));
         node.set("forest.chance", .01);
         node.set("forest.max-found", 3);
-        node.set("plains.items", Arrays.asList(new String[] { "WHEAT", "MELON" }));
+        node.set("plains.items", Arrays.asList("WHEAT", "MELON"));
         node.set("plains.chance", .01);
         node.set("plains.max-found", 3);
-        node.set("water.items", Arrays.asList(new String[] { "RAW_FISH" }));
+        node.set("water.items", Arrays.asList("RAW_FISH"));
         node.set("water.chance", .01);
         node.set("water.max-found", 3);
-        node.set("swamp.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE" }));
+        node.set("swamp.items", Arrays.asList("RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE"));
         node.set("swamp.chance", .01);
         node.set("swamp.max-found", 4);
-        node.set("desert.items", Arrays.asList(new String[] { "CACTUS", "SUGAR_CANE" }));
+        node.set("desert.items", Arrays.asList("CACTUS", "SUGAR_CANE"));
         node.set("desert.chance", .005);
         node.set("desert.max-found", 2);
-        node.set("hell.items", Arrays.asList(new String[] { "ROTTEN_FLESH" }));
+        node.set("hell.items", Arrays.asList("ROTTEN_FLESH"));
         node.set("hell.chance", .005);
         node.set("hell.max-found", 1);
-        node.set("sky.items", Arrays.asList(new String[] { "VINE" }));
+        node.set("sky.items", Arrays.asList("VINE"));
         node.set("sky.chance", .01);
         node.set("sky.max-found", 3);
-        node.set("ice.items", Arrays.asList(new String[] { "RAW_FISH" }));
+        node.set("ice.items", Arrays.asList("RAW_FISH"));
         node.set("ice.chance", 0.005D);
         node.set("ice.max-found", 1);
-        node.set("mushroom.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2" }));
+        node.set("mushroom.items", Arrays.asList("RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"));
         node.set("mushroom.chance", 0.1);
         node.set("mushroom.max-found", 2);
-        node.set("default.items", new ArrayList<String>());
+        node.set("default.items", new ArrayList<>());
         return node;
     }
 
@@ -75,7 +74,7 @@ public class SkillForage extends ActiveSkill {
         double chance = 0;
         int maxFinds = 0;
         //Get the list of foragable stuff here
-        List<String> materialNames = new ArrayList<String>();
+        List<String> materialNames = new ArrayList<>();
         switch (biome) {
         default:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
@@ -137,13 +136,12 @@ public class SkillForage extends ActiveSkill {
             break;
         }
 
-        List<Material> materials = new ArrayList<Material>();
+        List<Material> materials = new ArrayList<>();
         for (String name : materialNames) {
             try {
                 materials.add(Material.valueOf(name));
             }
-            catch (IllegalArgumentException e) {
-                continue;
+            catch (IllegalArgumentException ignored) {
             }
         }
 

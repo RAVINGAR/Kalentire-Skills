@@ -43,10 +43,10 @@ public class SkillHarmtouch extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(180));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.75));
-        node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(75));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.DAMAGE.node(), 180);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.75);
+        node.set(SkillSetting.HEALTH_COST.node(), 75);
 
         return node;
     }
@@ -56,7 +56,7 @@ public class SkillHarmtouch extends TargettedSkill {
         Player player = hero.getPlayer();
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(180), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.75), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.75, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         addSpellTarget(target, hero);
@@ -72,8 +72,6 @@ public class SkillHarmtouch extends TargettedSkill {
             		.withColor(Color.BLACK)
             		.withFade(Color.PURPLE)
             		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

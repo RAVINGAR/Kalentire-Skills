@@ -1,17 +1,18 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -20,21 +21,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
 
 public class SkillDoomwave extends ActiveSkill {
 
@@ -81,13 +71,13 @@ public class SkillDoomwave extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("enderpearls-launched", Integer.valueOf(12));
-        node.set("enderpearls-launched-per-intellect", Double.valueOf(0.325));
-        node.set("velocity-multiplier", Double.valueOf(1.0));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.5));
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set("enderpearls-launched", 12);
+        node.set("enderpearls-launched-per-intellect", 0.325);
+        node.set("velocity-multiplier", 1.0);
+        node.set(SkillSetting.DAMAGE.node(), 90);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.5);
+        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
     }
@@ -113,7 +103,7 @@ public class SkillDoomwave extends ActiveSkill {
         long time = System.currentTimeMillis();
         Random ranGen = new Random((int) ((time / 2.0) * 12));
 
-        double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", Double.valueOf(0.75), false);
+        double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.75, false);
 
         for (double i = 0; i < numEnderPearls; i++) {
             EnderPearl doomPearl = player.launchProjectile(EnderPearl.class);

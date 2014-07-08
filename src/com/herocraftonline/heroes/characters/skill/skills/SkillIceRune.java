@@ -68,7 +68,7 @@ public class SkillIceRune extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(35), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.625, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
@@ -81,10 +81,10 @@ public class SkillIceRune extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(35));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.75));
+        node.set(SkillSetting.DAMAGE.node(), 35);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.75);
         node.set("speed-multiplier", 2);
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
+        node.set(SkillSetting.DURATION.node(), 2000);
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.AQUA + "Ice.");
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been slowed by a Rune of Ice!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
@@ -133,7 +133,7 @@ public class SkillIceRune extends ActiveSkill {
             final Hero hero = event.getHero();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
-            if (!(event.getRuneList().getHead().name == "IceRune"))
+            if (!(event.getRuneList().getHead().name.equals("IceRune")))
                 return;
 
             // Ensure that the target is a living entity
@@ -157,7 +157,7 @@ public class SkillIceRune extends ActiveSkill {
                     long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 2000, false);
 
                     double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(35), false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.625, false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                     String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been slowed by a Rune of Ice!").replace("%target%", "$1");
@@ -179,7 +179,6 @@ public class SkillIceRune extends ActiveSkill {
                 }
             }, 2L);
 
-            return;
         }
     }
 }

@@ -54,7 +54,7 @@ public class SkillHeadbutt extends TargettedSkill {
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 30);
         node.set(SkillSetting.DAMAGE.node(), 31);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.7);
-        node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(80));
+        node.set(SkillSetting.HEALTH_COST.node(), 80);
 
         return node;
     }

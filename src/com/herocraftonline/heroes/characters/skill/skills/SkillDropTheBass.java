@@ -67,8 +67,8 @@ public class SkillDropTheBass extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(15));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
+        node.set(SkillSetting.RADIUS.node(), 15);
+        node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s party celebrates bass-drops!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s party no longer is dropping bass!");
 

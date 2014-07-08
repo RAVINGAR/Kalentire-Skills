@@ -49,7 +49,7 @@ public class SkillHealingTotem extends SkillBaseTotem {
             party = hero.getParty().getMembers();
         }
         else {
-            party = new HashSet<Hero>(Arrays.asList(hero));
+            party = new HashSet<>(Arrays.asList(hero));
         }
         
         for(Hero member : party) {
@@ -67,8 +67,8 @@ public class SkillHealingTotem extends SkillBaseTotem {
 
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.HEALING.node(), Double.valueOf(25.0));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.0));
+        node.set(SkillSetting.HEALING.node(), 25.0);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.0);
         return node;
     }
 

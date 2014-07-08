@@ -1,9 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,14 +17,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class SkillForgeChainLeggings extends ActiveSkill {
     public SkillForgeChainLeggings(Heroes plugin) {
@@ -41,7 +40,7 @@ public class SkillForgeChainLeggings extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.AMOUNT.node(), Integer.valueOf(1));
+        node.set(SkillSetting.AMOUNT.node(), 1);
 
         return node;
     }
@@ -65,7 +64,7 @@ public class SkillForgeChainLeggings extends ActiveSkill {
         HashMap<Integer, ItemStack> leftOvers = inventory.addItem(forgedItem);
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+            Messaging.send(player, "Items have been dropped at your feet!");
         }
 
         broadcastExecuteText(hero);

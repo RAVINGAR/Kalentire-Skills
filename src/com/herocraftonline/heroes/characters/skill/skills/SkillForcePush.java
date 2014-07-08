@@ -50,7 +50,7 @@ public class SkillForcePush extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.6), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         return getDescription().replace("$1", damage + "");
@@ -60,15 +60,15 @@ public class SkillForcePush extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.6));
-        node.set("horizontal-power", Double.valueOf(1.5));
-        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.0375));
-        node.set("vertical-power", Double.valueOf(0.25));
-        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.0075));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 50);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.6);
+        node.set("horizontal-power", 1.5);
+        node.set("horizontal-power-increase-per-intellect", 0.0375);
+        node.set("vertical-power", 0.25);
+        node.set("vertical-power-increase-per-intellect", 0.0075);
         node.set("ncp-exemption-duration", 1500);
-        node.set("push-delay", Double.valueOf(0.2));
+        node.set("push-delay", 0.2);
 
         return node;
     }
@@ -80,7 +80,7 @@ public class SkillForcePush extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.6), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         if (damage > 0) {
@@ -121,8 +121,8 @@ public class SkillForcePush extends TargettedSkill {
                 break;
         }
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0075), false);
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", 0.0075, false);
         tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         if (weakenVelocity)
@@ -136,8 +136,8 @@ public class SkillForcePush extends TargettedSkill {
         final double xDir = targetLoc.getX() - playerLoc.getX();
         final double zDir = targetLoc.getZ() - playerLoc.getZ();
 
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.0375), false);
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.0375, false);
         tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         if (weakenVelocity)
@@ -158,12 +158,9 @@ public class SkillForcePush extends TargettedSkill {
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
+                    .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

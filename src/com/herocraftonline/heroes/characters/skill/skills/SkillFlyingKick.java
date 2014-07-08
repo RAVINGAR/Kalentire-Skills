@@ -59,16 +59,16 @@ public class SkillFlyingKick extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.15));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_AGILITY.node(), 0.15);
         node.set(SkillSetting.DAMAGE.node(), 40);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.125));
-        node.set("vertical-power", Double.valueOf(1.0));
-        node.set("horizontal-divider", Integer.valueOf(6));
-        node.set("vertical-divider", Integer.valueOf(8));
-        node.set("multiplier", Double.valueOf(1.0));
-        node.set("jump-delay", Double.valueOf(0.3));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.125);
+        node.set("vertical-power", 1.0);
+        node.set("horizontal-divider", 6);
+        node.set("vertical-divider", 8);
+        node.set("multiplier", 1.0);
+        node.set("jump-delay", 0.3);
+        node.set("ncp-exemption-duration", 2000);
 
         return node;
     }
@@ -92,8 +92,8 @@ public class SkillFlyingKick extends TargettedSkill {
             }
         }
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0075), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0075, false);
         vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY));
         Vector pushUpVector = new Vector(0, vPower, 0);
         player.setVelocity(pushUpVector);

@@ -35,10 +35,10 @@ public class SkillDrainsoul extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.77, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedHeal = Util.decFormat.format(damage * healMult);
@@ -50,11 +50,11 @@ public class SkillDrainsoul extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(98));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
-        node.set("heal-mult", Double.valueOf(0.77));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
+        node.set(SkillSetting.DAMAGE.node(), 98);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.0);
+        node.set("heal-mult", 0.77);
 
         return node;
     }
@@ -64,7 +64,7 @@ public class SkillDrainsoul extends TargettedSkill {
         Player player = hero.getPlayer();
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         broadcastExecuteText(hero, target);
@@ -72,7 +72,7 @@ public class SkillDrainsoul extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.77, false);
 
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this);         // Bypass self heal as this can only be used on themself.
         plugin.getServer().getPluginManager().callEvent(hrEvent);
@@ -89,11 +89,7 @@ public class SkillDrainsoul extends TargettedSkill {
                                                .withColor(Color.GREEN)
                                                .withFade(Color.PURPLE)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

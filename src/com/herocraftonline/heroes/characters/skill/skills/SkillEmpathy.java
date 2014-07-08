@@ -48,16 +48,14 @@ public class SkillEmpathy extends TargettedSkill {
         String formattedModifier = Util.decFormat.format(modifier * 100.0);
         String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
 
-        String description = getDescription().replace("$1", maxDamage + "").replace("$2", formattedModifier).replace("$3", formattedSlowDuration);
-
-        return description;
+        return getDescription().replace("$1", maxDamage + "").replace("$2", formattedModifier).replace("$3", formattedSlowDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
         node.set("max-damage", 152);
         node.set("max-damage-increase-per-intellect", 1.0);
         node.set("damage-modifier", 1.0);
@@ -108,11 +106,7 @@ public class SkillEmpathy extends TargettedSkill {
                                                .withColor(Color.BLACK)
                                                .withFade(Color.GRAY)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

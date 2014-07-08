@@ -44,7 +44,7 @@ public class SkillHarmshield extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) / 1000;
-        float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(0.2), false);
+        float damageReduction = (float) SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.2, false);
         damageReduction *= 100F;
         damageReduction = 100F - damageReduction;
 
@@ -56,7 +56,7 @@ public class SkillHarmshield extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set("damage-multiplier", Double.valueOf(0.2));
+        node.set("damage-multiplier", 0.2);
         node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is shielded from harm!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% lost his harm shield!");
@@ -88,11 +88,7 @@ public class SkillHarmshield extends ActiveSkill {
                                                .withColor(Color.MAROON)
                                                .withFade(Color.YELLOW)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -128,7 +124,7 @@ public class SkillHarmshield extends ActiveSkill {
         private double getAdjustment(Player player, double d) {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("HarmShield"))
-                d *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", Double.valueOf(0.2), false);
+                d *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 0.2, false);
 
             return d;
         }

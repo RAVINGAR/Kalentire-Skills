@@ -36,8 +36,8 @@ public class SkillEscapeArtist extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("speed-multiplier", Integer.valueOf(0));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(0));
+        node.set("speed-multiplier", 0);
+        node.set(SkillSetting.DURATION.node(), 0);
 
         return node;
     }

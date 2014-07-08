@@ -1,13 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Map;
-
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -15,6 +7,13 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Map;
 
 public class SkillGift extends TargettedSkill {
 
@@ -39,7 +38,8 @@ public class SkillGift extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        sendText = SkillConfigManager.getRaw(this, "send-text", "%hero% has sent you %amount% %item%").replace("%hero%", "$1").replace("%amount%", "$2").replace("%item%", "$3");
+        sendText = SkillConfigManager.getRaw(this, "send-text", "%hero% has sent you %amount% %item%").replace("%hero%", "$1")
+                .replace("%amount%", "$2").replace("%item%", "$3");
     }
 
     @Override
@@ -59,7 +59,7 @@ public class SkillGift extends TargettedSkill {
         }
         
         int maxAmount = SkillConfigManager.getUseSetting(hero, this, "max-amount", 64, false);
-        int amount = 0;
+        int amount;
 
         amount = item.getAmount();
         if (amount > maxAmount) {

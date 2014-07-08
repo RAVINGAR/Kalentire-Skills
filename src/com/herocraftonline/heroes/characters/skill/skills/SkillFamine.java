@@ -59,12 +59,12 @@ public class SkillFamine extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
-        node.set("stamina-drain-per-tick", Integer.valueOf(60));
-        node.set("stamina-drain-increase-intellect", Integer.valueOf(1));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        node.set("stamina-drain-per-tick", 60);
+        node.set("stamina-drain-increase-intellect", 1);
+        node.set(SkillSetting.RADIUS.node(), 4);
+        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.PERIOD.node(), 1500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s has been overcome with famine!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s famine has ended.");
 
@@ -125,11 +125,7 @@ public class SkillFamine extends TargettedSkill {
                                                .withColor(Color.GREEN)
                                                .withFade(Color.BLACK)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -151,7 +147,7 @@ public class SkillFamine extends TargettedSkill {
 
             this.staminaDrain = staminaDrain;
 
-            addMobEffect(17, (int) (duration / 1000) * 20, 0, false);
+            addMobEffect(17, duration / 1000 * 20, 0, false);
         }
 
         @Override

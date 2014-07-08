@@ -1,15 +1,16 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import mc.alk.tracker.controllers.*;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
+import com.herocraftonline.heroes.characters.party.HeroParty;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+import mc.alk.tracker.controllers.MessageController;
 import net.minecraft.server.v1_7_R3.EntityLiving;
 import net.minecraft.server.v1_7_R3.MobEffectList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,18 +23,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.inventory.ItemStack;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
-import com.herocraftonline.heroes.characters.party.HeroParty;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class SkillFeignDeath extends ActiveSkill {
     private String applyText;
@@ -70,9 +64,9 @@ public class SkillFeignDeath extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(60000));
-        node.set("detection-range", Double.valueOf(1.0));
-        node.set("max-move-distance", Double.valueOf(1.0));
+        node.set(SkillSetting.DURATION.node(), 60000);
+        node.set("detection-range", 1.0);
+        node.set("max-move-distance", 1.0);
 
         return node;
     }
@@ -99,7 +93,7 @@ public class SkillFeignDeath extends ActiveSkill {
 
     public class FeignMoveChecker implements Runnable {
 
-        private Map<Hero, Location> oldLocations = new HashMap<Hero, Location>();
+        private Map<Hero, Location> oldLocations = new HashMap<>();
         private Skill skill;
 
         FeignMoveChecker(Skill skill) {
@@ -119,12 +113,12 @@ public class SkillFeignDeath extends ActiveSkill {
                 }
 
                 Location newLoc = hero.getPlayer().getLocation();
-                if (newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", Double.valueOf(1.0), false)) {
+                if (newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1.0, false)) {
                     hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
                 }
-                double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", Double.valueOf(1.0), false);
+                double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", 1.0, false);
                 List<Entity> nearEntities = hero.getPlayer().getNearbyEntities(detectRange, detectRange, detectRange);
                 for (Entity entity : nearEntities) {
                     if (entity instanceof Player) {

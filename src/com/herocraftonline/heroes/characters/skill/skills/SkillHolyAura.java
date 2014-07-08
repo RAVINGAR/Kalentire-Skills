@@ -51,11 +51,11 @@ public class SkillHolyAura extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(16000), false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.15), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.15, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(20), false);
-        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", Double.valueOf(0.375), false);
+        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", 0.375, false);
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
@@ -71,13 +71,13 @@ public class SkillHolyAura extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(16000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(17));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.15));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(6));
-        node.set("undead-damage", Integer.valueOf(20));
-        node.set("undead-damage-increase-per-wisdom", Double.valueOf(0.375));
+        node.set(SkillSetting.DURATION.node(), 16000);
+        node.set(SkillSetting.PERIOD.node(), 2000);
+        node.set(SkillSetting.HEALING.node(), 17);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.15);
+        node.set(SkillSetting.RADIUS.node(), 6);
+        node.set("undead-damage", 20);
+        node.set("undead-damage-increase-per-wisdom", 0.375);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% begins to radiate a holy aura!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has lost their holy aura!");
 
@@ -102,22 +102,19 @@ public class SkillHolyAura extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(16000), false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.15), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(20), false);
-        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", Double.valueOf(0.375), false);
+        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", 0.375, false);
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
         hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
 
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
+                    .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

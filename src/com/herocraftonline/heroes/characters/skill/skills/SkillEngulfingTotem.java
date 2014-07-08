@@ -1,11 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
@@ -19,16 +13,15 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 import com.herocraftonline.heroes.util.Messaging;
-
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.*;
 
 public class SkillEngulfingTotem extends SkillBaseTotem {
 
@@ -182,7 +175,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
 
         private void setEffect(final LivingEntity entity) {
             
-            final LivingEntity fEntity = entity;;
+            final LivingEntity fEntity = entity;
             effect = new BukkitRunnable() {
 
                 private Location location = fEntity.getLocation();

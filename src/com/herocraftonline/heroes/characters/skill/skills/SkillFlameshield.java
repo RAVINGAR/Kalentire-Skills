@@ -80,11 +80,7 @@ public class SkillFlameshield extends ActiveSkill {
                                                .withColor(Color.RED)
                                                .withFade(Color.MAROON)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

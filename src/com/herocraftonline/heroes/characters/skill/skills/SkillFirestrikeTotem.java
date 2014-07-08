@@ -66,7 +66,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 continue;
             }
             for(int i = 0; i < 4; i++) {
-                SmallFireball fireball = (SmallFireball)entity.getWorld().spawn(locForRel.getRelative(firingFaces[i], 2).getLocation(), SmallFireball.class);
+                SmallFireball fireball = entity.getWorld().spawn(locForRel.getRelative(firingFaces[i], 2).getLocation(), SmallFireball.class);
                 homingFireballs.put(fireball, entity);
                 fireballVelocities.put(fireball, getVelocity(hero));
                 setVelocity(fireball, entity);
@@ -83,10 +83,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
 
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.DAMAGE.node(), Double.valueOf(50.0));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(5.0));
-        node.set("fire-ticks", Integer.valueOf(50));
-        node.set("velocity", Double.valueOf(1.5));
+        node.set(SkillSetting.DAMAGE.node(), 50.0);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5.0);
+        node.set("fire-ticks", 50);
+        node.set("velocity", 1.5);
         return node;
     }
 

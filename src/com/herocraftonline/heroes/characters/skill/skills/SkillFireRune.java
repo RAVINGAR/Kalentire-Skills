@@ -66,7 +66,7 @@ public class SkillFireRune extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(55), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.875), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         return getDescription().replace("$1", damage + "");
@@ -76,8 +76,8 @@ public class SkillFireRune extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(55));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.375));
+        node.set(SkillSetting.DAMAGE.node(), 55);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.375);
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been burned by a Rune of Fire!");
         node.set("rune-chat-color", ChatColor.RED.toString());
@@ -121,7 +121,7 @@ public class SkillFireRune extends ActiveSkill {
             final Hero hero = event.getHero();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
-            if (!(event.getRuneList().getHead().name == "FireRune"))
+            if (!(event.getRuneList().getHead().name.equals("FireRune")))
                 return;
 
             // Ensure that the target is a living entity
@@ -142,7 +142,7 @@ public class SkillFireRune extends ActiveSkill {
                     CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
                     double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(55), false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.875), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                     String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
@@ -160,7 +160,6 @@ public class SkillFireRune extends ActiveSkill {
                 }
             }, (long) (0.1 * 20));
 
-            return;
         }
     }
 }

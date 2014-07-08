@@ -1,17 +1,23 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,24 +27,8 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SkillGrapplingHook extends ActiveSkill {
 
@@ -48,7 +38,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -56,7 +46,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -96,20 +86,20 @@ public class SkillGrapplingHook extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("num-shots", Integer.valueOf(1));
-        node.set("velocity-multiplier", Double.valueOf(0.5D));
-        node.set("max-distance", Integer.valueOf(-1));
-        node.set("safe-fall-duration", Integer.valueOf(4500));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
-        node.set("horizontal-divider", Integer.valueOf(6));
-        node.set("vertical-divider", Integer.valueOf(8));
-        node.set("multiplier", Double.valueOf(1.0));
-        node.set("grapple-delay", Double.valueOf(0.5));
+        node.set("num-shots", 1);
+        node.set("velocity-multiplier", 0.5D);
+        node.set("max-distance", -1);
+        node.set("safe-fall-duration", 4500);
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set("horizontal-divider", 6);
+        node.set("vertical-divider", 8);
+        node.set("multiplier", 1.0);
+        node.set("grapple-delay", 0.5);
         node.set("ncp-exemption-duration", 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% readies his grappling hook!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% drops his grappling hook.");
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(287));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(2));
+        node.set(SkillSetting.REAGENT.node(), 287);
+        node.set(SkillSetting.REAGENT_COST.node(), 2);
 
         return node;
     }
@@ -167,7 +157,7 @@ public class SkillGrapplingHook extends ActiveSkill {
                 grapplingHook.setVelocity(grapplingHook.getVelocity().multiply(velocityMultiplier));
 
                 // Put it on the hashmap so we can check it in another event.
-                grapplingHooks.put(grapplingHook, Long.valueOf(System.currentTimeMillis()));
+                grapplingHooks.put(grapplingHook, System.currentTimeMillis());
             }
         }
 
@@ -199,7 +189,6 @@ public class SkillGrapplingHook extends ActiveSkill {
                 }
             }, (long) (grappleDelay * 20));
 
-            return;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -211,7 +200,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
                 return;
 
-            if (!(grapplingHooks.containsKey((Arrow) projectile)))
+            if (!(grapplingHooks.containsKey(projectile)))
                 return;
 
             final Arrow grapplingHook = (Arrow) projectile;
@@ -220,7 +209,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             final LivingEntity targetLE = (LivingEntity) event.getEntity();
 
             // Switch from the normal hook to the player hook.
-            grapplingHooksAttachedToPlayers.put(grapplingHook, Long.valueOf(System.currentTimeMillis()));
+            grapplingHooksAttachedToPlayers.put(grapplingHook, System.currentTimeMillis());
 
             double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
 
@@ -252,7 +241,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "You threw your hook to far and lost your grip!", new Object[0]);
+                Messaging.send(player, "You threw your hook to far and lost your grip!");
                 return;
             }
         }

@@ -1,7 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -15,22 +23,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Util;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.List;
 
 public class SkillFireblast extends ActiveSkill {
     public VisualEffect fplayer = new VisualEffect();
@@ -67,12 +60,12 @@ public class SkillFireblast extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.2));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
-        node.set("horizontal-power", Double.valueOf(1.2));
-        node.set("vertical-power", Double.valueOf(0.5));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.1);
+        node.set(SkillSetting.DAMAGE.node(), 90);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.2);
+        node.set(SkillSetting.RADIUS.node(), 3);
+        node.set("horizontal-power", 1.2);
+        node.set("vertical-power", 0.5);
         node.set("ncp-exemption-duration", 500);
 
         return node;
@@ -109,12 +102,9 @@ public class SkillFireblast extends ActiveSkill {
             blastLocation.add(new Vector(.5, 0, .5));
             
             try {
-                fplayer.playFirework(blastLocation.getWorld(), blastLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-            }
-            catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            catch (Exception e) {
+                fplayer.playFirework(blastLocation.getWorld(), blastLocation, FireworkEffect.builder().flicker(false).trail(true)
+                        .with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

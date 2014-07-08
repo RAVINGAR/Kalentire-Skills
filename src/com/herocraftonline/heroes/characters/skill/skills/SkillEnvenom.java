@@ -52,7 +52,7 @@ public class SkillEnvenom extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(10000), false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(5), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(2.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         String formattedDamage = Util.decFormat.format(damage);
@@ -66,9 +66,9 @@ public class SkillEnvenom extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("weapons", Util.swords);
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2));
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.DAMAGE.node(), 5);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has coated his weapons with a deadly poison.");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s weapons are no longer poisoned.");
 
@@ -142,13 +142,12 @@ public class SkillEnvenom extends ActiveSkill {
 
             ItemStack item = player.getItemInHand();
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
-                if (arrow == true)
+                if (arrow)
                     dealEnvenomDamage(hero, target);
             }
             else
                 dealEnvenomDamage(hero, target);
 
-            return;
         }
 
         private void dealEnvenomDamage(final Hero hero, final LivingEntity target) {
@@ -158,7 +157,7 @@ public class SkillEnvenom extends ActiveSkill {
                         return;
 
                     double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(5), false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(2.0), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
                     damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
                     // Damage the target

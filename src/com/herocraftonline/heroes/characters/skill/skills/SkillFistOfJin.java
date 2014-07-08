@@ -1,8 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,19 +20,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Util;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillFistOfJin extends PassiveSkill {
 
@@ -42,7 +37,7 @@ public class SkillFistOfJin extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        double cdDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "healing-internal-cooldown", Double.valueOf(1000.0), false) / 1000.0);
+        double cdDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "healing-internal-cooldown", 1000.0, false) / 1000.0);
 
         double selfHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-self", Integer.valueOf(8), false);
         double partyHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-party", Integer.valueOf(3), false);
@@ -53,7 +48,7 @@ public class SkillFistOfJin extends PassiveSkill {
         partyHeal += calculatedIncrease;
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(8), false);
-        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.1), false);
+        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
         radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
 
         return getDescription().replace("$1", selfHeal + "").replace("$2", partyHeal + "").replace("$3", radius + "").replace("$4", cdDuration + "");
@@ -65,12 +60,12 @@ public class SkillFistOfJin extends PassiveSkill {
 
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set("healing-internal-cooldown", Integer.valueOf(1000));
-        node.set("heal-per-hit-self", Integer.valueOf(8));
-        node.set("heal-per-hit-party", Integer.valueOf(3));
+        node.set("healing-internal-cooldown", 1000);
+        node.set("heal-per-hit-self", 8);
+        node.set("heal-per-hit-party", 3);
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.15);
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(6));
-        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), Double.valueOf(0.1));
+        node.set(SkillSetting.RADIUS.node(), 6);
+        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.1);
 
         List<String> weaponList = new ArrayList<String>(5);
         weaponList.add("AIR");
@@ -129,7 +124,7 @@ public class SkillFistOfJin extends PassiveSkill {
             partyHeal += calculatedIncrease;
 
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), false);
-            double radiusIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.1), false);
+            double radiusIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
             radius += (int) Math.floor(radiusIncrease * wisdom);
             int radiusSquared = radius * radius;
 

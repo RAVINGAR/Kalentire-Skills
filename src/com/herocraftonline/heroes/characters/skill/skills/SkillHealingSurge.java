@@ -33,11 +33,11 @@ public class SkillHealingSurge extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(20000), false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(10), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.25), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        double manaStaminaPercent = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent", Double.valueOf(1), false);
-        double manaStaminaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent-per-intellect", Double.valueOf(1), false);
+        double manaStaminaPercent = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent", (double) 1, false);
+        double manaStaminaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent-per-intellect", (double) 1, false);
         manaStaminaPercent += (hero.getAttributeValue(AttributeType.INTELLECT) * manaStaminaPercentIncrease);
         
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
@@ -52,13 +52,13 @@ public class SkillHealingSurge extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(10));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.25));
-        node.set("mana-stamina-recover-percent", Double.valueOf(1));
-        node.set("mana-stamina-recover-percent-per-intellect", Double.valueOf(0.1));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set(SkillSetting.DURATION.node(), 20000);
+        node.set(SkillSetting.PERIOD.node(), 2000);
+        node.set(SkillSetting.HEALING_TICK.node(), 10);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.25);
+        node.set("mana-stamina-recover-percent", (double) 1);
+        node.set("mana-stamina-recover-percent-per-intellect", 0.1);
         return node;
     }
 
@@ -79,11 +79,11 @@ public class SkillHealingSurge extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(10), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.25), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        double manaStaminaPercent = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent", Double.valueOf(1), false);
-        double manaStaminaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent-per-intellect", Double.valueOf(1), false);
+        double manaStaminaPercent = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent", (double) 1, false);
+        double manaStaminaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-stamina-recover-percent-per-intellect", (double) 1, false);
         manaStaminaPercent += (hero.getAttributeValue(AttributeType.INTELLECT) * manaStaminaPercentIncrease);
         
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);

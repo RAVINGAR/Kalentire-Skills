@@ -55,13 +55,13 @@ public class SkillGreatCombustion extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(100));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.875));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(750));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(32));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1500));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.RADIUS.node(), 4);
+        node.set(SkillSetting.DAMAGE.node(), 100);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.875);
+        node.set(SkillSetting.DURATION.node(), 750);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 32);
+        node.set(SkillSetting.DELAY.node(), 1500);
 
         return node;
     }
@@ -73,7 +73,7 @@ public class SkillGreatCombustion extends ActiveSkill {
 
         Block targetBlock = null;
         Block tempBlock;
-        BlockIterator iter = null;
+        BlockIterator iter;
         try {
             iter = new BlockIterator(player, distance);
         }

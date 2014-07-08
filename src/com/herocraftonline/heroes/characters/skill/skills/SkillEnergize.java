@@ -82,11 +82,7 @@ public class SkillEnergize extends ActiveSkill {
                                                .withColor(Color.YELLOW)
                                                .withFade(Color.TEAL)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

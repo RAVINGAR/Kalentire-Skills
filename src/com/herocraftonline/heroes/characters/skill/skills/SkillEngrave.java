@@ -1,15 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -19,6 +9,15 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 public class SkillEngrave extends ActiveSkill {
 
@@ -36,9 +35,8 @@ public class SkillEngrave extends ActiveSkill {
 
         double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
         chance = chance > 0 ? chance : 0;
-        String description = getDescription().replace("$1", chance + "%");
 
-        return description;
+        return getDescription().replace("$1", chance + "%");
     }
 
     @Override
