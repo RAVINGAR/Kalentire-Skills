@@ -34,8 +34,18 @@ package com.herocraftonline.heroes.characters.skill.skills;
  * RuneQueue.java				// The actual Rune Queue List. A unique object of this kind is attached to every player that has this skill.
  */
 
-import java.util.HashMap;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.ClassChangeEvent;
+import com.herocraftonline.heroes.api.events.HeroChangeLevelEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.classes.HeroClass;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.runeskills.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -55,26 +65,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.ClassChangeEvent;
-import com.herocraftonline.heroes.api.events.HeroChangeLevelEvent;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.classes.HeroClass;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.runeskills.Rune;
-import com.herocraftonline.heroes.characters.skill.runeskills.RuneActivationEvent;
-import com.herocraftonline.heroes.characters.skill.runeskills.RuneApplicationEvent;
-import com.herocraftonline.heroes.characters.skill.runeskills.RuneExpireEvent;
-import com.herocraftonline.heroes.characters.skill.runeskills.RuneQueue;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.HashMap;
 
 public class SkillAbsorbRunes extends ActiveSkill {
     // Runequeue Hashmap for holding all player RuneQueue tables
@@ -93,7 +84,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         Bukkit.getPluginManager().registerEvents(new AbsorbRunesListener(this), plugin);
 
         // Create a new hashmap for all hero Rune queues.
-        heroRunes = new HashMap<Hero, RuneQueue>();
+        heroRunes = new HashMap<>();
     }
 
     @Override
@@ -114,7 +105,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         node.set("fail-text-no-runes", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "You have no Runes to absorb!");
 
         // Rune usage configs
-        node.set("rune-application-cooldown", Integer.valueOf(1000));
+        node.set("rune-application-cooldown", 1000);
         node.set("imbued-runes-text-empty", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "Your weapon is no longer imbued with Runes!");
         node.set("imbued-runes-text-start", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "Imbued Runes: <");
         node.set("imbued-runes-text-delimiter", ChatColor.WHITE + "|");
@@ -136,7 +127,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         RuneQueue runeList = heroRunes.get(hero);
         if (runeList.isEmpty()) {
             String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "You have no Runes to absorb!");
-            Messaging.send(player, failText, new Object[0]);
+            Messaging.send(player, failText);
             return SkillResult.FAIL;
         }
 
@@ -234,7 +225,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 targetCT.addEffect(new RuneApplicationCooldownEffect(skill, player, cdEffectName, cdDuration));
             }
 
-            return;
+            //return;
         }
 
         // Listen for Rune activations, and then queue them to the player's Rune list.
@@ -288,7 +279,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 displayRuneQueue(hero, runeList);
             }
 
-            return;
+            //return;
         }
 
         // Manipulate the RuneList hashmap on player death
@@ -302,7 +293,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
             clearRuneList(hero);
 
-            return;
+            //return;
         }
 
         // Manipulate the Rune hashmap on player world change
@@ -317,7 +308,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
             clearRuneList(hero);
 
-            return;
+            //return;
         }
 
         // Manipulate the RuneList hashmap on player join
@@ -338,7 +329,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 }
             }
 
-            return;
+            //return;
         }
 
         // Manipulate the HashMap upon player logout
@@ -350,7 +341,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             if (heroRunes.containsKey(hero))
                 heroRunes.remove(hero);
 
-            return;
+            //return;
         }
 
         // Manipulate the HashMap on hero level changes
@@ -377,7 +368,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                     heroRunes.put(hero, new RuneQueue());
                 }
 
-                return;
+                //return;
             }
             else {
                 // Player is on the hashmap. Check to see if we should remove him.
@@ -391,7 +382,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                     heroRunes.remove(hero);
                 }
 
-                return;
+                //return;
             }
         }
 
@@ -411,7 +402,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                         heroRunes.remove(hero);
                     }
 
-                    return;
+                    //return;
                 }
                 else {
                     // The class does have the skill. Check to see if the hero is allowed to have it yet.
@@ -426,7 +417,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                             heroRunes.remove(hero);
                         }
 
-                        return;
+                       //return;
                     }
                     else {
                         // They are high enough level
@@ -437,7 +428,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                             heroRunes.put(hero, new RuneQueue());
                         }
 
-                        return;
+                        //return;
                     }
                 }
             }
@@ -485,7 +476,9 @@ public class SkillAbsorbRunes extends ActiveSkill {
         }
 
         // Show the player his the message
-        Messaging.send(hero.getPlayer(), currentRuneQueueStr, new Object[0]);
+
+        //Messaging.send(hero.getPlayer(), currentRuneQueueStr, new Object[0]);
+        Messaging.send(hero.getPlayer(), currentRuneQueueStr);
     }
 
     // Effect required for implementing an internal cooldown on rune application

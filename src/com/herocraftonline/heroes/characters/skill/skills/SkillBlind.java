@@ -44,8 +44,8 @@ public class SkillBlind extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 10);
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(62));
+        node.set(SkillSetting.DURATION.node(), 2000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 62);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been blinded!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% can see again!");
 

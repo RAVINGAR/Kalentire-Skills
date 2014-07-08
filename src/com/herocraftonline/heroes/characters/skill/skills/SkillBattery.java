@@ -29,7 +29,8 @@ public class SkillBattery extends TargettedSkill {
         setDescription("You grant $1 of your mana to your target.");
         setUsage("/skill battery");
         setArgumentRange(0, 1);
-        setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MANA_DECREASING, SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_DARK);
+        setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MANA_DECREASING,
+                SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_DARK);
         setIdentifiers("skill battery");
     }
 
@@ -44,7 +45,7 @@ public class SkillBattery extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
         node.set("transfer-amount", 150);
 
         return node;
@@ -92,11 +93,7 @@ public class SkillBattery extends TargettedSkill {
                                                    .withColor(Color.SILVER)
                                                    .withFade(Color.NAVY)
                                                    .build());
-            }
-            catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

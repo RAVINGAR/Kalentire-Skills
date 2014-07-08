@@ -1,8 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,20 +18,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SkillBackflip extends ActiveSkill {
 
@@ -64,11 +58,11 @@ public class SkillBackflip extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("no-air-backflip", false);
-        node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0125));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("vertical-power-increase-per-agility", Double.valueOf(0.00625));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set("horizontal-power", 0.5);
+        node.set("horizontal-power-increase-per-agility", 0.0125);
+        node.set("vertical-power", 0.5);
+        node.set("vertical-power-increase-per-agility", 0.00625);
+        node.set("ncp-exemption-duration", 2000);
 
         return node;
     }
@@ -120,8 +114,8 @@ public class SkillBackflip extends ActiveSkill {
 
         int agility = hero.getAttributeValue(AttributeType.AGILITY);
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0125, false);
         vPower += agility * vPowerIncrease;
 
         if (vPower > 2.0)
@@ -138,8 +132,8 @@ public class SkillBackflip extends ActiveSkill {
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", 0.0125, false);
         hPower += agility * hPowerIncrease;
 
         if (weakenVelocity)
@@ -198,7 +192,7 @@ public class SkillBackflip extends ActiveSkill {
 
     private static final Set<Material> nobackflipMaterials;
     static {
-        nobackflipMaterials = new HashSet<Material>();
+        nobackflipMaterials = new HashSet<>();
         nobackflipMaterials.add(Material.STATIONARY_WATER);
         nobackflipMaterials.add(Material.STATIONARY_LAVA);
         nobackflipMaterials.add(Material.WATER);

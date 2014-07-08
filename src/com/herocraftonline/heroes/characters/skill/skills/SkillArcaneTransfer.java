@@ -1,12 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -21,6 +14,12 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class SkillArcaneTransfer extends TargettedSkill {
 
@@ -46,9 +45,9 @@ public class SkillArcaneTransfer extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set("max-transfers", Integer.valueOf(1));
-        node.set("max-transfers-increase-per-intellect", Double.valueOf(0.025));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set("max-transfers", 1);
+        node.set("max-transfers-increase-per-intellect", 0.025);
 
         return node;
     }
@@ -57,7 +56,7 @@ public class SkillArcaneTransfer extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
+        ArrayList<Effect> possibleEffects = new ArrayList<>();
         for (Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.HARMFUL) && effect.isType(EffectType.DISPELLABLE)) {
                 possibleEffects.add(effect);
@@ -69,7 +68,7 @@ public class SkillArcaneTransfer extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 
 
         int maxTransfers = SkillConfigManager.getUseSetting(hero, this, "max-transfers", 2, false);

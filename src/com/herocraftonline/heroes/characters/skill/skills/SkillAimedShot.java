@@ -64,11 +64,11 @@ public class SkillAimedShot extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(125));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(3.1));
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(40));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(3000));
-        node.set("grace-period", Integer.valueOf(4000));
+        node.set(SkillSetting.DAMAGE.node(), 125);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 3.1);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 40);
+        node.set(SkillSetting.DELAY.node(), 3000);
+        node.set("grace-period", 4000);
         node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% is locked on!"));
         node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% begins to hone in his aim on %target%"));
         node.set("expire-text-fail", String.valueOf(Messaging.getSkillDenoter() + "%hero% has lost sight of his target."));
@@ -208,7 +208,8 @@ public class SkillAimedShot extends TargettedSkill {
             }
 
             if (target instanceof Monster)
-                broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), Messaging.getLivingEntityName((Monster) target));
+                //broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), Messaging.getLivingEntityName((Monster) target));
+                broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), Messaging.getLivingEntityName(target));
             else if (target instanceof Player)
                 broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), ((Player) target).getName());
         }

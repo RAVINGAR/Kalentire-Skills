@@ -58,12 +58,12 @@ public class SkillBlackjack extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(30));
-        node.set("stealthy-damage", Integer.valueOf(60));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Integer.valueOf(1));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(15));
-        node.set("stun-duration", Integer.valueOf(1250));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 30);
+        node.set("stealthy-damage", 60);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 15);
+        node.set("stun-duration", 1250);
 
         return node;
     }

@@ -1,18 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.SkillResult.ResultType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+import com.herocraftonline.townships.HeroTowns;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -29,22 +26,13 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+
 //import com.bekvon.bukkit.residence.Residence;
 //import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 //import com.bekvon.bukkit.residence.protection.ResidencePermissions;
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.SkillResult.ResultType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-import com.herocraftonline.townships.HeroTowns;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillAncientRunestone extends ActiveSkill {
 
@@ -65,7 +53,7 @@ public class SkillAncientRunestone extends ActiveSkill {
         setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
 
-        soulboundRunestones = new ConcurrentHashMap<Player, List<ItemStack>>();
+        soulboundRunestones = new ConcurrentHashMap<>();
 
         try {
             //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
@@ -101,9 +89,9 @@ public class SkillAncientRunestone extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
+        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
         node.set(SkillSetting.DELAY.node(), 10000);
-        node.set("max-uses", Integer.valueOf(-1));
+        node.set("max-uses", -1);
 
         return node;
     }
@@ -114,7 +102,7 @@ public class SkillAncientRunestone extends ActiveSkill {
 
         // Check to make sure it is a redstone block
         ItemStack item = player.getItemInHand();
-        if (item.getType().name() != "REDSTONE_BLOCK") {
+        if (!item.getType().name().equals("REDSTONE_BLOCK")) {
             Messaging.send(player, "You must be holding a Redstone Block in order to imbue Runestones.");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
@@ -196,8 +184,8 @@ public class SkillAncientRunestone extends ActiveSkill {
             if (actualAmount > 1) {
                 // We need to return their excess blocks to them.
                 PlayerInventory inventory = player.getInventory();
-
-                HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1) });
+              //HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1) });
+                HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1));
                 for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
                     player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
                     Messaging.send(player, "Items have been dropped at your feet!");
@@ -299,7 +287,7 @@ public class SkillAncientRunestone extends ActiveSkill {
 
             Player player = event.getEntity();
 
-            for (ItemStack item : new HashSet<ItemStack>(event.getDrops())) {
+            for (ItemStack item : new HashSet<>(event.getDrops())) {
                 if (item == null)
                     continue;
 
@@ -344,7 +332,7 @@ public class SkillAncientRunestone extends ActiveSkill {
             // Add the runestone data to the list.
             if (soulboundRunestones.isEmpty()) {
                 // Initialize our item data pairs
-                List<ItemStack> runestoneDataPairs = new ArrayList<ItemStack>();
+                List<ItemStack> runestoneDataPairs = new ArrayList<>();
 
                 // Add the paired data to the list
                 runestoneDataPairs.add(item);
@@ -367,7 +355,7 @@ public class SkillAncientRunestone extends ActiveSkill {
                     // The player is not on the map.
                     // Let's add the runestone to the list.
 
-                    List<ItemStack> runestoneDataPairs = new ArrayList<ItemStack>();
+                    List<ItemStack> runestoneDataPairs = new ArrayList<>();
                     runestoneDataPairs.add(item);
 
                     // Pair the paired data to our player

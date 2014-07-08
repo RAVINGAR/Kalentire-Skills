@@ -1,13 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Iterator;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -18,6 +10,13 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import java.util.Iterator;
 
 public class SkillBalance extends ActiveSkill {
 
@@ -41,8 +40,8 @@ public class SkillBalance extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
-        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), Double.valueOf(0.005));
+        node.set(SkillSetting.RADIUS.node(), 7);
+        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.005);
 
         return node;
     }
@@ -69,7 +68,7 @@ public class SkillBalance extends ActiveSkill {
         Location playerLocation = player.getLocation();
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
-        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, Double.valueOf(0.1), false);
+        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
         radius += (int) Math.floor(radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
         int radiusSquared = radius * radius;
 
@@ -97,7 +96,7 @@ public class SkillBalance extends ActiveSkill {
 
             if (skipRangeCheck || applyHeroLocation.distanceSquared(playerLocation) < radiusSquared) {
                 applyHero.getPlayer().setHealth((applyHero.getPlayer().getMaxHealth() * healthMultiplier));
-                if (applyHero.getName() == hero.getName()) {
+                if (applyHero.getName().equals(hero.getName())) {
                     player.sendMessage(ChatColor.GRAY + "You used Balance!");
                 }
                 else {

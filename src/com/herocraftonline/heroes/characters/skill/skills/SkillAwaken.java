@@ -36,9 +36,9 @@ public class SkillAwaken extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(7500));
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(38));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(0));
+        node.set(SkillSetting.DELAY.node(), 7500);
+        node.set(SkillSetting.REAGENT.node(), 38);
+        node.set(SkillSetting.REAGENT_COST.node(), 0);
 
         return node;
     }

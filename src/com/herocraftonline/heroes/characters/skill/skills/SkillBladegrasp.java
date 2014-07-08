@@ -125,7 +125,6 @@ public class SkillBladegrasp extends ActiveSkill {
         @EventHandler()
         public void onSkillDamage(SkillDamageEvent event) {
             // Ignore cancelled damage events & 0 damage events for Spam Control
-            //TODO: adjust to allow monsters
             if (event.getDamage() == 0 || event.isCancelled() || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_PHYSICAL) || !(event.getEntity() instanceof Player)) {
                 return;
             }

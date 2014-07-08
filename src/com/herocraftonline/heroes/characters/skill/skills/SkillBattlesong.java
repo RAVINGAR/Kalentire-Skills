@@ -54,7 +54,7 @@ public class SkillBattlesong extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
 
         int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
-        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", 0.15, false);
         staminaRestoreTick += (int) (staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
@@ -67,14 +67,14 @@ public class SkillBattlesong extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-        node.set("stamina-restore-tick", Integer.valueOf(7));
-        node.set("stamina-restore-tick-increase-per-charisma", Double.valueOf(0.275));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.RADIUS.node(), 12);
+        node.set("stamina-restore-tick", 7);
+        node.set("stamina-restore-tick-increase-per-charisma", 0.275);
+        node.set(SkillSetting.PERIOD.node(), 1500);
+        node.set(SkillSetting.DURATION.node(), 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are filled with ");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "You feel strength leave your body!");
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
     }
@@ -97,7 +97,7 @@ public class SkillBattlesong extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
 
         int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
-        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", 0.15, false);
         staminaRestoreTick += (int) Math.floor((staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA)));
 
         BattlesongEffect mEffect = new BattlesongEffect(this, hero.getPlayer(), period, duration, radius, staminaRestoreTick);

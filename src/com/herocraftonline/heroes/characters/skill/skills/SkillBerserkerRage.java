@@ -33,8 +33,8 @@ public class SkillBerserkerRage extends PassiveSkill {
     public String getDescription(Hero hero) {
         Player player = hero.getPlayer();
 
-        double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-per-hp-percent", Double.valueOf(0.0075), false);
-        double damageIncreaseThreshhold = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-threshhold", Double.valueOf(0.40), false);
+        double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-per-hp-percent", 0.0075, false);
+        double damageIncreaseThreshhold = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-threshhold", 0.40, false);
 
         int hpPercent = 100 - ((int) ((player.getHealth() / player.getMaxHealth()) * 100));
         double currentDamageModifier = hpPercent * damageIncreasePerHPPercent;
@@ -54,8 +54,8 @@ public class SkillBerserkerRage extends PassiveSkill {
 
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "");
-        node.set("damage-percent-increase-per-hp-percent", Double.valueOf(0.0075));
-        node.set("damage-percent-increase-threshhold", Double.valueOf(0.40));
+        node.set("damage-percent-increase-per-hp-percent", 0.0075);
+        node.set("damage-percent-increase-threshhold", 0.40);
 
         return node;
     }
@@ -103,20 +103,19 @@ public class SkillBerserkerRage extends PassiveSkill {
 
     private double getBloodRageDamage(double originalDamage, Hero hero, Player player) {
         int hpPercent = 100 - ((int) ((player.getHealth() / player.getMaxHealth()) * 100));
-        double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-per-hp-percent", Double.valueOf(0.0075), false);
+        double damageIncreasePerHPPercent = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-per-hp-percent", 0.0075, false);
         double damageModifier = 1 + (hpPercent * damageIncreasePerHPPercent);
 
         // Heroes.log(Level.INFO, "BloodRage Attack: Damage Modifier: " + damageModifier);
 
-        double damageIncreaseThreshhold = 1 + SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-threshhold", Double.valueOf(0.40), false);
+        double damageIncreaseThreshhold = 1 + SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-threshhold", 0.40, false);
         if (damageModifier > damageIncreaseThreshhold) {
             damageModifier = damageIncreaseThreshhold;
             // Heroes.log(Level.INFO, "BloodRage Attack: Hit Threshhold. New Modifier: " + damageModifier);
         }
-
-        double newDamage = damageModifier * originalDamage;
+///     double newDamage = damageModifier * originalDamage;
         // Heroes.log(Level.INFO, "BloodRage Attack: Original Damage: " + originalDamage + ", New Damage: " + newDamage);
 
-        return newDamage;
+        return damageModifier * originalDamage;
     }
 }

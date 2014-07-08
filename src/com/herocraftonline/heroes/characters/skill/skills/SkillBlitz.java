@@ -45,11 +45,11 @@ public class SkillBlitz extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 5);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.1);
         node.set(SkillSetting.DAMAGE.node(), 180);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2);
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
         node.set("lightning-volume", 0.0F);
 
         return node;
@@ -85,8 +85,6 @@ public class SkillBlitz extends TargettedSkill {
             		.withColor(Color.YELLOW)
             		.withFade(Color.SILVER)
             		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
