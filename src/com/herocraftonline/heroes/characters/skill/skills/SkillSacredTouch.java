@@ -37,7 +37,7 @@ public class SkillSacredTouch extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
@@ -50,9 +50,9 @@ public class SkillSacredTouch extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(150));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(3.75));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set(SkillSetting.HEALING.node(), 150);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 3.75);
 
         return node;
     }
@@ -66,7 +66,7 @@ public class SkillSacredTouch extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(2.0), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double targetHealth = target.getHealth();
@@ -102,12 +102,9 @@ public class SkillSacredTouch extends TargettedSkill {
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
+                    .trail(false).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

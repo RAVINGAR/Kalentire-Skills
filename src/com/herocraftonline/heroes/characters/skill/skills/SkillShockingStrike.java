@@ -33,7 +33,7 @@ public class SkillShockingStrike extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.6), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         String formattedDamage = Util.decFormat.format(damage);
@@ -44,10 +44,10 @@ public class SkillShockingStrike extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
         node.set("weapons", Util.axes);
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(30));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.7));
+        node.set(SkillSetting.DAMAGE.node(), 30);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.7);
         node.set("lightning-volume", 0.0F);
         
         return node;
@@ -59,12 +59,12 @@ public class SkillShockingStrike extends TargettedSkill {
 
         Material item = player.getItemInHand().getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
-            Messaging.send(player, "You can't use Shocking Strike with that weapon!", new Object[0]);
+            Messaging.send(player, "You can't use Shocking Strike with that weapon!");
             return SkillResult.FAIL;
         }
         
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.7), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);

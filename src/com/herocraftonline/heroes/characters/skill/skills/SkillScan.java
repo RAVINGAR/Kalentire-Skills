@@ -44,10 +44,10 @@ public class SkillScan extends TargettedSkill {
             // Create the message variables
             Object[] messageVariables = new Object[] {
                     tHero.getPlayer().getName(),
-                    Integer.valueOf(tHero.getLevel(tHero.getHeroClass())),
+                    tHero.getLevel(tHero.getHeroClass()),
                     tHero.getHeroClass().getName(),
-                    Integer.valueOf((int) target.getHealth()),
-                    Integer.valueOf((int) target.getMaxHealth())
+                    (int) target.getHealth(),
+                    (int) target.getMaxHealth()
             };
 
             // Send the message
@@ -57,8 +57,8 @@ public class SkillScan extends TargettedSkill {
             // Create the message variables
             Object[] messageVariables = new Object[] {
                     Messaging.getLivingEntityName(target),
-                    Integer.valueOf((int) target.getHealth()),
-                    Integer.valueOf((int) target.getMaxHealth())
+                    (int) target.getHealth(),
+                    (int) target.getMaxHealth()
             };
 
             // Send the message

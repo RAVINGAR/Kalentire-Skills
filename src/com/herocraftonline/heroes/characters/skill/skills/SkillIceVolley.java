@@ -1,17 +1,22 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,23 +27,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SkillIceVolley extends ActiveSkill {
 
@@ -48,7 +38,7 @@ public class SkillIceVolley extends ActiveSkill {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -88,12 +78,12 @@ public class SkillIceVolley extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-        node.set("max-arrows-per-shot", Integer.valueOf(5));
-        node.set("degrees", Double.valueOf(10.0));
-        node.set("velocity-multiplier", Double.valueOf(2.0));
-        node.set("slow-multiplier", Integer.valueOf(1));
-        node.set("slow-duration", Integer.valueOf(2500));
+        node.set(SkillSetting.DURATION.node(), 4000);
+        node.set("max-arrows-per-shot", 5);
+        node.set("degrees", 10.0);
+        node.set("velocity-multiplier", 2.0);
+        node.set("slow-multiplier", 1);
+        node.set("slow-duration", 2500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has loaded an array of Ice Arrows!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer firing a volley of arrows.");
         node.set("slow-apply-text", Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!");
@@ -200,11 +190,11 @@ public class SkillIceVolley extends ActiveSkill {
             Arrow actualArrow = (Arrow) event.getProjectile();
             actualArrow.remove();
 
-            double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", Double.valueOf(1.6), false);
+            double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.6, false);
             velocityMultiplier = force * velocityMultiplier;    // Reduce the velocity based on how far back they pulled their bow.
 
             // Create arrow spread
-            double degrees = SkillConfigManager.getUseSetting(hero, skill, "degrees", Double.valueOf(65.0), false);
+            double degrees = SkillConfigManager.getUseSetting(hero, skill, "degrees", 65.0, false);
             double degreesRad = degrees * (Math.PI / 180);      // Convert degrees to radians
             double diff = degreesRad / (arrowsToShoot - 1);           // Create our difference for the spread
 
@@ -294,7 +284,7 @@ public class SkillIceVolley extends ActiveSkill {
             arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
 
             arrow.setShooter(player);
-            iceVolleyShots.put(arrow, Long.valueOf(System.currentTimeMillis()));
+            iceVolleyShots.put(arrow, System.currentTimeMillis());
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -306,7 +296,7 @@ public class SkillIceVolley extends ActiveSkill {
             if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
                 return;
 
-            if (!(iceVolleyShots.containsKey((Arrow) projectile)))
+            if (!(iceVolleyShots.containsKey(projectile)))
                 return;
 
             final Arrow iceArrow = (Arrow) projectile;

@@ -40,14 +40,14 @@ public class SkillRegrowth extends TargettedSkill {
 
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(25), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.875), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
         healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(3000), false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(15000), false);
 
         double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(29), false);
-        double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, Double.valueOf(0.7), false);
+        double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 0.7, false);
         hot += hero.getAttributeValue(AttributeType.WISDOM) * hotIncrease;
 
         String formattedHealing = Util.decFormat.format(healing);
@@ -62,13 +62,13 @@ public class SkillRegrowth extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(25));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.875));
-        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(29));
-        node.set(SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM.node(), Double.valueOf(0.7));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set(SkillSetting.DURATION.node(), 15000);
+        node.set(SkillSetting.PERIOD.node(), 3000);
+        node.set(SkillSetting.HEALING.node(), 25);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.875);
+        node.set(SkillSetting.HEALING_TICK.node(), 29);
+        node.set(SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM.node(), 0.7);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been given the gift of regrowth!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has lost the gift of regrowth!");
 
@@ -97,14 +97,14 @@ public class SkillRegrowth extends TargettedSkill {
         }
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(25), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(0.875), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
         healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(3000), false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(15000), false);
 
         double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(29), false);
-        double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, Double.valueOf(0.7), false);
+        double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 0.7, false);
         hot += hero.getAttributeValue(AttributeType.WISDOM) * hotIncrease;
 
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
@@ -122,11 +122,7 @@ public class SkillRegrowth extends TargettedSkill {
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -67,8 +67,8 @@ public class SkillShockTotem extends SkillBaseTotem {
 
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.DAMAGE.node(), Double.valueOf(50.0));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(5.0));
+        node.set(SkillSetting.DAMAGE.node(), 50.0);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5.0);
         node.set("lightning-volume", 0.0F);
         return node;
     }

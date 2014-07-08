@@ -43,8 +43,8 @@ public class SkillReplenish extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("mana-gain-percent", Double.valueOf(0.20));
-        node.set("mana-gain-percent-increase-per-wisdom", Double.valueOf(0.015));
+        node.set("mana-gain-percent", 0.20);
+        node.set("mana-gain-percent-increase-per-wisdom", 0.015);
 
         return node;
     }

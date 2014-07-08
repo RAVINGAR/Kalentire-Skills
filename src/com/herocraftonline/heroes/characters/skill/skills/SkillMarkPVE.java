@@ -51,10 +51,10 @@ public class SkillMarkPVE extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.NO_COMBAT_USE.node(), true);
-        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(3180000));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(5000));
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(265));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.COOLDOWN.node(), 3180000);
+        node.set(SkillSetting.DELAY.node(), 5000);
+        node.set(SkillSetting.REAGENT.node(), 265);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
     }
@@ -74,7 +74,7 @@ public class SkillMarkPVE extends ActiveSkill {
             if (world == null) {
                 return SkillResult.FAIL;
             }
-            double[] xyzyp = null;
+            double[] xyzyp;
             try {
                 xyzyp = getStoredData(skillSettings);
             } catch (IllegalArgumentException e) {
@@ -121,7 +121,7 @@ public class SkillMarkPVE extends ActiveSkill {
 
     public static double[] getStoredData(ConfigurationSection skillSettings) throws IllegalArgumentException {
         double[] xyzyp = new double[5];
-        Double temp = null;
+        Double temp;
         temp = Util.toDouble(skillSettings.get("x"));
         if (temp == null) {
             throw new IllegalArgumentException("Bad recall data.");

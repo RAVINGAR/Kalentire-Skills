@@ -67,7 +67,7 @@ public class SkillVoidRune extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(35), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.625, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
@@ -80,9 +80,9 @@ public class SkillVoidRune extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(25));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.625));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(1500));
+        node.set(SkillSetting.DAMAGE.node(), 25);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.625);
+        node.set(SkillSetting.DURATION.node(), 1500);
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.DARK_PURPLE + "Void.");
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been silenced by a Rune of Void!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer silenced!");
@@ -132,7 +132,7 @@ public class SkillVoidRune extends ActiveSkill {
             final Player player = hero.getPlayer();
 
             // Check to see if this is the correct rune to apply, and that the player actually has the rune applied.
-            if (!(event.getRuneList().getHead().name == "VoidRune"))
+            if (!(event.getRuneList().getHead().name.equals("VoidRune")))
                 return;
 
             // Ensure that the target is a living entity
@@ -153,14 +153,14 @@ public class SkillVoidRune extends ActiveSkill {
                     long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
 
                     double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(25), false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.625), false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.625, false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                     String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been silenced by a Rune of Void!").replace("%target%", "$1");
                     String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer silenced!").replace("%target%", "$1");
 
                     // Damage and silence the target
-                    addSpellTarget((LivingEntity) targEnt, hero);
+                    addSpellTarget(targEnt, hero);
                     damageEntity((LivingEntity) targEnt, player, damage, DamageCause.MAGIC, false);
                     VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, player, duration, applyText, expireText);
 
@@ -173,7 +173,6 @@ public class SkillVoidRune extends ActiveSkill {
                 }
             }, (long) (0.1 * 20));
 
-            return;
         }
     }
 

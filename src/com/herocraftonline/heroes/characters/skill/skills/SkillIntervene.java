@@ -48,7 +48,7 @@ public class SkillIntervene extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(8000), false);
-        double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", Double.valueOf(0.50), false);
+        double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", 0.50, false);
 
         int distanceRequired = SkillConfigManager.getUseSetting(hero, this, "distance-required-for-intervene", Integer.valueOf(5), false);
 
@@ -63,9 +63,9 @@ public class SkillIntervene extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 7);
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
-        node.set("damage-split-percent", Double.valueOf(0.5));
-        node.set("distance-required-for-intervene", Integer.valueOf(5));
+        node.set(SkillSetting.DURATION.node(), 8000);
+        node.set("damage-split-percent", 0.5);
+        node.set("distance-required-for-intervene", 5);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is intervening attacks against %target%");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer intervening attacks against %target%.");
 
@@ -96,7 +96,7 @@ public class SkillIntervene extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(8000), false);
-        double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", Double.valueOf(0.50), false);
+        double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", 0.50, false);
         int distanceRequired = SkillConfigManager.getUseSetting(hero, this, "distance-required-for-intervene", Integer.valueOf(5), false);
 
         targetHero.addEffect(new InterveneEffect(this, player, duration, damageSplitPercent, distanceRequired));
@@ -148,13 +148,13 @@ public class SkillIntervene extends TargettedSkill {
                     event.setDamage(defenderDamage);
 
                     CharacterTemplate damagerCT = event.getDamager();
-                    addSpellTarget((LivingEntity) interveningPlayer, (Hero) damagerCT);
+                    addSpellTarget(interveningPlayer, (Hero) damagerCT);
 
                     Skill eSkill = event.getSkill();
                     if (eSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !eSkill.isType(SkillType.ARMOR_PIERCING))
-                        damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.ENTITY_ATTACK, false);
+                        damageEntity(interveningPlayer, damagerLE, intervenerDamage, DamageCause.ENTITY_ATTACK, false);
                     else
-                        damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.MAGIC, false);
+                        damageEntity(interveningPlayer, damagerLE, intervenerDamage, DamageCause.MAGIC, false);
 
                     //interveningPlayer.getWorld().playSound(interveningPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }
@@ -206,9 +206,9 @@ public class SkillIntervene extends TargettedSkill {
                     event.setDamage(defenderDamage);
 
                     CharacterTemplate damagerCT = plugin.getCharacterManager().getCharacter(damagerLE);
-                    addSpellTarget((LivingEntity) interveningPlayer, (Hero) damagerCT);
+                    addSpellTarget(interveningPlayer, (Hero) damagerCT);
 
-                    damageEntity((LivingEntity) interveningPlayer, (Player) damagerLE, intervenerDamage, DamageCause.ENTITY_ATTACK, false);
+                    damageEntity(interveningPlayer, damagerLE, intervenerDamage, DamageCause.ENTITY_ATTACK, false);
 
                     //interveningPlayer.getWorld().playSound(interveningPlayer.getLocation(), Sound.HURT, 0.8F, 0.5F);
                 }

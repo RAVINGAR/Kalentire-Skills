@@ -1,28 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Painting;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -31,13 +8,23 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SkillWeb extends TargettedSkill {
 
@@ -70,11 +57,11 @@ public class SkillWeb extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(75));
-        node.set("root-duration", Integer.valueOf(500));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
+        node.set(SkillSetting.DURATION.node(), 2000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 75);
+        node.set("root-duration", 500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% conjured a web at %target%'s feet!");
 
         return node;
@@ -98,7 +85,7 @@ public class SkillWeb extends TargettedSkill {
         long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 500, false);
         WebEffect wEffect = new WebEffect(this, player, duration, rootDuration);
 
-        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(wEffect);
 
         player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
@@ -122,7 +109,7 @@ public class SkillWeb extends TargettedSkill {
 
     private class WebEffect extends ExpirableEffect {
 
-        private List<Location> locations = new ArrayList<Location>();
+        private List<Location> locations = new ArrayList<>();
         private Location loc;
 
         public WebEffect(Skill skill, Player applier, long webDuration, long rootDuration) {
@@ -149,7 +136,7 @@ public class SkillWeb extends TargettedSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            createWeb((Entity) hero.getPlayer());
+            createWeb(hero.getPlayer());
         }
 
         @Override
@@ -171,7 +158,7 @@ public class SkillWeb extends TargettedSkill {
             loc = placedOnEntity.getLocation();
 
             List<Entity> entities = placedOnEntity.getNearbyEntities(10, 10, 10);
-            List<Entity> blockEntities = new ArrayList<Entity>();
+            List<Entity> blockEntities = new ArrayList<>();
             for (Entity entity : entities) {
                 if (entity instanceof ItemFrame)
                     blockEntities.add(entity);

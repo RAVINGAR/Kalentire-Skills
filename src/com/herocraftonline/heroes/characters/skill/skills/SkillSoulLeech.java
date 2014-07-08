@@ -46,11 +46,11 @@ public class SkillSoulLeech extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, Double.valueOf(14.0), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.0375), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 14.0, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.0375, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.72), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.72, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamage = Util.decFormat.format(damage * (duration / period));
@@ -63,15 +63,15 @@ public class SkillSoulLeech extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(14));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.0375));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set("heal-mult", Double.valueOf(0.72));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 14);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.0375);
+        node.set(SkillSetting.DURATION.node(), 20000);
+        node.set(SkillSetting.PERIOD.node(), 2000);
+        node.set("heal-mult", 0.72);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is having their soul leeched by %hero%");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s soul is no longer being leeched.");
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
     }
@@ -91,11 +91,11 @@ public class SkillSoulLeech extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, Double.valueOf(14.0), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.0375), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 14.0, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.0375, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.72), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.72, false);
 
         broadcastExecuteText(hero, target);
 
@@ -112,11 +112,7 @@ public class SkillSoulLeech extends TargettedSkill {
                                                .withColor(Color.GREEN)
                                                .withFade(Color.PURPLE)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

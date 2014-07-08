@@ -40,9 +40,9 @@ public class SkillManaFreeze extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.1);
+        node.set(SkillSetting.DURATION.node(), 6000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has stopped regenerating mana!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is once again regenerating mana!");
 

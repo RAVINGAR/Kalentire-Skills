@@ -1,10 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,19 +23,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SkillRampartVine extends ActiveSkill {
 
@@ -59,10 +54,10 @@ public class SkillRampartVine extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.2);
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
-        node.set("max-growth-distance", Integer.valueOf(30));
+        node.set(SkillSetting.DURATION.node(), 15000);
+        node.set("max-growth-distance", 30);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% creates an overgrowth of vines!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s vines have withered.");
 
@@ -145,7 +140,6 @@ public class SkillRampartVine extends ActiveSkill {
 
             if (sourceBlock.getType() == Material.VINE && changedBlocks.contains(sourceLocation)) {
                 event.setCancelled(true);
-                return;
             }
         }
     }
@@ -154,7 +148,7 @@ public class SkillRampartVine extends ActiveSkill {
         private final Block targetBlock;
         private final BlockFace targetFace;
         private final int maxGrowth;
-        private List<Location> locations = new ArrayList<Location>();
+        private List<Location> locations = new ArrayList<>();
 
         public OvergrowthEffect(Skill skill, Player applier, long duration, Block targetBlock, BlockFace targetFace, int maxGrowth) {
             super(skill, "Overgrowth", applier, duration);

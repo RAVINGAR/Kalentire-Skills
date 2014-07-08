@@ -46,10 +46,10 @@ public class SkillSongOfRespiration extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(225));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.RADIUS.node(), 7);
+        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 225);
+        node.set(SkillSetting.DELAY.node(), 1000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are filled with increased respiration!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "Your increased respiration has faded.");
 

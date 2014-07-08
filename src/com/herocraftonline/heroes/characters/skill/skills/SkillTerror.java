@@ -50,10 +50,10 @@ public class SkillTerror extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
-        node.set("amplifier", Integer.valueOf(2));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(75));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        node.set("amplifier", 2);
+        node.set(SkillSetting.DURATION.node(), 4000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 75);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been overcome with fear!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has overcome his fear!");
 

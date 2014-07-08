@@ -1,15 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashSet;
-
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.TreeType;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -19,6 +9,15 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.TreeType;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import java.util.HashSet;
 
 public class SkillOvergrowth extends ActiveSkill {
 
@@ -77,7 +76,7 @@ public class SkillOvergrowth extends ActiveSkill {
                     break;
                 default:
                     tType = TreeType.TREE;
-            };
+            }
         } else if (mat == Material.RED_MUSHROOM) {
             tType = TreeType.RED_MUSHROOM;
         } else if (mat == Material.BROWN_MUSHROOM) {

@@ -54,10 +54,10 @@ public class SkillSneak extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         final ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(600000)); // 10 minutes in milliseconds
+        node.set(SkillSetting.DURATION.node(), 600000); // 10 minutes in milliseconds
         node.set("damage-cancels", true);
         node.set("attacking-cancels", true);
-        node.set("refresh-interval", Integer.valueOf(5000)); // in milliseconds
+        node.set("refresh-interval", 5000); // in milliseconds
         return node;
     }
 
@@ -95,7 +95,7 @@ public class SkillSneak extends ActiveSkill {
                 return;
             }
 
-            Player player = null;
+            Player player;
             if (event.getEntity() instanceof Player) {
                 player = (Player) event.getEntity();
                 final Hero hero = plugin.getCharacterManager().getHero(player);

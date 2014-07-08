@@ -30,7 +30,7 @@ public class SkillPiercingStrike extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
+        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         String formattedDamageMultiplier = Util.decFormat.format(damageMultiplier * 100.0);
 
@@ -41,9 +41,9 @@ public class SkillPiercingStrike extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
         node.set("weapons", Util.shovels);
-        node.set("damage-multiplier", Double.valueOf(0.5));
+        node.set("damage-multiplier", 0.5);
 
         return node;
     }
@@ -59,7 +59,7 @@ public class SkillPiercingStrike extends TargettedSkill {
         }
 
         double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
-        damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
+        damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);

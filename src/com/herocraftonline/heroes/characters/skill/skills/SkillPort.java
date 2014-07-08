@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -18,6 +9,14 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillPort extends ActiveSkill {
 
@@ -41,9 +40,9 @@ public class SkillPort extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(10));
+        node.set(SkillSetting.RADIUS.node(), 10);
         node.set(SkillSetting.NO_COMBAT_USE.node(), true);
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(10000));
+        node.set(SkillSetting.DELAY.node(), 10000);
 
 		return node;
 	}
@@ -52,7 +51,7 @@ public class SkillPort extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
 
-		List<String> keys = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, null));
+		List<String> keys = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, null));
 
 		// Strip non-world keys
 		for (SkillSetting setting : SkillSetting.values()) {

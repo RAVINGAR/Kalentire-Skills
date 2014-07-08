@@ -1,29 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import net.minecraft.server.v1_7_R3.EntityLiving;
-import net.minecraft.server.v1_7_R3.MobEffect;
-
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftLivingEntity;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Sheep;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.util.Vector;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -33,6 +9,24 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
+import net.minecraft.server.v1_7_R3.EntityLiving;
+import net.minecraft.server.v1_7_R3.MobEffect;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftLivingEntity;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SkillPlagueBomb extends ActiveSkill {
     private Map<Integer, Player> sheepMap = new HashMap<Integer, Player>();
@@ -51,13 +45,13 @@ public class SkillPlagueBomb extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(100));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.75));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set("fuse-time", Integer.valueOf(6000));
-        node.set("velocity", Double.valueOf(1.0D));
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(367));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(0));
+        node.set(SkillSetting.DAMAGE.node(), 100);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2.75);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set("fuse-time", 6000);
+        node.set("velocity", 1.0D);
+        node.set(SkillSetting.REAGENT.node(), 367);
+        node.set(SkillSetting.REAGENT_COST.node(), 0);
 
         return node;
     }
@@ -82,10 +76,9 @@ public class SkillPlagueBomb extends ActiveSkill {
 
         Vector pLoc = player.getLocation().toVector();
         Vector direction = player.getLocation().getDirection();
-        Vector spawnLoc = pLoc; //.add(direction);
         World world = player.getWorld();
 
-        final LivingEntity sheep = (LivingEntity) world.spawnEntity(spawnLoc.toLocation(world), EntityType.SHEEP);
+        final LivingEntity sheep = (LivingEntity) world.spawnEntity(pLoc.toLocation(world), EntityType.SHEEP);
         sheepMap.put(sheep.getEntityId(), player);
 
         EntityLiving cbSheep = ((CraftLivingEntity) sheep).getHandle();
@@ -143,7 +136,7 @@ public class SkillPlagueBomb extends ActiveSkill {
     private void explodeSheep(LivingEntity sheep) {
         int id = sheep.getEntityId();
         if (sheepMap.containsKey(id)) {
-            Player player = (Player) sheepMap.get(id);
+            Player player = sheepMap.get(id);
             Hero hero = plugin.getCharacterManager().getHero(player);
             double damage = 1;
             if (hero != null) {

@@ -37,9 +37,9 @@ public class SkillLayhands extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_WISDOM.node(), Double.valueOf(0.1));
-        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(900000));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_WISDOM.node(), 0.1);
+        node.set(SkillSetting.COOLDOWN.node(), 900000);
 
         return node;
     }
@@ -75,11 +75,7 @@ public class SkillLayhands extends TargettedSkill {
                                                .withColor(Color.FUCHSIA)
                                                .withFade(Color.WHITE)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

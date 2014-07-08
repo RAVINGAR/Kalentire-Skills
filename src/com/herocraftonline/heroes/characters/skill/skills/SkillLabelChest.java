@@ -35,9 +35,8 @@ public class SkillLabelChest extends ActiveSkill {
 
         double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
         chance = chance > 0 ? chance : 0;
-        String description = getDescription().replace("$1", chance + "%");
 
-        return description;
+        return getDescription().replace("$1", chance + "%");
     }
 
     @Override

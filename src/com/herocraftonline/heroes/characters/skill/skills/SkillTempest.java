@@ -1,21 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
-import org.bukkit.FireworkEffect.Type;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -23,6 +7,16 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import org.bukkit.*;
+import org.bukkit.FireworkEffect.Type;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillTempest extends ActiveSkill {
 
@@ -73,9 +67,9 @@ public class SkillTempest extends ActiveSkill {
         broadcastExecuteText(hero);
 
         // Create a cicle of firework locations, based on skill radius.
-        List<Location> fireworkLocations = circle(player, player.getLocation(), radius, 1, true, false, height);
+        List<Location> fireworkLocations = circle(player.getLocation(), radius, 1, true, false, height);
         int fireworksSize = fireworkLocations.size();
-        long ticksPerFirework = (int) (100 / fireworksSize);
+        long ticksPerFirework = 100 / fireworksSize;
 
         // Play the firework effects in a sequence
         for (int i = 0; i < fireworksSize; i++) {
@@ -84,12 +78,9 @@ public class SkillTempest extends ActiveSkill {
                 @Override
                 public void run() {
                     try {
-                        fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect.builder().flicker(false).trail(false).withColor(Color.AQUA).with(Type.BURST).build());
-                    }
-                    catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                    }
-                    catch (Exception e) {
+                        fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect.builder().flicker(false).trail(false)
+                                .withColor(Color.AQUA).with(Type.BURST).build());
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -110,7 +101,7 @@ public class SkillTempest extends ActiveSkill {
                         continue;
 
                     // Damage the target
-                    addSpellTarget((LivingEntity) entity, hero);
+                    addSpellTarget(entity, hero);
                     damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
                     // Lightning like this is too annoying.
                     // entity.getWorld().strikeLightningEffect(entity.getLocation());
@@ -126,7 +117,7 @@ public class SkillTempest extends ActiveSkill {
     }
 
     protected List<Entity> getNearbyEntities(Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-        List<Entity> entities = new ArrayList<Entity>();
+        List<Entity> entities = new ArrayList<>();
 
         for (Entity entity : targetLocation.getWorld().getEntities()) {
             if (isInBorder(targetLocation, entity.getLocation(), radiusX, radiusY, radiusZ)) {
@@ -145,13 +136,11 @@ public class SkillTempest extends ActiveSkill {
         int y2 = targetLocation.getBlockY();
         int z2 = targetLocation.getBlockZ();
 
-        if (x2 >= (x1 + radiusX) || x2 <= (x1 - radiusX) || y2 >= (y1 + radiusY) || y2 <= (y1 - radiusY) || z2 >= (z1 + radiusZ) || z2 <= (z1 - radiusZ))
-            return false;
+        return !(x2 >= (x1 + radiusX) || x2 <= (x1 - radiusX) || y2 >= (y1 + radiusY) || y2 <= (y1 - radiusY) || z2 >= (z1 + radiusZ) || z2 <= (z1 - radiusZ));
 
-        return true;
     }
 
-    protected List<Location> circle(Player player, Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
+    protected List<Location> circle(Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
         List<Location> circleblocks = new ArrayList<Location>();
         int cx = loc.getBlockX();
         int cy = loc.getBlockY();

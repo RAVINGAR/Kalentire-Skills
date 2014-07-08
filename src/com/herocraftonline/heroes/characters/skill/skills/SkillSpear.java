@@ -46,7 +46,7 @@ public class SkillSpear extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         return getDescription().replace("$1", damage + "");
@@ -56,12 +56,12 @@ public class SkillSpear extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(45));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.375));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set(SkillSetting.DAMAGE.node(), 45);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.375);
         node.set("weapons", Util.shovels);
-        node.set("ncp-exemption-duration", Integer.valueOf(1000));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(500));
+        node.set("ncp-exemption-duration", 1000);
+        node.set(SkillSetting.DELAY.node(), 500);
 
         return node;
     }
@@ -105,8 +105,7 @@ public class SkillSpear extends TargettedSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
-        final double vPower = tempVPower;
+        final double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
 
         Vector pushUpVector = new Vector(0, vPower, 0);
         target.setVelocity(pushUpVector);
@@ -114,7 +113,7 @@ public class SkillSpear extends TargettedSkill {
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
         final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
 
-        final double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
+        final double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
 
         // push them "up" first. THEN we can pull them to us.
         double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);

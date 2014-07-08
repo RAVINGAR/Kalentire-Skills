@@ -1,16 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -21,6 +10,16 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SkillTransmuteOre extends ActiveSkill {
 
@@ -66,7 +65,7 @@ public class SkillTransmuteOre extends ActiveSkill {
             return SkillResult.FAIL;
         }
         // List all items this hero can transmute
-        Set<String> itemSet = new HashSet<String>(SkillConfigManager.getUseSettingKeys(hero, this));
+        Set<String> itemSet = new HashSet<>(SkillConfigManager.getUseSettingKeys(hero, this));
         itemSet.remove("require-furnace");
         for (SkillSetting set : SkillSetting.values()) {
             itemSet.remove(set.node());

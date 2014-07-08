@@ -1,9 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
-
-import java.util.HashMap;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -12,13 +15,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
+import java.util.HashMap;
+
+import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
 
 public class SkillSmeltIron extends ActiveSkill{
 	private static final String base="base-ingot-chance",gain="chance-gain-per-level";
@@ -83,10 +82,10 @@ public class SkillSmeltIron extends ActiveSkill{
 			player.sendMessage(ChatColor.GRAY + "You got an extra ingot from the smelting process!");
 		}
 
-        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.IRON_INGOT, amount) });
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.IRON_INGOT, amount));
 		for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
 			player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-			Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+			Messaging.send(player, "Items have been dropped at your feet!");
 		}
 
 		return SkillResult.NORMAL;

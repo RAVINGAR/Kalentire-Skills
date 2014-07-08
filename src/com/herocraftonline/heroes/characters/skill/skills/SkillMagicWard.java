@@ -40,7 +40,7 @@ public class SkillMagicWard extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
-        double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", Double.valueOf(0.2), false);
+        double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageReduction = Util.decFormat.format(damageReduction * 100);
@@ -52,8 +52,8 @@ public class SkillMagicWard extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("damage-reduction", Double.valueOf(0.2));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
+        node.set("damage-reduction", 0.2);
+        node.set(SkillSetting.DURATION.node(), 4000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is being protected by a Magic Ward!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Magic Ward has faded");
 
@@ -79,7 +79,7 @@ public class SkillMagicWard extends ActiveSkill {
                 broadcastExecuteText(hero);
 
                 int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
-                double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", Double.valueOf(0.2), false);
+                double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
 
                 hero.addEffect(new MagicWardEffect(this, player, duration, damageReduction));
 
@@ -116,7 +116,6 @@ public class SkillMagicWard extends ActiveSkill {
                     double damageReduction = 1.0 - ((MagicWardEffect) defenderHero.getEffect("MagicWard")).damageReduction;
                     event.setDamage((event.getDamage() * damageReduction));
                 default:
-                    return;
             }
         }
     }

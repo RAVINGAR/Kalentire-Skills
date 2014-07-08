@@ -34,9 +34,7 @@ public class SkillTumble extends PassiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) ncpEnabled = true;
     }
 
     @Override
@@ -45,7 +43,7 @@ public class SkillTumble extends PassiveSkill {
         String description = " ";
 
         double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", Integer.valueOf(0), false);
-        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
+        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-agility-level", 0.25, false);
         distance += (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease) + 3;
 
         if (distance == 3)
@@ -64,9 +62,9 @@ public class SkillTumble extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("base-distance", Integer.valueOf(0));
-        node.set("distance-increase-per-agility-level", Double.valueOf(0.25));
-        node.set("ncp-exemption-duration", Integer.valueOf(100));
+        node.set("base-distance", 0);
+        node.set("distance-increase-per-agility-level", 0.25);
+        node.set("ncp-exemption-duration", 100);
 
         return node;
     }
@@ -90,7 +88,7 @@ public class SkillTumble extends PassiveSkill {
             }
 
             double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", Integer.valueOf(0), false);
-            double distanceIncrease = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-agility-level", Double.valueOf(0.25), false);
+            double distanceIncrease = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-agility-level", 0.25, false);
             distance += hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease;
 
             double fallDistance = event.getDamage();

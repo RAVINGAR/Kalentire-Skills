@@ -43,11 +43,11 @@ public class SkillInvuln extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
+        node.set(SkillSetting.DURATION.node(), 6000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has become invulnerable!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is once again vulnerable!");
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(81));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.REAGENT.node(), 81);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
     }

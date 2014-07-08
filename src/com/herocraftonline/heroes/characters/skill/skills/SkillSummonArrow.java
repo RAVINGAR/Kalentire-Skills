@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
-
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -17,6 +8,14 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+
+import java.util.HashMap;
 
 public class SkillSummonArrow extends ActiveSkill {
 
@@ -52,10 +51,10 @@ public class SkillSummonArrow extends ActiveSkill {
         int amount = SkillConfigManager.getUseSetting(hero, this, "amount", 5, false);
 
         PlayerInventory inventory = player.getInventory();
-        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.ARROW, amount) });
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.ARROW, amount));
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+            Messaging.send(player, "Items have been dropped at your feet!");
         }
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.DIG_WOOD, 0.8F, 0.2F);

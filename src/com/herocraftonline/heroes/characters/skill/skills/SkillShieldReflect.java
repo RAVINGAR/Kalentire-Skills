@@ -1,5 +1,18 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
@@ -14,20 +27,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getRaw;
+import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
 
 public class SkillShieldReflect extends ActiveSkill {
     private String applyText;
@@ -46,8 +47,8 @@ public class SkillShieldReflect extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "reflected-damage-modifier", Double.valueOf(0.8), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        double damageModifier = getUseSetting(hero, this, "reflected-damage-modifier", 0.8, false);
+        int duration = getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageModifier = Util.decFormat.format(damageModifier * 100);
@@ -59,8 +60,8 @@ public class SkillShieldReflect extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
-        node.set("reflected-damage-modifier", Double.valueOf(0.8));
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set("reflected-damage-modifier", 0.8);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% holds up their shield and is now reflecting incoming attacks!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer reflecting attacks!");
 
@@ -71,8 +72,8 @@ public class SkillShieldReflect extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% holds up their shield and is now reflecting incoming attacks!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer reflecting attacks!").replace("%hero%", "$1");
+        applyText = getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% holds up their shield and is now reflecting incoming attacks!").replace("%hero%", "$1");
+        expireText = getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer reflecting attacks!").replace("%hero%", "$1");
     }
 
     @Override
@@ -85,7 +86,7 @@ public class SkillShieldReflect extends ActiveSkill {
             case TRAP_DOOR:
                 broadcastExecuteText(hero);
 
-                int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+                int duration = getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
                 hero.addEffect(new ShieldReflectEffect(this, player, duration));
 
                 player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
@@ -130,7 +131,7 @@ public class SkillShieldReflect extends ActiveSkill {
                     case IRON_DOOR:
                     case WOOD_DOOR:
                     case TRAP_DOOR:
-                        double damageModifier = SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-damage-modifier", Double.valueOf(0.8), false);
+                        double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
                         double damage = event.getDamage() * damageModifier;
                         LivingEntity target = event.getDamager().getEntity();
 
@@ -143,7 +144,6 @@ public class SkillShieldReflect extends ActiveSkill {
                             damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC, false);
 
                     default:
-                        return;
                 }
             }
         }
@@ -173,14 +173,13 @@ public class SkillShieldReflect extends ActiveSkill {
                         case IRON_DOOR:
                         case WOOD_DOOR:
                         case TRAP_DOOR:
-                            double damageModifier = SkillConfigManager.getUseSetting(defenderHero, skill, "reflected-damage-modifier", Double.valueOf(0.8), false);
+                            double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
                             double damage = event.getDamage() * damageModifier;
 
                             LivingEntity target = (LivingEntity) attacker;
                             addSpellTarget(target, defenderHero);
                             damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
                         default:
-                            return;
                     }
                 }
             }

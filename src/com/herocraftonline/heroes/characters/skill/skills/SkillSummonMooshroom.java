@@ -32,9 +32,8 @@ public class SkillSummonMooshroom extends ActiveSkill {
                 SkillConfigManager.getUseSetting(hero, this, "chance-2x-per-level", 0.0, false) * hero.getSkillLevel(this));
         int chance3x = (int) (SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) * 100 +
                 SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this));
-        String description = getDescription().replace("$2", chance2x + "").replace("$3", chance3x + "");
-        
-        return description;
+
+        return getDescription().replace("$2", chance2x + "").replace("$3", chance3x + "");
     }
 
     @Override

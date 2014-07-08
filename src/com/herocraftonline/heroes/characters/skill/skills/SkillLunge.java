@@ -50,14 +50,14 @@ public class SkillLunge extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.15));
-        node.set("vertical-power", Double.valueOf(1.0));
-        node.set("horizontal-divider", Integer.valueOf(6));
-        node.set("vertical-divider", Integer.valueOf(8));
-        node.set("multiplier", Double.valueOf(1.0));
-        node.set("jump-delay", Double.valueOf(0.3));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_STRENGTH.node(), 0.15);
+        node.set("vertical-power", 1.0);
+        node.set("horizontal-divider", 6);
+        node.set("vertical-divider", 8);
+        node.set("multiplier", 1.0);
+        node.set("jump-delay", 0.3);
+        node.set("ncp-exemption-duration", 2000);
 
         return node;
     }
@@ -81,8 +81,8 @@ public class SkillLunge extends TargettedSkill {
             }
         }
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-strength", Double.valueOf(0.0075), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-strength", 0.0075, false);
         vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
         Vector pushUpVector = new Vector(0, vPower, 0);
         player.setVelocity(pushUpVector);

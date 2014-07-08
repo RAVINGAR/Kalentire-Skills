@@ -58,7 +58,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         int slowDuration = SkillConfigManager.getUseSetting(hero, this, "melodic-slow-duration", Integer.valueOf(1500), false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(17), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, Double.valueOf(0.125), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
@@ -74,18 +74,18 @@ public class SkillMelodicBinding extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set("melodic-buff-duration", Integer.valueOf(3000));
-        node.set("melodic-buff-period", Integer.valueOf(1500));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(6));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(17));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_CHARISMA.node(), Double.valueOf(0.125));
-        node.set("melodic-slow-duration", Integer.valueOf(1500));
-        node.set("slow-amplifier", Integer.valueOf(0));
-        node.set("slow-amplifier-increase-per-charisma", Double.valueOf(0.075));
+        node.set("melodic-buff-duration", 3000);
+        node.set("melodic-buff-period", 1500);
+        node.set(SkillSetting.RADIUS.node(), 6);
+        node.set(SkillSetting.DAMAGE.node(), 17);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_CHARISMA.node(), 0.125);
+        node.set("melodic-slow-duration", 1500);
+        node.set("slow-amplifier", 0);
+        node.set("slow-amplifier-increase-per-charisma", 0.075);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% releases Melodic Bindings!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer binding enemies.");
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
-        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.DELAY.node(), 1000);
+        node.set(SkillSetting.COOLDOWN.node(), 1000);
 
         return node;
     }
@@ -132,13 +132,13 @@ public class SkillMelodicBinding extends ActiveSkill {
             int charisma = hero.getAttributeValue(AttributeType.CHARISMA);
 
             int slowAmount = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier", Integer.valueOf(1), false);
-            double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier-increase-per-charisma", Double.valueOf(0.075), false);
+            double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier-increase-per-charisma", 0.075, false);
             slowAmount += Math.floor(slowAmountIncrease * charisma);
 
             int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "melodic-slow-duration", Integer.valueOf(1500), false);
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(17), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, Double.valueOf(0.125), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
             damage += damageIncrease * charisma;
 
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {

@@ -56,7 +56,7 @@ public class SkillPrimalTotem extends SkillBaseTotem implements Listener {
     public void usePower(Hero hero, Totem totem) {
         Location totemLoc = totem.getLocation();
 
-        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<Hero>(Arrays.asList(hero));
+        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Arrays.asList(hero));
         double rangeSquared = Math.pow(getRange(hero), 2);
         Player heroP = hero.getPlayer();
 
@@ -105,7 +105,7 @@ public class SkillPrimalTotem extends SkillBaseTotem implements Listener {
 
     @Override
     public void totemDestroyed(Hero hero, Totem totem) {
-        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<Hero>(Arrays.asList(hero));
+        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Arrays.asList(hero));
         Player heroP = hero.getPlayer();
 
         for(Hero member : party) {

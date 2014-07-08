@@ -48,8 +48,8 @@ public class SkillProvoke extends TargettedSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
 
-        double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
-        double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.35), false);
+        double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
+        double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.35, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
@@ -61,13 +61,13 @@ public class SkillProvoke extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
-        node.set("outgoing-damage-increase-percent", Double.valueOf(0.35));
-        node.set("incoming-damage-increase-percent", Double.valueOf(0.20));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set("outgoing-damage-increase-percent", 0.35);
+        node.set("incoming-damage-increase-percent", 0.20);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% was provoked by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer provoked!");
-        node.set("provoke-message-speed", Integer.valueOf(1000));
+        node.set("provoke-message-speed", 1000);
         node.set("provoke-text", "%hero% is provoking you!");
 
         return node;
@@ -89,8 +89,8 @@ public class SkillProvoke extends TargettedSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, "provoke-message-speed", Integer.valueOf(1000), false);
-        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.25), false);
-        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
+        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.25, false);
+        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
 
         ProvokeEffect effect = new ProvokeEffect(this, player, period, duration, incomingDamageIncrease, outgoingDamageIncrease);
 

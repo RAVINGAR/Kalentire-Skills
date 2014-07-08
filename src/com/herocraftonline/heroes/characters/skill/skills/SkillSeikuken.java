@@ -66,12 +66,12 @@ public class SkillSeikuken extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("damage-multiplier", Double.valueOf(0.4));
-        node.set("damage-multiplier-increase-per-intellect", Double.valueOf(0.00875));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), Integer.valueOf(75));
-        node.set("slow-amplifier", Integer.valueOf(35));
-        node.set("disarm-duration", Integer.valueOf(3000));
+        node.set("damage-multiplier", 0.4);
+        node.set("damage-multiplier-increase-per-intellect", 0.00875);
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), 75);
+        node.set("slow-amplifier", 35);
+        node.set("disarm-duration", 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has created a Seikuken!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Seikuken has faded.");
 
@@ -127,7 +127,7 @@ public class SkillSeikuken extends ActiveSkill {
                 Player damagerPlayer = ((Hero) event.getDamager()).getPlayer();
                 Hero damagerHero = plugin.getCharacterManager().getHero(damagerPlayer);
 
-                if ((((LivingEntity) defenderPlayer).getNoDamageTicks() > 10) || defenderPlayer.isDead() || defenderPlayer.getHealth() <= 0)
+                if ((defenderPlayer.getNoDamageTicks() > 10) || defenderPlayer.isDead() || defenderPlayer.getHealth() <= 0)
                     return;
 
                 // Check if they are under the effects of Seikuken
@@ -153,8 +153,8 @@ public class SkillSeikuken extends ActiveSkill {
                     // Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
                     defenderPlayer.setNoDamageTicks(defenderPlayer.getMaximumNoDamageTicks());
 
-                    double damageMultiplier = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier", Double.valueOf(0.4), false);
-                    double damageMultiplierIncrease = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier-increase-per-intellect", Double.valueOf(0.00875), false);
+                    double damageMultiplier = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier", 0.4, false);
+                    double damageMultiplierIncrease = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier-increase-per-intellect", 0.00875, false);
                     damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
                     Material item = defenderPlayer.getItemInHand().getType();

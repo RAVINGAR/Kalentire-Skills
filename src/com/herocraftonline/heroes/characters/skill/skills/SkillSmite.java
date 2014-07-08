@@ -37,7 +37,7 @@ public class SkillSmite extends TargettedSkill {
         int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
 
         int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         undeadDamage += damageIncrease * intellect;
 
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
@@ -53,10 +53,10 @@ public class SkillSmite extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
-        node.set("undead-damage", Integer.valueOf(80));
-        node.set(SkillSetting.DAMAGE.node(), Double.valueOf(40));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.0));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set("undead-damage", 80);
+        node.set(SkillSetting.DAMAGE.node(), (double) 40);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.0);
 
         return node;
     }
@@ -69,15 +69,15 @@ public class SkillSmite extends TargettedSkill {
 
         int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double damage = 0;
+        double damage;
         if (Util.isUndead(plugin, target)) {
             damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
             damage += (damageIncrease * intellect);
         }
         else {
             damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
             damage += (damageIncrease * intellect);
         }
 
@@ -86,12 +86,9 @@ public class SkillSmite extends TargettedSkill {
 
         // this is our fireworks
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.SILVER).withFade(Color.NAVY).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
+                    .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.SILVER).withFade(Color.NAVY).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

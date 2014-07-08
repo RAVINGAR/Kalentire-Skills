@@ -35,7 +35,7 @@ public class SkillRenewal extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
@@ -48,10 +48,10 @@ public class SkillRenewal extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_WISDOM.node(), Double.valueOf(0.15));
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(100));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.25));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_WISDOM.node(), 0.15);
+        node.set(SkillSetting.HEALING.node(), 100);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.25);
 
         return node;
     }
@@ -65,7 +65,7 @@ public class SkillRenewal extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(2.0), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double targetHealth = target.getHealth();
@@ -100,12 +100,9 @@ public class SkillRenewal extends TargettedSkill {
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.SILVER).withFade(Color.WHITE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
+                    .trail(false).with(FireworkEffect.Type.BURST).withColor(Color.SILVER).withFade(Color.WHITE).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

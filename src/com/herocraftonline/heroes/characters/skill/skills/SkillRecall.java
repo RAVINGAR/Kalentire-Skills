@@ -1,20 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -26,6 +11,15 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 public class SkillRecall extends ActiveSkill {
 
@@ -65,10 +59,10 @@ public class SkillRecall extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
+        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
         node.set(SkillSetting.DELAY.node(), 10000);
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(331));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(10));
+        node.set(SkillSetting.REAGENT.node(), 331);
+        node.set(SkillSetting.REAGENT_COST.node(), 10);
 
         return node;
     }
@@ -188,7 +182,7 @@ public class SkillRecall extends ActiveSkill {
                             float yaw = currentLocation.getYaw();
 
                             // Validate world checks
-                            List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disable-worlds"));
+                            List<String> disabledWorlds = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "disable-worlds"));
                             for (String disabledWorld : disabledWorlds) {
                                 if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
                                     Messaging.send(player, "Magic has blocked your recall in this world");
@@ -267,7 +261,7 @@ public class SkillRecall extends ActiveSkill {
         // DEFAULT RECALL FUNCTIONALITY
 
         // Validate world checks
-        List<String> disabledWorlds = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"));
+        List<String> disabledWorlds = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"));
         for (String disabledWorld : disabledWorlds) {
             if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
                 Messaging.send(player, "Magic has blocked your recall in this world");
@@ -285,12 +279,12 @@ public class SkillRecall extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        double[] xyzyp = null;
+        double[] xyzyp;
         try {
             xyzyp = SkillMark.getStoredData(skillSettings);
         }
         catch (IllegalArgumentException e) {
-            Messaging.send(player, "Your recall location is improperly set!", new Object[0]);
+            Messaging.send(player, "Your recall location is improperly set!");
             return SkillResult.SKIP_POST_USAGE;
         }
 
@@ -343,10 +337,7 @@ public class SkillRecall extends ActiveSkill {
     public boolean validateWorldByName(String worldName) {
         World world = Bukkit.getServer().getWorld(worldName);
 
-        if (world == null)
-            return false;
-        else
-            return true;
+        return world != null;
     }
 
     public boolean validateCoordinate(String coord) {

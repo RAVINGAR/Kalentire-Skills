@@ -1,15 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -18,6 +8,15 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+
+import java.util.HashMap;
 
 public class SkillSmeltGold extends ActiveSkill {
 
@@ -36,9 +35,9 @@ public class SkillSmeltGold extends ActiveSkill {
 
 	public final ConfigurationSection getDefaultConfig() {
 		ConfigurationSection config = super.getDefaultConfig();
-		config.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
-		config.set("base-nugget-chance", Integer.valueOf(10));
-		config.set("chance-gain-per-level", Float.valueOf(0.25F));
+		config.set(SkillSetting.NO_COMBAT_USE.node(), true);
+		config.set("base-nugget-chance", 10);
+		config.set("chance-gain-per-level", 0.25F);
 		return config;
 	}
 
@@ -82,10 +81,10 @@ public class SkillSmeltGold extends ActiveSkill {
 			player.sendMessage(ChatColor.GRAY + "You got an extra ingot from the smelting process!");
 		}
 
-		HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.GOLD_INGOT, amount) });
+		HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.GOLD_INGOT, amount));
 		for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
 			player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-			Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
+			Messaging.send(player, "Items have been dropped at your feet!");
 		}
 
 		return SkillResult.NORMAL;

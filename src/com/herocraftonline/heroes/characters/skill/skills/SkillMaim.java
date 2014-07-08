@@ -34,7 +34,7 @@ public class SkillMaim extends TargettedSkill {
 
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
@@ -46,12 +46,12 @@ public class SkillMaim extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set("weapons", Util.axes);
-        node.set("amplitude", Integer.valueOf(3));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(60));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.0));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2500));
+        node.set("amplitude", 3);
+        node.set(SkillSetting.DAMAGE.node(), 60);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);
+        node.set(SkillSetting.DURATION.node(), 2500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been maimed by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer slowed!");
 
@@ -70,7 +70,7 @@ public class SkillMaim extends TargettedSkill {
 
         Material item = player.getItemInHand().getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
-            Messaging.send(player, "You can't use Maim with that weapon!", new Object[0]);
+            Messaging.send(player, "You can't use Maim with that weapon!");
             return SkillResult.FAIL;
         }
 
@@ -81,7 +81,7 @@ public class SkillMaim extends TargettedSkill {
 
         // Damage the target and add the slow effect.
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         addSpellTarget(target, hero);

@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -20,6 +11,14 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.MaterialUtil;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
 
 public class SkillRepair extends ActiveSkill {
 
@@ -106,7 +105,7 @@ public class SkillRepair extends ActiveSkill {
             double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
             unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getSkillLevel(this);
             if (Util.nextRand() <= unchant) {
-                for (Enchantment enchant : new ArrayList<Enchantment>(is.getEnchantments().keySet())) {
+                for (Enchantment enchant : new ArrayList<>(is.getEnchantments().keySet())) {
                     is.removeEnchantment(enchant);
                 }
                 lost = true;

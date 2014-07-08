@@ -38,8 +38,8 @@ public class SkillPurge extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
-        node.set("max-removals", Integer.valueOf(1));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set("max-removals", 1);
 
         return node;
     }

@@ -1,29 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.Vector;
-
-//import com.bekvon.bukkit.residence.Residence;
-//import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-//import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -36,6 +12,26 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+
+//import com.bekvon.bukkit.residence.Residence;
+//import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+//import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 
 public class SkillMinorRunestone extends ActiveSkill {
 
@@ -88,9 +84,9 @@ public class SkillMinorRunestone extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
+        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
         node.set(SkillSetting.DELAY.node(), 5000);
-        node.set("max-uses", Integer.valueOf(2));
+        node.set("max-uses", 2);
 
         return node;
     }
@@ -101,7 +97,7 @@ public class SkillMinorRunestone extends ActiveSkill {
 
         // Check to make sure it is a redstone block
         ItemStack item = player.getItemInHand();
-        if (item.getType().name() != "REDSTONE_BLOCK") {
+        if (!item.getType().name().equals("REDSTONE_BLOCK")) {
             Messaging.send(player, "You must be holding a Redstone Block in order to imbue Runestones.");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
@@ -184,7 +180,7 @@ public class SkillMinorRunestone extends ActiveSkill {
                 // We need to return their excess blocks to them.
                 PlayerInventory inventory = player.getInventory();
 
-                HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1) });
+                HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.REDSTONE_BLOCK, actualAmount - 1));
                 for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
                     player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
                     Messaging.send(player, "Items have been dropped at your feet!");

@@ -47,7 +47,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.3), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.3, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
     	
     	return getDescription()
@@ -59,13 +59,13 @@ public class SkillTremorTotem extends SkillBaseTotem {
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(25));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.3));
-        node.set("horizontal-power", Double.valueOf(1.5));
-        node.set("horizontal-power-increase-per-wisdom", Double.valueOf(0.0375));
-        node.set("vertical-power", Double.valueOf(0.25));
-        node.set("vertical-power-increase-per-wisdom", Double.valueOf(0.0075));
-        node.set("ncp-exemption-duration", Integer.valueOf(1500));
+        node.set(SkillSetting.DAMAGE.node(), 25);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.3);
+        node.set("horizontal-power", 1.5);
+        node.set("horizontal-power-increase-per-wisdom", 0.0375);
+        node.set("vertical-power", 0.25);
+        node.set("vertical-power-increase-per-wisdom", 0.0075);
+        node.set("ncp-exemption-duration", 1500);
 
         return node;
     }
@@ -76,11 +76,11 @@ public class SkillTremorTotem extends SkillBaseTotem {
 
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.3), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.3, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(2.8), false);
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 2.8, false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
         
         for (Entity entity : totem.getTargets(hero)) {
             if (!(entity instanceof LivingEntity)) {

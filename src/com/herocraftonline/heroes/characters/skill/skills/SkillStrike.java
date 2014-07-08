@@ -38,13 +38,13 @@ public class SkillStrike extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is struct greivously by %hero%!");
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(40));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.0));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(10));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.25));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.DAMAGE.node(), 40);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.PERIOD.node(), 1500);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 10);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_STRENGTH.node(), 0.25);
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "");
 
@@ -54,7 +54,7 @@ public class SkillStrike extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
@@ -86,7 +86,7 @@ public class SkillStrike extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         // Damage the target

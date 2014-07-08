@@ -52,7 +52,7 @@ public class SkillSummonSword extends ActiveSkill {
         broadcastExecuteText(hero);
 
         PlayerInventory inventory = player.getInventory();
-        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.STONE_SWORD, amount) });
+        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.STONE_SWORD, amount));
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
             Messaging.send(player, "Item(s) have been dropped at your feet!");

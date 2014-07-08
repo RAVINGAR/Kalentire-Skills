@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -19,6 +10,14 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import java.util.logging.Level;
 
 public class SkillMark extends ActiveSkill {
 
@@ -61,10 +60,10 @@ public class SkillMark extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.NO_COMBAT_USE.node(), true);
-        node.set(SkillSetting.COOLDOWN.node(), Integer.valueOf(3180000));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(5000));
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(265));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.COOLDOWN.node(), 3180000);
+        node.set(SkillSetting.DELAY.node(), 5000);
+        node.set(SkillSetting.REAGENT.node(), 265);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
     }
@@ -84,7 +83,7 @@ public class SkillMark extends ActiveSkill {
             if (world == null) {
                 return SkillResult.FAIL;
             }
-            double[] xyzyp = null;
+            double[] xyzyp;
             try {
                 xyzyp = getStoredData(skillSettings);
             } catch (IllegalArgumentException e) {
@@ -139,7 +138,7 @@ public class SkillMark extends ActiveSkill {
 
     public static double[] getStoredData(ConfigurationSection skillSettings) throws IllegalArgumentException {
         double[] xyzyp = new double[5];
-        Double temp = null;
+        Double temp;
         temp = Util.toDouble(skillSettings.get("x"));
         if (temp == null) {
             throw new IllegalArgumentException("Bad recall data.");

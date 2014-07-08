@@ -1,16 +1,16 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,17 +24,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SkillShuriken extends PassiveSkill {
 
@@ -42,7 +33,7 @@ public class SkillShuriken extends PassiveSkill {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -78,14 +69,14 @@ public class SkillShuriken extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(20));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), Double.valueOf(0.4));
-        node.set(SkillSetting.STAMINA.node(), Integer.valueOf(100));
-        node.set("shuriken-toss-cooldown", Integer.valueOf(1000));
-        node.set("num-shuriken", Integer.valueOf(3));
-        node.set("degrees", Double.valueOf(10));
-        node.set("interval", Double.valueOf(0.15));
-        node.set("velocity-multiplier", Double.valueOf(3.0));
+        node.set(SkillSetting.DAMAGE.node(), 20);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 0.4);
+        node.set(SkillSetting.STAMINA.node(), 100);
+        node.set("shuriken-toss-cooldown", 1000);
+        node.set("num-shuriken", 3);
+        node.set("degrees", (double) 10);
+        node.set("interval", 0.15);
+        node.set("velocity-multiplier", 3.0);
 
         return node;
     }
@@ -191,7 +182,7 @@ public class SkillShuriken extends PassiveSkill {
                 return;
             }
 
-            if (!(shurikens.containsKey((Arrow) projectile)))
+            if (!(shurikens.containsKey(projectile)))
                 return;
 
             Arrow shuriken = (Arrow) projectile;
@@ -236,10 +227,10 @@ public class SkillShuriken extends PassiveSkill {
             return;
         else if (numShuriken == 1) {
             // If we're only firing a single shuriken, there is no need for fancy math.
-            Arrow shuriken = (Arrow) player.launchProjectile(Arrow.class);
+            Arrow shuriken = player.launchProjectile(Arrow.class);
             shuriken.setVelocity(shuriken.getVelocity().multiply(velocityMultiplier));
             shuriken.setShooter(player);
-            shurikens.put(shuriken, Long.valueOf(System.currentTimeMillis()));
+            shurikens.put(shuriken, System.currentTimeMillis());
 
             return;
         }
@@ -283,7 +274,7 @@ public class SkillShuriken extends PassiveSkill {
 
                     shuriken.setVelocity(vel);
                     shuriken.setShooter(player);
-                    shurikens.put(shuriken, Long.valueOf(System.currentTimeMillis()));
+                    shurikens.put(shuriken, System.currentTimeMillis());
                 }
 
             }, (long) ((interval * i) * 20));

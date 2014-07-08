@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -17,13 +8,17 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.List;
 
 public class SkillWhirlwind extends ActiveSkill {
     private String applyText;
@@ -61,12 +56,12 @@ public class SkillWhirlwind extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(60));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.0));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(500));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
-        node.set("slow-amplifier", Integer.valueOf(1));
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 60);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);
+        node.set(SkillSetting.PERIOD.node(), 500);
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set("slow-amplifier", 1);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is unleashing a powerful whirlwind!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer whirlwinding!");
 
@@ -137,7 +132,7 @@ public class SkillWhirlwind extends ActiveSkill {
             player.getWorld().playSound(player.getLocation(), Sound.BAT_LOOP, 0.6F, 0.6F);
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
             boolean hitTarget = false;

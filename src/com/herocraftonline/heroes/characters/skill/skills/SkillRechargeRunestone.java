@@ -1,8 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
-import java.util.List;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,14 +18,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.HashMap;
+import java.util.List;
 
 public class SkillRechargeRunestone extends ActiveSkill {
     public SkillRechargeRunestone(Heroes plugin) {
@@ -40,7 +39,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
+        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
         node.set(SkillSetting.DELAY.node(), 8000);
 
         return node;
@@ -85,7 +84,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
                     currentUsesString = currentUsesString.substring(currentIndexLocation, endIndexLocation);
                 }
 
-                if (validateUsesValue(currentUsesString, player)) {
+                if (validateUsesValue(currentUsesString)) {
                     // We have a valid value for "uses". It is either a number, or "unlimited"
 
                     int uses = -1;
@@ -107,7 +106,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
                         endIndexLocation = usesString.length();
                         String maxUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
 
-                        if (validateUsesValue(maxUsesString, player)) {
+                        if (validateUsesValue(maxUsesString)) {
 
                             int maxUses = -1;
                             if (!maxUsesString.equals("unlimited"))
@@ -180,7 +179,7 @@ public class SkillRechargeRunestone extends ActiveSkill {
         }
     }
 
-    public boolean validateUsesValue(String uses, Player player) {
+    public boolean validateUsesValue(String uses) {
         if (uses.equals("unlimited")) {
             return true;
         }

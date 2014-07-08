@@ -65,7 +65,7 @@ public class SkillWoodcutting extends PassiveSkill {
                 return;
             }
 
-            int extraDrops = 0;
+            int extraDrops;
             switch (block.getType()) {
                 case LOG:
                     break;
@@ -78,12 +78,7 @@ public class SkillWoodcutting extends PassiveSkill {
                 return;
             }
 
-            if (extraDrops != 0) {
-                extraDrops = Util.nextInt(extraDrops) + 1;
-            }
-            else {
-                extraDrops = 1;
-            }
+            extraDrops = 1;
 
             block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, (short) 0, block.getData()));
         }

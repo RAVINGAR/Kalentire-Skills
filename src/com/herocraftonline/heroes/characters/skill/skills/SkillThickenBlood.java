@@ -50,9 +50,9 @@ public class SkillThickenBlood extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), Integer.valueOf(75));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        node.set(SkillSetting.DURATION.node(), 2000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), 75);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood has thickened!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood returns to normal.");
 
@@ -94,11 +94,7 @@ public class SkillThickenBlood extends TargettedSkill {
                                                .withColor(Color.GREEN)
                                                .withFade(Color.BLACK)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -117,7 +113,7 @@ public class SkillThickenBlood extends TargettedSkill {
             types.add(EffectType.HUNGER);
             types.add(EffectType.STAMINA_FREEZING);
 
-            addMobEffect(17, (int) (duration / 1000) * 20, 0, false);
+            addMobEffect(17, duration / 1000 * 20, 0, false);
         }
 
         @Override

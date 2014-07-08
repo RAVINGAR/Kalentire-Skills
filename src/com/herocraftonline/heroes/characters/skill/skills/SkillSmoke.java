@@ -47,11 +47,11 @@ public class SkillSmoke extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5500));
+        node.set(SkillSetting.DURATION.node(), 5500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "Someone vanished in a cloud of smoke!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has reappeared!");
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
     }

@@ -1,9 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -14,15 +19,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class SkillImbueRunestone extends ActiveSkill {
     public SkillImbueRunestone(Heroes plugin) {
@@ -42,8 +41,8 @@ public class SkillImbueRunestone extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.NO_COMBAT_USE.node(), Boolean.valueOf(true));
-        node.set("max-message-length", Integer.valueOf(40));
+        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
+        node.set("max-message-length", 40);
 
         return node;
     }
@@ -78,7 +77,7 @@ public class SkillImbueRunestone extends ActiveSkill {
 
         // Check to make sure it is a redstone block
         ItemStack item = player.getItemInHand();
-        if (item.getType().name() != "REDSTONE_BLOCK") {
+        if (!item.getType().name().equals("REDSTONE_BLOCK")) {
             Messaging.send(player, "You must be holding a Runestone Block to use this skill.");
             return SkillResult.INVALID_TARGET;
         }

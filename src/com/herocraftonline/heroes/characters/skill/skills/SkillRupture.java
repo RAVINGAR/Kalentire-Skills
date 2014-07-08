@@ -47,12 +47,12 @@ public class SkillRupture extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
 
-        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", Double.valueOf(10), false);
+        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", (double) 10, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formatteddamagePerDistance = Util.decFormat.format(damagePerDistance);
@@ -65,13 +65,13 @@ public class SkillRupture extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(40));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.0));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(7500));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(500));
-        node.set("damage-per-distance-moved", Double.valueOf(10));
-        node.set("distance-per-damage", Double.valueOf(1.0));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set(SkillSetting.DAMAGE.node(), 40);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);
+        node.set(SkillSetting.DURATION.node(), 7500);
+        node.set(SkillSetting.PERIOD.node(), 500);
+        node.set("damage-per-distance-moved", (double) 10);
+        node.set("distance-per-damage", 1.0);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is wounded deeply!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer wounded.");
 
@@ -93,7 +93,7 @@ public class SkillRupture extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(0.7), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         // Damage the target
@@ -104,8 +104,8 @@ public class SkillRupture extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
-        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", Double.valueOf(10), false);
-        double distancePerDamage = SkillConfigManager.getUseSetting(hero, this, "distance-per-damage", Double.valueOf(2.0), false);
+        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", (double) 10, false);
+        double distancePerDamage = SkillConfigManager.getUseSetting(hero, this, "distance-per-damage", 2.0, false);
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new RuptureBleedEffect(this, player, period, duration, damagePerDistance, distancePerDamage));
 

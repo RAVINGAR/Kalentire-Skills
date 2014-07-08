@@ -53,13 +53,13 @@ public class SkillToss extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(5));
-        node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("horizontal-power-increase-per-strength", Double.valueOf(0.025));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("vertical-power-increase-per-strength", Double.valueOf(0.0175));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set("horizontal-power", 0.5);
+        node.set("horizontal-power-increase-per-strength", 0.025);
+        node.set("vertical-power", 0.5);
+        node.set("vertical-power-increase-per-strength", 0.0175);
         node.set("ncp-exemption-duration", 1500);
-        node.set("toss-delay", Double.valueOf(0.2));
+        node.set("toss-delay", 0.2);
 
         return node;
     }
@@ -107,8 +107,8 @@ public class SkillToss extends TargettedSkill {
                 break;
         }
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-strength", Double.valueOf(0.0075), false);
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-strength", 0.0075, false);
         tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         if (weakenVelocity)
@@ -122,8 +122,8 @@ public class SkillToss extends TargettedSkill {
         final double xDir = playerLoc.getX() - targetLoc.getX();
         final double zDir = playerLoc.getZ() - targetLoc.getZ();
 
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(1.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", Double.valueOf(0.0375), false);
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0375, false);
         tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         if (weakenVelocity)

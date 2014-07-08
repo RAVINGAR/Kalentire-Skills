@@ -1,9 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,15 +17,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SkillPotion extends PassiveSkill {
     private static final Map<Byte, String> regularPotions;
@@ -170,7 +165,7 @@ public class SkillPotion extends PassiveSkill {
     }
 
     static {
-        Map<Byte, String> regMap = new HashMap<Byte, String>();
+        Map<Byte, String> regMap = new HashMap<>();
         regMap.put((byte) 8193, "regeneration");
         regMap.put((byte) 8257, "regeneration");
         regMap.put((byte) 8225, "regeneration-II");
@@ -200,7 +195,7 @@ public class SkillPotion extends PassiveSkill {
         regMap.put((byte) 8236, "harming-II");
         regularPotions = Collections.unmodifiableMap(regMap);
 
-        Map<Byte, String> splashMap = new HashMap<Byte, String>();
+        Map<Byte, String> splashMap = new HashMap<>();
         splashMap.put((byte) 16385, "splash-regeneration");
         splashMap.put((byte) 16449, "splash-regeneration");
         splashMap.put((byte) 16417, "splash-regeneration-II");

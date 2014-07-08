@@ -1,17 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -22,9 +10,19 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SkillJump extends ActiveSkill {
 
@@ -53,11 +51,11 @@ public class SkillJump extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("no-air-jump", false);
-        node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0125));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("vertical-power-increase-per-agility", Double.valueOf(0.00625));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set("horizontal-power", 0.5);
+        node.set("horizontal-power-increase-per-agility", 0.0125);
+        node.set("vertical-power", 0.5);
+        node.set("vertical-power-increase-per-agility", 0.00625);
+        node.set("ncp-exemption-duration", 2000);
 
         return node;
     }
@@ -109,8 +107,8 @@ public class SkillJump extends ActiveSkill {
 
         int agility = hero.getAttributeValue(AttributeType.AGILITY);
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0125, false);
         vPower += agility * vPowerIncrease;
 
         if (vPower > 2.0)
@@ -127,8 +125,8 @@ public class SkillJump extends ActiveSkill {
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", 0.0125, false);
         hPower += agility * hPowerIncrease;
 
         if (weakenVelocity)
@@ -173,7 +171,7 @@ public class SkillJump extends ActiveSkill {
 
     private static final Set<Material> noJumpMaterials;
     static {
-        noJumpMaterials = new HashSet<Material>();
+        noJumpMaterials = new HashSet<>();
         noJumpMaterials.add(Material.STATIONARY_WATER);
         noJumpMaterials.add(Material.STATIONARY_LAVA);
         noJumpMaterials.add(Material.WATER);

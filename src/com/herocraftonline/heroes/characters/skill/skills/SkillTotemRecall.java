@@ -69,12 +69,6 @@ public class SkillTotemRecall extends ActiveSkill {
         totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         
         return SkillResult.NORMAL;
     }

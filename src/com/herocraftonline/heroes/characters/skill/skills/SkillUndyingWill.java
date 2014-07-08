@@ -51,8 +51,8 @@ public class SkillUndyingWill extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4500));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(500));
+        node.set(SkillSetting.DURATION.node(), 4500);
+        node.set(SkillSetting.PERIOD.node(), 500);
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is overcome with an undying will!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s will returns to normal.");
 
