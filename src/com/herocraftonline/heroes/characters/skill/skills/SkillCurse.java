@@ -67,8 +67,8 @@ public class SkillCurse extends TargettedSkill {
         node.set("miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!");
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!");
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(318));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.REAGENT.node(), 318);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
     }

@@ -45,11 +45,11 @@ public class SkillBoneSpear extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.125));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(2));
-        node.set("spear-move-delay", Integer.valueOf(2));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 20);
+        node.set(SkillSetting.DAMAGE.node(), 80);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.125);
+        node.set(SkillSetting.RADIUS.node(), 2);
+        node.set("spear-move-delay", 2);
 
         return node;
     }
@@ -97,11 +97,7 @@ public class SkillBoneSpear extends ActiveSkill {
                         try {
                             fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
                                     .flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
-                        }
-                        catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 

@@ -46,9 +46,9 @@ public class SkillBloodRitual extends TargettedSkill {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(8));
-        node.set("blood-union-health-multiplier", Double.valueOf(0.0625));
-        node.set("blood-union-health-multiplier-increase-per-wisdom", Double.valueOf(0.0016));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        node.set("blood-union-health-multiplier", 0.0625);
+        node.set("blood-union-health-multiplier-increase-per-wisdom", 0.0016);
 
         return node;
     }
@@ -109,12 +109,9 @@ public class SkillBloodRitual extends TargettedSkill {
 
         // Play effect
         try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false)
+                    .trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -44,10 +44,10 @@ public class SkillCombustBlood extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(95));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.75));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.2);
+        node.set(SkillSetting.DAMAGE.node(), 95);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.75);
         node.set("blood-union-increase", 1);
         node.set("blood-union-required-for-dot", 3);
         node.set(SkillSetting.DAMAGE_TICK.node(), 14);
@@ -103,11 +103,7 @@ public class SkillCombustBlood extends TargettedSkill {
         broadcastExecuteText(hero, target);
         try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.MAROON).withFade(Color.RED).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

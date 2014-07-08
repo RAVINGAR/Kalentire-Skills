@@ -39,7 +39,7 @@ public class SkillDeathMark extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(60000), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", Double.valueOf(0.1), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", 0.1, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageIncrease = Util.decFormat.format(damageIncrease * 100);
@@ -51,9 +51,9 @@ public class SkillDeathMark extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(60000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(5000));
-        node.set("damage-increase-percent", Double.valueOf(0.1));
+        node.set(SkillSetting.DURATION.node(), 60000);
+        node.set(SkillSetting.PERIOD.node(), 5000);
+        node.set("damage-increase-percent", 0.1);
 
         return node;
     }
@@ -74,7 +74,7 @@ public class SkillDeathMark extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(60000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(5000), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", Double.valueOf(0.1), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", 0.1, false);
         hero.addEffect(new DeathMarkingEffect(this, player, period, duration, target, damageIncrease));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP, 0.8F, 5.0F);
@@ -98,7 +98,7 @@ public class SkillDeathMark extends ActiveSkill {
                 if (hero.hasEffect("DeathMarking")) {
                     DeathMarkingEffect dmEffect = (DeathMarkingEffect) hero.getEffect("DeathMarking");
 
-                    if (dmEffect.getTarget().equals(((Player) event.getEntity()))) {
+                    if (dmEffect.getTarget().equals(event.getEntity())) {
                         double damageIncreasePercent = dmEffect.getDamageIncreasePercent();
                         event.setDamage(event.getDamage() * (1 + damageIncreasePercent));
                     }
@@ -118,7 +118,7 @@ public class SkillDeathMark extends ActiveSkill {
                 if (hero.hasEffect("DeathMarking")) {
                     DeathMarkingEffect dmEffect = (DeathMarkingEffect) hero.getEffect("DeathMarking");
 
-                    if (dmEffect.getTarget().equals(((Player) event.getEntity()))) {
+                    if (dmEffect.getTarget().equals(event.getEntity())) {
                         double damageIncreasePercent = dmEffect.getDamageIncreasePercent();
                         event.setDamage(event.getDamage() * (1 + damageIncreasePercent));
                     }

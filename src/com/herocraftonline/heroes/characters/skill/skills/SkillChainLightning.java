@@ -75,15 +75,18 @@ public class SkillChainLightning extends TargettedSkill {
 
     // Methods to grab config info, because I don't feel like putting this math everywhere.
     public double getDamage(Hero hero) {
-        return SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200D, false) + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.1D, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+        return SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200D, false) + SkillConfigManager.getUseSetting
+                (hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.1D, false) * hero.getAttributeValue(AttributeType.INTELLECT);
     }
 
     public double getRadius(Hero hero) {
-        return SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5D, false) + SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.17D, false) * hero.getAttributeValue(AttributeType.WISDOM);
+        return SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5D, false) + SkillConfigManager.getUseSetting
+                (hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.17D, false) * hero.getAttributeValue(AttributeType.WISDOM);
     }
 
     public int getMaxTargets(Hero hero) {
-        return (int) (SkillConfigManager.getUseSetting(hero, this, "max-targets", 3, false) + SkillConfigManager.getUseSetting(hero, this, "radius-per-level", 0.04D, false) * hero.getSkillLevel(this));
+        return (int) (SkillConfigManager.getUseSetting(hero, this, "max-targets", 3, false) + SkillConfigManager.getUseSetting
+                (hero, this, "radius-per-level", 0.04D, false) * hero.getSkillLevel(this));
     }
 
     public double getVelocity(Hero hero) {
@@ -106,7 +109,7 @@ public class SkillChainLightning extends TargettedSkill {
             hero.getPlayer().sendMessage(ChatColor.RED + "You already have a chain going!");
             return SkillResult.FAIL;
         }
-        Snowball snowball = ((Snowball) hero.getPlayer().launchProjectile(Snowball.class));
+        Snowball snowball = hero.getPlayer().launchProjectile(Snowball.class);
         snowball.setShooter(hero.getPlayer());
         snowballs.put(hero, snowball);
         snowballVelocities.put(hero, getVelocity(hero));
@@ -143,7 +146,7 @@ public class SkillChainLightning extends TargettedSkill {
             return;
         }
         Location loc = oldSnowball.getLocation();
-        Snowball snowball = (Snowball) loc.getWorld().spawn(loc, Snowball.class);
+        Snowball snowball = loc.getWorld().spawn(loc, Snowball.class);
         snowball.setShooter(key.getPlayer());
         snowballs.put(key, snowball);
         targets.put(key, target);
@@ -161,7 +164,7 @@ public class SkillChainLightning extends TargettedSkill {
             snowballs.put(key, null);
             return;
         }
-        Snowball snowball = (Snowball) livingEntity.launchProjectile(Snowball.class);
+        Snowball snowball = livingEntity.launchProjectile(Snowball.class);
         oldSnowball.remove();
         snowball.setShooter(key.getPlayer());
         snowballs.put(key, snowball);
@@ -173,7 +176,7 @@ public class SkillChainLightning extends TargettedSkill {
     private LivingEntity getTarget(Entity centerEntity, Hero key) {
         double radius = getRadius(key);
         List<Entity> entities = centerEntity.getNearbyEntities(radius, radius, radius);
-        List<LivingEntity> possibleTargets = new ArrayList<LivingEntity>();
+        List<LivingEntity> possibleTargets = new ArrayList<>();
         Player player = key.getPlayer();
         for(Entity entity : entities) {
             if(entity instanceof LivingEntity) {
@@ -186,8 +189,9 @@ public class SkillChainLightning extends TargettedSkill {
         if(possibleTargets.isEmpty()) {
             return null;
         }
-        LivingEntity target = possibleTargets.get(Util.nextInt(possibleTargets.size()));
-        return target;
+        //LivingEntity target = possibleTargets.get(Util.nextInt(possibleTargets.size()));
+        //return target;
+        return possibleTargets.get(Util.nextInt(possibleTargets.size()));
     }
 
     // Damages the target

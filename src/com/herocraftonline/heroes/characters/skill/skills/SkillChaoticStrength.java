@@ -56,9 +56,9 @@ public class SkillChaoticStrength extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
-        node.set("strength-buff", Integer.valueOf(18));
-        node.set("intellect-drain", Integer.valueOf(15));
+        node.set(SkillSetting.DURATION.node(), 15000);
+        node.set("strength-buff", 18);
+        node.set("intellect-drain", 15);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is imbued with Chaotic Strength!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Chaotic Strength fades.");
 
@@ -86,12 +86,9 @@ public class SkillChaoticStrength extends ActiveSkill {
 
         try {
             Location playerLocation = player.getLocation();
-            fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.BLACK).withFade(Color.ORANGE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(false)
+                    .with(FireworkEffect.Type.STAR).withColor(Color.BLACK).withFade(Color.ORANGE).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

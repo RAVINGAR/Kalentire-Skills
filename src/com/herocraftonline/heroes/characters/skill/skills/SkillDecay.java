@@ -57,11 +57,11 @@ public class SkillDecay extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2500));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(17));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.17));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        node.set(SkillSetting.DURATION.node(), 20000);
+        node.set(SkillSetting.PERIOD.node(), 2500);
+        node.set(SkillSetting.DAMAGE_TICK.node(), (double) 17);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.17);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s flesh dhas begun to rot!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer decaying alive!");
 
@@ -85,8 +85,8 @@ public class SkillDecay extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
 
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, Double.valueOf(17), false);
-        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.17), false);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, (double) 17, false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.17, false);
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, player, duration, period, tickDamage));
@@ -103,11 +103,7 @@ public class SkillDecay extends TargettedSkill {
                                                .withColor(Color.BLACK)
                                                .withFade(Color.GRAY)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

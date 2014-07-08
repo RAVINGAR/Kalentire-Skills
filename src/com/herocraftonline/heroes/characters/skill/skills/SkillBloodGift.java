@@ -34,13 +34,13 @@ public class SkillBloodGift extends TargettedSkill {
     public String getDescription(Hero hero) {
 
         int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(130), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.8), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false);
         healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
         
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), Integer.valueOf(85), false);
         int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), Integer.valueOf(110), false);
 
-        int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", Double.valueOf(0.04), false) * 100);
+        int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.04, false) * 100);
 
         return getDescription().replace("$1", healing + "").replace("$2", healthCost + "").replace("$3", manacost + "").replace("$4", healIncrease + "");
     }
@@ -49,12 +49,12 @@ public class SkillBloodGift extends TargettedSkill {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
-        node.set("health-increase-percent-per-blood-union", Double.valueOf(0.04));
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(130));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.8));
-        node.set(SkillSetting.HEALTH_COST.node(), Integer.valueOf(85));
-        node.set(SkillSetting.MANA.node(), Integer.valueOf(110));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set("health-increase-percent-per-blood-union", 0.04);
+        node.set(SkillSetting.HEALING.node(), 130);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8);
+        node.set(SkillSetting.HEALTH_COST.node(), 85);
+        node.set(SkillSetting.MANA.node(), 110);
 
         return node;
     }
@@ -78,7 +78,8 @@ public class SkillBloodGift extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(130), false);
-        double wisHealIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(1.8), false));
+        double wisHealIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * SkillConfigManager.getUseSetting(hero, this,
+                SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false));
         healAmount += wisHealIncrease;
 
         // Get Blood Union Level
@@ -89,7 +90,7 @@ public class SkillBloodGift extends TargettedSkill {
         }
 
         // Increase healing based on blood union level
-        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", Double.valueOf(0.04), false);
+        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.04, false);
         healIncrease = 1 + (healIncrease *= bloodUnionLevel);
         healAmount *= healIncrease;
 
@@ -106,12 +107,9 @@ public class SkillBloodGift extends TargettedSkill {
 
         // Play effect
         try {
-            this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false)
+                    .with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

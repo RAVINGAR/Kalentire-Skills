@@ -52,9 +52,9 @@ public class SkillDevourMagic extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
-        node.set("resist-value", Double.valueOf(0.2));
-        node.set("mana-per-damage", Double.valueOf(0.8));
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set("resist-value", 0.2);
+        node.set("mana-per-damage", 0.8);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is devouring incoming magic!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer devouring magic.");
 

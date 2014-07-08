@@ -61,15 +61,15 @@ public class SkillDespair extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(55));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.5));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(8));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), Integer.valueOf(50));
+        node.set(SkillSetting.DAMAGE.node(), 55);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.5);
+        node.set(SkillSetting.RADIUS.node(), 8);
+        node.set(SkillSetting.DURATION.node(), 4000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has blinded %target% with %skill%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has recovered their sight!");
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(367));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.REAGENT.node(), 367);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
     }
@@ -117,11 +117,7 @@ public class SkillDespair extends ActiveSkill {
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 2.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.NAVY).withFade(Color.BLACK).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

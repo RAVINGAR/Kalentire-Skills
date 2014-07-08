@@ -30,7 +30,7 @@ public class SkillCleave extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(1.0), false);
+        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         String formattedDamageMultiplier = Util.decFormat.format(damageMultiplier * 100.0);
 
@@ -41,10 +41,10 @@ public class SkillCleave extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set("weapons", Util.swords);
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
-        node.set("damage-multiplier", Double.valueOf(0.75));
+        node.set(SkillSetting.RADIUS.node(), 3);
+        node.set("damage-multiplier", 0.75);
 
         return node;
     }
@@ -71,7 +71,7 @@ public class SkillCleave extends TargettedSkill {
                 continue;
             }
 
-            addSpellTarget((LivingEntity) entity, hero);
+            addSpellTarget(entity, hero);
             damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
         }
 

@@ -1,12 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -15,6 +8,12 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class SkillCauterize extends TargettedSkill {
 
@@ -34,9 +33,8 @@ public class SkillCauterize extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
 
-        return node;
+        return super.getDefaultConfig();
     }
 
     @Override
@@ -48,7 +46,7 @@ public class SkillCauterize extends TargettedSkill {
 
         Player targetPlayer = (Player) target;
         Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
-        ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
+        ArrayList<Effect> possibleEffects = new ArrayList<>();
         for (Effect effect : targetHero.getEffects()) {
             if (effect.isType(EffectType.HARMFUL) && effect.isType(EffectType.BLEED)) {
                 possibleEffects.add(effect);
@@ -66,8 +64,7 @@ public class SkillCauterize extends TargettedSkill {
 
         // Remove bleeds
         if (!possibleEffects.isEmpty()) {
-            for (int i = 0; i < possibleEffects.size(); i++) {
-                Effect removableEffect = possibleEffects.get(i);
+            for (Effect removableEffect : possibleEffects) {
                 targetHero.removeEffect(removableEffect);
             }
         }

@@ -45,11 +45,11 @@ public class SkillBolt extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DAMAGE.node(), 180);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.4));
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(9));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.4);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 9);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.2);
+        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
         node.set("lightning-volume", 0.0F);
 
         return node;
@@ -60,7 +60,7 @@ public class SkillBolt extends TargettedSkill {
         Player player = hero.getPlayer();
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(180), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.4), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.4, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
         
         float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);
@@ -84,8 +84,6 @@ public class SkillBolt extends TargettedSkill {
             		.withColor(Color.YELLOW)
             		.withFade(Color.SILVER)
             		.build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

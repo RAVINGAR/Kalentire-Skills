@@ -1,30 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.util.Vector;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -33,13 +8,25 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.util.Vector;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class SkillBlizzard extends ActiveSkill {
 
@@ -84,19 +71,19 @@ public class SkillBlizzard extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(15));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.5));
-        node.set("max-storm-height", Integer.valueOf(4));
-        node.set("downward-velocity", Double.valueOf(0.8));
-        node.set("velocity-deviation", Double.valueOf(0.5));
-        node.set("delay-between-firing", Double.valueOf(0.1));
-        node.set("icebolts-launched", Integer.valueOf(4));
-        node.set("icebolts-launched-per-intellect", Double.valueOf(0.5));
-        node.set("slow duration", Integer.valueOf(1000));
-        node.set("slow-multiplier", Integer.valueOf(1));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.2);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 15);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.5);
+        node.set("max-storm-height", 4);
+        node.set("downward-velocity", 0.8);
+        node.set("velocity-deviation", 0.5);
+        node.set("delay-between-firing", 0.1);
+        node.set("icebolts-launched", 4);
+        node.set("icebolts-launched-per-intellect", 0.5);
+        node.set("slow duration", 1000);
+        node.set("slow-multiplier", 1);
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "");
 
@@ -132,7 +119,7 @@ public class SkillBlizzard extends ActiveSkill {
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
         Block tBlock = player.getTargetBlock(null, maxDist);
-
+     // Block tBlock = player.getTargetBlock(null, maxDist);
         if (tBlock == null)
             return SkillResult.INVALID_TARGET;
 
@@ -228,7 +215,7 @@ public class SkillBlizzard extends ActiveSkill {
                 event.getEntity().setFireTicks(0);
 
                 double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(1.0), false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
                 damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", Integer.valueOf(2000), false);
@@ -241,7 +228,8 @@ public class SkillBlizzard extends ActiveSkill {
                 targetCT.addEffect(iceSlowEffect);
                 targetCT.addEffect(new ExpirableEffect(skill, "BlizzardAntiMultiEffect", (Player) dmger, 500));
 
-                addSpellTarget((LivingEntity) event.getEntity(), hero);
+              //addSpellTarget((LivingEntity) event.getEntity(), hero);
+                addSpellTarget(event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
 
                 event.setCancelled(true);

@@ -1,25 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Chicken;
-import org.bukkit.entity.Cow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.MushroomCow;
-import org.bukkit.entity.Ocelot;
-import org.bukkit.entity.Pig;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Wolf;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -28,6 +8,15 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class SkillBreed extends PassiveSkill {
 
@@ -127,7 +116,7 @@ public class SkillBreed extends PassiveSkill {
                     return;
                 }
             }
-            else if (targetEntity instanceof Sheep || targetEntity instanceof Cow || targetEntity instanceof MushroomCow) {
+            else if (targetEntity instanceof Sheep || targetEntity instanceof Cow) {
                 if (material == Material.WHEAT)
                     isBreedAttempt = true;
             }
@@ -161,7 +150,6 @@ public class SkillBreed extends PassiveSkill {
             if (isBreedAttempt && !hero.canUseSkill(getName())) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
-                return;
             }
         }
     }

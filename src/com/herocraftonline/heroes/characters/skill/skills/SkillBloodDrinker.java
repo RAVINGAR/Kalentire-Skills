@@ -47,7 +47,7 @@ public class SkillBloodDrinker extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7500), false);
-        double damageHealingPercent = SkillConfigManager.getUseSetting(hero, this, "damage-healing-percent", Double.valueOf(0.1), false);
+        double damageHealingPercent = SkillConfigManager.getUseSetting(hero, this, "damage-healing-percent", 0.1, false);
         int maximumHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -61,9 +61,9 @@ public class SkillBloodDrinker extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("weapons", Util.axes);
-        node.set("damage-healing-percent", Double.valueOf(0.1));
-        node.set("maximum-healing", Integer.valueOf(200));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(7500));
+        node.set("damage-healing-percent", 0.1);
+        node.set("maximum-healing", 200);
+        node.set(SkillSetting.DURATION.node(), 7500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is drinking blood!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer drinking blood!");
 
@@ -84,7 +84,7 @@ public class SkillBloodDrinker extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7500), false);
-        double damageHealingPercent = SkillConfigManager.getUseSetting(hero, this, "damage-healing-percent", Double.valueOf(0.1), false);
+        double damageHealingPercent = SkillConfigManager.getUseSetting(hero, this, "damage-healing-percent", 0.1, false);
         int maximumHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
 
         BloodDrinkEffect effect = new BloodDrinkEffect(this, player, duration, damageHealingPercent, maximumHealing);

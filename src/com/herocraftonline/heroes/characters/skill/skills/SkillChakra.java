@@ -48,7 +48,7 @@ public class SkillChakra extends ActiveSkill {
         healing += (wisdom * healingIncrease);
 
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
-        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", Double.valueOf(0.05), false);
+        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", 0.05, false);
         removals += Math.floor((wisdom * removalsIncrease));     // Round down
 
         String formattedHealing = Util.decFormat.format(healing);
@@ -61,12 +61,12 @@ public class SkillChakra extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), Double.valueOf(0.125));
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(75));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(0.875));
-        node.set("max-removals", Integer.valueOf(0));
-        node.set("max-removals-increase-per-wisdom", Double.valueOf(0.05));
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.125);
+        node.set(SkillSetting.HEALING.node(), 75);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.875);
+        node.set("max-removals", 0);
+        node.set("max-removals-increase-per-wisdom", 0.05);
 
         return node;
     }
@@ -88,7 +88,7 @@ public class SkillChakra extends ActiveSkill {
         healing += (wisdom * healingIncrease);
 
         int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
-        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", Double.valueOf(0.05), false);
+        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", 0.05, false);
         removals += Math.floor(wisdom * removalsIncrease);     // Round down
 
         if (hero.hasParty()) {
@@ -108,12 +108,9 @@ public class SkillChakra extends ActiveSkill {
 
         // this is our fireworks shit
         try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
+                    .trail(true).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

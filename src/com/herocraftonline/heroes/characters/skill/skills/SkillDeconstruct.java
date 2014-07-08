@@ -1,20 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
@@ -26,6 +11,16 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.*;
 
 public class SkillDeconstruct extends ActiveSkill {
 
@@ -68,7 +63,7 @@ public class SkillDeconstruct extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        Set<String> items = new HashSet<String>(SkillConfigManager.getUseSettingKeys(hero, this));
+        Set<String> items = new HashSet<>(SkillConfigManager.getUseSettingKeys(hero, this));
         items.remove("require-workbench");
         for (SkillSetting set : SkillSetting.values()) {
             items.remove(set.node());
@@ -79,7 +74,7 @@ public class SkillDeconstruct extends ActiveSkill {
         if (args.length > 0) {
 
             if (args[0].toLowerCase().equals("list")) {
-                List<String> itemList = new ArrayList<String>(items);
+                List<String> itemList = new ArrayList<>(items);
                 int totalPages = itemList.size() / 10;
                 if (totalPages % 10 == 0) {
                     totalPages++;
@@ -91,7 +86,7 @@ public class SkillDeconstruct extends ActiveSkill {
                         if (page > totalPages || page < 0) {
                             page = 0;
                         }
-                    } catch (NumberFormatException e) {}
+                    } catch (NumberFormatException ignored) {}
                 }
                 int start = page * 10;
                 int end = (page + 1) * 10;

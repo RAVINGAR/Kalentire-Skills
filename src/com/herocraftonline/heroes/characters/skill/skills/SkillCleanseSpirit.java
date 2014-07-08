@@ -30,7 +30,7 @@ public class SkillCleanseSpirit extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(2.0), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
         
         int effectRemovals = SkillConfigManager.getUseSetting(hero, this, "max-effect-removals", 1, false);
@@ -45,10 +45,10 @@ public class SkillCleanseSpirit extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(10));
-        node.set(SkillSetting.HEALING.node(), Integer.valueOf(150));
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), Double.valueOf(3.75));
-        node.set("max-effect-removals", Integer.valueOf(1));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        node.set(SkillSetting.HEALING.node(), 150);
+        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 3.75);
+        node.set("max-effect-removals", 1);
 
         return node;
     }
@@ -62,7 +62,7 @@ public class SkillCleanseSpirit extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, Double.valueOf(2.0), false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         double targetHealth = target.getHealth();
@@ -97,7 +97,8 @@ public class SkillCleanseSpirit extends TargettedSkill {
 
         for (Effect effect : targetHero.getEffects()) {
             // This combined with checking for DISPELLABLE and HARMFUL is so huge I'd rather split the lines. Disallow dispelling movement impediment, don't want the class countering itself.
-            boolean isMovementImpeding = effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING) || effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT);
+            boolean isMovementImpeding = effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING) ||
+                    effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT);
             if (!isMovementImpeding && effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL )) {
                 hero.removeEffect(effect);
                 // Just in case it's fire

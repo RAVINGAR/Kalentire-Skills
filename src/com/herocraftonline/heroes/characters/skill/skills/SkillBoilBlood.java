@@ -71,17 +71,17 @@ public class SkillBoilBlood extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(70));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(10));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(12000));
+        node.set(SkillSetting.DAMAGE.node(), 70);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 10);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.15);
+        node.set(SkillSetting.PERIOD.node(), 2000);
+        node.set(SkillSetting.DURATION.node(), 12000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood begins to boil!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s blood is no longer boiling.");
-        node.set("blood-union-required-for-use", Integer.valueOf(3));
-        node.set("max-targets", Integer.valueOf(6));
+        node.set("blood-union-required-for-use", 3);
+        node.set("max-targets", 6);
 
         return node;
     }
@@ -103,6 +103,7 @@ public class SkillBoilBlood extends ActiveSkill {
 
         if (bloodUnionLevel < bloodUnionReq) {
 
+            //Messaging.send(player, "You must have at least " + bloodUnionReq + " Blood Union to use this ability!", new Object[0]);
             Messaging.send(player, "You must have at least " + bloodUnionReq + " Blood Union to use this ability!", new Object[0]);
             return SkillResult.FAIL;
         }
@@ -141,12 +142,9 @@ public class SkillBoilBlood extends ActiveSkill {
             LivingEntity target = (LivingEntity) entity;
 
             try {
-                this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.RED).withFade(Color.BLACK).build());
-            }
-            catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            catch (Exception e) {
+                this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder()
+                        .flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.RED).withFade(Color.BLACK).build());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

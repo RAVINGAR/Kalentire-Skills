@@ -82,11 +82,7 @@ public class SkillDarkRitual extends ActiveSkill {
                                                .withColor(Color.BLACK)
                                                .withFade(Color.GRAY)
                                                .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

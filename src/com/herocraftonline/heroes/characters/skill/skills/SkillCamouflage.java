@@ -1,16 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
+import com.herocraftonline.heroes.characters.party.HeroParty;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
 import net.minecraft.server.v1_7_R3.EntityCreature;
 import net.minecraft.server.v1_7_R3.EntityPlayer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,17 +18,8 @@ import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
-import com.herocraftonline.heroes.characters.party.HeroParty;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class SkillCamouflage extends ActiveSkill {
 
@@ -148,11 +137,11 @@ public class SkillCamouflage extends ActiveSkill {
             if (!(entity instanceof CraftCreature))
                 continue;
 
-            EntityCreature notchMob = (EntityCreature) ((CraftCreature) entity).getHandle();
+            EntityCreature notchMob = ((CraftCreature) entity).getHandle();
             if (notchMob.target == null)
                 continue;
 
-            EntityPlayer notchPlayer = (EntityPlayer) ((CraftPlayer) player).getHandle();
+            EntityPlayer notchPlayer = ((CraftPlayer) player).getHandle();
             if (notchMob.target.equals(notchPlayer))
                 notchMob.setGoalTarget(null);
         }
@@ -163,7 +152,7 @@ public class SkillCamouflage extends ActiveSkill {
 
     public class CamoMoveChecker implements Runnable {
 
-        private Map<Hero, Location> oldLocations = new HashMap<Hero, Location>();
+        private Map<Hero, Location> oldLocations = new HashMap<>();
         private Skill skill;
 
         CamoMoveChecker(Skill skill) {

@@ -116,7 +116,8 @@ public class SkillCauldron extends PassiveSkill {
 		}
 
 		for(int i =0; i<getCauldronConfig().getInt("CauldronRecipes.size"); i++){
-			ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(config.getInt("CauldronRecipes."+i+".results.TypeId"),config.getInt("CauldronRecipes."+i+".results.result-amount"),(short)config.getInt("CauldronRecipes."+i+".results.materialData")));
+			ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(config.getInt("CauldronRecipes."+i+".results.TypeId")
+                    ,config.getInt("CauldronRecipes."+i+".results.result-amount"),(short)config.getInt("CauldronRecipes."+i+".results.materialData")));
 			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
 			String top = "ABC";			//3 Spaces->3 slots
 			String mid = "DEF";
@@ -247,22 +248,21 @@ public class SkillCauldron extends PassiveSkill {
 						Hero hero = plugin.getCharacterManager().getHero(player.get(i));
 						int sLevel = hero.getLevel(hero.getSecondClass());
 						Recipe recipe = event.getRecipe();
-						if(usingCauldronbench.get(i) == false) {
-							for (int j=0; j<ShapedCauldronRecipes.size(); j++){
-								ShapedRecipe shapedRecipe = ShapedCauldronRecipes.get(j);
-								//Moved recipe comparison to a seperate function using alkarin's method
-								//Considering how complex it is
-								if (!compareRecipes(shapedRecipe, recipe)){
-									bCanMake.set(i, true);
+						if(!usingCauldronbench.get(i)) {
+                            for (ShapedRecipe shapedRecipe : ShapedCauldronRecipes) {
+                                //Moved recipe comparison to a seperate function using alkarin's method
+                                //Considering how complex it is
+                                if (!compareRecipes(shapedRecipe, recipe)) {
+                                    bCanMake.set(i, true);
 
-								}else{
-									bCanMake.set(i, false);
-									break;
-								}
-							}
+                                } else {
+                                    bCanMake.set(i, false);
+                                    break;
+                                }
+                            }
 						}
 
-						if(usingCauldronbench.get(i) == true) {
+						if(usingCauldronbench.get(i)) {
 							for (int j=0; j<ShapedCauldronRecipes.size(); j++){
 								ShapedRecipe shapedRecipe = ShapedCauldronRecipes.get(j);
 
@@ -293,7 +293,7 @@ public class SkillCauldron extends PassiveSkill {
 
 			for(int i=0; i<player.size(); i++){	
 				if (player.get(i) == event.getWhoClicked()){
-					if (usingCauldronbench.get(i) == true) {
+					if (usingCauldronbench.get(i)) {
 
 						ItemStack item = event.getCurrentItem();
 						for (int j=0; j<ShapedCauldronRecipes.size(); j++){
