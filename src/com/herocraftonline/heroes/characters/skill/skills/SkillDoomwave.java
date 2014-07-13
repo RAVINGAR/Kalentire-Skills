@@ -105,6 +105,7 @@ public class SkillDoomwave extends ActiveSkill {
 
         double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.75, false);
 
+
         for (double i = 0; i < numEnderPearls; i++) {
             EnderPearl doomPearl = player.launchProjectile(EnderPearl.class);
             doomPearl.setFireTicks(100);
@@ -193,7 +194,7 @@ public class SkillDoomwave extends ActiveSkill {
     private class NCPExemptionEffect extends Effect {
 
         public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
+            super(skill, "NCPExemptionEffect_BLOCKPLACE_SPEED");
         }
 
         @Override
