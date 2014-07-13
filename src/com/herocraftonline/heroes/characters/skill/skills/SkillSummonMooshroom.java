@@ -22,7 +22,7 @@ public class SkillSummonMooshroom extends ActiveSkill {
         setDescription("100% chance to spawn 1 mooshroom cow, $2% for 2, and $3% for 3.");
         setUsage("/skill mushroomcow");
         setArgumentRange(0, 0);
-        setIdentifiers("skill mushroomc", "skill mushroomcow", "skill mcow", "skill mooshroom", "skill summonmushroomcow", "skill mushroomcow");
+        setIdentifiers("skill mushroomc", "skill mushroomcow", "skill mcow", "skill summonmooshroom", "skill mooshroom", "skill summonmushroomcow", "skill mushroomcow");
         setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE);
     }
 
