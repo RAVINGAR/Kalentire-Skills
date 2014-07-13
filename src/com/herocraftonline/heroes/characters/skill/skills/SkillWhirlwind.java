@@ -11,6 +11,9 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -24,6 +27,8 @@ public class SkillWhirlwind extends ActiveSkill {
     private String applyText;
     private String expireText;
 
+    private boolean ncpEnabled = false;
+
     public SkillWhirlwind(Heroes plugin) {
         super(plugin, "Whirlwind");
         setDescription("Unleash a furious Whirlwind for $1 seconds. While active, you strike all enemies within $2 blocks every $3 seconds for $4 physical damage. You are slowed during the effect.");
@@ -31,6 +36,10 @@ public class SkillWhirlwind extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill whirlwind");
         setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
+        }
     }
 
     @Override
@@ -81,6 +90,13 @@ public class SkillWhirlwind extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
+                hero.addEffect(ncpExemptEffect);
+            }
+        }
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(1), false);
@@ -90,6 +106,12 @@ public class SkillWhirlwind extends ActiveSkill {
 
         hero.addEffect(effect);
 
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
+                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+            }
+        }
         return SkillResult.NORMAL;
     }
 
@@ -158,5 +180,28 @@ public class SkillWhirlwind extends ActiveSkill {
 
         @Override
         public void tickMonster(Monster monster) {}
+    }
+
+    private class NCPExemptionEffect extends Effect {
+
+        public NCPExemptionEffect(Skill skill) {
+            super(skill, "NCPExemptionEffect_FIGHT");
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
+        }
     }
 }
