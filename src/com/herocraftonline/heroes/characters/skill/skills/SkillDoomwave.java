@@ -105,6 +105,7 @@ public class SkillDoomwave extends ActiveSkill {
 
         double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.75, false);
 
+        player.sendMessage("YOU; " + NCPExemptionManager.isExempted(player, CheckType.BLOCKPLACE_SPEED));
         for (double i = 0; i < numEnderPearls; i++) {
             EnderPearl doomPearl = player.launchProjectile(EnderPearl.class);
             doomPearl.setFireTicks(100);
