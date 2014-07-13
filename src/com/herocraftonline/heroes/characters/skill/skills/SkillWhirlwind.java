@@ -90,13 +90,6 @@ public class SkillWhirlwind extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
-                hero.addEffect(ncpExemptEffect);
-            }
-        }
-
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(1), false);
@@ -106,12 +99,6 @@ public class SkillWhirlwind extends ActiveSkill {
 
         hero.addEffect(effect);
 
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-            }
-        }
         return SkillResult.NORMAL;
     }
 
@@ -143,6 +130,14 @@ public class SkillWhirlwind extends ActiveSkill {
         @Override
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
+
+
+            if (ncpEnabled) {
+                if (!player.isOp()) {
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this.skill);
+                    hero.addEffect(ncpExemptEffect);
+                }
+            }
 
             for (Effect effect : hero.getEffects()) {
                 if (effect.isType(EffectType.STUN) || effect.isType(EffectType.DISABLE)) {
@@ -176,6 +171,13 @@ public class SkillWhirlwind extends ActiveSkill {
 
             if (hitTarget)
                 player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.3F, 1.6F);
+
+            if (ncpEnabled) {
+                if (!player.isOp()) {
+                    if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
+                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+                }
+            }
         }
 
         @Override
