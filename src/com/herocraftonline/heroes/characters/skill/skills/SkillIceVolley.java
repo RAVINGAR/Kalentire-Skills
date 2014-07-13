@@ -366,7 +366,7 @@ public class SkillIceVolley extends ActiveSkill {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
 
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
+            NCPExemptionManager.exemptPermanently(player, CheckType.BLOCKPLACE_SPEED);
         }
 
         @Override
@@ -374,7 +374,7 @@ public class SkillIceVolley extends ActiveSkill {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
 
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
+            NCPExemptionManager.unexempt(player, CheckType.BLOCKPLACE_SPEED);
         }
     }
 }
