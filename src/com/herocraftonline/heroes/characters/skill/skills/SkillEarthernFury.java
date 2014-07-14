@@ -6,15 +6,15 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.AttributeDecreaseEffect;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Effect;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -26,6 +26,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 public class SkillEarthernFury extends TargettedSkill {
+    private boolean ncpEnabled = false;
+
     private String applyText;
     private String expireText;
 
@@ -36,6 +38,12 @@ public class SkillEarthernFury extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill earthernfury");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_EARTH, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MOVEMENT_SLOWING);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
+        }
+
+
     }
 
     public String getDescription(Hero hero) {
@@ -83,6 +91,13 @@ public class SkillEarthernFury extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
+                hero.addEffect(ncpExemptEffect);
+            }
+        }
+
         // Prep variables
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 
@@ -98,7 +113,7 @@ public class SkillEarthernFury extends TargettedSkill {
          * offset controls how spread out the particles are
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().playSound(player.getLocation(), Sound.DIG_GRASS, 1.0F, 1.0F);
         
         // Create the effect and slow the target
@@ -107,6 +122,14 @@ public class SkillEarthernFury extends TargettedSkill {
         int slownessAmplitude = SkillConfigManager.getUseSetting(hero, this, "slownessAmplitude", 2, false);
         ChillingStrikeAgilityEffect cEffect = new ChillingStrikeAgilityEffect(this, hero, duration, agilityReduction, slownessAmplitude, applyText, expireText);
         targCT.addEffect(cEffect);
+
+
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
+                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+            }
+        }
 
         return SkillResult.NORMAL;
     }
@@ -172,7 +195,7 @@ public class SkillEarthernFury extends TargettedSkill {
                      * offset controls how spread out the particles are
                      * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                      * */
-                    fEntity.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
+                    fEntity.getWorld().spigot().playEffect(location, org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
                     fEntity.getWorld().playSound(location, Sound.DIG_GRAVEL, 0.1F, 1.0F);
                     
                     time += 0.01;
@@ -180,5 +203,28 @@ public class SkillEarthernFury extends TargettedSkill {
             }.runTaskTimer(plugin, 0, 1);
         }
 
+    }
+
+    private class NCPExemptionEffect extends Effect {
+
+        public NCPExemptionEffect(Skill skill) {
+            super(skill, "NCPExemptionEffect_FIGHT");
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
+        }
     }
 }
