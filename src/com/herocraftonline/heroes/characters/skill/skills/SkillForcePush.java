@@ -90,7 +90,7 @@ public class SkillForcePush extends TargettedSkill {
 
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
+            damageEntity(target, player, damage, DamageCause.MAGIC, false);
         }
 
         // Let's bypass the nocheat issues...
