@@ -150,6 +150,7 @@ public class SkillForcePush extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+
         return SkillResult.NORMAL;
     }
 
