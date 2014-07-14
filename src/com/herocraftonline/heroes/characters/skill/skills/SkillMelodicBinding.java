@@ -100,6 +100,8 @@ public class SkillMelodicBinding extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+
+        Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
         hero.addEffect(new SoundEffect(this, "MelodicBindingSong", 100, skillSong));
@@ -109,6 +111,10 @@ public class SkillMelodicBinding extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
 
         hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
+
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }

@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Color;
-import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -108,9 +107,12 @@ public class SkillVoidsong extends ActiveSkill {
             e.printStackTrace();
         }
 
-        player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
 
+
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
         return SkillResult.NORMAL;
     }
 }

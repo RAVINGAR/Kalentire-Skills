@@ -90,6 +90,8 @@ public class SkillBattlesong extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
 
+        Player player = hero.getPlayer();
+
         hero.addEffect(new SoundEffect(this, "BattlesongSong", 100, skillSong));
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
@@ -104,6 +106,10 @@ public class SkillBattlesong extends ActiveSkill {
         hero.addEffect(mEffect);
 
         broadcastExecuteText(hero);
+
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 1.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }
