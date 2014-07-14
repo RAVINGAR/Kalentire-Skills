@@ -24,9 +24,6 @@ public class SkillForcePull extends TargettedSkill {
 
     private boolean ncpEnabled = false;
 
-    /* This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();*/
-
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
         setDescription("Deal $1 physical damage and force your target towards you. The targetting distance of this ability is affected by your Intellect.");
@@ -144,18 +141,6 @@ public class SkillForcePull extends TargettedSkill {
                 target.setVelocity(pushVector);
             }
         }, (long) (delay * 20));
-        /* this is our fireworks
-
-        /* this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
@@ -179,6 +164,7 @@ public class SkillForcePull extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
         }
 
         @Override
@@ -187,6 +173,7 @@ public class SkillForcePull extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }

@@ -79,7 +79,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), Sound.CREEPER_DEATH, 18.0F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.HORSE_HIT, 18.0F, 0.4F);
 
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
@@ -141,6 +141,7 @@ public class SkillFlyingKick extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
         }
 
         @Override
@@ -149,6 +150,7 @@ public class SkillFlyingKick extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }
