@@ -11,8 +11,6 @@ import com.herocraftonline.heroes.util.Util;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -89,18 +87,6 @@ public class SkillDuskblade extends TargettedSkill {
             hero.heal(hrEvent.getAmount());
 
         // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder().
-                                               flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.PURPLE)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         if (ncpEnabled) {
             if (!player.isOp()) {
@@ -109,6 +95,12 @@ public class SkillDuskblade extends TargettedSkill {
             }
         }
 
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
     }
 

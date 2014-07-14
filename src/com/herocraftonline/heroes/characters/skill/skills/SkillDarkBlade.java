@@ -1,31 +1,28 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.skill.*;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.common.WitheringEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillDarkBlade extends TargettedSkill {
     // This is for Firework Effects
     private boolean ncpEnabled = false;
-    public VisualEffect fplayer = new VisualEffect();
+    //public VisualEffect fplayer = new VisualEffect();
 
     public SkillDarkBlade(Heroes plugin) {
         super(plugin, "DarkBlade");
@@ -115,7 +112,7 @@ public class SkillDarkBlade extends TargettedSkill {
                 Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
         }
 
-        // this is our fireworks shit
+        /* this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(),
                                  target.getLocation(),
@@ -127,7 +124,7 @@ public class SkillDarkBlade extends TargettedSkill {
                                                .build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         if (ncpEnabled) {
             if (!player.isOp()) {
@@ -135,6 +132,13 @@ public class SkillDarkBlade extends TargettedSkill {
                     hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
             }
         }
+
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SMALL_SMOKE, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.SMALL_SMOKE, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), org.bukkit.Effect.SMALL_SMOKE, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), org.bukkit.Effect.SMALL_SMOKE, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.SMALL_SMOKE, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.SMALL_SMOKE, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
     }
 

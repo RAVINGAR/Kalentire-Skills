@@ -95,6 +95,9 @@ public class SkillDivineStun extends TargettedSkill {
                     hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
             }
         }
+
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
     }
 

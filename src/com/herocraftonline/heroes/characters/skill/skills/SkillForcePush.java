@@ -1,8 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -12,28 +19,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-
 public class SkillForcePush extends TargettedSkill {
 
     private boolean ncpEnabled = false;
-
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
@@ -156,14 +144,12 @@ public class SkillForcePush extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
-                    .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.NAVY).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
     }
 
@@ -179,6 +165,7 @@ public class SkillForcePush extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
         }
 
         @Override
@@ -187,6 +174,7 @@ public class SkillForcePush extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }

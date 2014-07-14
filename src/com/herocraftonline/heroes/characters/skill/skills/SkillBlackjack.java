@@ -138,6 +138,12 @@ public class SkillBlackjack extends TargettedSkill {
             }
         }
 
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
     }
 
