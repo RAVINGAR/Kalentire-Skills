@@ -161,7 +161,7 @@ public class SkillForcePush extends TargettedSkill {
     private class NCPFightExemptionEffect extends ExpirableEffect {
 
         public NCPFightExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPMExemptionEffect_FIGHT", applier, duration);
+            super(skill, "NCPExemptionEffect_FIGHT", applier, duration);
         }
 
         @Override

@@ -3,9 +3,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.skill.*;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
@@ -67,19 +66,6 @@ public class SkillForcePull extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (target instanceof Player) {
-                Player targetPlayer = (Player) target;
-                if (!targetPlayer.isOp()) {
-                    long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
-                    if (duration > 0) {
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, duration);
-                        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                        targetCT.addEffect(ncpExemptEffect);
-                    }
-                }
-            }
-        }
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
@@ -87,7 +73,21 @@ public class SkillForcePull extends TargettedSkill {
 
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
+
+            if (ncpEnabled) {
+                if (!player.isOp()) {
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
+                    hero.addEffect(ncpExemptEffect);
+                }
+            }
+            damageEntity(target, player, damage, DamageCause.MAGIC, false);
+
+            if (ncpEnabled) {
+                if (!player.isOp()) {
+                    if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
+                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+                }
+            }
         }
 
 
@@ -152,10 +152,10 @@ public class SkillForcePull extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    private class NCPExemptionEffect extends ExpirableEffect {
+    private class NCPExemptionEffect extends Effect {
 
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
+        public NCPExemptionEffect(Skill skill) {
+            super(skill, "NCPExemptionEffect_FIGHT");
         }
 
         @Override
@@ -163,7 +163,6 @@ public class SkillForcePull extends TargettedSkill {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
 
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
             NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
         }
 
@@ -172,7 +171,6 @@ public class SkillForcePull extends TargettedSkill {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
 
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
             NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }

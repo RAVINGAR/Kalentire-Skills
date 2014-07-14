@@ -76,7 +76,7 @@ public class SkillTremor extends ActiveSkill{
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
 
         broadcastExecuteText(hero);
-        
+
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {

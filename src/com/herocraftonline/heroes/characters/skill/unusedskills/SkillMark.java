@@ -1,11 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -16,29 +9,45 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.HeroTowns;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
-public class SkillMarkPVE extends ActiveSkill {
+import java.util.logging.Level;
+
+public class SkillMark extends ActiveSkill {
 
     private boolean herotowns = false;
     private HeroTowns ht;
+    private WorldGuardPlugin wgp;
+    private boolean worldguard = false;
 
-    public SkillMarkPVE(Heroes plugin) {
-        super(plugin, "MarkPVE");
+    public SkillMark(Heroes plugin) {
+        super(plugin, "Mark");
         setDescription("You mark a location for use with recall.");
-        setUsage("/skill markpve <info|reset>");
+        setUsage("/skill mark <info|reset>");
         setArgumentRange(0, 1);
-        setIdentifiers("skill mark", "skill markpve");
+        setIdentifiers("skill mark");
         setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
 
-        //        try {
-        //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-        //                herotowns = true;
-        //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-        //            }
-        //        }
-        //        catch (Exception e) {
-        //            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
-        //        }
+        try {
+            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+            //                herotowns = true;
+            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            //            }
+            //        }
+            if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+                worldguard = true;
+                wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+            }
+        }
+        catch (Exception e) {
+            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+        }
     }
 
     @Override
@@ -62,7 +71,7 @@ public class SkillMarkPVE extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        ConfigurationSection skillSettings = hero.getSkillSettings("RecallPVE");
+        ConfigurationSection skillSettings = hero.getSkillSettings("Recall");
 
         if (args.length > 0 && args[0].equalsIgnoreCase("reset")) {
             clearStoredData(skillSettings);
@@ -90,22 +99,30 @@ public class SkillMarkPVE extends ActiveSkill {
             // Validate Herotowns
             if (herotowns) {
                 if (!ht.getGlobalRegionManager().canBuild(player, loc)) {
-                    broadcast(player.getLocation(), "Can not use Mark in a town you have no access to!");
+                    Messaging.send(player, "You cannot Mark in a Town you have no access to!");
                     return SkillResult.FAIL;
                 }
             }
 
-            hero.setSkillSetting("RecallPVE", "world", loc.getWorld().getName());
-            hero.setSkillSetting("RecallPVE", "x", loc.getX());
-            hero.setSkillSetting("RecallPVE", "y", loc.getY());
-            hero.setSkillSetting("RecallPVE", "z", loc.getZ());
-            hero.setSkillSetting("RecallPVE", "yaw", (double) loc.getYaw());
-            hero.setSkillSetting("RecallPVE", "pitch", (double) loc.getPitch());
+            // Validate WorldGuard
+            if (worldguard) {
+                if (!wgp.canBuild(player, loc)) {
+                    Messaging.send(player, "You cannot Mark in a Region you have no access to!");
+                    return SkillResult.FAIL;
+                }
+            }
+
+            hero.setSkillSetting("Recall", "world", loc.getWorld().getName());
+            hero.setSkillSetting("Recall", "x", loc.getX());
+            hero.setSkillSetting("Recall", "y", loc.getY());
+            hero.setSkillSetting("Recall", "z", loc.getZ());
+            hero.setSkillSetting("Recall", "yaw", (double) loc.getYaw());
+            hero.setSkillSetting("Recall", "pitch", (double) loc.getPitch());
             Object[] obj = new Object[] { loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() };
             Messaging.send(player, "You have marked a new location on $1 at: $2, $3, $4", obj);
 
-            //plugin.getCharacterManager().saveHero(hero, false);
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
+            //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
             return SkillResult.NORMAL;
         }
     }
