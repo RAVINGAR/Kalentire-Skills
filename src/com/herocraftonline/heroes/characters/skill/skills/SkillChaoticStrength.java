@@ -1,12 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -15,20 +8,16 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.AttributeDecreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.AttributeIncreaseEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 public class SkillChaoticStrength extends ActiveSkill {
     private String applyText;
     private String expireText;
-
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillChaoticStrength(Heroes plugin) {
         super(plugin, "ChaoticStrength");
@@ -84,13 +73,10 @@ public class SkillChaoticStrength extends ActiveSkill {
 
         hero.addEffect(new ChaoticStrengthEffect(this, player, duration, strengthGain, intellectDrain));
 
-        try {
-            Location playerLocation = player.getLocation();
-            fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(false)
-                    .with(FireworkEffect.Type.STAR).withColor(Color.BLACK).withFade(Color.ORANGE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.COW_HURT, 1.3F, 0.5F);

@@ -97,6 +97,9 @@ public class SkillBattery extends TargettedSkill {
                 e.printStackTrace();
             }
 
+            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
+            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
+            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
             return SkillResult.NORMAL;
         }
         else {

@@ -51,6 +51,10 @@ public class SkillAntidote extends TargettedSkill {
                 return SkillResult.INVALID_TARGET_NO_MSG;
             } else {
                 broadcastExecuteText(hero, target);
+
+                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
+                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
+                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
             }
             return SkillResult.NORMAL;
         }

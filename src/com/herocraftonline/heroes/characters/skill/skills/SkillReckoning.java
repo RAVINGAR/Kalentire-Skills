@@ -145,7 +145,10 @@ public class SkillReckoning extends ActiveSkill {
             target.setVelocity(v);
         }
 
-        player.getWorld().playEffect(player.getLocation(), Effect.CLOUD, 3);
+
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
         player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.4F, 1.0F);
 
 

@@ -15,7 +15,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SkillAbsolution extends TargettedSkill {
-    public VisualEffect fplayer = new VisualEffect();
+    //public VisualEffect fplayer = new VisualEffect();
 
     public SkillAbsolution(Heroes plugin) {
         super(plugin, "Absolution");
