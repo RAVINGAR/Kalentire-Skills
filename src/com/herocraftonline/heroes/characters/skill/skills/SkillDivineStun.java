@@ -1,5 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.skill.*;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -11,14 +16,11 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDivineStun extends TargettedSkill {
 
+    private boolean ncpEnabled = false;
     public SkillDivineStun(Heroes plugin) {
         super(plugin, "DivineStun");
         setDescription("You stun your target for $1 seconds, preventing them from using skills or moving and dealing $2 damage");
@@ -26,6 +28,10 @@ public class SkillDivineStun extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill divinestun");
         setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.DISABLING, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
+        }
     }
 
     @Override
@@ -61,6 +67,14 @@ public class SkillDivineStun extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
+                hero.addEffect(ncpExemptEffect);
+            }
+        }
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
@@ -75,6 +89,35 @@ public class SkillDivineStun extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.5F, 1.0F);
 
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
+                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+            }
+        }
         return SkillResult.NORMAL;
+    }
+
+    private class NCPExemptionEffect extends Effect {
+
+        public NCPExemptionEffect(Skill skill) {
+            super(skill, "NCPExemptionEffect_FIGHT");
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
+        }
     }
 }

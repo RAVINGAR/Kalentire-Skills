@@ -1,5 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.skill.*;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,16 +19,12 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.WitheringEffect;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDarkBlade extends TargettedSkill {
     // This is for Firework Effects
+    private boolean ncpEnabled = false;
     public VisualEffect fplayer = new VisualEffect();
 
     public SkillDarkBlade(Heroes plugin) {
@@ -34,6 +35,9 @@ public class SkillDarkBlade extends TargettedSkill {
         setIdentifiers("skill darkblade");
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCEABLE, SkillType.DAMAGING,
                 SkillType.AGGRESSIVE, SkillType.MANA_INCREASING, SkillType.MANA_DECREASING);
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
+            ncpEnabled = true;
+        }
     }
 
     @Override
@@ -65,12 +69,18 @@ public class SkillDarkBlade extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
+        broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        broadcastExecuteText(hero, target);
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
+                hero.addEffect(ncpExemptEffect);
+            }
+        }
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
@@ -119,6 +129,35 @@ public class SkillDarkBlade extends TargettedSkill {
             e.printStackTrace();
         }
 
+        if (ncpEnabled) {
+            if (!player.isOp()) {
+                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
+                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+            }
+        }
         return SkillResult.NORMAL;
+    }
+
+    private class NCPExemptionEffect extends Effect {
+
+        public NCPExemptionEffect(Skill skill) {
+            super(skill, "NCPExemptionEffect_FIGHT");
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
+        }
     }
 }
