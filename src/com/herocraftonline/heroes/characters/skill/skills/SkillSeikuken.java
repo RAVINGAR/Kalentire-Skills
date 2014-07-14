@@ -36,7 +36,7 @@ public class SkillSeikuken extends ActiveSkill {
 
     public SkillSeikuken(Heroes plugin) {
         super(plugin, "Seikuken");
-        setDescription("Creative a protective barrier around yourself for $1 seconds. The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds, and dealing $3% of your weapon damage to them.");
+        setDescription("Create a protective barrier around yourself for $1 seconds. The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds, and dealing $3% of your weapon damage to them.");
         setUsage("/skill seikuken");
         setArgumentRange(0, 0);
         setIdentifiers("skill seikuken");
@@ -51,8 +51,8 @@ public class SkillSeikuken extends ActiveSkill {
 
         int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", Integer.valueOf(3000), false);
 
-        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", Double.valueOf(0.4), false);
-        double damageMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase-per-intellect", Double.valueOf(0.00875), false);
+        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.4, false);
+        double damageMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase-per-intellect", 0.00875, false);
         damageMultiplier += hero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -101,6 +101,7 @@ public class SkillSeikuken extends ActiveSkill {
 
         hero.addEffect(new SeikukenEffect(this, player, duration, slowAmplifier, disarmDuration));
 
+        player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
         player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.7F, 2.0F);
 
         return SkillResult.NORMAL;

@@ -140,7 +140,7 @@ public class SkillTremor extends ActiveSkill{
         }
 
         //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
-        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+        player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3);
         player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
@@ -160,6 +160,8 @@ public class SkillTremor extends ActiveSkill{
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+            NCPExemptionManager.exemptPermanently(player, CheckType.COMBINED);
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
         }
 
         @Override
@@ -168,6 +170,8 @@ public class SkillTremor extends ActiveSkill{
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
+            NCPExemptionManager.unexempt(player, CheckType.COMBINED);
         }
     }
 }

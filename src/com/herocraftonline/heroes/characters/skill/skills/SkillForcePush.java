@@ -37,7 +37,7 @@ public class SkillForcePush extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
@@ -67,16 +67,6 @@ public class SkillForcePush extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        if (damage > 0) {
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
-        }
-
-        // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (target instanceof Player) {
                 Player targetPlayer = (Player) target;
@@ -90,6 +80,16 @@ public class SkillForcePush extends TargettedSkill {
                 }
             }
         }
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        if (damage > 0) {
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
+        }
+
+        // Let's bypass the nocheat issues...
 
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();

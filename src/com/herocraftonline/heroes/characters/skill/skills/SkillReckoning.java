@@ -145,8 +145,9 @@ public class SkillReckoning extends ActiveSkill {
             target.setVelocity(v);
         }
 
-        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+        player.getWorld().playEffect(player.getLocation(), Effect.CLOUD, 3);
         player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.4F, 1.0F);
+
 
         return SkillResult.NORMAL;
     }
@@ -163,6 +164,7 @@ public class SkillReckoning extends ActiveSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
         }
 
         @Override
@@ -171,6 +173,7 @@ public class SkillReckoning extends ActiveSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }

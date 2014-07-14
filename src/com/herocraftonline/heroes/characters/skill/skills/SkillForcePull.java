@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -67,15 +66,6 @@ public class SkillForcePull extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        if (damage > 0) {
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
-        }
-
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (target instanceof Player) {
@@ -90,6 +80,16 @@ public class SkillForcePull extends TargettedSkill {
                 }
             }
         }
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        if (damage > 0) {
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
+        }
+
 
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();

@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -143,6 +144,7 @@ public class SkillWarsong extends ActiveSkill {
             }
         }
 
+        player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.NOTE, 3);
         return SkillResult.NORMAL;
     }
 
