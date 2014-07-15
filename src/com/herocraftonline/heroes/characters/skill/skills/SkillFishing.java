@@ -3,7 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

@@ -11,12 +11,12 @@
         import com.herocraftonline.heroes.api.Entity.EntityUtil;
         //import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlaze;
         //import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlazeFireball;
-        import net.minecraft.server.v1_7_R3.World;
+        import net.minecraft.server.v1_7_R4.World;
 
         import org.bukkit.Bukkit;
         import org.bukkit.Location;
         import org.bukkit.configuration.ConfigurationSection;
-        import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+        import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
         import org.bukkit.entity.Blaze;
         import org.bukkit.entity.LivingEntity;
         import org.bukkit.entity.Player;

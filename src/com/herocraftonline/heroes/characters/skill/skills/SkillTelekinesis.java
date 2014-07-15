@@ -14,16 +14,16 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import net.minecraft.server.v1_7_R3.EntityHuman;
-import net.minecraft.server.v1_7_R3.WorldServer;
+import net.minecraft.server.v1_7_R4.EntityHuman;
+import net.minecraft.server.v1_7_R4.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Jukebox;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -180,7 +180,7 @@ public class SkillTelekinesis extends ActiveSkill {
                     int blockID = blockMaterial.getId();
                     WorldServer worldServer = ((CraftWorld) targetBlock.getWorld()).getHandle();
                     EntityHuman entityHuman = ((CraftPlayer) player).getHandle();
-                    net.minecraft.server.v1_7_R3.Block block = net.minecraft.server.v1_7_R3.Block.b(Integer.toString(blockID));
+                    net.minecraft.server.v1_7_R4.Block block = net.minecraft.server.v1_7_R4.Block.b(Integer.toString(blockID));
 
                     block.interact(worldServer, targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), entityHuman, 0, 0, 0, 0);
 
