@@ -32,7 +32,7 @@ public class SkillDropTheBass extends ActiveSkill {
 
     public SkillDropTheBass(Heroes plugin) {
         super(plugin, "DropTheBass");
-        setDescription("Apply a m your close group members from taking fall damage for $1 seconds.");
+        setDescription("Stops your close group members from taking fall damage for $1 seconds.");
         setUsage("/skill dropthebass");
         setArgumentRange(0, 0);
         setIdentifiers("skill dropthebass");
