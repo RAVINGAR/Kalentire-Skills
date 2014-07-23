@@ -136,7 +136,6 @@ public class SkillFlyingKick extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
         }
 
         @Override
@@ -145,7 +144,6 @@ public class SkillFlyingKick extends TargettedSkill {
             final Player player = hero.getPlayer();
 
             NCPExemptionManager.unexempt(player, CheckType.MOVING);
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }

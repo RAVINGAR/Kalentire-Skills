@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +9,21 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillForcePush extends TargettedSkill {
 
@@ -67,23 +73,19 @@ public class SkillForcePush extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        if (ncpEnabled) {
-            if (target instanceof Player) {
-                Player targetPlayer = (Player) target;
-                if (!targetPlayer.isOp()) {
-                    long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
-                    if (duration > 0) {
-                        NCPMovingExemptionEffect ncpMovingExemptEffect = new NCPMovingExemptionEffect(this, targetPlayer, duration);
-                        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                        targetCT.addEffect(ncpMovingExemptEffect);
-
-                        NCPFightExemptionEffect ncpFightExemptEffect = new NCPFightExemptionEffect(this, player, duration);
-                        CharacterTemplate playerCT = plugin.getCharacterManager().getCharacter(player);
-                        playerCT.addEffect(ncpFightExemptEffect);
-                    }
+        // Let's bypass the nocheat issues...
+        if (target instanceof Player && ncpEnabled) {
+            Player targetPlayer = (Player) target;
+            if (!targetPlayer.isOp()) {
+                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
+                if (duration > 0) {
+                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, hero.getPlayer(), duration);
+                    CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                    targetCT.addEffect(ncpExemptEffect);
                 }
             }
         }
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
@@ -92,8 +94,6 @@ public class SkillForcePush extends TargettedSkill {
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC, false);
         }
-
-        // Let's bypass the nocheat issues...
 
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
@@ -158,32 +158,9 @@ public class SkillForcePush extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    private class NCPFightExemptionEffect extends ExpirableEffect {
+    private class NCPExemptionEffect extends ExpirableEffect {
 
-        public NCPFightExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_FIGHT", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
-        }
-    }
-
-    private class NCPMovingExemptionEffect extends ExpirableEffect {
-
-        public NCPMovingExemptionEffect(Skill skill, Player applier, long duration) {
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
             super(skill, "NCPExemptionEffect_MOVING", applier, duration);
         }
 
