@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -31,12 +30,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-
 public class SkillFirewave extends ActiveSkill {
-
-    private boolean ncpEnabled = false;
 
     private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
@@ -54,9 +48,6 @@ public class SkillFirewave extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 		setIdentifiers("skill firewave");
 		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
 	}
 
     @Override
@@ -94,14 +85,6 @@ public class SkillFirewave extends ActiveSkill {
         double numFireballsIncrease = SkillConfigManager.getUseSetting(hero, this, "fireballs-per-intellect", 0.325, false);
         numFireballs += (int) (numFireballsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
-                hero.addEffect(ncpExemptEffect);
-            }
-        }
-
 		double diff = 2 * Math.PI / numFireballs;
 		long time = System.currentTimeMillis(); //<- red = variable type
 		for (double a = 0; a < 2 * Math.PI; a += diff) {
@@ -111,14 +94,6 @@ public class SkillFirewave extends ActiveSkill {
 			fireballs.put(snowball, time);
 			snowball.setFireTicks(100);
 		}
-
-        // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-            }
-        }
 
 		return SkillResult.NORMAL;
 	}
@@ -180,29 +155,6 @@ public class SkillFirewave extends ActiveSkill {
                 //Adds an Effect to Prevent Multihit
                 plugin.getCharacterManager().getCharacter(targetLE).addEffect(new ExpirableEffect(skill, "FireWaveAntiMultiEffect", (Player) dmger, 500));
             }
-        }
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }

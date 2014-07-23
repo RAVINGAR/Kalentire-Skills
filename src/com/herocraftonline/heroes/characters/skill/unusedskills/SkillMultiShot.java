@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -33,12 +32,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-
 public class SkillMultiShot extends ActiveSkill {
 
-    private boolean ncpEnabled = false;
     private String expireText;
 
     private Map<Arrow, Long> multiShots = new LinkedHashMap<Arrow, Long>(100) {
@@ -58,13 +53,6 @@ public class SkillMultiShot extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.BUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-
-        try {
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
-        }
-        catch (Exception e) {}
     }
 
     public String getDescription(Hero hero) {
@@ -268,14 +256,6 @@ public class SkillMultiShot extends ActiveSkill {
                 actualCenterDegreesRad = a;
             }
 
-            // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
-
             // Create a multiplier that lowers velocity based on how high or low the player is looking
             double pitchMultiplier = Math.abs(Math.sin(Math.abs(pitch) - 90));
 
@@ -289,14 +269,6 @@ public class SkillMultiShot extends ActiveSkill {
             // Fire arrows from the start and move clockwise towards the center
             for (double a = 0; a < actualCenterDegreesRad; a += diff) {
                 shootMultiShotArrow(player, bow, force, yaw + a, pitchMultiplier, velocityMultiplier);
-            }
-
-            // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-                }
             }
 
             // Allow further bow events to be listened to.
@@ -464,29 +436,6 @@ public class SkillMultiShot extends ActiveSkill {
 
         public void setShowExpireText(boolean showExpireText) {
             this.showExpireText = showExpireText;
-        }
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }

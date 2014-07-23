@@ -1,5 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.List;
+
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -8,26 +17,17 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
-import java.util.List;
 
 public class SkillWhirlwind extends ActiveSkill {
     private String applyText;
     private String expireText;
-
-    private boolean ncpEnabled = false;
 
     public SkillWhirlwind(Heroes plugin) {
         super(plugin, "Whirlwind");
@@ -36,10 +36,6 @@ public class SkillWhirlwind extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill whirlwind");
         setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     @Override
@@ -131,14 +127,6 @@ public class SkillWhirlwind extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this.skill);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
-
             for (Effect effect : hero.getEffects()) {
                 if (effect.isType(EffectType.STUN) || effect.isType(EffectType.DISABLE)) {
                     hero.removeEffect(this);
@@ -171,39 +159,9 @@ public class SkillWhirlwind extends ActiveSkill {
 
             if (hitTarget)
                 player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.3F, 1.6F);
-
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-                }
-            }
         }
 
         @Override
         public void tickMonster(Monster monster) {}
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
-        }
     }
 }

@@ -41,6 +41,16 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/unusedskills/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -63,7 +73,7 @@
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <artifactId>spigot</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -79,20 +89,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>me.desht</groupId>
-            <artifactId>scrollingmenusign</artifactId>
-            <version>2.1.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
             <version>5.8.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.neatmonster</groupId>
-            <artifactId>ncpcore</artifactId>
-            <version>static</version>
         </dependency>
 
         <dependency>
