@@ -242,8 +242,8 @@ public class SkillIceVolley extends ActiveSkill {
             // Let's bypass the nocheat issues...
             if (ncpEnabled) {
                 if (!player.isOp()) {
-                    if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+                    if (hero.hasEffect("NCPExemptionEffect_BLOCKPLACE_SPEED"))
+                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_BLOCKPLACE_SPEED"));
                 }
             }
 
@@ -358,7 +358,7 @@ public class SkillIceVolley extends ActiveSkill {
     private class NCPExemptionEffect extends Effect {
 
         public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
+            super(skill, "NCPExemptionEffect_BLOCKPLACE_SPEED");
         }
 
         @Override

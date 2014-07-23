@@ -123,8 +123,8 @@ public class SkillDoomwave extends ActiveSkill {
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
             if (!player.isOp()) {
-                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+                if (hero.hasEffect("NCPExemptionEffect_BLOCKPLACE_SPEED"))
+                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_BLOCKPLACE_SPEED"));
             }
         }
 
