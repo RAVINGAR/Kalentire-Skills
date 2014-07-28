@@ -1,11 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 //src=http://pastie.org/private/oeherulcmebfy0lerywsw
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -18,17 +18,16 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillDropTheBass extends ActiveSkill {
 
     private Song skillSong;
-
-    private boolean ncpEnabled = false;
 
     public SkillDropTheBass(Heroes plugin) {
         super(plugin, "DropTheBass");
@@ -48,10 +47,6 @@ public class SkillDropTheBass extends ActiveSkill {
                              new Note(Sound.NOTE_BASS_DRUM, 0.8F, 7.0F, 6),
                              new Note(Sound.NOTE_BASS, 0.8F, 8.0F, 7)
                 );
-
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
     }
 
     @Override
@@ -76,62 +71,53 @@ public class SkillDropTheBass extends ActiveSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, String[] args) {
 
-        Player player = hero.getPlayer();
+        final Skill theSkill = this;
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
         hero.addEffect(new SoundEffect(this, "DropTheBassSong", 100, skillSong));
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15, false);
 
         double radiusSquared = Math.pow(radius, 2);
 
         if (hero.hasParty()) {
-            for (Hero member : hero.getParty().getMembers()) {
+            for (final Hero member : hero.getParty().getMembers()) {
                 Player memberPlayer = member.getPlayer();
                 if (memberPlayer.getWorld() != player.getWorld())
                     continue;
 
                 if (memberPlayer.getLocation().distanceSquared(player.getLocation()) <= radiusSquared) {
-                    member.addEffect(new NCPCompatSafeFallEffect(this, player, duration));
+                    NCPUtils.applyExemptions(memberPlayer, new NCPFunction() {
+
+                        @Override
+                        public void execute()
+                        {
+                            member.addEffect(new SafeFallEffect(theSkill, player, duration));
+                        }
+                    }, Lists.newArrayList(CheckType.MOVING_NOFALL), duration);
                 }
             }
         }
-        else
-            hero.addEffect(new NCPCompatSafeFallEffect(this, player, duration));
+        else {
+            NCPUtils.applyExemptions(player, new NCPFunction() {
+                
+                @Override
+                public void execute()
+                {
+                    hero.addEffect(new SafeFallEffect(theSkill, player, duration));                    
+                }
+            }, Lists.newArrayList(CheckType.MOVING_NOFALL), duration);
+        }
 
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
-    }
-
-    private class NCPCompatSafeFallEffect extends SafeFallEffect {
-
-        public NCPCompatSafeFallEffect(Skill skill, Player applier, long duration) {
-            super(skill, applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING_NOFALL);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
-        }
     }
 }

@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,23 +11,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
+import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillTremorTotem extends SkillBaseTotem {
-
-    private boolean ncpEnabled = false;
 
 	public SkillTremorTotem(Heroes plugin) {
         super(plugin, "TremorTotem");
@@ -38,10 +35,6 @@ public class SkillTremorTotem extends SkillBaseTotem {
         setIdentifiers("skill tremortotem");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
         material = Material.QUARTZ_BLOCK;
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     @Override
@@ -92,7 +85,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
                 continue;
             }
 
-            LivingEntity target = (LivingEntity) entity;
+            final LivingEntity target = (LivingEntity) entity;
 
             double individualHPower = hPower;
             double individualVPower = vPower;
@@ -142,42 +135,15 @@ public class SkillTremorTotem extends SkillBaseTotem {
             entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 1.2, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
             
             // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (target instanceof Player) {
-                    Player targetPlayer = (Player) target;
-                    Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
-                    if (!targetPlayer.isOp()) {
-                        long ncpDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, ncpDuration);
-                        targetHero.addEffect(ncpExemptEffect);
-                    }
+            final Vector velocity = new Vector(xDir, individualVPower, zDir);
+            NCPUtils.applyExemptions(target, new NCPFunction() {
+                
+                @Override
+                public void execute()
+                {
+                    target.setVelocity(velocity);                    
                 }
-            }
-            
-            target.setVelocity(new Vector(xDir, individualVPower, zDir));
-        }
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
         }
     }
 }

@@ -1,19 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -27,13 +22,29 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillExplosiveShot extends ActiveSkill {
 
-    private boolean ncpEnabled = false;
     public VisualEffect fplayer = new VisualEffect();
 
     private Map<Arrow, Long> explosiveShots = new LinkedHashMap<Arrow, Long>(100) {
@@ -57,9 +68,6 @@ public class SkillExplosiveShot extends ActiveSkill {
         setTypes(SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
     }
 
     public String getDescription(Hero hero) {
@@ -198,7 +206,7 @@ public class SkillExplosiveShot extends ActiveSkill {
             Location arrowLoc = projectile.getLocation();
             List<Entity> targets = projectile.getNearbyEntities(radius, radius, radius);
             double horizontalPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", 1.1, false);
-            double veticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.5, false);
+            final double veticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.5, false);
 
             // Loop through nearby targets and damage / knock them back
             for (Entity entity : targets) {
@@ -207,7 +215,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                     continue;
 
                 // Damage target
-                LivingEntity target = (LivingEntity) entity;
+                final LivingEntity target = (LivingEntity) entity;
                 addSpellTarget(target, hero);
                 damageEntity(target, shooter, damage, DamageCause.ENTITY_EXPLOSION);
 
@@ -218,24 +226,17 @@ public class SkillExplosiveShot extends ActiveSkill {
                 double zDir = targetLoc.getZ() - arrowLoc.getZ();
                 double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
 
-                xDir = xDir / magnitude * horizontalPower;
-                zDir = zDir / magnitude * horizontalPower;
+                final double x = xDir / magnitude * horizontalPower;
+                final double z = zDir / magnitude * horizontalPower;
 
-                if (ncpEnabled) {
-                    if (target instanceof Player) {
-                        Player targetPlayer = (Player) target;
-                        if (!targetPlayer.isOp()) {
-                            long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
-                            if (duration > 0) {
-                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, duration);
-                                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                                targetCT.addEffect(ncpExemptEffect);
-                            }
-                        }
+                NCPUtils.applyExemptions(target, new NCPFunction() {
+
+                    @Override
+                    public void execute()
+                    {
+                        target.setVelocity(new Vector(x, veticalPower, z));                        
                     }
-                }
-
-                target.setVelocity(new Vector(xDir, veticalPower, zDir));
+                }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false));
 
                 // Play effect
                 try {
@@ -315,29 +316,6 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         public void setShowExpireText(boolean showExpireText) {
             this.showExpireText = showExpireText;
-        }
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
         }
     }
 }

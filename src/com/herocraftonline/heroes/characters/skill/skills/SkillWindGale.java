@@ -1,16 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,13 +18,24 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Util;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillWindGale extends ActiveSkill {
 
-    private boolean ncpEnabled = false;
-    
     public VisualEffect fplayer = new VisualEffect();
 
     public SkillWindGale(Heroes plugin) {
@@ -37,10 +45,6 @@ public class SkillWindGale extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill windgale");
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_AIR, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
-        
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     @Override
@@ -167,21 +171,6 @@ public class SkillWindGale extends ActiveSkill {
                             
                             hitEnemies.add(entity);
                             
-                            // Let's bypass the nocheat issues...
-                            if (ncpEnabled) {
-                                if (entity instanceof Player) {
-                                    Player targetPlayer = (Player) entity;
-                                    if (!targetPlayer.isOp()) {
-                                        long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 1500, false);
-                                        if (duration > 0) {
-                                            NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, duration);
-                                            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetPlayer);
-                                            targetCT.addEffect(ncpExemptEffect);
-                                        }
-                                    }
-                                }
-                            }
-                            
                             // And now we're into the code clone of ForcePush
                             Location playerLoc = player.getLocation();
                             Location targetLoc = target.getLocation();
@@ -210,8 +199,16 @@ public class SkillWindGale extends ActiveSkill {
 
                             final double vPower = tempVPower;
 
-                            Vector pushUpVector = new Vector(0, vPower, 0);
-                            target.setVelocity(pushUpVector);
+                            final Vector pushUpVector = new Vector(0, vPower, 0);
+                            // Let's bypass the nocheat issues...
+                            NCPUtils.applyExemptions(target, new NCPFunction() {
+                                
+                                @Override
+                                public void execute()
+                                {
+                                    target.setVelocity(pushUpVector);                                    
+                                }
+                            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 1500, false));
 
                             final double xDir = targetLoc.getX() - playerLoc.getX();
                             final double zDir = targetLoc.getZ() - playerLoc.getZ();
@@ -259,31 +256,5 @@ public class SkillWindGale extends ActiveSkill {
         angle = Math.abs(angle - 180.0D);
 
         return (angle <= 45.0D) || (angle > 135.0D);
-    }
-    
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration, null, null);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.unexempt(player, CheckType.MOVING);
-
-        }
     }
 }

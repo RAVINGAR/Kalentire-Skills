@@ -10,24 +10,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
+import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillForcePush extends TargettedSkill {
-
-    private boolean ncpEnabled = false;
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
@@ -36,9 +33,6 @@ public class SkillForcePush extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill forcepush");
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
     }
 
     @Override
@@ -72,19 +66,6 @@ public class SkillForcePush extends TargettedSkill {
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
-
-        // Let's bypass the nocheat issues...
-        if (target instanceof Player && ncpEnabled) {
-            Player targetPlayer = (Player) target;
-            if (!targetPlayer.isOp()) {
-                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
-                if (duration > 0) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, hero.getPlayer(), duration);
-                    CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                    targetCT.addEffect(ncpExemptEffect);
-                }
-            }
-        }
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
@@ -122,8 +103,16 @@ public class SkillForcePush extends TargettedSkill {
 
         final double vPower = tempVPower;
 
-        Vector pushUpVector = new Vector(0, vPower, 0);
-        target.setVelocity(pushUpVector);
+        final Vector pushUpVector = new Vector(0, vPower, 0);
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(target, new NCPFunction() {
+            
+            @Override
+            public void execute()
+            {
+                target.setVelocity(pushUpVector);                
+            }
+        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double xDir = targetLoc.getX() - playerLoc.getX();
         final double zDir = targetLoc.getZ() - playerLoc.getZ();
@@ -156,28 +145,5 @@ public class SkillForcePush extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 25, 16);
 
         return SkillResult.NORMAL;
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
-        }
     }
 }

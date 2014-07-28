@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -18,9 +9,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
-public class SkillFlyingKick extends TargettedSkill {
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Util;
 
-    private boolean ncpEnabled = false;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+
+public class SkillFlyingKick extends TargettedSkill {
 
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
@@ -32,9 +37,6 @@ public class SkillFlyingKick extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
         setTypes(SkillType.VELOCITY_INCREASING, SkillType.DAMAGING, SkillType.INTERRUPTING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
     }
 
     @Override
@@ -74,22 +76,19 @@ public class SkillFlyingKick extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 18.0F, 0.4F);
 
-        // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
-                if (duration > 0) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
-        }
-
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0075, false);
         vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY));
-        Vector pushUpVector = new Vector(0, vPower, 0);
-        player.setVelocity(pushUpVector);
+        final Vector pushUpVector = new Vector(0, vPower, 0);
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(player, new NCPFunction() {
+
+            @Override
+            public void execute()
+            {
+                player.setVelocity(pushUpVector);
+            }
+        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
         final double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
@@ -122,28 +121,5 @@ public class SkillFlyingKick extends TargettedSkill {
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
-        }
     }
 }

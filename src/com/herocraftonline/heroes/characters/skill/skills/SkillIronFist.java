@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,27 +14,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
+import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillIronFist extends ActiveSkill {
-
-    private boolean ncpEnabled = false;
 
     public SkillIronFist(Heroes plugin) {
         super(plugin, "IronFist");
@@ -44,10 +41,6 @@ public class SkillIronFist extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill ironfist");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     @Override
@@ -126,7 +119,7 @@ public class SkillIronFist extends ActiveSkill {
                 continue;
             }
 
-            LivingEntity target = (LivingEntity) entity;
+            final LivingEntity target = (LivingEntity) entity;
 
             double individualHPower = hPower;
             double individualVPower = vPower;
@@ -154,23 +147,19 @@ public class SkillIronFist extends ActiveSkill {
             double zDir = targetLoc.getZ() - playerLoc.getZ();
             double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
 
-            xDir = xDir / magnitude * individualHPower;
-            zDir = zDir / magnitude * individualHPower;
+            final double x = xDir / magnitude * individualHPower;
+            final double z = zDir / magnitude * individualHPower;
+            final double y = individualVPower;
 
             // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (target instanceof Player) {
-                    Player targetPlayer = (Player) target;
-                    Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
-                    if (!targetPlayer.isOp()) {
-                        long ncpDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, ncpDuration);
-                        targetHero.addEffect(ncpExemptEffect);
-                    }
+            NCPUtils.applyExemptions(target, new NCPFunction() {
+                
+                @Override
+                public void execute()
+                {
+                    target.setVelocity(new Vector(x, y, z));
                 }
-            }
-
-            target.setVelocity(new Vector(xDir, individualVPower, zDir));
+            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
 
             SlowEffect sEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
             sEffect.types.add(EffectType.DISPELLABLE);
@@ -182,28 +171,5 @@ public class SkillIronFist extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
-        }
     }
 }

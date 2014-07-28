@@ -1,16 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.Bukkit;
+import java.util.List;
+
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -23,11 +14,24 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Util;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillFireblast extends ActiveSkill {
     public VisualEffect fplayer = new VisualEffect();
-    private boolean ncpEnabled = false;
 
     public SkillFireblast(Heroes plugin) {
         super(plugin, "Fireblast");
@@ -36,9 +40,6 @@ public class SkillFireblast extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill fireblast");
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
     }
 
     public String getDescription(Hero hero) {
@@ -113,7 +114,7 @@ public class SkillFireblast extends ActiveSkill {
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
             double horizontalPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.1, false);
-            double veticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+            final double veticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
 
             int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
             int radiusSquared = radius * radius;
@@ -130,7 +131,7 @@ public class SkillFireblast extends ActiveSkill {
                     continue;
 
                 // Damage target
-                LivingEntity target = (LivingEntity) entity;
+                final LivingEntity target = (LivingEntity) entity;
 
                 addSpellTarget(target, hero);
                 damageEntity(target, player, damage, DamageCause.MAGIC, false);
@@ -142,24 +143,17 @@ public class SkillFireblast extends ActiveSkill {
                 double zDir = targetLoc.getZ() - blastLocation.getZ();
                 double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
 
-                xDir = xDir / magnitude * horizontalPower;
-                zDir = zDir / magnitude * horizontalPower;
+                final double x = xDir / magnitude * horizontalPower;
+                final double z = zDir / magnitude * horizontalPower;
 
-                if (ncpEnabled) {
-                    if (target instanceof Player) {
-                        Player targetPlayer = (Player) target;
-                        if (!targetPlayer.isOp()) {
-                            long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
-                            if (duration > 0) {
-                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, duration);
-                                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                                targetCT.addEffect(ncpExemptEffect);
-                            }
-                        }
+                NCPUtils.applyExemptions(target, new NCPFunction() {
+
+                    @Override
+                    public void execute()
+                    {
+                        target.setVelocity(new Vector(x, veticalPower, z));
                     }
-                }
-
-                target.setVelocity(new Vector(xDir, veticalPower, zDir));
+                }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
 
                 break;       // Only hit 1 target.
             }
@@ -168,28 +162,5 @@ public class SkillFireblast extends ActiveSkill {
         }
 
         return SkillResult.NORMAL;
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
-        }
     }
 }

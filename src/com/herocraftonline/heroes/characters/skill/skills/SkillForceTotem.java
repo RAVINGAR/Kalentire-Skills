@@ -1,21 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.NauseaEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
-import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
-import com.herocraftonline.heroes.util.Messaging;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -24,9 +8,25 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class SkillForceTotem extends SkillBaseTotem {
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.NauseaEffect;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
+import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
+import com.herocraftonline.heroes.util.Messaging;
 
-    private boolean ncpEnabled = false;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+
+public class SkillForceTotem extends SkillBaseTotem {
 
     public SkillForceTotem(Heroes plugin) {
         super(plugin, "ForceTotem");
@@ -36,10 +36,6 @@ public class SkillForceTotem extends SkillBaseTotem {
         setDescription("Places a force totem at target location that throws non-partied entites in a $1 radius into the air, dealing $2 damage and disorienting them. Lasts for $3 seconds.");
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
         material = Material.QUARTZ_BLOCK;
-        
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     @Override
@@ -51,29 +47,15 @@ public class SkillForceTotem extends SkillBaseTotem {
     }
 
     @Override
-    public void usePower(Hero hero, Totem totem) {
+    public void usePower(final Hero hero, Totem totem) {
         Player heroP = hero.getPlayer();
-        for(LivingEntity entity : totem.getTargets(hero)) {
+        for(final LivingEntity entity : totem.getTargets(hero)) {
             if(!damageCheck(heroP, entity)) {
                 continue;
             }
             Player player = null;
             if(entity instanceof Player) {
                 player = (Player) entity;
-            }
-            
-            // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (player != null) {
-                    if (!player.isOp()) {
-                        long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false);
-                        if (duration > 0) {
-                            NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
-                            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(entity);
-                            targetCT.addEffect(ncpExemptEffect);
-                        }
-                    }
-                }
             }
             
             CharacterTemplate character = plugin.getCharacterManager().getCharacter(entity);
@@ -108,8 +90,17 @@ public class SkillForceTotem extends SkillBaseTotem {
                 damageEntity(entity, heroP, damage);
             }
             character.addEffect(new NauseaEffect(this, "ForceTotemNauseaEffect", heroP, getDisorientationDuration(hero), getDisorientationLevel(hero), null, getUnapplyText()));
-            entity.setVelocity(new Vector(0, getLaunch(hero), 0));
-            entity.setFallDistance(-512);
+
+            // Let's bypass the nocheat issues...
+            NCPUtils.applyExemptions(entity, new NCPFunction() {
+                
+                @Override
+                public void execute()
+                {
+                    entity.setVelocity(new Vector(0, getLaunch(hero), 0));
+                    entity.setFallDistance(-512);
+                }
+            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
         }
     }
 
@@ -150,28 +141,5 @@ public class SkillForceTotem extends SkillBaseTotem {
 
     public String getUnapplyText() {
         return SkillConfigManager.getRaw(this, SkillSetting.UNAPPLY_TEXT, Messaging.getSkillDenoter() + "$1 is no longer disoriented by a totem's power.");
-    }
-    
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
-        }
     }
 }
