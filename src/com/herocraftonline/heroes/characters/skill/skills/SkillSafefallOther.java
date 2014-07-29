@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -44,7 +45,10 @@ public class SkillSafefallOther extends TargettedSkill {
         if (!(target instanceof Player) || hero.getPlayer().equals(target))
             return SkillResult.INVALID_TARGET;
 
+        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         broadcastExecuteText(hero, target);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        targetHero.addEffect(new SafeFallEffect(this, hero.getPlayer(), duration));
 
         return SkillResult.NORMAL;
     }
