@@ -92,26 +92,12 @@ public class SkillDropTheBass extends ActiveSkill {
                     continue;
 
                 if (memberPlayer.getLocation().distanceSquared(player.getLocation()) <= radiusSquared) {
-                    NCPUtils.applyExemptions(memberPlayer, new NCPFunction() {
-
-                        @Override
-                        public void execute()
-                        {
-                            member.addEffect(new SafeFallEffect(theSkill, player, duration));
-                        }
-                    }, Lists.newArrayList(CheckType.MOVING_NOFALL), duration);
+                    member.addEffect(new SafeFallEffect(theSkill, player, duration));
                 }
             }
         }
         else {
-            NCPUtils.applyExemptions(player, new NCPFunction() {
-                
-                @Override
-                public void execute()
-                {
-                    hero.addEffect(new SafeFallEffect(theSkill, player, duration));                    
-                }
-            }, Lists.newArrayList(CheckType.MOVING_NOFALL), duration);
+            hero.addEffect(new SafeFallEffect(theSkill, player, duration));
         }
 
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
