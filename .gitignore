@@ -16,5 +16,6 @@ buildLocal.xml
 *.ipr
 *.iws
 .idea/
+/.DS_Store
 
 #Specific files to the project

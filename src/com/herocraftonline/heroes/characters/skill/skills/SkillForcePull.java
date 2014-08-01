@@ -1,13 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.skill.*;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,9 +10,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
-public class SkillForcePull extends TargettedSkill {
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 
-    private boolean ncpEnabled = false;
+import fr.neatmonster.nocheatplus.checks.CheckType;
+
+public class SkillForcePull extends TargettedSkill {
 
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
@@ -29,9 +33,6 @@ public class SkillForcePull extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill forcepull");
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
     }
 
     @Override
@@ -65,31 +66,14 @@ public class SkillForcePull extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        // Let's bypass the nocheat issues...
-
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         if (damage > 0) {
             addSpellTarget(target, hero);
-
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
             damageEntity(target, player, damage, DamageCause.MAGIC, false);
-
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-                }
-            }
         }
-
 
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
@@ -116,8 +100,16 @@ public class SkillForcePull extends TargettedSkill {
 
         final double vPower = tempVPower;
 
-        Vector pushUpVector = new Vector(0, vPower, 0);
-        target.setVelocity(pushUpVector);
+        final Vector pushUpVector = new Vector(0, vPower, 0);
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(target, new NCPFunction() {
+
+            @Override
+            public void execute()
+            {
+                target.setVelocity(pushUpVector);
+            }
+        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
 
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
         final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
@@ -150,28 +142,5 @@ public class SkillForcePull extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
 
         return SkillResult.NORMAL;
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
-        }
     }
 }

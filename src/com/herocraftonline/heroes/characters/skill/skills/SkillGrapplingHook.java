@@ -1,23 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,12 +21,27 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillGrapplingHook extends ActiveSkill {
-
-    private boolean ncpEnabled = false;
 
     private Map<Arrow, Long> grapplingHooks = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
@@ -61,10 +70,6 @@ public class SkillGrapplingHook extends ActiveSkill {
         setIdentifiers("skill grapplinghook");
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.VELOCITY_INCREASING, SkillType.FORCE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     public String getDescription(Hero hero) {
@@ -227,7 +232,7 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     private void grappleToLocation(Hero hero, Location targetLoc) {
 
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         Location playerLoc = player.getLocation();
         if (!(playerLoc.getWorld().equals(targetLoc.getWorld())))
@@ -270,7 +275,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         double yDir = (targetLoc.getY() - playerLoc.getY()) / verticalDivider;
         double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
         double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
-        Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+        final Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
 
         // Prevent y velocity increase if told to.
         if (noY) {
@@ -282,23 +287,20 @@ public class SkillGrapplingHook extends ActiveSkill {
             hero.addEffect(new JumpSafeFallEffect(this, player, safeFallDuration));
         }
 
-        // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
-                if (duration > 0) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
-        }
-
         // Grapple!
         player.getWorld().playSound(playerLoc, Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
-        player.setVelocity(vec);
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(player, new NCPFunction() {
+            
+            @Override
+            public void execute()
+            {
+                player.setVelocity(vec);                
+            }
+        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
     }
 
-    private void grappleTargetToPlayer(Hero hero, LivingEntity target) {
+    private void grappleTargetToPlayer(Hero hero, final LivingEntity target) {
 
         Player player = hero.getPlayer();
 
@@ -324,27 +326,19 @@ public class SkillGrapplingHook extends ActiveSkill {
         double xDir = (playerLoc.getX() - targetLoc.getX()) / horizontalDivider;
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / horizontalDivider;
         double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
-        Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
-
-        // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (target instanceof Player) {
-                Player targetPlayer = (Player) target;
-
-                if (!targetPlayer.isOp()) {
-                    long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
-                    if (duration > 0) {
-                        NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
-                        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                        targetCT.addEffect(ncpExemptEffect);
-                    }
-                }
-            }
-        }
+        final Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
 
         // Grapple!
         player.getWorld().playSound(playerLoc, Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
-        target.setVelocity(vec);
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(player, new NCPFunction() {
+            
+            @Override
+            public void execute()
+            {
+                target.setVelocity(vec);
+            }
+        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
     }
 
     // Buff effect used to keep track of grappling hook uses
@@ -412,30 +406,6 @@ public class SkillGrapplingHook extends ActiveSkill {
             types.add(EffectType.JUMP_BOOST);
 
             addMobEffect(8, duration / 1000 * 20, 5, false);
-        }
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
-
         }
     }
 }

@@ -1,9 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.characters.skill.*;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -17,11 +13,14 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlackjack extends TargettedSkill {
 
-    private boolean ncpEnabled = false;
     public SkillBlackjack(Heroes plugin) {
         super(plugin, "Blackjack");
         setDescription("Strike your target with a Blackjack, dealing $1 damage and stunning the target for $2 seconds. If you are invisible or sneaking, you will instead deal $3 damage.");
@@ -29,9 +28,6 @@ public class SkillBlackjack extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill blackjack");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.STEALTHY);
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     @Override
@@ -79,13 +75,6 @@ public class SkillBlackjack extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
-                hero.addEffect(ncpExemptEffect);
-            }
-        }
-
         int str = hero.getAttributeValue(AttributeType.STRENGTH);
 
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
@@ -131,13 +120,6 @@ public class SkillBlackjack extends TargettedSkill {
             }
         }
 
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-            }
-        }
-
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
@@ -145,28 +127,5 @@ public class SkillBlackjack extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
-        }
     }
 }

@@ -1,21 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.griefcraft.lwc.LWC;
-import com.griefcraft.lwc.LWCPlugin;
-import com.griefcraft.model.Protection;
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.server.v1_7_R4.EntityHuman;
 import net.minecraft.server.v1_7_R4.WorldServer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -30,13 +20,27 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.BlockIterator;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.griefcraft.lwc.LWC;
+import com.griefcraft.lwc.LWCPlugin;
+import com.griefcraft.model.Protection;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillTelekinesis extends ActiveSkill {
 
     private boolean lwcEnabled = false;
-    private boolean ncpEnabled = false;
 
     public SkillTelekinesis(Heroes plugin) {
         super(plugin, "Telekinesis");
@@ -45,9 +49,6 @@ public class SkillTelekinesis extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill telekinesis");
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
 
         if (Bukkit.getServer().getPluginManager().getPlugin("LWC") != null)
             lwcEnabled = true;
@@ -70,7 +71,7 @@ public class SkillTelekinesis extends ActiveSkill {
     @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false);
         Block targetBlock = player.getTargetBlock(null, maxDist);
@@ -123,13 +124,6 @@ public class SkillTelekinesis extends ActiveSkill {
             }
 
             if (canInteractWithBlock) {
-                // Let's bypass the nocheat issues...
-                if (ncpEnabled) {
-                    if (!player.isOp()) {
-                        NCPExemptionManager.exemptPermanently(player, CheckType.BLOCKINTERACT);
-                    }
-                }
-
                 // LWC plugin handles the Iron door stuff themselves, let them do it if we're dealing with an LWC.
                 Material blockType = targetBlock.getType();
                 if (blockType.equals(Material.IRON_DOOR_BLOCK) && isLWCd) {
@@ -146,9 +140,18 @@ public class SkillTelekinesis extends ActiveSkill {
                         hero.unbind(heldItem);
                     }
 
-                    // Interact with the block
-                    PlayerInteractEvent fakeInteractEvent = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getItemInHand(), targetBlock, BlockFace.UP);
-                    plugin.getServer().getPluginManager().callEvent(fakeInteractEvent);
+                    // Let's bypass the nocheat issues...
+                    final Block clickedBlock = targetBlock;
+                    NCPUtils.applyExemptions(player, new NCPFunction() {
+                        
+                        @Override
+                        public void execute()
+                        {
+                            // Interact with the block
+                            PlayerInteractEvent fakeInteractEvent = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getItemInHand(), clickedBlock, BlockFace.UP);
+                            plugin.getServer().getPluginManager().callEvent(fakeInteractEvent);
+                        }
+                    }, Lists.newArrayList(CheckType.BLOCKINTERACT), 0);
 
                     // Give their bind back
                     if (hasBind)
@@ -201,13 +204,6 @@ public class SkillTelekinesis extends ActiveSkill {
                     //                    if (topHalf.getType().equals(Material.IRON_DOOR_BLOCK)) {
                     //                        topHalf.setData((byte) (topHalf.getData() ^ 0x4));
                     //                    }
-                }
-
-                // Let's bypass the nocheat issues...
-                if (ncpEnabled) {
-                    if (!player.isOp()) {
-                        NCPExemptionManager.unexempt(player, CheckType.BLOCKINTERACT);
-                    }
                 }
 
                 return SkillResult.NORMAL;

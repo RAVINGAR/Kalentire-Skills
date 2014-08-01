@@ -1,19 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.classes.HeroClass;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -26,9 +12,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-public class SkillMortalWound extends TargettedSkill {
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.classes.HeroClass;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
-    private boolean ncpEnabled = false;
+public class SkillMortalWound extends TargettedSkill {
 
     private String applyText;
     private String expireText;
@@ -41,10 +41,6 @@ public class SkillMortalWound extends TargettedSkill {
         setIdentifiers("skill mortalwound", "skill mwound");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
-
     }
 
     @Override
@@ -88,14 +84,6 @@ public class SkillMortalWound extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
-                hero.addEffect(ncpExemptEffect);
-            }
-        }
-
         double damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
@@ -109,14 +97,6 @@ public class SkillMortalWound extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.MOBSPAWNER_FLAMES, 3);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F);
-
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-            }
-        }
-
 
         return SkillResult.NORMAL;
     }
@@ -182,29 +162,6 @@ public class SkillMortalWound extends TargettedSkill {
                 MortalWound mEffect = (MortalWound) event.getHero().getEffect("MortalWound");
                 event.setAmount((event.getAmount() * mEffect.healMultiplier));
             }
-        }
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
         }
     }
 }

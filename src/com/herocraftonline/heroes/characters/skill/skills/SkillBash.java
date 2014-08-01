@@ -1,9 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.skill.*;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -14,11 +10,14 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBash extends TargettedSkill {
 
-    private boolean ncpEnabled = false;
     public SkillBash(Heroes plugin) {
         super(plugin, "Bash");
         setDescription("Deliver a strong bash to your target, dealing $1 physical damage and interrupting their casting.");
@@ -56,13 +55,6 @@ public class SkillBash extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
-                hero.addEffect(ncpExemptEffect);
-            }
-        }
-
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
@@ -72,39 +64,7 @@ public class SkillBash extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.0F);
 
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
-            }
-        }
-
-
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;
-    }
-
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.FIGHT);
-        }
     }
 }

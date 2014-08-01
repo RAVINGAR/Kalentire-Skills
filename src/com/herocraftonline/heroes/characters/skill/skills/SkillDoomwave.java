@@ -1,18 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -21,10 +20,22 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillDoomwave extends ActiveSkill {
 
@@ -37,8 +48,6 @@ public class SkillDoomwave extends ActiveSkill {
         }
     };
 
-    private boolean ncpEnabled = false;
-
     public SkillDoomwave(Heroes plugin) {
         super(plugin, "Doomwave");
         setDescription("Unleash a wave of doom around you. Doomwave will launch $1 fiery ender pearls in all directions around you. Each pearl will deal $2 damage to targets hit, and teleport you to each location.");
@@ -47,10 +56,6 @@ public class SkillDoomwave extends ActiveSkill {
         setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_FIRE, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
         setIdentifiers("skill doomwave");
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
-            ncpEnabled = true;
-
     }
 
     @Override
@@ -84,49 +89,40 @@ public class SkillDoomwave extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
-        int numEnderPearls = SkillConfigManager.getUseSetting(hero, this, "enderpearls-launched", 12, false);
         double numEnderPearlsIncrease = SkillConfigManager.getUseSetting(hero, this, "enderpearls-launched-per-intellect", 0.325, false);
-        numEnderPearls += (int) (numEnderPearlsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        final int numEnderPearls = SkillConfigManager.getUseSetting(hero, this, "enderpearls-launched", 12, false)
+                + (int) (numEnderPearlsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         broadcastExecuteText(hero);
 
-        // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this);
-                hero.addEffect(ncpExemptEffect);
-            }
-        }
+        final long time = System.currentTimeMillis();
+        final Random ranGen = new Random((int) ((time / 2.0) * 12));
 
-        long time = System.currentTimeMillis();
-        Random ranGen = new Random((int) ((time / 2.0) * 12));
-
-        double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.75, false);
-
-
-        for (double i = 0; i < numEnderPearls; i++) {
-            EnderPearl doomPearl = player.launchProjectile(EnderPearl.class);
-            doomPearl.setFireTicks(100);
-
-            double randomX = ranGen.nextGaussian();
-            double randomY = ranGen.nextGaussian();
-            double randomZ = ranGen.nextGaussian();
-
-            Vector vel = new Vector(randomX, randomY, randomZ);
-            doomPearl.setVelocity(vel.multiply(velocityMultiplier));
-
-            doomPearls.put(doomPearl, time);
-        }
+        final double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.75, false);
 
         // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                    hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+        NCPUtils.applyExemptions(player, new NCPFunction() {
+
+            @Override
+            public void execute()
+            {
+                for (double i = 0; i < numEnderPearls; i++) {
+                    EnderPearl doomPearl = player.launchProjectile(EnderPearl.class);
+                    doomPearl.setFireTicks(100);
+
+                    double randomX = ranGen.nextGaussian();
+                    double randomY = ranGen.nextGaussian();
+                    double randomZ = ranGen.nextGaussian();
+
+                    Vector vel = new Vector(randomX, randomY, randomZ);
+                    doomPearl.setVelocity(vel.multiply(velocityMultiplier));
+
+                    doomPearls.put(doomPearl, time);
+                }
             }
-        }
+        }, Lists.newArrayList(CheckType.BLOCKPLACE_SPEED), 0);
 
         return SkillResult.NORMAL;
     }
@@ -188,29 +184,6 @@ public class SkillDoomwave extends ActiveSkill {
                 //Adds an Effect to Prevent Multihit
                 plugin.getCharacterManager().getCharacter(targetLE).addEffect(new ExpirableEffect(skill, "DoomWaveAntiMultiEffect", (Player) dmger, 500));
             }
-        }
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_BLOCKPLACE_SPEED");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.BLOCKPLACE_SPEED);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.BLOCKPLACE_SPEED);
         }
     }
 }

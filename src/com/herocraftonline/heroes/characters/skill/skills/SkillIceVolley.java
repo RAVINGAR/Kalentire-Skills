@@ -1,22 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,12 +22,27 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillIceVolley extends ActiveSkill {
-
-    private boolean ncpEnabled = false;
 
     private Map<Arrow, Long> iceVolleyShots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
@@ -57,10 +67,6 @@ public class SkillIceVolley extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     public String getDescription(Hero hero) {
@@ -127,7 +133,6 @@ public class SkillIceVolley extends ActiveSkill {
             this.skill = skill;
         }
 
-        @SuppressWarnings("deprecation")
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityShootBow(EntityShootBowEvent event) {
             if ((!(event.getEntity() instanceof Player)) || (!(event.getProjectile() instanceof Arrow))) {
@@ -141,7 +146,7 @@ public class SkillIceVolley extends ActiveSkill {
             // Get the effect from the player, and fire "up to" the set max arrows per shot.
             IceVolleyShotEffect msEffect = (IceVolleyShotEffect) hero.getEffect("IceVolleyShot");
 
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
 
             int maxArrowsToShoot = msEffect.getMaxArrowsPerShot();
 
@@ -191,12 +196,12 @@ public class SkillIceVolley extends ActiveSkill {
             actualArrow.remove();
 
             double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.6, false);
-            velocityMultiplier = force * velocityMultiplier;    // Reduce the velocity based on how far back they pulled their bow.
+            final double adjustedVelocityMultiplier = force * velocityMultiplier;    // Reduce the velocity based on how far back they pulled their bow.
 
             // Create arrow spread
             double degrees = SkillConfigManager.getUseSetting(hero, skill, "degrees", 65.0, false);
-            double degreesRad = degrees * (Math.PI / 180);      // Convert degrees to radians
-            double diff = degreesRad / (arrowsToShoot - 1);           // Create our difference for the spread
+            final double degreesRad = degrees * (Math.PI / 180);      // Convert degrees to radians
+            final double diff = degreesRad / (arrowsToShoot - 1);           // Create our difference for the spread
 
             // Center the projectile direction based on yaw, and then convert it to radians.
             double degreeOffset = (90.0 - (degrees / 2.0));
@@ -218,34 +223,28 @@ public class SkillIceVolley extends ActiveSkill {
                     broadcast(player.getLocation(), shotText, player.getName());
             }
 
-            // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
-
             // Create a multiplier that lowers velocity based on how high or low the player is looking
-            double pitchMultiplier = Math.abs(Math.sin(Math.abs(pitch) - 90));
-
-            // Fire arrows from the center and move clockwise towards the end.
-            for (double a = actualCenterDegreesRad; a <= degreesRad; a += diff) {
-                shootIceVolleyArrow(player, yaw + a, pitchMultiplier, velocityMultiplier);
-            }
-
-            // Fire arrows from the start and move clockwise towards the center
-            for (double a = 0; a < actualCenterDegreesRad; a += diff) {
-                shootIceVolleyArrow(player, yaw + a, pitchMultiplier, velocityMultiplier);
-            }
+            final double pitchMultiplier = Math.abs(Math.sin(Math.abs(pitch) - 90));
 
             // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                if (!player.isOp()) {
-                    if (hero.hasEffect("NCPExemptionEffect_FIGHT"))
-                        hero.removeEffect(hero.getEffect("NCPExemptionEffect_FIGHT"));
+            final double centerRadians = actualCenterDegreesRad;
+            final double centerYaw = yaw;
+            NCPUtils.applyExemptions(player, new NCPFunction() {
+                
+                @Override
+                public void execute()
+                {
+                    // Fire arrows from the center and move clockwise towards the end.
+                    for (double a = centerRadians; a <= degreesRad; a += diff) {
+                        shootIceVolleyArrow(player, centerYaw + a, pitchMultiplier, adjustedVelocityMultiplier);
+                    }
+
+                    // Fire arrows from the start and move clockwise towards the center
+                    for (double a = 0; a < centerRadians; a += diff) {
+                        shootIceVolleyArrow(player, centerYaw + a, pitchMultiplier, adjustedVelocityMultiplier);
+                    }
                 }
-            }
+            }, Lists.newArrayList(CheckType.BLOCKPLACE_SPEED), 0);
 
             // Remove the arrows from the players inventory
             int removedArrows = 0;
@@ -352,29 +351,6 @@ public class SkillIceVolley extends ActiveSkill {
 
         public void setMaxArrowsPerShot(int maxArrowsPerShot) {
             this.maxArrowsPerShot = maxArrowsPerShot;
-        }
-    }
-
-    private class NCPExemptionEffect extends Effect {
-
-        public NCPExemptionEffect(Skill skill) {
-            super(skill, "NCPExemptionEffect_FIGHT");
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.BLOCKPLACE_SPEED);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.BLOCKPLACE_SPEED);
         }
     }
 }

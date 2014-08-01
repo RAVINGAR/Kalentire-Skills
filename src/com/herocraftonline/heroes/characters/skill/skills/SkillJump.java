@@ -1,18 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.Bukkit;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -21,12 +11,21 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.Messaging;
+
+import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillJump extends ActiveSkill {
-
-    private boolean ncpEnabled = false;
 
     public SkillJump(Heroes plugin) {
         super(plugin, "Jump");
@@ -35,10 +34,6 @@ public class SkillJump extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill jump");
         setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-            ncpEnabled = true;
-        }
     }
 
     @Override
@@ -62,7 +57,7 @@ public class SkillJump extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
@@ -73,17 +68,6 @@ public class SkillJump extends ActiveSkill {
         }
 
         broadcastExecuteText(hero);
-
-        // Let's bypass the nocheat issues...
-        if (ncpEnabled) {
-            if (!player.isOp()) {
-                long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false);
-                if (duration > 0) {
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, player, duration);
-                    hero.addEffect(ncpExemptEffect);
-                }
-            }
-        }
 
         // Calculate jump values
         float pitch = player.getEyeLocation().getPitch();
@@ -117,7 +101,7 @@ public class SkillJump extends ActiveSkill {
         if (weakenVelocity)
             vPower *= 0.75;
 
-        Vector velocity = player.getVelocity().setY(vPower);
+        final Vector velocity = player.getVelocity().setY(vPower);
 
         Vector directionVector = player.getLocation().getDirection();
         directionVector.setY(0);
@@ -134,39 +118,21 @@ public class SkillJump extends ActiveSkill {
 
         velocity.multiply(new Vector(hPower, 1, hPower));
 
-        // Jump!
-        player.setVelocity(velocity);
-        player.setFallDistance(-8f);
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(player, new NCPFunction() {
+            
+            @Override
+            public void execute()
+            {
+                // Jump!
+                player.setVelocity(velocity);
+                player.setFallDistance(-8f);
+            }
+        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
         player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
 
         return SkillResult.NORMAL;
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration, null, null);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.unexempt(player, CheckType.MOVING);
-
-        }
     }
 
     private static final Set<Material> noJumpMaterials;

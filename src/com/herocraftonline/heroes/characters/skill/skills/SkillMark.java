@@ -1,4 +1,13 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
+
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -10,14 +19,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
-import java.util.logging.Level;
 
 public class SkillMark extends ActiveSkill {
 
@@ -112,6 +113,7 @@ public class SkillMark extends ActiveSkill {
                 }
             }
 
+            hero.setSkillSetting("Recall", "server", plugin.getServerName());
             hero.setSkillSetting("Recall", "world", loc.getWorld().getName());
             hero.setSkillSetting("Recall", "x", loc.getX());
             hero.setSkillSetting("Recall", "y", loc.getY());
@@ -128,6 +130,7 @@ public class SkillMark extends ActiveSkill {
     }
 
     public static void clearStoredData(ConfigurationSection skillSettings) {
+        skillSettings.set("server", null);
         skillSettings.set("world", null);
         skillSettings.set("x", null);
         skillSettings.set("y", null);

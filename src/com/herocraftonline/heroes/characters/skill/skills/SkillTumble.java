@@ -9,23 +9,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillTumble extends PassiveSkill {
-
-    private boolean ncpEnabled = false;
 
     public SkillTumble(Heroes plugin) {
         super(plugin, "Tumble");
@@ -33,8 +32,6 @@ public class SkillTumble extends PassiveSkill {
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) ncpEnabled = true;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class SkillTumble extends PassiveSkill {
         }
 
         @EventHandler(priority = EventPriority.LOW)
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onEntityDamage(final EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
             }
@@ -98,44 +95,20 @@ public class SkillTumble extends PassiveSkill {
             fallDistance -= distance;
 
             // Let's bypass the nocheat issues...
-            if (ncpEnabled) {
-                Player player = (Player) event.getEntity();
-                if (!player.isOp()) {
-                    long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", Integer.valueOf(100), false);
-                    NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, (Player) event.getEntity(), duration);
-                    hero.addEffect(ncpExemptEffect);
+            final double fallDamage = fallDistance;
+            NCPUtils.applyExemptions(event.getEntity(), new NCPFunction() {
+                
+                @Override
+                public void execute()
+                {
+                    if (fallDamage <= 0) {
+                        event.setCancelled(true);
+                    }
+                    else {
+                        event.setDamage(fallDamage);
+                    }
                 }
-            }
-
-            if (fallDistance <= 0) {
-                event.setCancelled(true);
-            }
-            else {
-                event.setDamage(fallDistance);
-            }
-        }
-    }
-
-    private class NCPExemptionEffect extends ExpirableEffect {
-
-        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
-            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING_NOFALL);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
+            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", Integer.valueOf(100), false));
         }
     }
 }
