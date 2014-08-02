@@ -485,7 +485,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     private boolean isRemoteServerLocation(ConfigurationSection skillSettings) {
         
         return skillSettings != null && StringUtils.isNotEmpty(skillSettings.getString("server"))
-                && !plugin.getServerName().equals(skillSettings.getString("server"))
+                && !skillSettings.getString("server").equals(plugin.getServerName())
                 && plugin.getServerNames().contains(skillSettings.getString("server"));
     }
 
