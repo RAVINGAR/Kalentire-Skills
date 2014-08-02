@@ -5,10 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -49,6 +51,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     private HeroTowns ht;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    private Set<String> pendingTeleport = new HashSet<>();
     private Map<String, Location> playerLocations = new Hashtable<>();
 
     public SkillRecall(Heroes plugin) {
@@ -208,8 +211,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
                             float yaw = currentLocation.getYaw();
 
                             // Validate world checks
-                            List<String> disabledWorlds = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "disable-worlds"));
-                            if (isDisabledWorld(player.getWorld().getName(), disabledWorlds)) {
+                            if (isDisabledWorld(player.getWorld().getName(), SkillConfigManager.getUseSettingKeys(hero, this, "disable-worlds"))) {
                                 Messaging.send(player, "Magic has blocked your recall in this world");
                                 return SkillResult.FAIL;
                             }
@@ -319,12 +321,27 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
 
             player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, recallRequest.toByteArray());
 
+            // Run this delayed task to check if the recall failed
+            final String playerName = player.getName();
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+
+                @Override
+                public void run()
+                {
+                    if (pendingTeleport.remove(playerName)) {
+                        Player player = Bukkit.getPlayer(playerName);
+                        if (player != null) {
+                            Messaging.send(player, "Teleport fizzled.");
+                        }
+                    }
+                }
+            }, 40);
+
             return SkillResult.NORMAL;
         }
 
         // Validate world checks
-        List<String> disabledWorlds = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"));
-        if (isDisabledWorld(player.getWorld().getName(), disabledWorlds)) {
+        if (isDisabledWorld(player.getWorld().getName(), SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"))) {
             Messaging.send(player, "Magic has blocked your recall in this world");
             return SkillResult.FAIL;
         }
@@ -414,8 +431,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
                 }
             }
             catch (IOException e) {
-                // TODO: handle error?
-                e.printStackTrace();
+                Heroes.log(Level.SEVERE, "SkillRecall: Could not parse RecallRequest message from remote server");
             }
             break;
         case "RunestoneRequest":
@@ -430,10 +446,20 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         Location location = playerLocations.remove(player.getName());
         if (location != null) {
             player.teleport(location);
+            location.getWorld().playSound(location, Sound.WITHER_SPAWN, 0.5F, 1.0F);
         }
     }
 
-    private boolean isDisabledWorld(String world, List<String> disabledWorlds) {
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (pendingTeleport.remove(player.getName())) {
+            broadcastExecuteText(plugin.getCharacterManager().getHero(player));
+            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        }
+    }
+
+    private boolean isDisabledWorld(String world, Set<String> disabledWorlds) {
         boolean isDisabled = false;
 
         for (String disabledWorld : disabledWorlds) {
