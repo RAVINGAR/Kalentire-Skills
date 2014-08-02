@@ -114,7 +114,9 @@ public class SkillMark extends ActiveSkill {
                 }
             }
 
-            hero.setSkillSetting("Recall", "server", plugin.getServerName());
+            if (plugin.getServerName() != null) {
+                hero.setSkillSetting("Recall", "server", plugin.getServerName());
+            }
             hero.setSkillSetting("Recall", "world", loc.getWorld().getName());
             hero.setSkillSetting("Recall", "x", loc.getX());
             hero.setSkillSetting("Recall", "y", loc.getY());
