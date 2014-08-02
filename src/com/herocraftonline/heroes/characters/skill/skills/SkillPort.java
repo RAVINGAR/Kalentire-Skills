@@ -46,7 +46,7 @@ import com.herocraftonline.heroes.util.Messaging;
 public class SkillPort extends ActiveSkill implements Listener, PluginMessageListener {
 
     private Set<String> pendingPort = new HashSet<>();
-    private Map<String, String> onJoinSkillSettings = new Hashtable<>();
+    private Map<String, Info<String>> onJoinSkillSettings = new Hashtable<>();
 
 	public SkillPort(Heroes plugin) {
 		super(plugin, "Port");
@@ -277,7 +277,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
                 String playerNames = msgin.readUTF();
                 for (String playerName : Splitter.on(",").split(playerNames)) {
                     // cache the location for onPlayerJoin
-                    onJoinSkillSettings.put(playerName, portInfo);
+                    onJoinSkillSettings.put(playerName, new Info<String>(portInfo));
     
                     // send the player to this server
                     ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
@@ -300,9 +300,9 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Hero hero = plugin.getCharacterManager().getHero(player);
-        String portInfo = onJoinSkillSettings.remove(player.getName());
-        if (portInfo != null) {
-            SkillResult result = doPort(hero, portInfo, false);
+        Info<String> portInfo = onJoinSkillSettings.remove(player.getName());
+        if (portInfo != null && portInfo.isNotExpired()) {
+            SkillResult result = doPort(hero, portInfo.getInfo(), false);
             if (!SkillResult.NORMAL.equals(result)) {
                 player.teleport(player.getWorld().getSpawnLocation());
                 Messaging.send(player, "Teleport fizzled.");
@@ -316,6 +316,35 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         if (pendingPort.remove(player.getName())) {
             broadcastExecuteText(plugin.getCharacterManager().getHero(player));
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        }
+    }
+
+    class Info<T>
+    {
+        private final static long TIMEOUT = 10 * 1000; // 10s
+    
+        private final long timeStamp;
+        private final T info;
+    
+        public Info(final T info)
+        {
+            timeStamp = System.currentTimeMillis();
+            this.info = info;
+        }
+    
+        public T getInfo()
+        {
+            return info;
+        }
+
+        public boolean isExpired()
+        {
+            return System.currentTimeMillis() - timeStamp > TIMEOUT;
+        }
+
+        public boolean isNotExpired()
+        {
+            return !isExpired();
         }
     }
 }

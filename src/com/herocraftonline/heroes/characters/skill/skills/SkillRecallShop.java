@@ -52,7 +52,7 @@ public class SkillRecallShop extends ActiveSkill implements Listener, PluginMess
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     private Set<String> pendingTeleport = new HashSet<>();
-    private Map<String, ConfigurationSection> onJoinSkillSettings = new Hashtable<>();
+    private Map<String, Info<ConfigurationSection>> onJoinSkillSettings = new Hashtable<>();
 
     public SkillRecallShop(Heroes plugin) {
         super(plugin, "RecallShop");
@@ -426,7 +426,7 @@ public class SkillRecallShop extends ActiveSkill implements Listener, PluginMess
                 skillSettings.set("pitch", msgin.readUTF());
 
                 // cache the location for onPlayerJoin
-                onJoinSkillSettings.put(playerName, skillSettings);
+                onJoinSkillSettings.put(playerName, new Info<ConfigurationSection>(skillSettings));
 
                 // send the player to this server
                 ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
@@ -450,9 +450,9 @@ public class SkillRecallShop extends ActiveSkill implements Listener, PluginMess
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Hero hero = plugin.getCharacterManager().getHero(player);
-        ConfigurationSection skillSettings = onJoinSkillSettings.remove(player.getName());
-        if (skillSettings != null) {
-            SkillResult result = doTeleport(hero, skillSettings, false);
+        Info<ConfigurationSection> skillSettings = onJoinSkillSettings.remove(player.getName());
+        if (skillSettings != null && skillSettings.isNotExpired()) {
+            SkillResult result = doTeleport(hero, skillSettings.getInfo(), false);
             if (!SkillResult.NORMAL.equals(result)) {
                 player.teleport(player.getWorld().getSpawnLocation());
                 Messaging.send(player, "Teleport fizzled.");
@@ -517,6 +517,35 @@ public class SkillRecallShop extends ActiveSkill implements Listener, PluginMess
         }
         catch (Exception ex) {
             return false;
+        }
+    }
+
+    class Info<T>
+    {
+        private final static long TIMEOUT = 10 * 1000; // 10s
+    
+        private final long timeStamp;
+        private final T info;
+    
+        public Info(final T info)
+        {
+            timeStamp = System.currentTimeMillis();
+            this.info = info;
+        }
+    
+        public T getInfo()
+        {
+            return info;
+        }
+
+        public boolean isExpired()
+        {
+            return System.currentTimeMillis() - timeStamp > TIMEOUT;
+        }
+
+        public boolean isNotExpired()
+        {
+            return !isExpired();
         }
     }
 }
