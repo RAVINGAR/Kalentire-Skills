@@ -344,7 +344,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         return doTeleport(hero, skillSettings, true);
     }
 
-    private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isLocal)
+    private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isDeparting)
     {
         Player player = hero.getPlayer();
 
@@ -386,7 +386,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             }
         }
 
-        if (isLocal) {
+        if (isDeparting) {
             broadcastExecuteText(hero);
     
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);

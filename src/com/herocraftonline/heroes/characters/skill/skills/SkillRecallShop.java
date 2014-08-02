@@ -1,5 +1,35 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -14,22 +44,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import java.io.*;
-import java.util.*;
-import java.util.logging.Level;
 
 public class SkillRecallShop extends ActiveSkill implements Listener, PluginMessageListener {
 
@@ -330,7 +344,7 @@ public class SkillRecallShop extends ActiveSkill implements Listener, PluginMess
         return doTeleport(hero, skillSettings, true);
     }
 
-    private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isLocal)
+    private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isDeparting)
     {
         Player player = hero.getPlayer();
 
@@ -340,14 +354,14 @@ public class SkillRecallShop extends ActiveSkill implements Listener, PluginMess
             return SkillResult.FAIL;
         }
 
-        World world = SkillMarkShop.getValidWorld(skillSettings, player.getName());
+        World world = SkillMark.getValidWorld(skillSettings, player.getName());
         if (world == null) {
             return SkillResult.FAIL;
         }
 
         double[] xyzyp;
         try {
-            xyzyp = SkillMarkShop.createLocationData(skillSettings);
+            xyzyp = SkillMark.createLocationData(skillSettings);
         }
         catch (IllegalArgumentException e) {
             Messaging.send(player, "Your recall location is improperly set!");
@@ -372,7 +386,7 @@ public class SkillRecallShop extends ActiveSkill implements Listener, PluginMess
             }
         }
 
-        if (isLocal) {
+        if (isDeparting) {
             broadcastExecuteText(hero);
     
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
