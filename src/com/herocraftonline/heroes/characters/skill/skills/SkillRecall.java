@@ -52,7 +52,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     private Set<String> pendingTeleport = new HashSet<>();
-    private Map<String, Location> playerLocations = new Hashtable<>();
+    private Map<String, ConfigurationSection> onJoinSkillSettings = new Hashtable<>();
 
     public SkillRecall(Heroes plugin) {
         super(plugin, "Recall");
@@ -97,7 +97,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     }
 
     public SkillResult use(Hero hero, String[] args) {
-        final Player player = hero.getPlayer();
+        Player player = hero.getPlayer();
 
         // RUNESTONE RECALL FUNCTIONALITY
         ItemStack heldItem = player.getItemInHand();
@@ -340,6 +340,13 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             return SkillResult.NORMAL;
         }
 
+        return doTeleport(hero, skillSettings, true);
+    }
+
+    private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isLocal)
+    {
+        Player player = hero.getPlayer();
+
         // Validate world checks
         if (isDisabledWorld(player.getWorld().getName(), SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"))) {
             Messaging.send(player, "Magic has blocked your recall in this world");
@@ -378,9 +385,11 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             }
         }
 
-        broadcastExecuteText(hero);
-
-        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        if (isLocal) {
+            broadcastExecuteText(hero);
+    
+            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        }
 
         player.teleport(teleportLocation);
 
@@ -414,21 +423,17 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
                 skillSettings.set("z", msgin.readUTF());
                 skillSettings.set("yaw", msgin.readUTF());
                 skillSettings.set("pitch", msgin.readUTF());
-                if (isValidLocation(playerName, skillSettings)) {
-                    // cache the location for onPlayerJoin
-                    double[] xyzyp = SkillMark.createLocationData(skillSettings);
-                    Location teleportLocation = new Location(Bukkit.getWorld(skillSettings.getString("world")),
-                            xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
-                    playerLocations.put(playerName, teleportLocation);
 
-                    // send the player to this server
-                    ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
-                    connectOther.writeUTF("ConnectOther");
-                    connectOther.writeUTF(playerName);
-                    connectOther.writeUTF(plugin.getServerName());
+                // cache the location for onPlayerJoin
+                onJoinSkillSettings.put(playerName, skillSettings);
 
-                    player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, connectOther.toByteArray());
-                }
+                // send the player to this server
+                ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
+                connectOther.writeUTF("ConnectOther");
+                connectOther.writeUTF(playerName);
+                connectOther.writeUTF(plugin.getServerName());
+
+                player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, connectOther.toByteArray());
             }
             catch (IOException e) {
                 Heroes.log(Level.SEVERE, "SkillRecall: Could not parse RecallRequest message from remote server");
@@ -443,10 +448,13 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Location location = playerLocations.remove(player.getName());
-        if (location != null) {
-            player.teleport(location);
-            location.getWorld().playSound(location, Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        Hero hero = plugin.getCharacterManager().getHero(player);
+        ConfigurationSection skillSettings = onJoinSkillSettings.remove(player.getName());
+        if (skillSettings != null) {
+            SkillResult result = doTeleport(hero, skillSettings, false);
+            if (!SkillResult.NORMAL.equals(result)) {
+                Messaging.send(player, "Teleport fizzled.");
+            }
         }
     }
 
@@ -479,12 +487,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
                 && plugin.getServerNames().contains(skillSettings.getString("server"));
     }
 
-	private boolean isValidLocation(String playerName, ConfigurationSection skillSettings) {
-        // TODO: do proper validation
-        return true;
-    }
-
-    private boolean isValidUses(String uses, Player player) {
+	private boolean isValidUses(String uses, Player player) {
         if (uses.equals("unlimited")) {
             return true;
         }
