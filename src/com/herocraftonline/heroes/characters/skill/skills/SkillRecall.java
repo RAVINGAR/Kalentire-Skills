@@ -319,6 +319,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             recallRequest.writeShort(msgbytes.toByteArray().length);
             recallRequest.write(msgbytes.toByteArray());
 
+            pendingTeleport.add(player.getName());
             player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, recallRequest.toByteArray());
 
             // Run this delayed task to check if the recall failed
