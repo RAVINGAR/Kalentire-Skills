@@ -27,14 +27,16 @@ public class SkillMark extends ActiveSkill {
     private HeroTowns ht;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    protected String skillSettingsName;
 
-    public SkillMark(Heroes plugin) {
-        super(plugin, "Mark");
+    protected SkillMark(Heroes plugin, String name) {
+        super(plugin, name);
         setDescription("You mark a location for use with recall.");
         setUsage("/skill mark <info|reset>");
         setArgumentRange(0, 1);
         setIdentifiers("skill mark");
         setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
+        skillSettingsName = "Recall";
 
         try {
             //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
@@ -50,6 +52,10 @@ public class SkillMark extends ActiveSkill {
         catch (Exception e) {
             Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
         }
+    }
+
+    public SkillMark(Heroes plugin) {
+        this(plugin, "Mark");
     }
 
     @Override
@@ -73,7 +79,7 @@ public class SkillMark extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        ConfigurationSection skillSettings = hero.getSkillSettings("Recall");
+        ConfigurationSection skillSettings = hero.getSkillSettings(skillSettingsName);
 
         if (args.length > 0 && args[0].equalsIgnoreCase("reset")) {
             clearStoredData(skillSettings);
@@ -115,14 +121,14 @@ public class SkillMark extends ActiveSkill {
             }
 
             if (plugin.getServerName() != null) {
-                hero.setSkillSetting("Recall", "server", plugin.getServerName());
+                hero.setSkillSetting(skillSettingsName, "server", plugin.getServerName());
             }
-            hero.setSkillSetting("Recall", "world", loc.getWorld().getName());
-            hero.setSkillSetting("Recall", "x", loc.getX());
-            hero.setSkillSetting("Recall", "y", loc.getY());
-            hero.setSkillSetting("Recall", "z", loc.getZ());
-            hero.setSkillSetting("Recall", "yaw", (double) loc.getYaw());
-            hero.setSkillSetting("Recall", "pitch", (double) loc.getPitch());
+            hero.setSkillSetting(skillSettingsName, "world", loc.getWorld().getName());
+            hero.setSkillSetting(skillSettingsName, "x", loc.getX());
+            hero.setSkillSetting(skillSettingsName, "y", loc.getY());
+            hero.setSkillSetting(skillSettingsName, "z", loc.getZ());
+            hero.setSkillSetting(skillSettingsName, "yaw", (double) loc.getYaw());
+            hero.setSkillSetting(skillSettingsName, "pitch", (double) loc.getPitch());
             Object[] obj = new Object[] { loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() };
             Messaging.send(player, "You have marked a new location on $1 at: $2, $3, $4", obj);
 

@@ -54,8 +54,8 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     private Set<String> pendingTeleport = new HashSet<>();
     private Map<String, Info<ConfigurationSection>> onJoinSkillSettings = new Hashtable<>();
 
-    public SkillRecall(Heroes plugin) {
-        super(plugin, "Recall");
+    protected SkillRecall(Heroes plugin, String name) {
+        super(plugin, name);
         setDescription("You recall to your marked location. If you are holding a Runestone, you recall to its stored location instead.");
         setUsage("/skill recall");
         setArgumentRange(0, 0);
@@ -79,6 +79,10 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
         plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, Heroes.BUNGEE_CORD_CHANNEL, this);
+    }
+
+    public SkillRecall(Heroes plugin) {
+        this(plugin, "Recall");
     }
 
     public String getDescription(Hero hero) {
