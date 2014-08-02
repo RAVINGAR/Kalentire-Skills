@@ -454,6 +454,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         if (skillSettings != null) {
             SkillResult result = doTeleport(hero, skillSettings, false);
             if (!SkillResult.NORMAL.equals(result)) {
+                player.teleport(player.getWorld().getSpawnLocation());
                 Messaging.send(player, "Teleport fizzled.");
             }
         }
