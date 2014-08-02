@@ -1,9 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,10 +19,18 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -27,12 +43,13 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
-public class SkillRecall extends ActiveSkill {
+public class SkillRecall extends ActiveSkill implements Listener, PluginMessageListener {
 
     private boolean herotowns = false;
     private HeroTowns ht;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    private Map<String, Location> playerLocations = new Hashtable<>();
 
     public SkillRecall(Heroes plugin) {
         super(plugin, "Recall");
@@ -56,6 +73,9 @@ public class SkillRecall extends ActiveSkill {
         catch (Exception e) {
             Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
         }
+
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+        plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, Heroes.BUNGEE_CORD_CHANNEL, this);
     }
 
     public String getDescription(Hero hero) {
@@ -109,7 +129,7 @@ public class SkillRecall extends ActiveSkill {
                         currentUsesString = currentUsesString.substring(currentIndexLocation, endIndexLocation);
                     }
 
-                    if (validateUsesValue(currentUsesString, player)) {
+                    if (isValidUses(currentUsesString, player)) {
                         // We have a valid value for "uses". It is either a number, or "unlimited"
 
                         int uses = -1;
@@ -133,7 +153,7 @@ public class SkillRecall extends ActiveSkill {
                                 endIndexLocation = usesString.length();
                                 String maxUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
 
-                                if (validateUsesValue(maxUsesString, player)) {
+                                if (isValidUses(maxUsesString, player)) {
                                     if (!maxUsesString.equals("unlimited"))
                                         maxUses = Integer.parseInt(maxUsesString);    // Grab the uses from the string
                                 }
@@ -171,10 +191,10 @@ public class SkillRecall extends ActiveSkill {
                         String zString = locationString.substring(currentIndexLocation, endIndexLocation);
 
                         // VERIFY ALL LOCATION DATA
-                        if (validateCoordinate(xString)
-                                && validateCoordinate(yString)
-                                && validateCoordinate(zString)
-                                && validateWorldByName(worldString)) {
+                        if (isValidInteger(xString)
+                                && isValidInteger(yString)
+                                && isValidInteger(zString)
+                                && isValidWorld(worldString)) {
 
                             // We have validate location information, convert our strings to real data
                             World world = Bukkit.getServer().getWorld(worldString);
@@ -189,11 +209,9 @@ public class SkillRecall extends ActiveSkill {
 
                             // Validate world checks
                             List<String> disabledWorlds = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "disable-worlds"));
-                            for (String disabledWorld : disabledWorlds) {
-                                if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
-                                    Messaging.send(player, "Magic has blocked your recall in this world");
-                                    return SkillResult.FAIL;
-                                }
+                            if (isDisabledWorld(player.getWorld().getName(), disabledWorlds)) {
+                                Messaging.send(player, "Magic has blocked your recall in this world");
+                                return SkillResult.FAIL;
                             }
 
                             Location teleportLocation = (new Location(world, x, y, z, yaw, pitch));
@@ -266,39 +284,70 @@ public class SkillRecall extends ActiveSkill {
 
         // DEFAULT RECALL FUNCTIONALITY
 
-        // Validate world checks
-        List<String> disabledWorlds = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"));
-        for (String disabledWorld : disabledWorlds) {
-            if (disabledWorld.equalsIgnoreCase(player.getWorld().getName())) {
-                Messaging.send(player, "Magic has blocked your recall in this world");
-                return SkillResult.FAIL;
-            }
-        }
-
-        ConfigurationSection skillSettings = hero.getSkillSettings(this);
-        World world = SkillMark.validateLocation(skillSettings, player);
-        if (world == null) {
-            return SkillResult.FAIL;
-        }
         if (hero.hasEffectType(EffectType.ROOT) || hero.hasEffectType(EffectType.STUN)) {
             Messaging.send(player, "Teleport fizzled.");
             return SkillResult.FAIL;
         }
 
+        ConfigurationSection skillSettings = hero.getSkillSettings(this);
+
+        // Forward recall request to remote server
+        if (isRemoteServerLocation(skillSettings)) {
+            ByteArrayDataOutput recallRequest = ByteStreams.newDataOutput();
+            recallRequest.writeUTF("Forward");
+            recallRequest.writeUTF(skillSettings.getString("server"));
+            recallRequest.writeUTF("RecallRequest");
+
+            ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
+            DataOutputStream msgout = new DataOutputStream(msgbytes);
+            try {
+                msgout.writeUTF(player.getName());
+                msgout.writeUTF(skillSettings.getString("world"));
+                msgout.writeUTF(skillSettings.getString("x"));
+                msgout.writeUTF(skillSettings.getString("y"));
+                msgout.writeUTF(skillSettings.getString("z"));
+                msgout.writeUTF(skillSettings.getString("yaw"));
+                msgout.writeUTF(skillSettings.getString("pitch"));
+            }
+            catch (IOException e) {
+                Messaging.send(player, "Your recall location is improperly set!");
+                return SkillResult.SKIP_POST_USAGE;
+            }
+
+            recallRequest.writeShort(msgbytes.toByteArray().length);
+            recallRequest.write(msgbytes.toByteArray());
+
+            player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, recallRequest.toByteArray());
+
+            return SkillResult.NORMAL;
+        }
+
+        // Validate world checks
+        List<String> disabledWorlds = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"));
+        if (isDisabledWorld(player.getWorld().getName(), disabledWorlds)) {
+            Messaging.send(player, "Magic has blocked your recall in this world");
+            return SkillResult.FAIL;
+        }
+
+        World world = SkillMark.getValidWorld(skillSettings, player.getName());
+        if (world == null) {
+            return SkillResult.FAIL;
+        }
+
         double[] xyzyp;
         try {
-            xyzyp = SkillMark.getStoredData(skillSettings);
+            xyzyp = SkillMark.createLocationData(skillSettings);
         }
         catch (IllegalArgumentException e) {
             Messaging.send(player, "Your recall location is improperly set!");
             return SkillResult.SKIP_POST_USAGE;
         }
 
-        Location recallLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
+        Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
 
         // Validate Herotowns
         if (herotowns) {
-            if (!ht.getGlobalRegionManager().canBuild(player, recallLocation)) {
+            if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
                 Messaging.send(player, "You cannot Recall to a Town you have no access to!");
                 return SkillResult.FAIL;
             }
@@ -306,7 +355,7 @@ public class SkillRecall extends ActiveSkill {
 
         // Validate WorldGuard
         if (worldguard) {
-            if (!wgp.canBuild(player, recallLocation)) {
+            if (!wgp.canBuild(player, teleportLocation)) {
                 Messaging.send(player, "You cannot Recall to a Region you have no access to!");
                 return SkillResult.FAIL;
             }
@@ -316,8 +365,6 @@ public class SkillRecall extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
 
-        Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
-
         player.teleport(teleportLocation);
 
         teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
@@ -325,7 +372,93 @@ public class SkillRecall extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public boolean validateUsesValue(String uses, Player player) {
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (!Heroes.BUNGEE_CORD_CHANNEL.equals(channel)) {
+            return;
+        }
+    
+        ByteArrayDataInput in = ByteStreams.newDataInput(message);
+        String subChannel = in.readUTF();
+        
+        short len = in.readShort();
+        byte[] msgbytes = new byte[len];
+        in.readFully(msgbytes);
+        DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
+    
+        switch (subChannel) {
+        case "RecallRequest":
+            try {
+                String playerName = msgin.readUTF();
+                ConfigurationSection skillSettings = new MemoryConfiguration();
+                skillSettings.set("world", msgin.readUTF());
+                skillSettings.set("x", msgin.readUTF());
+                skillSettings.set("y", msgin.readUTF());
+                skillSettings.set("z", msgin.readUTF());
+                skillSettings.set("yaw", msgin.readUTF());
+                skillSettings.set("pitch", msgin.readUTF());
+                if (isValidLocation(playerName, skillSettings)) {
+                    // cache the location for onPlayerJoin
+                    double[] xyzyp = SkillMark.createLocationData(skillSettings);
+                    Location teleportLocation = new Location(Bukkit.getWorld(skillSettings.getString("world")),
+                            xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
+                    playerLocations.put(playerName, teleportLocation);
+
+                    // send the player to this server
+                    ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
+                    connectOther.writeUTF("ConnectOther");
+                    connectOther.writeUTF(playerName);
+                    connectOther.writeUTF(plugin.getServerName());
+
+                    player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, connectOther.toByteArray());
+                }
+            }
+            catch (IOException e) {
+                // TODO: handle error?
+                e.printStackTrace();
+            }
+            break;
+        case "RunestoneRequest":
+            break;
+        default:
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        Location location = playerLocations.remove(player.getName());
+        if (location != null) {
+            player.teleport(location);
+        }
+    }
+
+    private boolean isDisabledWorld(String world, List<String> disabledWorlds) {
+        boolean isDisabled = false;
+
+        for (String disabledWorld : disabledWorlds) {
+            if (disabledWorld.equalsIgnoreCase(world)) {
+                isDisabled = true;
+                break;
+            }
+        }
+
+        return isDisabled;
+    }
+
+    private boolean isRemoteServerLocation(ConfigurationSection skillSettings) {
+        
+        return skillSettings != null && StringUtils.isNotEmpty(skillSettings.getString("server"))
+                && !plugin.getServerName().equals(skillSettings.getString("server"))
+                && plugin.getServerNames().contains(skillSettings.getString("server"));
+    }
+
+	private boolean isValidLocation(String playerName, ConfigurationSection skillSettings) {
+        // TODO: do proper validation
+        return true;
+    }
+
+    private boolean isValidUses(String uses, Player player) {
         if (uses.equals("unlimited")) {
             return true;
         }
@@ -340,15 +473,15 @@ public class SkillRecall extends ActiveSkill {
         }
     }
 
-    public boolean validateWorldByName(String worldName) {
+    private boolean isValidWorld(String worldName) {
         World world = Bukkit.getServer().getWorld(worldName);
 
         return world != null;
     }
 
-    public boolean validateCoordinate(String coord) {
+    private boolean isValidInteger(String i) {
         try {
-            Integer.parseInt(coord);
+            Integer.parseInt(i);
             return true;
         }
         catch (Exception ex) {
