@@ -17,6 +17,6 @@ public class SkillGiganticRunestone extends SkillBaseRunestone {
         displayName = "Gigantic Runestone";
         displayNameColor = ChatColor.YELLOW;
 
-        registerListener();
+        new RunestoneListener();
     }
 }

@@ -17,6 +17,6 @@ public class SkillMajorRunestone extends SkillBaseRunestone {
         displayName = "Major Runestone";
         displayNameColor = ChatColor.BLUE;
 
-        registerListener();
+        new RunestoneListener();
     }
 }

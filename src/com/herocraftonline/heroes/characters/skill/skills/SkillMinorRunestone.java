@@ -20,6 +20,6 @@ public class SkillMinorRunestone extends SkillBaseRunestone {
         displayName = "Minor Runestone";
         displayNameColor = ChatColor.GREEN;
 
-        registerListener();
+        new RunestoneListener();
     }
 }

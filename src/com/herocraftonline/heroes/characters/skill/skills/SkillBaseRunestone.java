@@ -55,16 +55,6 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
 
     protected SkillBaseRunestone(Heroes plugin, String name) {
         super(plugin, name);
-        setDescription("You imbue a redstone block with a Runestone. Runestones $1");
-        setUsage("/skill runestone");
-        setArgumentRange(0, 0);
-        setIdentifiers("skill runestone");
-        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
-
-        defaultMaxUses = 2;
-        defaultDelay = 5000;
-        displayName = "Runestone";
-        displayNameColor = ChatColor.GREEN;
 
         try {
             //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
@@ -85,7 +75,19 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
     }
 
     public SkillBaseRunestone(Heroes plugin) {
-        super(plugin, "Runestone");
+        this(plugin, "Runestone");
+        setDescription("You imbue a redstone block with a Runestone. Runestones $1");
+        setUsage("/skill runestone");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill runestone");
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
+
+        defaultMaxUses = 2;
+        defaultDelay = 5000;
+        displayName = "Runestone";
+        displayNameColor = ChatColor.GREEN;
+
+        new RunestoneListener();
     }
 
     public String getDescription(Hero hero) {
@@ -218,14 +220,11 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
         }
     }
 
-    protected void registerListener()
-    {
-        Bukkit.getServer().getPluginManager().registerEvents(new RunestoneListener(), plugin);        
-    }
+    protected class RunestoneListener implements Listener {
 
-    public class RunestoneListener implements Listener {
-
-        public RunestoneListener() {}
+        public RunestoneListener() {
+            Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onBlockPlace(BlockPlaceEvent event) {

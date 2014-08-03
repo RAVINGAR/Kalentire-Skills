@@ -264,14 +264,13 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
     
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
-        
+
         short len = in.readShort();
         byte[] msgbytes = new byte[len];
         in.readFully(msgbytes);
         DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
     
-        switch (subChannel) {
-        case "PortRequest":
+        if ("PortRequest".equals(subChannel)) {
             try {
                 String portInfo = msgin.readUTF();
                 String playerNames = msgin.readUTF();
@@ -291,8 +290,6 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             catch (IOException e) {
                 Heroes.log(Level.SEVERE, "SkillPort: Could not parse PortRequest message from remote server");
             }
-            break;
-        default:
         }
     }
 

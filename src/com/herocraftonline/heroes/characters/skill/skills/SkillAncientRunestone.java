@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,16 +42,10 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
 
         soulboundRunestones = new ConcurrentHashMap<>();
 
-        registerListener();
+        new AncientRunestoneListener(this);
     }
 
-    @Override
-    protected void registerListener()
-    {
-        Bukkit.getServer().getPluginManager().registerEvents(new AncientRunestoneListener(this), plugin);        
-    }
-
-    public class AncientRunestoneListener extends RunestoneListener implements Listener {
+    protected class AncientRunestoneListener extends RunestoneListener implements Listener {
 
         private Skill skill;
 
