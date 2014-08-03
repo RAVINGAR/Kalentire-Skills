@@ -213,7 +213,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             float yaw = currentLocation.getYaw();
 
             ConfigurationSection skillSettings = new MemoryConfiguration();
-            skillSettings.set("serer", serverString);
+            skillSettings.set("server", serverString);
             skillSettings.set("world", worldString);
             skillSettings.set("x", xString);
             skillSettings.set("y", yString);
