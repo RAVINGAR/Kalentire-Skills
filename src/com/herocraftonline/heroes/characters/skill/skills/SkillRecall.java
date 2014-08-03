@@ -226,23 +226,16 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             skillSettings.set("yaw", yaw);
             skillSettings.set("pitch", pitch);
 
-            if (isRemoteServerLocation(skillSettings)) {
-                return forwardTeleport(player, skillSettings);
-            }
-            else {
-                SkillResult result = doTeleport(hero, skillSettings, true);
-                if (SkillResult.NORMAL.equals(result)) {
-                    // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
-                    if (uses != -1) {
-                        if (maxUses != -1) {
-                            loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
-                            metaData.setLore(loreData);
-                            heldItem.setItemMeta(metaData);
-                        }
-                    }
+            // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
+            if (uses != -1) {
+                if (maxUses != -1) {
+                    loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
+                    metaData.setLore(loreData);
+                    heldItem.setItemMeta(metaData);
                 }
-                return result;
             }
+
+            return isRemoteServerLocation(skillSettings) ? forwardTeleport(player, skillSettings) : doTeleport(hero, skillSettings, true);
         }
 
         // If we make it this far, this is not a proper Runestone block.
