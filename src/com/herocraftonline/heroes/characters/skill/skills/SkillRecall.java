@@ -113,175 +113,130 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             ItemMeta metaData = heldItem.getItemMeta();
             List<String> loreData = metaData.getLore();
 
-            // Ensure that we actually have meta data
-            if (loreData != null) {
+            // Ensure that we actually have meta data and at least three rows of available on the block
+            if (loreData == null || loreData.isEmpty()) {
+                Messaging.send(player, "Not a Valid Runestone Object. Uses Value is not Valid.", player.getName());
+                return SkillResult.FAIL;
+            }
 
-                // Ensure that there is at least three rows of meta-data available on the block
-                if (loreData.size() > 2) {
+            // Get the uses on the Runestone and ensure it is greater than 1
+            String usesString = loreData.get(1);
+            usesString = usesString.toLowerCase();
+    
+            // Strip the usesString of the "Uses:" text.
+            int currentIndexLocation = usesString.indexOf(":", 0) + 2;  // Set the start point
+            int endIndexLocation = usesString.length();                 // Get the end point for grabbing remaining uses data
+            String currentUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
+    
+            // Strip the currentUsesString of the "max uses" text.
+            currentIndexLocation = 0;
+            endIndexLocation = currentUsesString.indexOf("/", 0);
+            if (endIndexLocation != -1) {
+                // There is a possible maximum uses located within the usesString
+                currentUsesString = currentUsesString.substring(currentIndexLocation, endIndexLocation);
+            }
+    
+            if (!isValidUses(currentUsesString, player)) {
+                Messaging.send(player, "Runestone Contains Invalid Location Data.", player.getName());
+                return SkillResult.FAIL;
+            }
 
-                    // Get the uses on the Runestone and ensure it is greater than 1
-                    String usesString = loreData.get(1);
-                    usesString = usesString.toLowerCase();
+            // We have a valid value for "uses". It is either a number, or "unlimited"
 
-                    // Strip the usesString of the "Uses:" text.
-                    int currentIndexLocation = usesString.indexOf(":", 0) + 2;  // Set the start point
-                    int endIndexLocation = usesString.length();                 // Get the end point for grabbing remaining uses data
-                    String currentUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
+            int uses = -1;
+            if (!currentUsesString.equals("unlimited"))
+                uses = Integer.parseInt(currentUsesString);    // Grab the uses from the string
 
-                    // Strip the currentUsesString of the "max uses" text.
-                    currentIndexLocation = 0;
-                    endIndexLocation = currentUsesString.indexOf("/", 0);
-                    if (endIndexLocation != -1) {
-                        // There is a possible maximum uses located within the usesString
-                        currentUsesString = currentUsesString.substring(currentIndexLocation, endIndexLocation);
-                    }
+            // If it's empty, tell them to recharge it.
+            if (uses == 0) {
+                Messaging.send(player, "Runestone is out of uses and needs to be recharged.");
+                return SkillResult.FAIL;
+            }
 
-                    if (isValidUses(currentUsesString, player)) {
-                        // We have a valid value for "uses". It is either a number, or "unlimited"
+            int maxUses = -1;
+            if (uses != -1) {
+                // We will need to set the max uses later, validate and store the value now.
+                currentIndexLocation = usesString.indexOf("/", 0);
+                if (currentIndexLocation != 0) {
 
-                        int uses = -1;
-                        if (!currentUsesString.equals("unlimited"))
-                            uses = Integer.parseInt(currentUsesString);    // Grab the uses from the string
+                    // There is a possible maximum uses located within the usesString
+                    currentIndexLocation++;
+                    endIndexLocation = usesString.length();
+                    String maxUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
 
-                        // If it's empty, tell them to recharge it.
-                        if (uses == 0) {
-                            Messaging.send(player, "Runestone is out of uses and needs to be recharged.");
-                            return SkillResult.FAIL;
-                        }
-
-                        int maxUses = -1;
-                        if (uses != -1) {
-                            // We will need to set the max uses later, validate and store the value now.
-                            currentIndexLocation = usesString.indexOf("/", 0);
-                            if (currentIndexLocation != 0) {
-
-                                // There is a possible maximum uses located within the usesString
-                                currentIndexLocation++;
-                                endIndexLocation = usesString.length();
-                                String maxUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
-
-                                if (isValidUses(maxUsesString, player)) {
-                                    if (!maxUsesString.equals("unlimited"))
-                                        maxUses = Integer.parseInt(maxUsesString);    // Grab the uses from the string
-                                }
-                            }
-                        }
-
-                        // We have at least 1 use available--start grabbing location data from the Runestone.
-
-                        String locationString = loreData.get(0);
-                        locationString = locationString.toLowerCase();
-
-                        // Strip the coloring codes from the string
-                        currentIndexLocation = 2;
-                        endIndexLocation = locationString.length();
-                        locationString = locationString.substring(currentIndexLocation, endIndexLocation);
-
-                        // Get the world data
-                        currentIndexLocation = 0;                                                               // Set the start point
-                        endIndexLocation = locationString.indexOf(":", currentIndexLocation);                   // Get the end point for grabbing world location data
-                        String worldString = locationString.substring(currentIndexLocation, endIndexLocation);
-
-                        // Get the x coord data
-                        currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
-                        endIndexLocation = locationString.indexOf(",", currentIndexLocation);                   // Get the end point for grabbing x location data
-                        String xString = locationString.substring(currentIndexLocation, endIndexLocation);
-
-                        // Get the y coord data
-                        currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
-                        endIndexLocation = locationString.indexOf(",", currentIndexLocation);                   // Get the end point for grabbing y location data
-                        String yString = locationString.substring(currentIndexLocation, endIndexLocation);
-
-                        // Get the z coord data 
-                        currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
-                        endIndexLocation = locationString.length();                                             // Get the end point for grabbing z location data
-                        String zString = locationString.substring(currentIndexLocation, endIndexLocation);
-
-                        // VERIFY ALL LOCATION DATA
-                        if (isValidInteger(xString)
-                                && isValidInteger(yString)
-                                && isValidInteger(zString)
-                                && isValidWorld(worldString)) {
-
-                            // We have validate location information, convert our strings to real data
-                            World world = Bukkit.getServer().getWorld(worldString);
-                            int x = Integer.parseInt(xString);
-                            int y = Integer.parseInt(yString);
-                            int z = Integer.parseInt(zString);
-
-                            // Grab the players current location and store their pitch / yaw values.
-                            Location currentLocation = player.getLocation();
-                            float pitch = currentLocation.getPitch();
-                            float yaw = currentLocation.getYaw();
-
-                            // Validate world checks
-                            if (isDisabledWorld(player.getWorld().getName(), SkillConfigManager.getUseSettingKeys(hero, this, "disable-worlds"))) {
-                                Messaging.send(player, "Magic has blocked your recall in this world");
-                                return SkillResult.FAIL;
-                            }
-
-                            Location teleportLocation = (new Location(world, x, y, z, yaw, pitch));
-
-                            // Validate Herotowns
-                            if (herotowns) {
-                                if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
-                                    Messaging.send(player, "You cannot Recall to a Town you have no access to!");
-                                    return SkillResult.FAIL;
-                                }
-                            }
-                            
-                            // Validate WorldGuard
-                            if (worldguard) {
-                                if (!wgp.canBuild(player, teleportLocation)) {
-                                    Messaging.send(player, "You cannot Recall to a Region you have no access to!");
-                                    return SkillResult.FAIL;
-                                }
-                            }
-
-                            // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
-                            if (uses != -1) {
-                                if (maxUses != -1) {
-                                    loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
-                                    metaData.setLore(loreData);
-                                    heldItem.setItemMeta(metaData);
-                                }
-                            }
-
-                            broadcastExecuteText(hero);
-
-                            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
-
-                            // Teleport the player to the location
-                            player.teleport(teleportLocation);
-
-                            // Removed for now until I have time to properly test it.
-                            //                            final Location finalTeleportLocation = teleportLocation;
-                            //                            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                            //                                @Override
-                            //                                public void run() {
-                            //                                    if (!player.getLocation().equals(finalTeleportLocation))
-                            //                                        player.teleport(finalTeleportLocation);
-                            //                                }
-                            //                            }, 5L);
-
-                            teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
-
-                            return SkillResult.NORMAL;
-                        }
-                        else {
-                            Messaging.send(player, "Runestone Contains Invalid Location Data.", player.getName());
-                            return SkillResult.FAIL;
-                        }
-                    }
-                    else {
-                        Messaging.send(player, "Not a Valid Runestone Object. Uses Value is not Valid.", player.getName());
-                        return SkillResult.FAIL;
+                    if (isValidUses(maxUsesString, player)) {
+                        if (!maxUsesString.equals("unlimited"))
+                            maxUses = Integer.parseInt(maxUsesString);    // Grab the uses from the string
                     }
                 }
-                else {
-                    Messaging.send(player, "Not a Valid Runestone Object. LoreData Size <= 0", player.getName());
-                    return SkillResult.FAIL;
+            }
+
+            // We have at least 1 use available--start grabbing location data from the Runestone.
+
+            String locationString = loreData.get(0);
+            locationString = locationString.toLowerCase();
+
+            // Strip the coloring codes from the string
+            currentIndexLocation = 2;
+            endIndexLocation = locationString.length();
+            locationString = locationString.substring(currentIndexLocation, endIndexLocation);
+
+            // Get the world data
+            currentIndexLocation = 0;                                                               // Set the start point
+            endIndexLocation = locationString.indexOf(":", currentIndexLocation);                   // Get the end point for grabbing world location data
+            String worldString = locationString.substring(currentIndexLocation, endIndexLocation);
+            String serverString = plugin.getServerName();
+            String[] worldParts = worldString.split(",");
+            if (worldParts.length > 1) {
+                worldString = worldParts[1];
+                serverString = worldParts[0];
+            }
+
+            // Get the x coord data
+            currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
+            endIndexLocation = locationString.indexOf(",", currentIndexLocation);                   // Get the end point for grabbing x location data
+            String xString = locationString.substring(currentIndexLocation, endIndexLocation);
+
+            // Get the y coord data
+            currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
+            endIndexLocation = locationString.indexOf(",", currentIndexLocation);                   // Get the end point for grabbing y location data
+            String yString = locationString.substring(currentIndexLocation, endIndexLocation);
+
+            // Get the z coord data 
+            currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
+            endIndexLocation = locationString.length();                                             // Get the end point for grabbing z location data
+            String zString = locationString.substring(currentIndexLocation, endIndexLocation);
+
+            // Grab the players current location and store their pitch / yaw values.
+            Location currentLocation = player.getLocation();
+            float pitch = currentLocation.getPitch();
+            float yaw = currentLocation.getYaw();
+
+            ConfigurationSection skillSettings = new MemoryConfiguration();
+            skillSettings.set("serer", serverString);
+            skillSettings.set("world", worldString);
+            skillSettings.set("x", xString);
+            skillSettings.set("y", yString);
+            skillSettings.set("z", zString);
+            skillSettings.set("yaw", yaw);
+            skillSettings.set("pitch", pitch);
+
+            if (isRemoteServerLocation(skillSettings)) {
+                return forwardTeleport(player, skillSettings);
+            }
+            else {
+                SkillResult result = doTeleport(hero, skillSettings, true);
+                if (SkillResult.NORMAL.equals(result)) {
+                    // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
+                    if (uses != -1) {
+                        if (maxUses != -1) {
+                            loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
+                            metaData.setLore(loreData);
+                            heldItem.setItemMeta(metaData);
+                        }
+                    }
                 }
+                return result;
             }
         }
 
@@ -297,60 +252,62 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
 
         ConfigurationSection skillSettings = hero.getSkillSettings(this);
 
-        // Forward recall request to remote server
-        if (isRemoteServerLocation(skillSettings)) {
-            ByteArrayDataOutput recallRequest = ByteStreams.newDataOutput();
-            recallRequest.writeUTF("Forward");
-            recallRequest.writeUTF(skillSettings.getString("server"));
-            recallRequest.writeUTF("RecallRequest");
+        // If necessary, forward recall request to remote server
+        return isRemoteServerLocation(skillSettings) ?
+                forwardTeleport(player, skillSettings) : doTeleport(hero, skillSettings, true);
+    }
 
-            ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
-            DataOutputStream msgout = new DataOutputStream(msgbytes);
-            try {
-                msgout.writeUTF(player.getName());
-                msgout.writeUTF(skillSettings.getString("world"));
-                msgout.writeUTF(skillSettings.getString("x"));
-                msgout.writeUTF(skillSettings.getString("y"));
-                msgout.writeUTF(skillSettings.getString("z"));
-                msgout.writeUTF(skillSettings.getString("yaw"));
-                msgout.writeUTF(skillSettings.getString("pitch"));
-            }
-            catch (IOException e) {
-                Messaging.send(player, "Your recall location is improperly set!");
-                return SkillResult.SKIP_POST_USAGE;
-            }
+    private SkillResult forwardTeleport(Player player, ConfigurationSection skillSettings)
+    {
+        ByteArrayDataOutput recallRequest = ByteStreams.newDataOutput();
+        recallRequest.writeUTF("Forward");
+        recallRequest.writeUTF(skillSettings.getString("server"));
+        recallRequest.writeUTF("RecallRequest");
 
-            recallRequest.writeShort(msgbytes.toByteArray().length);
-            recallRequest.write(msgbytes.toByteArray());
-
-            pendingTeleport.add(player.getName());
-            player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, recallRequest.toByteArray());
-
-            // Run this delayed task to check if the recall failed
-            final String playerName = player.getName();
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
-                @Override
-                public void run()
-                {
-                    if (pendingTeleport.remove(playerName)) {
-                        Player player = Bukkit.getPlayer(playerName);
-                        if (player != null) {
-                            Messaging.send(player, "Teleport fizzled.");
-                        }
-                    }
-                }
-            }, 40);
-
-            return SkillResult.NORMAL;
+        ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
+        DataOutputStream msgout = new DataOutputStream(msgbytes);
+        try {
+            msgout.writeUTF(player.getName());
+            msgout.writeUTF(skillSettings.getString("world"));
+            msgout.writeUTF(skillSettings.getString("x"));
+            msgout.writeUTF(skillSettings.getString("y"));
+            msgout.writeUTF(skillSettings.getString("z"));
+            msgout.writeUTF(skillSettings.getString("yaw"));
+            msgout.writeUTF(skillSettings.getString("pitch"));
+        }
+        catch (IOException e) {
+            Messaging.send(player, "Your recall location is improperly set!");
+            return SkillResult.SKIP_POST_USAGE;
         }
 
-        return doTeleport(hero, skillSettings, true);
+        recallRequest.writeShort(msgbytes.toByteArray().length);
+        recallRequest.write(msgbytes.toByteArray());
+
+        pendingTeleport.add(player.getName());
+        player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, recallRequest.toByteArray());
+
+        // Run this delayed task to check if the recall failed
+        final String playerName = player.getName();
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+
+            @Override
+            public void run()
+            {
+                if (pendingTeleport.remove(playerName)) {
+                    Player player = Bukkit.getPlayer(playerName);
+                    if (player != null) {
+                        Messaging.send(player, "Teleport fizzled.");
+                    }
+                }
+            }
+        }, 40);
+
+        return SkillResult.NORMAL;
     }
 
     private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isDeparting)
     {
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         // Validate world checks
         if (isDisabledWorld(player.getWorld().getName(), SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"))) {
@@ -395,6 +352,16 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         }
+
+        // Removed for now until I have time to properly test it.
+        // final Location finalTeleportLocation = teleportLocation;
+        // Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+        //     @Override
+        //     public void run() {
+        //         if (!player.getLocation().equals(finalTeleportLocation))
+        //             player.teleport(finalTeleportLocation);
+        //     }
+        // }, 5L);
 
         player.teleport(teleportLocation);
 
@@ -504,22 +471,6 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         }
         catch (Exception ex) {
             broadcast(player.getLocation(), "Tried to parse an invalid integar. Not valid.", player.getName());  // DEBUG
-            return false;
-        }
-    }
-
-    private boolean isValidWorld(String worldName) {
-        World world = Bukkit.getServer().getWorld(worldName);
-
-        return world != null;
-    }
-
-    private boolean isValidInteger(String i) {
-        try {
-            Integer.parseInt(i);
-            return true;
-        }
-        catch (Exception ex) {
             return false;
         }
     }
