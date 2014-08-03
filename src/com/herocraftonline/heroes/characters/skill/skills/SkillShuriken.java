@@ -89,7 +89,6 @@ public class SkillShuriken extends PassiveSkill {
             this.skill = skill;
         }
 
-        @SuppressWarnings("deprecation")
         @EventHandler(priority = EventPriority.MONITOR)
         public void onPlayerInteract(PlayerInteractEvent event) {
 

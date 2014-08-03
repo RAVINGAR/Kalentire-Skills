@@ -32,7 +32,6 @@ public class SkillDisenchant extends ActiveSkill {
         return getDescription().replace("$1", Math.pow(hero.getLevel(hero.getSecondClass()), -1) * 100 + "");
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(Hero hero, String[] args) {
         ItemStack hand = hero.getPlayer().getItemInHand();

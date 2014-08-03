@@ -43,7 +43,6 @@ public class SkillEnchantingBook extends ActiveSkill {
         setTypes(SkillType.SILENCEABLE);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public SkillResult use(Hero h, String[] args) {
 		Player p = h.getPlayer();
