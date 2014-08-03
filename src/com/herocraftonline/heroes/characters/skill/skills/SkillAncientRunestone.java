@@ -26,7 +26,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.Skill;
 
-public class SkillAncientRunestone extends SkillAbstractRunestone {
+public class SkillAncientRunestone extends SkillBaseRunestone {
 
     private ConcurrentHashMap<Player, List<ItemStack>> soulboundRunestones;
 

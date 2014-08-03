@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 import com.herocraftonline.heroes.Heroes;
 
-public class SkillGiganticRunestone extends SkillAbstractRunestone {
+public class SkillGiganticRunestone extends SkillBaseRunestone {
 
     public SkillGiganticRunestone(Heroes plugin) {
         super(plugin, "GiganticRunestone");

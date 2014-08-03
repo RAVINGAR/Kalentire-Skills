@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
-public class SkillMinorRunestone extends SkillAbstractRunestone {
+public class SkillMinorRunestone extends SkillBaseRunestone {
 
     public SkillMinorRunestone(Heroes plugin) {
         super(plugin, "MinorRunestone");

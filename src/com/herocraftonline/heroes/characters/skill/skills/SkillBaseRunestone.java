@@ -40,7 +40,7 @@ import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
-public abstract class SkillAbstractRunestone extends ActiveSkill {
+public abstract class SkillBaseRunestone extends ActiveSkill {
 
     private boolean herotowns = false;
     private HeroTowns ht;
@@ -53,7 +53,7 @@ public abstract class SkillAbstractRunestone extends ActiveSkill {
     protected String displayName;
     protected ChatColor displayNameColor;
 
-    protected SkillAbstractRunestone(Heroes plugin, String name) {
+    protected SkillBaseRunestone(Heroes plugin, String name) {
         super(plugin, name);
         setDescription("You imbue a redstone block with a Runestone. Runestones $1");
         setUsage("/skill runestone");
@@ -84,7 +84,7 @@ public abstract class SkillAbstractRunestone extends ActiveSkill {
         }
     }
 
-    public SkillAbstractRunestone(Heroes plugin) {
+    public SkillBaseRunestone(Heroes plugin) {
         super(plugin, "Runestone");
     }
 
