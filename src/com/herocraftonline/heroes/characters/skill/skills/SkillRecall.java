@@ -54,13 +54,10 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     private Set<String> pendingTeleport = new HashSet<>();
     private Map<String, Info<ConfigurationSection>> onJoinSkillSettings = new Hashtable<>();
 
+    protected String subChannel;
+
     protected SkillRecall(Heroes plugin, String name) {
         super(plugin, name);
-        setDescription("You recall to your marked location. If you are holding a Runestone, you recall to its stored location instead.");
-        setUsage("/skill recall");
-        setArgumentRange(0, 0);
-        setIdentifiers("skill recall");
-        setTypes(SkillType.SILENCEABLE, SkillType.TELEPORTING);
 
         try {
             //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
@@ -83,6 +80,14 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
 
     public SkillRecall(Heroes plugin) {
         this(plugin, "Recall");
+
+        setDescription("You recall to your marked location. If you are holding a Runestone, you recall to its stored location instead.");
+        setUsage("/skill recall");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill recall");
+        setTypes(SkillType.SILENCEABLE, SkillType.TELEPORTING);
+
+        subChannel = "RecallRequest";
     }
 
     public String getDescription(Hero hero) {
@@ -262,7 +267,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         ByteArrayDataOutput recallRequest = ByteStreams.newDataOutput();
         recallRequest.writeUTF("Forward");
         recallRequest.writeUTF(skillSettings.getString("server"));
-        recallRequest.writeUTF("RecallRequest");
+        recallRequest.writeUTF(subChannel);
 
         ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
         DataOutputStream msgout = new DataOutputStream(msgbytes);
@@ -384,8 +389,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         in.readFully(msgbytes);
         DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
     
-        switch (subChannel) {
-        case "RecallRequest":
+        if (this.subChannel.equals(subChannel)) {
             try {
                 String playerName = msgin.readUTF();
                 ConfigurationSection skillSettings = new MemoryConfiguration();
@@ -410,10 +414,6 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             catch (IOException e) {
                 Heroes.log(Level.SEVERE, "SkillRecall: Could not parse RecallRequest message from remote server");
             }
-            break;
-        case "RunestoneRequest":
-            break;
-        default:
         }
     }
 

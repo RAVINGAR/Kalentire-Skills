@@ -12,5 +12,7 @@ public class SkillRecallShop extends SkillRecall implements Listener, PluginMess
         setDescription("You recall to your marked shop location.");
         setUsage("/skill recallshop");
         setIdentifiers("skill recallshop");
+
+        subChannel = "RecallShopRequest";
     }
 }
