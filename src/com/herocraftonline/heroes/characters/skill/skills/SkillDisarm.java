@@ -71,7 +71,7 @@ public class SkillDisarm extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int strDecrease = SkillConfigManager.getUseSetting(hero, this, "str-decrease", -90, false);
+        int strDecrease = SkillConfigManager.getUseSetting(hero, this, "str-decrease", 90, false);
         targetHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
 
         AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "DisarmEffect", player, duration, AttributeType.STRENGTH, strDecrease, applyText, expireText);
