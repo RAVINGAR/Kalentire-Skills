@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.ChatColor;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillGiganticRunestone extends SkillBaseRunestone {
 
@@ -10,7 +11,9 @@ public class SkillGiganticRunestone extends SkillBaseRunestone {
         super(plugin, "GiganticRunestone");
         setDescription("You imbue a redstone block with an Gigantic Runestone. Gigantic Runestones $1");
         setUsage("/skill giganticrunestone");
+        setArgumentRange(0, 0);
         setIdentifiers("skill giganticrunestone");
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
 
         defaultMaxUses = 15;
         defaultDelay = 8000;

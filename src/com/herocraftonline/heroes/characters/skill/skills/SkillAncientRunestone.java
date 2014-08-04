@@ -24,6 +24,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillAncientRunestone extends SkillBaseRunestone {
 
@@ -33,7 +34,9 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
         super(plugin, "AncientRunestone");
         setDescription("You imbue a redstone block with an Ancient Runestone. Ancient Runestones $1 and do not drop upon death.");
         setUsage("/skill ancientrunestone");
+        setArgumentRange(0, 0);
         setIdentifiers("skill ancientrunestone");
+        setTypes(SkillType.ITEM_MODIFYING, SkillType.SILENCEABLE);
 
         defaultMaxUses = -1;
         defaultDelay = 10000;
