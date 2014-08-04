@@ -62,7 +62,7 @@ public class SkillJump extends ActiveSkill {
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
 
-        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-jump", true) && noJumpMaterials.contains(belowMat)) || player.isInsideVehicle()) {
+        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-jump", true) && requiredMaterials.contains(belowMat)) || player.isInsideVehicle()) {
             Messaging.send(player, "You can't jump while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
@@ -120,7 +120,7 @@ public class SkillJump extends ActiveSkill {
 
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
-            
+
             @Override
             public void execute()
             {
@@ -135,15 +135,15 @@ public class SkillJump extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private static final Set<Material> noJumpMaterials;
+    private static final Set<Material> requiredMaterials;
     static {
-        noJumpMaterials = new HashSet<>();
-        noJumpMaterials.add(Material.STATIONARY_WATER);
-        noJumpMaterials.add(Material.STATIONARY_LAVA);
-        noJumpMaterials.add(Material.WATER);
-        noJumpMaterials.add(Material.LAVA);
-        noJumpMaterials.add(Material.AIR);
-        noJumpMaterials.add(Material.LEAVES);
-        noJumpMaterials.add(Material.SOUL_SAND);
+        requiredMaterials = new HashSet<>();
+        requiredMaterials.add(Material.STATIONARY_WATER);
+        requiredMaterials.add(Material.STATIONARY_LAVA);
+        requiredMaterials.add(Material.WATER);
+        requiredMaterials.add(Material.LAVA);
+        requiredMaterials.add(Material.AIR);
+        requiredMaterials.add(Material.LEAVES);
+        requiredMaterials.add(Material.SOUL_SAND);
     }
 }

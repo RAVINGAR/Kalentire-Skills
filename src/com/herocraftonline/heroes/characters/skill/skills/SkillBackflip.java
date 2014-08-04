@@ -73,7 +73,7 @@ public class SkillBackflip extends ActiveSkill {
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
 
-        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && nobackflipMaterials.contains(belowMat)) || player.isInsideVehicle()) {
+        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && requiredMaterials.contains(belowMat)) || player.isInsideVehicle()) {
             Messaging.send(player, "You can't backflip while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
@@ -162,15 +162,15 @@ public class SkillBackflip extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private static final Set<Material> nobackflipMaterials;
+    private static final Set<Material> requiredMaterials;
     static {
-        nobackflipMaterials = new HashSet<>();
-        nobackflipMaterials.add(Material.STATIONARY_WATER);
-        nobackflipMaterials.add(Material.STATIONARY_LAVA);
-        nobackflipMaterials.add(Material.WATER);
-        nobackflipMaterials.add(Material.LAVA);
-        nobackflipMaterials.add(Material.AIR);
-        nobackflipMaterials.add(Material.LEAVES);
-        nobackflipMaterials.add(Material.SOUL_SAND);
+        requiredMaterials = new HashSet<>();
+        requiredMaterials.add(Material.STATIONARY_WATER);
+        requiredMaterials.add(Material.STATIONARY_LAVA);
+        requiredMaterials.add(Material.WATER);
+        requiredMaterials.add(Material.LAVA);
+        requiredMaterials.add(Material.AIR);
+        requiredMaterials.add(Material.LEAVES);
+        requiredMaterials.add(Material.SOUL_SAND);
     }
 }

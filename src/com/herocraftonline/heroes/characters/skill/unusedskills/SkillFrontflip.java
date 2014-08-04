@@ -68,7 +68,7 @@ public class SkillFrontflip extends ActiveSkill {
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
 
-        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-frontflip", true) && noFrontflipMaterials.contains(belowMat)) || player.isInsideVehicle()) {
+        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-frontflip", true) && requiredMaterials.contains(belowMat)) || player.isInsideVehicle()) {
             Messaging.send(player, "You can't frontflip while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
@@ -97,8 +97,8 @@ public class SkillFrontflip extends ActiveSkill {
 
         int agility = hero.getAttributeValue(AttributeType.AGILITY);
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0125, false);
         vPower += agility * vPowerIncrease;
 
         if (vPower > 2.0)
@@ -115,8 +115,8 @@ public class SkillFrontflip extends ActiveSkill {
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", 0.0125, false);
         hPower += agility * hPowerIncrease;
 
         if (weakenVelocity)
@@ -126,7 +126,7 @@ public class SkillFrontflip extends ActiveSkill {
 
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
-            
+
             @Override
             public void execute()
             {
@@ -146,15 +146,15 @@ public class SkillFrontflip extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private static final Set<Material> noFrontflipMaterials;
+    private static final Set<Material> requiredMaterials;
     static {
-        noFrontflipMaterials = new HashSet<Material>();
-        noFrontflipMaterials.add(Material.STATIONARY_WATER);
-        noFrontflipMaterials.add(Material.STATIONARY_LAVA);
-        noFrontflipMaterials.add(Material.WATER);
-        noFrontflipMaterials.add(Material.LAVA);
-        noFrontflipMaterials.add(Material.AIR);
-        noFrontflipMaterials.add(Material.LEAVES);
-        noFrontflipMaterials.add(Material.SOUL_SAND);
+        requiredMaterials = new HashSet<>();
+        requiredMaterials.add(Material.STATIONARY_WATER);
+        requiredMaterials.add(Material.STATIONARY_LAVA);
+        requiredMaterials.add(Material.WATER);
+        requiredMaterials.add(Material.LAVA);
+        requiredMaterials.add(Material.AIR);
+        requiredMaterials.add(Material.LEAVES);
+        requiredMaterials.add(Material.SOUL_SAND);
     }
 }
