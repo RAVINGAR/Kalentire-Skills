@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.AttributeDecreaseEffect;
-import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -72,11 +71,11 @@ public class SkillDisarm extends TargettedSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int strDecrease = SkillConfigManager.getUseSetting(hero, this, "str-decrease", 90, false);
-        targetHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
+        //targetHero.addEffect(new StrDecreaseEffect(this, player, duration, applyText, expireText));
 
-        AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "DisarmEffect", player, duration, AttributeType.STRENGTH, strDecrease, applyText, expireText);
-        if(hero.hasEffect("DisarmEffect")) {
-            if(((AttributeDecreaseEffect) hero.getEffect("DisarmEffect")).getDecreaseValue() > aEffect.getDecreaseValue()) {
+        AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "StrDecreaseEffect", player, duration, AttributeType.STRENGTH, strDecrease, applyText, expireText);
+        if(hero.hasEffect("StrDecreaseEffect")) {
+            if(((AttributeDecreaseEffect) hero.getEffect("StrDecreaseEffect")).getDecreaseValue() > aEffect.getDecreaseValue()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }
