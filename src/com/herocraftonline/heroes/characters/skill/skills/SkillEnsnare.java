@@ -70,7 +70,7 @@ public class SkillEnsnare extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int strDecrease = SkillConfigManager.getUseSetting(hero, this, "agi-decrease", 90, false);
+        int strDecrease = SkillConfigManager.getUseSetting(hero, this, "agi-decrease", 500, false);
         //targetHero.addEffect(new StrDecreaseEffect(this, player, duration, applyText, expireText));
 
         AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "AgiDecreaseEffect", player, duration, AttributeType.AGILITY, strDecrease, applyText, expireText);
