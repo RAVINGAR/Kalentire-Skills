@@ -1,10 +1,16 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
+
+import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.AttributeDecreaseEffect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -12,11 +18,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Effect;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 public class SkillDisarm extends TargettedSkill {
 
@@ -62,31 +63,34 @@ public class SkillDisarm extends TargettedSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
         if (!(target instanceof Player))
-            return SkillResult.INVALID_TARGET;
+        	return SkillResult.INVALID_TARGET;
 
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        Hero tHero = plugin.getCharacterManager().getHero((Player) target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int strDecrease = SkillConfigManager.getUseSetting(hero, this, "str-decrease", -90, false);
-        targetHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
+        Material heldItem = tHero.getPlayer().getItemInHand().getType();
 
-        AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "DisarmEffect", player, duration, AttributeType.STRENGTH, strDecrease, applyText, expireText);
-        if(hero.hasEffect("DisarmEffect")) {
-            if(((AttributeDecreaseEffect) hero.getEffect("DisarmEffect")).getDecreaseValue() > aEffect.getDecreaseValue()) {
-                Messaging.send(player, "Target has a more powerful effect already!");
-                return SkillResult.CANCELLED;
-            }
+        if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
+            Messaging.send(player, "You cannot disarm that target!");
+            return SkillResult.FAIL;
         }
+
+        if (tHero.hasEffectType(EffectType.DISARM)) {
+            Messaging.send(player, "%target% is already disarmed.");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        tHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
+
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
 
         broadcastExecuteText(hero, target);
 
-        targetHero.addEffect(aEffect);
         return SkillResult.NORMAL;
     }
 }
