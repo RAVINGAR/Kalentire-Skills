@@ -124,6 +124,7 @@ public class SkillForage extends ActiveSkill {
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "mushroom.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "mushroom.chance", .01, false) * hero.getSkillLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "mushroom.max-found", 2, false);
+            break;
         case HELL:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[] { "ROTTEN_FLESH" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getSkillLevel(this);
