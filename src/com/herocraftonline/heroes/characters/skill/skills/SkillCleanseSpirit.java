@@ -1,20 +1,21 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
-public class SkillCleanseSpirit extends TargettedSkill {
+public class SkillCleanseSpirit extends SkillBaseHeal {
     // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
 
@@ -54,48 +55,18 @@ public class SkillCleanseSpirit extends TargettedSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-        if (!(target instanceof Player)) {
-            return SkillResult.INVALID_TARGET;
-        }
-
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
-        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
-
-        double targetHealth = target.getHealth();
-        if (targetHealth >= target.getMaxHealth()) {
-            if (player.equals(targetHero.getPlayer())) {
-                Messaging.send(player, "You are already at full health.");
-            }
-            else {
-                Messaging.send(player, "Target is already fully healed.");
-            }
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-
-        HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
-        plugin.getServer().getPluginManager().callEvent(hrhEvent);
-        if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!");
-            return SkillResult.CANCELLED;
-        }
-
-        targetHero.heal(hrhEvent.getAmount());
-
-        for (Effect effect : targetHero.getEffects()) {
+    protected void removeEffects(Hero hero) {
+        for (Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
-                    targetHero.removeEffect(effect);
+                    hero.removeEffect(effect);
                 }
             }
         }
         
         int maxRemovals = SkillConfigManager.getUseSetting(hero, this, "max-effect-removals", 1, false);
 
-        for (Effect effect : targetHero.getEffects()) {
+        for (Effect effect : hero.getEffects()) {
             // This combined with checking for DISPELLABLE and HARMFUL is so huge I'd rather split the lines. Disallow dispelling movement impediment, don't want the class countering itself.
             boolean isMovementImpeding = effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING) ||
                     effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT);
@@ -103,7 +74,7 @@ public class SkillCleanseSpirit extends TargettedSkill {
                 hero.removeEffect(effect);
                 // Just in case it's fire
                 if (effect.isType(EffectType.FIRE)) {
-                    target.setFireTicks(0);
+                    hero.getPlayer().setFireTicks(0);
                 }
                 maxRemovals--;
                 if (maxRemovals == 0) {
@@ -111,11 +82,10 @@ public class SkillCleanseSpirit extends TargettedSkill {
                 }
             }
         }
+    }
 
-        broadcastExecuteText(hero, target);
-
-        // Should probably add an effect. I'm really not up to it, though.
-
-        return SkillResult.NORMAL;
+    @Override
+    protected void doVisualEffects(World world, LivingEntity target) {
+        // TODO: Should probably add an effect. I'm really not up to it, though.
     }
 }
