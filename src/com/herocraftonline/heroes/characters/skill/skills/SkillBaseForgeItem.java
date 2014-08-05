@@ -41,11 +41,13 @@ public class SkillBaseForgeItem extends ActiveSkill {
         deafultItem = Material.LEATHER_BOOTS;
     }
 
+    @Override
     public String getDescription(Hero hero) {
         int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, defaultAmount, false);
         return getDescription().replace("$1", amount + "");
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
@@ -54,6 +56,7 @@ public class SkillBaseForgeItem extends ActiveSkill {
         return node;
     }
 
+    @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 

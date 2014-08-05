@@ -90,6 +90,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
         new RunestoneListener();
     }
 
+    @Override
     public String getDescription(Hero hero) {
 
         int maxUses = SkillConfigManager.getUseSetting(hero, this, "max-uses", defaultMaxUses, false);
@@ -103,6 +104,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
         return getDescription().replace("$1", maxUsesString);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
@@ -113,6 +115,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
         return node;
     }
 
+    @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         ItemStack heldItem = player.getInventory().getItemInHand();
