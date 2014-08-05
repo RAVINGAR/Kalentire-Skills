@@ -45,11 +45,6 @@ public abstract class SkillBaseHeal extends TargettedSkill {
     }
 
     @Override
-    public ConfigurationSection getDefaultConfig() {
-        return super.getDefaultConfig();
-    }
-
-    @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (!(target instanceof Player)) {
