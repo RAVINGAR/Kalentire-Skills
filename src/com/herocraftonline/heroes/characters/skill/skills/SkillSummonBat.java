@@ -56,6 +56,7 @@ public class SkillSummonBat extends ActiveSkill {
         double chance = Util.nextRand();
         if (chance <= chance3x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.BAT);
+            player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.BAT);
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.BAT);
         }
