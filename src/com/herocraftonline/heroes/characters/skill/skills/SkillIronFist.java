@@ -40,7 +40,7 @@ public class SkillIronFist extends ActiveSkill {
         setUsage("/skill ironfist");
         setArgumentRange(0, 0);
         setIdentifiers("skill ironfist");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     @Override

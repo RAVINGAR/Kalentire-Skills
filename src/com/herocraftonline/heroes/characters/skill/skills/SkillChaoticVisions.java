@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,11 +25,11 @@ public class SkillChaoticVisions extends ActiveSkill {
 
     public SkillChaoticVisions(Heroes plugin) {
         super(plugin, "ChaoticVisions");
-        setDescription("Launch a spear of bone in front of you. The spear will travel up to $1 blocks, pass through enemies, and damage all targets hit for $2 damage.");
+        setDescription("Launch an illusion of chaos in front of you. The spear will travel up to $1 blocks, pass through enemies, and damage all targets hit for $2 damage.");
         setUsage("/skill chaoticvisions");
         setArgumentRange(0, 0);
         setIdentifiers("skill chaoticvisions");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     public String getDescription(Hero hero) {

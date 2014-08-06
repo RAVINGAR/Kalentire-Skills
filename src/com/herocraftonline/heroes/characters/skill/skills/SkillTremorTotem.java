@@ -33,7 +33,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
         setUsage("/skill tremortotem");
         setArgumentRange(0, 0);
         setIdentifiers("skill tremortotem");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT);
         material = Material.QUARTZ_BLOCK;
     }
 

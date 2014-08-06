@@ -26,7 +26,7 @@ public class SkillHellgate extends ActiveSkill {
         setUsage("/skill hellgate");
         setArgumentRange(0, 0);
         setIdentifiers("skill hellgate");
-        setTypes(SkillType.SILENCEABLE, SkillType.TELEPORTING);
+        setTypes(SkillType.SILENCEABLE, SkillType.TELEPORTING, SkillType.AREA_OF_EFFECT);
     }
 
     @Override

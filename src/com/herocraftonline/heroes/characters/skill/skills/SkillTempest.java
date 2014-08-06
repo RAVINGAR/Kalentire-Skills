@@ -6,7 +6,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+
 import org.bukkit.*;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,6 +30,7 @@ public class SkillTempest extends ActiveSkill {
         setUsage("/skill tempest");
         setArgumentRange(0, 0);
         setDescription("Conjure a Tempest in the area around your feet, dealing $1 damage to all targets within a $2 block radius.");
+        setTypes(SkillType.AREA_OF_EFFECT, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHTNING);
     }
 
     public ConfigurationSection getDefaultConfig() {

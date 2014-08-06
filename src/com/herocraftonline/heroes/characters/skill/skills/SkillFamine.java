@@ -36,7 +36,7 @@ public class SkillFamine extends TargettedSkill {
         setUsage("/skill famine");
         setArgumentRange(0, 0);
         setIdentifiers("skill famine");
-        setTypes(SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.STAMINA_DECREASING, SkillType.DEBUFFING);
+        setTypes(SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.STAMINA_DECREASING, SkillType.DEBUFFING, SkillType.AREA_OF_EFFECT);
     }
 
     public String getDescription(Hero hero) {

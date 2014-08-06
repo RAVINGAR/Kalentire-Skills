@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductio
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -51,7 +52,7 @@ public class SkillDarkBolt extends ActiveSkill {
         setUsage("/skill darkbolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkbolt");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }

@@ -36,7 +36,7 @@ public class SkillTremor extends ActiveSkill{
         setUsage("/skill tremor");
         setArgumentRange(0, 0);
         setIdentifiers("skill tremor");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     @Override

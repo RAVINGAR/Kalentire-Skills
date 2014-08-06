@@ -34,7 +34,7 @@ public class SkillForceTotem extends SkillBaseTotem {
         setUsage("/skill forcetotem");
         setIdentifiers("skill forcetotem");
         setDescription("Places a force totem at target location that throws non-partied entites in a $1 radius into the air, dealing $2 damage and disorienting them. Lasts for $3 seconds.");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
         material = Material.QUARTZ_BLOCK;
     }
 
