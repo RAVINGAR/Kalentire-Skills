@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -28,7 +26,7 @@ public class SkillBandage extends TargettedSkill {
         setUsage("/skill bandage <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill bandage");
-        setTypes(SkillType.HEAL, SkillType.PHYSICAL);
+        setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_PHYSICAL);
     }
 
     @Override
@@ -91,4 +89,3 @@ public class SkillBandage extends TargettedSkill {
         return getDescription().replace("$1", amount + "");
     }
 }
-*/

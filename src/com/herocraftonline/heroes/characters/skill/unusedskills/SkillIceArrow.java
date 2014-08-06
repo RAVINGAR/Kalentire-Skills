@@ -1,8 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -39,7 +36,7 @@ public class SkillIceArrow extends ActiveSkill {
         setUsage("/skill iarrow");
         setArgumentRange(0, 0);
         setIdentifiers("skill iarrow", "skill icearrow");
-        setTypes(SkillType.BUFF, SkillType.ICE, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -122,7 +119,7 @@ public class SkillIceArrow extends ActiveSkill {
             if (hero.hasEffect("IceArrowBuff")) {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
-                SlowEffect iceSlowEffect = new SlowEffect(skill, duration, amplifier, false, slowApplyText, slowExpireText, hero);
+                SlowEffect iceSlowEffect = new SlowEffect(skill, hero.getPlayer(), duration, amplifier, slowApplyText, slowExpireText);
                 LivingEntity target = (LivingEntity) event.getEntity();
                 plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
             }
@@ -151,4 +148,3 @@ public class SkillIceArrow extends ActiveSkill {
         return getDescription().replace("$1", mana + "");
     }
 }
-*/

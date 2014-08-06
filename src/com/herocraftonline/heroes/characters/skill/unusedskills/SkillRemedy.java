@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -30,7 +28,7 @@ public class SkillRemedy extends TargettedSkill {
         setUsage("/skill remedy <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill remedy");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override
@@ -98,4 +96,3 @@ public class SkillRemedy extends TargettedSkill {
         return getDescription().replace("$1", health + "");
     }
 }
-*/

@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -26,7 +24,7 @@ public class SkillBloodlust extends ActiveSkill {
         setUsage("/skill bloodlust");
         setArgumentRange(0, 0);
         setIdentifiers(new String[] { "skill bloodlust" });
-        setTypes(new SkillType[] { SkillType.BUFF, SkillType.SILENCABLE, SkillType.PHYSICAL });
+        setTypes(new SkillType[] { SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_PHYSICAL });
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -46,7 +44,7 @@ public class SkillBloodlust extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         hero.getPlayer().setHealth(hero.getPlayer().getHealth() / 2);
-        BloodlustEffect beffect = new BloodlustEffect(this, duration, this.applyText, this.expireText);
+        BloodlustEffect beffect = new BloodlustEffect(this, hero.getPlayer(), duration, this.applyText, this.expireText);
         hero.addEffect(beffect);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
@@ -60,8 +58,8 @@ public class SkillBloodlust extends ActiveSkill {
         private String applyText;
         private String expireText;
 
-        public BloodlustEffect(Skill skill, long duration, String applyText, String expireText) {
-            super(skill, "Bloodlust", duration);
+        public BloodlustEffect(Skill skill, Player applier, long duration, String applyText, String expireText) {
+            super(skill, "Bloodlust", applier, duration);
             this.applyText = applyText;
             this.expireText = expireText;
             this.types.add(EffectType.DISPELLABLE);
@@ -84,4 +82,3 @@ public class SkillBloodlust extends ActiveSkill {
         }
     }
 }
-*/

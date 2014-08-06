@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 //http://pastie.org/private/i04dtc6t4oannstqls6sq
 
@@ -33,14 +32,14 @@ public class SkillArcaneStorm extends ActiveSkill  {
 		setIdentifiers("skill ArcaneStorm");
 		setUsage("/skill ArcaneStorm");
 		setArgumentRange(0,0);
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
 		setDescription("On use, user is rooted into place for 5 seconds. " +
 				"After the 5 seconds, the user unleashes a hail of devastating magical artillery in the surrounding area");
 	}
 
 	@Override
 	public SkillResult use(final Hero hero, String[] arg1) {
-		hero.addEffect(new RootEffect(this, 5000L) {
+		hero.addEffect(new RootEffect(this, hero.getPlayer(), 1000, 5000L) {
 			@Override
 			public void applyToHero(Hero hero) {
 				super.applyToHero(hero);
@@ -123,4 +122,3 @@ public class SkillArcaneStorm extends ActiveSkill  {
 
 
 }
-*/

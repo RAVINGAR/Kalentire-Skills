@@ -1,4 +1,4 @@
-/*package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,7 +21,7 @@ public class SkillHolyStrike extends TargettedSkill {
         setUsage("/skill holystrike");
         setArgumentRange(0, 0);
         setIdentifiers("skill holystrike");
-        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.INTERRUPT, SkillType.LIGHT);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.INTERRUPTING, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override
@@ -52,4 +52,3 @@ public class SkillHolyStrike extends TargettedSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
-*/

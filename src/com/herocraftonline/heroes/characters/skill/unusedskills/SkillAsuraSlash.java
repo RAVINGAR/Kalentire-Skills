@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,7 +21,7 @@ public class SkillAsuraSlash extends TargettedSkill {
         setUsage("/skill asuraslash");
         setArgumentRange(0, 0);
         setIdentifiers("skill asuraslash");
-        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL, SkillType.DARK);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     @Override
@@ -54,4 +52,3 @@ public class SkillAsuraSlash extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 }
-*/

@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,7 +30,7 @@ public class SkillShock extends TargettedSkill {
         setUsage("/skill shock");
         setArgumentRange(0, 0);
         setIdentifiers("skill shock");
-        setTypes(SkillType.LIGHTNING, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class SkillShock extends TargettedSkill {
         private final int range;
         
         public ShockEffect(Skill skill, long period, long duration, double tickDamage, int range, Player applier) {
-            super(skill, "Shock", period, duration, tickDamage, applier);
+            super(skill, "Shock", applier, period, duration, tickDamage);
             this.range = range;
 
             types.add(EffectType.DISPELLABLE);
@@ -97,7 +96,7 @@ public class SkillShock extends TargettedSkill {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            broadcast(monster.getgetLocation(), "    " + applyText,pplyText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getEntity().getLocation(), "    " + applyText, Messaging.getLivingEntityName(monster));
         }
         
         @Override
@@ -118,7 +117,7 @@ public class SkillShock extends TargettedSkill {
                     if (!damageCheck(getApplier(), (LivingEntity) entity)) {
                         continue;
                     }
-                    addSpellTarget(entity, getApplierHero());
+                    addSpellTarget(entity, plugin.getCharacterManager().getHero(getApplier()));
                     damageEntity((LivingEntity) entity, player, getTickDamage(), DamageCause.MAGIC);
                 }
             }
@@ -135,7 +134,7 @@ public class SkillShock extends TargettedSkill {
                     if (!damageCheck(getApplier(), (LivingEntity) entity)) {
                         continue;
                     }
-                    addSpellTarget(entity, getApplierHero());
+                    addSpellTarget(entity, plugin.getCharacterManager().getHero(getApplier()));
                     damageEntity((LivingEntity) entity, player, getTickDamage(), DamageCause.MAGIC, false);
                 }
             }
@@ -153,4 +152,3 @@ public class SkillShock extends TargettedSkill {
     }
 
 }
-*/

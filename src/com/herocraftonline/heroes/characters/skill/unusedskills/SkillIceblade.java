@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -41,7 +39,7 @@ public class SkillIceblade extends TargettedSkill {
         setUsage("/skill iceblade");
         setArgumentRange(0, 0);
         setIdentifiers("skill iceblade");
-        setTypes(SkillType.ICE, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.FORCE, SkillType.INTERRUPT);
+        setTypes(SkillType.ABILITY_PROPERTY_ICE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.FORCE, SkillType.INTERRUPTING);
     }
 
     @Override
@@ -72,14 +70,14 @@ public class SkillIceblade extends TargettedSkill {
             return SkillResult.FAIL;
         }
         
-        double damage = plugin.getDamageManager().getItemDamage(item, player);
+        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC);
         //Add the slow effect
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 4, false);
-        SlowEffect sEffect = new SlowEffect(this, duration, amplitude, false, applyText, expireText, hero);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new IcebladeEffect(this, 300, sEffect));
+        SlowEffect sEffect = new SlowEffect(this, hero.getPlayer(), duration, amplitude, applyText, expireText);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new IcebladeEffect(this, hero.getPlayer(), 300, sEffect));
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
         try {
@@ -101,8 +99,8 @@ public class SkillIceblade extends TargettedSkill {
     public class IcebladeEffect extends ExpirableEffect {
 
     	private final Effect effect;
-		public IcebladeEffect(Skill skill, long duration, Effect afterEffect) {
-			super(skill, "Iceblade", duration);
+		public IcebladeEffect(Skill skill, Player applier, long duration, Effect afterEffect) {
+			super(skill, "Iceblade", applier, duration);
 			this.effect = afterEffect;
 			this.types.add(EffectType.HARMFUL);
 			this.types.add(EffectType.ICE);
@@ -130,4 +128,3 @@ public class SkillIceblade extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

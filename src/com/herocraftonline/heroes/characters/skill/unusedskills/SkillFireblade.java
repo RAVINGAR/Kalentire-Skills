@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Bukkit;
@@ -38,7 +37,7 @@ public class SkillFireblade extends ActiveSkill {
         setUsage("/skill fireblade");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireblade");
-        setTypes(SkillType.FIRE, SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.BUFFING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -66,7 +65,7 @@ public class SkillFireblade extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        hero.addEffect(new FirebladeEffect(this, duration));
+        hero.addEffect(new FirebladeEffect(this, hero.getPlayer(), duration));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 0.6F, 1.0F);
         return SkillResult.NORMAL;
@@ -112,8 +111,8 @@ public class SkillFireblade extends ActiveSkill {
 
     public class FirebladeEffect extends ExpirableEffect {
 
-        public FirebladeEffect(Skill skill, long duration) {
-            super(skill, "Fireblade", duration);
+        public FirebladeEffect(Skill skill, Player applier, long duration) {
+            super(skill, "Fireblade", applier, duration);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.FIRE);
@@ -140,4 +139,3 @@ public class SkillFireblade extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(chance * 100));
     }
 }
-*/

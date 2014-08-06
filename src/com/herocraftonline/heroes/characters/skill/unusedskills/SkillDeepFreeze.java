@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -40,7 +38,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         setUsage("/skill deepfreeze <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill deepfreeze", "skill dfreeze");
-        setTypes(SkillType.ICE, SkillType.SILENCABLE, SkillType.DEBUFF, SkillType.DAMAGING, SkillType.HARMFUL, SkillType.INTERRUPT);
+        setTypes(SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
@@ -69,7 +67,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         
         //Deal the damage to the player
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
         
         // Add the effect to the entity
@@ -85,7 +83,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         private double x, y, z;
 
         public FreezeEffect(Skill skill, long duration, Hero applier) {
-            super(skill, "Freeze", period, duration);
+            super(skill, "Freeze", applier.getPlayer(), period, duration);
             this.applier = applier;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.HARMFUL);
@@ -123,8 +121,9 @@ public class SkillDeepFreeze extends TargettedSkill {
             broadcast(location, applyText, player.getName());
         }
 
-        public Hero getApplier() {
-            return applier;
+        @Override
+        public Player getApplier() {
+            return applier.getPlayer();
         }
         
         public void shatter(CharacterTemplate character) {
@@ -134,7 +133,7 @@ public class SkillDeepFreeze extends TargettedSkill {
                 super.removeFromMonster((Monster) character);
             }
             LivingEntity lEntity = character.getEntity();
-            int damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
+            double damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
             addSpellTarget(lEntity, applier);
             damageEntity(lEntity, applier.getPlayer(), damage, DamageCause.MAGIC);
             broadcast(lEntity.getLocation(), shatterText, Messaging.getLivingEntityName(lEntity));
@@ -199,7 +198,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         
         @EventHandler(priority = EventPriority.MONITOR)
         public void onSkillDamage(SkillDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0 || !event.getSkill().isType(SkillType.FIRE)) {
+            if (event.isCancelled() || event.getDamage() == 0 || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_FIRE)) {
                 return;
             }
             CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
@@ -219,4 +218,3 @@ public class SkillDeepFreeze extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "").replace("$3", shatter + "");
     }
 }
-*/

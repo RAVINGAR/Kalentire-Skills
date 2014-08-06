@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -41,7 +39,7 @@ public class SkillToxicblade extends ActiveSkill {
         setUsage("/skill toxicblade");
         setArgumentRange(0, 0);
         setIdentifiers("skill tblade", "skill toxicblade");
-        setTypes(SkillType.BUFF);
+        setTypes(SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -71,7 +69,7 @@ public class SkillToxicblade extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 600000, false);
         int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
-        hero.addEffect(new ToxicbladeBuff(this, duration, numAttacks));
+        hero.addEffect(new ToxicbladeBuff(this, hero.getPlayer(), duration, numAttacks));
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
@@ -80,8 +78,8 @@ public class SkillToxicblade extends ActiveSkill {
 
         protected int applicationsLeft = 1;
 
-        public ToxicbladeBuff(Skill skill, long duration, int numAttacks) {
-            super(skill, "Toxicblade", duration);
+        public ToxicbladeBuff(Skill skill, Player applier, long duration, int numAttacks) {
+            super(skill, "Toxicblade", applier, duration);
             this.applicationsLeft = numAttacks;
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.POISON);
@@ -105,7 +103,7 @@ public class SkillToxicblade extends ActiveSkill {
     public class ToxicbladePoison extends PeriodicDamageEffect {
 
         public ToxicbladePoison(Skill skill, long period, long duration, double tickDamage, Player applier) {
-            super(skill, "ToxicbladePoison", period, duration, tickDamage, applier);
+            super(skill, "ToxicbladePoison", applier, period, duration, tickDamage);
             this.types.add(EffectType.POISON);
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
         }
@@ -120,7 +118,7 @@ public class SkillToxicblade extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcasgetLocation(), "    " + applyText,pplyText, player.getName());
+            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
@@ -201,4 +199,3 @@ public class SkillToxicblade extends ActiveSkill {
         return s;
     }
 }
-*/

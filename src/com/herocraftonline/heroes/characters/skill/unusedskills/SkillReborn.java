@@ -1,6 +1,6 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,12 +14,13 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillDecay.DecayEffect;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 
 public class SkillReborn extends ActiveSkill {
     private String rebornText;
@@ -66,13 +67,15 @@ public class SkillReborn extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, (double) 17, false);
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, player, duration, period, tickDamage));
+        plugin.getCharacterManager().getCharacter(player).addEffect(new PeriodicHealEffect(this, "Reborn", player, duration, period, tickDamage));
 
         // this is our fireworks shit
+        VisualEffect fplayer = new VisualEffect();
         try {
             fplayer.playFirework(player.getWorld(),
-                                 target.getLocation().add(0, 1.5, 0),
+                                 player.getLocation().add(0, 1.5, 0),
                                  FireworkEffect.builder()
                                                .flicker(true).trail(false)
                                                .with(FireworkEffect.Type.BALL)
@@ -129,4 +132,3 @@ public class SkillReborn extends ActiveSkill {
         }
     }
 }
-*/

@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,7 +30,7 @@ public class SkillExplosiveFireball extends ActiveSkill {
         setUsage("/skill fireball");
         setArgumentRange(0, 0);
         setIdentifiers("skill explosivefireball");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -96,4 +95,3 @@ public class SkillExplosiveFireball extends ActiveSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
-*/

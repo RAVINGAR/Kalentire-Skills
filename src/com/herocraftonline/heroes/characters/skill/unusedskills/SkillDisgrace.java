@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Effect;
@@ -30,7 +29,7 @@ public class SkillDisgrace extends TargettedSkill {
         setDescription("You disgrace your target, causing them to bleed, dealing $1 damage over $2 seconds.");
         setUsage("/skill disgrace");
         setArgumentRange(0, 0);
-        setTypes(SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         setIdentifiers("skill disgrace");
     }
 
@@ -75,7 +74,7 @@ public class SkillDisgrace extends TargettedSkill {
     public class BleedSkillEffect extends PeriodicDamageEffect {
 
         public BleedSkillEffect(Skill skill, long duration, long period, double tickDamage, Player applier) {
-            super(skill, "Disgrace", period, duration, tickDamage, applier);
+            super(skill, "Disgrace", applier, period, duration, tickDamage);
             this.types.add(EffectType.BLEED);
         }
 
@@ -115,4 +114,3 @@ public class SkillDisgrace extends TargettedSkill {
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "");
     }
 }
-*/

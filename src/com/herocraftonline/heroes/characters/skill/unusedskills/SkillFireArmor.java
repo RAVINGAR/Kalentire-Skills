@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class SkillFireArmor extends PassiveSkill {
     public SkillFireArmor(Heroes plugin) {
         super(plugin, "FireArmor");
         setDescription("Your armor has a $1% chance to ignite your attackers!");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.BUFFING);
         setEffectTypes(EffectType.FIRE);
         defaultArmors.add(Material.GOLD_CHESTPLATE.name());
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
@@ -109,4 +108,3 @@ public class SkillFireArmor extends PassiveSkill {
         return getDescription().replace("$1", chance * 100 + "");
     }
 }
-*/

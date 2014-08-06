@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.Random;
 
@@ -36,7 +34,7 @@ public class SkillConfuse extends TargettedSkill {
         setUsage("/skill confuse");
         setArgumentRange(0, 0);
         setIdentifiers("skill confuse");
-        setTypes(SkillType.SILENCABLE, SkillType.ILLUSION, SkillType.HARMFUL);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -62,7 +60,7 @@ public class SkillConfuse extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 0.35, false);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new ConfuseEffect(this, duration, period, maxDrift));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new ConfuseEffect(this, hero.getPlayer(), duration, period, maxDrift));
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -71,8 +69,8 @@ public class SkillConfuse extends TargettedSkill {
 
         private final float maxDrift;
 
-        public ConfuseEffect(Skill skill, long duration, long period, float maxDrift) {
-            super(skill, "Confuse", period, duration);
+        public ConfuseEffect(Skill skill, Player applier, long duration, long period, float maxDrift) {
+            super(skill, "Confuse", applier, period, duration);
             this.maxDrift = maxDrift;
             this.types.add(EffectType.HARMFUL);
             this.types.add(EffectType.DISPELLABLE);
@@ -84,8 +82,8 @@ public class SkillConfuse extends TargettedSkill {
             Vector velocity = lEntity.getVelocity();
 
             float angle = random.nextFloat() * 2 * 3.14159f;
-            float xAdjustment = maxDrift * net.minecraft.server.v1_7_R1.MathHelper.cos(angle);
-            float zAdjustment = maxDrift * net.minecraft.server.v1_7_R1.MathHelper.sin(angle);
+            float xAdjustment = maxDrift * net.minecraft.server.v1_7_R4.MathHelper.cos(angle);
+            float zAdjustment = maxDrift * net.minecraft.server.v1_7_R4.MathHelper.sin(angle);
 
             velocity.add(new Vector(xAdjustment, 0f, zAdjustment));
             velocity.setY(0);
@@ -137,4 +135,3 @@ public class SkillConfuse extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

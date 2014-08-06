@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,7 +29,7 @@ public class SkillQuicken extends ActiveSkill {
         setUsage("/skill quicken");
         setArgumentRange(0, 0);
         setIdentifiers("skill quicken", "skill quick");
-        setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
@@ -61,7 +60,7 @@ public class SkillQuicken extends ActiveSkill {
         if (multiplier > 20) {
             multiplier = 20;
         }
-        QuickenEffect qEffect = new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText);
+        QuickenEffect qEffect = new QuickenEffect(this, getName(), hero.getPlayer(), duration, multiplier, applyText, expireText);
         if (!hero.hasParty()) {
             hero.addEffect(qEffect);
             return SkillResult.NORMAL;
@@ -106,4 +105,3 @@ public class SkillQuicken extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

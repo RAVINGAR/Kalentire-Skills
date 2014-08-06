@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -34,7 +32,7 @@ public class SkillHeartshot extends ActiveSkill {
 		setUsage("/skill heartshot");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill heartshot", "skill hshot");
-		setTypes(SkillType.BUFF);
+		setTypes(SkillType.BUFFING);
 		plugin.getServer().getPluginManager().registerEvents(new HeartShotListener(this), plugin);
 	}
 
@@ -117,7 +115,7 @@ public class SkillHeartshot extends ActiveSkill {
 			
 			if(hero.hasEffect("HeartShotBuff")) {
 				if(!damageCheck(player, target)) return;
-				Integer damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
+				double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
 				damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
 				damageEntity(target, player, damage, DamageCause.MAGIC, false);
 			}
@@ -125,4 +123,3 @@ public class SkillHeartshot extends ActiveSkill {
 		}
 	}
 }
-*/

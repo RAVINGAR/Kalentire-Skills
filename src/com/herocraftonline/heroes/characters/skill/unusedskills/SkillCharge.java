@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,7 +42,7 @@ public class SkillCharge extends TargettedSkill {
         setUsage("/skill charge");
         setArgumentRange(0, 0);
         setIdentifiers("skill charge");
-        setTypes(SkillType.PHYSICAL, SkillType.MOVEMENT, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.MOVEMENT_INCREASING, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new ChargeEntityListener(this), plugin);
     }
 
@@ -108,6 +106,8 @@ public class SkillCharge extends TargettedSkill {
             long stunDuration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 5000, false);
             long slowDuration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 0, false);
             long rootDuration = SkillConfigManager.getUseSetting(hero, skill, "root-duration", 0, false);
+            int rootPeriod = SkillConfigManager.getUseSetting(hero, skill, "root-period", 100, false);
+            
             long silenceDuration = SkillConfigManager.getUseSetting(hero, skill, "silence-duration", 0, false);
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE.node(), 0, false);
             damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(skill));
@@ -125,14 +125,14 @@ public class SkillCharge extends TargettedSkill {
                     Player p = (Player) e;
                     Hero tHero = plugin.getCharacterManager().getHero(p);
                     if (stunDuration > 0)
-                        tHero.addEffect(new StunEffect(skill, stunDuration));
+                        tHero.addEffect(new StunEffect(skill, hero.getPlayer(), stunDuration));
                     if (slowDuration > 0)
-                        tHero.addEffect(new SlowEffect(skill, slowDuration, 2, true, p.getName() + " has been slowed by " + player.getName(),
-                                p.getName() + " is no longer slowed by " + player.getName(), hero));
+                        tHero.addEffect(new SlowEffect(skill, hero.getPlayer(), slowDuration, 2, p.getName() + " has been slowed by " + player.getName(),
+                                p.getName() + " is no longer slowed by " + player.getName()));
                     if (rootDuration > 0)
-                        tHero.addEffect(new RootEffect(skill, rootDuration));
+                        tHero.addEffect(new RootEffect(skill, hero.getPlayer(), rootPeriod, rootDuration));
                     if (silenceDuration > 0)
-                        tHero.addEffect(new SilenceEffect(skill, silenceDuration));
+                        tHero.addEffect(new SilenceEffect(skill, hero.getPlayer(), silenceDuration));
                     if (damage > 0) {
                         addSpellTarget(le, hero);
                         Skill.damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
@@ -140,10 +140,10 @@ public class SkillCharge extends TargettedSkill {
                 } else if (e instanceof LivingEntity) {
                     Monster monster = plugin.getCharacterManager().getMonster((LivingEntity) e);
                     if (slowDuration > 0)
-                        monster.addEffect(new SlowEffect(skill, slowDuration, 2, true, Messaging.getLivingEntityName(le) + " has been slowed by " + player.getName(),
-                                Messaging.getLivingEntityName(le) + " is no longer slowed by " + player.getName(), hero));
+                        monster.addEffect(new SlowEffect(skill, hero.getPlayer(), slowDuration, 2, Messaging.getLivingEntityName(le) + " has been slowed by " + player.getName(),
+                                Messaging.getLivingEntityName(le) + " is no longer slowed by " + player.getName()));
                     if (rootDuration > 0)
-                       monster.addEffect(new RootEffect(skill, rootDuration));
+                       monster.addEffect(new RootEffect(skill, hero.getPlayer(), rootPeriod, rootDuration));
                 }
 
                 if (damage > 0) {
@@ -158,4 +158,3 @@ public class SkillCharge extends TargettedSkill {
         return getDescription();
     }
 }
-*/

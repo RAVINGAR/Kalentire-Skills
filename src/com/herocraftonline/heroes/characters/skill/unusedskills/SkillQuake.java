@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,7 +27,7 @@ public class SkillQuake extends PassiveSkill {
         setDescription("You hit the ground with a thunderous roar dealing damage to nearby players!");
         setArgumentRange(0, 0);
         setEffectTypes(EffectType.PHYSICAL, EffectType.BENEFICIAL);
-        setTypes(SkillType.PHYSICAL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -76,7 +75,7 @@ public class SkillQuake extends PassiveSkill {
                     continue;
                 }
                 addSpellTarget(target, hero);
-                Skill.damageEntity(target, player, (int) damage, DamageCause.ENTITY_ATTACK);
+                Skill.damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
             }
         }
     }
@@ -86,4 +85,3 @@ public class SkillQuake extends PassiveSkill {
         return getDescription();
     }
 }
-*/

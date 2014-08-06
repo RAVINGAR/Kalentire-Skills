@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Bukkit;
@@ -27,7 +26,7 @@ public class SkillMend extends TargettedSkill {
         setUsage("/skill mend <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill mend");
-        setTypes(SkillType.HEAL, SkillType.PHYSICAL);
+        setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_PHYSICAL);
     }
 
     @Override
@@ -93,4 +92,3 @@ public class SkillMend extends TargettedSkill {
         return getDescription().replace("$1", amount + "");
     }
 }
-*/

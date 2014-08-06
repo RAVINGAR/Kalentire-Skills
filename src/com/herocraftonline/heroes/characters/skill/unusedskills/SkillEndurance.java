@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,7 +30,7 @@ public class SkillEndurance extends ActiveSkill {
         setUsage("/skill endurance");
         setArgumentRange(0, 0);
         setIdentifiers("skill endurance");
-        setTypes(SkillType.BUFF, SkillType.PHYSICAL);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
@@ -103,7 +102,7 @@ public class SkillEndurance extends ActiveSkill {
             }
 
             //TODO: change to allow monsters
-            if (event.getSkill().isType(SkillType.PHYSICAL) && event.getDamager() instanceof Hero) {
+            if (event.getSkill().isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && event.getDamager() instanceof Hero) {
                 Hero hero =  (Hero) event.getDamager();
                 if (hero.hasEffect(getName())) {
                     int newDamage = (int) (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "outgoing-multiplier", .9, false));
@@ -159,4 +158,3 @@ public class SkillEndurance extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(inc * 100)).replace("$2", Util.stringDouble(out * 100));
     }
 }
-*/

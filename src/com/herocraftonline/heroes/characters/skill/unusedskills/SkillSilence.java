@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,7 +22,7 @@ public class SkillSilence extends TargettedSkill {
         setUsage("/skill silence");
         setArgumentRange(0, 0);
         setIdentifiers("skill silence");
-        setTypes(SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.INTERRUPT);
+        setTypes(SkillType.DEBUFFING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 
     @Override
@@ -41,7 +39,7 @@ public class SkillSilence extends TargettedSkill {
         	return SkillResult.INVALID_TARGET;
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        SilenceEffect sEffect = new SilenceEffect(this, duration);
+        SilenceEffect sEffect = new SilenceEffect(this, hero.getPlayer(), duration);
         plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
@@ -54,4 +52,3 @@ public class SkillSilence extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

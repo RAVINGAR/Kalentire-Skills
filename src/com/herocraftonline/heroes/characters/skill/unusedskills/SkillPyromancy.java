@@ -1,45 +1,44 @@
-/*package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-        import java.text.DecimalFormat;
-        import java.util.Deque;
-        import java.util.HashMap;
-        import java.util.LinkedList;
-        import java.util.Map;
-        import java.util.UUID;
-        import java.util.concurrent.TimeUnit;
+import java.text.DecimalFormat;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-        import com.herocraftonline.heroes.api.Entity.EntityUtil;
-        //import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlaze;
-        //import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlazeFireball;
-        import net.minecraft.server.v1_7_R4.World;
+//import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlaze;
+//import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlazeFireball;
+import net.minecraft.server.v1_7_R4.World;
 
-        import org.bukkit.Bukkit;
-        import org.bukkit.Location;
-        import org.bukkit.configuration.ConfigurationSection;
-        import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
-        import org.bukkit.entity.Blaze;
-        import org.bukkit.entity.LivingEntity;
-        import org.bukkit.entity.Player;
-        import org.bukkit.event.EventHandler;
-        import org.bukkit.event.EventPriority;
-        import org.bukkit.event.Listener;
-        import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import org.bukkit.entity.Blaze;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-        import com.google.common.cache.Cache;
-        import com.google.common.cache.CacheBuilder;
-        import com.google.common.cache.CacheLoader;
-        import com.herocraftonline.heroes.Heroes;
-        import com.herocraftonline.heroes.api.SkillResult;
-        import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-        import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
-        import com.herocraftonline.heroes.characters.CharacterTemplate;
-        import com.herocraftonline.heroes.characters.Hero;
-        import com.herocraftonline.heroes.characters.effects.Effect;
-        import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-        import com.herocraftonline.heroes.characters.skill.Skill;
-        import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-        import com.herocraftonline.heroes.characters.skill.SkillSetting;
-        import com.herocraftonline.heroes.util.Messaging;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillPyromancy extends ActiveSkill implements Listener {
 
@@ -81,8 +80,8 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
 
             @Override
             public void run() {
-                EntityUtil.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
-                EntityUtil.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
+                //EntityUtil.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
+                //EntityUtil.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
             }
 
         });
@@ -99,21 +98,21 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
             Messaging.send(hero.getPlayer(), "You do not have the ability to control any more summons!", new Object[] {});
             return SkillResult.INVALID_TARGET_NO_MSG;
         } else {
-            Blaze blaze = summonMinion(hero.getPlayer().getEyeLocation(), effect, hero.getPlayer());
-            effect.registerSummons(blaze);
+//            Blaze blaze = summonMinion(hero.getPlayer().getEyeLocation(), effect, hero.getPlayer());
+//            effect.registerSummons(blaze);
             Messaging.send(hero.getPlayer(), "Summoned 1 blaze!", new Object[] {});
             return SkillResult.NORMAL;
         }
     }
 
-    private Blaze summonMinion(Location loc, PyromancySummonsEffect effect, Player owner) {
-        World world = ((CraftWorld) loc.getWorld()).getHandle();
-        PyromancyBlaze summons = new PyromancyBlaze(world, effect, owner, this);
-        world.addEntity(summons);
-        Blaze summonedBukkit = (Blaze) summons.getBukkitEntity();
-        summonedBukkit.teleport(loc, TeleportCause.UNKNOWN);
-        return summonedBukkit;
-    }
+//    private Blaze summonMinion(Location loc, PyromancySummonsEffect effect, Player owner) {
+//        World world = ((CraftWorld) loc.getWorld()).getHandle();
+//        PyromancyBlaze summons = new PyromancyBlaze(world, effect, owner, this);
+//        world.addEntity(summons);
+//        Blaze summonedBukkit = (Blaze) summons.getBukkitEntity();
+//        summonedBukkit.teleport(loc, TeleportCause.UNKNOWN);
+//        return summonedBukkit;
+//    }
 
     @Override
     public String getDescription(Hero hero) {
@@ -263,4 +262,4 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
         }
     }
 
-}*/
+}

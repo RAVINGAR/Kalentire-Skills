@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -29,7 +28,7 @@ public class SkillPray extends TargettedSkill {
         setUsage("/skill pray <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill pray");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class SkillPray extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         int hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
-        int targetHealth = target.getHealth();
+        double targetHealth = target.getHealth();
 
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
@@ -90,4 +89,3 @@ public class SkillPray extends TargettedSkill {
         return getDescription().replace("$1", health + "");
     }
 }
-*/

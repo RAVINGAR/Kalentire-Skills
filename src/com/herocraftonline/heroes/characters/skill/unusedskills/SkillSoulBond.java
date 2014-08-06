@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,7 +36,7 @@ public class SkillSoulBond extends TargettedSkill {
         setUsage("/skill soulbond <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill soulbond", "skill sbond");
-        setTypes(SkillType.SILENCABLE, SkillType.LIGHT, SkillType.BUFF);
+        setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroesListener(this), plugin);
     }
 
@@ -74,7 +72,7 @@ public class SkillSoulBond extends TargettedSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 300000, false);
         SoulBondedEffect sbEffect = new SoulBondedEffect(this, player);
-        hero.addEffect(new SoulBondEffect(this, duration, target, sbEffect));
+        hero.addEffect(new SoulBondEffect(this, hero.getPlayer(), duration, target, sbEffect));
         plugin.getCharacterManager().getCharacter(target).addEffect(sbEffect);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
@@ -165,8 +163,8 @@ public class SkillSoulBond extends TargettedSkill {
         private final LivingEntity target;
         private final Effect bondEffect;
 
-        public SoulBondEffect(Skill skill, long duration, LivingEntity target, Effect bondEffect) {
-            super(skill, "SoulBond", duration);
+        public SoulBondEffect(Skill skill, Player applier, long duration, LivingEntity target, Effect bondEffect) {
+            super(skill, "SoulBond", applier, duration);
             this.target = target;
             this.bondEffect = bondEffect;
             this.types.add(EffectType.BENEFICIAL);
@@ -192,4 +190,3 @@ public class SkillSoulBond extends TargettedSkill {
         return getDescription();
     }
 }
-*/

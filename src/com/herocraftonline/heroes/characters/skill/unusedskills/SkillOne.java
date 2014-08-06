@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -23,7 +22,7 @@ public class SkillOne extends ActiveSkill {
         setUsage("/skill one");
         setArgumentRange(0, 0);
         setIdentifiers("skill one");
-        setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class SkillOne extends ActiveSkill {
         if (multiplier > 20) {
             multiplier = 20;
         }
-        hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText));
+        hero.addEffect(new QuickenEffect(this, getName(), hero.getPlayer(), duration, multiplier, applyText, expireText));
 
         return SkillResult.NORMAL;
     }
@@ -63,4 +62,3 @@ public class SkillOne extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

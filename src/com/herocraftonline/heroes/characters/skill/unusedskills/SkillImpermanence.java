@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Sound;
@@ -24,7 +23,7 @@ public class SkillImpermanence extends ActiveSkill {
         setUsage("/skill impermanence");
         setArgumentRange(0, 0);
         setIdentifiers("skill impermanence", "skill imp", "skill imper");
-        setTypes(SkillType.MOVEMENT, SkillType.COUNTER, SkillType.PHYSICAL, SkillType.STEALTHY);
+        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.DISABLE_COUNTERING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
     }
     
     @Override
@@ -50,7 +49,7 @@ public class SkillImpermanence extends ActiveSkill {
             int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
             if(multiplier > 20)
             	multiplier = 20;
-            hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, "$1 gained a burst of speed!", "$1 returned to normal speed!"));
+            hero.addEffect(new QuickenEffect(this, getName(), hero.getPlayer(), duration, multiplier, "$1 gained a burst of speed!", "$1 returned to normal speed!"));
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHEEP_SHEAR , 0.8F, 1.0F);
             broadcastExecuteText(hero);
             return SkillResult.NORMAL;
@@ -65,4 +64,3 @@ public class SkillImpermanence extends ActiveSkill {
         return getDescription();
     }
 }
-*/

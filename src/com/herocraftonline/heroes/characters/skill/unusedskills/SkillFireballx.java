@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 // http://pastie.org/private/rnvrflwdxua3yyxo9poloa (Snowball no fire)
 import java.util.LinkedHashMap;
@@ -19,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -41,7 +41,7 @@ public class SkillFireballx extends ActiveSkill {
         setUsage("/skill fireballx");
         setArgumentRange(0, 0);
         setIdentifiers("skill fireballx");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -89,8 +89,8 @@ public class SkillFireballx extends ActiveSkill {
             }
             fireballs.remove(projectile);
             LivingEntity entity = (LivingEntity) subEvent.getEntity();
-            Entity dmger = ((SmallFireball) projectile).getShooter();
-            if (dmger instanceof Player) {
+            if (((SmallFireball) projectile).getShooter() instanceof Player) {
+                Player dmger = (Player) ((SmallFireball) projectile).getShooter();
                 Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
                 if (!damageCheck((Player) dmger, entity)) {
@@ -99,8 +99,8 @@ public class SkillFireballx extends ActiveSkill {
                 }
 
                 // Ignite the player
-             //   entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
-             //   plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
+//                entity.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 100, false));
+//                plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the player
                 addSpellTarget(entity, hero);
@@ -119,4 +119,3 @@ public class SkillFireballx extends ActiveSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
-*/

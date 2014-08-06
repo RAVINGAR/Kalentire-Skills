@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,7 +26,7 @@ public class SkillConstrict extends TargettedSkill {
         setUsage("/skill constrict");
         setArgumentRange(0, 0);
         setIdentifiers("skill constrict");
-        setTypes(SkillType.DEBUFF, SkillType.MOVEMENT, SkillType.SILENCABLE, SkillType.HARMFUL, SkillType.DAMAGING);
+        setTypes(SkillType.DEBUFFING, SkillType.MOVEMENT_SLOWING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.DAMAGING);
     }
 
     @Override
@@ -58,7 +56,7 @@ public class SkillConstrict extends TargettedSkill {
         if (multiplier > 20) {
             multiplier = 20;
         }
-        SlowEffect effect = new SlowEffect(this, duration, multiplier, true, applyText, expireText, hero);
+        SlowEffect effect = new SlowEffect(this, hero.getPlayer(), duration, multiplier, applyText, expireText);
         effect.types.add(EffectType.MAGIC);
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SPIDER_WALK , 0.8F, 1.0F);
@@ -71,4 +69,3 @@ public class SkillConstrict extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

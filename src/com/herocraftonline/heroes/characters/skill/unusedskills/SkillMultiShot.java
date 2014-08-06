@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.LinkedHashMap;
@@ -144,7 +143,7 @@ public class SkillMultiShot extends ActiveSkill {
             hero.removeEffect(msEffect);
         }
 
-        hero.addEffect(new MultiShotEffect(this, duration, currentlyLoadedArrows, maxArrowsPerShot, maxTotalArrows));
+        hero.addEffect(new MultiShotEffect(this, hero.getPlayer(), duration, currentlyLoadedArrows, maxArrowsPerShot, maxTotalArrows));
 
         // "Load" the arrows
         msEffect = (MultiShotEffect) hero.getEffect("MultiShot");
@@ -161,7 +160,6 @@ public class SkillMultiShot extends ActiveSkill {
             this.skill = skill;
         }
 
-        @SuppressWarnings("deprecation")
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityShootBow(EntityShootBowEvent event) {
             if ((!(event.getEntity() instanceof Player)) || (!(event.getProjectile() instanceof Arrow))) {
@@ -310,7 +308,7 @@ public class SkillMultiShot extends ActiveSkill {
                 msEffect.showExpireText = false;
                 hero.removeEffect(msEffect);
 
-                hero.addEffect(new MultiShotEffect(skill, duration, currentlyLoadedArrows, maxArrowsPerShot, maxTotalArrows));
+                hero.addEffect(new MultiShotEffect(skill, hero.getPlayer(), duration, currentlyLoadedArrows, maxArrowsPerShot, maxTotalArrows));
             }
         }
 
@@ -342,8 +340,8 @@ public class SkillMultiShot extends ActiveSkill {
         private boolean listenToBowShootEvents;
         private boolean showExpireText;
 
-        public MultiShotEffect(Skill skill, long duration, int maxArrowsPerShot, int maxTotalArrows) {
-            super(skill, "MultiShot", duration);
+        public MultiShotEffect(Skill skill, Player applier, long duration, int maxArrowsPerShot, int maxTotalArrows) {
+            super(skill, "MultiShot", applier, duration);
 
             currentlyLoadedArrows = 0;
             setShowExpireText(true);
@@ -356,8 +354,8 @@ public class SkillMultiShot extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
         }
 
-        public MultiShotEffect(Skill skill, long duration, int currentlyLoadedArrows, int maxArrowsPerShot, int maxTotalArrows) {
-            super(skill, "MultiShot", duration);
+        public MultiShotEffect(Skill skill, Player applier, long duration, int currentlyLoadedArrows, int maxArrowsPerShot, int maxTotalArrows) {
+            super(skill, "MultiShot", applier, duration);
 
             this.currentlyLoadedArrows = currentlyLoadedArrows;
             setShowExpireText(true);
@@ -439,4 +437,3 @@ public class SkillMultiShot extends ActiveSkill {
         }
     }
 }
-*/

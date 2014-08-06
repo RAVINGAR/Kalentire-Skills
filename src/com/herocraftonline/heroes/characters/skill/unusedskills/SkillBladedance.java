@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -28,7 +26,7 @@ public class SkillBladedance extends TargettedSkill {
         setUsage("/skill bladedance");
         setArgumentRange(0, 0);
         setIdentifiers("skill bladedance");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class SkillBladedance extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = plugin.getDamageManager().getItemDamage(item, player);
+        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
@@ -63,7 +61,7 @@ public class SkillBladedance extends TargettedSkill {
             addSpellTarget(target, hero);
             damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH , 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -74,4 +72,3 @@ public class SkillBladedance extends TargettedSkill {
         return getDescription().replace("$1", mult * 100 + "");
     }
 }
-*/

@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,7 @@ public class SkillBoltstorm extends ActiveSkill {
         setUsage("/skill boltstorm");
         setArgumentRange(0, 0);
         setIdentifiers("skill boltstorm");
-        setTypes(SkillType.LIGHTNING, SkillType.SILENCABLE, SkillType.DAMAGING);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCEABLE, SkillType.DAMAGING);
     }
 
     @Override
@@ -61,14 +59,14 @@ public class SkillBoltstorm extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        hero.addEffect(new BoltStormEffect(this, period, duration));
+        hero.addEffect(new BoltStormEffect(this, hero.getPlayer(), period, duration));
         return SkillResult.NORMAL;
     }
 
     public class BoltStormEffect extends PeriodicExpirableEffect {
 
-        public BoltStormEffect(Skill skill, long period, long duration) {
-            super(skill, "Boltstorm", period, duration);
+        public BoltStormEffect(Skill skill, Player applier, long period, long duration) {
+            super(skill, "Boltstorm", applier, period, duration);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.MAGIC);
@@ -137,4 +135,3 @@ public class SkillBoltstorm extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "").replace("$2", damage + "");
     }
 }
-*/

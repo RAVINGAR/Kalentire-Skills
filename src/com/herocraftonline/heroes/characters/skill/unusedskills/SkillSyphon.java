@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,7 +20,7 @@ public class SkillSyphon extends TargettedSkill {
         setUsage("/skill syphon <target> <health>");
         setArgumentRange(0, 2);
         setIdentifiers("skill syphon");
-        setTypes(SkillType.HEAL, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.DARK);
+        setTypes(SkillType.HEALING, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     @Override
@@ -67,4 +65,3 @@ public class SkillSyphon extends TargettedSkill {
         return getDescription();
     }
 }
-*/

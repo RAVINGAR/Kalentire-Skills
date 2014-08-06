@@ -1,4 +1,3 @@
-/*  
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Bukkit;
@@ -41,7 +40,7 @@ public class SkillMortalWound extends TargettedSkill {
         setUsage("/skill mortalwound");
         setArgumentRange(0, 0);
         setIdentifiers("skill mortalwound", "skill mwound");
-        setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.DEBUFF, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.DEBUFFING, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
@@ -97,7 +96,7 @@ public class SkillMortalWound extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, period, duration, tickDamage, player, healMultiplier));
         
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 
@@ -106,7 +105,7 @@ public class SkillMortalWound extends TargettedSkill {
         private final double healMultiplier;
 
         public MortalWound(Skill skill, long period, long duration, double tickDamage, Player applier, double healMultiplier) {
-            super(skill, "MortalWound", period, duration, tickDamage, applier);
+            super(skill, "MortalWound", applier, period, duration, tickDamage);
             this.healMultiplier = healMultiplier;
 
             types.add(EffectType.BLEED);
@@ -164,4 +163,3 @@ public class SkillMortalWound extends TargettedSkill {
         }
     }
 }
-*/

@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -33,7 +31,7 @@ public class SkillChlorobon extends TargettedSkill {
         setUsage("/skill chlorobon <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill chlorobon");
-        setTypes(SkillType.BUFF, SkillType.HEAL, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     public String getDescription(Hero hero) {
@@ -96,7 +94,7 @@ public class SkillChlorobon extends TargettedSkill {
 
     public class ChlorobonEffect extends PeriodicHealEffect {
         public ChlorobonEffect(Skill skill, long period, long duration, double tickHealth, Player applier) {
-            super(skill, "ChlorobonEffect", period, duration, tickHealth, applier);
+            super(skill, "ChlorobonEffect", applier, period, duration, tickHealth);
             this.types.add(EffectType.DISPELLABLE);
         }
 
@@ -113,4 +111,3 @@ public class SkillChlorobon extends TargettedSkill {
         }
     }
 }
-*/

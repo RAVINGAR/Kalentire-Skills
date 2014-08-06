@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.LinkedHashMap;
@@ -47,7 +46,7 @@ public class SkillFirebolt extends ActiveSkill {
         setUsage("/skill firebolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill firebolt");
-        setTypes(SkillType.FIRE, SkillType.SILENCABLE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -140,4 +139,3 @@ public class SkillFirebolt extends ActiveSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
-*/

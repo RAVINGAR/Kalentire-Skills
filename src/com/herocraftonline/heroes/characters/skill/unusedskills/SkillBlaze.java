@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class SkillBlaze extends ActiveSkill {
         setUsage("/skill blaze");
         setArgumentRange(0, 0);
         setIdentifiers("skill blaze");
-        setTypes(SkillType.FIRE, SkillType.DAMAGING, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -90,4 +88,3 @@ public class SkillBlaze extends ActiveSkill {
         return getDescription().replace("$1", damage + "");
     }
 }
-*/

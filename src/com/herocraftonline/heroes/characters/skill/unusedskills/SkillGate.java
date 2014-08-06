@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,7 +23,7 @@ public class SkillGate extends ActiveSkill {
         setUsage("/skill gate <location>");
         setArgumentRange(1, 1);
         setIdentifiers("skill gate");
-        setTypes(SkillType.TELEPORT, SkillType.SILENCABLE);
+        setTypes(SkillType.TELEPORTING, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -78,4 +76,3 @@ public class SkillGate extends ActiveSkill {
         return null;
     }
 }
-*/

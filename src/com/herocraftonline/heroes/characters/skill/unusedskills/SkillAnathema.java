@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -27,7 +25,7 @@ public class SkillAnathema extends TargettedSkill {
         setUsage("/skill anathema");
         setArgumentRange(0, 0);
         setIdentifiers("skill anathema");
-        setTypes(SkillType.DAMAGING, SkillType.LIGHT, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -69,4 +67,3 @@ public class SkillAnathema extends TargettedSkill {
     }
 
 }
-*/

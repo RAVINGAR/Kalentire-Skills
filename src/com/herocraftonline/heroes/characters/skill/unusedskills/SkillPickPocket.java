@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +33,7 @@ public class SkillPickPocket extends TargettedSkill {
         setUsage("/skill pickpocket");
         setArgumentRange(0, 0);
         setIdentifiers("skill pickpocket", "skill ppocket", "skill pickp");
-        setTypes(SkillType.PHYSICAL, SkillType.HARMFUL);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -59,7 +57,6 @@ public class SkillPickPocket extends TargettedSkill {
         noisySuccessMessage = SkillConfigManager.getRaw(this, "noisy-success-message", "%hero% stole %target%s %item%!").replace("%hero", "$1").replace("%target%", "$2").replace("%item%", "$3");
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
@@ -127,4 +124,3 @@ public class SkillPickPocket extends TargettedSkill {
 
 
 }
-*/

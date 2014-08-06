@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -29,7 +27,7 @@ public class SkillChant extends TargettedSkill {
         setUsage("/skill chant <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill chant");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -93,4 +91,3 @@ public class SkillChant extends TargettedSkill {
         return getDescription().replace("$1", amount + "");
     }
 }
-*/

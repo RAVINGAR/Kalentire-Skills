@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Color;
@@ -28,7 +27,7 @@ public class SkillDivineWord extends TargettedSkill {
         setUsage("/skill divineword");
         setArgumentRange(0, 0);
         setIdentifiers("skill divineword");
-        setTypes(SkillType.HEALING, SkillType.SILENCABLE, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override
@@ -94,4 +93,3 @@ public class SkillDivineWord extends TargettedSkill {
         return getDescription().replace("$1", amount + "");
     }
 }
-*/

@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         setUsage("/skill melodicbinding");
         setArgumentRange(0, 0);
         setIdentifiers("skill melodicbinding");
-        setTypes(SkillType.DEBUFF, SkillType.MOVEMENT, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.DEBUFFING, SkillType.MOVEMENT_SLOWING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 
@@ -79,7 +78,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 500, true);
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10, false);
-        hero.addEffect(new MelodicBindingEffect(this, duration, period, tickDamage, range));
+        hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), duration, period, tickDamage, range));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 6.0F); 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 2.0F); 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.NOTE_PIANO , 0.8F, 8.0F); 
@@ -124,8 +123,8 @@ public class SkillMelodicBinding extends ActiveSkill {
         private final double tickDamage;
         private final int range;
 
-        public MelodicBindingEffect(SkillMelodicBinding skill, long duration, long period, double tickDamage, int range) {
-            super(skill, "MelodicBinding", period, duration);
+        public MelodicBindingEffect(SkillMelodicBinding skill, Player applier, long duration, long period, double tickDamage, int range) {
+            super(skill, "MelodicBinding", applier, period, duration);
             this.tickDamage = tickDamage;
             this.range = range;
             this.types.add(EffectType.DISPELLABLE);
@@ -164,7 +163,7 @@ public class SkillMelodicBinding extends ActiveSkill {
             changeBlock(loc, hero);
 
             int amplitude = SkillConfigManager.getUseSetting(hero, skill, "amplitude", 2, false);
-            SlowEffect sEffect = new SlowEffect(skill, this.getPeriod(), amplitude, true, null, null, hero);
+            SlowEffect sEffect = new SlowEffect(skill, hero.getPlayer(), this.getPeriod(), amplitude, null, null);
             for (Entity entity : player.getNearbyEntities(range, range, range)) {
                 if (entity instanceof LivingEntity) {
                     LivingEntity lEntity = (LivingEntity) entity;
@@ -205,4 +204,3 @@ public class SkillMelodicBinding extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

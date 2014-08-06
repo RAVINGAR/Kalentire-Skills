@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Sound;
@@ -27,7 +26,7 @@ public class SkillFog extends ActiveSkill {
         setUsage("/skill fog");
         setArgumentRange(0, 0);
         setIdentifiers("skill fog");
-        setTypes(SkillType.SILENCABLE, SkillType.BUFF, SkillType.ILLUSION);
+        setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_ILLUSION);
     }
 
     @Override
@@ -50,7 +49,7 @@ public class SkillFog extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
-        hero.addEffect(new NightvisionEffect(this, duration, applyText, expireText));
+        hero.addEffect(new NightvisionEffect(this, hero.getPlayer(), duration, applyText, expireText));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
         return SkillResult.NORMAL;
@@ -62,4 +61,3 @@ public class SkillFog extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

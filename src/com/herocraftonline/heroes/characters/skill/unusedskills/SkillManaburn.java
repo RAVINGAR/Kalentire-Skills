@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.Effect;
@@ -27,7 +26,7 @@ public class SkillManaburn extends TargettedSkill {
         setUsage("/skill manaburn");
         setArgumentRange(0, 1);
         setIdentifiers("skill manaburn", "skill mburn");
-        setTypes(SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.MANA, SkillType.HARMFUL);
+        setTypes(SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.MANA_INCREASING, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -75,4 +74,3 @@ public class SkillManaburn extends TargettedSkill {
         return getDescription().replace("$1", mana + "");
     }
 }
-*/

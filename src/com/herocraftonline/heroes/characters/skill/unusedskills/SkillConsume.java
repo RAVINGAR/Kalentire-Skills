@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.List;
 
@@ -28,7 +26,7 @@ public class SkillConsume extends ActiveSkill {
         setUsage("/skill consume <item>");
         setArgumentRange(1, 1);
         setIdentifiers("skill consume");
-        setTypes(SkillType.ITEM, SkillType.MANA);
+        setTypes(SkillType.ITEM_DESTRUCTION, SkillType.MANA_INCREASING);
     }
 
     @Override
@@ -41,7 +39,6 @@ public class SkillConsume extends ActiveSkill {
         return node;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
@@ -85,7 +82,7 @@ public class SkillConsume extends ActiveSkill {
                 player.getInventory().removeItem(reagent);
                 player.updateInventory();
                 hero.setMana(hrmEvent.getAmount() + hero.getMana());
-                if (hero.isVerbose()) {
+                if (hero.isVerboseMana()) {
                     Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
                 } else {
                     Messaging.send(player, "You regain " + mana + " mana");
@@ -105,4 +102,3 @@ public class SkillConsume extends ActiveSkill {
         return getDescription();
     }
 }
-*/

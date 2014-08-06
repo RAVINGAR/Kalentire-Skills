@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,7 +34,7 @@ public class SkillManaShield extends ActiveSkill {
         setUsage("/skill manashield");
         setArgumentRange(0, 0);
         setIdentifiers("skill manashield", "skill mshield");
-        setTypes(SkillType.BUFF, SkillType.SILENCABLE, SkillType.MANA);
+        setTypes(SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.MANA_DECREASING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
@@ -62,15 +60,15 @@ public class SkillManaShield extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        hero.addEffect(new ManaShieldEffect(this, duration));
+        hero.addEffect(new ManaShieldEffect(this, hero.getPlayer(), duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_BREAK , 0.8F, 1.0F); 
         return SkillResult.NORMAL;
     }
 
     public class ManaShieldEffect extends ExpirableEffect {
 
-        public ManaShieldEffect(Skill skill, long duration) {
-            super(skill, "ManaShield", duration);
+        public ManaShieldEffect(Skill skill, Player applier, long duration) {
+            super(skill, "ManaShield", applier, duration);
             
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
@@ -130,7 +128,7 @@ public class SkillManaShield extends ActiveSkill {
                 } else {
                     mana -= absorbamount;
                     hero.setMana(mana);
-                    if (mana != 100 && hero.isVerbose()) {
+                    if (mana != 100 && hero.isVerboseMana()) {
                         Messaging.send(player, ChatColor.BLUE + "MANA " + Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
                     }
                 }
@@ -145,4 +143,3 @@ public class SkillManaShield extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

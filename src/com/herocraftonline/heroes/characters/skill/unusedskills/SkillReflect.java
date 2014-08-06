@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,7 +34,7 @@ public class SkillReflect extends ActiveSkill {
         setUsage("/skill reflect");
         setArgumentRange(0, 0);
         setIdentifiers("skill reflect");
-        setTypes(SkillType.FORCE, SkillType.SILENCABLE, SkillType.BUFF);
+        setTypes(SkillType.FORCE, SkillType.SILENCEABLE, SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
@@ -62,7 +61,7 @@ public class SkillReflect extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double reflectAmount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", 0.5, false);
-        hero.addEffect(new ReflectEffect(this, duration, reflectAmount));
+        hero.addEffect(new ReflectEffect(this, hero.getPlayer(), duration, reflectAmount));
 
         return SkillResult.NORMAL;
     }
@@ -71,8 +70,8 @@ public class SkillReflect extends ActiveSkill {
 
         private final double reflectAmount;
 
-        public ReflectEffect(Skill skill, long duration, double reflectAmount) {
-            super(skill, "Reflect", duration);
+        public ReflectEffect(Skill skill, Player applier, long duration, double reflectAmount) {
+            super(skill, "Reflect", applier, duration);
             this.reflectAmount = reflectAmount;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
@@ -113,7 +112,7 @@ public class SkillReflect extends ActiveSkill {
             }
             CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (character.hasEffect("Reflect")) {
-                int damage = (int) (event.getDamage() * ((ReflectEffect) character.getEffect("Reflect")).reflectAmount);
+                double damage = event.getDamage() * ((ReflectEffect) character.getEffect("Reflect")).reflectAmount;
                 plugin.getDamageManager().addSpellTarget(event.getDamager().getEntity(), character, skill);
                 Skill.damageEntity(event.getDamager().getEntity(), character.getEntity(), damage, DamageCause.MAGIC);
             }
@@ -127,4 +126,3 @@ public class SkillReflect extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(amount * 100)).replace("$2", duration / 1000 + "");
     }
 }
-*/

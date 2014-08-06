@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Color;
@@ -10,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -28,7 +28,7 @@ public class SkillWindwalk extends ActiveSkill {
         setUsage("/skill windwalk");
         setArgumentRange(0, 0);
         setIdentifiers("skill windwalk");
-        setTypes(SkillType.BUFF, SkillType.MOVEMENT, SkillType.SILENCABLE);
+        setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class SkillWindwalk extends ActiveSkill {
         if (multiplier > 20) {
             multiplier = 20;
         }
-        hero.addEffect(new QuickenEffect(this, getName(), duration, multiplier, applyText, expireText));
+        hero.addEffect(new QuickenEffect(this, getName(), hero.getPlayer(), duration, multiplier, applyText, expireText));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT , 0.8F, 1.0F);
         // this is our fireworks shit
         Player player = hero.getPlayer();
@@ -83,4 +83,3 @@ public class SkillWindwalk extends ActiveSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

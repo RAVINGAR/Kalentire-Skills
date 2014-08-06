@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -35,7 +33,7 @@ public class SkillAbsorb extends ActiveSkill {
         setUsage("/skill absorb");
         setArgumentRange(0, 0);
         setIdentifiers("skill absorb");
-        setTypes(SkillType.SILENCABLE, SkillType.BUFFING, SkillType.MANA_INCREASING);
+        setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.MANA_INCREASING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
@@ -120,7 +118,7 @@ public class SkillAbsorb extends ActiveSkill {
                     hero.removeEffect(hero.getEffect("Absorb"));
                 } else {
                     hero.setMana(mana + absorbAmount);
-                    if (hero.isVerbose()) {
+                    if (hero.isVerboseMana()) {
                         Messaging.send(player, ChatColor.BLUE + "MANA " + Messaging.createManaBar(mana + absorbAmount, hero.getMaxMana()));
                     }
                 }
@@ -134,4 +132,3 @@ public class SkillAbsorb extends ActiveSkill {
         return getDescription();
     }
 }
-*/

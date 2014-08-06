@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Bukkit;
@@ -42,7 +41,7 @@ public class SkillSoulFire extends ActiveSkill {
         setUsage("/skill soulfire");
         setArgumentRange(0, 0);
         setIdentifiers("skill soulfire");
-        setTypes(SkillType.FIRE, SkillType.BUFF, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.BUFFING, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -70,7 +69,7 @@ public class SkillSoulFire extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        hero.addEffect(new SoulFireEffect(this, duration));
+        hero.addEffect(new SoulFireEffect(this, hero.getPlayer(), duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 0.5F, 1.0F); 
         // this is our fireworks shit
         Player player = hero.getPlayer();
@@ -129,8 +128,8 @@ public class SkillSoulFire extends ActiveSkill {
 
     public class SoulFireEffect extends ExpirableEffect {
 
-        public SoulFireEffect(Skill skill, long duration) {
-            super(skill, "SoulFire", duration);
+        public SoulFireEffect(Skill skill, Player applier, long duration) {
+            super(skill, "SoulFire", applier, duration);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.FIRE);
@@ -157,4 +156,3 @@ public class SkillSoulFire extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(chance * 100));
     }
 }
-*/

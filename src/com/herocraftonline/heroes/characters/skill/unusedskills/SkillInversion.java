@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,7 +21,7 @@ public class SkillInversion extends TargettedSkill {
         setUsage("/skill inversion");
         setArgumentRange(0, 0);
         setIdentifiers("skill inversion");
-        setTypes(SkillType.MANA, SkillType.DAMAGING, SkillType.SILENCABLE, SkillType.HARMFUL);
+        setTypes(SkillType.MANA_DECREASING, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -105,4 +104,3 @@ public class SkillInversion extends TargettedSkill {
     }
 
 }
-*/

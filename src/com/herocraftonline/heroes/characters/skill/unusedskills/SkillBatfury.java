@@ -1,9 +1,25 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 //TODO: add in following AI so the skill is more stressful to the victim 
 //https://github.com/DMarby/Pets/blob/master/src/main/java/se/DMarby/Pets/EntityBatPet.java
 //possible AI source from Pets
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
+import org.bukkit.entity.Bat;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.ExperienceChangeEvent;
@@ -11,27 +27,10 @@ import com.herocraftonline.heroes.api.events.HeroKillCharacterEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Setting;
 import com.herocraftonline.heroes.util.Util;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SkillBatfury extends TargettedSkill implements Listener {
 
@@ -45,7 +44,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         setUsage("/skill batfury ");
         setArgumentRange(0, 0);
         setIdentifiers("skill bats", "skill batfury");
-        setTypes(SkillType.SUMMON, SkillType.SILENCABLE, SkillType.KNOWLEDGE, SkillType.HARMFUL);
+        setTypes(SkillType.SUMMONING, SkillType.SILENCEABLE, SkillType.KNOWLEDGE, SkillType.AGGRESSIVE);
 
         Bukkit.getPluginManager().registerEvents(this, this.plugin);
     }
@@ -54,21 +53,21 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         StringBuilder descr = new StringBuilder(getDescription().replace("$1", String.valueOf(getAmountFor(hero)))
                 .replace("$4", Util.stringDouble(getDespawnDelayFor(hero) / 1000.0)));
 
-        double cdSec = SkillConfigManager.getUseSetting(hero, this, Setting.COOLDOWN, 30000, false) / 1000.0;
+        double cdSec = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 30000, false) / 1000.0;
         if (cdSec > 0) {
             descr.append(" CD:");
             descr.append(Util.formatDouble(cdSec));
             descr.append("s");
         }
 
-        int mana = SkillConfigManager.getUseSetting(hero, this, Setting.MANA, 30, false);
+        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 30, false);
         if (mana > 0) {
             descr.append(" M:");
             descr.append(mana);
         }
 
-        double distance = SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE.node(), 10, false) +
-                SkillConfigManager.getUseSetting(hero, this, Setting.MAX_DISTANCE_INCREASE.node(), 0.1, false) * hero.getSkillLevel(this);
+        double distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE.node(), 10, false) +
+                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE.node(), 0.1, false) * hero.getSkillLevel(this);
         if (distance > 0) {
             descr.append(" Dist:");
             descr.append(Util.formatDouble(distance));
@@ -79,9 +78,9 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
-        defaultConfig.set(Setting.MAX_DISTANCE.node(), 25);
-        defaultConfig.set(Setting.COOLDOWN.node(), 10000);
-        defaultConfig.set(Setting.MANA.node(), 30);
+        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 25);
+        defaultConfig.set(SkillSetting.COOLDOWN.node(), 10000);
+        defaultConfig.set(SkillSetting.MANA.node(), 30);
         defaultConfig.set("bat-amount", 30);
         defaultConfig.set("base-despawn-delay", 5000);
         defaultConfig.set("per-level-despawn-delay", 50);
@@ -162,7 +161,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 	//
 	//
 	//	Timer for setting bats in front of face.
-		Note this can be set to swarm target instead.
+	//	Note this can be set to swarm target instead.
 	//
 	//
 	public class BatFlightTimer extends TimerTask{
@@ -212,5 +211,3 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         return Bukkit.getWorlds().get(0).getFullTime();
     }
 }
-
-*/

@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -37,7 +35,7 @@ public class SkillBladegrasp extends ActiveSkill {
         setUsage("/skill bladegrasp");
         setArgumentRange(0, 0);
         setIdentifiers("skill bladegrasp", "skill bgrasp");
-        setTypes(SkillType.PHYSICAL, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -66,7 +64,7 @@ public class SkillBladegrasp extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        hero.addEffect(new BladegraspEffect(this, duration));
+        hero.addEffect(new BladegraspEffect(this, hero.getPlayer(), duration));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_LAND , 0.6F, 1.0F);
         return SkillResult.NORMAL;
@@ -74,8 +72,8 @@ public class SkillBladegrasp extends ActiveSkill {
 
     public class BladegraspEffect extends ExpirableEffect {
 
-        public BladegraspEffect(Skill skill, long duration) {
-            super(skill, "Bladegrasp", duration);
+        public BladegraspEffect(Skill skill, Player applier, long duration) {
+            super(skill, "Bladegrasp", applier, duration);
             this.types.add(EffectType.PHYSICAL);
             this.types.add(EffectType.BENEFICIAL);
         }
@@ -132,7 +130,7 @@ public class SkillBladegrasp extends ActiveSkill {
         public void onSkillDamage(SkillDamageEvent event) {
             // Ignore cancelled damage events & 0 damage events for Spam Control
             //TODO: adjust to allow monsters
-            if (event.getDamage() == 0 || event.isCancelled() || !event.getSkill().isType(SkillType.PHYSICAL) || !(event.getEntity() instanceof Player)) {
+            if (event.getDamage() == 0 || event.isCancelled() || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_PHYSICAL) || !(event.getEntity() instanceof Player)) {
                 return;
             }
             Player player = (Player) event.getEntity();
@@ -164,4 +162,3 @@ public class SkillBladegrasp extends ActiveSkill {
         return getDescription().replace("$1", Util.stringDouble(chance * level * 100)).replace("$2", duration / 1000 + "");
     }
 }
-*/

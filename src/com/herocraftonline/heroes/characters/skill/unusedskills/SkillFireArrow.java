@@ -1,5 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -34,7 +33,7 @@ public class SkillFireArrow extends ActiveSkill {
         setUsage("/skill firearrow");
         setArgumentRange(0, 0);
         setIdentifiers("skill firearrow", "skill farrow");
-        setTypes(SkillType.FIRE, SkillType.BUFF);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
@@ -138,4 +137,3 @@ public class SkillFireArrow extends ActiveSkill {
         return getDescription().replace("$1", mana + "");
     }
 }
-*/

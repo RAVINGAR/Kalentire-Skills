@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.oldskills;
 
 import java.util.Map;
 
@@ -28,7 +26,7 @@ public class SkillBarrage extends ActiveSkill {
 		setDescription("You fire a barrage of arrows in all directions.");
 		setUsage("/skill barrage");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.HARMFUL);
+		setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 		setIdentifiers("skill barrage");
 	}
 
@@ -46,7 +44,6 @@ public class SkillBarrage extends ActiveSkill {
 		return getDescription();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
@@ -102,4 +99,3 @@ public class SkillBarrage extends ActiveSkill {
 		return SkillResult.NORMAL;
 	}
 }
-*/

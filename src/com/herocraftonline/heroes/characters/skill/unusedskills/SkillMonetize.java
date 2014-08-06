@@ -1,13 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 
 import static com.herocraftonline.heroes.Heroes.econ;
 import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
-import static com.herocraftonline.heroes.characters.skill.SkillType.ITEM;
-import static com.herocraftonline.heroes.characters.skill.SkillType.KNOWLEDGE;
-import static com.herocraftonline.heroes.characters.skill.SkillType.PHYSICAL;
-import static com.herocraftonline.heroes.characters.skill.SkillType.UNBINDABLE;
 import static org.bukkit.ChatColor.BOLD;
 import static org.bukkit.ChatColor.GOLD;
 import static org.bukkit.ChatColor.GRAY;
@@ -25,6 +19,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillMonetize extends ActiveSkill{
 	private static final String base="base-coin-per-ingot",gain="coin-gain-per-level";
@@ -37,7 +32,7 @@ public class SkillMonetize extends ActiveSkill{
 		setUsage("/skill Monetize");
 		setArgumentRange(0,0);
 		setIdentifiers("skill Monetize");
-		setTypes(KNOWLEDGE,PHYSICAL,ITEM,UNBINDABLE);
+		setTypes(SkillType.KNOWLEDGE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ITEM_MODIFYING, SkillType.UNBINDABLE);
 	}
 
 	@Override
@@ -92,4 +87,3 @@ public class SkillMonetize extends ActiveSkill{
 		return config;
 	}
 }
-*/

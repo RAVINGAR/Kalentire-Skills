@@ -1,8 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
-
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,7 +29,7 @@ public class SkillChloroblast extends TargettedSkill {
         setUsage("/skill chloroblast <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill chloroblast");
-        setTypes(SkillType.HEAL, SkillType.SILENCABLE, SkillType.EARTH);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_EARTH);
     }
 
     @Override
@@ -98,4 +95,3 @@ public class SkillChloroblast extends TargettedSkill {
         return getDescription().replace("$1", health + "");
     }
 }
-*/

@@ -1,14 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*package com.herocraftonline.heroes.characters.skill.skills;
-
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.StunEffect;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
@@ -16,6 +6,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.StunEffect;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 
 public class SkillTackle extends TargettedSkill {
 
@@ -25,7 +24,7 @@ public class SkillTackle extends TargettedSkill {
         setUsage("/skill tackle");
         setArgumentRange(0, 0);
         setIdentifiers("skill tackle");
-        setTypes(SkillType.MOVEMENT, SkillType.HARMFUL, SkillType.PHYSICAL, SkillType.DAMAGING, SkillType.DEBUFF);
+        setTypes(SkillType.TELEPORTING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.DEBUFFING);
     }
 
     @Override
@@ -109,16 +108,16 @@ public class SkillTackle extends TargettedSkill {
         long duration = (long) ((SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0.0, false) * hero.getSkillLevel(this))));
         duration = duration > 0 ? duration : 0;
-        int damage = (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 6, false) +
+        double damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 6, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "damage-increase", 0.0, false) * hero.getSkillLevel(this)));
         damage = damage > 0 ? damage : 0;
         for (Entity e : ((Entity) hero.getPlayer()).getNearbyEntities(radius, radius, radius)) {
             if (e instanceof Player) {
                 Player tPlayer = (Player) e;
                 Hero tHero = plugin.getCharacterManager().getHero(tPlayer);
-                if (damageCheck(player, tPlayer)) {
+                if (damageCheck(player, (LivingEntity) e)) {
                     if (duration > 0) {
-                        tHero.addEffect(new StunEffect(this, duration));
+                        tHero.addEffect(new StunEffect(this, hero.getPlayer(), duration));
                     }
                     if (damage > 0) {
                         damageEntity(tPlayer, player, damage, DamageCause.ENTITY_ATTACK);
@@ -136,4 +135,3 @@ public class SkillTackle extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 }
-*/

@@ -1,8 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -40,7 +37,7 @@ public class SkillPoisonArrow extends ActiveSkill {
         setUsage("/skill parrow");
         setArgumentRange(0, 0);
         setIdentifiers("skill parrow", "skill poisonarrow");
-        setTypes(SkillType.BUFF);
+        setTypes(SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -79,7 +76,7 @@ public class SkillPoisonArrow extends ActiveSkill {
     public class ArrowPoison extends PeriodicDamageEffect {
         
         public ArrowPoison(Skill skill, long period, long duration, double tickDamage, Player applier) {
-            super(skill, "ArrowPoison", period, duration, tickDamage, applier);
+            super(skill, "ArrowPoison", applier, period, duration, tickDamage);
             this.types.add(EffectType.POISON);
             addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
         }
@@ -94,7 +91,7 @@ public class SkillPoisonArrow extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcasgetLocation(), "    " + applyText,pplyText, player.getName());
+            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
@@ -185,4 +182,3 @@ public class SkillPoisonArrow extends ActiveSkill {
         return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "").replace("$3", mana + "");
     }
 }
-*/

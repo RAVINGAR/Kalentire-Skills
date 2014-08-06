@@ -1,6 +1,4 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
-/*
-package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/ujku9azqzhmdgu5lki6ooa
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -29,7 +27,7 @@ public class SkillRoot extends TargettedSkill {
         setUsage("/skill root");
         setArgumentRange(0, 0);
         setIdentifiers("skill root");
-        setTypes(SkillType.MOVEMENT, SkillType.DEBUFF, SkillType.SILENCABLE, SkillType.EARTH, SkillType.HARMFUL);
+        setTypes(SkillType.MOVEMENT_PREVENTING, SkillType.DEBUFFING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_EARTH, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -42,12 +40,13 @@ public class SkillRoot extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false); //Adding to combat-tag the player
         Player player = hero.getPlayer(); //Adding for Fireworks
         player.setWalkSpeed(0);
         addSpellTarget(target, hero); // Combat Tagging
         damageEntity(target, player, damage, DamageCause.MAGIC); //Combat tagging
-        plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(this, duration));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(this, hero.getPlayer(), period, duration));
         
         broadcastExecuteText(hero, target);
         
@@ -74,4 +73,3 @@ public class SkillRoot extends TargettedSkill {
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
-*/

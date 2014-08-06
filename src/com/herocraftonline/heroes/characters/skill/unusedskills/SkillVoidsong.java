@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Color;
@@ -32,7 +31,7 @@ public class SkillVoidsong extends ActiveSkill {
         setUsage("/skill voidsong");
         setArgumentRange(0, 0);
         setIdentifiers("skill voidsong");
-        setTypes(SkillType.MOVEMENT, SkillType.DARK, SkillType.INTERRUPT);
+        setTypes(SkillType.MOVEMENT_PREVENTING, SkillType.ABILITY_PROPERTY_DARK, SkillType.INTERRUPTING);
     }
     
     @Override
@@ -118,7 +117,7 @@ public class SkillVoidsong extends ActiveSkill {
             }
             addSpellTarget(e, hero);
             damageEntity(character.getEntity(), player, damage, DamageCause.MAGIC);
-            character.addEffect(new SilenceEffect(this, duration));
+            character.addEffect(new SilenceEffect(this, hero.getPlayer(), duration));
             //hit = true;
             
         }
@@ -128,4 +127,3 @@ public class SkillVoidsong extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 }
-*/

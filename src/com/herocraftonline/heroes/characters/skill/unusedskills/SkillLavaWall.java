@@ -1,4 +1,3 @@
-/*
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.HashSet;
@@ -31,7 +30,7 @@ public class SkillLavaWall extends ActiveSkill {
 		setUsage("/skill lavawall");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill Lavawall");
-		setTypes(SkillType.ILLUSION, SkillType.KNOWLEDGE, SkillType.PHYSICAL, SkillType.FIRE);
+		setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.KNOWLEDGE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_FIRE);
 	}
 
 	public ConfigurationSection getDefaultConfig() {
@@ -76,7 +75,7 @@ public class SkillLavaWall extends ActiveSkill {
 			return SkillResult.INVALID_TARGET;
 		}
 
-		ShieldWallEffect swEffect = new ShieldWallEffect(this, duration, tBlock, width, height, setter);
+		ShieldWallEffect swEffect = new ShieldWallEffect(this, hero.getPlayer(), duration, tBlock, width, height, setter);
 		hero.addEffect(swEffect);
 
 		return SkillResult.NORMAL;
@@ -89,8 +88,8 @@ public class SkillLavaWall extends ActiveSkill {
 		private HashSet<Block> wBlocks;
 		private Material setter;
 
-		public ShieldWallEffect(Skill skill, long duration, Block tBlock, int width, int height, Material setter) {
-			super(skill, "sheildWallEffect", duration);
+		public ShieldWallEffect(Skill skill, Player applier, long duration, Block tBlock, int width, int height, Material setter) {
+			super(skill, "sheildWallEffect", applier, duration);
 			this.tBlock = tBlock;
 			this.width = width;
 			this.height = height;
@@ -158,4 +157,3 @@ public class SkillLavaWall extends ActiveSkill {
 		}
 	}
 }
-*/
