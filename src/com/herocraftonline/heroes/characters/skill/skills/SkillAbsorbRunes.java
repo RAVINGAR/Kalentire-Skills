@@ -333,7 +333,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         }
 
         // Manipulate the HashMap upon player logout
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onPlayerQuit(PlayerQuitEvent event) {
             Hero hero = skill.plugin.getCharacterManager().getHero(event.getPlayer());
 
