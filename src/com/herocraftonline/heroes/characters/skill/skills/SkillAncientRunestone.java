@@ -56,7 +56,7 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onPlayerQuit(PlayerQuitEvent event) {
             if (!(soulboundRunestones.containsKey(event.getPlayer())))
                 return;
