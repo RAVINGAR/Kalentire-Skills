@@ -42,6 +42,7 @@ public class SkillTempest extends ActiveSkill {
         node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% has unleashed a powerful " + ChatColor.BOLD + "Tempest!");
         node.set("effect-height", 4);
         node.set("lightning-volume", 0.0F);
+        node.set("max-targets", 5);
 
         return node;
     }
@@ -91,14 +92,20 @@ public class SkillTempest extends ActiveSkill {
             }, ticksPerFirework * i);
         }
 
-        // Save player location for the center of the blast
+        // Save player location for the center of the blast and max target count
         final Location centerLocation = player.getLocation();
+        final int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
 
         // Damage all entities near the center after the fireworks finish playing
         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
+                int targetsHit = 0;
                 for (Entity entity : getNearbyEntities(centerLocation, radius, radius, radius)) {
+                    // Check to see if we've exceeded the max targets
+                    if (maxTargets > 0 && targetsHit >= maxTargets)
+                        break;
+                    
                     // Check to see if the entity can be damaged
                     if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
                         continue;
@@ -110,6 +117,9 @@ public class SkillTempest extends ActiveSkill {
                     // entity.getWorld().strikeLightningEffect(entity.getLocation());
                     entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
                     entity.getWorld().playSound(entity.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
+                    
+                    // Increase counter
+                    targetsHit++;
                 }
             }
 
