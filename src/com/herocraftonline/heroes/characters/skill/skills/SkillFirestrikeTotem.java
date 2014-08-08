@@ -61,7 +61,14 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
     public void usePower(Hero hero, Totem totem) {
         Player heroP = hero.getPlayer();
         Block locForRel = totem.getLocation().getBlock().getRelative(BlockFace.UP, 2);
+        
+        int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
+        int targetsHit = 0;
         for(LivingEntity entity : totem.getTargets(hero)) {
+            // Check to see if we've exceeded the max targets
+            if (maxTargets > 0 && targetsHit >= maxTargets) {
+                break;
+            }
             if(!damageCheck(heroP, entity)) {
                 continue;
             }
@@ -72,6 +79,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 setVelocity(fireball, entity);
                 fireball.setShooter(heroP);
             }
+            targetsHit++;
         }
     }
 
@@ -87,6 +95,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5.0);
         node.set("fire-ticks", 50);
         node.set("velocity", 1.5);
+        node.set("max-targets", 5);
         return node;
     }
 

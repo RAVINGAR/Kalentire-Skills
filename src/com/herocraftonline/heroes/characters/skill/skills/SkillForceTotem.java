@@ -49,7 +49,16 @@ public class SkillForceTotem extends SkillBaseTotem {
     @Override
     public void usePower(final Hero hero, Totem totem) {
         Player heroP = hero.getPlayer();
+        double damage = getDamage(hero);
+        // An example of not limiting if damage is 0. Since this is the case on live, it makes for a good example.
+        int maxTargets = damage > 0 ? SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false) : 0;
+        int targetsHit = 0;
         for(final LivingEntity entity : totem.getTargets(hero)) {
+            // Check to see if we've exceeded the max targets
+            if (maxTargets > 0 && targetsHit >= maxTargets) {
+                break;
+            }
+            
             if(!damageCheck(heroP, entity)) {
                 continue;
             }
@@ -85,7 +94,6 @@ public class SkillForceTotem extends SkillBaseTotem {
             entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 1.1, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
             entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 1.2, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
             
-            double damage = getDamage(hero);
             if(damage > 0) {
                 damageEntity(entity, heroP, damage);
             }
@@ -101,6 +109,7 @@ public class SkillForceTotem extends SkillBaseTotem {
                     entity.setFallDistance(-512);
                 }
             }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
+            targetsHit++;
         }
     }
 
@@ -115,6 +124,7 @@ public class SkillForceTotem extends SkillBaseTotem {
         node.set("disorientation-level", 1);
         node.set("disorientation-duration", 5000);
         node.set("ncp-exemption-duration", 2000);
+        node.set("max-targets", 5);
         return node;
     }
 

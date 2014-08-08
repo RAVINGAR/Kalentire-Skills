@@ -86,6 +86,8 @@ public class SkillMelodicBinding extends ActiveSkill {
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer binding enemies.");
         node.set(SkillSetting.DELAY.node(), 1000);
         node.set(SkillSetting.COOLDOWN.node(), 1000);
+        node.set("max-targets", 5);
+        
 
         return node;
     }
@@ -147,7 +149,15 @@ public class SkillMelodicBinding extends ActiveSkill {
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
             damage += damageIncrease * charisma;
 
+            // An example of not limiting if damage is 0. Since this isn't the case on live, it makes for a good example.
+            int maxTargets = damage > 0 ? SkillConfigManager.getUseSetting(hero, skill, "max-targets", 0, false) : 0;
+            int targetsHit = 0;
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+                // Check to see if we've exceeded the max targets
+                if (maxTargets > 0 && targetsHit >= maxTargets) {
+                    break;
+                }
+                
                 if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                     continue;
                 }
@@ -162,6 +172,8 @@ public class SkillMelodicBinding extends ActiveSkill {
                 SlowEffect sEffect = new SlowEffect(skill, player, slowDuration, slowAmount, null, null);
                 sEffect.types.add(EffectType.DISPELLABLE);
                 targetCT.addEffect(sEffect);
+                
+                targetsHit++;
             }
         }
 

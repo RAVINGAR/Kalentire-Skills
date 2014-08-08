@@ -59,6 +59,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
         node.set("vertical-power", 0.25);
         node.set("vertical-power-increase-per-wisdom", 0.0075);
         node.set("ncp-exemption-duration", 1500);
+        node.set("max-targets", 5);
 
         return node;
     }
@@ -75,7 +76,13 @@ public class SkillTremorTotem extends SkillBaseTotem {
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 2.8, false);
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
         
+        int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
+        int targetsHit = 0;
         for (Entity entity : totem.getTargets(hero)) {
+            // Check to see if we've exceeded the max targets
+            if (maxTargets > 0 && targetsHit >= maxTargets) {
+                break;
+            }
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
@@ -144,6 +151,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
                     target.setVelocity(velocity);                    
                 }
             }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            maxTargets++;
         }
     }
 }

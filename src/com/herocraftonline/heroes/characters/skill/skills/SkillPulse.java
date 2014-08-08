@@ -46,6 +46,7 @@ public class SkillPulse extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), 60);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.0);
         node.set(SkillSetting.RADIUS.node(), 5);
+        node.set("max-targets", 5);
 
         return node;
     }
@@ -62,8 +63,15 @@ public class SkillPulse extends ActiveSkill {
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
+        int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
+        int targetsHit = 0;
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
+            // Check to see if we've exceeded the max targets
+            if (maxTargets > 0 && targetsHit >= maxTargets) {
+                break;
+            }
+            
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
@@ -86,7 +94,7 @@ public class SkillPulse extends ActiveSkill {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+            targetsHit++;
         }
 
         return SkillResult.NORMAL;
