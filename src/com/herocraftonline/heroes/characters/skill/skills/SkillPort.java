@@ -177,6 +177,18 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 		}
 	}
 
+	@Override
+	public boolean isWarmupRequired(String[] args)
+	{
+	    return !args[0].equalsIgnoreCase("list");
+	}
+
+	@Override
+	public boolean isCoolDownRequired(String[] args)
+	{
+        return !args[0].equalsIgnoreCase("list");
+	}
+
     private SkillResult doPort(Hero hero, String portInfo, boolean isDeparting)
     {
         Player player = hero.getPlayer();

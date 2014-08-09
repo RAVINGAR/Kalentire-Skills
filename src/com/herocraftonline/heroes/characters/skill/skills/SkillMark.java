@@ -143,6 +143,18 @@ public class SkillMark extends ActiveSkill {
         }
     }
 
+    @Override
+    public boolean isWarmupRequired(String[] args)
+    {
+        return !(args.length > 0);
+    }
+
+    @Override
+    public boolean isCoolDownRequired(String[] args)
+    {
+        return !(args.length > 0);
+    }
+
     public static void clearStoredData(ConfigurationSection skillSettings) {
         skillSettings.set("server", null);
         skillSettings.set("world", null);
