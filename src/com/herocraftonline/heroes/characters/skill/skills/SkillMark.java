@@ -98,7 +98,12 @@ public class SkillMark extends ActiveSkill {
                 Messaging.send(player, "Your recall location is improperly set!");
                 return SkillResult.SKIP_POST_USAGE;
             }
-            Messaging.send(player, "Your recall is currently marked on $1 at: $2, $3, $4", world.getName(), (int) xyzyp[0], (int) xyzyp[1], (int) xyzyp[2]);
+            if (StringUtils.isNotEmpty(skillSettings.getString("server"))) {
+                Messaging.send(player, "Your recall is currently marked on $1,$2 at: $3, $4, $5", skillSettings.getString("server"), world.getName(), (int) xyzyp[0], (int) xyzyp[1], (int) xyzyp[2]);
+            }
+            else {
+                Messaging.send(player, "Your recall is currently marked on $1 at: $2, $3, $4", world.getName(), (int) xyzyp[0], (int) xyzyp[1], (int) xyzyp[2]);
+            }
             return SkillResult.SKIP_POST_USAGE;
         } else {
             // Save a new mark
