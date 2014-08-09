@@ -111,8 +111,6 @@ public class SkillSoulBond extends TargettedSkill {
                 Skill.damageEntity(applier, event.getDamager().getEntity(), splitDamage, DamageCause.MAGIC);
                 event.setDamage(event.getDamage() - splitDamage);
             }
-
-            Heroes.debug.stopTask("HeroesSkillListener");
         }
 
         @EventHandler(priority = EventPriority.HIGHEST)

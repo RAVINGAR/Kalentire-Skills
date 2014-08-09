@@ -102,11 +102,9 @@ public class SkillSkeleton extends ActiveSkill {
         @EventHandler(priority=EventPriority.LOWEST)
         public void onPlayerQuit(PlayerQuitEvent paramPlayerQuitEvent)
         {
-            Heroes.debug.startTask("HeroesSkillListener.Skeleton");
             Hero localHero = plugin.getCharacterManager().getHero(paramPlayerQuitEvent.getPlayer());
             if (localHero.getSummons().isEmpty())
             {
-                Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                 return;
             }
             Iterator<Monster> localIterator = localHero.getSummons().iterator();
@@ -123,7 +121,6 @@ public class SkillSkeleton extends ActiveSkill {
                     }
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
         }
     }
 
@@ -137,26 +134,21 @@ public class SkillSkeleton extends ActiveSkill {
         @EventHandler(priority=EventPriority.HIGHEST)
         public void onEntityCombust(EntityCombustEvent paramEntityCombustEvent)
         {
-            Heroes.debug.startTask("HeroesSkillListener.Skeleton");
             if ((!(paramEntityCombustEvent.getEntity() instanceof Skeleton)) || (paramEntityCombustEvent.isCancelled()))
             {
-                Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                 return;
             }
             CharacterTemplate localCreature = plugin.getCharacterManager().getCharacter((LivingEntity) paramEntityCombustEvent.getEntity());
             if (localCreature.hasEffect("Summon")) {
                 paramEntityCombustEvent.setCancelled(true);
             }
-            Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
         }
 
         @EventHandler(priority=EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent paramEntityDamageEvent)
         {
-            Heroes.debug.startTask("HeroesSkillListener.Skeleton");
             if ((paramEntityDamageEvent.isCancelled()) || (!(paramEntityDamageEvent instanceof EntityDamageByEntityEvent)))
             {
-                Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                 return;
             }
             Object localObject1;
@@ -169,7 +161,6 @@ public class SkillSkeleton extends ActiveSkill {
                 localObject1 = SkillSkeleton.this.plugin.getCharacterManager().getHero((Player)paramEntityDamageEvent.getEntity());
                 if (((Hero)localObject1).getSummons().isEmpty())
                 {
-                    Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                     return;
                 }
                 localObject2 = (EntityDamageByEntityEvent)paramEntityDamageEvent;
@@ -181,7 +172,6 @@ public class SkillSkeleton extends ActiveSkill {
                 }
                 if (localObject3 == null)
                 {
-                    Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                     return;
                 }
                 localIterator = ((Hero)localObject1).getSummons().iterator();
@@ -204,13 +194,11 @@ public class SkillSkeleton extends ActiveSkill {
                 }
                 if (localObject2 == null)
                 {
-                    Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                     return;
                 }
                 localObject3 = SkillSkeleton.this.plugin.getCharacterManager().getHero((Player)localObject2);
                 if (((Hero)localObject3).getSummons().isEmpty())
                 {
-                    Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                     return;
                 }
                 localIterator = ((Hero)localObject3).getSummons().iterator();
@@ -221,17 +209,14 @@ public class SkillSkeleton extends ActiveSkill {
                         ((Skeleton)localLivingEntity).setTarget((LivingEntity)paramEntityDamageEvent.getEntity());
                     }
                 }
-                Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
             }
         }
 
         @EventHandler(priority=EventPriority.MONITOR)
         public void onEntityDeath(EntityDeathEvent paramEntityDeathEvent)
         {
-            Heroes.debug.startTask("HeroesSkillListener.Skeleton");
             if (!(paramEntityDeathEvent.getEntity() instanceof Skeleton))
             {
-                Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                 return;
             }
             Skeleton localSkeleton = (Skeleton)paramEntityDeathEvent.getEntity();
@@ -244,16 +229,13 @@ public class SkillSkeleton extends ActiveSkill {
                     localHero.getSummons().remove(localSkeleton);
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
         }
 
         @EventHandler(priority=EventPriority.HIGHEST)
         public void onEntityTarget(EntityTargetEvent paramEntityTargetEvent)
         {
-            Heroes.debug.startTask("HeroesSkillListener.Skeleton");
             if ((paramEntityTargetEvent.isCancelled()) || (!(paramEntityTargetEvent.getEntity() instanceof Creature)))
             {
-                Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
                 return;
             }
             if ((paramEntityTargetEvent.getTarget() instanceof Player))
@@ -281,7 +263,6 @@ public class SkillSkeleton extends ActiveSkill {
                     }
                 }
             }
-            Heroes.debug.stopTask("HeroesSkillListener.Skeleton");
         }
     }
 }
