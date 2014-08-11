@@ -9,7 +9,7 @@
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
-    <property name="heroes" value="../../Heroes-dev/workspace/target/" />
+    <property name="heroes" value="../../Heroes-dev/workspace/modules/plugin/target/" />
     <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
 
@@ -56,6 +56,7 @@
         <antcall target="jar-totem-lib" />
         <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
         <antcall target="zip" />
+        <!--Make sure to remove the Library Jar file-->
         <delete dir="${dir.dist.skills}" includes="TotemRecall.jar" />
         <delete dir="${dir.bin}"/>
     </target>

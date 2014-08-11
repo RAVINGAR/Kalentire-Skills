@@ -49,7 +49,6 @@
         <mkdir dir="${dir.dist}/${dir.dist.skills}" />
         <mkdir dir="${dir.bin}" />
         <mkdir dir="${dir.bin}/${dir.dist.skills}" />
-
         <javac srcdir="src/${used}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" excludes="src/${unused}"/>
         <antcall target="jar-skills" />
         <antcall target="jar-totem-lib" />
@@ -82,7 +81,7 @@
         <basename file="SkillTotemRecall" suffix=".class" property="basename" />
         <echo message="${basename}" />
         <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${basename}" />
-        <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info ${dir.bin.skills}/${totem.lib}/*.class">
+        <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info ${dir.bin.skills}/${totem.lib}/*.class ${dir.bin.skills}/${totem.lib}/tasks/*.class">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>
@@ -94,7 +93,7 @@
             <fileset dir="${dir.dist}" includes="*.jar"/>
             <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
         </zip>
-        <delete dir="${dir.maven.dependencies}"/>
         <delete dir="${dir.dist}/${ant.project.name}"/>
+        <delete dir="${dir.maven.dependencies}"/>
     </target>
 </project>
