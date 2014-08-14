@@ -8,15 +8,23 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-//import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlaze;
 //import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlazeFireball;
+import net.minecraft.server.v1_7_R4.Entity;
+import net.minecraft.server.v1_7_R4.EntityBlaze;
+import net.minecraft.server.v1_7_R4.EntityFireball;
+import net.minecraft.server.v1_7_R4.EntityHuman;
+import net.minecraft.server.v1_7_R4.MathHelper;
+import net.minecraft.server.v1_7_R4.MovingObjectPosition;
+import net.minecraft.server.v1_7_R4.PathfinderGoal;
 import net.minecraft.server.v1_7_R4.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftLivingEntity;
 import org.bukkit.entity.Blaze;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -98,21 +106,21 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
             Messaging.send(hero.getPlayer(), "You do not have the ability to control any more summons!", new Object[] {});
             return SkillResult.INVALID_TARGET_NO_MSG;
         } else {
-//            Blaze blaze = summonMinion(hero.getPlayer().getEyeLocation(), effect, hero.getPlayer());
-//            effect.registerSummons(blaze);
+            Blaze blaze = summonMinion(hero.getPlayer().getEyeLocation(), effect, hero.getPlayer());
+            effect.registerSummons(blaze);
             Messaging.send(hero.getPlayer(), "Summoned 1 blaze!", new Object[] {});
             return SkillResult.NORMAL;
         }
     }
 
-//    private Blaze summonMinion(Location loc, PyromancySummonsEffect effect, Player owner) {
-//        World world = ((CraftWorld) loc.getWorld()).getHandle();
-//        PyromancyBlaze summons = new PyromancyBlaze(world, effect, owner, this);
-//        world.addEntity(summons);
-//        Blaze summonedBukkit = (Blaze) summons.getBukkitEntity();
-//        summonedBukkit.teleport(loc, TeleportCause.UNKNOWN);
-//        return summonedBukkit;
-//    }
+    private Blaze summonMinion(Location loc, PyromancySummonsEffect effect, Player owner) {
+        World world = ((CraftWorld) loc.getWorld()).getHandle();
+        PyromancyBlaze summons = new PyromancyBlaze(world, effect, owner, this);
+        world.addEntity(summons);
+        Blaze summonedBukkit = (Blaze) summons.getBukkitEntity();
+        summonedBukkit.teleport(loc, TeleportCause.UNKNOWN);
+        return summonedBukkit;
+    }
 
     @Override
     public String getDescription(Hero hero) {
@@ -262,4 +270,132 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
         }
     }
 
+    class PyromancyBlaze extends EntityBlaze {
+
+        private PyromancySummonsEffect linkedEffect;
+        private LivingEntity owner;
+        private int br;
+        private Skill skill;
+
+        public PyromancyBlaze(World world, PyromancySummonsEffect effect, LivingEntity owner, Skill skill) {
+            super(world);
+            this.skill = skill;
+            this.br = 0;
+            this.linkedEffect = effect;
+            this.goalSelector.a(0, new PathfinderGoalCheckPyroValidity(((LivingEntity)this.getBukkitEntity()), linkedEffect));
+            this.goalSelector.a(1, new PathfinderGoalOrbitOwner(owner, (Creature) this.getBukkitEntity()));
+        }
+
+        //Blazes still use old AI - override
+        @Override
+        protected Entity findTarget() {
+            if (owner instanceof Player) {
+                Hero h = Heroes.getInstance().getCharacterManager().getHero((Player)owner);
+                PyromancyTargetEffect effect = SkillPyromancy.getInstance().targetEffects.getUnchecked(h.getPlayer().getUniqueId());
+                LivingEntity target = effect.getLastTarget();
+                if(target != null) {
+                    return ((CraftLivingEntity)target).getHandle();
+                } else {
+                    return null;
+                }
+            } else if (owner instanceof Creature) {
+                return ((CraftLivingEntity)((Creature) owner).getTarget()).getHandle();
+            } else { //Should not ever be called
+                return null;
+            }
+        }
+
+        @Override
+        protected void a(Entity entity, float f) {
+            if (this.attackTicks <= 0 && f < 2.0F && entity.boundingBox.e > this.boundingBox.b && entity.boundingBox.b < this.boundingBox.e) {
+                this.attackTicks = 20;
+                this.n(entity);
+            } else if (f < 30.0F) {
+                double d0 = entity.locX - this.locX;
+                double d1 = entity.boundingBox.b + (double) (entity.length / 2.0F) - (this.locY + (double) (this.length / 2.0F));
+                double d2 = entity.locZ - this.locZ;
+
+                if (this.attackTicks == 0) {
+                    ++this.br;
+                    if (this.br == 1) {
+                        this.attackTicks = 60;
+                        this.a(true);
+                    } else if (this.br <= 4) {
+                        this.attackTicks = 6;
+                    } else {
+                        this.attackTicks = 100;
+                        this.br = 0;
+                        this.a(false);
+                    }
+
+                    if (this.br > 1) {
+                        float f1 = MathHelper.c(f) * 0.5F;
+
+                        this.world.a((EntityHuman) null, 1009, (int) this.locX, (int) this.locY, (int) this.locZ, 0);
+
+                        for (int i = 0; i < 1; ++i) {
+                            PyromancyBlazeFireball entitysmallfireball = new PyromancyBlazeFireball(this.world, this, d0 + this.random.nextGaussian() * (double) f1, d1, d2 + this.random.nextGaussian() * (double) f1, null, skill);
+
+                            entitysmallfireball.locY = this.locY + (double) (this.length / 2.0F) + 0.5D;
+                            this.world.addEntity(entitysmallfireball);
+                        }
+                    }
+                }
+
+                this.yaw = (float) (Math.atan2(d2, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
+                this.bn = true;
+            }
+            return;
+        }
+    }
+
+    class PyromancyBlazeFireball extends EntityFireball {
+
+        public PyromancyBlazeFireball(World world, PyromancyBlaze entityliving, double d0, double d1, double d2, Object object, Skill skill)
+        {
+            // TODO Auto-generated constructor stub
+            super(world, entityliving, d0, d1, d2);
+            
+        }
+
+        @Override
+        protected void a(MovingObjectPosition paramMovingObjectPosition)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+        
+    }
+
+    class PathfinderGoalCheckPyroValidity extends PathfinderGoal {
+
+        public PathfinderGoalCheckPyroValidity(LivingEntity livingEntity, PyromancySummonsEffect linkedEffect)
+        {
+            // TODO Auto-generated constructor stub
+        }
+
+        @Override
+        public boolean a()
+        {
+            // TODO Auto-generated method stub
+            return false;
+        }
+        
+    }
+
+    class PathfinderGoalOrbitOwner extends PathfinderGoal {
+
+        public PathfinderGoalOrbitOwner(LivingEntity owner, Creature bukkitEntity)
+        {
+            // TODO Auto-generated constructor stub
+        }
+
+        @Override
+        public boolean a()
+        {
+            // TODO Auto-generated method stub
+            return false;
+        }
+        
+    }
 }
