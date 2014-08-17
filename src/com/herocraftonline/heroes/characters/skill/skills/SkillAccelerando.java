@@ -1,18 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 // src http://pastie.org/private/syyyftinqa5r1uv4ixka
-import net.minecraft.server.v1_7_R4.EntityLiving;
-import net.minecraft.server.v1_7_R4.MobEffectList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftLivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -188,9 +185,9 @@ public class SkillAccelerando extends ActiveSkill {
         @Override
         public void removeFromHero(final Hero hero) {
             Player player = hero.getPlayer();
-            EntityLiving el = ((CraftLivingEntity) player).getHandle();
 
-            if (el.hasEffect(MobEffectList.POISON) || el.hasEffect(MobEffectList.WITHER) || el.hasEffect(MobEffectList.HARM)) {
+            if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER)
+                    || player.hasPotionEffect(PotionEffectType.HARM)) {
                 // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
@@ -199,8 +196,9 @@ public class SkillAccelerando extends ActiveSkill {
                     }
                 }, 2L);
             }
-            else
+            else {
                 super.removeFromHero(hero);
+            }
 
             if (expireText != null && expireText.length() > 0) {
                 Messaging.send(player, "    " + expireText, player.getName(), applier.getName());

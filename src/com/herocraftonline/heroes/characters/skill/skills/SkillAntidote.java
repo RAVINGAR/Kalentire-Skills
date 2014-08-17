@@ -1,12 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.MobEffectList;
-
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -41,9 +38,9 @@ public class SkillAntidote extends TargettedSkill {
                     targetHero.removeEffect(effect);
                 }
             }
-            EntityPlayer tp = ((CraftPlayer) targetHero.getPlayer()).getHandle();
-            if (tp.hasEffect(MobEffectList.POISON)) {
-                tp.effects.remove(MobEffectList.POISON.id);
+            Player targetPlayer = targetHero.getPlayer();
+            if (targetPlayer.hasPotionEffect(PotionEffectType.POISON)) {
+                targetPlayer.removePotionEffect(PotionEffectType.POISON);
                 cured = true;
             }
             if (!cured) {
