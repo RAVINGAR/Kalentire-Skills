@@ -20,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 
 
 public class SkillBladegrasp extends ActiveSkill {
@@ -31,7 +32,7 @@ public class SkillBladegrasp extends ActiveSkill {
 
     public SkillBladegrasp(Heroes plugin) {
         super(plugin, "Bladegrasp");
-        setDescription("You parry the next physical attack within $1 seconds.");
+        setDescription("You have a $1% chance to block incoming damage for $2 seconds.");
         setUsage("/skill bladegrasp");
         setArgumentRange(0, 0);
         setIdentifiers("skill bladegrasp", "skill bgrasp");
@@ -43,10 +44,11 @@ public class SkillBladegrasp extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% tightened their grip!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% loosened their grip!");
+        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% tightened his grip!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% loosened his grip!");
         node.set("parry-text", "%hero% parried an attack!");
         //node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
+        node.set(SkillSetting.CHANCE_PER_LEVEL.node(), .02);
         return node;
     }
 
@@ -95,7 +97,6 @@ public class SkillBladegrasp extends ActiveSkill {
 
     public class SkillEntityListener implements Listener {
 
-        @SuppressWarnings("unused")
         private Skill skill;
 
         SkillEntityListener(Skill skill) {
@@ -104,15 +105,19 @@ public class SkillBladegrasp extends ActiveSkill {
 
         @EventHandler()
         public void onWeaponDamage(WeaponDamageEvent event) {
-            // Ignore cancelled damage events & 0/1 damage events for Spam Control
-            if (event.getDamage() <= 1 || event.isCancelled() || !(event.getEntity() instanceof Player)) {
+            // Ignore cancelled damage events & 0 damage events for Spam Control
+            if (event.getDamage() == 0 || event.isCancelled() || !(event.getEntity() instanceof Player)) {
                 return;
             }
 
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                hero.getEffect(getName()).removeFromHero(hero);
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .02, false) * hero.getSkillLevel(skill);
+                if (Util.nextRand() > parryChance) {
+                    return;
+                }
+
                 event.setCancelled(true);
                 String message = Messaging.parameterizeMessage(parryText, player.getName());
                 Messaging.send(player, message);
@@ -131,7 +136,11 @@ public class SkillBladegrasp extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                hero.getEffect(getName()).removeFromHero(hero);
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
+                if (Util.nextRand() > parryChance) {
+                    return;
+                }
+
                 event.setCancelled(true);
                 String message = Messaging.parameterizeMessage(parrySkillText, player.getName(), Messaging.getLivingEntityName(event.getDamager()), event.getSkill().getName());
                 Messaging.send(player, message);
@@ -146,6 +155,10 @@ public class SkillBladegrasp extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
+        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .02, false);
+        int level = hero.getSkillLevel(this);
+        if (level < 1)
+            level = 1;
+        return getDescription().replace("$1", Util.stringDouble(chance * level * 100)).replace("$2", duration / 1000 + "");
     }
 }
