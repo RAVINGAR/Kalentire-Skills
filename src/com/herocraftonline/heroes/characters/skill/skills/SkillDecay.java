@@ -62,7 +62,7 @@ public class SkillDecay extends TargettedSkill {
         node.set(SkillSetting.PERIOD.node(), 2500);
         node.set(SkillSetting.DAMAGE_TICK.node(), (double) 17);
         node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.17);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s flesh dhas begun to rot!");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s flesh has begun to rot!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer decaying alive!");
 
         return node;
@@ -136,7 +136,7 @@ public class SkillDecay extends TargettedSkill {
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster).toLowerCase(), applier.getName());
+            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster), applier.getName());
         }
 
         @Override

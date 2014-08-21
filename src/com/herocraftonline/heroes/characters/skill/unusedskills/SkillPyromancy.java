@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-//import net.kingdomsofarden.andrew2060.heroes.skills.pyromancy.PyromancyBlazeFireball;
 import net.minecraft.server.v1_7_R4.Entity;
 import net.minecraft.server.v1_7_R4.EntityBlaze;
 import net.minecraft.server.v1_7_R4.EntityFireball;
@@ -46,6 +45,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.nms.versions.EntityUtil_v1_7_R4;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillPyromancy extends ActiveSkill implements Listener {
@@ -88,8 +88,8 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
 
             @Override
             public void run() {
-                //EntityUtil.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
-                //EntityUtil.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
+                EntityUtil_v1_7_R4.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
+                EntityUtil_v1_7_R4.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
             }
 
         });
