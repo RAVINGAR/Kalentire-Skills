@@ -72,6 +72,11 @@
             <version>1.7.2-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.herocraftonline.heroes</groupId>
+            <artifactId>NMSHandler-v1_7_R4</artifactId>
+            <version>v1_7_R4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
