@@ -31,10 +31,10 @@ public class SkillChaoticStrength extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        int strengthGain = SkillConfigManager.getUseSetting(hero, this, "strength-buff", Integer.valueOf(15), false);
-        int intellectDrain = SkillConfigManager.getUseSetting(hero, this, "intellect-drain", Integer.valueOf(15), false);
+        int strengthGain = SkillConfigManager.getUseSetting(hero, this, "strength-buff", 15, false);
+        int intellectDrain = SkillConfigManager.getUseSetting(hero, this, "intellect-drain", 15, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -66,10 +66,10 @@ public class SkillChaoticStrength extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int strengthGain = SkillConfigManager.getUseSetting(hero, this, "strength-buff", Integer.valueOf(22), false);
-        int intellectDrain = SkillConfigManager.getUseSetting(hero, this, "intellect-drain", Integer.valueOf(15), false);
+        int strengthGain = SkillConfigManager.getUseSetting(hero, this, "strength-buff", 22, false);
+        int intellectDrain = SkillConfigManager.getUseSetting(hero, this, "intellect-drain", 15, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         hero.addEffect(new ChaoticStrengthEffect(this, player, duration, strengthGain, intellectDrain));
 

@@ -1,5 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -10,7 +18,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Variant;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,17 +28,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
-
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 
 public abstract class SkillBaseSteed extends ActiveSkill {
 
@@ -88,7 +84,7 @@ public abstract class SkillBaseSteed extends ActiveSkill {
         horse.setColor(steedColor);
         horse.setPassenger(heroP);
 
-        int summonDuration = SkillConfigManager.getUseSetting(hero, this, "summon-duration", Integer.valueOf(60),false);
+        int summonDuration = SkillConfigManager.getUseSetting(hero, this, "summon-duration", 60,false);
         m.addEffect(new ExpirableEffect(this, plugin, "HorseExpiry", heroP, summonDuration*1000) {
             @Override
             public void removeFromMonster(Monster m) {
@@ -183,7 +179,7 @@ public abstract class SkillBaseSteed extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int summonDuration = SkillConfigManager.getUseSetting(hero, this, "summon-duration", Integer.valueOf(60),false);
+        int summonDuration = SkillConfigManager.getUseSetting(hero, this, "summon-duration", 60,false);
         return getDescription().replace("$1", summonDuration + "");
     }
 

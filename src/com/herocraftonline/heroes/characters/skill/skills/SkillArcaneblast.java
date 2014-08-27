@@ -30,7 +30,7 @@ public class SkillArcaneblast extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(200), false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.5, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
@@ -51,7 +51,7 @@ public class SkillArcaneblast extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(200), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.5, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 

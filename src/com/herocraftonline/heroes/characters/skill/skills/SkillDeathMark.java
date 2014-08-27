@@ -38,7 +38,7 @@ public class SkillDeathMark extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(60000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", 0.1, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -72,8 +72,8 @@ public class SkillDeathMark extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(60000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(5000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 5000, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", 0.1, false);
         hero.addEffect(new DeathMarkingEffect(this, player, period, duration, target, damageIncrease));
 

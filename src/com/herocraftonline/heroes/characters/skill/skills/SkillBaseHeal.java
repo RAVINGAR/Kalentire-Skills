@@ -33,7 +33,7 @@ public abstract class SkillBaseHeal extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(125), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
@@ -52,7 +52,7 @@ public abstract class SkillBaseHeal extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(125), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 125, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 2.0, false);
         healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 

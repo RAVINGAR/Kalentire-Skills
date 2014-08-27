@@ -186,7 +186,7 @@ public class SkillDarkBolt extends ActiveSkill {
         Hero hero = plugin.getCharacterManager().getHero(player);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(80), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

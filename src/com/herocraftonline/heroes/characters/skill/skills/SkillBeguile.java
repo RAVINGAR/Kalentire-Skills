@@ -1,16 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.Random;
-
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -20,17 +9,22 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-
 import fr.neatmonster.nocheatplus.checks.CheckType;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+import java.util.Random;
 
 public class SkillBeguile extends TargettedSkill {
 
@@ -68,7 +62,7 @@ public class SkillBeguile extends TargettedSkill {
         node.set(SkillSetting.PERIOD.node(), 1000);
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 125);
         node.set("max-drift", 2.1);
-        node.set("ncp-exemption-duration", Integer.valueOf(500));
+        node.set("ncp-exemption-duration", 500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is beguiled!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has regained his wit!");
 

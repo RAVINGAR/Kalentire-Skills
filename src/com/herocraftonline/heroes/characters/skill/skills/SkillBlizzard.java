@@ -59,7 +59,7 @@ public class SkillBlizzard extends ActiveSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", Integer.valueOf(2000), false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 2000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
@@ -214,11 +214,11 @@ public class SkillBlizzard extends ActiveSkill {
 
                 event.getEntity().setFireTicks(0);
 
-                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
                 double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
                 damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-                long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", Integer.valueOf(2000), false);
+                long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 2000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
 
                 SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);

@@ -49,11 +49,11 @@ public class SkillBattlesong extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
+        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", 12, false);
         double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", 0.15, false);
         staminaRestoreTick += (int) (staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
@@ -94,11 +94,11 @@ public class SkillBattlesong extends ActiveSkill {
 
         hero.addEffect(new SoundEffect(this, "BattlesongSong", 100, skillSong));
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", Integer.valueOf(12), false);
+        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", 12, false);
         double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", 0.15, false);
         staminaRestoreTick += (int) Math.floor((staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA)));
 

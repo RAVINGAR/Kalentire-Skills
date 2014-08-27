@@ -40,11 +40,12 @@ public class SkillDecay extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", Integer.valueOf(17), false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.17), false);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 17, false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero,
+                this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.17, false);
         tickDamage += tickDamageIncrease;
 
         String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
@@ -82,8 +83,8 @@ public class SkillDecay extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, (double) 17, false);
         double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.17, false);

@@ -46,9 +46,9 @@ public class SkillBloodDrinker extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         double damageHealingPercent = SkillConfigManager.getUseSetting(hero, this, "damage-healing-percent", 0.1, false);
-        int maximumHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
+        int maximumHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", 200, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedhealingPercent = Util.decFormat.format(damageHealingPercent * 100.0);
@@ -83,9 +83,9 @@ public class SkillBloodDrinker extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         double damageHealingPercent = SkillConfigManager.getUseSetting(hero, this, "damage-healing-percent", 0.1, false);
-        int maximumHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", Integer.valueOf(200), false);
+        int maximumHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing", 200, false);
 
         BloodDrinkEffect effect = new BloodDrinkEffect(this, player, duration, damageHealingPercent, maximumHealing);
 

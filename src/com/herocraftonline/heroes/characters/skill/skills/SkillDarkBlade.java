@@ -35,11 +35,11 @@ public class SkillDarkBlade extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain", Integer.valueOf(100), false);
+        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain", 100, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedManaDrain = Util.decFormat.format(manaDrain);
@@ -64,7 +64,7 @@ public class SkillDarkBlade extends TargettedSkill {
         Player player = hero.getPlayer();
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
@@ -73,7 +73,7 @@ public class SkillDarkBlade extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new WitheringEffect(this, player, 1000, 0, null, null));
 
-        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain", Integer.valueOf(100), false);
+        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain", 100, false);
 
         // If the target is a player, drain their mana
         if ((target instanceof Player)) {
