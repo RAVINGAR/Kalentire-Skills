@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkillBoneSpear extends ActiveSkill {
-   // public VisualEffect fplayer = new VisualEffect();
+    public VisualEffect fplayer = new VisualEffect();
 
     public SkillBoneSpear(Heroes plugin) {
         super(plugin, "BoneSpear");
@@ -94,15 +94,16 @@ public class SkillBoneSpear extends ActiveSkill {
                 // Schedule the action in advance
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        /* Play effect
+                        //Play effect
 
                         try {
                             fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
                                     .flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }*/
-                        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                        }
+                        //attempting spigot particles
+                        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {
                             // Ensure that we have a valid entity
