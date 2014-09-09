@@ -59,10 +59,6 @@
             <id>heroes-repo</id>
             <url>http://nexus.theyeticave.net/content/groups/herocraft/</url>
         </repository>
-        <repository>
-            <id>md_5</id>
-            <url>http://repo.md-5.net/content/groups/public/</url>
-        </repository>
     </repositories>
 
     <dependencies>
