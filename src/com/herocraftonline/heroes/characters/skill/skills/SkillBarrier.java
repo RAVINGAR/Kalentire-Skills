@@ -29,17 +29,17 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillSeikuken extends ActiveSkill {
+public class SkillBarrier extends ActiveSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillSeikuken(Heroes plugin) {
-        super(plugin, "Seikuken");
+    public SkillBarrier(Heroes plugin) {
+        super(plugin, "Barrier");
         setDescription("Create a protective barrier around yourself for $1 seconds. The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds, and dealing $3% of your weapon damage to them.");
-        setUsage("/skill seikuken");
+        setUsage("/skill barrier");
         setArgumentRange(0, 0);
-        setIdentifiers("skill seikuken");
+        setIdentifiers("skill barrier");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.BUFFING, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
@@ -72,8 +72,8 @@ public class SkillSeikuken extends ActiveSkill {
         node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), 75);
         node.set("slow-amplifier", 35);
         node.set("disarm-duration", 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has created a Seikuken!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Seikuken has faded.");
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has created a Barrier!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Barrier has faded.");
 
         return node;
     }
@@ -82,8 +82,8 @@ public class SkillSeikuken extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has created a Seikuken!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s Seikuken has faded.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has created a Barrier!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s Barrier has faded.").replace("%hero%", "$1");
     }
 
     @Override
@@ -99,7 +99,7 @@ public class SkillSeikuken extends ActiveSkill {
         int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", Integer.valueOf(3000), false);
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(3), false);
 
-        hero.addEffect(new SeikukenEffect(this, player, duration, slowAmplifier, disarmDuration));
+        hero.addEffect(new BarrierEffect(this, player, duration, slowAmplifier, disarmDuration));
 
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
         player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.7F, 2.0F);
@@ -131,9 +131,9 @@ public class SkillSeikuken extends ActiveSkill {
                 if ((defenderPlayer.getNoDamageTicks() > 10) || defenderPlayer.isDead() || defenderPlayer.getHealth() <= 0)
                     return;
 
-                // Check if they are under the effects of Seikuken
-                if (defenderHero.hasEffect("Seikuken")) {
-                    SeikukenEffect bgEffect = (SeikukenEffect) defenderHero.getEffect("Seikuken");
+                // Check if they are under the effects of Barrier
+                if (defenderHero.hasEffect("Barrier")) {
+                    BarrierEffect bgEffect = (BarrierEffect) defenderHero.getEffect("Barrier");
 
                     if (!(damageCheck(defenderPlayer, (LivingEntity) damagerPlayer) && damageCheck(damagerPlayer, (LivingEntity) defenderPlayer)))
                         return;
@@ -145,7 +145,7 @@ public class SkillSeikuken extends ActiveSkill {
                         }
                     }
 
-                    if (damagerHero.hasEffect("Seikuken"))
+                    if (damagerHero.hasEffect("Barrier"))
                         return;
 
                     // Cancel the attack
@@ -184,12 +184,12 @@ public class SkillSeikuken extends ActiveSkill {
         }
     }
 
-    public class SeikukenEffect extends ExpirableEffect {
+    public class BarrierEffect extends ExpirableEffect {
 
         private long disarmDuration;
 
-        public SeikukenEffect(Skill skill, Player applier, long duration, int slowAmplifier, long disarmDuration) {
-            super(skill, "Seikuken", applier, duration, applyText, expireText);
+        public BarrierEffect(Skill skill, Player applier, long duration, int slowAmplifier, long disarmDuration) {
+            super(skill, "Barrier", applier, duration, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
