@@ -50,7 +50,7 @@ public class SkillWrath extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
         node.set("undead-damage", 120);
         node.set(SkillSetting.DAMAGE.node(), (double) 60);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.2);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.15);
 
         return node;
     }
@@ -65,18 +65,18 @@ public class SkillWrath extends TargettedSkill {
 
         double damage;
         if (Util.isUndead(plugin, target)) {
-            damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 80, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+            damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 120, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
             damage += (damageIncrease * intellect);
         }
         else {
-            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.15, false);
             damage += (damageIncrease * intellect);
         }
 
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.ENTITY_EXPLOSION);
+        damageEntity(target, player, damage, DamageCause.MAGIC);
 
         /* this is our fireworks
         try {
