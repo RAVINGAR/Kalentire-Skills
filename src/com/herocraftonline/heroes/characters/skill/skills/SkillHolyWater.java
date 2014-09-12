@@ -40,12 +40,12 @@ public class SkillHolyWater extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(8), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 8, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(45), false);
-        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", 0.625, false);
+        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 70, false);
+        double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", 1.2, false);
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
         String formattedHealing = Util.decFormat.format(healing);
@@ -60,8 +60,8 @@ public class SkillHolyWater extends ActiveSkill {
         node.set(SkillSetting.HEALING.node(), 75);
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.875);
         node.set(SkillSetting.RADIUS.node(), 7);
-        node.set("undead-damage", 45);
-        node.set("undead-damage-increase-per-wisdom", 0.625);
+        node.set("undead-damage", 70);
+        node.set("undead-damage-increase-per-wisdom", 1.2);
         node.set("velocity-multiplier", 1.5);
 
         return node;
@@ -118,14 +118,14 @@ public class SkillHolyWater extends ActiveSkill {
             Player player = (Player) shooter;
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(7), false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 7, false);
 
-            double healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING.node(), Integer.valueOf(85), false);
+            double healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING.node(), 85, false);
             double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.0, false);
             healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-            double undeadDamage = SkillConfigManager.getUseSetting(hero, skill, "undead-damage", Integer.valueOf(45), false);
-            double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, "undead-damage-increase-per-wisdom", 0.625, false);
+            double undeadDamage = SkillConfigManager.getUseSetting(hero, skill, "undead-damage", 70, false);
+            double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, "undead-damage-increase-per-wisdom", 1.2, false);
             undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
             Set<Hero> partyMembers = null;
