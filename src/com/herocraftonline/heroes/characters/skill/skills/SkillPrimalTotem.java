@@ -62,8 +62,8 @@ public class SkillPrimalTotem extends SkillBaseTotem implements Listener {
 
         for(Hero member : party) {
             Location memberLoc = member.getPlayer().getLocation();
-            if(memberLoc.getWorld() != totemLoc.getWorld() || memberLoc.distanceSquared(totemLoc) > rangeSquared) {
-                if(member.hasEffect("PrimalTotemStrengthEffect")) {
+            if(member.hasEffect("PrimalTotemStrengthEffect")) {
+                if(memberLoc.getWorld() != totemLoc.getWorld()) {
                     AttributeIncreaseEffect oldEffect = (AttributeIncreaseEffect) member.getEffect("PrimalTotemStrengthEffect");
                     if(oldEffect.getApplier() == heroP) {
                         oldEffect.expire();
@@ -71,7 +71,7 @@ public class SkillPrimalTotem extends SkillBaseTotem implements Listener {
                 }
                 continue;
             }
-            if(!member.hasEffect("PrimalTotemStrengthEffect")) {
+            else if (memberLoc.distanceSquared(totemLoc) <= rangeSquared) {
                 AttributeIncreaseEffect mEffect = new AttributeIncreaseEffect(this, "PrimalTotemStrengthEffect", heroP, totem.getEffect().getRemainingTime(), AttributeType.STRENGTH, (int)getStrengthIncrease(hero), getApplyText(), getExpireText());
                 final Player memberP = member.getPlayer();
                 new BukkitRunnable() {

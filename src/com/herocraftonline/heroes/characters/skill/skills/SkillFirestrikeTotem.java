@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -163,9 +162,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                     return;
                 }
 
+                // No target igniting here...
                 // Ignite the target
-                targetLE.setFireTicks(skill.getFireTicks(hero));
-                skill.plugin.getCharacterManager().getCharacter(targetLE).addEffect(new CombustEffect(this.skill, player));
+                // targetLE.setFireTicks(skill.getFireTicks(hero));
+                // skill.plugin.getCharacterManager().getCharacter(targetLE).addEffect(new CombustEffect(this.skill, player));
                 skill.plugin.getDamageManager().addSpellTarget(targetLE, hero, skill);
                 skill.damageEntity(targetLE, player, skill.getDamage(hero));
                 
@@ -187,7 +187,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
             if(event.getCause() != IgniteCause.FIREBALL || event.getIgnitingEntity().getType() != EntityType.SMALL_FIREBALL) {
                 return;
             }
-            if(skill.homingFireballs.containsKey(event.getIgnitingEntity())) {
+            SmallFireball fireball = (SmallFireball) event.getIgnitingEntity();
+            if(skill.homingFireballs.containsKey(fireball)) {
+                skill.homingFireballs.remove(fireball);
+                skill.fireballVelocities.remove(fireball);
                 event.setCancelled(true); 
             }
         }
