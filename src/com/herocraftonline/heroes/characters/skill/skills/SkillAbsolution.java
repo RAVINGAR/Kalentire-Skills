@@ -1,18 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 
 public class SkillAbsolution extends SkillBaseHeal {
 
@@ -61,7 +57,8 @@ public class SkillAbsolution extends SkillBaseHeal {
         catch (Exception e) {
             e.printStackTrace();
         }*/
-
+      //This is the methods used for the Spigot VisualEffects
+      //public void playEffect(Location location, Effect effect, int id, int data, float offsetX, float offsetY, float offsetZ, float speed, int particleCount, int radius)
         world.spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 1, 25, 16);
     }
 }

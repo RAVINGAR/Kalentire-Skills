@@ -85,10 +85,13 @@ public class SkillWrath extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
+        //public void playEffect(Location location, Effect effect, int_ id, int_ data, float_ offsetX, float_ offsetY, float_ offsetZ, float_ speed, int_ particleCount, int_ radius)
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 1F, 1F, 1F, 1F, 30, 10);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 10F, 1F, 1F, 50F, 30, 10);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.PORTAL, 1, 1, 0F, 0F, 0F, 10F, 200, 10);
         player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
         player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.POTION_SWIRL, 0, 0, 0.3F, 0.3F, 0.3F, 255, 100, 20);
-        player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
+        /*player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(4.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(3.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(2.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
@@ -106,7 +109,7 @@ public class SkillWrath extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 3.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 2.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);*/
         return SkillResult.NORMAL;
     }
 }
