@@ -86,6 +86,8 @@ public class SkillWrath extends TargettedSkill {
             e.printStackTrace();
         }*/
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 1F, 1F, 1F, 1F, 30, 10);
+        player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
+        player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.POTION_SWIRL, 0, 0, 0.3F, 0.3F, 0.3F, 255, 100, 20);
         player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(4.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(3.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
