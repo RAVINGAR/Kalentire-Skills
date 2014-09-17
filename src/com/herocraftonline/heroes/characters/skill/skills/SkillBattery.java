@@ -1,24 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.Effect;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class SkillBattery extends TargettedSkill {
     // This is for Firework Effects
@@ -82,7 +75,7 @@ public class SkillBattery extends TargettedSkill {
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
             player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 1.0F);
 
-            // this is our fireworks shit
+            /* this is our fireworks shit
             try {
                 fplayer.playFirework(player.getWorld(),
                                      target.getLocation().add(0, 1.5, 0),
@@ -95,11 +88,8 @@ public class SkillBattery extends TargettedSkill {
                                                    .build());
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-
-            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
-            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
-            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
+            }*/
+            target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0F, 1F, 0F, 10F, 55, 10);
             return SkillResult.NORMAL;
         }
         else {

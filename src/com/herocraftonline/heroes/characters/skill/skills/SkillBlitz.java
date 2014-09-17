@@ -1,26 +1,19 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-
 public class SkillBlitz extends TargettedSkill {
     // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+    //public VisualEffect fplayer = new VisualEffect();
     
     public SkillBlitz(Heroes plugin) {
         super(plugin, "Blitz");
@@ -68,13 +61,14 @@ public class SkillBlitz extends TargettedSkill {
         // Lightning like this is too annoying.
         // target.getWorld().strikeLightningEffect(target.getLocation());
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
+        player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
         target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         broadcastExecuteText(hero, target);
 
-        // this is our fireworks shit
+        /* this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), 
             		target.getLocation().add(0,1.5,0), 
@@ -87,7 +81,7 @@ public class SkillBlitz extends TargettedSkill {
             		.build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         return SkillResult.NORMAL;
     }

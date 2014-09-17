@@ -7,8 +7,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -72,7 +71,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 1.5F, .5F);
 
-        // this is our fireworks shit
+        /* this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(),
                                  target.getLocation().add(0, 1.5, 0),
@@ -85,7 +84,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
                                                .build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         long currentTime = System.currentTimeMillis();
         List<Entity> entities = target.getNearbyEntities(radius, radius, radius);
@@ -113,10 +112,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
         }
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.NOTE, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
 
         return SkillResult.NORMAL;
     }

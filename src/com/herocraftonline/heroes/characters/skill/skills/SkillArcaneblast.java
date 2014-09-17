@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillArcaneblast extends TargettedSkill {
 
-    public VisualEffect fplayer = new VisualEffect();
+    //public VisualEffect fplayer = new VisualEffect();
     public SkillArcaneblast(Heroes plugin) {
         super(plugin, "Arcaneblast");
         setDescription("You arcaneblast the target for $1 light damage.");
@@ -54,7 +54,8 @@ public class SkillArcaneblast extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.SPELL, 1, 1, 0F, 0F, 0F, 10F, 200, 10);
+        //public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION, 1, 1, 0F, 1F, 0F, 10F, 200, 10);
         /* this is our fireworks shit
         try {
             fplayer.playFirework(target.getWorld(),

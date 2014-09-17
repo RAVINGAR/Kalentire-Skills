@@ -168,7 +168,7 @@ public class SkillBlizzard extends ActiveSkill {
                 }
             }, (long) ((delayBetween * i) * 20));
         }
-
+        player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 
