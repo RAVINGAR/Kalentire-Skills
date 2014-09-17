@@ -46,10 +46,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.runeskills.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -151,12 +148,10 @@ public class SkillAbsorbRunes extends ActiveSkill {
         // Let the world know that the hero has absorbed his Runes
         broadcastExecuteText(hero);
 
-        // Play firework effect
-        // CODE HERE
 
         // Play sound
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.5F, 1.0F);
-
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.FLYING_GLYPH, 1, 1, 0F, 0F, 0F, 50F, 30, 10);
         // Save the altered list to the hashmap
         heroRunes.put(hero, runeList);
 

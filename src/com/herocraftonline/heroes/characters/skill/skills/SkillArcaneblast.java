@@ -1,21 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import org.bukkit.Effect;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillArcaneblast extends TargettedSkill {
 
@@ -60,7 +54,8 @@ public class SkillArcaneblast extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        // this is our fireworks shit
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.SPELL, 1, 1, 0F, 0F, 0F, 10F, 200, 10);
+        /* this is our fireworks shit
         try {
             fplayer.playFirework(target.getWorld(),
                                  target.getLocation().add(0, 3, 0),
@@ -72,7 +67,7 @@ public class SkillArcaneblast extends TargettedSkill {
                                                .build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         
         return SkillResult.NORMAL;
     }
