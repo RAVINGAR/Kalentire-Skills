@@ -49,7 +49,7 @@ public class SkillSacredTouch extends SkillBaseHeal {
     }
 
     @Override
-    protected void doVisualEffects(World world, LivingEntity target) {
+    protected void applyParticleEffects(World world, LivingEntity target) {
         // This is for Firework Effects
         VisualEffect fplayer = new VisualEffect();
 

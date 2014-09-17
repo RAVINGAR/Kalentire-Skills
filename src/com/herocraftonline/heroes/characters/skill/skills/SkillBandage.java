@@ -1,8 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -33,11 +31,6 @@ public class SkillBandage extends SkillBaseHeal {
 
     @Override
     protected void removeEffects(Hero hero) {
-
-    }
-
-    @Override
-    protected void doVisualEffects(World world, LivingEntity target) {
 
     }
 }

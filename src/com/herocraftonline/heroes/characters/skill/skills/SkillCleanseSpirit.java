@@ -83,9 +83,4 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
             }
         }
     }
-
-    @Override
-    protected void doVisualEffects(World world, LivingEntity target) {
-        // TODO: Should probably add an effect. I'm really not up to it, though.
-    }
 }
