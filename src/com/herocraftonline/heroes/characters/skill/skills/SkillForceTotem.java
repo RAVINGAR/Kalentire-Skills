@@ -87,12 +87,7 @@ public class SkillForceTotem extends SkillBaseTotem {
              * offset controls how spread out the particles are
              * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
              * */
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.6, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.7, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.9, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 1.0, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 1.1, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 1.2, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 25, 16);
+            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.6, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 150, 16);
             
             if(damage > 0) {
                 damageEntity(entity, heroP, damage);

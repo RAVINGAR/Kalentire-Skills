@@ -57,18 +57,7 @@ public class SkillTotemRecall extends ActiveSkill {
          * offset controls how spread out the particles are
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.2, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.1, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 25, 16);
+        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 300, 16);
         
         return SkillResult.NORMAL;
     }

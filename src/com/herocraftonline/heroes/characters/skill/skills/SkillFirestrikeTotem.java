@@ -173,12 +173,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                  * offset controls how spread out the particles are
                  * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                  * */
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 25, 16);
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.7, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 25, 16);
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.9, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 25, 16);
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.0, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 25, 16);
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.1, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 25, 16);
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 1.2, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 25, 16);
+                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 150, 16);
             }
         }
         

@@ -120,12 +120,7 @@ public class SkillDragonDash extends TargettedSkill {
         // Create particle effect at target
         playEffect(hero, target);
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
         return SkillResult.NORMAL;
     }
 

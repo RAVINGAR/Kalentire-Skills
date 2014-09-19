@@ -75,8 +75,7 @@ public class SkillDivineStun extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.5F, 1.0F);
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 1, 50, 16);
         return SkillResult.NORMAL;
     }
 }
