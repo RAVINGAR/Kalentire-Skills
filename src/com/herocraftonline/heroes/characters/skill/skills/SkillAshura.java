@@ -31,7 +31,7 @@ public class SkillAshura extends TargettedSkill {
 
     public SkillAshura(Heroes plugin) {
         super(plugin, "Ashura");
-        setDescription("Deal $1 physical damage and force your target away from you. The push power is affected by your Strength. Coasts $2% of your sword.");
+        setDescription("Deal $1 physical damage and force your target away from you. The push power is affected by your Strength. Costs $2% of your sword.");
         setUsage("/skill ashura");
         setArgumentRange(0, 0);
         setIdentifiers("skill ashura");
@@ -167,12 +167,7 @@ public class SkillAshura extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.6, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.7, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.9, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.1, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 150, 16);
 
         return SkillResult.NORMAL;
     }
