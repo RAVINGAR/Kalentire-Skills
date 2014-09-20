@@ -142,7 +142,7 @@ public class SkillCauldron extends PassiveSkill {
 			for(int j=6; j<9; j++){
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				if(id == 0) {
-					bot.replace(convertInttoChar(j), ' ') ;
+					bot = bot.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 
