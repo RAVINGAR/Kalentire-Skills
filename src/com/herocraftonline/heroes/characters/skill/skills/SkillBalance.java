@@ -82,7 +82,7 @@ public class SkillBalance extends ActiveSkill {
             }
         }
 
-        if (maxHealthTotal == player.getMaxHealth()) {
+        if (Double.compare(maxHealthTotal, player.getMaxHealth()) == 0) {
             Messaging.send(player, "There is nobody in range to balance with!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
