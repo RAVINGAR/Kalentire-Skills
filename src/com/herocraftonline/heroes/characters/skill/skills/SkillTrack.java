@@ -33,7 +33,7 @@ public class SkillTrack extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int randomness = SkillConfigManager.getUseSetting(hero, this, "randomness", 50, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, Integer.valueOf(30000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 30000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -63,8 +63,8 @@ public class SkillTrack extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1000), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, Integer.valueOf(30000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 30000, false);
 
         hero.addEffect(new TrackingEffect(this, player, period, duration, target));
 

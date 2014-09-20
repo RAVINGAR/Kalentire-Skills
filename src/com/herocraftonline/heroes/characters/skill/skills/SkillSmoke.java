@@ -37,7 +37,7 @@ public class SkillSmoke extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);

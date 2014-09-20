@@ -48,7 +48,7 @@ public class SkillShieldReflect extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double damageModifier = getUseSetting(hero, this, "reflected-damage-modifier", 0.8, false);
-        int duration = getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageModifier = Util.decFormat.format(damageModifier * 100);
@@ -86,7 +86,7 @@ public class SkillShieldReflect extends ActiveSkill {
             case TRAP_DOOR:
                 broadcastExecuteText(hero);
 
-                int duration = getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+                int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
                 hero.addEffect(new ShieldReflectEffect(this, player, duration));
 
                 player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);

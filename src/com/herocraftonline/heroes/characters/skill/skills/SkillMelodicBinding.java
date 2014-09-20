@@ -51,13 +51,13 @@ public class SkillMelodicBinding extends ActiveSkill {
     
     public String getDescription(Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", Integer.valueOf(3000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", Integer.valueOf(1500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", 3000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", 1500, false);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
-        int slowDuration = SkillConfigManager.getUseSetting(hero, this, "melodic-slow-duration", Integer.valueOf(1500), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
+        int slowDuration = SkillConfigManager.getUseSetting(hero, this, "melodic-slow-duration", 1500, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(17), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 17, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
@@ -108,9 +108,9 @@ public class SkillMelodicBinding extends ActiveSkill {
 
         hero.addEffect(new SoundEffect(this, "MelodicBindingSong", 100, skillSong));
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", Integer.valueOf(3000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", Integer.valueOf(1500), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", 3000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", 1500, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
         hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
 
@@ -139,13 +139,13 @@ public class SkillMelodicBinding extends ActiveSkill {
 
             int charisma = hero.getAttributeValue(AttributeType.CHARISMA);
 
-            int slowAmount = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier", Integer.valueOf(1), false);
+            int slowAmount = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier", 1, false);
             double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, skill, "slow-amplifier-increase-per-charisma", 0.075, false);
             slowAmount += Math.floor(slowAmountIncrease * charisma);
 
-            int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "melodic-slow-duration", Integer.valueOf(1500), false);
+            int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "melodic-slow-duration", 1500, false);
 
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(17), false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 17, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
             damage += damageIncrease * charisma;
 

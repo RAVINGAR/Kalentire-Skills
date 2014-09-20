@@ -91,12 +91,17 @@ public class SkillCharge extends TargettedSkill {
 
         @EventHandler(priority = EventPriority.LOWEST)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (!event.getCause().equals(DamageCause.FALL) || !(event.getEntity() instanceof Player) || !chargingPlayers.contains(event.getEntity())) {
+            if (!event.getCause().equals(DamageCause.FALL) || !(event.getEntity() instanceof Player)) {
                 return;
             }
 
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
+
+            if (!chargingPlayers.contains(hero.getName())) {
+                return;
+            }
+
             chargingPlayers.remove(hero.getName());
             Heroes.log(Level.INFO, "Player landed!");
             event.setDamage(0);

@@ -29,7 +29,7 @@ public class SkillBloodlust extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(30000));
+        node.set(SkillSetting.DURATION.node(), 30000);
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% is in bloodlust!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% is no longer in bloodlust!");
         return node;

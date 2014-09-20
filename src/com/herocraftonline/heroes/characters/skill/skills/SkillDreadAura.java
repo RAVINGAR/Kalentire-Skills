@@ -36,19 +36,19 @@ public class SkillDreadAura extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.1, false);
 
-        int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", Integer.valueOf(200), false);
+        int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", 200, false);
 
-        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", Integer.valueOf(13), false);
+        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 13, false);
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
@@ -88,11 +88,11 @@ public class SkillDreadAura extends ActiveSkill {
             return SkillResult.REMOVED_EFFECT;
         }
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.1, false);
-        int maxHealingPerTick = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", Integer.valueOf(200), false);
-        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", Integer.valueOf(13), false);
+        int maxHealingPerTick = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", 200, false);
+        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 13, false);
 
         hero.addEffect(new DreadAuraEffect(this, period, manaTick, radius, healMult, maxHealingPerTick));
 
@@ -166,7 +166,7 @@ public class SkillDreadAura extends ActiveSkill {
             
             Player player = hero.getPlayer();
 
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 60, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

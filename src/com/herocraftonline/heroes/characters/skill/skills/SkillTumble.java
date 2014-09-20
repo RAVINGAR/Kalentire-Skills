@@ -39,7 +39,7 @@ public class SkillTumble extends PassiveSkill {
 
         String description = " ";
 
-        double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", Integer.valueOf(0), false);
+        double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", 0, false);
         double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-agility-level", 0.25, false);
         distance += (hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease) + 3;
 
@@ -84,7 +84,7 @@ public class SkillTumble extends PassiveSkill {
                 return;
             }
 
-            double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", Integer.valueOf(0), false);
+            double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", 0, false);
             double distanceIncrease = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-agility-level", 0.25, false);
             distance += hero.getAttributeValue(AttributeType.AGILITY) * distanceIncrease;
 
@@ -108,7 +108,7 @@ public class SkillTumble extends PassiveSkill {
                         event.setDamage(fallDamage);
                     }
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", Integer.valueOf(100), false));
+            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 100, false));
         }
     }
 }

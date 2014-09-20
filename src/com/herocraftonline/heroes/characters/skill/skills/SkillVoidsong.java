@@ -40,7 +40,7 @@ public class SkillVoidsong extends ActiveSkill {
     public String getDescription(Hero hero) {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 5, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(17), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 17, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA);
 
@@ -77,7 +77,7 @@ public class SkillVoidsong extends ActiveSkill {
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 38, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(17), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 17, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 

@@ -49,7 +49,7 @@ public class SkillBarrier extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
-        int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", Integer.valueOf(3000), false);
+        int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", 3000, false);
 
         double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.4, false);
         double damageMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase-per-intellect", 0.00875, false);
@@ -96,8 +96,8 @@ public class SkillBarrier extends ActiveSkill {
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
         duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
 
-        int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", Integer.valueOf(3000), false);
-        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(3), false);
+        int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", 3000, false);
+        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 3, false);
 
         hero.addEffect(new BarrierEffect(this, player, duration, slowAmplifier, disarmDuration));
 

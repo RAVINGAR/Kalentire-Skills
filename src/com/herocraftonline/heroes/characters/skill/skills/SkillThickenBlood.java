@@ -38,8 +38,8 @@ public class SkillThickenBlood extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, Integer.valueOf(75), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
         duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -77,8 +77,8 @@ public class SkillThickenBlood extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // Get Debuff values
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(2000), false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, Integer.valueOf(75), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
         duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
 
         ThickenBloodEffect tbEffect = new ThickenBloodEffect(this, player, duration);

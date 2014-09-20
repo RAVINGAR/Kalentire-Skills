@@ -64,16 +64,16 @@ public class SkillWindGale extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.2));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
-        node.set("wind-travel-delay", Integer.valueOf(1));
-        node.set("push-horizontal-power", Double.valueOf(1.5));
-        node.set("push-horizontal-power-increase-per-wisdom", Double.valueOf(0.0375));
-        node.set("push-vertical-power", Double.valueOf(0.25));
-        node.set("push-vertical-power-increase-per-wisdom", Double.valueOf(0.0075));
+        node.set(SkillSetting.DAMAGE.node(), 50);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2);
+        node.set(SkillSetting.RADIUS.node(), 3);
+        node.set("wind-travel-delay", 1);
+        node.set("push-horizontal-power", 1.5);
+        node.set("push-horizontal-power-increase-per-wisdom", 0.0375);
+        node.set("push-vertical-power", 0.25);
+        node.set("push-vertical-power-increase-per-wisdom", 0.0075);
         node.set("ncp-exemption-duration", 1500);
-        node.set("push-delay", Double.valueOf(0.2));
+        node.set("push-delay", 0.2);
 
         return node;
     }
@@ -190,8 +190,8 @@ public class SkillWindGale extends ActiveSkill {
                                     break;
                             }
 
-                            double tempVPower = SkillConfigManager.getUseSetting(hero, skill, "push-vertical-power", Double.valueOf(0.25), false);
-                            double vPowerIncrease = SkillConfigManager.getUseSetting(hero, skill, "push-vertical-power-increase-per-wisdom", Double.valueOf(0.0075), false);
+                            double tempVPower = SkillConfigManager.getUseSetting(hero, skill, "push-vertical-power", 0.25, false);
+                            double vPowerIncrease = SkillConfigManager.getUseSetting(hero, skill, "push-vertical-power-increase-per-wisdom", 0.0075, false);
                             tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.WISDOM));
 
                             if (weakenVelocity)
@@ -213,8 +213,8 @@ public class SkillWindGale extends ActiveSkill {
                             final double xDir = targetLoc.getX() - playerLoc.getX();
                             final double zDir = targetLoc.getZ() - playerLoc.getZ();
 
-                            double tempHPower = SkillConfigManager.getUseSetting(hero, skill, "push-horizontal-power", Double.valueOf(1.5), false);
-                            double hPowerIncrease = SkillConfigManager.getUseSetting(hero, skill, "push-horizontal-power-increase-per-wisdom", Double.valueOf(0.0375), false);
+                            double tempHPower = SkillConfigManager.getUseSetting(hero, skill, "push-horizontal-power", 1.5, false);
+                            double hPowerIncrease = SkillConfigManager.getUseSetting(hero, skill, "push-horizontal-power-increase-per-wisdom", 0.0375, false);
                             tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.WISDOM);
 
                             if (weakenVelocity)

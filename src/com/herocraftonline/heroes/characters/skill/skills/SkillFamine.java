@@ -41,13 +41,13 @@ public class SkillFamine extends TargettedSkill {
 
     public String getDescription(Hero hero) {
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(4), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, true);
 
-        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", Integer.valueOf(60), false);
-        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", Integer.valueOf(1), false);
+        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 60, false);
+        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", 1, false);
         staminaDrain += hero.getAttributeValue(AttributeType.INTELLECT) * staminaIncrease;
 
         String formattedStaminaDrain = Util.decFormat.format(staminaDrain * ((double) duration / (double) period));
@@ -88,13 +88,13 @@ public class SkillFamine extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(4), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
 
         // Get Debuff values
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), true);
-        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", Integer.valueOf(60), false);
-        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", Integer.valueOf(1), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, true);
+        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 60, false);
+        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", 1, false);
         staminaDrain += hero.getAttributeValue(AttributeType.INTELLECT) * staminaIncrease;
 
         // Famine the first target

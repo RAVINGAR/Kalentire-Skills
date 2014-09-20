@@ -45,16 +45,16 @@ public class SkillHolyAura extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(16000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 16000, false);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), Integer.valueOf(17), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 17, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.15, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(20), false);
+        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 20, false);
         double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", 0.375, false);
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
@@ -98,14 +98,14 @@ public class SkillHolyAura extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2000), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(16000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 16000, false);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(20), false);
+        double undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 20, false);
         double undeadDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "undead-damage-increase-per-wisdom", 0.375, false);
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
@@ -162,7 +162,7 @@ public class SkillHolyAura extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(6), false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 6, false);
             int radiusSquared = radius * radius;
 
             // Check if the hero has a party

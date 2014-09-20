@@ -40,11 +40,11 @@ public class SkillPoison extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(15000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", Integer.valueOf(6), false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.075), false);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 6, false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.075, false);
         tickDamage += tickDamageIncrease;
 
         String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
@@ -57,11 +57,11 @@ public class SkillPoison extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1000));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(6));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.075));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set(SkillSetting.DURATION.node(), 15000);
+        node.set(SkillSetting.PERIOD.node(), 1000);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 6);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.075);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s is poisoned!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the poison!");
 
@@ -82,11 +82,11 @@ public class SkillPoison extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(15000), false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1000), true);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
 
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, Double.valueOf(6), false);
-        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, Double.valueOf(0.075), false);
+        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 6, false);
+        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.075, false);
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new PoisonSkillEffect(this, player, period, duration, tickDamage));

@@ -71,9 +71,9 @@ public class SkillIceVolley extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
-        int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", Integer.valueOf(2500), false);
-        int arrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", Integer.valueOf(5), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 2500, false);
+        int arrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", 5, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
@@ -113,7 +113,7 @@ public class SkillIceVolley extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int maxArrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", Integer.valueOf(5), false);
+        int maxArrowsPerShot = SkillConfigManager.getUseSetting(hero, this, "max-arrows-per-shot", 5, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
         hero.addEffect(new IceVolleyShotEffect(this, player, duration, maxArrowsPerShot));
@@ -302,8 +302,8 @@ public class SkillIceVolley extends ActiveSkill {
             Player player = (Player) iceArrow.getShooter();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", Integer.valueOf(2000), false);
-            int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", Integer.valueOf(1), false);
+            long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 2000, false);
+            int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
 
             SlowEffect iceSlowEffect = new SlowEffect(skill, player, duration, amplifier, slowApplyText, slowExpireText);
             iceSlowEffect.types.add(EffectType.DISPELLABLE);

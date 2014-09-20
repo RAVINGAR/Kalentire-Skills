@@ -50,11 +50,11 @@ public class SkillSuperJump extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), 5000);
-        node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.0125));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("vertical-power-increase-per-agility", Double.valueOf(0.00625));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set("horizontal-power", 0.5);
+        node.set("horizontal-power-increase-per-agility", 0.0125);
+        node.set("vertical-power", 0.5);
+        node.set("vertical-power-increase-per-agility", 0.00625);
+        node.set("ncp-exemption-duration", 2000);
 
         return node;
     }
@@ -69,8 +69,8 @@ public class SkillSuperJump extends ActiveSkill {
 
         int agility = hero.getAttributeValue(AttributeType.AGILITY);
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0125, false);
         vPower += agility * vPowerIncrease;
 
         if (vPower > 4.0)
@@ -93,8 +93,8 @@ public class SkillSuperJump extends ActiveSkill {
         directionVector.normalize();
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", Double.valueOf(0.0125), false);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", 0.0125, false);
         hPower += agility * hPowerIncrease;
 
         if (hPower > 8.0)

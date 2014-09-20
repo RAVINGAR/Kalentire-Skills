@@ -24,7 +24,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 public class SkillMark extends ActiveSkill {
 
     private boolean herotowns = false;
-    private HeroTowns ht;
+    //private HeroTowns ht;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     protected String skillSettingsName;
@@ -39,11 +39,11 @@ public class SkillMark extends ActiveSkill {
         skillSettingsName = "Recall";
 
         try {
-            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-            //                herotowns = true;
-            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            //            }
-            //        }
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+                herotowns = true;
+                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            }*/
+
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -111,10 +111,10 @@ public class SkillMark extends ActiveSkill {
 
             // Validate Herotowns
             if (herotowns) {
-                if (!ht.getGlobalRegionManager().canBuild(player, loc)) {
+                /*if (!ht.getGlobalRegionManager().canBuild(player, loc)) {
                     Messaging.send(player, "You cannot Mark in a Town you have no access to!");
                     return SkillResult.FAIL;
-                }
+                }*/
             }
 
             // Validate WorldGuard

@@ -36,11 +36,11 @@ public class SkillSmite extends TargettedSkill {
 
         int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
 
-        int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
+        int undeadDamage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         undeadDamage += damageIncrease * intellect;
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
         damage += damageIncrease * intellect;
 
         String formattedUndeadDamage = Util.decFormat.format(undeadDamage);
@@ -71,12 +71,12 @@ public class SkillSmite extends TargettedSkill {
 
         double damage;
         if (Util.isUndead(plugin, target)) {
-            damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", Integer.valueOf(80), false);
+            damage = SkillConfigManager.getUseSetting(hero, this, "undead-damage", 80, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
             damage += (damageIncrease * intellect);
         }
         else {
-            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+            damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
             damage += (damageIncrease * intellect);
         }

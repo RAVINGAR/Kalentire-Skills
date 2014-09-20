@@ -47,11 +47,11 @@ public class SkillManasong extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
+        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", 12, false);
         double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", 0.15, false);
         manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
@@ -91,11 +91,11 @@ public class SkillManasong extends ActiveSkill {
         Player player = hero.getPlayer();
         hero.addEffect(new SoundEffect(this, "ManaSongSong", 100, skillSong));
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
+        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", 12, false);
         double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", 0.15, false);
         manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 

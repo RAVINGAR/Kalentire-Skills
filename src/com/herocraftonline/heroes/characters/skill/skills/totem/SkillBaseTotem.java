@@ -98,12 +98,12 @@ public abstract class SkillBaseTotem extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(60000));
-        node.set(SkillSetting.DURATION_INCREASE_PER_WISDOM.node(), Integer.valueOf(100));
-        node.set("duration-per-level", Integer.valueOf(100));
-        node.set("range", Integer.valueOf(5));
-        node.set("range-per-level", Double.valueOf(0.1));
-        node.set(SkillSetting.PERIOD.node(), Long.valueOf(1000L));
+        node.set(SkillSetting.DURATION.node(), 60000);
+        node.set(SkillSetting.DURATION_INCREASE_PER_WISDOM.node(), 100);
+        node.set("duration-per-level", 100);
+        node.set("range", 5);
+        node.set("range-per-level", 0.1);
+        node.set(SkillSetting.PERIOD.node(), 1000L);
         node.set("fireOnNaturalRemove", true);
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% placed a(n) " + getName().replace("Totem", "") + " totem!");
         return getSpecificDefaultConfig(node);

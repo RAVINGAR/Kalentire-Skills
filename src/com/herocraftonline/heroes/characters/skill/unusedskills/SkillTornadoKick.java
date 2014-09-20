@@ -40,10 +40,10 @@ public class SkillTornadoKick extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.6), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         String formattedDamage = Util.decFormat.format(damage);
@@ -55,15 +55,15 @@ public class SkillTornadoKick extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(50));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(1.125));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(500));
-        node.set("horizontal-power", Double.valueOf(0.4));
-        node.set("horizontal-power-increase-per-intellect", Double.valueOf(0.015));
-        node.set("vertical-power", Double.valueOf(0.2));
-        node.set("vertical-power-increase-per-intellect", Double.valueOf(0.0075));
-        node.set("ncp-exemption-duration", Integer.valueOf(1000));
+        node.set(SkillSetting.DAMAGE.node(), 50);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.125);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DELAY.node(), 500);
+        node.set("horizontal-power", 0.4);
+        node.set("horizontal-power-increase-per-intellect", 0.015);
+        node.set("vertical-power", 0.2);
+        node.set("vertical-power-increase-per-intellect", 0.0075);
+        node.set("ncp-exemption-duration", 1000);
 
         return node;
     }
@@ -78,18 +78,18 @@ public class SkillTornadoKick extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.125), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.125, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.4), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", Double.valueOf(0.015), false);
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.4, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.015, false);
         hPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.0), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", Double.valueOf(0.0), false);
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.0, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", 0.0, false);
         vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         broadcastExecuteText(hero);

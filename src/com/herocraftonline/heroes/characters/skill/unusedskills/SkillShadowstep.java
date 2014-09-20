@@ -48,8 +48,8 @@ public class SkillShadowstep extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection defaultConfig = super.getDefaultConfig();
 
-        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        defaultConfig.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.15));
+        defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        defaultConfig.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
         defaultConfig.set("teleport-blocks-behind-target", 1);
         defaultConfig.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% ShadowStepped behind %target%!");
 

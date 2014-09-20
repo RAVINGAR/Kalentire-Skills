@@ -43,13 +43,13 @@ public class SkillReckoning extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.5, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", radius + "").replace("$2", damage + "").replace("$3", formattedDuration);
@@ -77,21 +77,21 @@ public class SkillReckoning extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(5), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(40), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.5, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         int intellect = hero.getAttributeValue(AttributeType.INTELLECT);
 
-        int slowAmount = SkillConfigManager.getUseSetting(hero, this, "slow-amount", Integer.valueOf(1), false);
+        int slowAmount = SkillConfigManager.getUseSetting(hero, this, "slow-amount", 1, false);
         double slowAmountIncrease = SkillConfigManager.getUseSetting(hero, this, "slow-amount-increase-per-intellect", 0.075, false);
         slowAmount += Math.floor(slowAmountIncrease * intellect);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(750), false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, Integer.valueOf(12), false);
-        duration += Math.ceil(durationIncrease * intellect);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 750, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 12, false);
+        duration += durationIncrease * intellect;
 
         Location playerLoc = player.getLocation();
 

@@ -46,9 +46,9 @@ public class SkillChlorobon extends TargettedSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("tick-heal", Integer.valueOf(71));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(12000));
+        node.set("tick-heal", 71);
+        node.set(SkillSetting.PERIOD.node(), 3000);
+        node.set(SkillSetting.DURATION.node(), 12000);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been given the gift of Chlorobon!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has lost the gift of Chlorobon.");
         return node;

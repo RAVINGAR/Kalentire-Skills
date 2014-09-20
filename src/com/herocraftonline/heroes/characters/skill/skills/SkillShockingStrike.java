@@ -34,7 +34,7 @@ public class SkillShockingStrike extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
@@ -65,7 +65,7 @@ public class SkillShockingStrike extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(30), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

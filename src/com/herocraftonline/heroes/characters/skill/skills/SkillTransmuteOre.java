@@ -71,11 +71,12 @@ public class SkillTransmuteOre extends ActiveSkill {
             itemSet.remove(set.node());
         }
 
-        String itemName = item.getType().name();
-        if (item == null || !itemSet.contains(itemName)) {
+        if (item == null || !itemSet.contains(item.getType().name())) {
             Messaging.send(player, "You can't transmute that item!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
+
+        String itemName = item.getType().name();
 
         int level = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.LEVEL, 1, true);
         if (hero.getSkillLevel(this) < level) {

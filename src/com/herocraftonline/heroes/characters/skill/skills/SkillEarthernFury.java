@@ -40,11 +40,11 @@ public class SkillEarthernFury extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
@@ -88,7 +88,7 @@ public class SkillEarthernFury extends TargettedSkill {
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 
         // Damage the target and add the slow effect.
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(50), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

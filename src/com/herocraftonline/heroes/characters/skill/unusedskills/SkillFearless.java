@@ -41,8 +41,8 @@ public class SkillFearless extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
-        double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.35), false);
+        double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
+        double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.35, false);
 
         String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
         String formattedIncomingIncrease = Util.decFormat.format(incomingIncrease * 100);
@@ -54,8 +54,8 @@ public class SkillFearless extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set("outgoing-damage-increase-percent", Double.valueOf(0.25));
-        node.set("incoming-damage-increase-percent", Double.valueOf(0.35));
+        node.set("outgoing-damage-increase-percent", 0.25);
+        node.set("incoming-damage-increase-percent", 0.35);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is fearless!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer fearless!");
 
@@ -79,8 +79,8 @@ public class SkillFearless extends ActiveSkill {
 
             broadcastExecuteText(hero);
 
-            double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", Double.valueOf(0.25), false);
-            double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", Double.valueOf(0.25), false);
+            double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.25, false);
+            double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
             hero.addEffect(new FearlessEffect(this, incomingDamageIncrease, outgoingDamageIncrease));
 
             player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 0.5F, 0.1F);

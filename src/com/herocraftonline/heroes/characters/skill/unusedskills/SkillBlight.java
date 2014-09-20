@@ -60,11 +60,11 @@ public class SkillBlight extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(12));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(17500));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2500));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Double.valueOf(15));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.4));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set(SkillSetting.DURATION.node(), 17500);
+        node.set(SkillSetting.PERIOD.node(), 2500);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 15);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.4);
         node.set(SkillSetting.RADIUS.node(), 4);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% begins to radiate a cloud of disease!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer diseased!");

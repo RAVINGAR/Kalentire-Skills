@@ -32,11 +32,11 @@ public class SkillSacrifice extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
-        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", Integer.valueOf(20), false);
+        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", 20, false);
         double conIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "con-increase-per-strength", 0.0, false);
         conIncrease += (int) (conIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
         
-        int strIncrease = SkillConfigManager.getUseSetting(hero, this, "str-increase", Integer.valueOf(20), false);
+        int strIncrease = SkillConfigManager.getUseSetting(hero, this, "str-increase", 20, false);
         double strIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "str-increase-per-strength", 0.0, false);
         strIncrease += (int) (strIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 
@@ -75,11 +75,11 @@ public class SkillSacrifice extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
-        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", Integer.valueOf(20), false);
+        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", 20, false);
         double conIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "con-increase-per-strength", 0.0, false);
         conIncrease += (int) (conIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
         
-        int strIncrease = SkillConfigManager.getUseSetting(hero, this, "str-increase", Integer.valueOf(20), false);
+        int strIncrease = SkillConfigManager.getUseSetting(hero, this, "str-increase", 20, false);
         double strIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "str-increase-per-strength", 0.0, false);
         strIncrease += (int) (strIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 

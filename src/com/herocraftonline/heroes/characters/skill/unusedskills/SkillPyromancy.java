@@ -136,11 +136,11 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("max-summons", Integer.valueOf(3));
-        node.set("max-summons-per-level", Double.valueOf(0.1));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(5));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.1));
-        node.set("fire-ticks", Integer.valueOf(40));
+        node.set("max-summons", 3);
+        node.set("max-summons-per-level", 0.1);
+        node.set(SkillSetting.DAMAGE.node(), 5);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.1);
+        node.set("fire-ticks", 40);
         return node;
     }
 

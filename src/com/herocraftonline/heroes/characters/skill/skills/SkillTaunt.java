@@ -85,7 +85,7 @@ public class SkillTaunt extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, "taunt-message-speed", Integer.valueOf(1000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "taunt-message-speed", 1000, false);
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.85, false);
 
         broadcastExecuteText(hero);

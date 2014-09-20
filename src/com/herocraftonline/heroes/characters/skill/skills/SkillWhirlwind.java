@@ -88,7 +88,7 @@ public class SkillWhirlwind extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
-        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", Integer.valueOf(1), false);
+        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
         WhirlwindEffect effect = new WhirlwindEffect(this, player, period, duration, slowAmplifier, radius);
@@ -136,7 +136,7 @@ public class SkillWhirlwind extends ActiveSkill {
 
             player.getWorld().playSound(player.getLocation(), Sound.BAT_LOOP, 0.6F, 0.6F);
 
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 60, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 

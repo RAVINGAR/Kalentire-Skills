@@ -68,7 +68,6 @@ public class SkillCauldron extends PassiveSkill {
 	public ArrayList<Integer> CauldronRecipesLevel = new ArrayList<Integer>();
 	private File CauldronConfigFile;
 	private FileConfiguration CauldronConfig;
-	Heroes plugin;
 
 	public SkillCauldron(Heroes plugin) {
 		super(plugin, "Cauldron");
@@ -76,7 +75,6 @@ public class SkillCauldron extends PassiveSkill {
 		setArgumentRange(0, 0);
         setTypes(SkillType.ITEM_CREATION, SkillType.ITEM_MODIFYING);
 		setEffectTypes(EffectType.BENEFICIAL);
-		this.plugin = plugin;
 		loadCauldronRecipes();
 		Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this, plugin), plugin);
 	}
@@ -128,7 +126,7 @@ public class SkillCauldron extends PassiveSkill {
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				//If ID is 0, replace with space
 				if(id == 0) {
-					top.replace(convertInttoChar(j), ' ') ;
+					top = top.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 
@@ -136,7 +134,7 @@ public class SkillCauldron extends PassiveSkill {
 			for(int j=3; j<6; j++){
 				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
 				if(id == 0) {
-					mid.replace(convertInttoChar(j), ' ') ;
+					mid = mid.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 

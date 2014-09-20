@@ -40,8 +40,8 @@ public class SkillFrenzy extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
 
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", 0.5, false);
         double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", 0.5, false);
@@ -79,13 +79,13 @@ public class SkillFrenzy extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(7000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(500), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
 
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", 0.5, false);
         double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase", 0.5, false);
 
-        int nauseaAmplifier = SkillConfigManager.getUseSetting(hero, this, "nausea-amplifier", Integer.valueOf(3), false);
+        int nauseaAmplifier = SkillConfigManager.getUseSetting(hero, this, "nausea-amplifier", 3, false);
 
         broadcastExecuteText(hero);
 

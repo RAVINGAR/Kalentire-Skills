@@ -35,8 +35,8 @@ public class SkillWisdom extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
 
-        int manaRegen = SkillConfigManager.getUseSetting(hero, this, "mana-regen", Integer.valueOf(10), false);
-        double manaRegenIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-regen-increase-per-intellect", Double.valueOf(0.375), false);
+        int manaRegen = SkillConfigManager.getUseSetting(hero, this, "mana-regen", 10, false);
+        double manaRegenIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-regen-increase-per-intellect", 0.375, false);
         manaRegen += (int) (manaRegenIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         String formattedDuration = Util.decFormat.format((duration / 1000.0) / 60.0);   // Convert to minutes.
@@ -48,10 +48,10 @@ public class SkillWisdom extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(10));
-        node.set("mana-regen", Double.valueOf(1.2));
-        node.set("mana-regen-increase-per-intellect", Double.valueOf(0.375));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(180000));
+        node.set(SkillSetting.RADIUS.node(), 10);
+        node.set("mana-regen", 1.2);
+        node.set("mana-regen-increase-per-intellect", 0.375);
+        node.set(SkillSetting.DURATION.node(), 180000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You feel a bit wiser!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "You no longer feel as wise!");
 
@@ -71,8 +71,8 @@ public class SkillWisdom extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        int manaRegen = SkillConfigManager.getUseSetting(hero, this, "mana-regen", Integer.valueOf(10), false);
-        double manaRegenIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-regen-increase-per-intellect", Double.valueOf(0.375), false);
+        int manaRegen = SkillConfigManager.getUseSetting(hero, this, "mana-regen", 10, false);
+        double manaRegenIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-regen-increase-per-intellect", 0.375, false);
         manaRegen += (int) (manaRegenIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         WisdomEffect mEffect = new WisdomEffect(this, player, duration, manaRegen);

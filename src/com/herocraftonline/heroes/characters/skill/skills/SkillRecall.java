@@ -48,7 +48,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 public class SkillRecall extends ActiveSkill implements Listener, PluginMessageListener {
 
     private boolean herotowns = false;
-    private HeroTowns ht;
+    //private HeroTowns ht;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     private Set<String> pendingTeleport = new HashSet<>();
@@ -60,11 +60,11 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         super(plugin, name);
 
         try {
-            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-            //                herotowns = true;
-            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            //            }
-            //        }
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+                herotowns = true;
+                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            }*/
+
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -331,10 +331,10 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
 
         // Validate Herotowns
         if (herotowns) {
-            if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
+            /*if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
                 Messaging.send(player, "You cannot Recall to a Town you have no access to!");
                 return SkillResult.FAIL;
-            }
+            }*/
         }
 
         // Validate WorldGuard

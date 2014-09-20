@@ -39,14 +39,14 @@ public class SkillRegrowth extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(25), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
         healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(3000), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(15000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 15000, false);
 
-        double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(29), false);
+        double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 29, false);
         double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 0.7, false);
         hot += hero.getAttributeValue(AttributeType.WISDOM) * hotIncrease;
 
@@ -96,14 +96,14 @@ public class SkillRegrowth extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, Integer.valueOf(25), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
         healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(3000), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(15000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 15000, false);
 
-        double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(29), false);
+        double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 29, false);
         double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 0.7, false);
         hot += hero.getAttributeValue(AttributeType.WISDOM) * hotIncrease;
 

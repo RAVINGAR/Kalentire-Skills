@@ -47,7 +47,7 @@ public class SkillEnderPearls extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, this, "cooldown-during-combat", true);
-        int cdDuration = SkillConfigManager.getUseSetting(hero, this, "combat-toss-cooldown", Integer.valueOf(60000), false);
+        int cdDuration = SkillConfigManager.getUseSetting(hero, this, "combat-toss-cooldown", 60000, false);
 
         String combatCooldownString = "";
         if (hasCombatCooldown) {
@@ -110,7 +110,7 @@ public class SkillEnderPearls extends PassiveSkill {
                 }
 
                 boolean hasCombatCooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown-during-combat", true);
-                int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "combat-toss-cooldown", Integer.valueOf(5000), false);
+                int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "combat-toss-cooldown", 5000, false);
                 boolean applyCooldown = false;
                 if (hasCombatCooldown) {
                     if (hero.isInCombat())
@@ -182,7 +182,7 @@ public class SkillEnderPearls extends PassiveSkill {
                 float pitch = teleportLoc.getPitch();
                 float yaw = teleportLoc.getYaw();
 
-                int verticalLeniency = SkillConfigManager.getUseSetting(hero, skill, "vertical-leniency", Integer.valueOf(2), false);
+                int verticalLeniency = SkillConfigManager.getUseSetting(hero, skill, "vertical-leniency", 2, false);
 
                 boolean validLocation = false;
                 int i = 0;

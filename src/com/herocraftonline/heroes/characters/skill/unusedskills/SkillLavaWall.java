@@ -36,10 +36,10 @@ public class SkillLavaWall extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("height", Integer.valueOf(3));
-		node.set("width", Integer.valueOf(2));
-		node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(20));
-		node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
+		node.set("height", 3);
+		node.set("width", 2);
+		node.set(SkillSetting.MAX_DISTANCE.node(), 20);
+		node.set(SkillSetting.DURATION.node(), 5000);
 		node.set("block-type", "LAVA");
 
 		return node;

@@ -64,7 +64,7 @@ public class SkillManaFreeze extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         targetHero.addEffect(new ManaFreezeEffect(this, hero.getPlayer(), duration));

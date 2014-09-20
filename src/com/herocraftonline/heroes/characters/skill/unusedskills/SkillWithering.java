@@ -53,11 +53,11 @@ public class SkillWithering extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(7));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(8000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(2000));
-        node.set(SkillSetting.DAMAGE_TICK.node(), Integer.valueOf(19));
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.475));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        node.set(SkillSetting.DURATION.node(), 8000);
+        node.set(SkillSetting.PERIOD.node(), 2000);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 19);
+        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.475);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s begins to wither away!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s is no longer withering.");
 

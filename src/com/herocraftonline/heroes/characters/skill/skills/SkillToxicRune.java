@@ -85,8 +85,8 @@ public class SkillToxicRune extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(15));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.375));
+        node.set(SkillSetting.DAMAGE.node(), 15);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.375);
         node.set(SkillSetting.PERIOD.node(), 3000);
         node.set(SkillSetting.DURATION.node(), 12000);
         node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.DARK_GREEN + "Toxicity.");
@@ -158,8 +158,8 @@ public class SkillToxicRune extends ActiveSkill {
                     long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 9000, false);
                     long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(55), false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.875), false);
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 55, false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                     String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been poisoned by a Rune of Toxicity!").replace("%target%", "$1");

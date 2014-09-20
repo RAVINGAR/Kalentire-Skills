@@ -31,7 +31,7 @@ public class SkillHonor extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
 
-        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", Integer.valueOf(5), false);
+        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", 5, false);
         double conIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "con-increase-per-strength", 0.0, false);
         conIncrease += (int) (conIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 
@@ -67,7 +67,7 @@ public class SkillHonor extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", Integer.valueOf(5), false);
+        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", 5, false);
         double conIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "con-increase-per-strength", 0.0, false);
         conIncrease += (int) (conIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 

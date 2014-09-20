@@ -50,8 +50,8 @@ public class SkillWarsong extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.1, false);
         double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", 0.00375, false);
@@ -90,8 +90,8 @@ public class SkillWarsong extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.1, false);
         double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", 0.00375, false);

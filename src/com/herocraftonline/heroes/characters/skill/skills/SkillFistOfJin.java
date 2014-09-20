@@ -39,15 +39,15 @@ public class SkillFistOfJin extends PassiveSkill {
 
         double cdDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "healing-internal-cooldown", 1000.0, false) / 1000.0);
 
-        double selfHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-self", Integer.valueOf(8), false);
-        double partyHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-party", Integer.valueOf(3), false);
+        double selfHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-self", 8, false);
+        double partyHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-party", 3, false);
 
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
         double calculatedIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
         selfHeal += calculatedIncrease;
         partyHeal += calculatedIncrease;
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(8), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
         double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
         radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
 
@@ -115,20 +115,20 @@ public class SkillFistOfJin extends PassiveSkill {
 
             int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
 
-            double selfHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-self", Integer.valueOf(8), false);
-            double partyHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-party", Integer.valueOf(3), false);
+            double selfHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-self", 8, false);
+            double partyHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-party", 3, false);
 
             double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
             double calculatedIncrease = wisdom * healingIncrease;
             selfHeal += calculatedIncrease;
             partyHeal += calculatedIncrease;
 
-            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), false);
+            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 8, false);
             double radiusIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
             radius += (int) Math.floor(radiusIncrease * wisdom);
             int radiusSquared = radius * radius;
 
-            int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "healing-internal-cooldown", Integer.valueOf(1000), false);
+            int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "healing-internal-cooldown", 1000, false);
 
             // Check if the hero has a party
             if (hero.hasParty()) {

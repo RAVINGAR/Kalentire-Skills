@@ -79,9 +79,9 @@ public class SkillImbue extends ActiveSkill
   public ConfigurationSection getDefaultConfig()
   {
     ConfigurationSection node = super.getDefaultConfig();
-    node.set(SkillSetting.AMOUNT.node(), Integer.valueOf(10));
+    node.set(SkillSetting.AMOUNT.node(), 10);
 //    for (String type : HeroArrows.imbueables()) {
-//      node.set(type + "." + "level", Integer.valueOf(20));
+//      node.set(type + "." + "level", 20);
 //      node.set(type + "." + "available", Boolean.valueOf(false));
 //    }
     return node;

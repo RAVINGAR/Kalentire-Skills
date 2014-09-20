@@ -57,7 +57,7 @@ public class SkillPulse extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(60), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 

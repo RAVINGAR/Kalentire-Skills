@@ -59,8 +59,8 @@ public class SkillLancersReach extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int reach = SkillConfigManager.getUseSetting(hero, this, "reach-distance", Integer.valueOf(7), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+        int reach = SkillConfigManager.getUseSetting(hero, this, "reach-distance", 7, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -71,9 +71,9 @@ public class SkillLancersReach extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
-        node.set("reach-distance", Integer.valueOf(7));
-        node.set("attack cooldown-duration", Integer.valueOf(500));
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set("reach-distance", 7);
+        node.set("attack cooldown-duration", 500);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is reaching!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer reaching.");
 
@@ -93,8 +93,8 @@ public class SkillLancersReach extends ActiveSkill {
         Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(10000), false);
-        int reach = SkillConfigManager.getUseSetting(hero, this, "reach-distance", Integer.valueOf(7), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int reach = SkillConfigManager.getUseSetting(hero, this, "reach-distance", 7, false);
         hero.addEffect(new LancersReachEffect(this, player, duration, reach));
 
         return SkillResult.NORMAL;
@@ -182,7 +182,7 @@ public class SkillLancersReach extends ActiveSkill {
                 addSpellTarget(finalTarget, hero);
                 damageEntity(finalTarget, player, damage, DamageCause.ENTITY_ATTACK);
 
-                int duration = SkillConfigManager.getUseSetting(hero, skill, "attack cooldown-duration", Integer.valueOf(500), false);
+                int duration = SkillConfigManager.getUseSetting(hero, skill, "attack cooldown-duration", 500, false);
                 hero.addEffect(new LancersReachCooldownEffect(skill, player, duration));
             }
         }

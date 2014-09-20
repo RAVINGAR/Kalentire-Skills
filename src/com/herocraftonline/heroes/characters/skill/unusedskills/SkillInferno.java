@@ -43,8 +43,8 @@ public class SkillInferno extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(12), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(5000), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
@@ -59,12 +59,12 @@ public class SkillInferno extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(13));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.425));
-        node.set("explosion-hitbox-radius", Integer.valueOf(3));
-        node.set("inferno-spawn-delay", Integer.valueOf(1));
+        node.set(SkillSetting.RADIUS.node(), 12);
+        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.DAMAGE.node(), 13);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.425);
+        node.set("explosion-hitbox-radius", 3);
+        node.set("inferno-spawn-delay", 1);
 
         return node;
     }
@@ -74,7 +74,7 @@ public class SkillInferno extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(5000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         hero.addEffect(new InfernoEffect(this, player, duration));
 
@@ -99,9 +99,9 @@ public class SkillInferno extends ActiveSkill {
 
             final Player player = hero.getPlayer();
             
-            final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(12), false);
-            final int hitboxRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-hitbox-radius", Integer.valueOf(3), false);
-            int spawnDelay = SkillConfigManager.getUseSetting(hero, skill, "inferno-spawn-delay", Integer.valueOf(1), false);
+            final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 12, false);
+            final int hitboxRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-hitbox-radius", 3, false);
+            int spawnDelay = SkillConfigManager.getUseSetting(hero, skill, "inferno-spawn-delay", 1, false);
 
             double tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);

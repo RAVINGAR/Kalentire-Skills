@@ -46,7 +46,7 @@ public class SkillProvoke extends TargettedSkill {
 
     public String getDescription(Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
         double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.35, false);
@@ -87,8 +87,8 @@ public class SkillProvoke extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, "provoke-message-speed", Integer.valueOf(1000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, "provoke-message-speed", 1000, false);
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.25, false);
         double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
 

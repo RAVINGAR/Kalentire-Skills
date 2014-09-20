@@ -65,8 +65,8 @@ public class SkillReborn extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(20000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(2500), true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, (double) 17, false);
 
         plugin.getCharacterManager().getCharacter(player).addEffect(new PeriodicHealEffect(this, "Reborn", player, duration, period, tickDamage));

@@ -68,12 +68,12 @@ public class SkillFirewave extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("fireballs", Integer.valueOf(12));
-        node.set("fireballs-per-intellect", Double.valueOf(0.325));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(95));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.25));
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(289));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(1));
+        node.set("fireballs", 12);
+        node.set("fireballs-per-intellect", 0.325);
+        node.set(SkillSetting.DAMAGE.node(), 95);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
+        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT_COST.node(), 1);
 
 		return node;
 	}

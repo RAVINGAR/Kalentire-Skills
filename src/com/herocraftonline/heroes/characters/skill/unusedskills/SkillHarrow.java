@@ -36,11 +36,11 @@ public class SkillHarrow extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(90), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.8), false);
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.8, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.9), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.9, false);
 
         String formattedHeal = Util.decFormat.format(damage * healMult);
 
@@ -51,10 +51,10 @@ public class SkillHarrow extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(6));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(90));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.8));
-        node.set("heal-mult", Double.valueOf(0.9));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.DAMAGE.node(), 90);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.8);
+        node.set("heal-mult", 0.9);
         node.set("not-behind-player-text", Messaging.getSkillDenoter() + "You are not behind the target!");
 
         return node;
@@ -76,14 +76,14 @@ public class SkillHarrow extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(90), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, Double.valueOf(0.8), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.8, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.9), false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.9, false);
 
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this, hero);
         plugin.getServer().getPluginManager().callEvent(hrEvent);

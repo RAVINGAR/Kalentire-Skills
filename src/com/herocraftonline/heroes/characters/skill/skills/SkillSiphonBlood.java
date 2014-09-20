@@ -37,7 +37,7 @@ public class SkillSiphonBlood extends TargettedSkill {
     public String getDescription(Hero hero) {
 
         // Damage stuff
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(80), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
@@ -77,7 +77,7 @@ public class SkillSiphonBlood extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // Calculate damage
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

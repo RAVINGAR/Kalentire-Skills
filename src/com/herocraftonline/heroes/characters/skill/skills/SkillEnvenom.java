@@ -49,9 +49,9 @@ public class SkillEnvenom extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(10000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(5), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
@@ -85,7 +85,7 @@ public class SkillEnvenom extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(10000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new EnvenomEffect(this, hero.getPlayer(), duration));
 
         broadcastExecuteText(hero);
@@ -156,7 +156,7 @@ public class SkillEnvenom extends ActiveSkill {
                     if (!(damageCheck(hero.getPlayer(), target)))
                         return;
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, Integer.valueOf(5), false);
+                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 5, false);
                     double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
                     damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

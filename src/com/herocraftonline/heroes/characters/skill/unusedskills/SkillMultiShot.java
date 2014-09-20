@@ -67,13 +67,13 @@ public class SkillMultiShot extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(20000));
-        node.set("arrows-loaded-per-use", Integer.valueOf(6));
-        node.set("max-arrows-per-shot", Integer.valueOf(6));
-        node.set("max-total-arrows", Integer.valueOf(30));
-        node.set("degrees", Double.valueOf(65.0));
-        node.set("velocity-multiplier", Double.valueOf(1.6));
-        node.set("multishot-immunity-duration", Integer.valueOf(500));
+        node.set(SkillSetting.DURATION.node(), 20000);
+        node.set("arrows-loaded-per-use", 6);
+        node.set("max-arrows-per-shot", 6);
+        node.set("max-total-arrows", 30);
+        node.set("degrees", 65.0);
+        node.set("velocity-multiplier", 1.6);
+        node.set("multishot-immunity-duration", 500);
 
         node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to load up arrows!"));
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are no longer firing multiple arrows.");
@@ -325,7 +325,7 @@ public class SkillMultiShot extends ActiveSkill {
             arrow.setVelocity(vel);    // Apply multiplier so it goes farther.
 
             arrow.setShooter(player);
-            multiShots.put(arrow, Long.valueOf(System.currentTimeMillis()));
+            multiShots.put(arrow, System.currentTimeMillis());
             final EntityShootBowEvent fakeShootBowEvent = new EntityShootBowEvent(player, bow, arrow, force);
             plugin.getServer().getPluginManager().callEvent(fakeShootBowEvent);
         }

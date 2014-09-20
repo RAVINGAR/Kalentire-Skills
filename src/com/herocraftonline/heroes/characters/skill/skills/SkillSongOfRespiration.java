@@ -32,7 +32,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 2500, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 38, false);
@@ -79,7 +79,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
         if (!hero.hasParty())
             hero.addEffect(wbEffect);
         else {
-            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
+            int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
             int radiusSquared = radius * radius;
 
             Location loc = player.getLocation();

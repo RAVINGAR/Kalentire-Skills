@@ -45,7 +45,7 @@ public class SkillDragonsBreathOLD extends ActiveSkill {
 
     public String getDescription(Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(5000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
@@ -60,13 +60,13 @@ public class SkillDragonsBreathOLD extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(3));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(6000));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(750));
-        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(13));
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(0.425));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(3));
-        node.set("fire-spray-move-delay", Integer.valueOf(1));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
+        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.PERIOD.node(), 750);
+        node.set(SkillSetting.DAMAGE.node(), 13);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.425);
+        node.set(SkillSetting.RADIUS.node(), 3);
+        node.set("fire-spray-move-delay", 1);
 
         return node;
     }
@@ -76,8 +76,8 @@ public class SkillDragonsBreathOLD extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(5000), false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(750), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 750, false);
 
         hero.addEffect(new DragonsBreathEffect(this, player, period, duration));
 

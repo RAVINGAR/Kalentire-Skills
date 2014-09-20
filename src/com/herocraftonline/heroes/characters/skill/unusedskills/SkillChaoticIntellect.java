@@ -42,10 +42,10 @@ public class SkillChaoticIntellect extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        int intellectGain = SkillConfigManager.getUseSetting(hero, this, "intellect-buff", Integer.valueOf(15), false);
-        int constitutionDrain = SkillConfigManager.getUseSetting(hero, this, "constitution-drain", Integer.valueOf(15), false);
+        int intellectGain = SkillConfigManager.getUseSetting(hero, this, "intellect-buff", 15, false);
+        int constitutionDrain = SkillConfigManager.getUseSetting(hero, this, "constitution-drain", 15, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -56,9 +56,9 @@ public class SkillChaoticIntellect extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(15000));
-        node.set("intellect-buff", Integer.valueOf(16));
-        node.set("constitution-drain", Integer.valueOf(20));
+        node.set(SkillSetting.DURATION.node(), 15000);
+        node.set("intellect-buff", 16);
+        node.set("constitution-drain", 20);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is imbued with Chaotic Intellect!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Chaotic Intellect fades.");
 
@@ -77,10 +77,10 @@ public class SkillChaoticIntellect extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int intellectGain = SkillConfigManager.getUseSetting(hero, this, "intellect-buff", Integer.valueOf(22), false);
-        int constitutionDrain = SkillConfigManager.getUseSetting(hero, this, "constitution-drain", Integer.valueOf(15), false);
+        int intellectGain = SkillConfigManager.getUseSetting(hero, this, "intellect-buff", 22, false);
+        int constitutionDrain = SkillConfigManager.getUseSetting(hero, this, "constitution-drain", 15, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(30000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         hero.addEffect(new ChaoticIntellectEffect(this, player, duration, intellectGain, constitutionDrain));
 

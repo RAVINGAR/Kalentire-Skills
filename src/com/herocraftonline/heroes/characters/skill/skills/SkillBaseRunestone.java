@@ -43,7 +43,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 public abstract class SkillBaseRunestone extends ActiveSkill {
 
     private boolean herotowns = false;
-    private HeroTowns ht;
+    //private HeroTowns ht;
     //private boolean residence = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
@@ -57,10 +57,10 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
         super(plugin, name);
 
         try {
-            //            if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-            //                herotowns = true;
-            //                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            //            }
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
+                herotowns = true;
+                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
+            }*/
             /*if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
             }*/
@@ -151,10 +151,10 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
 
             // Validate Herotowns
             if (herotowns) {
-                if (!(ht.getGlobalRegionManager().canBuild(player, location))) {
+                /*if (!(ht.getGlobalRegionManager().canBuild(player, location))) {
                     Messaging.send(player, "You cannot imbue a Runestone within a town you do not have access to!");
                     return SkillResult.FAIL;
-                }
+                }*/
             }
 
             // Validate WorldGuard

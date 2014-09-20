@@ -33,7 +33,7 @@ public class SkillInvuln extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(6000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 6000, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
@@ -72,7 +72,7 @@ public class SkillInvuln extends ActiveSkill {
             }
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(6000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         hero.addEffect(new InvulnerabilityEffect(this, player, duration, applyText, expireText));
 
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.8F, 1.0F);

@@ -39,7 +39,7 @@ public class SkillMagicWard extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -78,7 +78,7 @@ public class SkillMagicWard extends ActiveSkill {
             case TRAP_DOOR:
                 broadcastExecuteText(hero);
 
-                int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(4000), false);
+                int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
                 double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
 
                 hero.addEffect(new MagicWardEffect(this, player, duration, damageReduction));

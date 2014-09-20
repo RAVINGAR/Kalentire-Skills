@@ -101,7 +101,7 @@ public class SkillLunge extends TargettedSkill {
         }, (long) (delay * 20));
 
 
-        //        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.4), false);
+        //        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
         //        final double vPower = tempVPower;
         //
         //        Vector pushUpVector = new Vector(0, vPower, 0);
@@ -110,8 +110,8 @@ public class SkillLunge extends TargettedSkill {
         //        final double xDir = (targetLoc.getX() - playerLoc.getX()) / 3;
         //        final double zDir = (targetLoc.getZ() - playerLoc.getZ()) / 3;
         //
-        //        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        //        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", Double.valueOf(0.0), false);
+        //        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        //        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0, false);
         //        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
         //        final double hPower = tempHPower;
         //
