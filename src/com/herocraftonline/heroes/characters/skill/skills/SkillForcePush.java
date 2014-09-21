@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -137,7 +138,15 @@ public class SkillForcePush extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().playSound(target.getLocation(), Sound.FIZZ, 0.5f, 2.0f);
+
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), 
+                org.bukkit.Effect.WITCH_MAGIC, 
+                0, 0, 
+                0, 0, 0, 
+                1, 
+                150, 
+                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5, false) + 1);
 
         return SkillResult.NORMAL;
     }

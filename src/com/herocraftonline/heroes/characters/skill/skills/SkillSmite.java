@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -84,13 +83,15 @@ public class SkillSmite extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_EXPLOSION);
 
-        // this is our fireworks
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
-                    .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.SILVER).withFade(Color.NAVY).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        player.getWorld().playSound(target.getLocation(), Sound.HURT_FLESH, 0.5f, 1.0f);
+
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+                org.bukkit.Effect.CRIT, // effect
+                0, 0, // id,data: for block effect
+                0, 0, 0, // offset
+                1.0f, // speed
+                50, // particle count
+                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false) + 1); // radius: player observable distance
 
         return SkillResult.NORMAL;
     }
