@@ -134,7 +134,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
                             return SkillResult.SKIP_POST_USAGE;
                         }
 
-                        portRequest.writeShort(msgbytes.toByteArray().length);
+                        portRequest.writeInt(msgbytes.toByteArray().length);
                         portRequest.write(msgbytes.toByteArray());
 
                         pendingPort.add(player.getName());
@@ -277,7 +277,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
 
-        short len = in.readShort();
+        int len = in.readInt();
         byte[] msgbytes = new byte[len];
         in.readFully(msgbytes);
         DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
