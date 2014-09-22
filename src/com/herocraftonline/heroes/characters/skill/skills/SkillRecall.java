@@ -377,12 +377,12 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
         
-        short len = in.readShort();
-        byte[] msgbytes = new byte[len];
-        in.readFully(msgbytes);
-        DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
-    
         if (this.subChannel.equals(subChannel)) {
+            short len = in.readShort();
+            byte[] msgbytes = new byte[len];
+            in.readFully(msgbytes);
+            DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
+        
             try {
                 String playerName = msgin.readUTF();
                 ConfigurationSection skillSettings = new MemoryConfiguration();
