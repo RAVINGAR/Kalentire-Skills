@@ -115,7 +115,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
 
-            if (!(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
+            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
             // Ensure that the target is a living entity
