@@ -141,7 +141,7 @@ public class SkillDarkScythe extends ActiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
 
             ItemStack item = player.getItemInHand();
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
+            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.axes).contains(item.getType().name())) {
                 if (arrow)
                     dealDarkscytheDamage(hero, target);
             }
