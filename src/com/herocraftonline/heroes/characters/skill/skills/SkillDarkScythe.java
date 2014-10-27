@@ -65,7 +65,7 @@ public class SkillDarkScythe extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("weapons", Util.swords);
+        node.set("weapons", Util.axes);
         node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.DAMAGE.node(), 5);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
