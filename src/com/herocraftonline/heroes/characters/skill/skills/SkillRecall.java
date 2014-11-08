@@ -1,14 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -28,9 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.herocraftonline.heroes.Heroes;
@@ -45,14 +35,12 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
-public class SkillRecall extends ActiveSkill implements Listener, PluginMessageListener {
+public class SkillRecall extends ActiveSkill implements Listener {
 
     private boolean herotowns = false;
     //private HeroTowns ht;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
-    private Set<String> pendingTeleport = new HashSet<>();
-    private Map<String, Info<ConfigurationSection>> onJoinSkillSettings = new Hashtable<>();
 
     protected String subChannel;
 
@@ -75,7 +63,6 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         }
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, Heroes.BUNGEE_CORD_CHANNEL, this);
     }
 
     public SkillRecall(Heroes plugin) {
@@ -225,6 +212,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
             skillSettings.set("z", zString);
             skillSettings.set("yaw", yaw);
             skillSettings.set("pitch", pitch);
+            skillSettings.set("pending-teleport", "runestone");
 
             // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
             if (uses != -1) {
@@ -235,7 +223,7 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
                 }
             }
 
-            return isRemoteServerLocation(skillSettings) ? forwardTeleport(player, skillSettings) : doTeleport(hero, skillSettings, true);
+            return isRemoteServerLocation(skillSettings) ? forwardTeleport(hero, skillSettings) : doTeleport(hero, skillSettings, true);
         }
 
         // If we make it this far, this is not a proper Runestone block.
@@ -252,48 +240,46 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
 
         // If necessary, forward recall request to remote server
         return isRemoteServerLocation(skillSettings) ?
-                forwardTeleport(player, skillSettings) : doTeleport(hero, skillSettings, true);
+                forwardTeleport(hero, skillSettings) : doTeleport(hero, skillSettings, true);
     }
 
-    private SkillResult forwardTeleport(Player player, ConfigurationSection skillSettings)
+    private SkillResult forwardTeleport(final Hero hero, ConfigurationSection skillSettings)
     {
         ByteArrayDataOutput recallRequest = ByteStreams.newDataOutput();
-        recallRequest.writeUTF("Forward");
+        recallRequest.writeUTF("Connect");
         recallRequest.writeUTF(skillSettings.getString("server"));
-        recallRequest.writeUTF(subChannel);
-
-        ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
-        DataOutputStream msgout = new DataOutputStream(msgbytes);
-        try {
-            msgout.writeUTF(player.getName());
-            msgout.writeUTF(skillSettings.getString("world"));
-            msgout.writeUTF(skillSettings.getString("x"));
-            msgout.writeUTF(skillSettings.getString("y"));
-            msgout.writeUTF(skillSettings.getString("z"));
-            msgout.writeUTF(skillSettings.getString("yaw"));
-            msgout.writeUTF(skillSettings.getString("pitch"));
+        if ("runestone".equals(skillSettings.getString("pending-teleport"))) {
+            hero.setSkillSetting(this, "pending-teleport", skillSettings.getString("pending-teleport"));
+            hero.setSkillSetting(this, "rs-server", skillSettings.getString("server"));
+            hero.setSkillSetting(this, "rs-world", skillSettings.getString("world"));
+            hero.setSkillSetting(this, "rs-x", skillSettings.getString("x"));
+            hero.setSkillSetting(this, "rs-y", skillSettings.getString("y"));
+            hero.setSkillSetting(this, "rs-z", skillSettings.getString("z"));
+            hero.setSkillSetting(this, "rs-yaw", skillSettings.getString("yaw"));
+            hero.setSkillSetting(this, "rs-pitch", skillSettings.getString("pitch"));
         }
-        catch (IOException e) {
-            Messaging.send(player, "Your recall location is improperly set!");
-            return SkillResult.SKIP_POST_USAGE;
+        else {
+            hero.setSkillSetting(this, "pending-teleport", "recall");
         }
 
-        recallRequest.writeShort(msgbytes.toByteArray().length);
-        recallRequest.write(msgbytes.toByteArray());
-
-        pendingTeleport.add(player.getName());
+        Player player = hero.getPlayer();
         player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, recallRequest.toByteArray());
 
         // Run this delayed task to check if the recall failed
         final String playerName = player.getName();
+        final SkillRecall thisSkill = this;
         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
             @Override
             public void run()
             {
-                if (pendingTeleport.remove(playerName)) {
-                    Player player = Bukkit.getPlayer(playerName);
-                    if (player != null) {
+                Player player = Bukkit.getPlayerExact(playerName);
+                if (player != null) {
+                    Hero hero = plugin.getCharacterManager().getHero(player);
+                    ConfigurationSection skillSettings = plugin.getCharacterManager().getHero(player).getSkillSettings(thisSkill);
+                    if (skillSettings != null && ("runestone".equals(skillSettings.getString("pending-teleport")) ||
+                            "recall".equals(skillSettings.getString("pending-teleport")))) {
+                        hero.setSkillSetting(thisSkill, "pending-teleport", "none");
                         Messaging.send(player, "Teleport fizzled.");
                     }
                 }
@@ -368,58 +354,34 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
         return SkillResult.NORMAL;
     }
 
-    @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!Heroes.BUNGEE_CORD_CHANNEL.equals(channel)) {
-            return;
-        }
-    
-        ByteArrayDataInput in = ByteStreams.newDataInput(message);
-        String subChannel = in.readUTF();
-        
-        if (this.subChannel.equals(subChannel)) {
-            short len = in.readShort();
-            byte[] msgbytes = new byte[len];
-            in.readFully(msgbytes);
-            DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
-        
-            try {
-                String playerName = msgin.readUTF();
-                ConfigurationSection skillSettings = new MemoryConfiguration();
-                skillSettings.set("world", msgin.readUTF());
-                skillSettings.set("x", msgin.readUTF());
-                skillSettings.set("y", msgin.readUTF());
-                skillSettings.set("z", msgin.readUTF());
-                skillSettings.set("yaw", msgin.readUTF());
-                skillSettings.set("pitch", msgin.readUTF());
-
-                // cache the location for onPlayerJoin
-                onJoinSkillSettings.put(playerName, new Info<ConfigurationSection>(skillSettings));
-
-                // send the player to this server
-                ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
-                connectOther.writeUTF("ConnectOther");
-                connectOther.writeUTF(playerName);
-                connectOther.writeUTF(plugin.getServerName());
-
-                player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, connectOther.toByteArray());
-            }
-            catch (IOException e) {
-                Heroes.log(Level.SEVERE, "SkillRecall: Could not parse RecallRequest message from remote server");
-            }
-        }
-    }
-
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Hero hero = plugin.getCharacterManager().getHero(player);
-        Info<ConfigurationSection> skillSettings = onJoinSkillSettings.remove(player.getName());
-        if (skillSettings != null && skillSettings.isNotExpired()) {
-            SkillResult result = doTeleport(hero, skillSettings.getInfo(), false);
-            if (!SkillResult.NORMAL.equals(result)) {
-                player.teleport(player.getWorld().getSpawnLocation());
-                Messaging.send(player, "Teleport fizzled.");
+        ConfigurationSection skillSettings = hero.getSkillSettings(this);
+        if (skillSettings != null) {
+            ConfigurationSection teleportSettings = null;
+            if ("recall".equals(skillSettings.getString("pending-teleport"))) {
+                hero.setSkillSetting(this, "pending-teleport", "none");
+                teleportSettings = skillSettings;
+            }
+            else if ("runestone".equals(skillSettings.getString("pending-teleport"))) {
+                hero.setSkillSetting(this, "pending-teleport", "none");
+                teleportSettings = new MemoryConfiguration();
+                teleportSettings.set("server", skillSettings.getString("rs-server"));
+                teleportSettings.set("world", skillSettings.getString("rs-world"));
+                teleportSettings.set("x", skillSettings.getString("rs-x"));
+                teleportSettings.set("y", skillSettings.getString("rs-y"));
+                teleportSettings.set("z", skillSettings.getString("rs-z"));
+                teleportSettings.set("yaw", skillSettings.getString("rs-yaw"));
+                teleportSettings.set("pitch", skillSettings.getString("rs-pitch"));
+            }
+            if (teleportSettings != null) {
+                SkillResult result = doTeleport(hero, teleportSettings, false);
+                if (!SkillResult.NORMAL.equals(result)) {
+                    player.teleport(player.getWorld().getSpawnLocation());
+                    Messaging.send(player, "Teleport fizzled.");
+                }
             }
         }
     }
@@ -427,8 +389,11 @@ public class SkillRecall extends ActiveSkill implements Listener, PluginMessageL
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (pendingTeleport.remove(player.getName())) {
-            broadcastExecuteText(plugin.getCharacterManager().getHero(player));
+        Hero hero = plugin.getCharacterManager().getHero(player);
+        ConfigurationSection skillSettings = hero.getSkillSettings(this);
+        if (skillSettings != null && ("runestone".equals(skillSettings.getString("pending-teleport")) ||
+                "recall".equals(skillSettings.getString("pending-teleport")))) {
+            broadcastExecuteText(hero);
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         }
     }
