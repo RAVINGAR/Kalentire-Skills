@@ -40,7 +40,7 @@ public class SkillBarrier extends ActiveSkill {
         setUsage("/skill barrier");
         setArgumentRange(0, 0);
         setIdentifiers("skill barrier");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.BUFFING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DAMAGING, SkillType.BUFFING, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
