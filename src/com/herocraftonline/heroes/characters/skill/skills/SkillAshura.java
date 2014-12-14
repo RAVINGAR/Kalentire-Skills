@@ -82,7 +82,7 @@ public class SkillAshura extends TargettedSkill {
         short duraCost = (short) (maxDura * (SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 5, false) * 0.01));
         
         if(dura == (short)0) {
-            player.getItemInHand().setDurability((short) (maxDura - duraCost));
+            player.getItemInHand().setDurability((short) (duraCost));
         }
         else if(maxDura - dura > duraCost) {
             player.getItemInHand().setDurability((short) (dura + duraCost));
