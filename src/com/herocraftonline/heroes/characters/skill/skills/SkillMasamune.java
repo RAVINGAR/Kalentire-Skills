@@ -36,7 +36,7 @@ public class SkillMasamune extends ActiveSkill {
         long healingPeriod = SkillConfigManager.getUseSetting(hero, this, "healing-period", 1000, false);
         long healingDuration = SkillConfigManager.getUseSetting(hero, this, "healing-duration", 10000, false);
 
-        int swordSacrificePercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 10, false);
+        int swordSacrificePercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 20, false);
 
         return getDescription().replace("$1", (speedDuration / 1000) + "").replace("$2", healingPerTick + "").replace("$3", healingPeriod + "").replace("$4", healingDuration + "").replace("$5", swordSacrificePercent + "");
     }
@@ -68,7 +68,7 @@ public class SkillMasamune extends ActiveSkill {
 
         short dura = player.getItemInHand().getDurability();
         short maxDura = player.getItemInHand().getType().getMaxDurability();
-        short duraCost = (short) (maxDura * (SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 10, false) * 0.01));
+        short duraCost = (short) (maxDura * (SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 20, false) * 0.01));
 
         if(dura == (short)0) {
             player.getItemInHand().setDurability((short) (duraCost));
