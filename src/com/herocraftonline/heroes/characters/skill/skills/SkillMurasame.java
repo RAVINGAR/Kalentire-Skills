@@ -24,11 +24,11 @@ public class SkillMurasame extends TargettedSkill {
 
     public SkillMurasame(Heroes plugin) {
         super(plugin, "Murasame");
-        setDescription("Deal $1 physical damage and heal yourself for $2% of your total health. Costs $3% of your sword.");
+        setDescription("Deal $1 magical damage and heal yourself for $2% of your total health. Costs $3% of your sword.");
         setUsage("/skill murasame");
         setArgumentRange(0, 0);
         setIdentifiers("skill murasame");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MOVEMENT_SLOWING);
+        setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
