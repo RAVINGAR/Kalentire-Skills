@@ -114,7 +114,7 @@ public class SkillKotesu extends TargettedSkill {
             damageEntity(target, player, damage, DamageCause.MAGIC, false);
         }
 
-        SlowEffect slowEffect = new SlowEffect(this, player, duration, amplifier, applyText, expireText);
+        SlowEffect slowEffect = new SlowEffect(this, "KotesuSlowEffect", player, duration, amplifier, applyText, expireText);
 
         plugin.getCharacterManager().getCharacter(target).addEffect(slowEffect);
 
