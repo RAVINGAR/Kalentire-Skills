@@ -35,7 +35,7 @@ public class SkillAshura extends TargettedSkill {
         setUsage("/skill ashura");
         setArgumentRange(0, 0);
         setIdentifiers("skill ashura");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SkillAshura extends TargettedSkill {
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         int swordSacrificePercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 5, false);
-        
+
         return getDescription().replace("$1", damage + "").replace("$2", swordSacrificePercent + "");
     }
 
@@ -75,17 +75,17 @@ public class SkillAshura extends TargettedSkill {
             Messaging.send(player, "You can't damage that target!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        
+
         Material item = player.getItemInHand().getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't use Ashura with that weapon!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        
+
         short dura = player.getItemInHand().getDurability();
         short maxDura = player.getItemInHand().getType().getMaxDurability();
         short duraCost = (short) (maxDura * (SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 5, false) * 0.01));
-        
+
         if(dura == (short)0) {
             player.getItemInHand().setDurability((short) (duraCost));
         }
@@ -118,15 +118,15 @@ public class SkillAshura extends TargettedSkill {
 
         boolean weakenVelocity = false;
         switch (mat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
-            case WATER:
-            case LAVA:
-            case SOUL_SAND:
-                weakenVelocity = true;
-                break;
-            default:
-                break;
+        case STATIONARY_WATER:
+        case STATIONARY_LAVA:
+        case WATER:
+        case LAVA:
+        case SOUL_SAND:
+            weakenVelocity = true;
+            break;
+        default:
+            break;
         }
 
         double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
@@ -141,7 +141,7 @@ public class SkillAshura extends TargettedSkill {
         final Vector pushUpVector = new Vector(0, vPower, 0);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(target, new NCPFunction() {
-            
+
             @Override
             public void execute()
             {
