@@ -71,6 +71,11 @@ public class SkillAshura extends TargettedSkill {
     public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        if (!damageCheck(player, target)) {
+            Messaging.send(player, "You can't damage that target!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+        
         Material item = player.getItemInHand().getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't use Ashura with that weapon!");
