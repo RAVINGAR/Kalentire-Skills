@@ -35,7 +35,7 @@ public class SkillAshura extends TargettedSkill {
         setUsage("/skill ashura");
         setArgumentRange(0, 0);
         setIdentifiers("skill ashura");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
