@@ -59,6 +59,14 @@
             <id>heroes-repo</id>
             <url>http://nexus.theyeticave.net/content/groups/herocraft/</url>
         </repository>
+        <repository>
+            <id>sk89q-repo-snapshot</id>
+            <url>http://maven.sk89q.com/artifactory/libs-snapshot</url>
+        </repository>
+        <repository>
+            <id>sk89q-repo-release</id>
+            <url>http://maven.sk89q.com/artifactory/libs-release</url>
+        </repository>
     </repositories>
 
     <dependencies>
