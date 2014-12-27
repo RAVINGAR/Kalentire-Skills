@@ -34,6 +34,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -238,7 +239,7 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
             }
             Hero h = (Hero) event.getDamager();
             if(h.canUseSkill(this)) {
-                PyromancyTargetEffect effect = this.targetEffects.getUnchecked(h.getPlayer().getUniqueId());
+                PyromancyTargetEffect effect = ((LoadingCache<UUID, PyromancyTargetEffect>) this.targetEffects).getUnchecked(h.getPlayer().getUniqueId());
                 effect.updateTarget((LivingEntity) event.getEntity());
                 return;
             } else {
@@ -258,7 +259,7 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
             }
             Hero h = (Hero) event.getDamager();
             if(h.canUseSkill(this)) {
-                PyromancyTargetEffect effect = this.targetEffects.getUnchecked(h.getPlayer().getUniqueId());
+                PyromancyTargetEffect effect = ((LoadingCache<UUID, PyromancyTargetEffect>) this.targetEffects).getUnchecked(h.getPlayer().getUniqueId());
                 effect.updateTarget((LivingEntity) event.getEntity());
                 return;
             } else {
@@ -291,7 +292,7 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
         protected Entity findTarget() {
             if (owner instanceof Player) {
                 Hero h = Heroes.getInstance().getCharacterManager().getHero((Player)owner);
-                PyromancyTargetEffect effect = SkillPyromancy.getInstance().targetEffects.getUnchecked(h.getPlayer().getUniqueId());
+                PyromancyTargetEffect effect = ((LoadingCache<UUID, PyromancyTargetEffect>) SkillPyromancy.getInstance().targetEffects).getUnchecked(h.getPlayer().getUniqueId());
                 LivingEntity target = effect.getLastTarget();
                 if(target != null) {
                     return ((CraftLivingEntity)target).getHandle();
