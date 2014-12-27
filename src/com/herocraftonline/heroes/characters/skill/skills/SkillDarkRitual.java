@@ -69,6 +69,9 @@ public class SkillDarkRitual extends ActiveSkill {
         broadcastExecuteText(hero);
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
+        if (hero.isVerboseMana()) {
+            Messaging.send(hero.getPlayer(), Messaging.createFullManaBar(hero.getMana(), hero.getMaxMana()));
+        }
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.4F, 1.0F);
 
