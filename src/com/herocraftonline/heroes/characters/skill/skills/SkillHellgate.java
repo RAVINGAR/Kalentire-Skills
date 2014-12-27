@@ -40,9 +40,10 @@ public class SkillHellgate extends ActiveSkill {
 
         node.set(SkillSetting.RADIUS.node(), 10);
         node.set("teleport-absolute", false);
-        node.set("x", 0);
-        node.set("y", 128);
-        node.set("z", 0);
+        //Defaults set to coordinates of hell island
+        node.set("x", 612);
+        node.set("y", 124);
+        node.set("z", -65);
         node.set("hell-world", "hell");
         node.set("default-return", "bastion"); // default world the player return to if their location wasn't saved
         return node;
