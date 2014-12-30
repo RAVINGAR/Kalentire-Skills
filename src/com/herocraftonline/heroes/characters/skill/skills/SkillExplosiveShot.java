@@ -6,11 +6,10 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -126,7 +125,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
-        hero.addEffect(new ExplosiveShotBuffEffect(this, hero.getPlayer(), duration, numShots));
+       
 
         return SkillResult.NORMAL;
     }
@@ -199,14 +198,13 @@ public class SkillExplosiveShot extends ActiveSkill {
             // Play explosion effect
             projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
             try {
-                fplayer.playFirework(projectile.getWorld(), projectile.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-            }
-            catch (IllegalArgumentException e) {
+                projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
+                
+                projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+                        
+            } catch (Exception e) {
                 e.printStackTrace();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+                }
 
             // Prep some variables
             Location arrowLoc = projectile.getLocation();
@@ -250,20 +248,8 @@ public class SkillExplosiveShot extends ActiveSkill {
                 }
 
                 target.setVelocity(new Vector(xDir, veticalPower, zDir));
-
-                // Play effect
-                try {
-                    fplayer.playFirework(target.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-                }
-                catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+                
             }
-
-            return;
         }
     }
 
@@ -359,3 +345,8 @@ public class SkillExplosiveShot extends ActiveSkill {
         }
     }
 }
+
+        
+    
+
+
