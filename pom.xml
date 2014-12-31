@@ -108,6 +108,12 @@
             <artifactId>worldguard</artifactId>
             <version>5.8.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>mc.alk.tracker</groupId>
