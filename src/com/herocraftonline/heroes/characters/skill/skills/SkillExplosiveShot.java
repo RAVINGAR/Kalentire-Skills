@@ -6,11 +6,10 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,10 +21,10 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
-import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -36,22 +35,22 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
-import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillExplosiveShot extends ActiveSkill {
 
+    private boolean ncpEnabled = false;
     public VisualEffect fplayer = new VisualEffect();
 
     private Map<Arrow, Long> explosiveShots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -68,6 +67,9 @@ public class SkillExplosiveShot extends ActiveSkill {
         setTypes(SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
+            ncpEnabled = true;
     }
 
     public String getDescription(Hero hero) {
@@ -96,13 +98,13 @@ public class SkillExplosiveShot extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set("num-shots", 1);
-        node.set(SkillSetting.DURATION.node(), 4000);
-        node.set(SkillSetting.RADIUS.node(), 4);
-        node.set(SkillSetting.DAMAGE.node(), 80);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2.0);
-        node.set("horizontal-power", 1.1);
-        node.set("vertical-power", 0.5);
+        node.set("num-shots", Integer.valueOf(1));
+        node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
+        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.0));
+        node.set("horizontal-power", Double.valueOf(1.1));
+        node.set("vertical-power", Double.valueOf(0.5));
         node.set("ncp-exemption-duration", 500);
         node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
         node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive."));
@@ -123,7 +125,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
-        hero.addEffect(new ExplosiveShotBuffEffect(this, hero.getPlayer(), duration, numShots));
+       
 
         return SkillResult.NORMAL;
     }
@@ -161,12 +163,12 @@ public class SkillExplosiveShot extends ActiveSkill {
             }
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), shotText, player.getName());
+            broadcast(player.getLocation(), shotText, player.getDisplayName());
 
             // Add the projectile to the hashlist
             Arrow explosiveShot = (Arrow) event.getProjectile();
-            //explosiveShot.setFireTicks(20);
-            explosiveShots.put(explosiveShot, System.currentTimeMillis());
+            explosiveShot.setFireTicks(20);
+            explosiveShots.put(explosiveShot, Long.valueOf(System.currentTimeMillis()));
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -196,17 +198,19 @@ public class SkillExplosiveShot extends ActiveSkill {
             // Play explosion effect
             projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
             try {
-                fplayer.playFirework(projectile.getWorld(), projectile.getLocation(), FireworkEffect.builder().flicker(false)
-                        .trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
+                projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
+                
+                projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+                        
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+                }
 
             // Prep some variables
             Location arrowLoc = projectile.getLocation();
             List<Entity> targets = projectile.getNearbyEntities(radius, radius, radius);
             double horizontalPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", 1.1, false);
-            final double veticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.5, false);
+            double veticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.5, false);
 
             // Loop through nearby targets and damage / knock them back
             for (Entity entity : targets) {
@@ -215,9 +219,9 @@ public class SkillExplosiveShot extends ActiveSkill {
                     continue;
 
                 // Damage target
-                final LivingEntity target = (LivingEntity) entity;
+                LivingEntity target = (LivingEntity) entity;
                 addSpellTarget(target, hero);
-                damageEntity(target, shooter, damage, DamageCause.ENTITY_EXPLOSION);
+                damageEntity(target, shooter, damage, DamageCause.MAGIC);
 
                 // Do a knock up/back effect.
                 Location targetLoc = target.getLocation();
@@ -226,27 +230,26 @@ public class SkillExplosiveShot extends ActiveSkill {
                 double zDir = targetLoc.getZ() - arrowLoc.getZ();
                 double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
 
-                final double x = xDir / magnitude * horizontalPower;
-                final double z = zDir / magnitude * horizontalPower;
+                xDir = xDir / magnitude * horizontalPower;
+                zDir = zDir / magnitude * horizontalPower;
 
-                NCPUtils.applyExemptions(target, new NCPFunction() {
-
-                    @Override
-                    public void execute()
-                    {
-                        target.setVelocity(new Vector(x, veticalPower, z));                        
+                if (ncpEnabled) {
+                    if (target instanceof Player) {
+                        Player targetPlayer = (Player) target;
+                        if (!targetPlayer.isOp()) {
+                            long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
+                            if (duration > 0) {
+                                NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, duration);
+                                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                                targetCT.addEffect(ncpExemptEffect);
+                            }
+                        }
                     }
-                }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false));
-
-                // Play effect
-                try {
-                    fplayer.playFirework(target.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false)
-                            .trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
 
+                target.setVelocity(new Vector(xDir, veticalPower, zDir));
+                
+            }
         }
     }
 
@@ -284,9 +287,9 @@ public class SkillExplosiveShot extends ActiveSkill {
 
             if (applyText != null && applyText.length() > 0) {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, "    " + applyText, player.getName());
+                    Messaging.send(player, applyText, player.getDisplayName());
                 else
-                    broadcast(player.getLocation(), "    " + applyText, player.getName());
+                    broadcast(player.getLocation(), applyText, player.getDisplayName());
             }
         }
 
@@ -299,9 +302,9 @@ public class SkillExplosiveShot extends ActiveSkill {
             if (showExpireText) {
                 if (expireText != null && expireText.length() > 0) {
                     if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                        Messaging.send(player, "    " + expireText, player.getName());
+                        Messaging.send(player, expireText, player.getDisplayName());
                     else
-                        broadcast(player.getLocation(), "    " + expireText, player.getName());
+                        broadcast(player.getLocation(), expireText, player.getDisplayName());
                 }
             }
         }
@@ -318,4 +321,32 @@ public class SkillExplosiveShot extends ActiveSkill {
             this.showExpireText = showExpireText;
         }
     }
+
+    private class NCPExemptionEffect extends ExpirableEffect {
+
+        public NCPExemptionEffect(Skill skill, Player applier, long duration) {
+            super(skill, "NCPExemptionEffect_MOVING", applier, duration);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+
+            NCPExemptionManager.unexempt(player, CheckType.MOVING);
+        }
+    }
 }
+
+        
+    
+
+
