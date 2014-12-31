@@ -59,6 +59,14 @@
             <id>heroes-repo</id>
             <url>http://nexus.theyeticave.net/content/groups/herocraft/</url>
         </repository>
+        <repository>
+            <id>sk89q-repo-snapshot</id>
+            <url>http://maven.sk89q.com/artifactory/libs-snapshot</url>
+        </repository>
+        <repository>
+            <id>sk89q-repo-release</id>
+            <url>http://maven.sk89q.com/artifactory/libs-release</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -68,9 +76,20 @@
             <version>1.7.2-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.herocraftonline.heroes</groupId>
+            <artifactId>NMSHandler-v1_8_R1</artifactId>
+            <version>v1_8_R1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <version>1.8-R0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>sneaky-throw</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -81,13 +100,19 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
             <version>5.8.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
