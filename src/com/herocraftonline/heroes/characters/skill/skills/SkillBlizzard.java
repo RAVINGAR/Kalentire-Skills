@@ -231,7 +231,6 @@ public class SkillBlizzard extends ActiveSkill {
               //addSpellTarget((LivingEntity) event.getEntity(), hero);
                 addSpellTarget(event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
-
                 event.setCancelled(true);
             }
         }
