@@ -180,13 +180,13 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 	@Override
 	public boolean isWarmupRequired(String[] args)
 	{
-	    return args != null ? !args[0].equalsIgnoreCase("list") : true;
+	    return args != null ? !"list".equalsIgnoreCase(args[0]) : true;
 	}
 
 	@Override
 	public boolean isCoolDownRequired(String[] args)
 	{
-        return args != null ? !args[0].equalsIgnoreCase("list") : true;
+        return args != null ? !"list".equalsIgnoreCase(args[0]) : true;
 	}
 
     private SkillResult doPort(Hero hero, String portInfo, boolean isDeparting)
