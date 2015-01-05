@@ -151,10 +151,11 @@ public class SkillBlizzard extends ActiveSkill {
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    if (j % 8 == 0) {
+                    //temp remove until we can figure out why the task is never-ending.
+                    /*if (j % 8 == 0) {
                         Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
                         world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.1F, 1.0F);
-                    }
+                    }*/
 
                     double randomX = ranGen.nextGaussian() * velocityDeviation;
                     double randomZ = ranGen.nextGaussian() * velocityDeviation;
