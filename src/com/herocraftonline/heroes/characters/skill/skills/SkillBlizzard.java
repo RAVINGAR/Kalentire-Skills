@@ -152,7 +152,7 @@ public class SkillBlizzard extends ActiveSkill {
                 @Override
                 public void run() {
                     if (j % 8 == 0) {
-                        Util.playClientEffect(player, fLoc, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
+                        Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
                         world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.1F, 1.0F);
                     }
 
