@@ -39,9 +39,13 @@ public class SkillHellgate extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.RADIUS.node(), 10);
+        node.set("teleport-absolute", false);
+        //Defaults set to coordinates of hell island
+        node.set("x", 612);
+        node.set("y", 124);
+        node.set("z", -65);
         node.set("hell-world", "hell");
-        node.set("default-return", "bastion"); // default world the player return to if their location wasn't
-                                                     // saved
+        node.set("default-return", "bastion"); // default world the player return to if their location wasn't saved
         return node;
     }
 
@@ -86,7 +90,20 @@ public class SkillHellgate extends ActiveSkill {
             }
 
             hero.addEffect(new HellgateEffect(this, player.getLocation()));
-            teleportLocation = world.getSpawnLocation();
+            
+            boolean absolute = SkillConfigManager.getUseSetting(hero, this, "teleport-absolute", false);
+            if (absolute) {
+            	Location cur = hero.getPlayer().getLocation();
+            	
+            	//If no config setting, just leave them where they are
+            	int x = SkillConfigManager.getUseSetting(hero, this, "x", cur.getBlockX(), false);
+            	int y = SkillConfigManager.getUseSetting(hero, this, "y", cur.getBlockY(), false);
+            	int z = SkillConfigManager.getUseSetting(hero, this, "z", cur.getBlockZ(), false);
+            	
+            	teleportLocation = new Location(world, x, y, z);
+            } else {
+            	teleportLocation = world.getSpawnLocation();
+            }
         }
 
         if (hero.hasParty()) {

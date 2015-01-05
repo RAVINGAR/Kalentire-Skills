@@ -1,10 +1,12 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.v1_7_R4.EntityHuman;
-import net.minecraft.server.v1_7_R4.WorldServer;
+import net.minecraft.server.v1_8_R1.BlockPosition;
+import net.minecraft.server.v1_8_R1.EntityHuman;
+import net.minecraft.server.v1_8_R1.EnumDirection;
+import net.minecraft.server.v1_8_R1.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,8 +14,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Jukebox;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -183,9 +185,9 @@ public class SkillTelekinesis extends ActiveSkill {
                     int blockID = blockMaterial.getId();
                     WorldServer worldServer = ((CraftWorld) targetBlock.getWorld()).getHandle();
                     EntityHuman entityHuman = ((CraftPlayer) player).getHandle();
-                    net.minecraft.server.v1_7_R4.Block block = net.minecraft.server.v1_7_R4.Block.b(Integer.toString(blockID));
+                    net.minecraft.server.v1_8_R1.Block block = net.minecraft.server.v1_8_R1.Block.getById(blockID);
 
-                    block.interact(worldServer, targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), entityHuman, 0, 0, 0, 0);
+                    block.interact(worldServer, new BlockPosition(targetBlock.getX(), targetBlock.getY(), targetBlock.getZ()), block.getBlockData(), entityHuman,entityHuman.getDirection(),0, 0, 0);
 
                     // DEAR GOD WHYYYY. I DONT WANNA HAVE TO DO IT THIS WAY.
                     //                    if ((targetBlock.getData() & 0x8) == 0x8)

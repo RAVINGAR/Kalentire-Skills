@@ -8,20 +8,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import net.minecraft.server.v1_7_R4.Entity;
-import net.minecraft.server.v1_7_R4.EntityBlaze;
-import net.minecraft.server.v1_7_R4.EntityFireball;
-import net.minecraft.server.v1_7_R4.EntityHuman;
-import net.minecraft.server.v1_7_R4.MathHelper;
-import net.minecraft.server.v1_7_R4.MovingObjectPosition;
-import net.minecraft.server.v1_7_R4.PathfinderGoal;
-import net.minecraft.server.v1_7_R4.World;
+import net.minecraft.server.v1_8_R1.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
@@ -34,6 +27,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -45,7 +39,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.nms.versions.EntityUtil_v1_7_R4;
+import com.herocraftonline.heroes.nms.versions.EntityUtil_v1_8_R1;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillPyromancy extends ActiveSkill implements Listener {
@@ -88,8 +82,8 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
 
             @Override
             public void run() {
-                EntityUtil_v1_7_R4.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
-                EntityUtil_v1_7_R4.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
+                EntityUtil_v1_8_R1.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
+                EntityUtil_v1_8_R1.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
             }
 
         });
@@ -238,7 +232,7 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
             }
             Hero h = (Hero) event.getDamager();
             if(h.canUseSkill(this)) {
-                PyromancyTargetEffect effect = this.targetEffects.getUnchecked(h.getPlayer().getUniqueId());
+                PyromancyTargetEffect effect = ((LoadingCache<UUID, PyromancyTargetEffect>) this.targetEffects).getUnchecked(h.getPlayer().getUniqueId());
                 effect.updateTarget((LivingEntity) event.getEntity());
                 return;
             } else {
@@ -258,7 +252,7 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
             }
             Hero h = (Hero) event.getDamager();
             if(h.canUseSkill(this)) {
-                PyromancyTargetEffect effect = this.targetEffects.getUnchecked(h.getPlayer().getUniqueId());
+                PyromancyTargetEffect effect = ((LoadingCache<UUID, PyromancyTargetEffect>) this.targetEffects).getUnchecked(h.getPlayer().getUniqueId());
                 effect.updateTarget((LivingEntity) event.getEntity());
                 return;
             } else {
@@ -287,11 +281,12 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
         }
 
         //Blazes still use old AI - override
+        /*
         @Override
         protected Entity findTarget() {
             if (owner instanceof Player) {
                 Hero h = Heroes.getInstance().getCharacterManager().getHero((Player)owner);
-                PyromancyTargetEffect effect = SkillPyromancy.getInstance().targetEffects.getUnchecked(h.getPlayer().getUniqueId());
+                PyromancyTargetEffect effect = ((LoadingCache<UUID, PyromancyTargetEffect>) SkillPyromancy.getInstance().targetEffects).getUnchecked(h.getPlayer().getUniqueId());
                 LivingEntity target = effect.getLastTarget();
                 if(target != null) {
                     return ((CraftLivingEntity)target).getHandle();
@@ -304,15 +299,18 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
                 return null;
             }
         }
-
+*/
         @Override
-        protected void a(Entity entity, float f) {
-            if (this.attackTicks <= 0 && f < 2.0F && entity.boundingBox.e > this.boundingBox.b && entity.boundingBox.b < this.boundingBox.e) {
+        public void a(Entity entity, float f, float nf1) {
+
+            //ToDo: Fix this for 1.8
+
+            /*if (this.attackTicks <= 0 && f < 2.0F && entity.getBoundingBox().e > this.getBoundingBox().b && entity.getBoundingBox().b < this.getBoundingBox().e) {
                 this.attackTicks = 20;
                 this.n(entity);
             } else if (f < 30.0F) {
                 double d0 = entity.locX - this.locX;
-                double d1 = entity.boundingBox.b + (double) (entity.length / 2.0F) - (this.locY + (double) (this.length / 2.0F));
+                double d1 = entity.getBoundingBox().b + (double) (entity.length / 2.0F) - (this.locY + (double) (this.length / 2.0F));
                 double d2 = entity.locZ - this.locZ;
 
                 if (this.attackTicks == 0) {
@@ -345,6 +343,8 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
                 this.yaw = (float) (Math.atan2(d2, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
                 this.bn = true;
             }
+            */
+
             return;
         }
     }
