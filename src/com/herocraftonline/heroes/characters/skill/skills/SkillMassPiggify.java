@@ -102,7 +102,7 @@ public class SkillMassPiggify extends ActiveSkill {
 
             Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
 
-            plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, (Creature) creature));
+            plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, creature));
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
@@ -193,10 +193,10 @@ public class SkillMassPiggify extends ActiveSkill {
     // TEMP EXPLOIT FIX. JUST A TWEAKED ROOT
     private class PigEffect extends PeriodicExpirableEffect {
 
-        private final Creature creature;
+        private final Entity creature;
         private Location loc;
 
-        public PigEffect(Skill skill, Player applier, int duration, Creature creature) {
+        public PigEffect(Skill skill, Player applier, int duration, Entity creature) {
             super(skill, "MassPiggify", applier, 100, duration);
 
             types.add(EffectType.DISPELLABLE);
