@@ -75,7 +75,7 @@ public class SkillPiggify extends TargettedSkill {
         Material material = target.getLocation().getBlock().getType();
         EntityType type = (material.equals(Material.WATER) ||
                 material.equals(Material.STATIONARY_WATER) ?
-                EntityType.BAT : EntityType.PIG);
+                EntityType.SQUID : EntityType.PIG);
 
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, (Creature) creature));
