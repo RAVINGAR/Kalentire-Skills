@@ -78,7 +78,7 @@ public class SkillPiggify extends TargettedSkill {
                 EntityType.SQUID : EntityType.PIG);
 
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, (Creature) creature));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, creature));
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.8F, 1.0F);
 
@@ -164,10 +164,10 @@ public class SkillPiggify extends TargettedSkill {
     // TEMP EXPLOIT FIX. JUST A TWEAKED ROOT
     private class PigEffect extends PeriodicExpirableEffect {
 
-        private final Creature creature;
+        private final Entity creature;
         private Location loc;
 
-        public PigEffect(Skill skill, Player applier, int duration, Creature creature) {
+        public PigEffect(Skill skill, Player applier, int duration, Entity creature) {
             super(skill, "Piggify", applier, 100, duration);
             this.creature = creature;
 
