@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.animations.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -95,7 +96,7 @@ public class SkillDreadAura extends ActiveSkill {
         int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 13, false);
 
         hero.addEffect(new DreadAuraEffect(this, period, manaTick, radius, healMult, maxHealingPerTick));
-
+        
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
@@ -163,6 +164,9 @@ public class SkillDreadAura extends ActiveSkill {
                 // Drain the player's mana
                 hero.setMana(hero.getMana() - manaTick);
             }
+            
+            AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(vm, SkillType.DARK, radius);
+            aoe.run();
             
             Player player = hero.getPlayer();
 
