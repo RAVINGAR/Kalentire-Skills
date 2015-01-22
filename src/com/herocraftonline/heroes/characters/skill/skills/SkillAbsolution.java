@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -37,6 +38,17 @@ public class SkillAbsolution extends SkillBaseHeal {
         for (Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.DARK)) {
+            		CylinderEffect fx = new CylinderEffect(vm);
+            		fx.setEntity(hero.getPlayer());			
+            		fx.particle = ParticleEffect.HEART;
+            		fx.height = 2;
+            		fx.particles = 15;
+            		fx.solid = false;
+            		fx.type = EffectType.DELAYED;
+            		fx.delay = 20;
+            		fx.radius = 1;
+            		fx.offset = new Vector(0, -0.5, 0);
+            		fx.start();
                     hero.removeEffect(effect);
                 }
             }
