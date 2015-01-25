@@ -90,7 +90,7 @@ public abstract class SkillBaseHeal extends TargettedSkill {
 		fx.particles = 30;
 		fx.solid = false;
 		fx.radius = 1;
-		fx.offset = new Vector(0, -1, 0);
+		fx.offset = new Vector(0, -0.5, 0);
 		fx.type = EffectType.INSTANT;
 		fx.run();
         
@@ -126,12 +126,12 @@ public abstract class SkillBaseHeal extends TargettedSkill {
 		fx2.setEntity(targetHero.getPlayer());			
 		fx2.particle = ParticleEffect.HEART;
 		fx2.height = 2;
-		fx2.particles = 30;
+		fx2.particles = 15;
 		fx2.solid = false;
 		fx2.type = EffectType.DELAYED;
 		fx2.delay = 20;
 		fx2.radius = 1;
-		fx2.offset = new Vector(0, -1, 0);
+		fx2.offset = new Vector(0, -0.5, 0);
 		fx2.start();
     }
 }

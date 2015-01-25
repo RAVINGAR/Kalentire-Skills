@@ -30,6 +30,9 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
+import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.LineEffect;
+
 public class SkillAimedShot extends TargettedSkill {
 
     private String applyText;
@@ -145,10 +148,11 @@ public class SkillAimedShot extends TargettedSkill {
                 player.getWorld().playSound(player.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
                 target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
                 
-                LineEffect le = new LineEffect(vm);
+                LineEffect le = new LineEffect(new EffectManager(plugin));
                 le.particles = 20;
                 le.setEntity(player);
                 le.setTarget(target.getLocation());
+                le.run();
                 
                 target.getWorld().playEffect(target.getLocation(), org.bukkit.Effect.EXPLOSION, 1);
 

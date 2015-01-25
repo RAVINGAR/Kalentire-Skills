@@ -40,15 +40,13 @@ public class SkillAbsolution extends SkillBaseHeal {
                 if (effect.isType(EffectType.DARK)) {
             		CylinderEffect fx = new CylinderEffect(vm);
             		fx.setEntity(hero.getPlayer());			
-            		fx.particle = ParticleEffect.HEART;
+            		fx.particle = ParticleEffect.FIREWORKS_SPARK;
             		fx.height = 2;
-            		fx.particles = 15;
+            		fx.particles = 7;
             		fx.solid = false;
-            		fx.type = EffectType.DELAYED;
-            		fx.delay = 20;
             		fx.radius = 1;
             		fx.offset = new Vector(0, -0.5, 0);
-            		fx.start();
+            		fx.run();
                     hero.removeEffect(effect);
                 }
             }

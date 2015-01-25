@@ -26,8 +26,11 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
+import de.slikey.effectlib.EffectManager;
 
 public class SkillAccelerando extends ActiveSkill {
 
@@ -132,7 +135,8 @@ public class SkillAccelerando extends ActiveSkill {
             tHero.addEffect(accelEffect);
         }
         
-        AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(vm, SkillType.ABILITY_PROPERTY_SONG, radius);
+        AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(new EffectManager(this.plugin), SkillType.ABILITY_PROPERTY_SONG, radius);
+        aoe.setEntity(player);
         aoe.run();
 
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
