@@ -104,8 +104,9 @@ public class SkillChaoticVisions extends ActiveSkill {
                             e.printStackTrace();
                         }*/
                     	
-                    	ParticleEffect.SPELL_WITCH.display(1, 1, 1, 0.1, 5, targetLocation, 20);
-
+                    	//ParticleEffect.SPELL_WITCH.display(1, 1, 1, 0.1, 5, targetLocation, 20);
+                    	targetLocation.getWorld().playEffect(targetLocation, Effect.WITCH_MAGIC, 2);
+                    	
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {
                             // Ensure that we have a valid entity

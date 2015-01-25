@@ -38,7 +38,7 @@ public class SkillAbsolution extends SkillBaseHeal {
         for (Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.DARK)) {
-            		CylinderEffect fx = new CylinderEffect(vm);
+            		/*CylinderEffect fx = new CylinderEffect(vm);
             		fx.setEntity(hero.getPlayer());			
             		fx.particle = ParticleEffect.FIREWORKS_SPARK;
             		fx.height = 2;
@@ -46,7 +46,7 @@ public class SkillAbsolution extends SkillBaseHeal {
             		fx.solid = false;
             		fx.radius = 1;
             		fx.offset = new Vector(0, -0.5, 0);
-            		fx.run();
+            		fx.run();*/
                     hero.removeEffect(effect);
                 }
             }

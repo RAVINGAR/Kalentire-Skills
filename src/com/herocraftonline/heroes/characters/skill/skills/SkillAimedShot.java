@@ -148,11 +148,11 @@ public class SkillAimedShot extends TargettedSkill {
                 player.getWorld().playSound(player.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
                 target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
                 
-                LineEffect le = new LineEffect(new EffectManager(plugin));
+                /*LineEffect le = new LineEffect(new EffectManager(plugin));
                 le.particles = 20;
                 le.setEntity(player);
                 le.setTarget(target.getLocation());
-                le.run();
+                le.run();*/
                 
                 target.getWorld().playEffect(target.getLocation(), org.bukkit.Effect.EXPLOSION, 1);
 

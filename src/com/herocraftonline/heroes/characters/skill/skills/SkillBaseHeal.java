@@ -83,7 +83,7 @@ public abstract class SkillBaseHeal extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
         
-		CylinderEffect fx = new CylinderEffect(em);
+		/*CylinderEffect fx = new CylinderEffect(vm);
 		fx.setEntity(player);			
 		fx.particle = ParticleEffect.VILLAGER_HAPPY;
 		fx.height = 2;
@@ -92,7 +92,7 @@ public abstract class SkillBaseHeal extends TargettedSkill {
 		fx.radius = 1;
 		fx.offset = new Vector(0, -0.5, 0);
 		fx.type = EffectType.INSTANT;
-		fx.run();
+		fx.run();*/
         
         targetHero.heal(hrhEvent.getAmount());
 
@@ -122,7 +122,7 @@ public abstract class SkillBaseHeal extends TargettedSkill {
                 //25, // particle count
                 //1); // radius*/
 		
-		CylinderEffect fx2 = new CylinderEffect(em);
+		/*CylinderEffect fx2 = new CylinderEffect(em);
 		fx2.setEntity(targetHero.getPlayer());			
 		fx2.particle = ParticleEffect.HEART;
 		fx2.height = 2;
@@ -132,6 +132,6 @@ public abstract class SkillBaseHeal extends TargettedSkill {
 		fx2.delay = 20;
 		fx2.radius = 1;
 		fx2.offset = new Vector(0, -0.5, 0);
-		fx2.start();
+		fx2.start();*/
     }
 }

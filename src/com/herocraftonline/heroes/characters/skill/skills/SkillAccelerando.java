@@ -135,9 +135,9 @@ public class SkillAccelerando extends ActiveSkill {
             tHero.addEffect(accelEffect);
         }
         
-        AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(new EffectManager(this.plugin), SkillType.ABILITY_PROPERTY_SONG, radius);
+        /*AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(new EffectManager(this.plugin), SkillType.ABILITY_PROPERTY_SONG, radius);
         aoe.setEntity(player);
-        aoe.run();
+        aoe.run();*/
 
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);

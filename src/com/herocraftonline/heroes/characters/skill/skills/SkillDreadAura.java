@@ -172,9 +172,9 @@ public class SkillDreadAura extends ActiveSkill {
                 hero.setMana(hero.getMana() - manaTick);
             }
             
-            AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(new EffectManager(this.plugin), SkillType.ABILITY_PROPERTY_DARK, radius);
+            /*AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(new EffectManager(this.plugin), SkillType.ABILITY_PROPERTY_DARK, radius);
             aoe.setEntity(hero.getPlayer());
-            aoe.run();
+            aoe.run();*/
             
             Player player = hero.getPlayer();
 
