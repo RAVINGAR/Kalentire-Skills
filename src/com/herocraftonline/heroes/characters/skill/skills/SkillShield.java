@@ -88,23 +88,15 @@ public class SkillShield extends PassiveSkill {
 				event.setDamage((event.getDamage() * multiplier));
 			}
 		}
-
-		@EventHandler(priority = EventPriority.NORMAL)
-		public void onPlayerUse(PlayerInteractEvent event) 
-		{
-			Player player = (Player) event.getPlayer();
-			// huge compound boolean check, yay - if the item is a door and it has a name from the shield list it cancels
-			// (The name check is in case someone has a disenchanted one for some reason.)
-			if (shieldItems.contains(player.getItemInHand().getType()))// && shieldNames.contains(player.getItemInHand().getItemMeta().getDisplayName()))
-			{
-				event.setCancelled(true);
-			}
-		}
 		
 		@EventHandler(priority = EventPriority.NORMAL)
 		public void onBlockPlaced(BlockPlaceEvent event)
 		{
-			// nothing for now
+			Player player = (Player) event.getPlayer();
+			if (event.getBlock().getType() == Material.IRON_DOOR)
+			{
+				event.setCancelled(true);
+			}
 		}
 	}
 }
