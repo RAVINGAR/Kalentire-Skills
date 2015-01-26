@@ -105,7 +105,8 @@ public class SkillChaoticVisions extends ActiveSkill {
                         }*/
                     	
                     	//ParticleEffect.SPELL_WITCH.display(1, 1, 1, 0.1, 5, targetLocation, 20);
-                    	targetLocation.getWorld().playEffect(targetLocation, Effect.WITCH_MAGIC, 2);
+                    	//public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
+                    	targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.WITCH_MAGIC, 1, 1, 0F, 0F, 0F, 0.2F, 10, 20);
                     	
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {

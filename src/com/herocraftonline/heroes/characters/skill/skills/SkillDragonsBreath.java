@@ -6,8 +6,10 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -118,7 +120,8 @@ public class SkillDragonsBreath extends ActiveSkill {
                     public void run() {
                         try {
                             for (Location location : locations) {
-                                fplayer.playFirework(location.getWorld(), location, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                                //fplayer.playFirework(location.getWorld(), location, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                            	player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

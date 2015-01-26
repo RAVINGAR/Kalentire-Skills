@@ -56,6 +56,7 @@ public class SkillArcaneblast extends TargettedSkill {
 
         //public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION, 1, 1, 0F, 1F, 0F, 10F, 200, 10);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_LARGE, 1, 1, 0F, 1F, 0F, 0.1F, 10, 10);
         /* this is our fireworks shit
         try {
             fplayer.playFirework(target.getWorld(),
