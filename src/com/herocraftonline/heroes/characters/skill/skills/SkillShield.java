@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
@@ -89,7 +90,7 @@ public class SkillShield extends PassiveSkill {
 		}
 
 		@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-		public void onBlockPlace(BlockPlaceEvent event) 
+		public void onPlayerUse(PlayerInteractEvent event) 
 		{
 			Player player = (Player) event.getPlayer();
 			// huge compound boolean check, yay - if the item is a door and it has a name from the shield list it cancels
