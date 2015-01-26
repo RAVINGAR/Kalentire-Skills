@@ -26,11 +26,11 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
+//import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import de.slikey.effectlib.EffectManager;
+//import de.slikey.effectlib.EffectManager;
 
 public class SkillAccelerando extends ActiveSkill {
 

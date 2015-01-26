@@ -21,9 +21,9 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import de.slikey.effectlib.EffectType;
-import de.slikey.effectlib.effect.CylinderEffect;
-import de.slikey.effectlib.util.ParticleEffect;
+//import de.slikey.effectlib.EffectType;
+//import de.slikey.effectlib.effect.CylinderEffect;
+//import de.slikey.effectlib.util.ParticleEffect;
 
 public abstract class SkillBaseHeal extends TargettedSkill {
 

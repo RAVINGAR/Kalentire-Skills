@@ -30,8 +30,8 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.LineEffect;
+//import de.slikey.effectlib.EffectManager;
+//import de.slikey.effectlib.effect.LineEffect;
 
 public class SkillAimedShot extends TargettedSkill {
 
