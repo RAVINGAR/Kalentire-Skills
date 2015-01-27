@@ -96,15 +96,18 @@ public class SkillBoneSpear extends ActiveSkill {
                     public void run() {
                         //Play effect
 
-                        try {
+                        /*try {
                             fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
                                     .flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
+                        }*/ // BAD FIREWORKS. BAD.
+                    	
                         //attempting spigot particles
-
+                    	// Why does it play a bunch of crit particles every block the spear travels?
                         player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                        player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0F, 0F, 0F, 0F, 2, 16);
+                        
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {
                             // Ensure that we have a valid entity
