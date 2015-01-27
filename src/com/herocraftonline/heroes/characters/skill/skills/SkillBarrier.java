@@ -123,9 +123,9 @@ public class SkillBarrier extends ActiveSkill {
 
 		hero.addEffect(new BarrierEffect(this, player, duration, slowAmplifier, disarmDuration));
 
-		for (int i = 0; i < circle(player.getLocation(), 72, 1).size(); i++)
+		for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
 		{
-			player.getWorld().spigot().playEffect(player.getLocation(), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 0, 2, 16);
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);

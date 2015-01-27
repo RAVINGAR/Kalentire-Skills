@@ -3,8 +3,10 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.List;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -102,12 +104,16 @@ public class SkillFireblast extends ActiveSkill {
             Location blastLocation = targetBlock.getLocation().clone();
             blastLocation.add(new Vector(.5, 0, .5));
             
-            try {
+            /*try {
                 fplayer.playFirework(blastLocation.getWorld(), blastLocation, FireworkEffect.builder().flicker(false).trail(true)
                         .with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
+            
+            player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
+            player.getWorld().playSound(blastLocation, Sound.EXPLODE, 10.0F, 16);
+            player.getWorld().playSound(blastLocation, Sound.FIRE, 10.0F, 16);
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);

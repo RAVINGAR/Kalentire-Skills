@@ -7,6 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -115,12 +116,14 @@ public class SkillHolyAura extends ActiveSkill {
 
         hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
 
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
                     .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        
+        player.getWorld().playSound(player.getLocation(), Sound.NOTE_PIANO, 7.0F, 16);
 
         return SkillResult.NORMAL;
     }
@@ -189,10 +192,10 @@ public class SkillHolyAura extends ActiveSkill {
             
     		for (double r = 1; r < radius * 2; r++)
     		{
-    			ArrayList<Location> particleLocations = circle(player.getLocation(), 180, r / 2);
+    			ArrayList<Location> particleLocations = circle(player.getLocation(), 90, r / 2);
     			for (int i = 0; i < particleLocations.size(); i++)
     			{
-    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 4, 16);
+    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
     			}
     		}
 

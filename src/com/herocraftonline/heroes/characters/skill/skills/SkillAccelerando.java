@@ -145,10 +145,11 @@ public class SkillAccelerando extends ActiveSkill {
         int rSquared = radius * radius;
 
         Location playerLoc = player.getLocation();
-        for (int i = 0; i < circle(playerLoc, 72, radius).size(); i++)
-        {
-        	player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i).add(new Vector(0, 0.5, 0)), Effect.NOTE, 0, 0, 0, 0, 0, 0, 1, 16);
-        }
+        
+		for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+		{
+			player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 0, 16, 16);
+		}
 
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {

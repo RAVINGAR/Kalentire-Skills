@@ -1,8 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -62,6 +66,24 @@ public class SkillFlameshield extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a shield of flames!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost his shield of flames!").replace("%hero%", "$1");
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -72,7 +94,7 @@ public class SkillFlameshield extends ActiveSkill {
         hero.addEffect(new FlameshieldEffect(this, player, duration));
 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(),
                                  player.getLocation().add(0, 2, 0),
                                  FireworkEffect.builder().flicker(false).trail(false)
@@ -82,7 +104,12 @@ public class SkillFlameshield extends ActiveSkill {
                                                .build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        
+        for (int i = 0; i < circle(player.getLocation(), 72, 1.5).size(); i++)
+		{
+			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 1, 16);
+		}
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.4F, 1.0F);
 
