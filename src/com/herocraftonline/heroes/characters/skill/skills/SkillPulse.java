@@ -7,13 +7,17 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SkillPulse extends ActiveSkill {
@@ -50,6 +54,24 @@ public class SkillPulse extends ActiveSkill {
 
         return node;
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -84,7 +106,7 @@ public class SkillPulse extends ActiveSkill {
             damageEntity(target, player, damage, DamageCause.MAGIC);
 
             // this is our fireworks shit
-            try {
+            /*try {
                 fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
                 		FireworkEffect.builder().flicker(false).trail(false)
                 		.with(FireworkEffect.Type.BALL)
@@ -93,7 +115,16 @@ public class SkillPulse extends ActiveSkill {
                 		.build());
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
+            
+            for (double r = 1; r < radius * 2; r++)
+    		{
+    			ArrayList<Location> particleLocations = circle(player.getLocation(), 90, r / 2);
+    			for (int i = 0; i < particleLocations.size(); i++)
+    			{
+    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+    			}
+    		}
             targetsHit++;
         }
 

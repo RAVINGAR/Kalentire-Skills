@@ -83,7 +83,6 @@ public class SkillDisarm extends TargettedSkill {
         }
         Player targetPlayer = (Player) target;
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-        player.getWorld().spigot().playEffect(targetPlayer.getEyeLocation(), Effect.ITEM_BREAK, targetPlayer.getItemInHand().getTypeId(), 0, 0, 0, 0, 0, 4, 16);
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
 
         broadcastExecuteText(hero, target);
