@@ -92,6 +92,9 @@ public class SkillDragonsBreath extends ActiveSkill {
         final List<Entity> hitEnemies = new ArrayList<>();
 
         int numBlocks = 0;
+        
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
+        
         while (iter.hasNext()) {
             tempBlock = iter.next();
 

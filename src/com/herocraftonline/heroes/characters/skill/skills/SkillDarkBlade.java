@@ -118,8 +118,8 @@ public class SkillDarkBlade extends TargettedSkill {
             e.printStackTrace();
         }*/
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.TILE_BREAK, org.bukkit.Material.PORTAL.getId(), 0, 0, 0, 0, 1, 75, 16);
-        player.getWorld().playSound(target.getLocation(), Sound.ORB_PICKUP, 5.0F, 0.2F);
+        player.getWorld().spigot().playEffect(target.getEyeLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 35, 16);
+        player.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_CAVE, 5.0F, 0.2F);
         return SkillResult.NORMAL;
     }
 }

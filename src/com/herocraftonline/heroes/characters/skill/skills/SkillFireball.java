@@ -79,6 +79,8 @@ public class SkillFireball extends ActiveSkill {
         fireball.setShooter(player);
 
         broadcastExecuteText(hero);
+        
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
 
         return SkillResult.NORMAL;
     }
