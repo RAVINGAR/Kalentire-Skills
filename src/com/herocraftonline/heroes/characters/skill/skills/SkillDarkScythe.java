@@ -163,6 +163,7 @@ public class SkillDarkScythe extends ActiveSkill {
                     // Damage the target
                     addSpellTarget(target, hero);
                     damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+                    hero.getPlayer().getWorld().spigot().playEffect(target.getEyeLocation(), org.bukkit.Effect.ENDER_SIGNAL, 0, 0, 0.0F, 0.0F, 0.0F, 0.2F, 25, 16);
                 }
             }, 2L);
         }

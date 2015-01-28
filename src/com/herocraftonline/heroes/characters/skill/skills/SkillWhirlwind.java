@@ -160,13 +160,10 @@ public class SkillWhirlwind extends ActiveSkill {
 			// TORNADOOOO
 			for (int h = 0; h < 2; h++)
 			{
-				for (int r = 1; r < 3; r++)
+				ArrayList<Location> locations = circle(player.getLocation(), 36, (double) h + 1.2);
+				for (int i = 0; i < locations.size(); i++)
 				{
-					ArrayList<Location> locations = circle(player.getLocation(), 36, (double) r + 0.2);
-					for (int i = 0; i < locations.size(); i++)
-					{
-						player.getWorld().spigot().playEffect(locations.get(i).add(0, (double) h + 0.2, 0), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
-					}
+					player.getWorld().spigot().playEffect(locations.get(i).add(0, (double) h + 0.2, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 0, 8, 16);
 				}
 			}
 

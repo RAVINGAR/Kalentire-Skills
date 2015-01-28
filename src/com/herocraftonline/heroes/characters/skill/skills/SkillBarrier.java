@@ -125,7 +125,7 @@ public class SkillBarrier extends ActiveSkill {
 
 		for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
 		{
-			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 0, 2, 16);
+			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 1.5F, 0, 0, 8, 16);
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);

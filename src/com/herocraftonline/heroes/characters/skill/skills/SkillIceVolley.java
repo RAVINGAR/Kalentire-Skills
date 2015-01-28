@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -311,6 +312,9 @@ public class SkillIceVolley extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
+            
+            target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
+            target.getWorld().playSound(target.getLocation(), Sound.GLASS, 7.0F, 0.7F);
 
             iceVolleyShots.remove(iceArrow);
         }

@@ -1,5 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import net.minecraft.server.v1_8_R1.Material;
+
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -115,7 +118,8 @@ public class SkillDarkBlade extends TargettedSkill {
             e.printStackTrace();
         }*/
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SMALL_SMOKE, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.TILE_BREAK, org.bukkit.Material.PORTAL.getId(), 0, 0, 0, 0, 1, 75, 16);
+        player.getWorld().playSound(target.getLocation(), Sound.ORB_PICKUP, 5.0F, 0.2F);
         return SkillResult.NORMAL;
     }
 }

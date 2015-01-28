@@ -76,8 +76,8 @@ public class SkillIre extends TargettedSkill {
             e.printStackTrace();
         }*/
         
-        target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, org.bukkit.Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 16, 16);
-        target.getWorld().playSound(target.getLocation(), Sound.DIG_GRAVEL, 10.0F, 16);
+        target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, org.bukkit.Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 75, 16);
+        target.getWorld().playSound(target.getLocation(), Sound.DIG_GRAVEL, 7.0F, 0.6F);
 
         return SkillResult.NORMAL;
     }

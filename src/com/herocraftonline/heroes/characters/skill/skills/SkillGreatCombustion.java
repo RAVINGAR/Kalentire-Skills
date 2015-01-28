@@ -7,8 +7,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -94,8 +96,10 @@ public class SkillGreatCombustion extends ActiveSkill {
             Location targetLocation = targetBlock.getLocation().clone();
             targetLocation.add(new Vector(.5, .5, .5));
 
-            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.5, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 175, 16);
-            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 3, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.0, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 175, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_HUGE, 0, 0, 0, 0, 0, 0, 3, 16);
+            player.getWorld().playSound(targetBlock.getLocation(), Sound.EXPLODE, 6.0F, 1);
             /*try {
                 fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.RED).withFade(Color.ORANGE).build());
                 fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.ORANGE).withFade(Color.RED).build());
