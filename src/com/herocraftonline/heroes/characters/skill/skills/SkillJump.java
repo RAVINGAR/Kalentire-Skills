@@ -136,10 +136,10 @@ public class SkillJump extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
         
 			
-			{
-				player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.1F, 1, 5);
-			}
-		
+			
+		player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.1F, 1, 5);
+			
+	
 
         return SkillResult.NORMAL;
     }
