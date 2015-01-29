@@ -83,10 +83,10 @@ public class SkillSmite extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_EXPLOSION);
 
-        player.getWorld().playSound(target.getLocation(), Sound.HURT_FLESH, 0.5f, 1.0f);
+        player.getWorld().playSound(target.getLocation(), Sound.WITHER_SHOOT, 0.5f, 1.0f);
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.CRIT, // effect
+                org.bukkit.Effect.VILLAGER_THUNDERCLOUD, // effect
                 0, 0, // id,data: for block effect
                 0, 0, 0, // offset
                 1.0f, // speed

@@ -138,6 +138,10 @@ public class SkillDivineBlessing extends ActiveSkill {
 				if (time < 1.0) {
 					playerLoc.add(4.7 * Math.sin(time * 16), time * 2.2, 4.7 * Math.cos(time * 16));
 					playerLoc.getWorld().spigot().playEffect(playerLoc, Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0.1f, 1, 16);
+					playerLoc.subtract(4.7 * Math.sin(time * 16), 0, 4.7 * Math.cos(time * 16));
+					playerLoc.subtract(4.7 * Math.sin(time * 16), 0, 4.7 * Math.cos(time * 16));
+					playerLoc.getWorld().spigot().playEffect(playerLoc, Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0.1f, 1, 16);
+					playerLoc.add(4.7 * Math.sin(time * 16), 0, 4.7 * Math.cos(time * 16));
 				} else {
 					playerLoc.add(0, 2.3, 0);					
 					for (double r = 1; r < 5 * 2; r++)
