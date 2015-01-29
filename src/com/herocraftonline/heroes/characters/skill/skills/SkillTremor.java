@@ -167,10 +167,10 @@ public class SkillTremor extends ActiveSkill{
         
         for (double r = 1; r < 5 * 2; r++)
 		{
-			ArrayList<Location> particleLocations = circle(player.getLocation(), 90, r / 2);
+			ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+				player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
 			}
 		}
 

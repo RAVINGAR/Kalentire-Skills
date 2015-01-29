@@ -103,13 +103,12 @@ public class SkillBloodBond extends ActiveSkill {
         String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", Messaging.getSkillDenoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
 
         hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
-        
-        for (int i = 0; i < circle(hero.getPlayer().getLocation(), 36, 1.5).size(); i++)
-		{
-			hero.getPlayer().getWorld().spigot().playEffect(circle(hero.getPlayer().getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
-		}
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        for (int i = 0; i < circle(hero.getPlayer().getLocation(), 36, 1.5).size(); i++)
+		{
+			hero.getPlayer().getWorld().spigot().playEffect(circle(hero.getPlayer().getLocation(), 36, 1.5).get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+		}
         return SkillResult.NORMAL;
     }
 
@@ -157,7 +156,7 @@ public class SkillBloodBond extends ActiveSkill {
             
             for (int i = 0; i < circle(hero.getPlayer().getLocation(), 36, 1.5).size(); i++)
     		{
-    			hero.getPlayer().getWorld().spigot().playEffect(circle(hero.getPlayer().getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+            	hero.getPlayer().getWorld().spigot().playEffect(circle(hero.getPlayer().getLocation(), 36, 1.5).get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
     		}
 
             // Check if the hero has a party
