@@ -1,5 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,25 +22,25 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDuskblade extends TargettedSkill {
-
+    // This is for Firework Effects
     public VisualEffect fplayer = new VisualEffect();
 
     public SkillDuskblade(Heroes plugin) {
         super(plugin, "Duskblade");
-        setDescription("Strike your target with a blade of dusk, dealing $1 physical damage, and restoring $2 of your own health.");
+        setDescription("Strike your target with a blade of dusk, dealing $1 magical damage, and restoring $2 of your own health.");
         setUsage("/skill duskblade");
         setArgumentRange(0, 0);
         setIdentifiers("skill duskblade");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.HEALING);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.77, false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedHeal = Util.decFormat.format(damage * healMult);
@@ -48,10 +52,10 @@ public class SkillDuskblade extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        node.set(SkillSetting.DAMAGE.node(), 85);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.75);
-        node.set("heal-mult", 1.0);
+        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
+        node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(85));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), Double.valueOf(0.75));
+        node.set("heal-mult", Double.valueOf(1.0));
 
         return node;
     }
@@ -60,8 +64,8 @@ public class SkillDuskblade extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(98), false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, Double.valueOf(1.0), false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         broadcastExecuteText(hero, target);
@@ -69,7 +73,7 @@ public class SkillDuskblade extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.77, false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", Double.valueOf(0.77), false);
 
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this);     // Bypass self heal as this can only be used on themself.
         plugin.getServer().getPluginManager().callEvent(hrEvent);
@@ -77,7 +81,27 @@ public class SkillDuskblade extends TargettedSkill {
             hero.heal(hrEvent.getAmount());
 
         // this is our fireworks shit
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 150, 16);
+        try {
+            fplayer.playFirework(player.getWorld(),
+                                 target.getLocation(),
+                                 FireworkEffect.builder().
+                                               flicker(false).trail(false)
+                                               .with(FireworkEffect.Type.BURST)
+                                               .withColor(Color.GREEN)
+                                               .withFade(Color.PURPLE)
+                                               .build());
+        }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_HIT, 0.8F, 1.0F);
+        
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.INSTANT_SPELL, 0, 0, 0, 0.1F, 0, 0.1F, 20, 5);
+
         return SkillResult.NORMAL;
     }
 }
