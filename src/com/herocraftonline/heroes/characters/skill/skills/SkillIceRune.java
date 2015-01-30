@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -136,7 +137,7 @@ public class SkillIceRune extends ActiveSkill {
         
         for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
 		{
-        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
 		}
 
         return SkillResult.NORMAL;

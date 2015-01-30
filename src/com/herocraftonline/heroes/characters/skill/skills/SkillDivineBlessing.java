@@ -74,6 +74,39 @@ public class SkillDivineBlessing extends ActiveSkill {
 		}
 		return locations;
 	}
+	
+	public void onWarmup(Hero hero)
+	{
+		final Location playerLoc = hero.getPlayer().getLocation();
+		new BukkitRunnable() {
+
+			private double time = 0;
+
+			@Override
+			public void run() {
+					Location firstLoc = playerLoc.clone();
+					Location secondLoc = playerLoc.clone();
+				if (time < 1.0) {
+					firstLoc.add(4.7 * Math.sin(time * 16), (time * 5) * 2.2, 4.7 * Math.cos(time * 16));
+					firstLoc.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.0f, 1, 16);
+					secondLoc.add(-4.7 * Math.sin(time * 16), (time * 5) * 2.2, -4.7 * Math.cos(time * 16));
+					secondLoc.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.0f, 1, 16);
+				} else {
+					playerLoc.add(0, 2.3, 0);					
+					for (double r = 1; r < 5 * 2; r++)
+					{
+						ArrayList<Location> particleLocations = circle(playerLoc, 36, r / 2);
+						for (int i = 0; i < particleLocations.size(); i++)
+						{
+							playerLoc.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+						}
+					}
+					cancel();
+				}
+				time += 0.01;
+			}
+		}.runTaskTimer(plugin, 1, 1);
+	}
 
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
@@ -125,38 +158,6 @@ public class SkillDivineBlessing extends ActiveSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-		
-		final Location playerLoc = player.getLocation();
-
-		new BukkitRunnable() {
-
-			private double time = 0;
-
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
-					Location firstLoc = playerLoc.clone();
-					Location secondLoc = playerLoc.clone();
-				if (time < 1.0) {
-					firstLoc.add(4.7 * Math.sin(time * 16), time * 2.2, 4.7 * Math.cos(time * 16));
-					firstLoc.getWorld().spigot().playEffect(playerLoc, Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0.1f, 1, 16);
-					secondLoc.add(-4.7 * Math.sin(time * 16), time * 2.2, -4.7 * Math.cos(time * 16));
-					secondLoc.getWorld().spigot().playEffect(playerLoc, Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0.1f, 1, 16);
-				} else {
-					playerLoc.add(0, 2.3, 0);					
-					for (double r = 1; r < 5 * 2; r++)
-					{
-						ArrayList<Location> particleLocations = circle(playerLoc, 90, r / 2);
-						for (int i = 0; i < particleLocations.size(); i++)
-						{
-							playerLoc.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
-						}
-					}
-					cancel();
-				}
-				time += 0.01;
-			}
-		}.runTaskTimer(plugin, 1, 1);
 
 		return SkillResult.NORMAL;
 	}
