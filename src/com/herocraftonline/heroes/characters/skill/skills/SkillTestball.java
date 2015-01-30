@@ -42,7 +42,7 @@ public class SkillTestball extends ActiveSkill {
         //player.launchProjectile(ThrownPotion.class);
         //player.launchProjectile(SmallFireball.class);
         //player.launchProjectile(Arrow.class);
-        player.launchProjectile(Fireball.class);
+        player.launchProjectile(SmallFireball.class);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
