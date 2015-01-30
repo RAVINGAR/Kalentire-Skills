@@ -104,7 +104,7 @@ public class SkillDivineBlessing extends ActiveSkill {
 					}
 					cancel();
 				}
-				time += 0.01;
+				time += 0.02;
 			}
 		}.runTaskTimer(plugin, 1, 1);
 	}

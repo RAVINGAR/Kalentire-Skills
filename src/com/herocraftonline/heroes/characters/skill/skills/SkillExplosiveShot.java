@@ -38,6 +38,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.skills.SkillIceVolley.IceVolleyShotEffect;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -124,11 +125,15 @@ public class SkillExplosiveShot extends ActiveSkill {
 		shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDenoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
 	}
 
-	public SkillResult use(Hero hero, String[] args) {
-
+	public SkillResult use(Hero hero, String[] args) 
+	{
+		Player player = hero.getPlayer();
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 		int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
 
+        hero.addEffect(new ExplosiveShotBuffEffect(this, player, duration, numShots));
+
+        broadcastExecuteText(hero);
 
 		return SkillResult.NORMAL;
 	}
