@@ -29,7 +29,7 @@ public class SkillSuperheat extends ActiveSkill {
 
     public SkillSuperheat(Heroes plugin) {
         super(plugin, "Superheat");
-        setDescription("Your pickaxe smelts ores as you mine them for $1 seconds.");
+        setDescription("Your pickaxe smelts ores and blocks as you mine them for $1 seconds.");
         setUsage("/skill superheat");
         setArgumentRange(0, 0);
         setIdentifiers("skill superheat");
@@ -75,7 +75,7 @@ public class SkillSuperheat extends ActiveSkill {
     public class SkillPlayerListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST)
-        public void onBlockBreak(BlockBreakEvent event) {            
+        public void onBlockBreak(BlockBreakEvent event) {
             if (event.isCancelled()) {
                 return;
             }
@@ -84,27 +84,32 @@ public class SkillSuperheat extends ActiveSkill {
             if (hero.hasEffect("Superheat")) {
                 Block block = event.getBlock();
                 switch (block.getType()) {
-                case IRON_ORE:
-                    event.setCancelled(true);
-                    block.setType(Material.AIR);
-                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.IRON_INGOT, 1));
-                    break;
-                case GOLD_ORE:
-                    event.setCancelled(true);
-                    block.setType(Material.AIR);
-                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
-                    break;
-                case SAND:
-                    event.setCancelled(true);
-                    block.setType(Material.AIR);
-                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GLASS, 1));
-                    break;
-                case COBBLESTONE:
-                    event.setCancelled(true);
-                    block.setType(Material.AIR);
-                    block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.STONE, 1));
-                    break;
-                default:
+                    case IRON_ORE:
+                        event.setCancelled(true);
+                        block.setType(Material.AIR);
+                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.IRON_INGOT, 1));
+                        break;
+                    case GOLD_ORE:
+                        event.setCancelled(true);
+                        block.setType(Material.AIR);
+                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
+                        break;
+                    case SAND:
+                        event.setCancelled(true);
+                        block.setType(Material.AIR);
+                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GLASS, 1));
+                        break;
+                    case COBBLESTONE:
+                        event.setCancelled(true);
+                        block.setType(Material.AIR);
+                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.STONE, 1));
+                        break;
+                    case CLAY:
+                        event.setCancelled(true);
+                        block.setType(Material.AIR);
+                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.CLAY_BRICK, 4));
+                        break;
+                    default:
 
                 }
             }
