@@ -37,12 +37,12 @@ public class SkillTestball extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        
-        player.launchProjectile(Fish.class);
+
         //player.launchProjectile(FishHook.class);
         //player.launchProjectile(ThrownPotion.class);
         //player.launchProjectile(SmallFireball.class);
         //player.launchProjectile(Arrow.class);
+        player.launchProjectile(Fireball.class);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
