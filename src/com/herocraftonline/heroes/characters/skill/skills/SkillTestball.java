@@ -39,10 +39,10 @@ public class SkillTestball extends ActiveSkill {
         Player player = hero.getPlayer();
         
         player.launchProjectile(Fish.class);
-        player.launchProjectile(FishHook.class);
-        player.launchProjectile(ThrownPotion.class);
-        player.launchProjectile(SmallFireball.class);
-        player.launchProjectile(Arrow.class);
+        //player.launchProjectile(FishHook.class);
+        //player.launchProjectile(ThrownPotion.class);
+        //player.launchProjectile(SmallFireball.class);
+        //player.launchProjectile(Arrow.class);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
