@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
@@ -96,6 +97,8 @@ public class SkillDoomwave extends ActiveSkill {
                 + (int) (numEnderPearlsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         broadcastExecuteText(hero);
+        
+        
 
         final long time = System.currentTimeMillis();
         final Random ranGen = new Random((int) ((time / 2.0) * 12));
@@ -149,6 +152,7 @@ public class SkillDoomwave extends ActiveSkill {
 
             doomPearls.remove(projectile);
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
+            targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5, 0), Effect.LAVA_POP, 0, 0, 0.2F, 0.2F, 0.2F, 0.4F, 45, 16);
             ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof Entity))
                 return;
