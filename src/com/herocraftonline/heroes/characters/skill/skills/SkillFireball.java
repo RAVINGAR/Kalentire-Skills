@@ -26,11 +26,11 @@ import java.util.Map.Entry;
 
 public class SkillFireball extends ActiveSkill {
 
-    private Map<SmallFireball, Long> fireballs = new LinkedHashMap<SmallFireball, Long>(100) {
+    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<SmallFireball, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -72,7 +72,7 @@ public class SkillFireball extends ActiveSkill {
         Player player = hero.getPlayer();
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        SmallFireball fireball = player.launchProjectile(SmallFireball.class);
+        Snowball fireball = player.launchProjectile(Snowball.class);
         fireball.setVelocity(fireball.getVelocity().multiply(mult));
         fireball.setFireTicks(100);
         fireballs.put(fireball, System.currentTimeMillis());
@@ -101,7 +101,7 @@ public class SkillFireball extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof SmallFireball) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof Snowball) || !fireballs.containsKey(projectile)) {
                 return;
             }
 
