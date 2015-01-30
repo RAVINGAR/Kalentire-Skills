@@ -6,6 +6,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -19,6 +20,10 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
+//import de.slikey.effectlib.EffectType;
+//import de.slikey.effectlib.effect.CylinderEffect;
+//import de.slikey.effectlib.util.ParticleEffect;
 
 public abstract class SkillBaseHeal extends TargettedSkill {
 
@@ -77,7 +82,18 @@ public abstract class SkillBaseHeal extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-
+        
+		/*CylinderEffect fx = new CylinderEffect(vm);
+		fx.setEntity(player);			
+		fx.particle = ParticleEffect.VILLAGER_HAPPY;
+		fx.height = 2;
+		fx.particles = 30;
+		fx.solid = false;
+		fx.radius = 1;
+		fx.offset = new Vector(0, -0.5, 0);
+		fx.type = EffectType.INSTANT;
+		fx.run();*/
+        
         targetHero.heal(hrhEvent.getAmount());
 
         removeEffects(targetHero);
@@ -104,6 +120,18 @@ public abstract class SkillBaseHeal extends TargettedSkill {
                 1, 1, 1, // offset
                 1.0f, // speed
                 25, // particle count
-                1); // radius*/
+                1); // radius
+		
+		/*CylinderEffect fx2 = new CylinderEffect(em);
+		fx2.setEntity(targetHero.getPlayer());			
+		fx2.particle = ParticleEffect.HEART;
+		fx2.height = 2;
+		fx2.particles = 15;
+		fx2.solid = false;
+		fx2.type = EffectType.DELAYED;
+		fx2.delay = 20;
+		fx2.radius = 1;
+		fx2.offset = new Vector(0, -0.5, 0);
+		fx2.start();*/
     }
 }

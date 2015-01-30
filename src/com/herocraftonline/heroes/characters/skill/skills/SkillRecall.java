@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -335,6 +336,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             broadcastExecuteText(hero);
     
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
         }
 
         // Removed for now until I have time to properly test it.
@@ -350,6 +352,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         player.teleport(teleportLocation);
 
         teleportLocation.getWorld().playSound(teleportLocation, Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        teleportLocation.getWorld().spigot().playEffect(teleportLocation, Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
 
         return SkillResult.NORMAL;
     }

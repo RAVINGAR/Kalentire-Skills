@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,6 +180,24 @@ public class SkillDarkBolt extends ActiveSkill {
             event.setCancelled(true);
         }
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     private void explodeDarkBolt(WitherSkull darkBolt) {
 
@@ -193,6 +212,13 @@ public class SkillDarkBolt extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
         int witherLevel = SkillConfigManager.getUseSetting(hero, this, "wither-level", 1, false);
         double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
+        
+        // Effects
+        darkBolt.getWorld().spigot().playEffect(darkBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0, 15, 16);
+        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+		{
+			darkBolt.getWorld().spigot().playEffect(circle(darkBolt.getLocation(), 72, radius).get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.2F, 0.3F, 0.2F, 0, 2, 16);
+		}
 
         List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);
         for (Entity entity : targets) {

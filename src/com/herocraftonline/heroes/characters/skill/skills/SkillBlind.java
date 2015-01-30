@@ -75,6 +75,7 @@ public class SkillBlind extends TargettedSkill {
 
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
 
+        player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
         player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_IDLE, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;

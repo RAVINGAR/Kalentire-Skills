@@ -99,7 +99,7 @@ public class SkillEarthernFury extends TargettedSkill {
          * offset controls how spread out the particles are
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().playSound(player.getLocation(), Sound.DIG_GRASS, 1.0F, 1.0F);
         
         // Create the effect and slow the target

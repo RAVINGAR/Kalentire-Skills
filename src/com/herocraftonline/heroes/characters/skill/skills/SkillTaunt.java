@@ -12,8 +12,10 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -103,13 +105,13 @@ public class SkillTaunt extends ActiveSkill {
                 continue;
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+            target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 1.0F, 0.5F, 1.0F, 0.2F, 35, 16);
             targetCT.addEffect(tEffect);
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_WALK, 0.8F, 0.5F);
         player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_HURT, 0.8F, 1.25F);
-
-
+        
         return SkillResult.NORMAL;
     }
 

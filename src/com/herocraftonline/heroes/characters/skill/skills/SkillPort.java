@@ -16,6 +16,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -207,6 +208,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         if (isDeparting) {
             broadcastExecuteText(hero);
+            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
         }
 
         Location portLocation = new Location(world, Double.parseDouble(portArgs.get(2)), Double.parseDouble(portArgs.get(3)), Double.parseDouble(portArgs.get(4)));
@@ -218,6 +220,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         }
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.PORTAL_TRAVEL, 0.5F, 1.0F);
+        hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
         return SkillResult.NORMAL;
     }
 

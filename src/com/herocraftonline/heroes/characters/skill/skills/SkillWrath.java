@@ -87,8 +87,8 @@ public class SkillWrath extends TargettedSkill {
         }*/
         //public void playEffect(Location location, Effect effect, int_ id, int_ data, float_ offsetX, float_ offsetY, float_ offsetZ, float_ speed, int_ particleCount, int_ radius)
         //public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 1F, 1F, 1F, 1F, 30, 10);
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 10F, 1F, 1F, 50F, 30, 10);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 1, 1, 1F, 1F, 1F, 1F, 30, 10);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 1, 1, 10F, 1F, 1F, 50F, 30, 10);
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.PORTAL, 1, 1, 0F, 0F, 0F, 10F, 200, 10);
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.PORTAL, 1, 1, -5F, -5F, -5F, 10F, 100, 10);
         player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);

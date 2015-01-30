@@ -85,6 +85,7 @@ public class SkillChaoticVisions extends ActiveSkill {
         final List<Entity> hitEnemies = new ArrayList<>();
 
         int numBlocks = 0;
+        player.getWorld().playSound(player.getLocation(), Sound.PORTAL_TRAVEL, 0.7F, 1);
         while (iter.hasNext()) {
             tempBlock = iter.next();
             Material tempBlockType = tempBlock.getType();
@@ -95,13 +96,17 @@ public class SkillChaoticVisions extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         // Play effect
-                        try {
+                        /*try {
                             fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
                                     .flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.PURPLE).withFade(Color.BLACK).build());
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
-
+                        }*/
+                    	
+                    	//ParticleEffect.SPELL_WITCH.display(1, 1, 1, 0.1, 5, targetLocation, 20);
+                    	//public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
+                    	targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.WITCH_MAGIC, 1, 1, 0F, 0F, 0F, 0.2F, 10, 20);
+                    	
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {
                             // Ensure that we have a valid entity

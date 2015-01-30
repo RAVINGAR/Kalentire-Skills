@@ -1,5 +1,19 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
@@ -7,18 +21,16 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+//import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import java.util.List;
+//import de.slikey.effectlib.EffectManager;
 
 public class SkillDreadAura extends ActiveSkill {
 
@@ -95,7 +107,7 @@ public class SkillDreadAura extends ActiveSkill {
         int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 13, false);
 
         hero.addEffect(new DreadAuraEffect(this, period, manaTick, radius, healMult, maxHealingPerTick));
-
+        
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
@@ -149,6 +161,24 @@ public class SkillDreadAura extends ActiveSkill {
                     broadcast(player.getLocation(), "    " + expireText, player.getName());
             }
         }
+        
+        public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+    	{
+    		World world = centerPoint.getWorld();
+
+    		double increment = (2 * Math.PI) / particleAmount;
+
+    		ArrayList<Location> locations = new ArrayList<Location>();
+
+    		for (int i = 0; i < particleAmount; i++)
+    		{
+    			double angle = i * increment;
+    			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+    			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+    			locations.add(new Location(world, x, centerPoint.getY(), z));
+    		}
+    		return locations;
+    	}
 
         @Override
         public void tickHero(Hero hero) {
@@ -164,7 +194,20 @@ public class SkillDreadAura extends ActiveSkill {
                 hero.setMana(hero.getMana() - manaTick);
             }
             
+            /*AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(new EffectManager(this.plugin), SkillType.ABILITY_PROPERTY_DARK, radius);
+            aoe.setEntity(hero.getPlayer());
+            aoe.run();*/
+            
             Player player = hero.getPlayer();
+            
+    		for (double r = 1; r < radius * 2; r++)
+    		{
+    			ArrayList<Location> particleLocations = circle(player.getLocation(), 90, r / 2);
+    			for (int i = 0; i < particleLocations.size(); i++)
+    			{
+    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.WITCH_MAGIC, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+    			}
+    		}
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 60, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);

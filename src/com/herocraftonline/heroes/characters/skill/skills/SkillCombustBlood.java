@@ -1,7 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -101,11 +104,17 @@ public class SkillCombustBlood extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         broadcastExecuteText(hero, target);
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.MAROON).withFade(Color.RED).build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        
+        player.getWorld().spigot().playEffect(target.getLocation(), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 75, 16);
+        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);
+        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
+        player.getWorld().playSound(target.getLocation(), Sound.EXPLODE, 10.0F, 16);
+        player.getWorld().playSound(target.getLocation(), Sound.FIRE, 10.0F, 16);
 
         // Get Blood Union Level
         int bloodUnionLevel = 0;

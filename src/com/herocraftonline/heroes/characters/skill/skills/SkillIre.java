@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -61,7 +63,7 @@ public class SkillIre extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0),
                                  FireworkEffect.builder().flicker(false).trail(false)
                                                .with(FireworkEffect.Type.BURST)
@@ -72,7 +74,10 @@ public class SkillIre extends TargettedSkill {
                                                .build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        
+        target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, org.bukkit.Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 75, 16);
+        target.getWorld().playSound(target.getLocation(), Sound.DIG_GRAVEL, 7.0F, 0.6F);
 
         return SkillResult.NORMAL;
     }

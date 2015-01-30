@@ -83,6 +83,10 @@ public class SkillBoneSpear extends ActiveSkill {
 
         final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
         final List<Entity> hitEnemies = new ArrayList<>();
+        
+        // This looks out of place, but it's up here because it turns into ear-explosion-death-sound if it's in the loop.
+        // Also I just wanted to use the phrase "ear-explosion-death-sound."
+        player.getWorld().playSound(player.getLocation(), Sound.SKELETON_HURT, 6.0F, 1);
 
         int numBlocks = 0;
         while (iter.hasNext()) {
@@ -96,15 +100,18 @@ public class SkillBoneSpear extends ActiveSkill {
                     public void run() {
                         //Play effect
 
-                        try {
+                        /*try {
                             fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
                                     .flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
+                        }*/ // BAD FIREWORKS. BAD.
+                    	
                         //attempting spigot particles
-
+                    	// Why does it play a bunch of crit particles every block the spear travels?
                         player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                        player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 4, 16);                        
+                        
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {
                             // Ensure that we have a valid entity

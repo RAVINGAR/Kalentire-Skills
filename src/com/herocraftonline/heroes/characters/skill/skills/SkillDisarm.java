@@ -81,6 +81,7 @@ public class SkillDisarm extends TargettedSkill {
                 return SkillResult.CANCELLED;
             }
         }
+        Player targetPlayer = (Player) target;
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
 

@@ -2,6 +2,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,6 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Effect;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -130,9 +133,12 @@ public class SkillJump extends ActiveSkill {
             }
         }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
-        player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
-
-        return SkillResult.NORMAL;
+        player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_WINGS, 7.0F, 1.0F);     
+			
+			
+		player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);
+			
+	    return SkillResult.NORMAL;
     }
 
     private static final Set<Material> requiredMaterials;

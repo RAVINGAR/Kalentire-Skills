@@ -21,9 +21,14 @@ package com.herocraftonline.heroes.characters.skill.skills;
  * Upon Rune activation, this ability damages the target by a specified amount and applies a slow effect for a set duration.
  */
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -92,6 +97,24 @@ public class SkillIceRune extends ActiveSkill {
 
         return node;
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -111,6 +134,11 @@ public class SkillIceRune extends ActiveSkill {
         // Play Effects
         Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
+        
+        for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+		{
+        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+		}
 
         return SkillResult.NORMAL;
     }

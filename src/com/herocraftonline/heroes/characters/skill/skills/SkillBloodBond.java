@@ -1,9 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,6 +68,24 @@ public class SkillBloodBond extends ActiveSkill {
 
         return node;
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, String args[]) {
@@ -83,6 +105,10 @@ public class SkillBloodBond extends ActiveSkill {
         hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        for (int i = 0; i < circle(hero.getPlayer().getLocation(), 36, 1.5).size(); i++)
+		{
+			hero.getPlayer().getWorld().spigot().playEffect(circle(hero.getPlayer().getLocation(), 36, 1.5).get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+		}
         return SkillResult.NORMAL;
     }
 
@@ -127,6 +153,11 @@ public class SkillBloodBond extends ActiveSkill {
             // Set the distance variables 
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 12, false);
             int radiusSquared = radius * radius;
+            
+            for (int i = 0; i < circle(hero.getPlayer().getLocation(), 36, 1.5).size(); i++)
+    		{
+            	hero.getPlayer().getWorld().spigot().playEffect(circle(hero.getPlayer().getLocation(), 36, 1.5).get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+    		}
 
             // Check if the hero has a party
             if (hero.hasParty()) {

@@ -5,7 +5,9 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -20,6 +22,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -270,6 +273,26 @@ public class SkillIceVolley extends ActiveSkill {
 
             hero.removeEffect(msEffect);
         }
+        
+        public void addParticleEffect(final Projectile p)
+		{
+			new BukkitRunnable()
+			{
+				public void run() 
+				{
+					if(iceVolleyShots.containsKey(p))
+					{												
+						Location loc = p.getLocation();
+						p.getWorld().spigot().playEffect(loc, org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.1F, 0.0F, 0.0F, 1, 16);
+					}
+					else
+					{
+						this.cancel();
+						return;
+					}
+				}
+			}.runTaskTimer(plugin, 0, 1);
+		}  
 
         private void shootIceVolleyArrow(Player player, double yaw, double pitchMultiplier, double velocityMultiplier) {
 
@@ -311,6 +334,9 @@ public class SkillIceVolley extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
+            
+            target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.4F, 0.2F, 0.4F, 0.3F, 50, 16);
+            target.getWorld().playSound(target.getLocation(), Sound.GLASS, 7.0F, 0.7F);
 
             iceVolleyShots.remove(iceArrow);
         }

@@ -1,6 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -132,10 +137,37 @@ public class SkillMelodicBinding extends ActiveSkill {
 
             this.radius = radius;
         }
+        
+        public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+    	{
+    		World world = centerPoint.getWorld();
+
+    		double increment = (2 * Math.PI) / particleAmount;
+
+    		ArrayList<Location> locations = new ArrayList<Location>();
+
+    		for (int i = 0; i < particleAmount; i++)
+    		{
+    			double angle = i * increment;
+    			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+    			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+    			locations.add(new Location(world, x, centerPoint.getY(), z));
+    		}
+    		return locations;
+    	}
 
         @Override
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
+            
+            for (double r = 1; r < radius * 2; r++)
+    		{
+    			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
+    			for (int i = 0; i < particleLocations.size(); i++)
+    			{
+    				player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+    			}
+    		}
 
             int charisma = hero.getAttributeValue(AttributeType.CHARISMA);
 
