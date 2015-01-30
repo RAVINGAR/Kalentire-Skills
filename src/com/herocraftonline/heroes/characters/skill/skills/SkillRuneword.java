@@ -1,7 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -64,6 +69,24 @@ public class SkillRuneword extends TargettedSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been cursed by a Runeword!").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "The Runeword's curse fades from %target%!").replace("%target%", "$1");
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -77,6 +100,12 @@ public class SkillRuneword extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 0.5F, 1.0F);
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0.1F, 1.0F, 0.1F, 0.1F, 30, 10);
+        
+        for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+		{
+        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 10, 16);
+		}
 
         return SkillResult.NORMAL;
     }

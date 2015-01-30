@@ -217,7 +217,7 @@ public class SkillDarkBolt extends ActiveSkill {
         darkBolt.getWorld().spigot().playEffect(darkBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0, 15, 16);
         for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
 		{
-			darkBolt.getWorld().spigot().playEffect(circle(darkBolt.getLocation(), 72, radius).get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.2F, 1.5F, 0.2F, 0, 2, 16);
+			darkBolt.getWorld().spigot().playEffect(circle(darkBolt.getLocation(), 72, radius).get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.2F, 0.3F, 0.2F, 0, 2, 16);
 		}
 
         List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);

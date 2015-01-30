@@ -208,6 +208,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         if (isDeparting) {
             broadcastExecuteText(hero);
+            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
         }
 
         Location portLocation = new Location(world, Double.parseDouble(portArgs.get(2)), Double.parseDouble(portArgs.get(3)), Double.parseDouble(portArgs.get(4)));

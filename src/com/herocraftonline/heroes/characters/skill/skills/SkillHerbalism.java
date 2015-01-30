@@ -47,6 +47,9 @@ public class SkillHerbalism extends PassiveSkill {
 		return node;
 	}
 
+	/**
+	 * Something messes up just using getData(), need to turn the extra leaves into a player-usable version.
+	 */
 	public byte transmuteLeaves(Material mat, byte data)
 	{
 		if (mat == Material.LEAVES)

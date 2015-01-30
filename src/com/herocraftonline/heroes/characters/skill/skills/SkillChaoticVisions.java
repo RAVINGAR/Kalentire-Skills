@@ -85,6 +85,7 @@ public class SkillChaoticVisions extends ActiveSkill {
         final List<Entity> hitEnemies = new ArrayList<>();
 
         int numBlocks = 0;
+        player.getWorld().playSound(player.getLocation(), Sound.PORTAL_TRAVEL, 0.7F, 1);
         while (iter.hasNext()) {
             tempBlock = iter.next();
             Material tempBlockType = tempBlock.getType();

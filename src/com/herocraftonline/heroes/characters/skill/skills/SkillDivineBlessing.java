@@ -78,18 +78,19 @@ public class SkillDivineBlessing extends ActiveSkill {
 	public void onWarmup(Hero hero)
 	{
 		final Location playerLoc = hero.getPlayer().getLocation();
+		final Location firstLoc = playerLoc.clone();
+		final Location secondLoc = playerLoc.clone();
 		new BukkitRunnable() {
 
 			private double time = 0;
 
 			@Override
 			public void run() {
-					Location firstLoc = playerLoc.clone();
-					Location secondLoc = playerLoc.clone();
+					
 				if (time < 1.0) {
-					firstLoc.add(4.7 * Math.sin(time * 16), (time * 5) * 2.2, 4.7 * Math.cos(time * 16));
+					firstLoc.add(4.7 * Math.sin(time * 16), time * 2.2, 4.7 * Math.cos(time * 16));
 					firstLoc.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.0f, 1, 16);
-					secondLoc.add(-4.7 * Math.sin(time * 16), (time * 5) * 2.2, -4.7 * Math.cos(time * 16));
+					secondLoc.add(-4.7 * Math.sin(time * 16), time * 2.2, -4.7 * Math.cos(time * 16));
 					secondLoc.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.0f, 1, 16);
 				} else {
 					playerLoc.add(0, 2.3, 0);					
