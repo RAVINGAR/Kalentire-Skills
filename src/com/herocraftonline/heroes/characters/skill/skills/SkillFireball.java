@@ -26,11 +26,11 @@ import java.util.Map.Entry;
 
 public class SkillFireball extends ActiveSkill {
 
-    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
+    private Map<SmallFireball, Long> fireballs = new LinkedHashMap<SmallFireball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<SmallFireball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -72,14 +72,14 @@ public class SkillFireball extends ActiveSkill {
         Player player = hero.getPlayer();
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        Snowball fireball = player.launchProjectile(Snowball.class);
+        SmallFireball fireball = player.launchProjectile(SmallFireball.class);
         fireball.setVelocity(fireball.getVelocity().multiply(mult));
         fireball.setFireTicks(100);
         fireballs.put(fireball, System.currentTimeMillis());
         fireball.setShooter(player);
 
         broadcastExecuteText(hero);
-        
+
         player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
 
         return SkillResult.NORMAL;
@@ -101,7 +101,7 @@ public class SkillFireball extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof SmallFireball) || !fireballs.containsKey(projectile)) {
                 return;
             }
 
@@ -133,7 +133,7 @@ public class SkillFireball extends ActiveSkill {
                 // Damage the target
                 addSpellTarget(targetLE, hero);
                 damageEntity(targetLE, hero.getPlayer(), damage, DamageCause.MAGIC);
-                
+
                 targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
                 targetLE.getWorld().playSound(targetLE.getLocation(), Sound.FIRE, 7.0F, 1.0F);
             }
