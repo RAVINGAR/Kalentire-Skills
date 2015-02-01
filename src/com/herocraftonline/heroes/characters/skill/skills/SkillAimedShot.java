@@ -151,6 +151,7 @@ public class SkillAimedShot extends TargettedSkill {
 				// Play wolf howl at both locations
 				player.getWorld().playSound(player.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
 				target.getWorld().playSound(target.getLocation(), Sound.WOLF_HOWL, 0.7f, 1.0F);
+				target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 16, 20);
 
 				/*LineEffect le = new LineEffect(new EffectManager(plugin));
                 le.particles = 20;
@@ -178,8 +179,6 @@ public class SkillAimedShot extends TargettedSkill {
 						targetLocation.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.FLAME, 1, 1, 0F, 0F, 0F, 0F, 1, 20);
 					}
 				}
-
-				target.getWorld().playEffect(target.getLocation(), org.bukkit.Effect.EXPLOSION, 1);
 
 				// Lower damage of shot based on how drawn back the bow is.
 				double tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 125, false);

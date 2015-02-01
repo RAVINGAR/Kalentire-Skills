@@ -114,6 +114,7 @@ public class SkillInfernoFlash extends ActiveSkill {
         }
         while (iter.hasNext()) {
             currentBlock = iter.next();
+            currentBlock.getWorld().spigot().playEffect(currentBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
             Material currentBlockType = currentBlock.getType();
 
             if (Util.transparentBlocks.contains(currentBlockType)) {
@@ -150,14 +151,6 @@ public class SkillInfernoFlash extends ActiveSkill {
     		{
     			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
     		}
-            
-            Block tempBlock;
-            BlockIterator iterator = new BlockIterator(player.getLocation().clone().setDirection(teleport.toVector()), (int) player.getLocation().distance(teleport));
-            while (iterator.hasNext())
-            {
-            	tempBlock = iterator.next();
-            	tempBlock.getWorld().spigot().playEffect(tempBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
-            }
             teleport.getWorld().spigot().playEffect(teleport, Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 45, 16);
             player.teleport(teleport);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
