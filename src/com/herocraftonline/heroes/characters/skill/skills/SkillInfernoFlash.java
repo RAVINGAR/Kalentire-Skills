@@ -1,9 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -53,6 +56,24 @@ public class SkillInfernoFlash extends ActiveSkill {
 
         return node;
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+   	{
+   		World world = centerPoint.getWorld();
+
+   		double increment = (2 * Math.PI) / particleAmount;
+
+   		ArrayList<Location> locations = new ArrayList<Location>();
+
+   		for (int i = 0; i < particleAmount; i++)
+   		{
+   			double angle = i * increment;
+   			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+   			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+   			locations.add(new Location(world, x, centerPoint.getY(), z));
+   		}
+   		return locations;
+   	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -124,6 +145,20 @@ public class SkillInfernoFlash extends ActiveSkill {
             teleport.setPitch(loc.getPitch());
             teleport.setYaw(loc.getYaw());
 
+            ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
+            for (int i = 0; i < locations.size(); i++)
+    		{
+    			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+    		}
+            
+            Block tempBlock;
+            BlockIterator iterator = new BlockIterator(player.getLocation(), (int) player.getLocation().distance(teleport));
+            while (iterator.hasNext())
+            {
+            	tempBlock = iterator.next();
+            	tempBlock.getWorld().spigot().playEffect(tempBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
+            }
+            teleport.getWorld().spigot().playEffect(teleport, Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 45, 16);
             player.teleport(teleport);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
             player.getWorld().playSound(loc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
