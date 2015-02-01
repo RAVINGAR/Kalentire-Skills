@@ -152,7 +152,7 @@ public class SkillInfernoFlash extends ActiveSkill {
     		}
             
             Block tempBlock;
-            BlockIterator iterator = new BlockIterator(player.getLocation(), (int) player.getLocation().distance(teleport));
+            BlockIterator iterator = new BlockIterator(player.getLocation().clone().setDirection(teleport.toVector()), (int) player.getLocation().distance(teleport));
             while (iterator.hasNext())
             {
             	tempBlock = iterator.next();
