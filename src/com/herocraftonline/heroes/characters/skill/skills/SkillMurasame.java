@@ -28,7 +28,7 @@ public class SkillMurasame extends TargettedSkill {
         setUsage("/skill murasame");
         setArgumentRange(0, 0);
         setIdentifiers("skill murasame");
-        setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
