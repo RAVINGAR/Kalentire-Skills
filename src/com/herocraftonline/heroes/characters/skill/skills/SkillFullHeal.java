@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -85,7 +86,7 @@ public class SkillFullHeal extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // this is our fireworks shit        
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
             		FireworkEffect.builder().flicker(false).trail(false)
             		.with(FireworkEffect.Type.BALL)
@@ -94,7 +95,11 @@ public class SkillFullHeal extends TargettedSkill {
             		.build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        
+        Player targetPlayer = targetHero.getPlayer();
+        targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.CLOUD, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 25, 16);
+        targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.2F, 25, 16);
 
         return SkillResult.NORMAL;
     }

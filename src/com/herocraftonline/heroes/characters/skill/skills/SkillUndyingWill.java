@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -101,6 +102,8 @@ public class SkillUndyingWill extends ActiveSkill {
                     if (event.getDamage() > currentHealth) {
                         if (currentHealth != 1.0)
                             player.setHealth(1.0);
+                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.5F, 1.0F, 0.5F, 0.0F, 25, 16);
+                        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.5F, 0.8F);
 
                         event.setDamage(0.0);
                     }

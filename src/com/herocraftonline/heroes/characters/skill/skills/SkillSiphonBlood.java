@@ -129,7 +129,7 @@ public class SkillSiphonBlood extends TargettedSkill {
             e.printStackTrace();
         }*/
         
-        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
+        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LAVADRIP, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
         player.getWorld().playSound(target.getLocation(), Sound.DRINK, 4.0F, 1);
 
         return SkillResult.NORMAL;

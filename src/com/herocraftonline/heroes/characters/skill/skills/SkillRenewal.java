@@ -1,6 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -30,6 +33,21 @@ public class SkillRenewal extends SkillBaseHeal {
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.25);
 
         return node;
+    }
+    
+    protected void applySoundEffects(World world, LivingEntity target) {
+        world.playSound(target.getLocation(), Sound.LEVEL_UP, 0.5f, 1.0f);
+    }
+
+    protected void applyParticleEffects(World world, LivingEntity target) {
+        world.spigot().playEffect(target.getLocation(), // location
+                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+                0, // id
+                0, // data
+                1, 1, 1, // offset
+                1.0f, // speed
+                25, // particle count
+                1); // radius
     }
 
     @Override

@@ -136,5 +136,14 @@ public class SkillHealingChorus extends ActiveSkill {
 
             Messaging.send(player, "    " + expireText, applier.getName());
         }
+        
+        public void tickHero(Hero hero)
+        {
+        	super.tickHero(hero);
+        	if (hero.getPlayer() == applier)
+        	{
+        		hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+        	}
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -164,6 +165,7 @@ public class SkillManasong extends ActiveSkill {
                                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                                 if (!hrmEvent.isCancelled()) {
                                     member.setMana(hrmEvent.getAmount() + member.getMana());
+                                    member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                                     if (member.isVerboseMana())
                                         Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
@@ -179,6 +181,8 @@ public class SkillManasong extends ActiveSkill {
                     plugin.getServer().getPluginManager().callEvent(hrmEvent);
                     if (!hrmEvent.isCancelled()) {
                         hero.setMana(hrmEvent.getAmount() + hero.getMana());
+                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                         if (hero.isVerboseMana())
                             Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));

@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -93,10 +94,10 @@ public class SkillCurse extends TargettedSkill {
         double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, player, duration, missChance));
 
-        player.getWorld().playSound(player.getLocation(), Sound.GHAST_MOAN, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.8F, 1.0F);
 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(),
                                  target.getLocation().add(0, 2, 0),
                                  FireworkEffect.builder()
@@ -111,7 +112,9 @@ public class SkillCurse extends TargettedSkill {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
 
         return SkillResult.NORMAL;
     }
@@ -129,6 +132,7 @@ public class SkillCurse extends TargettedSkill {
                 CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
                 if (Util.nextRand() < cEffect.missChance) {
                     event.setCancelled(true);
+                    character.getEntity().getWorld().spigot().playEffect(character.getEntity().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
                     broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
                 }
             }

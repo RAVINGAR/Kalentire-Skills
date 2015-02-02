@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -127,7 +128,8 @@ public class SkillToss extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        // Play sound
+        // Play sound        
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 100, 16);
 
         return SkillResult.NORMAL;
     }

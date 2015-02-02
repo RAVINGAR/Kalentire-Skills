@@ -1,6 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -32,5 +35,20 @@ public class SkillSacredHymn extends SkillBaseHeal {
     @Override
     protected void removeEffects(Hero hero) {
         
+    }
+    
+    protected void applySoundEffects(World world, LivingEntity target) {
+        world.playSound(target.getLocation(), Sound.NOTE_PLING, 0.5f, 1.0f);
+    }
+
+    protected void applyParticleEffects(World world, LivingEntity target) {
+        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+                org.bukkit.Effect.NOTE, // effect
+                0, // id
+                0, // data
+                1, 1, 1, // offset
+                0.0f, // speed
+                25, // particle count
+                1); // radius
     }
 }
