@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -177,6 +178,8 @@ public class SkillFireRune extends ActiveSkill {
                     // Damage the target
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+                    
+                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.FLAME, 0, 0, 0, 0, 0, 0.5F, 35, 16);
 
                     // Announce that the player has been hit with the skill
                     broadcast(targEnt.getLocation(), "    " + applyText, targCT.getName());

@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -98,7 +99,7 @@ public class SkillEmpathy extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation(),
                                  FireworkEffect.builder()
                                                .flicker(true).trail(true)
@@ -108,7 +109,10 @@ public class SkillEmpathy extends TargettedSkill {
                                                .build());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.WITCH_MAGIC, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 45, 16);
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.SPELL, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 15, 16);
 
         return SkillResult.NORMAL;
     }

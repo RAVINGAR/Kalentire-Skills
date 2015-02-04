@@ -102,9 +102,10 @@ public class SkillRuneword extends TargettedSkill {
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 0.5F, 1.0F);
         player.getWorld().spigot().playEffect(player.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0.1F, 1.0F, 0.1F, 0.1F, 30, 10);
         
-        for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+        for (int i = 0; i < circle(target.getLocation(), 36, 1.5).size(); i++)
 		{
-        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 10, 16);
+        	target.getWorld().spigot().playEffect(circle(target.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.PORTAL, 0, 0, 0.2F, 1.0F, 0.2F, 0.4F, 10, 16);
+        	target.getWorld().spigot().playEffect(circle(target.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.2F, 1.0F, 0.2F, 0.2F, 10, 16);
 		}
 
         return SkillResult.NORMAL;
