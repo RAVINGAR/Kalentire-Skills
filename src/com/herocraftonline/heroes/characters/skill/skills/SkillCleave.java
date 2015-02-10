@@ -81,6 +81,7 @@ public class SkillCleave extends TargettedSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
+        target.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.CRIT, 0, 0, 1.5F, 1.0F, 1.5F, 0.4F, 45, 16);
 
         return SkillResult.NORMAL;
     }

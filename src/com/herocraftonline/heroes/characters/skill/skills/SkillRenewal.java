@@ -36,7 +36,7 @@ public class SkillRenewal extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.LEVEL_UP, 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.ORB_PICKUP, 0.5f, 0.9f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {

@@ -10,6 +10,7 @@ import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -127,6 +128,9 @@ public class SkillPulse extends ActiveSkill {
     		}
             targetsHit++;
         }
+        
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.2F);
 
         return SkillResult.NORMAL;
     }

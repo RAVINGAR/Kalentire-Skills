@@ -142,7 +142,7 @@ public class SkillHealingChorus extends ActiveSkill {
         	super.tickHero(hero);
         	if (hero.getPlayer() == applier)
         	{
-        		hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+        		hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
         	}
         }
     }

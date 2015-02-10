@@ -181,7 +181,7 @@ public class SkillManasong extends ActiveSkill {
                     plugin.getServer().getPluginManager().callEvent(hrmEvent);
                     if (!hrmEvent.isCancelled()) {
                         hero.setMana(hrmEvent.getAmount() + hero.getMana());
-                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+                        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
                         player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                         if (hero.isVerboseMana())

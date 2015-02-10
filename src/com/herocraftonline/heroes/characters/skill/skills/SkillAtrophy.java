@@ -158,7 +158,7 @@ public class SkillAtrophy extends TargettedSkill {
                     }
                     time += 0.02;
                 }
-            }.runTaskTimer(plugin, 1, 12);
+            }.runTaskTimer(plugin, 1, 8);
             broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
         }
 
