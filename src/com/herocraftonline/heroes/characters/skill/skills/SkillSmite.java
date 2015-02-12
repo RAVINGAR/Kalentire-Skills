@@ -61,6 +61,11 @@ public class SkillSmite extends TargettedSkill {
     }
 
     @Override
+    public SkillResult use(Hero hero, String[] args) {
+        return args.length > 1 ? SkillResult.INVALID_TARGET_NO_MSG : super.use(hero, args);
+    }
+
+    @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
