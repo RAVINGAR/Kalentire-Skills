@@ -118,7 +118,7 @@ public class SkillDarkBolt extends ActiveSkill {
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         darkBolt.setVelocity(darkBolt.getVelocity().multiply(mult));
 
-        darkBolt.setIsIncendiary(true);
+        darkBolt.setIsIncendiary(false);
         darkBolt.setYield(0.0F);
 
         int ticksLived = SkillConfigManager.getUseSetting(hero, this, "ticks-lived", 20, false);
