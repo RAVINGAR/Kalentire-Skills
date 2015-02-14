@@ -16,7 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.WitherSkull;
+import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -38,11 +38,11 @@ public class SkillDarkBolt extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    private Map<WitherSkull, Long> darkBolts = new LinkedHashMap<WitherSkull, Long>(100) {
+    private Map<SmallFireball, Long> darkBolts = new LinkedHashMap<SmallFireball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<WitherSkull, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<SmallFireball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -110,7 +110,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.4F, 2.0F);
 
-        final WitherSkull darkBolt = player.launchProjectile(WitherSkull.class);
+        final SmallFireball darkBolt = player.launchProjectile(SmallFireball.class);
         darkBolts.put(darkBolt, System.currentTimeMillis());
 
         darkBolt.setShooter(player);
@@ -144,10 +144,10 @@ public class SkillDarkBolt extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
-            if (!(event.getEntity() instanceof WitherSkull))
+            if (!(event.getEntity() instanceof SmallFireball))
                 return;
 
-            final WitherSkull darkBolt = (WitherSkull) event.getEntity();
+            final SmallFireball darkBolt = (SmallFireball) event.getEntity();
             if ((!(darkBolt.getShooter() instanceof Player)))
                 return;
 
@@ -172,7 +172,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof WitherSkull) || !darkBolts.containsKey(projectile)) {
+            if (!(projectile instanceof SmallFireball) || !darkBolts.containsKey(projectile)) {
                 return;
             }
 
@@ -199,7 +199,7 @@ public class SkillDarkBolt extends ActiveSkill {
 		return locations;
 	}
 
-    private void explodeDarkBolt(WitherSkull darkBolt) {
+    private void explodeDarkBolt(SmallFireball darkBolt) {
 
         Player player = (Player) darkBolt.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
