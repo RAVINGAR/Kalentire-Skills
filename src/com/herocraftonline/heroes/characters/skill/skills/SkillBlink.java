@@ -124,10 +124,10 @@ public class SkillBlink extends ActiveSkill {
             teleport.setPitch(loc.getPitch());
             teleport.setYaw(loc.getYaw());
 
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 35, 16);
+            player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.6F, 1.0F, 0.6F, 0.2F, 45, 16);
             player.teleport(teleport);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 35, 16);
+            player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.6F, 1.0F, 0.6F, 0.2F, 45, 16);
             player.getWorld().playSound(loc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;

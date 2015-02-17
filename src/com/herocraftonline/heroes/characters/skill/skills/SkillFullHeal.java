@@ -1,8 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -53,6 +56,19 @@ public class SkillFullHeal extends TargettedSkill {
 
         return node;
     }
+    
+    public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)
+	{
+		ArrayList<Location> locations = new ArrayList<Location>();
+		
+		for (double y = 0; y <= height; y += particleInterval) 
+		{
+			double x = center.getX() + (radius * Math.cos(y));
+			double z = center.getZ() + (radius * Math.sin(y));
+			locations.add(new Location(center.getWorld(), x, center.getY() + y, z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -99,6 +115,11 @@ public class SkillFullHeal extends TargettedSkill {
         
         Player targetPlayer = targetHero.getPlayer();
         targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.CLOUD, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 25, 16);
+        ArrayList<Location> particleLocations = helix(player.getLocation(), 1.0D, 2.0D, 0.1D);
+        for (Location l : particleLocations)
+        {
+        	player.getWorld().spigot().playEffect(l, org.bukkit.Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0, 1, 16);
+        }
         targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.2F, 25, 16);
 
         return SkillResult.NORMAL;

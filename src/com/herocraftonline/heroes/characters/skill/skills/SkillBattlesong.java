@@ -165,6 +165,7 @@ public class SkillBattlesong extends ActiveSkill {
                             HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(member, staminaRestore, skill);
                             plugin.getServer().getPluginManager().callEvent(hrsEvent);
                             if (!hrsEvent.isCancelled()) {
+                            	member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 25, 16);
                                 member.setStamina(hrsEvent.getAmount() + member.getStamina());
                             }
                         }
@@ -175,6 +176,8 @@ public class SkillBattlesong extends ActiveSkill {
                 HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
                 plugin.getServer().getPluginManager().callEvent(hrsEvent);
                 if (!hrsEvent.isCancelled()) {
+                	hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 25, 16);
+                	hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getEyeLocation(), org.bukkit.Effect.NOTE, 0, 0, 0.4F, 0.0F, 0.4F, 0.0F, 15, 16);
                     hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
                 }
             }

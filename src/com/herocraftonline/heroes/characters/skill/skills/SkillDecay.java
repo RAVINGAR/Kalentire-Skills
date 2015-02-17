@@ -1,11 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -124,6 +128,27 @@ public class SkillDecay extends TargettedSkill {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
+            final LivingEntity p = monster.getEntity();
+            new BukkitRunnable() {            
+                
+                private double time = 0;
+
+                @SuppressWarnings("deprecation")
+                @Override
+                public void run() 
+                {
+                	Location location = p.getLocation().add(0, 0.5, 0);
+                    if (time < 1.0) 
+                    {
+                        p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+                    } 
+                    else 
+                    {
+                        cancel();
+                    }
+                    time += 0.02;
+                }
+            }.runTaskTimer(plugin, 1, 6);
             broadcast(monster.getEntity().getLocation(), "    " + applyText, Messaging.getLivingEntityName(monster), applier.getName());
         }
 
@@ -131,6 +156,27 @@ public class SkillDecay extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
+            final Player p = player;
+            new BukkitRunnable() {            
+                
+                private double time = 0;
+
+                @SuppressWarnings("deprecation")
+                @Override
+                public void run() 
+                {
+                	Location location = p.getLocation().add(0, 0.5, 0);
+                    if (time < 1.0) 
+                    {
+                        p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+                    } 
+                    else 
+                    {
+                        cancel();
+                    }
+                    time += 0.02;
+                }
+            }.runTaskTimer(plugin, 1, 6);
             broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
         }
 

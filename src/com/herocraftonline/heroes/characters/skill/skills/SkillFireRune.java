@@ -179,7 +179,7 @@ public class SkillFireRune extends ActiveSkill {
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, false);
                     
-                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.FLAME, 0, 0, 0, 0, 0, 0.5F, 35, 16);
+                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
 
                     // Announce that the player has been hit with the skill
                     broadcast(targEnt.getLocation(), "    " + applyText, targCT.getName());

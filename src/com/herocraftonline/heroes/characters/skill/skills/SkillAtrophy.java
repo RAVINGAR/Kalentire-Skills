@@ -131,23 +131,16 @@ public class SkillAtrophy extends TargettedSkill {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            final Player p = player;
-            new BukkitRunnable() {
+            final LivingEntity p = monster.getEntity();
+            new BukkitRunnable() {            
                 
-                private Location location = p.getLocation().add(0, 0.5, 0);
-
                 private double time = 0;
 
                 @SuppressWarnings("deprecation")
                 @Override
-                public void run() {
+                public void run() 
+                {
+                	Location location = p.getLocation().add(0, 0.5, 0);
                     if (time < 1.0) 
                     {
                         p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
@@ -158,7 +151,35 @@ public class SkillAtrophy extends TargettedSkill {
                     }
                     time += 0.02;
                 }
-            }.runTaskTimer(plugin, 1, 8);
+            }.runTaskTimer(plugin, 1, 6);
+            broadcast(monster.getEntity().getLocation(), applyText, Messaging.getLivingEntityName(monster), applier.getDisplayName());
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            Player player = hero.getPlayer();
+            final Player p = player;
+            new BukkitRunnable() {            
+                
+                private double time = 0;
+
+                @SuppressWarnings("deprecation")
+                @Override
+                public void run() 
+                {
+                	Location location = p.getLocation().add(0, 0.5, 0);
+                    if (time < 1.0) 
+                    {
+                        p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+                    } 
+                    else 
+                    {
+                        cancel();
+                    }
+                    time += 0.02;
+                }
+            }.runTaskTimer(plugin, 1, 6);
             broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
         }
 

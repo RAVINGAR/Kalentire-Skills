@@ -68,6 +68,8 @@ public class SkillSuperheat extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         hero.addEffect(new SuperheatEffect(this, hero.getPlayer(), duration));
+        
+        hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 1.5F, 0.0F, 0.0F, 15, 8);
 
         return SkillResult.NORMAL;
     }

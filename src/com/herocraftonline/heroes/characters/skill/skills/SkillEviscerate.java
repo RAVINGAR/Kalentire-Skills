@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -73,6 +74,8 @@ public class SkillEviscerate extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_HIT, 0.4F, 2.0F);
         //player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.4F, 2.0F);
+        
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.TILE_BREAK, 115, 3, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
 
         return SkillResult.NORMAL;
     }
