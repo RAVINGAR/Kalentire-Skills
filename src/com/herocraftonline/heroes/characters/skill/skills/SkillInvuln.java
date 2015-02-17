@@ -103,9 +103,11 @@ public class SkillInvuln extends ActiveSkill {
             	ArrayList<Location> particleLocations = rectangle(location.add(0, height, 0), 2, 1);
             	for (Location l : particleLocations)
             	{
-            		l.getWorld().spigot().playEffect(l, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0, 0, 0, 0, 10, 16);
+            		l.getWorld().spigot().playEffect(l, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.2F, 0.3F, 0.0F, 10, 16);
             	}
             	height -= 1;
+            	if (height == 0)
+            		cancel();
             }
         }.runTaskTimer(plugin, 1, 3);
 		broadcastExecuteText(hero);

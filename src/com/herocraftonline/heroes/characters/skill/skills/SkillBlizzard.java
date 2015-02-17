@@ -11,7 +11,9 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -163,6 +165,7 @@ public class SkillBlizzard extends ActiveSkill {
                     Vector vel = new Vector(randomX, -yVelocity, randomZ);
 
                     Snowball iceBolt = world.spawn(fLoc, Snowball.class);
+                    iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
                     iceBolt.setShooter(player);
                     iceBolt.setVelocity(vel);
                     blizzardIceBolts.put(iceBolt, System.currentTimeMillis());
