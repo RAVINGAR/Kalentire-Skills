@@ -116,18 +116,19 @@ public class SkillPulse extends ActiveSkill {
                 		.build());
             } catch (Exception e) {
                 e.printStackTrace();
-            }*/
+            }*/            
             
-            for (double r = 1; r < radius * 2; r++)
-    		{
-    			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
-    			for (int i = 0; i < particleLocations.size(); i++)
-    			{
-    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
-    			}
-    		}
             targetsHit++;
         }
+        
+        for (double r = 1; r < radius * 2; r++)
+		{
+			ArrayList<Location> particleLocations = circle(player.getLocation(), 45, r / 2);
+			for (int i = 0; i < particleLocations.size(); i++)
+			{
+				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+			}
+		}
         
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 1.0F, 1.2F);
         player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.2F);

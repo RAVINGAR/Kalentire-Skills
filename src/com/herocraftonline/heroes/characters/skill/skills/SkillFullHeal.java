@@ -115,7 +115,7 @@ public class SkillFullHeal extends TargettedSkill {
         
         Player targetPlayer = targetHero.getPlayer();
         targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.CLOUD, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 25, 16);
-        ArrayList<Location> particleLocations = helix(player.getLocation(), 1.0D, 2.0D, 0.1D);
+        ArrayList<Location> particleLocations = helix(player.getLocation(), 3.0D, 2.0D, 0.05D);
         for (Location l : particleLocations)
         {
         	player.getWorld().spigot().playEffect(l, org.bukkit.Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0, 1, 16);
