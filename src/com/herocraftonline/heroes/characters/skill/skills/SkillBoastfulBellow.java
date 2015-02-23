@@ -18,8 +18,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import java.util.List;
 
 public class SkillBoastfulBellow extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillBoastfulBellow(Heroes plugin) {
         super(plugin, "BoastfulBellow");
@@ -70,21 +68,6 @@ public class SkillBoastfulBellow extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 1.5F, .5F);
-
-        /* this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 target.getLocation().add(0, 1.5, 0),
-                                 FireworkEffect.builder()
-                                               .flicker(false)
-                                               .trail(false)
-                                               .with(FireworkEffect.Type.BALL)
-                                               .withColor(Color.GRAY)
-                                               .withFade(Color.NAVY)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         long currentTime = System.currentTimeMillis();
         List<Entity> entities = target.getNearbyEntities(radius, radius, radius);

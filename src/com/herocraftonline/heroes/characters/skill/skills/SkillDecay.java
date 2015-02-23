@@ -28,8 +28,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDecay extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
@@ -97,20 +95,6 @@ public class SkillDecay extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, player, duration, period, tickDamage));
 
         target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_HURT, 0.8F, 2.0F);
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 target.getLocation().add(0, 1.5, 0),
-                                 FireworkEffect.builder()
-                                               .flicker(true).trail(false)
-                                               .with(FireworkEffect.Type.BALL)
-                                               .withColor(Color.BLACK)
-                                               .withFade(Color.GRAY)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

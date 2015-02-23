@@ -28,9 +28,6 @@ import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillFlyingKick extends TargettedSkill {
 
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
-
     public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
         setDescription("FlyingKick towards your target and deal $1 damage! Targetting distance for this ability is increased by your Agility.");

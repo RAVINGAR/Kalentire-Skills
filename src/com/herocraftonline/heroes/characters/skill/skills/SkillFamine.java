@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -26,7 +27,7 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFamine extends TargettedSkill {
-    public VisualEffect fplayer = new VisualEffect();
+	
     private String applyText;
     private String expireText;
 
@@ -115,19 +116,7 @@ public class SkillFamine extends TargettedSkill {
         }
 
         target.getWorld().playSound(target.getLocation(), Sound.BLAZE_BREATH, 0.7F, 2.0F);
-
-        try {
-            fplayer.playFirework(target.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder()
-                                               .flicker(false).trail(true)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.BLACK)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.3F, 0.2F, 0.3F, 0.0F, 25, 16);
 
         return SkillResult.NORMAL;
     }

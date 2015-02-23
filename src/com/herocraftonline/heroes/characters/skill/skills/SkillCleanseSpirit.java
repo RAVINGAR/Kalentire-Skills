@@ -17,8 +17,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillCleanseSpirit extends SkillBaseHeal {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillCleanseSpirit(Heroes plugin) {
         super(plugin, "CleanseSpirit");

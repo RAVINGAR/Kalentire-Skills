@@ -23,7 +23,6 @@ import org.bukkit.util.Vector;
 import java.util.List;
 
 public class SkillGreatCombustion extends ActiveSkill {
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillGreatCombustion(Heroes plugin) {
         super(plugin, "GreatCombustion");
@@ -100,16 +99,6 @@ public class SkillGreatCombustion extends ActiveSkill {
             player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
             player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 3, 16);
             player.getWorld().playSound(targetBlock.getLocation(), Sound.EXPLODE, 6.0F, 1);
-            /*try {
-                fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.RED).withFade(Color.ORANGE).build());
-                fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.ORANGE).withFade(Color.RED).build());
-            }
-            catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }*/
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);

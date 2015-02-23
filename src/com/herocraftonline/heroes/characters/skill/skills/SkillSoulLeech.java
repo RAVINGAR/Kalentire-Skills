@@ -25,8 +25,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSoulLeech extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     private String applyText;
     private String expireText;
@@ -101,20 +99,6 @@ public class SkillSoulLeech extends TargettedSkill {
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new SoulLeechEffect(this, player, period, duration, damage, healMult));
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(target.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder()
-                                               .flicker(false).trail(true)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.PURPLE)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

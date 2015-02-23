@@ -25,8 +25,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDivineBlessing extends ActiveSkill {
-	// This is for Firework Effects
-	public VisualEffect fplayer = new VisualEffect();
 
 	public SkillDivineBlessing(Heroes plugin) {
 		super(plugin, "DivineBlessing");
@@ -152,13 +150,6 @@ public class SkillDivineBlessing extends ActiveSkill {
 		}
 
 		broadcastExecuteText(hero);
-
-		// this is our fireworks shit
-		/*try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
 		return SkillResult.NORMAL;
 	}

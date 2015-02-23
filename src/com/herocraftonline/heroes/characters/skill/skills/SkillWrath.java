@@ -13,8 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillWrath extends TargettedSkill {
-    // This is for Firework Effects
-    //public VisualEffect fplayer = new VisualEffect();
 
     public SkillWrath(Heroes plugin) {
         super(plugin, "Wrath");
@@ -78,13 +76,6 @@ public class SkillWrath extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        /* this is our fireworks
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
-                    .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.SILVER).withFade(Color.NAVY).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         //public void playEffect(Location location, Effect effect, int_ id, int_ data, float_ offsetX, float_ offsetY, float_ offsetZ, float_ speed, int_ particleCount, int_ radius)
         //public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 1, 1, 1F, 1F, 1F, 1F, 30, 10);

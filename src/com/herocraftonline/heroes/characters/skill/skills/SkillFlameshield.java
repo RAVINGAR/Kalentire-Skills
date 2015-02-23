@@ -25,8 +25,7 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlameshield extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+	
     private String applyText;
     private String expireText;
 
@@ -92,19 +91,6 @@ public class SkillFlameshield extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         hero.addEffect(new FlameshieldEffect(this, player, duration));
-
-        // this is our fireworks shit
-        /*try {
-            fplayer.playFirework(player.getWorld(),
-                                 player.getLocation().add(0, 2, 0),
-                                 FireworkEffect.builder().flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.CREEPER)
-                                               .withColor(Color.RED)
-                                               .withFade(Color.MAROON)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         
         ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
         for (int i = 0; i < locations.size(); i++)

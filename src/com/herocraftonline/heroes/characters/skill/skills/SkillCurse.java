@@ -30,8 +30,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillCurse extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
     private String missText;
@@ -95,24 +93,6 @@ public class SkillCurse extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, player, duration, missChance));
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.8F, 1.0F);
-
-        // this is our fireworks shit
-        /*try {
-            fplayer.playFirework(player.getWorld(),
-                                 target.getLocation().add(0, 2, 0),
-                                 FireworkEffect.builder()
-                                               .flicker(false).trail(true)
-                                               .with(FireworkEffect.Type.CREEPER)
-                                               .withColor(Color.PURPLE)
-                                               .withFade(Color.GREEN)
-                                               .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }*/
         
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
 

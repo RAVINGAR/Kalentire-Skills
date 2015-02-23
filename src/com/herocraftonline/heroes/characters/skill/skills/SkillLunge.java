@@ -25,9 +25,6 @@ import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillLunge extends TargettedSkill {
 
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
-
     public SkillLunge(Heroes plugin) {
         super(plugin, "Lunge");
         setDescription("Lunge towards your target! Targetting distance for this ability is increased by your Strength.");

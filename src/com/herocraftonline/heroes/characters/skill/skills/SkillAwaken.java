@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAwaken extends ActiveSkill {
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillAwaken(Heroes plugin) {
         super(plugin, "Awaken");

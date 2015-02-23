@@ -33,8 +33,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHolyAura extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     private String applyText;
     private String expireText;
@@ -115,13 +113,6 @@ public class SkillHolyAura extends ActiveSkill {
         undeadDamage += (hero.getAttributeValue(AttributeType.WISDOM) * undeadDamageIncrease);
 
         hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
-
-        /*try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
-                    .trail(false).with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.SILVER).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         
         player.getWorld().playSound(player.getLocation(), Sound.NOTE_PIANO, 7.0F, 16);
 

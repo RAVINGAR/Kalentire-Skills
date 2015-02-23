@@ -25,9 +25,6 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillFullHeal extends TargettedSkill {
 
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
-
     public SkillFullHeal(Heroes plugin) {
         super(plugin, "FullHeal");
         setDescription("You restore your target to full health. However, this ability will only heal you for $1% of your max health however. Targetting distance for this ability is increased by your Wisdom level.");
@@ -100,18 +97,6 @@ public class SkillFullHeal extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
-
-        // this is our fireworks shit        
-        /*try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.FUCHSIA)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         
         Player targetPlayer = targetHero.getPlayer();
         targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.CLOUD, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 25, 16);

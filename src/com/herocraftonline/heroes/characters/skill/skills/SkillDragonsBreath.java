@@ -26,8 +26,6 @@ import java.util.List;
 
 public class SkillDragonsBreath extends ActiveSkill {
 
-    public VisualEffect fplayer = new VisualEffect();
-
     public SkillDragonsBreath(Heroes plugin) {
         super(plugin, "DragonsBreath");
         setDescription("You unleash the furious breath of a dragon in front of you, up to $1 blocks. Targets hit will will be dealt $2 fire damage.");
@@ -123,7 +121,6 @@ public class SkillDragonsBreath extends ActiveSkill {
                     public void run() {
                         try {
                             for (Location location : locations) {
-                                //fplayer.playFirework(location.getWorld(), location, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
                             	player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
                             }
                         } catch (Exception e) {

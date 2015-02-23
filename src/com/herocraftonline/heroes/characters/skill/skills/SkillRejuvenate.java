@@ -23,8 +23,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRejuvenate extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private String expireText;
     private String applyText;
 
@@ -94,14 +92,6 @@ public class SkillRejuvenate extends TargettedSkill {
 
         RejuvenateEffect rEffect = new RejuvenateEffect(this, player, period, duration, healing);
         targetHero.addEffect(rEffect);
-
-        // this is our fireworks shit
-        /*try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(false)
-                    .with(FireworkEffect.Type.STAR).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         return SkillResult.NORMAL;
     }

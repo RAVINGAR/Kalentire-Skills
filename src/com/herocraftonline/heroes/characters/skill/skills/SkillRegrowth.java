@@ -28,8 +28,7 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRegrowth extends TargettedSkill {
-
-    public VisualEffect fplayer = new VisualEffect();
+	
     private String expireText;
     private String applyText;
 
@@ -136,13 +135,6 @@ public class SkillRegrowth extends TargettedSkill {
         RegrowthEffect rEffect = new RegrowthEffect(this, player, period, duration, hot);
         targetHero.addEffect(rEffect);
 
-        // this is our fireworks shit
-        /*try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-        
         ArrayList<Location> particleLocations = helix(targetHero.getPlayer().getLocation(), 3.0D, 2.0D, 0.05D);
         for (Location l : particleLocations)
         {

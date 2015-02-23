@@ -23,8 +23,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDarkBlade extends TargettedSkill {
-    // This is for Firework Effects
-    //public VisualEffect fplayer = new VisualEffect();
 
     public SkillDarkBlade(Heroes plugin) {
         super(plugin, "DarkBlade");
@@ -103,20 +101,6 @@ public class SkillDarkBlade extends TargettedSkill {
             if (hero.isVerboseMana())
                 Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
         }
-
-        /* this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder().
-                                               flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.BLACK)
-                                               .withFade(Color.PURPLE)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         player.getWorld().spigot().playEffect(target.getEyeLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 35, 16);
         player.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_CAVE, 5.0F, 0.2F);

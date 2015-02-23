@@ -18,8 +18,7 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillLayhands extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+	
     public SkillLayhands(Heroes plugin) {
         super(plugin, "Layhands");
         setDescription("You restore your target to full health. The maximum targetting range of this ability is increased by your Wisdom.");
@@ -66,18 +65,6 @@ public class SkillLayhands extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.9F, 1.0F);
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0),
-                                 FireworkEffect.builder().flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.BALL)
-                                               .withColor(Color.FUCHSIA)
-                                               .withFade(Color.WHITE)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkillPulse extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+
     public SkillPulse(Heroes plugin) {
         super(plugin, "Pulse");
         setDescription("You deal $1 damage to all enemies within $2 blocks.");
@@ -104,19 +103,7 @@ public class SkillPulse extends ActiveSkill {
                 continue;
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
-
-            // this is our fireworks shit
-            /*try {
-                fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-                		FireworkEffect.builder().flicker(false).trail(false)
-                		.with(FireworkEffect.Type.BALL)
-                		.withColor(Color.YELLOW)
-                		.withFade(Color.SILVER)
-                		.build());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/            
+            damageEntity(target, player, damage, DamageCause.MAGIC);       
             
             targetsHit++;
         }

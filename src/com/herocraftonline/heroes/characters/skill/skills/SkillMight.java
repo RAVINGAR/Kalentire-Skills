@@ -28,8 +28,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMight extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
@@ -113,18 +111,6 @@ public class SkillMight extends ActiveSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 2, 0),
-                                 FireworkEffect.builder().flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.STAR)
-                                               .withColor(Color.RED)
-                                               .withFade(Color.MAROON)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

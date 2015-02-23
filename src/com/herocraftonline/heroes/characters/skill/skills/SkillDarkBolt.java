@@ -33,7 +33,6 @@ import java.util.Map.Entry;
 
 public class SkillDarkBolt extends ActiveSkill {
 
-    public VisualEffect fplayer = new VisualEffect();
 
     private String applyText;
     private String expireText;
@@ -239,16 +238,6 @@ public class SkillDarkBolt extends ActiveSkill {
         }
 
         Location darkBoltLoc = darkBolt.getLocation();
-        try {
-            fplayer.playFirework(darkBoltLoc.getWorld(), darkBoltLoc, FireworkEffect.builder()
-                                                                                    .flicker(false)
-                                                                                    .trail(true)
-                                                                                    .with(FireworkEffect.Type.CREEPER)
-                                                                                    .withColor(Color.BLACK)
-                                                                                    .withFade(Color.PURPLE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         darkBolt.remove();
     }

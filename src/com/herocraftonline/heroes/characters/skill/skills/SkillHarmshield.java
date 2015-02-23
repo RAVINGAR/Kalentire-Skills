@@ -1,9 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,8 +30,7 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillHarmshield extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+
     private String applyText;
     private String expireText;
 
@@ -70,6 +73,24 @@ public class SkillHarmshield extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is shielded from harm!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost his harm shield!").replace("%hero%", "$1");
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -79,18 +100,12 @@ public class SkillHarmshield extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new HarmShieldEffect(this, player, duration));
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0),
-                                 FireworkEffect.builder().flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.STAR)
-                                               .withColor(Color.MAROON)
-                                               .withFade(Color.YELLOW)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        
+        ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
+        for (int i = 0; i < locations.size(); i++)
+		{
+			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 1.2F, 0, 0, 1, 16);
+		}
 
         return SkillResult.NORMAL;
     }

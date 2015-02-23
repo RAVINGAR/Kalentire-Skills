@@ -22,8 +22,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDuskblade extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillDuskblade(Heroes plugin) {
         super(plugin, "Duskblade");
@@ -79,24 +77,6 @@ public class SkillDuskblade extends TargettedSkill {
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder().
-                                               flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.PURPLE)
-                                               .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
         
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_HIT, 0.8F, 1.0F);
         

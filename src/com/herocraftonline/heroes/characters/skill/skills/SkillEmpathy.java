@@ -22,8 +22,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillEmpathy extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillEmpathy(Heroes plugin) {
         super(plugin, "Empathy");
@@ -97,19 +95,6 @@ public class SkillEmpathy extends TargettedSkill {
         targetCT.addEffect(new SlowEffect(this, player, slowDuration, amplifier, null, null));
 
         broadcastExecuteText(hero, target);
-
-        // this is our fireworks shit
-        /*try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(),
-                                 FireworkEffect.builder()
-                                               .flicker(true).trail(true)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.BLACK)
-                                               .withFade(Color.GRAY)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.WITCH_MAGIC, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 45, 16);
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.SPELL, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 15, 16);

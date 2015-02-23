@@ -26,8 +26,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillPlague extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
@@ -96,18 +94,6 @@ public class SkillPlague extends TargettedSkill {
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, player, duration, period, tickDamage));
-
-        // this is our fireworks
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0),
-                                 FireworkEffect.builder().flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.OLIVE)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         player.getWorld().playSound(player.getLocation(), Sound.BAT_HURT, 0.8F, 1.0F);
 

@@ -27,9 +27,6 @@ import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillToss extends TargettedSkill {
 
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
-
     public SkillToss(Heroes plugin) {
         super(plugin, "Toss");
         setDescription("Grab your target and throw them in the opposite direction! Distance thrown is determined by your Strength.");

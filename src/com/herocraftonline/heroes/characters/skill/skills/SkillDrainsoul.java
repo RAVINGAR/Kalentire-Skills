@@ -20,8 +20,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDrainsoul extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillDrainsoul(Heroes plugin) {
         super(plugin, "Drainsoul");
@@ -78,20 +76,6 @@ public class SkillDrainsoul extends TargettedSkill {
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(target.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder()
-                                               .flicker(false).trail(true)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.PURPLE)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

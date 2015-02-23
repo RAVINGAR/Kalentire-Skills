@@ -16,7 +16,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SkillBloodRitual extends TargettedSkill {
-    //public VisualEffect fplayer = new VisualEffect();
 
     public SkillBloodRitual(Heroes plugin) {
         super(plugin, "BloodRitual");
@@ -101,14 +100,7 @@ public class SkillBloodRitual extends TargettedSkill {
 
         // Set Blood Union to 0
         buEffect.setBloodUnionLevel(0);
-
-        /* Play effect
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false)
-                    .trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+        
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.5F, 1.0F);
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
         return SkillResult.NORMAL;

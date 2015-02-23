@@ -22,8 +22,6 @@ import java.util.List;
 
 public class SkillTempest extends ActiveSkill {
 
-    public VisualEffect fplayer = new VisualEffect();		// Firework effect
-
     public SkillTempest(Heroes plugin) {
         super(plugin, "Tempest");
         setIdentifiers("skill tempest");
@@ -74,23 +72,6 @@ public class SkillTempest extends ActiveSkill {
         List<Location> fireworkLocations = circle(player.getLocation(), radius, 1, true, false, height);
         int fireworksSize = fireworkLocations.size();
         long ticksPerFirework = 100 / fireworksSize;
-
-        // Play the firework effects in a sequence
-        for (int i = 0; i < fireworksSize; i++) {
-            final Location fLoc = fireworkLocations.get(i);
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect.builder().flicker(false).trail(false)
-                                .withColor(Color.AQUA).with(Type.BURST).build());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }, ticksPerFirework * i);
-        }
 
         // Save player location for the center of the blast and max target count
         final Location centerLocation = player.getLocation();

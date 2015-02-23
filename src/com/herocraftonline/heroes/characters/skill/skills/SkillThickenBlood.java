@@ -24,7 +24,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillThickenBlood extends TargettedSkill {
-    public VisualEffect fplayer = new VisualEffect();
     private String applyText;
     private String expireText;
 
@@ -84,19 +83,6 @@ public class SkillThickenBlood extends TargettedSkill {
         ThickenBloodEffect tbEffect = new ThickenBloodEffect(this, player, duration);
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(tbEffect);
-
-        try {
-            fplayer.playFirework(target.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder()
-                                               .flicker(false).trail(true)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.BLACK)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

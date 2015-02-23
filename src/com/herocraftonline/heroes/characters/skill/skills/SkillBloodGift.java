@@ -15,7 +15,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SkillBloodGift extends TargettedSkill {
-    //public VisualEffect fplayer = new VisualEffect();
 
     public SkillBloodGift(Heroes plugin) {
         super(plugin, "BloodGift");
@@ -100,13 +99,6 @@ public class SkillBloodGift extends TargettedSkill {
         // Heal target
         targetHero.heal(hrhEvent.getAmount());
 
-        /* Play effect
-        try {
-            this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false)
-                    .with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         player.getWorld().playSound(player.getLocation(), Sound.BLAZE_BREATH, 0.5F, 1.0F);
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
         return SkillResult.NORMAL;

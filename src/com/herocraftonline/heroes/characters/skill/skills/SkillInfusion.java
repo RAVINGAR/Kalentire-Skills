@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillInfusion extends TargettedSkill {
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillInfusion(Heroes plugin) {
         super(plugin, "Infusion");
@@ -118,14 +117,6 @@ public class SkillInfusion extends TargettedSkill {
             if (effect.isType(EffectType.BLEED) && effect.isType(EffectType.HARMFUL)) {
                 targetHero.removeEffect(effect);
             }
-        }
-
-        // Play effect
-        try {
-            this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder()
-                    .flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return SkillResult.NORMAL;

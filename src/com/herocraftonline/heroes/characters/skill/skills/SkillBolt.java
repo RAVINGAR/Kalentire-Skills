@@ -19,8 +19,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 
 public class SkillBolt extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     
     public SkillBolt(Heroes plugin) {
         super(plugin, "Bolt");
@@ -73,20 +71,6 @@ public class SkillBolt extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         broadcastExecuteText(hero, target);
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.YELLOW)
-            		.withFade(Color.SILVER)
-            		.build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }
