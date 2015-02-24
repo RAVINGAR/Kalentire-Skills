@@ -1,12 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -14,6 +7,14 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+
+import java.util.HashSet;
 
 public class SkillSummonMooshroom extends ActiveSkill {
     
@@ -51,7 +52,7 @@ public class SkillSummonMooshroom extends ActiveSkill {
         Player player = hero.getPlayer();
         double chance2x = SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false);
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false);
-        Block wTargetBlock = player.getTargetBlock(null, 20).getRelative(BlockFace.UP);
+        Block wTargetBlock = player.getTargetBlock((HashSet<Byte>)null, 20).getRelative(BlockFace.UP);
         player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
         double chance = Util.nextRand();
         if (chance <= chance3x) {

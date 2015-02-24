@@ -1,23 +1,18 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import java.util.HashSet;
-import java.util.Iterator;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class SkillLavaWall extends ActiveSkill {
 
@@ -70,7 +65,7 @@ public class SkillLavaWall extends ActiveSkill {
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 		Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "LAVA"));
 
-		Block tBlock = player.getTargetBlock(null, maxDist);
+		Block tBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
 		if (tBlock.getType() == Material.AIR) {
 			return SkillResult.INVALID_TARGET;
 		}

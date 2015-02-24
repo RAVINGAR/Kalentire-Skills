@@ -1,5 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.DyeColor;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -9,14 +17,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Util;
+import java.util.HashSet;
 
 public class SkillSummonSheep extends ActiveSkill {
 
@@ -54,7 +55,7 @@ public class SkillSummonSheep extends ActiveSkill {
         double chance2x = SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-2x-per-level", 0.0, false) * hero.getSkillLevel(this);
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
-        Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
+        Block wTargetBlock = player.getTargetBlock((HashSet<Byte>)null, distance).getRelative(BlockFace.UP);
         Sheep sheep = (Sheep) player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.SHEEP);
         sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
         double chance = Util.nextRand();
