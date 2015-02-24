@@ -76,6 +76,7 @@ public class SkillMegabolt extends TargettedSkill {
         // target.getWorld().strikeLightningEffect(target.getLocation());
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
         target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.EXPLODE, lightningVolume, 1.0F);
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_HUGE, 0, 0, 0, 0, 0, 0, 1, 16);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);

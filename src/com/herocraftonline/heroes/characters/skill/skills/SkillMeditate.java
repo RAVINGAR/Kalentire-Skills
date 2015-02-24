@@ -81,6 +81,8 @@ public class SkillMeditate extends ActiveSkill {
         }
         
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 25, 16);
+        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 25, 16);
 
         return SkillResult.NORMAL;
     }

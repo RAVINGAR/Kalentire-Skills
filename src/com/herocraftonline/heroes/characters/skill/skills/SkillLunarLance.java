@@ -24,8 +24,6 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillLunarLance extends TargettedSkill {
 
-    //public VisualEffect fplayer = new VisualEffect();
-
     public SkillLunarLance(Heroes plugin) {
         super(plugin, "LunarLance");
         setDescription("Strike the target with a Lunar Lance dealing $1 physical damage and burning $2 mana from the target.");
@@ -104,18 +102,10 @@ public class SkillLunarLance extends TargettedSkill {
                 Messaging.send(player, Messaging.createManaBar(tHero.getMana(), tHero.getMaxMana()));
         }
 
-        /* Player Firework Effect
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(true)
-                    .trail(false).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.AQUA).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.CAT_HISS, 0.8F, 1.0F);
-
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0.0F, 0.0F, 0.0F, 0.4F, 35, 16);
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.0F, 0.2F, 0.1F, 25, 16);
+        target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_UNFECT, 1.0F, 0.6F);
+        player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 1.0F, 0.6F);
 
         return SkillResult.NORMAL;
     }

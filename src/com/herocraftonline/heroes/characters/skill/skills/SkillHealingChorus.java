@@ -112,7 +112,8 @@ public class SkillHealingChorus extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class HealingChorusEffect extends PeriodicHealEffect {
+    public class HealingChorusEffect extends PeriodicHealEffect 
+    {
 
         public HealingChorusEffect(Skill skill, Player applier, long period, long duration, double healing) {
             super(skill, "HealingChorus", applier, period, duration, healing, null, null);
@@ -124,7 +125,7 @@ public class SkillHealingChorus extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, "    " + applyText, player.getName());
+            Messaging.send(player, "    " + applyText, applier.getName());
         }
 
         @Override
@@ -133,7 +134,16 @@ public class SkillHealingChorus extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, "    " + expireText, player.getName());
+            Messaging.send(player, "    " + expireText, applier.getName());
+        }
+        
+        public void tickHero(Hero hero)
+        {
+        	super.tickHero(hero);
+        	if (hero.getPlayer() == applier)
+        	{
+        		hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+        	}
         }
     }
 }

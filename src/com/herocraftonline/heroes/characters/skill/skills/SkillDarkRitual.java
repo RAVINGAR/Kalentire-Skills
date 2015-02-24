@@ -18,8 +18,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDarkRitual extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillDarkRitual(Heroes plugin) {
         super(plugin, "DarkRitual");
@@ -74,20 +72,6 @@ public class SkillDarkRitual extends ActiveSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.4F, 1.0F);
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 player.getLocation().add(0, 3, 0),
-                                 FireworkEffect.builder()
-                                               .flicker(false).trail(true)
-                                               .with(FireworkEffect.Type.BALL_LARGE)
-                                               .withColor(Color.BLACK)
-                                               .withFade(Color.GRAY)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -199,6 +200,7 @@ public class SkillIceRune extends ActiveSkill {
                     // Damage and slow the target
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.5F, 1.0F, 0.5F, 0.0F, 35, 16);
                     targCT.addEffect(sEffect);
 
                     // Play Effects

@@ -18,6 +18,7 @@ import org.bukkit.entity.EnderCrystal;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public abstract class SkillBaseTotem extends ActiveSkill {
 
@@ -77,7 +78,7 @@ public abstract class SkillBaseTotem extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
 
-        Location loc = hero.getPlayer().getTargetBlock(null, 20).getLocation().add(0, 1, 0);
+        Location loc = hero.getPlayer().getTargetBlock((HashSet<Byte>)null,  20).getLocation().add(0, 1, 0);
         Totem totem = new Totem(this, loc, getFireOnNaturalRemove(hero), getRange(hero));
 
         if(hero.hasEffect("TotemEffect")) {

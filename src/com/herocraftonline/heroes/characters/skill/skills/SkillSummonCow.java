@@ -1,13 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -16,6 +8,15 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+
+import java.util.HashSet;
 
 public class SkillSummonCow extends ActiveSkill {
 
@@ -52,7 +53,7 @@ public class SkillSummonCow extends ActiveSkill {
         double chance2x = SkillConfigManager.getUseSetting(hero, this, "chance-2x", 0.2, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-2x-per-level", 0.0, false) * hero.getSkillLevel(this);
         double chance3x = SkillConfigManager.getUseSetting(hero, this, "chance-3x", 0.1, false) + (int) SkillConfigManager.getUseSetting(hero, this, "chance-3x-per-level", 0.0, false) * hero.getSkillLevel(this);
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
-        Block wTargetBlock = player.getTargetBlock(null, distance).getRelative(BlockFace.UP);
+        Block wTargetBlock = player.getTargetBlock((HashSet<Byte>)null, distance).getRelative(BlockFace.UP);
         EntityType cType = wTargetBlock.getType() == Material.HUGE_MUSHROOM_1 || 
                 wTargetBlock.getType() == Material.HUGE_MUSHROOM_2 || 
                 wTargetBlock.getType() == Material.MYCEL ? EntityType.MUSHROOM_COW : EntityType.COW;

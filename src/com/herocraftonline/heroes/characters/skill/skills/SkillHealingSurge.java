@@ -9,13 +9,14 @@ import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
+import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SkillHealingSurge extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+	
     private String expireText;
     private String applyText;
 
@@ -142,6 +143,9 @@ public class SkillHealingSurge extends TargettedSkill {
             hero.setStamina(hero.getStamina() + (int) Math.ceil(staminaToRestore));
             
             // This would be a good place for an effect.
+            Player player = hero.getPlayer();
+            player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 35, 16);
+            player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 15, 16);
         }
     }
 }

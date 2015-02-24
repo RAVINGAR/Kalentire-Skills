@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,8 +19,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 
 public class SkillHarmtouch extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillHarmtouch(Heroes plugin) {
         super(plugin, "Harmtouch");
@@ -63,20 +62,11 @@ public class SkillHarmtouch extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);
 
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,2,0), 
-            		FireworkEffect.builder()
-            		.flicker(true).trail(false)
-            		.with(FireworkEffect.Type.CREEPER)
-            		.withColor(Color.BLACK)
-            		.withFade(Color.PURPLE)
-            		.build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        //hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.HURT , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 0.3F, 1.2F, 0.3F, 0.0F, 15, 16);
+        hero.getPlayer().getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.3F, 1.2F, 0.3F, 0.0F, 25, 16);
+        hero.getPlayer().getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0.3F, 1.2F, 0.3F, 0.0F, 25, 16);
 
         return SkillResult.NORMAL;
     }

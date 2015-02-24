@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -16,8 +17,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillCleanseSpirit extends SkillBaseHeal {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillCleanseSpirit(Heroes plugin) {
         super(plugin, "CleanseSpirit");
@@ -53,6 +52,21 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
 
         return node;
     }
+    
+    protected void applySoundEffects(World world, LivingEntity target) {
+        world.playSound(target.getLocation(), Sound.ORB_PICKUP, 0.5f, 0.7f);
+    }
+
+    protected void applyParticleEffects(World world, LivingEntity target) {
+        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+                0, // id
+                0, // data
+                0.5F, 0.5F, 0.5F, // offset
+                1.0f, // speed
+                25, // particle count
+                16); // radius
+    }
 
     @Override
     protected void removeEffects(Hero hero) {
@@ -60,6 +74,8 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
                     hero.removeEffect(effect);
+                    hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.EXTINGUISH, 0, 0, 0, 0.4F, 0, 0.7F, 35, 16);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
                 }
             }
         }

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkillChaoticVisions extends ActiveSkill {
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillChaoticVisions(Heroes plugin) {
         super(plugin, "ChaoticVisions");
@@ -96,12 +95,6 @@ public class SkillChaoticVisions extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         // Play effect
-                        /*try {
-                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
-                                    .flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.PURPLE).withFade(Color.BLACK).build());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }*/
                     	
                     	//ParticleEffect.SPELL_WITCH.display(1, 1, 1, 0.1, 5, targetLocation, 20);
                     	//public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)

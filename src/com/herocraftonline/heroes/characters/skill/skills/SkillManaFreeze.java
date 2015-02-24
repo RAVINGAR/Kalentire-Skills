@@ -1,5 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
+import net.minecraft.server.v1_8_R1.Material;
+
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -56,6 +63,24 @@ public class SkillManaFreeze extends TargettedSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has stopped regenerating mana!").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is once again regenerating mana!").replace("%target%", "$1");
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -68,6 +93,15 @@ public class SkillManaFreeze extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         targetHero.addEffect(new ManaFreezeEffect(this, hero.getPlayer(), duration));
+        
+		ArrayList<Location> particleLocations = circle(targetHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
+		for (int i = 0; i < particleLocations.size(); i++)
+		{
+			targetHero.getPlayer().getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0, 0.1F, 0, 0.1F, 1, 16);
+		}
+		
+		targetHero.getPlayer().getWorld().spigot().playEffect(targetHero.getPlayer().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 35, 16);
+		
 
         return SkillResult.NORMAL;
 

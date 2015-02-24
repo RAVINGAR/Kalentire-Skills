@@ -1,27 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.server.v1_8_R1.BlockPosition;
-import net.minecraft.server.v1_8_R1.EntityHuman;
-import net.minecraft.server.v1_8_R1.EnumDirection;
-import net.minecraft.server.v1_8_R1.WorldServer;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Jukebox;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.util.BlockIterator;
-
 import com.google.common.collect.Lists;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
@@ -37,8 +15,27 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-
 import fr.neatmonster.nocheatplus.checks.CheckType;
+import net.minecraft.server.v1_8_R1.BlockPosition;
+import net.minecraft.server.v1_8_R1.EntityHuman;
+import net.minecraft.server.v1_8_R1.WorldServer;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Jukebox;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.BlockIterator;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class SkillTelekinesis extends ActiveSkill {
 
@@ -76,7 +73,7 @@ public class SkillTelekinesis extends ActiveSkill {
         final Player player = hero.getPlayer();
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false);
-        Block targetBlock = player.getTargetBlock(null, maxDist);
+        Block targetBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
         if (targetBlock.getType() == Material.AIR) {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }

@@ -4,6 +4,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -138,7 +139,8 @@ public class SkillMark extends ActiveSkill {
             Messaging.send(player, "You have marked a new location on $1 at: $2, $3, $4", obj);
 
             //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
+            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
             return SkillResult.NORMAL;
         }
     }

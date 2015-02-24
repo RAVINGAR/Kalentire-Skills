@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillBlitz extends TargettedSkill {
-    // This is for Firework Effects
-    //public VisualEffect fplayer = new VisualEffect();
     
     public SkillBlitz(Heroes plugin) {
         super(plugin, "Blitz");
@@ -67,21 +65,6 @@ public class SkillBlitz extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
         broadcastExecuteText(hero, target);
-
-        /* this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), 
-            		target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder()
-            		.flicker(false)
-            		.trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.YELLOW)
-            		.withFade(Color.SILVER)
-            		.build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         return SkillResult.NORMAL;
     }

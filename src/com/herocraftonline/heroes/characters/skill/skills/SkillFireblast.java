@@ -33,7 +33,6 @@ import com.herocraftonline.heroes.util.Util;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillFireblast extends ActiveSkill {
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillFireblast(Heroes plugin) {
         super(plugin, "Fireblast");
@@ -103,13 +102,6 @@ public class SkillFireblast extends ActiveSkill {
         if (targetBlock != null) {
             Location blastLocation = targetBlock.getLocation().clone();
             blastLocation.add(new Vector(.5, 0, .5));
-            
-            /*try {
-                fplayer.playFirework(blastLocation.getWorld(), blastLocation, FireworkEffect.builder().flicker(false).trail(true)
-                        .with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
             
             player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
             player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);

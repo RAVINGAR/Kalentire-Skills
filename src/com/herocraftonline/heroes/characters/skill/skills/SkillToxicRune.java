@@ -202,6 +202,7 @@ public class SkillToxicRune extends ActiveSkill {
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
                     player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    targCT.getEntity().getWorld().spigot().playEffect(targCT.getEntity().getLocation().add(0, 1, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.0F, 0.5F, 0.2F, 35, 16);
                 }
             }, (long) (0.1 * 20));
 

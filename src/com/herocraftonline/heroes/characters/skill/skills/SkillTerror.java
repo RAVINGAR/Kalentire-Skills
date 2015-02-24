@@ -87,6 +87,8 @@ public class SkillTerror extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.GHAST_SCREAM, 1.2F, 2.0F);
         player.getWorld().playSound(player.getLocation(), Sound.WOLF_HOWL, 0.4F, 1.8F);
+        target.getWorld().spigot().playEffect(target.getEyeLocation(), org.bukkit.Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.0F, 0.2F, 0.1F, 25, 16);
+        target.getWorld().spigot().playEffect(target.getEyeLocation(), org.bukkit.Effect.EXPLOSION, 0, 0, 0.2F, 0.0F, 0.2F, 0.5F, 25, 16);
 
         return SkillResult.NORMAL;
     }

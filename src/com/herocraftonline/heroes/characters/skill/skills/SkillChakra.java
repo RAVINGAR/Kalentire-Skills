@@ -26,8 +26,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillChakra extends ActiveSkill {
-	// This is for Firework Effects
-	public VisualEffect fplayer = new VisualEffect();
 
 	public SkillChakra(Heroes plugin) {
 		super(plugin, "Chakra");
@@ -126,14 +124,6 @@ public class SkillChakra extends ActiveSkill {
 			healDispel(hero, removals, healing, hero);
 
 		broadcastExecuteText(hero);
-
-		// this is our fireworks shit
-		/*try {
-			fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false)
-					.trail(true).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
 
 		for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
 		{

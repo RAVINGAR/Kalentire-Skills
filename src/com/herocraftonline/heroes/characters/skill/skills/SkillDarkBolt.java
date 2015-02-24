@@ -16,7 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.WitherSkull;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,16 +33,15 @@ import java.util.Map.Entry;
 
 public class SkillDarkBolt extends ActiveSkill {
 
-    public VisualEffect fplayer = new VisualEffect();
 
     private String applyText;
     private String expireText;
 
-    private Map<WitherSkull, Long> darkBolts = new LinkedHashMap<WitherSkull, Long>(100) {
+    private Map<Snowball, Long> darkBolts = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<WitherSkull, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -110,7 +109,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.4F, 2.0F);
 
-        final WitherSkull darkBolt = player.launchProjectile(WitherSkull.class);
+        final Snowball darkBolt = player.launchProjectile(Snowball.class);
         darkBolts.put(darkBolt, System.currentTimeMillis());
 
         darkBolt.setShooter(player);
@@ -118,8 +117,9 @@ public class SkillDarkBolt extends ActiveSkill {
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         darkBolt.setVelocity(darkBolt.getVelocity().multiply(mult));
 
-        darkBolt.setIsIncendiary(false);
-        darkBolt.setYield(0.0F);
+       // remove for now while we set this to a snowball
+       // darkBolt.setIsIncendiary(false);
+       // darkBolt.setYield(0.0F);
 
         int ticksLived = SkillConfigManager.getUseSetting(hero, this, "ticks-lived", 20, false);
 
@@ -144,10 +144,10 @@ public class SkillDarkBolt extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
-            if (!(event.getEntity() instanceof WitherSkull))
+            if (!(event.getEntity() instanceof Snowball))
                 return;
 
-            final WitherSkull darkBolt = (WitherSkull) event.getEntity();
+            final Snowball darkBolt = (Snowball) event.getEntity();
             if ((!(darkBolt.getShooter() instanceof Player)))
                 return;
 
@@ -172,7 +172,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof WitherSkull) || !darkBolts.containsKey(projectile)) {
+            if (!(projectile instanceof Snowball) || !darkBolts.containsKey(projectile)) {
                 return;
             }
 
@@ -180,7 +180,7 @@ public class SkillDarkBolt extends ActiveSkill {
             event.setCancelled(true);
         }
     }
-    
+
     public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
 	{
 		World world = centerPoint.getWorld();
@@ -199,7 +199,7 @@ public class SkillDarkBolt extends ActiveSkill {
 		return locations;
 	}
 
-    private void explodeDarkBolt(WitherSkull darkBolt) {
+    private void explodeDarkBolt(Snowball darkBolt) {
 
         Player player = (Player) darkBolt.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
@@ -238,16 +238,6 @@ public class SkillDarkBolt extends ActiveSkill {
         }
 
         Location darkBoltLoc = darkBolt.getLocation();
-        try {
-            fplayer.playFirework(darkBoltLoc.getWorld(), darkBoltLoc, FireworkEffect.builder()
-                                                                                    .flicker(false)
-                                                                                    .trail(true)
-                                                                                    .with(FireworkEffect.Type.CREEPER)
-                                                                                    .withColor(Color.BLACK)
-                                                                                    .withFade(Color.PURPLE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         darkBolt.remove();
     }

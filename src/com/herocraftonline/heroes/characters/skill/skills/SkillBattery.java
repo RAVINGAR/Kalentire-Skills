@@ -14,8 +14,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SkillBattery extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillBattery(Heroes plugin) {
         super(plugin, "Battery");
@@ -74,21 +72,6 @@ public class SkillBattery extends TargettedSkill {
 
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
             player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 1.0F);
-
-            /* this is our fireworks shit
-            try {
-                fplayer.playFirework(player.getWorld(),
-                                     target.getLocation().add(0, 1.5, 0),
-                                     FireworkEffect.builder()
-                                                   .flicker(false)
-                                                   .trail(false)
-                                                   .with(FireworkEffect.Type.BURST)
-                                                   .withColor(Color.SILVER)
-                                                   .withFade(Color.NAVY)
-                                                   .build());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
             target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0F, 1F, 0F, 10F, 55, 10);
             return SkillResult.NORMAL;
         }

@@ -1,7 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -20,9 +24,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFullHeal extends TargettedSkill {
-
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillFullHeal(Heroes plugin) {
         super(plugin, "FullHeal");
@@ -52,6 +53,19 @@ public class SkillFullHeal extends TargettedSkill {
 
         return node;
     }
+    
+    public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)
+	{
+		ArrayList<Location> locations = new ArrayList<Location>();
+		
+		for (double y = 0; y <= height; y += particleInterval) 
+		{
+			double x = center.getX() + (radius * Math.cos(y));
+			double z = center.getZ() + (radius * Math.sin(y));
+			locations.add(new Location(center.getWorld(), x, center.getY() + y, z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -83,18 +97,15 @@ public class SkillFullHeal extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
-
-        // this is our fireworks shit        
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-            		FireworkEffect.builder().flicker(false).trail(false)
-            		.with(FireworkEffect.Type.BALL)
-            		.withColor(Color.FUCHSIA)
-            		.withFade(Color.WHITE)
-            		.build());
-        } catch (Exception e) {
-            e.printStackTrace();
+        
+        Player targetPlayer = targetHero.getPlayer();
+        targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.CLOUD, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 25, 16);
+        ArrayList<Location> particleLocations = helix(player.getLocation(), 3.0D, 2.0D, 0.05D);
+        for (Location l : particleLocations)
+        {
+        	player.getWorld().spigot().playEffect(l, org.bukkit.Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0, 1, 16);
         }
+        targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.2F, 25, 16);
 
         return SkillResult.NORMAL;
     }

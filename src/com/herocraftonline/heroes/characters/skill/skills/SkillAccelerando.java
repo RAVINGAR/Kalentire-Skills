@@ -148,7 +148,7 @@ public class SkillAccelerando extends ActiveSkill {
         
 		for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
 		{
-			player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 0, 16, 16);
+			player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 16);
 		}
 
         //Apply the effect to all party members
@@ -163,10 +163,6 @@ public class SkillAccelerando extends ActiveSkill {
             tHero.addEffect(accelEffect);
             tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
         }
-        
-        /*AreaOfEffectAnimation aoe = new AreaOfEffectAnimation(new EffectManager(this.plugin), SkillType.ABILITY_PROPERTY_SONG, radius);
-        aoe.setEntity(player);
-        aoe.run();*/
 
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);

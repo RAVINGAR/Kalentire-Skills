@@ -1,8 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -28,8 +33,6 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillDespair extends ActiveSkill {
     private String applyText;
     private String expireText;
-
-    public VisualEffect fplayer = new VisualEffect(); //fireworks
 
     public SkillDespair(Heroes plugin) {
         super(plugin, "Despair");
@@ -81,6 +84,24 @@ public class SkillDespair extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has blinded %target% with %skill%!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% has recovered their sight!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
     }
+    
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
+
+		double increment = (2 * Math.PI) / particleAmount;
+
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -111,15 +132,17 @@ public class SkillDespair extends ActiveSkill {
                 damageEntity(character.getEntity(), player, damage, DamageCause.MAGIC);
             }
         }
+        
+		for (double r = 1; r < radius * 2; r++)
+		{
+			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
+			for (int i = 0; i < particleLocations.size(); i++)
+			{
+				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.SPELL, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+			}
+		}
 
         player.getWorld().playSound(player.getLocation(), Sound.GHAST_SCREAM, 1.2F, 2.0F);
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 2.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.NAVY).withFade(Color.BLACK).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

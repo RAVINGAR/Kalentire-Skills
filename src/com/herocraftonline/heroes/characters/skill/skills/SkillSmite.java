@@ -18,8 +18,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSmite extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillSmite(Heroes plugin) {
         super(plugin, "Smite");

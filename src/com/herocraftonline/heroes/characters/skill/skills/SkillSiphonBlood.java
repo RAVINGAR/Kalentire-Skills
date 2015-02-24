@@ -25,8 +25,6 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillSiphonBlood extends TargettedSkill {
 
-    public VisualEffect fplayer = new VisualEffect();		// Firework effect
-
     public SkillSiphonBlood(Heroes plugin) {
         super(plugin, "SiphonBlood");
         setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4.");
@@ -120,16 +118,9 @@ public class SkillSiphonBlood extends TargettedSkill {
             else
                 buEffect.addBloodUnion(bloodUnionIncrease, false);
         }
-
-        // Play Effect
-        /*try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(true)
-                    .with(FireworkEffect.Type.BURST).withColor(Color.GREEN).withFade(Color.PURPLE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         
-        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
+        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LAVADRIP, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.NETHER_STALK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
         player.getWorld().playSound(target.getLocation(), Sound.DRINK, 4.0F, 1);
 
         return SkillResult.NORMAL;

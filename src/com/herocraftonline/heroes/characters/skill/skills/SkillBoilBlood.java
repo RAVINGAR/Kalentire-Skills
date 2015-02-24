@@ -30,7 +30,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBoilBlood extends ActiveSkill {
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillBoilBlood(Heroes plugin) {
         super(plugin, "BoilBlood");
@@ -143,13 +142,6 @@ public class SkillBoilBlood extends ActiveSkill {
                 continue;
 
             LivingEntity target = (LivingEntity) entity;
-
-            /*try {
-                this.fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder()
-                        .flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.RED).withFade(Color.BLACK).build());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
             
             player.getWorld().spigot().playEffect(target.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0, 0, 0, 0.2F, 50, 16);
             player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);

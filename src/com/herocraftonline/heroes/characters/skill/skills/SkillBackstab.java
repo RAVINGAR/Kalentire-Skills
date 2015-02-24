@@ -8,10 +8,13 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -184,6 +187,8 @@ public class SkillBackstab extends ActiveSkill {
 
                 if (backstabbed) {
                     Entity target = event.getEntity();
+                    target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
+                    target.getWorld().playSound(target.getLocation(), Sound.ENDERDRAGON_HIT, 1.0F, 0.6F);
                     if (target instanceof Monster)
                         broadcast(player.getLocation(), backstabText, player.getName(), Messaging.getLivingEntityName((Monster) target));
                     else if (target instanceof Player)

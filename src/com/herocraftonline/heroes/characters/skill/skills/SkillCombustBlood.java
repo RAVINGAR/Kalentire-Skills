@@ -30,7 +30,6 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillCombustBlood extends TargettedSkill {
 
-    public VisualEffect fplayer = new VisualEffect();		// Firework effect
     private String applyText;
     private String expireText;
 
@@ -104,11 +103,6 @@ public class SkillCombustBlood extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         broadcastExecuteText(hero, target);
-        /*try {
-            fplayer.playFirework(player.getWorld(), target.getLocation().add(0.0D, 1.5D, 0.0D), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.MAROON).withFade(Color.RED).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         
         player.getWorld().spigot().playEffect(target.getLocation(), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 75, 16);
         player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);

@@ -1,6 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -32,21 +35,28 @@ public class SkillAbsolution extends SkillBaseHeal {
 
         return node;
     }
+    
+    protected void applySoundEffects(World world, LivingEntity target) {
+        world.playSound(target.getLocation(), Sound.ORB_PICKUP, 0.5f, 0.7f);
+    }
+
+    protected void applyParticleEffects(World world, LivingEntity target) {
+        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+                org.bukkit.Effect.FIREWORKS_SPARK, // effect
+                0, // id
+                0, // data
+                0.5F, 0.5F, 0.5F, // offset
+                1.0f, // speed
+                25, // particle count
+                16); // radius
+    }
 
     @Override
     protected void removeEffects(Hero hero) {
         for (Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.DARK)) {
-            		/*CylinderEffect fx = new CylinderEffect(vm);
-            		fx.setEntity(hero.getPlayer());			
-            		fx.particle = ParticleEffect.FIREWORKS_SPARK;
-            		fx.height = 2;
-            		fx.particles = 7;
-            		fx.solid = false;
-            		fx.radius = 1;
-            		fx.offset = new Vector(0, -0.5, 0);
-            		fx.run();*/
+                	hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 16, 16);
                     hero.removeEffect(effect);
                 }
             }

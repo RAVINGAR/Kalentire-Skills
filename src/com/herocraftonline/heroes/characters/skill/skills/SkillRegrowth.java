@@ -1,8 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -24,8 +28,7 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRegrowth extends TargettedSkill {
-
-    public VisualEffect fplayer = new VisualEffect();
+	
     private String expireText;
     private String applyText;
 
@@ -82,6 +85,19 @@ public class SkillRegrowth extends TargettedSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been given the gift of regrowth!").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has lost the gift of regrowth!").replace("%target%", "$1");
     }
+    
+    public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)
+	{
+		ArrayList<Location> locations = new ArrayList<Location>();
+		
+		for (double y = 0; y <= height; y += particleInterval) 
+		{
+			double x = center.getX() + (radius * Math.cos(y));
+			double z = center.getZ() + (radius * Math.sin(y));
+			locations.add(new Location(center.getWorld(), x, center.getY() + y, z));
+		}
+		return locations;
+	}
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -119,12 +135,13 @@ public class SkillRegrowth extends TargettedSkill {
         RegrowthEffect rEffect = new RegrowthEffect(this, player, period, duration, hot);
         targetHero.addEffect(rEffect);
 
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(false).with(FireworkEffect.Type.STAR).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
+        ArrayList<Location> particleLocations = helix(targetHero.getPlayer().getLocation(), 3.0D, 2.0D, 0.05D);
+        for (Location l : particleLocations)
+        {
+        	player.getWorld().spigot().playEffect(l, org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0, 0, 0, 0, 1, 16);
         }
+        
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 35, 16);
 
         return SkillResult.NORMAL;
     }
@@ -150,6 +167,13 @@ public class SkillRegrowth extends TargettedSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
+        }
+        
+        public void tickHero(Hero hero)
+        {
+        	super.tickHero(hero);
+        	Player player = hero.getPlayer();
+        	player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
         }
     }
 }

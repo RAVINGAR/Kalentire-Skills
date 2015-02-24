@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkillBoneSpear extends ActiveSkill {
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillBoneSpear(Heroes plugin) {
         super(plugin, "BoneSpear");
@@ -99,13 +98,6 @@ public class SkillBoneSpear extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         //Play effect
-
-                        /*try {
-                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder()
-                                    .flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.WHITE).withFade(Color.BLUE).build());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }*/ // BAD FIREWORKS. BAD.
                     	
                         //attempting spigot particles
                     	// Why does it play a bunch of crit particles every block the spear travels?

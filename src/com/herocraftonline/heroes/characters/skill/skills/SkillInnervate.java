@@ -65,7 +65,7 @@ public class SkillInnervate extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
         
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0, 0.1F, 0, 0.1F, 35, 5);
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0, 0.9F, 0, 0.1F, 65, 11);
 
         return SkillResult.NORMAL;
     }

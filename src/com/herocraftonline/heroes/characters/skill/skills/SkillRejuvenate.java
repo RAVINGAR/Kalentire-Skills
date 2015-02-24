@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -22,8 +23,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRejuvenate extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
     private String expireText;
     private String applyText;
 
@@ -94,14 +93,6 @@ public class SkillRejuvenate extends TargettedSkill {
         RejuvenateEffect rEffect = new RejuvenateEffect(this, player, period, duration, healing);
         targetHero.addEffect(rEffect);
 
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(true).trail(false)
-                    .with(FireworkEffect.Type.STAR).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return SkillResult.NORMAL;
     }
 
@@ -126,6 +117,13 @@ public class SkillRejuvenate extends TargettedSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
+        }
+        
+        public void tickHero(Hero hero)
+        {
+        	super.tickHero(hero);
+        	Player player = hero.getPlayer();
+        	player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
         }
     }
 }

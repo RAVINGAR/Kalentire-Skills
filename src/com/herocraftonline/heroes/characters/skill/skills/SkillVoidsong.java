@@ -24,8 +24,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillVoidsong extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillVoidsong(Heroes plugin) {
         super(plugin, "Voidsong");
@@ -99,17 +97,6 @@ public class SkillVoidsong extends ActiveSkill {
                 Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
                 targetHero.addEffect(new SilenceEffect(this, player, duration));
             }
-        }
-
-        try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 2, 0), FireworkEffect.builder()
-                                                                                                     .flicker(false).trail(false)
-                                                                                                     .with(FireworkEffect.Type.CREEPER)
-                                                                                                     .withColor(Color.BLACK)
-                                                                                                     .withFade(Color.MAROON)
-                                                                                                     .build());
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);

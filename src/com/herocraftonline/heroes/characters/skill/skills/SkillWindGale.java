@@ -36,8 +36,6 @@ import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillWindGale extends ActiveSkill {
 
-    public VisualEffect fplayer = new VisualEffect();
-
     public SkillWindGale(Heroes plugin) {
         super(plugin, "WindGale");
         setDescription("You unleash strong gales of wind front of you, up to $1 blocks. Targets hit will will be dealt $2 damage and knocked back based on your Intellect.");

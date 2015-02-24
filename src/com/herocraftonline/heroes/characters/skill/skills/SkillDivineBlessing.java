@@ -25,8 +25,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDivineBlessing extends ActiveSkill {
-	// This is for Firework Effects
-	public VisualEffect fplayer = new VisualEffect();
 
 	public SkillDivineBlessing(Heroes plugin) {
 		super(plugin, "DivineBlessing");
@@ -77,22 +75,22 @@ public class SkillDivineBlessing extends ActiveSkill {
 	
 	public void onWarmup(Hero hero)
 	{
-		final Location playerLoc = hero.getPlayer().getLocation();
-		final Location firstLoc = playerLoc.clone();
-		final Location secondLoc = playerLoc.clone();
+		final Player player = hero.getPlayer();
 		new BukkitRunnable() {
 
 			private double time = 0;
 
 			@Override
-			public void run() {
-					
-				if (time < 1.0) {
-					firstLoc.add(4.7 * Math.sin(time * 16), time * 2.2, 4.7 * Math.cos(time * 16));
-					firstLoc.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.0f, 1, 16);
-					secondLoc.add(-4.7 * Math.sin(time * 16), time * 2.2, -4.7 * Math.cos(time * 16));
-					secondLoc.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.0f, 1, 16);
-				} else {
+			public void run() 
+			{
+				final Location playerLoc = player.getLocation();
+				if (time < 1.0) 
+				{
+					player.getLocation(playerLoc).add(0.7 * Math.sin(time * 16), time * 2.2, 0.7 * Math.cos(time * 16));
+                    player.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.1f, 1, 16);			
+				} 
+				else 
+				{
 					playerLoc.add(0, 2.3, 0);					
 					for (double r = 1; r < 5 * 2; r++)
 					{
@@ -152,13 +150,6 @@ public class SkillDivineBlessing extends ActiveSkill {
 		}
 
 		broadcastExecuteText(hero);
-
-		// this is our fireworks shit
-		/*try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 1.5, 0), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BALL).withColor(Color.FUCHSIA).withFade(Color.WHITE).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
 		return SkillResult.NORMAL;
 	}

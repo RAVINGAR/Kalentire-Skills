@@ -18,8 +18,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillEnergize extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillEnergize(Heroes plugin) {
         super(plugin, "Energize");
@@ -70,21 +68,8 @@ public class SkillEnergize extends ActiveSkill {
         if (hero.isVerboseStamina())
             Messaging.send(player, Messaging.createFullStaminaBar(hero.getStamina(), hero.getMaxStamina()));
 
-        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
+        player.getWorld().spigot().playEffect(player.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0, 45, 16);
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.8F, 1.0F);
-
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 player.getLocation().add(0, 1.5, 0),
-                                 FireworkEffect.builder().flicker(false).trail(false)
-                                               .with(FireworkEffect.Type.STAR)
-                                               .withColor(Color.YELLOW)
-                                               .withFade(Color.TEAL)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return SkillResult.NORMAL;
     }

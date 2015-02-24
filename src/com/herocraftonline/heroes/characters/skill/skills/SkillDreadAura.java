@@ -202,7 +202,7 @@ public class SkillDreadAura extends ActiveSkill {
             
     		for (double r = 1; r < radius * 2; r++)
     		{
-    			ArrayList<Location> particleLocations = circle(player.getLocation(), 90, r / 2);
+    			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
     			for (int i = 0; i < particleLocations.size(); i++)
     			{
     				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.WITCH_MAGIC, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);

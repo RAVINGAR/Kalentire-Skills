@@ -10,6 +10,7 @@ import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -21,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkillPulse extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+
     public SkillPulse(Heroes plugin) {
         super(plugin, "Pulse");
         setDescription("You deal $1 damage to all enemies within $2 blocks.");
@@ -103,30 +103,22 @@ public class SkillPulse extends ActiveSkill {
                 continue;
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC);
-
-            // this is our fireworks shit
-            /*try {
-                fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
-                		FireworkEffect.builder().flicker(false).trail(false)
-                		.with(FireworkEffect.Type.BALL)
-                		.withColor(Color.YELLOW)
-                		.withFade(Color.SILVER)
-                		.build());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
+            damageEntity(target, player, damage, DamageCause.MAGIC);       
             
-            for (double r = 1; r < radius * 2; r++)
-    		{
-    			ArrayList<Location> particleLocations = circle(player.getLocation(), 90, r / 2);
-    			for (int i = 0; i < particleLocations.size(); i++)
-    			{
-    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
-    			}
-    		}
             targetsHit++;
         }
+        
+        for (double r = 1; r < radius * 2; r++)
+		{
+			ArrayList<Location> particleLocations = circle(player.getLocation(), 45, r / 2);
+			for (int i = 0; i < particleLocations.size(); i++)
+			{
+				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+			}
+		}
+        
+        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.2F);
 
         return SkillResult.NORMAL;
     }

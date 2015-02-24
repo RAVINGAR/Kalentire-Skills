@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -189,6 +190,8 @@ public class SkillVoidRune extends ActiveSkill {
                     // Damage and silence the target
                     addSpellTarget(targEnt, hero);
                     damageEntity((LivingEntity) targEnt, player, damage, DamageCause.MAGIC, false);
+                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.PORTAL, 0, 0, 0, 0, 0, 0.5F, 35, 16);
+                    
                     VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, player, duration, applyText, expireText);
 
                     // Add the effect to the target

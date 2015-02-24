@@ -48,7 +48,6 @@ import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 public class SkillExplosiveShot extends ActiveSkill {
 
 	private boolean ncpEnabled = false;
-	public VisualEffect fplayer = new VisualEffect();
 
 	private Map<Arrow, Long> explosiveShots = new LinkedHashMap<Arrow, Long>(100) {
 		private static final long serialVersionUID = 1L;

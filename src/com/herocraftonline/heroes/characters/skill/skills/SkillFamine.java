@@ -1,13 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -16,17 +8,19 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class SkillFamine extends TargettedSkill {
-    public VisualEffect fplayer = new VisualEffect();
+	
     private String applyText;
     private String expireText;
 
@@ -115,19 +109,7 @@ public class SkillFamine extends TargettedSkill {
         }
 
         target.getWorld().playSound(target.getLocation(), Sound.BLAZE_BREATH, 0.7F, 2.0F);
-
-        try {
-            fplayer.playFirework(target.getWorld(),
-                                 target.getLocation(),
-                                 FireworkEffect.builder()
-                                               .flicker(false).trail(true)
-                                               .with(FireworkEffect.Type.BURST)
-                                               .withColor(Color.GREEN)
-                                               .withFade(Color.BLACK)
-                                               .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.3F, 0.2F, 0.3F, 0.0F, 25, 16);
 
         return SkillResult.NORMAL;
     }
