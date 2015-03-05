@@ -3,9 +3,11 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
@@ -80,7 +82,7 @@ public class SkillSkeleton extends ActiveSkill {
         if (paramHero.getSummons().size() < SkillConfigManager.getUseSetting(paramHero, this, "max-summons", 3, false))
         {
             int i = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.MAX_DISTANCE, 5, false);
-            Location localLocation = localPlayer.getTargetBlock((HashSet)null, i).getLocation();
+            Location localLocation = localPlayer.getTargetBlock((Set<Material>)null, i).getLocation();
             CharacterTemplate localCreature = plugin.getCharacterManager().getCharacter((LivingEntity) localPlayer.getWorld().spawnEntity(localLocation, EntityType.SKELETON));
             long l = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.DURATION, 60000, false);
             localCreature.addEffect(new SummonEffect(this, l, paramHero, this.expireText));

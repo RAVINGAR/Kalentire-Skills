@@ -84,7 +84,7 @@ public class SkillRampartVine extends ActiveSkill {
         double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.75, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-        List<Block> lastBlocks = player.getLastTwoTargetBlocks(null, maxDist);
+        List<Block> lastBlocks = player.getLastTwoTargetBlocks((Set<Material>)null, maxDist);
 
         if (lastBlocks.size() < 2)
             return SkillResult.INVALID_TARGET;
