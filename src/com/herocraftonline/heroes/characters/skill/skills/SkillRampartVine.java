@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -84,7 +85,7 @@ public class SkillRampartVine extends ActiveSkill {
         double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.75, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-        List<Block> lastBlocks = player.getLastTwoTargetBlocks((Set<Material>)null, maxDist);
+        List<Block> lastBlocks = player.getLastTwoTargetBlocks((HashSet<Byte>)null, maxDist);
 
         if (lastBlocks.size() < 2)
             return SkillResult.INVALID_TARGET;

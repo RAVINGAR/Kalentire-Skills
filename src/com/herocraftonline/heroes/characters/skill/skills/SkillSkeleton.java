@@ -82,7 +82,7 @@ public class SkillSkeleton extends ActiveSkill {
         if (paramHero.getSummons().size() < SkillConfigManager.getUseSetting(paramHero, this, "max-summons", 3, false))
         {
             int i = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.MAX_DISTANCE, 5, false);
-            Location localLocation = localPlayer.getTargetBlock((Set<Material>)null, i).getLocation();
+            Location localLocation = localPlayer.getTargetBlock((HashSet<Byte>)null, i).getLocation();
             CharacterTemplate localCreature = plugin.getCharacterManager().getCharacter((LivingEntity) localPlayer.getWorld().spawnEntity(localLocation, EntityType.SKELETON));
             long l = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.DURATION, 60000, false);
             localCreature.addEffect(new SummonEffect(this, l, paramHero, this.expireText));
