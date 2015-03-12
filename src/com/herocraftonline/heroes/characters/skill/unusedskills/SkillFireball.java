@@ -5,11 +5,11 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import net.minecraft.server.v1_8_R1.*;
+import net.minecraft.server.v1_8_R2.*;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
@@ -127,7 +127,7 @@ public class SkillFireball extends ActiveSkill {
 
         protected void a(MovingObjectPosition movingobjectposition) {
             try {
-                if (!this.world.isStatic) {
+                if (!this.world.isClientSide) {
                     if (movingobjectposition.entity != null) {
                         Entity target = movingobjectposition.entity.getBukkitEntity();
                         if (!(target instanceof LivingEntity)) {
@@ -190,7 +190,7 @@ public class SkillFireball extends ActiveSkill {
 
         public void a(MovingObjectPosition movingobjectposition) {
             try {
-                if (!this.world.isStatic) {
+                if (!this.world.isClientSide) {
                     if (movingobjectposition.entity != null) {
                         Entity target = movingobjectposition.entity.getBukkitEntity();
                         if (!(target instanceof LivingEntity)) {

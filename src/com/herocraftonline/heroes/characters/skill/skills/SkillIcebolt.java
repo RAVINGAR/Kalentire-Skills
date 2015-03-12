@@ -10,7 +10,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import net.minecraft.server.v1_8_R1.Material;
+import net.minecraft.server.v1_8_R2.Material;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
