@@ -84,7 +84,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
             addSpellTarget(newTarget, hero);
             damageEntity(newTarget, player, damage, DamageCause.MAGIC);
-            
+
             if (targetCT instanceof Hero) {
                 Hero enemy = (Hero) targetCT;
                 if (enemy.getDelayedSkill() != null) {
@@ -96,6 +96,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         target.getWorld().spigot().playEffect(target.getLocation(), Effect.NOTE, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_HUGE, 0, 0, 0F, 0F, 0F, 0F, 1, 12);
 
         return SkillResult.NORMAL;
     }

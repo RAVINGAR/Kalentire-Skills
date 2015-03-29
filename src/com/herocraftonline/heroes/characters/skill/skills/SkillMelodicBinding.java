@@ -1,17 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -30,6 +18,17 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.ArrayList;
 
 public class SkillMelodicBinding extends ActiveSkill {
 
@@ -47,13 +46,13 @@ public class SkillMelodicBinding extends ActiveSkill {
         setTypes(SkillType.MOVEMENT_SLOWING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_PIANO, 0.8F, 6.0F, 0),
-                             new Note(Sound.NOTE_PIANO, 0.8F, 2.0F, 1),
-                             new Note(Sound.NOTE_PIANO, 0.8F, 8.0F, 2),
-                             new Note(Sound.NOTE_PIANO, 0.8F, 3.0F, 3)
-                );
+                new Note(Sound.NOTE_PIANO, 0.8F, 6.0F, 0),
+                new Note(Sound.NOTE_PIANO, 0.8F, 2.0F, 1),
+                new Note(Sound.NOTE_PIANO, 0.8F, 8.0F, 2),
+                new Note(Sound.NOTE_PIANO, 0.8F, 3.0F, 3)
+        );
     }
-    
+
     public String getDescription(Hero hero) {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", 3000, false);
@@ -92,7 +91,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         node.set(SkillSetting.DELAY.node(), 1000);
         node.set(SkillSetting.COOLDOWN.node(), 1000);
         node.set("max-targets", 5);
-        
+
 
         return node;
     }
@@ -137,37 +136,37 @@ public class SkillMelodicBinding extends ActiveSkill {
 
             this.radius = radius;
         }
-        
+
         public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-    	{
-    		World world = centerPoint.getWorld();
+        {
+            World world = centerPoint.getWorld();
 
-    		double increment = (2 * Math.PI) / particleAmount;
+            double increment = (2 * Math.PI) / particleAmount;
 
-    		ArrayList<Location> locations = new ArrayList<Location>();
+            ArrayList<Location> locations = new ArrayList<Location>();
 
-    		for (int i = 0; i < particleAmount; i++)
-    		{
-    			double angle = i * increment;
-    			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-    			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-    			locations.add(new Location(world, x, centerPoint.getY(), z));
-    		}
-    		return locations;
-    	}
+            for (int i = 0; i < particleAmount; i++)
+            {
+                double angle = i * increment;
+                double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+                double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+                locations.add(new Location(world, x, centerPoint.getY(), z));
+            }
+            return locations;
+        }
 
         @Override
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
-            
-            for (double r = 1; r < radius * 2; r++)
-    		{
-    			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
-    			for (int i = 0; i < particleLocations.size(); i++)
-    			{
-    				player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
-    			}
-    		}
+
+            for (double r = 1; r < radius; r++)
+            {
+                ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r);
+                for (int i = 0; i < particleLocations.size(); i++)
+                {
+                    player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                }
+            }
 
             int charisma = hero.getAttributeValue(AttributeType.CHARISMA);
 
@@ -189,7 +188,7 @@ public class SkillMelodicBinding extends ActiveSkill {
                 if (maxTargets > 0 && targetsHit >= maxTargets) {
                     break;
                 }
-                
+
                 if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                     continue;
                 }
@@ -204,7 +203,7 @@ public class SkillMelodicBinding extends ActiveSkill {
                 SlowEffect sEffect = new SlowEffect(skill, player, slowDuration, slowAmount, null, null);
                 sEffect.types.add(EffectType.DISPELLABLE);
                 targetCT.addEffect(sEffect);
-                
+
                 targetsHit++;
             }
         }

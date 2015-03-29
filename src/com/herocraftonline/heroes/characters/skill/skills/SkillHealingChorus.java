@@ -1,8 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -112,7 +114,7 @@ public class SkillHealingChorus extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class HealingChorusEffect extends PeriodicHealEffect 
+    public class HealingChorusEffect extends PeriodicHealEffect
     {
 
         public HealingChorusEffect(Skill skill, Player applier, long period, long duration, double healing) {
@@ -124,6 +126,31 @@ public class SkillHealingChorus extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
+            final Player p = player;
+
+            if (player == this.getApplier())
+            {
+                new BukkitRunnable() {
+
+                    private double time = 0;
+
+                    @SuppressWarnings("deprecation")
+                    @Override
+                    public void run()
+                    {
+                        Location location = p.getLocation();
+                        if (time < 0.5)
+                        {
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                        }
+                        else
+                        {
+                            cancel();
+                        }
+                        time += 0.01;
+                    }
+                }.runTaskTimer(plugin, 1, 4);
+            }
 
             Messaging.send(player, "    " + applyText, applier.getName());
         }
@@ -136,14 +163,10 @@ public class SkillHealingChorus extends ActiveSkill {
 
             Messaging.send(player, "    " + expireText, applier.getName());
         }
-        
+
         public void tickHero(Hero hero)
         {
-        	super.tickHero(hero);
-        	if (hero.getPlayer() == applier)
-        	{
-        		hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
-        	}
+            super.tickHero(hero);
         }
     }
 }

@@ -1,10 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainStaminaEvent;
@@ -16,13 +11,15 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillBattlesong extends ActiveSkill {
 
@@ -40,11 +37,11 @@ public class SkillBattlesong extends ActiveSkill {
         setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),
-                             new Note(Sound.NOTE_BASS, 1.0F, 0.7F, 1),
-                             new Note(Sound.NOTE_BASS, 1.2F, 0.4F, 2),
-                             new Note(Sound.NOTE_BASS, 0.8F, 0.2F, 3)
-                );
+                new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),
+                new Note(Sound.NOTE_BASS, 1.0F, 0.7F, 1),
+                new Note(Sound.NOTE_BASS, 1.2F, 0.4F, 2),
+                new Note(Sound.NOTE_BASS, 0.8F, 0.2F, 3)
+        );
     }
 
     @Override
@@ -135,6 +132,31 @@ public class SkillBattlesong extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
+            final Player p = player;
+
+            if (player == this.getApplier())
+            {
+                new BukkitRunnable() {
+
+                    private double time = 0;
+
+                    @SuppressWarnings("deprecation")
+                    @Override
+                    public void run()
+                    {
+                        Location location = p.getLocation();
+                        if (time < 0.8)
+                        {
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                        }
+                        else
+                        {
+                            cancel();
+                        }
+                        time += 0.01;
+                    }
+                }.runTaskTimer(plugin, 1, 4);
+            }
 
             Messaging.send(player, "    " + applyText, player.getName());
         }
@@ -165,7 +187,7 @@ public class SkillBattlesong extends ActiveSkill {
                             HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(member, staminaRestore, skill);
                             plugin.getServer().getPluginManager().callEvent(hrsEvent);
                             if (!hrsEvent.isCancelled()) {
-                            	member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 25, 16);
+                                member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
                                 member.setStamina(hrsEvent.getAmount() + member.getStamina());
                             }
                         }
@@ -176,8 +198,8 @@ public class SkillBattlesong extends ActiveSkill {
                 HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
                 plugin.getServer().getPluginManager().callEvent(hrsEvent);
                 if (!hrsEvent.isCancelled()) {
-                	hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 25, 16);
-                	hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getEyeLocation(), org.bukkit.Effect.NOTE, 0, 0, 0.4F, 0.0F, 0.4F, 0.0F, 15, 16);
+                    hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+
                     hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
                 }
             }

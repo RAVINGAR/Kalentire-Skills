@@ -1,10 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 //src=http://pastie.org/private/oeherulcmebfy0lerywsw
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -12,13 +8,17 @@ import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class SkillDropTheBass extends ActiveSkill {
 
@@ -33,15 +33,17 @@ public class SkillDropTheBass extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_SONG, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),
-                             new Note(Sound.NOTE_BASS, 0.8F, 2.0F, 1),
-                             new Note(Sound.NOTE_BASS, 0.8F, 3.0F, 2),
-                             new Note(Sound.NOTE_BASS, 0.8F, 4.0F, 3),
-                             new Note(Sound.NOTE_BASS, 0.8F, 5.0F, 4),
-                             new Note(Sound.NOTE_BASS_GUITAR, 0.8F, 6.0F, 5),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.8F, 7.0F, 6),
-                             new Note(Sound.NOTE_BASS, 0.8F, 8.0F, 7)
-                );
+                new Note(Sound.NOTE_PIANO, 0.8F, 6.0F, 0),
+                new Note(Sound.NOTE_PIANO, 0.8F, 5.0F, 1),
+                new Note(Sound.NOTE_PIANO, 0.8F, 4.0F, 2),
+                new Note(Sound.NOTE_PIANO, 0.8F, 3.0F, 3),
+                new Note(Sound.NOTE_PIANO, 0.8F, 2.0F, 4),
+                new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 5),
+                new Note(Sound.NOTE_PIANO, 0.0F, 1.0F, 6),
+                new Note(Sound.NOTE_BASS, 0.8F, 0.0F, 7),
+                new Note(Sound.NOTE_PIANO, 0.0F, 1.0F, 8),
+                new Note(Sound.NOTE_PIANO, 0.8F, 3.0F, 9)
+        );
     }
 
     @Override
@@ -65,6 +67,24 @@ public class SkillDropTheBass extends ActiveSkill {
         return node;
     }
 
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+    {
+        World world = centerPoint.getWorld();
+
+        double increment = (2 * Math.PI) / particleAmount;
+
+        ArrayList<Location> locations = new ArrayList<Location>();
+
+        for (int i = 0; i < particleAmount; i++)
+        {
+            double angle = i * increment;
+            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+            locations.add(new Location(world, x, centerPoint.getY(), z));
+        }
+        return locations;
+    }
+
     @Override
     public SkillResult use(final Hero hero, String[] args) {
 
@@ -78,6 +98,11 @@ public class SkillDropTheBass extends ActiveSkill {
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15, false);
 
+        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        {
+            player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+        }
+
         double radiusSquared = Math.pow(radius, 2);
 
         if (hero.hasParty()) {
@@ -89,6 +114,8 @@ public class SkillDropTheBass extends ActiveSkill {
                 if (memberPlayer.getLocation().distanceSquared(player.getLocation()) <= radiusSquared) {
                     member.addEffect(new SafeFallEffect(theSkill, player, duration));
                 }
+
+                member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
             }
         }
         else {

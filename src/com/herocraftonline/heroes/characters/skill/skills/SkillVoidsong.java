@@ -1,16 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -20,8 +9,17 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillVoidsong extends ActiveSkill {
 
@@ -63,6 +61,19 @@ public class SkillVoidsong extends ActiveSkill {
         return node;
     }
 
+    public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)
+    {
+        ArrayList<Location> locations = new ArrayList<Location>();
+
+        for (double y = 0; y <= height; y += particleInterval)
+        {
+            double x = center.getX() + (radius * Math.cos(y));
+            double z = center.getZ() + (radius * Math.sin(y));
+            locations.add(new Location(center.getWorld(), x, center.getY(), z));
+        }
+        return locations;
+    }
+
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
@@ -100,6 +111,12 @@ public class SkillVoidsong extends ActiveSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
+
+        ArrayList<Location> particleLocations = helix(player.getLocation().add(0, 0.5, 0), 10.0D, 3.5D, 0.1D);
+        for (Location l : particleLocations)
+        {
+            player.getWorld().spigot().playEffect(l, org.bukkit.Effect.NOTE, 0, 0, 0, 0, 0, 0, 1, 16);
+        }
 
 
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
