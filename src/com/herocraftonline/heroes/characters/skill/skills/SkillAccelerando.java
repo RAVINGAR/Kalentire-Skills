@@ -1,21 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 // src http://pastie.org/private/syyyftinqa5r1uv4ixka
-import java.util.ArrayList;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -26,14 +11,20 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-//import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+
+//import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
 
 //import de.slikey.effectlib.EffectManager;
 
@@ -55,19 +46,19 @@ public class SkillAccelerando extends ActiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.2F, 0),
-                             new Note(Sound.NOTE_BASS, 0.9F, 0.5F, 1),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.9F, 2),
-                             new Note(Sound.NOTE_BASS, 0.9F, 0.2F, 3),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.5F, 4),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.9F, 5),
-                             new Note(Sound.NOTE_BASS, 0.9F, 0.2F, 6),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.5F, 7),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.9F, 8),
-                             new Note(Sound.NOTE_BASS, 0.9F, 0.2F, 9),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.5F, 10),
-                             new Note(Sound.NOTE_BASS, 0.9F, 0.9F, 11)
-                );
+                new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.2F, 0),
+                new Note(Sound.NOTE_BASS, 0.9F, 0.5F, 1),
+                new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.9F, 2),
+                new Note(Sound.NOTE_BASS, 0.9F, 0.2F, 3),
+                new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.5F, 4),
+                new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.9F, 5),
+                new Note(Sound.NOTE_BASS, 0.9F, 0.2F, 6),
+                new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.5F, 7),
+                new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.9F, 8),
+                new Note(Sound.NOTE_BASS, 0.9F, 0.2F, 9),
+                new Note(Sound.NOTE_BASS_DRUM, 0.9F, 0.5F, 10),
+                new Note(Sound.NOTE_BASS, 0.9F, 0.9F, 11)
+        );
     }
 
     @Override
@@ -103,24 +94,24 @@ public class SkillAccelerando extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% gained a burst of speed!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% returned to normal speed!").replace("%hero%", "$1");
     }
-    
-	public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
 
-		double increment = (2 * Math.PI) / particleAmount;
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+    {
+        World world = centerPoint.getWorld();
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+        double increment = (2 * Math.PI) / particleAmount;
 
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
+        ArrayList<Location> locations = new ArrayList<Location>();
+
+        for (int i = 0; i < particleAmount; i++)
+        {
+            double angle = i * increment;
+            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+            locations.add(new Location(world, x, centerPoint.getY(), z));
+        }
+        return locations;
+    }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -145,11 +136,11 @@ public class SkillAccelerando extends ActiveSkill {
         int rSquared = radius * radius;
 
         Location playerLoc = player.getLocation();
-        
-		for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
-		{
-			player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 16);
-		}
+
+        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        {
+            player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+        }
 
         //Apply the effect to all party members
         for (Hero tHero : hero.getParty().getMembers()) {
@@ -172,7 +163,7 @@ public class SkillAccelerando extends ActiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-        
+
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
             if (event.getDamage() == 0 || !(event.getEntity() instanceof Player))
