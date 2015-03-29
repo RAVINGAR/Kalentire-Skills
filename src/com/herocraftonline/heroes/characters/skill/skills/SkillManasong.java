@@ -1,9 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -40,19 +42,19 @@ public class SkillManasong extends ActiveSkill {
         setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_PIANO, 0.8F, 1.0F, 0),
-                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 1)
-                );
+                new Note(Sound.NOTE_PIANO, 0.8F, 1.0F, 0),
+                new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 1)
+        );
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
-        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", 12, false);
+        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", 0.15, false);
         manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
@@ -65,14 +67,14 @@ public class SkillManasong extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-        node.set("mana-restore-tick", Integer.valueOf(8));
-        node.set("mana-restore-tick-increase-per-charisma", Double.valueOf(0.25));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.RADIUS.node(), 12);
+        node.set("mana-restore-tick", 8);
+        node.set("mana-restore-tick-increase-per-charisma", 0.25);
+        node.set(SkillSetting.PERIOD.node(), 1500);
+        node.set(SkillSetting.DURATION.node(), 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with a song of mana!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "The manasong has ended.");
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
     }
@@ -88,20 +90,25 @@ public class SkillManasong extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
 
+        Player player = hero.getPlayer();
         hero.addEffect(new SoundEffect(this, "ManaSongSong", 100, skillSong));
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", Integer.valueOf(12), false);
-        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", Double.valueOf(0.15), false);
+        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", 12, false);
+        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", 0.15, false);
         manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         ManasongEffect mEffect = new ManasongEffect(this, hero.getPlayer(), period, duration, radius, manaRestoreTick);
         hero.addEffect(mEffect);
 
         broadcastExecuteText(hero);
+
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }
@@ -127,6 +134,32 @@ public class SkillManasong extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
+            final Player p = player;
+
+            if (player == this.getApplier())
+            {
+                new BukkitRunnable() {
+
+                    private double time = 0;
+
+                    @SuppressWarnings("deprecation")
+                    @Override
+                    public void run()
+                    {
+                        Location location = p.getLocation();
+                        if (time < 0.8)
+                        {
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                        }
+                        else
+                        {
+                            cancel();
+                        }
+                        time += 0.01;
+                    }
+                }.runTaskTimer(plugin, 1, 4);
+            }
+
 
             Messaging.send(player, applyText);
         }
@@ -159,6 +192,7 @@ public class SkillManasong extends ActiveSkill {
                                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                                 if (!hrmEvent.isCancelled()) {
                                     member.setMana(hrmEvent.getAmount() + member.getMana());
+                                    member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                                     if (member.isVerboseMana())
                                         Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
@@ -174,6 +208,7 @@ public class SkillManasong extends ActiveSkill {
                     plugin.getServer().getPluginManager().callEvent(hrmEvent);
                     if (!hrmEvent.isCancelled()) {
                         hero.setMana(hrmEvent.getAmount() + hero.getMana());
+                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                         if (hero.isVerboseMana())
                             Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));

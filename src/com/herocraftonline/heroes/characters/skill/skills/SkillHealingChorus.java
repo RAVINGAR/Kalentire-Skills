@@ -1,8 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -10,12 +12,18 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHealingChorus extends ActiveSkill {
+
+    private String applyText;
+    private String expireText;
+
     public SkillHealingChorus(Heroes plugin) {
         super(plugin, "HealingChorus");
         setDescription("You sing a chorus of healing, affecting party members within $1 blocks. The chorus heals them for $2 health over $3 seconds. You are only healed for $4 health from this effect.");
@@ -26,13 +34,13 @@ public class SkillHealingChorus extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(3000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, Double.valueOf(0.175), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, 0.175, false);
         healing += (hero.getAttributeValue(AttributeType.CHARISMA) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
@@ -45,27 +53,37 @@ public class SkillHealingChorus extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-        node.set(SkillSetting.PERIOD.node(), Integer.valueOf(1500));
-        node.set(SkillSetting.HEALING_TICK.node(), Integer.valueOf(17));
-        node.set(SkillSetting.HEALING_INCREASE_PER_CHARISMA.node(), Double.valueOf(0.175));
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.RADIUS.node(), 12);
+        node.set(SkillSetting.PERIOD.node(), 1500);
+        node.set(SkillSetting.HEALING_TICK.node(), 17);
+        node.set(SkillSetting.HEALING_INCREASE_PER_CHARISMA.node(), 0.175);
+        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with %hero%'s chorus of healing.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s chorus of healing has ended.");
+        node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(15), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
         int radiusSquared = radius * radius;
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, Integer.valueOf(17), false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, Double.valueOf(0.175), false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
+        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_CHARISMA, 0.175, false);
         healing += (hero.getAttributeValue(AttributeType.CHARISMA) * healingIncrease);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, Integer.valueOf(1500), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), Integer.valueOf(3000), false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false);
 
         broadcastExecuteText(hero);
 
@@ -79,16 +97,76 @@ public class SkillHealingChorus extends ActiveSkill {
                     // Check to see if they are close enough to the player to receive the buff
                     if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
                         // Add the effect
-                        member.addEffect(new PeriodicHealEffect(this, "HealingChorus", player, period, duration, healing));
+                        member.addEffect(new HealingChorusEffect(this, player, period, duration, healing));
                     }
                 }
             }
         }
         else {
             // Add the effect to just the player
-            hero.addEffect(new PeriodicHealEffect(this, "HealingChorus", player, period, duration, healing));
+            hero.addEffect(new HealingChorusEffect(this, player, period, duration, healing));
         }
 
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+
         return SkillResult.NORMAL;
+    }
+
+    public class HealingChorusEffect extends PeriodicHealEffect
+    {
+
+        public HealingChorusEffect(Skill skill, Player applier, long period, long duration, double healing) {
+            super(skill, "HealingChorus", applier, period, duration, healing, null, null);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+
+            Player player = hero.getPlayer();
+            final Player p = player;
+
+            if (player == this.getApplier())
+            {
+                new BukkitRunnable() {
+
+                    private double time = 0;
+
+                    @SuppressWarnings("deprecation")
+                    @Override
+                    public void run()
+                    {
+                        Location location = p.getLocation();
+                        if (time < 0.5)
+                        {
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                        }
+                        else
+                        {
+                            cancel();
+                        }
+                        time += 0.01;
+                    }
+                }.runTaskTimer(plugin, 1, 4);
+            }
+
+            Messaging.send(player, "    " + applyText, applier.getName());
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+
+            Messaging.send(player, "    " + expireText, applier.getName());
+        }
+
+        public void tickHero(Hero hero)
+        {
+            super.tickHero(hero);
+        }
     }
 }

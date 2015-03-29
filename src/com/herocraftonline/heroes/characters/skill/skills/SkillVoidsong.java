@@ -1,10 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Color;
-import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -25,8 +26,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillVoidsong extends ActiveSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillVoidsong(Heroes plugin) {
         super(plugin, "Voidsong");
@@ -34,15 +33,15 @@ public class SkillVoidsong extends ActiveSkill {
         setUsage("/skill voidsong");
         setArgumentRange(0, 0);
         setIdentifiers("skill voidsong");
-        setTypes(SkillType.DISABLING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.SILENCING, SkillType.INTERRUPTING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DISABLING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.SILENCING, SkillType.INTERRUPTING, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 5, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(17), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, Double.valueOf(0.125), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 17, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 2500, false);
@@ -59,11 +58,24 @@ public class SkillVoidsong extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+        node.set(SkillSetting.RADIUS.node(), 5);
         node.set(SkillSetting.DURATION.node(), 2500);
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 38);
 
         return node;
+    }
+
+    public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)
+    {
+        ArrayList<Location> locations = new ArrayList<Location>();
+
+        for (double y = 0; y <= height; y += particleInterval)
+        {
+            double x = center.getX() + (radius * Math.cos(y));
+            double z = center.getZ() + (radius * Math.sin(y));
+            locations.add(new Location(center.getWorld(), x, center.getY(), z));
+        }
+        return locations;
     }
 
     @Override
@@ -78,8 +90,8 @@ public class SkillVoidsong extends ActiveSkill {
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 38, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, Integer.valueOf(17), false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, Double.valueOf(0.125), false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 17, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_CHARISMA, 0.125, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
@@ -102,24 +114,18 @@ public class SkillVoidsong extends ActiveSkill {
             }
         }
 
-        try {
-            fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 2, 0), FireworkEffect.builder()
-                                                                                                     .flicker(false).trail(false)
-                                                                                                     .with(FireworkEffect.Type.CREEPER)
-                                                                                                     .withColor(Color.BLACK)
-                                                                                                     .withFade(Color.MAROON)
-                                                                                                     .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
 
+        ArrayList<Location> particleLocations = helix(player.getLocation().add(0, 0.5, 0), 10.0D, 3.5D, 0.1D);
+        for (Location l : particleLocations)
+        {
+            player.getWorld().spigot().playEffect(l, org.bukkit.Effect.NOTE, 0, 0, 0, 0, 0, 0, 1, 16);
+        }
+
+
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         return SkillResult.NORMAL;
     }
 }

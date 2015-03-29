@@ -1,9 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -11,21 +15,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Util;
+import java.util.List;
 
 public class SkillBoastfulBellow extends TargettedSkill {
-    // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
 
     public SkillBoastfulBellow(Heroes plugin) {
         super(plugin, "BoastfulBellow");
@@ -33,7 +25,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
         setUsage("/skill boastfulbellow");
         setArgumentRange(0, 0);
         setIdentifiers("skill boastfulbellow");
-        setTypes(SkillType.DAMAGING, SkillType.INTERRUPTING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.INTERRUPTING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -53,9 +45,9 @@ public class SkillBoastfulBellow extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.DAMAGE.node(), 60);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(1.5));
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.5);
         node.set(SkillSetting.RADIUS.node(), 3);
 
         return node;
@@ -77,27 +69,8 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 1.5F, .5F);
 
-        // this is our fireworks shit
-        try {
-            fplayer.playFirework(player.getWorld(),
-                                 target.getLocation().add(0, 1.5, 0),
-                                 FireworkEffect.builder()
-                                               .flicker(false)
-                                               .trail(false)
-                                               .with(FireworkEffect.Type.BALL)
-                                               .withColor(Color.GRAY)
-                                               .withFade(Color.NAVY)
-                                               .build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
         long currentTime = System.currentTimeMillis();
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+        List<Entity> entities = target.getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
@@ -111,7 +84,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
             addSpellTarget(newTarget, hero);
             damageEntity(newTarget, player, damage, DamageCause.MAGIC);
-            
+
             if (targetCT instanceof Hero) {
                 Hero enemy = (Hero) targetCT;
                 if (enemy.getDelayedSkill() != null) {
@@ -120,6 +93,10 @@ public class SkillBoastfulBellow extends TargettedSkill {
                 }
             }
         }
+
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.NOTE, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_HUGE, 0, 0, 0F, 0F, 0F, 0F, 1, 12);
 
         return SkillResult.NORMAL;
     }

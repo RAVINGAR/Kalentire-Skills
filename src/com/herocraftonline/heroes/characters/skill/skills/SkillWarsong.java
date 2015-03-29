@@ -1,14 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
@@ -20,13 +11,20 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillWarsong extends ActiveSkill {
 
@@ -44,22 +42,22 @@ public class SkillWarsong extends ActiveSkill {
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_BASS_DRUM, 0.8F, 2.0F, 0),
-                             new Note(Sound.NOTE_PLING, 0.8F, 2.0F, 1),
-                             new Note(Sound.NOTE_SNARE_DRUM, 0.8F, 1.0F, 2),
-                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 3)
-                );
+                new Note(Sound.NOTE_BASS_DRUM, 0.8F, 2.0F, 0),
+                new Note(Sound.NOTE_PLING, 0.8F, 2.0F, 1),
+                new Note(Sound.NOTE_SNARE_DRUM, 0.8F, 1.0F, 2),
+                new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 3)
+        );
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
-        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", Double.valueOf(1.1), false);
-        double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", Double.valueOf(0.00375), false);
+        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.1, false);
+        double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", 0.00375, false);
         damageModifier += (int) (damageModifierTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -72,13 +70,13 @@ public class SkillWarsong extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-        node.set("damage-bonus", Double.valueOf(1.1));
-        node.set("damage-bonus-increase-per-charisma", Double.valueOf(0.00375));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(3000));
+        node.set(SkillSetting.RADIUS.node(), 12);
+        node.set("damage-bonus", 1.1);
+        node.set("damage-bonus-increase-per-charisma", 0.00375);
+        node.set(SkillSetting.DURATION.node(), 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "Your muscles bulge with power!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "You feel strength leave your body!");
-        node.set(SkillSetting.DELAY.node(), Integer.valueOf(1000));
+        node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
     }
@@ -95,11 +93,11 @@ public class SkillWarsong extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, Integer.valueOf(3000), false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(6), false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", Double.valueOf(1.1), false);
-        double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", Double.valueOf(0.00375), false);
+        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.1, false);
+        double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", 0.00375, false);
         damageModifier += (int) (damageModifierTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
 
         WarsongEffect mEffect = new WarsongEffect(this, player, duration, damageModifier);
@@ -142,6 +140,9 @@ public class SkillWarsong extends ActiveSkill {
                 pHero.addEffect(mEffect);
             }
         }
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }
@@ -185,6 +186,32 @@ public class SkillWarsong extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
+            final Player p = player;
+
+            if (player == this.getApplier())
+            {
+                new BukkitRunnable() {
+
+                    private double time = 0;
+
+                    @SuppressWarnings("deprecation")
+                    @Override
+                    public void run()
+                    {
+                        Location location = p.getLocation();
+                        if (time < 0.75)
+                        {
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                        }
+                        else
+                        {
+                            cancel();
+                        }
+                        time += 0.01;
+                    }
+                }.runTaskTimer(plugin, 1, 4);
+            }
+
 
             Messaging.send(player, applyText);
         }

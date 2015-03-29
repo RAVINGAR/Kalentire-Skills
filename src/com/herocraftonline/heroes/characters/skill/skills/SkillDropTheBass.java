@@ -1,8 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 //src=http://pastie.org/private/oeherulcmebfy0lerywsw
-import org.bukkit.Bukkit;
+import java.util.ArrayList;
+
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -21,37 +25,30 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-
 public class SkillDropTheBass extends ActiveSkill {
 
     private Song skillSong;
 
-    private boolean ncpEnabled = false;
-
     public SkillDropTheBass(Heroes plugin) {
         super(plugin, "DropTheBass");
-        setDescription("Apply a m your close group members from taking fall damage for $1 seconds.");
+        setDescription("Stops your close group members from taking fall damage for $1 seconds.");
         setUsage("/skill dropthebass");
         setArgumentRange(0, 0);
         setIdentifiers("skill dropthebass");
-        setTypes(SkillType.ABILITY_PROPERTY_SONG, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_SONG, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
 
         skillSong = new Song(
-                             new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 0),
-                             new Note(Sound.NOTE_BASS, 0.8F, 2.0F, 1),
-                             new Note(Sound.NOTE_BASS, 0.8F, 3.0F, 2),
-                             new Note(Sound.NOTE_BASS, 0.8F, 4.0F, 3),
-                             new Note(Sound.NOTE_BASS, 0.8F, 5.0F, 4),
-                             new Note(Sound.NOTE_BASS_GUITAR, 0.8F, 6.0F, 5),
-                             new Note(Sound.NOTE_BASS_DRUM, 0.8F, 7.0F, 6),
-                             new Note(Sound.NOTE_BASS, 0.8F, 8.0F, 7)
-                );
-
-            if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) {
-                ncpEnabled = true;
-            }
+                new Note(Sound.NOTE_PIANO, 0.8F, 6.0F, 0),
+                new Note(Sound.NOTE_PIANO, 0.8F, 5.0F, 1),
+                new Note(Sound.NOTE_PIANO, 0.8F, 4.0F, 2),
+                new Note(Sound.NOTE_PIANO, 0.8F, 3.0F, 3),
+                new Note(Sound.NOTE_PIANO, 0.8F, 2.0F, 4),
+                new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 5),
+                new Note(Sound.NOTE_PIANO, 0.0F, 1.0F, 6),
+                new Note(Sound.NOTE_BASS, 0.8F, 0.0F, 7),
+                new Note(Sound.NOTE_PIANO, 0.0F, 1.0F, 8),
+                new Note(Sound.NOTE_PIANO, 0.8F, 3.0F, 9)
+        );
     }
 
     @Override
@@ -67,67 +64,73 @@ public class SkillDropTheBass extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.RADIUS.node(), Integer.valueOf(15));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
+        node.set(SkillSetting.RADIUS.node(), 15);
+        node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s party celebrates bass-drops!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s party no longer is dropping bass!");
 
         return node;
     }
 
-    @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+    {
+        World world = centerPoint.getWorld();
 
-        Player player = hero.getPlayer();
+        double increment = (2 * Math.PI) / particleAmount;
+
+        ArrayList<Location> locations = new ArrayList<Location>();
+
+        for (int i = 0; i < particleAmount; i++)
+        {
+            double angle = i * increment;
+            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+            locations.add(new Location(world, x, centerPoint.getY(), z));
+        }
+        return locations;
+    }
+
+    @Override
+    public SkillResult use(final Hero hero, String[] args) {
+
+        final Skill theSkill = this;
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
         hero.addEffect(new SoundEffect(this, "DropTheBassSong", 100, skillSong));
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15, false);
+
+        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        {
+            player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+        }
 
         double radiusSquared = Math.pow(radius, 2);
 
         if (hero.hasParty()) {
-            for (Hero member : hero.getParty().getMembers()) {
+            for (final Hero member : hero.getParty().getMembers()) {
                 Player memberPlayer = member.getPlayer();
                 if (memberPlayer.getWorld() != player.getWorld())
                     continue;
 
                 if (memberPlayer.getLocation().distanceSquared(player.getLocation()) <= radiusSquared) {
-                    member.addEffect(new NCPCompatSafeFallEffect(this, player, duration));
+                    member.addEffect(new SafeFallEffect(theSkill, player, duration));
                 }
+
+                member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
             }
         }
-        else
-            hero.addEffect(new NCPCompatSafeFallEffect(this, player, duration));
+        else {
+            hero.addEffect(new SafeFallEffect(theSkill, player, duration));
+        }
+
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
-    }
-
-    private class NCPCompatSafeFallEffect extends SafeFallEffect {
-
-        public NCPCompatSafeFallEffect(Skill skill, Player applier, long duration) {
-            super(skill, applier, duration);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.exemptPermanently(player, CheckType.MOVING_NOFALL);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-
-            if (ncpEnabled)
-                NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
-        }
     }
 }
