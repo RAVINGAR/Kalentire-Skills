@@ -30,7 +30,7 @@ public class SkillFrontflip extends ActiveSkill {
 
     public SkillFrontflip(Heroes plugin) {
         super(plugin, "Frontflip");
-        setDescription("Frontflip forwards into the air. Distance traveled is based on your Agility.$1");
+        setDescription("Frontflip forwards into the air. Distance traveled is based on your Dexterity.$1");
         setUsage("/skill frontflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill frontflip");
@@ -53,9 +53,9 @@ public class SkillFrontflip extends ActiveSkill {
 
         node.set("no-air-frontflip", false);
         node.set("horizontal-power", Double.valueOf(0.4));
-        node.set("horizontal-power-increase-per-agility", Double.valueOf(0.01));
+        node.set("horizontal-power-increase-per-dexterity", Double.valueOf(0.01));
         node.set("vertical-power", Double.valueOf(0.5));
-        node.set("vertical-power-increase-per-agility", Double.valueOf(0.00625));
+        node.set("vertical-power-increase-per-dexterity", Double.valueOf(0.00625));
         node.set("ncp-exemption-duration", Integer.valueOf(2000));
 
         return node;
@@ -95,11 +95,11 @@ public class SkillFrontflip extends ActiveSkill {
                 break;
         }
 
-        int agility = hero.getAttributeValue(AttributeType.AGILITY);
+        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0125, false);
-        vPower += agility * vPowerIncrease;
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
+        vPower += dexterity * vPowerIncrease;
 
         if (vPower > 2.0)
             vPower = 2.0;
@@ -116,8 +116,8 @@ public class SkillFrontflip extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", 0.0125, false);
-        hPower += agility * hPowerIncrease;
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
+        hPower += dexterity * hPowerIncrease;
 
         if (weakenVelocity)
             hPower /= 2;

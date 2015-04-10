@@ -27,7 +27,7 @@ public class SkillAlacrity extends TargettedSkill {
         setArgumentRange(0,1);
         setUsage("/skill Alacrity <target>");
         setIdentifiers("skill alacrity");
-        setDescription("Prepare the target, granting them Alacrity that increases their Agility by $1 for $2 minutes");
+        setDescription("Prepare the target, granting them Alacrity that increases their Dexterity by $1 for $2 minutes");
         setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
@@ -73,7 +73,7 @@ public class SkillAlacrity extends TargettedSkill {
         duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getSkillLevel(this);
         int agiIncrease = SkillConfigManager.getUseSetting(hero, this, "agi-increase", 15, false);
         
-        AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "AlacrityAgiIncreaseEffect", player, duration, AttributeType.AGILITY, agiIncrease, applyText, expireText);
+        AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "AlacrityAgiIncreaseEffect", player, duration, AttributeType.DEXTERITY, agiIncrease, applyText, expireText);
         if(hero.hasEffect("AlacrityAgiIncreaseEffect")) {
             if(((AttributeIncreaseEffect) hero.getEffect("AlacrityAgiIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
                 Messaging.send(player, "Target has a more powerful effect already!");

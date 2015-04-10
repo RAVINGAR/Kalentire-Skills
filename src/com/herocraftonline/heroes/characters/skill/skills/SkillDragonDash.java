@@ -34,7 +34,7 @@ public class SkillDragonDash extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DAMAGE.node(), 1);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 0.1);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.1);
         node.set(SkillSetting.MAX_DISTANCE.node(), 8);
         node.set(SkillSetting.STAMINA.node(), 300);
         node.set("particle-power", 0.5);
@@ -72,7 +72,7 @@ public class SkillDragonDash extends TargettedSkill {
 
         // Damage
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 1, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 0.1, false) * hero.getLevel();
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.1, false) * hero.getLevel();
 
         description += getDescription()
                 .replace("$1", "§9" + damage + "§6");
@@ -83,7 +83,7 @@ public class SkillDragonDash extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 1, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 0.1, false) * hero.getLevel();
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.1, false) * hero.getLevel();
 
         Player player = hero.getPlayer(); // this may be needed for the player call - if not remove this.
 

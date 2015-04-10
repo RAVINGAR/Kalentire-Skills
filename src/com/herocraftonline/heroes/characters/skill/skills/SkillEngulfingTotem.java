@@ -32,7 +32,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
         setArgumentRange(0,0);
         setUsage("/skill engulfingtotem");
         setIdentifiers("skill engulfingtotem");
-        setDescription("Places an engulfing totem at target location that reduces the agility of non-partied entites in a $1 radius by $2. Lasts for $3 seconds.");
+        setDescription("Places an engulfing totem at target location that reduces the dexterity of non-partied entites in a $1 radius by $2. Lasts for $3 seconds.");
         setTypes(SkillType.MOVEMENT_SLOWING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
         material = Material.SOUL_SAND;
         afflictedTargets = new HashMap<Hero, List<LivingEntity>>();
@@ -42,7 +42,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     public String getDescription(Hero h) {
         return getDescription()
                 .replace("$1", getRange(h) + "")
-                .replace("$2", getAgilityReduceAmount(h) + "")
+                .replace("$2", getDexterityReduceAmount(h) + "")
                 .replace("$3", getDuration(h)*0.001 + "");
     }
 
@@ -66,8 +66,8 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
                 }
                 // If the character of it has the effect, we know they're out of range. Remove the effect.
                 CharacterTemplate character = plugin.getCharacterManager().getCharacter(entity);
-                if(character.hasEffect("EngulfingTotemAgilityEffect")) {
-                    EngulfingTotemAgilityEffect oldEffect = (EngulfingTotemAgilityEffect) character.getEffect("EngulfingTotemAgilityEffect");
+                if(character.hasEffect("EngulfingTotemDexterityEffect")) {
+                    EngulfingTotemDexterityEffect oldEffect = (EngulfingTotemDexterityEffect) character.getEffect("EngulfingTotemDexterityEffect");
                     if(oldEffect.getApplier() == heroP) {
                         oldEffect.expire();
                         iter.remove();
@@ -77,11 +77,11 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
         }
         for(LivingEntity entity : totemTargets) {
             CharacterTemplate character = plugin.getCharacterManager().getCharacter(entity);
-            if(character.hasEffect("EngulfingTotemAgilityEffect") ||!damageCheck(heroP, entity)) {
+            if(character.hasEffect("EngulfingTotemDexterityEffect") ||!damageCheck(heroP, entity)) {
                 continue;
             }
             String name = entity instanceof Player ? ((Player) entity).getName() : Messaging.getLivingEntityName(character);
-            character.addEffect(new EngulfingTotemAgilityEffect(this, hero, totem.getEffect().getRemainingTime(), getAgilityReduceAmount(hero), getSlownessAmplitude(hero), null, getExpireText()));
+            character.addEffect(new EngulfingTotemDexterityEffect(this, hero, totem.getEffect().getRemainingTime(), getDexterityReduceAmount(hero), getSlownessAmplitude(hero), null, getExpireText()));
             heroTargets.add(entity);
             broadcast(entity.getLocation(), getApplyText(), name, heroP.getName());
         }
@@ -99,8 +99,8 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
                 // Can't work with an invalid entity...
                 if(entity.isValid()) {
                     CharacterTemplate character = plugin.getCharacterManager().getCharacter(entity);
-                    if(character.hasEffect("EngulfingTotemAgilityEffect")) {
-                        EngulfingTotemAgilityEffect oldEffect = (EngulfingTotemAgilityEffect) character.getEffect("EngulfingTotemAgilityEffect");
+                    if(character.hasEffect("EngulfingTotemDexterityEffect")) {
+                        EngulfingTotemDexterityEffect oldEffect = (EngulfingTotemDexterityEffect) character.getEffect("EngulfingTotemDexterityEffect");
                         if(oldEffect.getApplier() == heroP) {
                             oldEffect.expire();
                         }
@@ -115,14 +115,14 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "    " + "$1 is engulfed by a totem's power!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "$1 is no longer engulfed by a totem's power.");
-        node.set("agility-reduce-amount", 3);
+        node.set("dexterity-reduce-amount", 3);
         node.set("slowness-amplitude", 2);
         return node;
     }
 
     // Methods to grab config info that is specific to this skill
-    public int getAgilityReduceAmount(Hero h) {
-        return SkillConfigManager.getUseSetting(h, this, "agility-reduce-amount", 3, false);
+    public int getDexterityReduceAmount(Hero h) {
+        return SkillConfigManager.getUseSetting(h, this, "dexterity-reduce-amount", 3, false);
     }
 
     public int getSlownessAmplitude(Hero h) {
@@ -137,12 +137,12 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
         return SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "$1 is no longer engulfed by a totem's power.");
     }
 
-    private class EngulfingTotemAgilityEffect extends AttributeDecreaseEffect {
+    private class EngulfingTotemDexterityEffect extends AttributeDecreaseEffect {
 
         private BukkitTask effect;
 
-        public EngulfingTotemAgilityEffect(SkillEngulfingTotem skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude, String applyText, String expireText) {
-            super(skill, "EngulfingTotemAgilityEffect", applier.getPlayer(), duration, AttributeType.AGILITY, decreaseValue, applyText, expireText);
+        public EngulfingTotemDexterityEffect(SkillEngulfingTotem skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude, String applyText, String expireText) {
+            super(skill, "EngulfingTotemDexterityEffect", applier.getPlayer(), duration, AttributeType.DEXTERITY, decreaseValue, applyText, expireText);
             types.add(EffectType.SLOW);
 
             int tickDuration = (int) ((duration / 1000) * 20);

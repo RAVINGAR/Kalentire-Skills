@@ -52,8 +52,8 @@ public class SkillAimedShot extends TargettedSkill {
 
         double gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 4000, false) / 1000;
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
-        damage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 3.1, false);
+        damage += hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease;
 
         String formattedDamage = Util.decFormat.format(damage);
 
@@ -65,7 +65,7 @@ public class SkillAimedShot extends TargettedSkill {
 
         node.set(SkillSetting.USE_TEXT.node(), "");
         node.set(SkillSetting.DAMAGE.node(), 125);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 3.1);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 3.1);
         node.set(SkillSetting.MAX_DISTANCE.node(), 40);
         node.set(SkillSetting.DELAY.node(), 3000);
         node.set("grace-period", 4000);
@@ -147,8 +147,8 @@ public class SkillAimedShot extends TargettedSkill {
 
                 // Lower damage of shot based on how drawn back the bow is.
                 double tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 125, false);
-                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 3.1, false);
-                tempDamage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 3.1, false);
+                tempDamage += hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease;
 
                 final double damage = event.getForce() * tempDamage;
                 // Damage the target, but add a delay based on the distance from the target.

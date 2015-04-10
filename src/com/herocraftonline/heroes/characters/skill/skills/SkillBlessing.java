@@ -84,7 +84,7 @@ public class SkillBlessing extends TargettedSkill {
         
         AttributeIncreaseEffect aEffectS = new AttributeIncreaseEffect(this, "BlessingStrIncreaseEffect", player, duration, AttributeType.STRENGTH, conIncrease, null, null);
         AttributeIncreaseEffect aEffectW = new AttributeIncreaseEffect(this, "BlessingWisIncreaseEffect", player, duration, AttributeType.WISDOM, conIncrease, null, null);
-        AttributeIncreaseEffect aEffectA = new AttributeIncreaseEffect(this, "BlessingAgiIncreaseEffect", player, duration, AttributeType.AGILITY, conIncrease, null, null);
+        AttributeIncreaseEffect aEffectA = new AttributeIncreaseEffect(this, "BlessingAgiIncreaseEffect", player, duration, AttributeType.DEXTERITY, conIncrease, null, null);
         AttributeIncreaseEffect aEffectI = new AttributeIncreaseEffect(this, "BlessingIntIncreaseEffect", player, duration, AttributeType.INTELLECT, conIncrease, null, null);
         AttributeIncreaseEffect aEffectE = new AttributeIncreaseEffect(this, "BlessingEndIncreaseEffect", player, duration, AttributeType.ENDURANCE, conIncrease, null, null);
         AttributeIncreaseEffect aEffectC = new AttributeIncreaseEffect(this, "BlessingChaIncreaseEffect", player, duration, AttributeType.CHARISMA, conIncrease, null, null);

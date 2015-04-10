@@ -1,16 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -23,14 +12,23 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
-
 import fr.neatmonster.nocheatplus.checks.CheckType;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SkillBackflip extends ActiveSkill {
 
     public SkillBackflip(Heroes plugin) {
         super(plugin, "Backflip");
-        setDescription("Backflip away from your enemies.$1Distance traveled is based on your Agility.$2");
+        setDescription("Backflip away from your enemies.$1Distance traveled is based on your Dexterity.$2");
         setUsage("/skill backflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill backflip");
@@ -58,9 +56,9 @@ public class SkillBackflip extends ActiveSkill {
 
         node.set("no-air-backflip", false);
         node.set("horizontal-power", 0.5);
-        node.set("horizontal-power-increase-per-agility", 0.0125);
+        node.set("horizontal-power-increase-per-dexterity", 0.0125);
         node.set("vertical-power", 0.5);
-        node.set("vertical-power-increase-per-agility", 0.00625);
+        node.set("vertical-power-increase-per-dexterity", 0.00625);
         node.set("ncp-exemption-duration", 2000);
 
         return node;
@@ -100,11 +98,11 @@ public class SkillBackflip extends ActiveSkill {
                 break;
         }
 
-        int agility = hero.getAttributeValue(AttributeType.AGILITY);
+        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0125, false);
-        vPower += agility * vPowerIncrease;
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
+        vPower += dexterity * vPowerIncrease;
 
         if (vPower > 2.0)
             vPower = 2.0;
@@ -121,8 +119,8 @@ public class SkillBackflip extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", 0.0125, false);
-        hPower += agility * hPowerIncrease;
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
+        hPower += dexterity * hPowerIncrease;
 
         if (weakenVelocity)
             hPower *= 0.75;

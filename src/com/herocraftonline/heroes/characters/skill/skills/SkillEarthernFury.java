@@ -56,7 +56,7 @@ public class SkillEarthernFury extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set("weapons", Util.axes);
         node.set("slownessAmplitude", 2);
-        node.set("agility-reduction", 3);
+        node.set("dexterity-reduction", 3);
         node.set(SkillSetting.DAMAGE.node(), 60);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.0);
         node.set(SkillSetting.DURATION.node(), 2500);
@@ -104,20 +104,20 @@ public class SkillEarthernFury extends TargettedSkill {
         
         // Create the effect and slow the target
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int agilityReduction = SkillConfigManager.getUseSetting(hero, this, "agility-reduction", 3, false);
+        int dexterityReduction = SkillConfigManager.getUseSetting(hero, this, "dexterity-reduction", 3, false);
         int slownessAmplitude = SkillConfigManager.getUseSetting(hero, this, "slownessAmplitude", 2, false);
-        ChillingStrikeAgilityEffect cEffect = new ChillingStrikeAgilityEffect(this, hero, duration, agilityReduction, slownessAmplitude, applyText, expireText);
+        ChillingStrikeDexterityEffect cEffect = new ChillingStrikeDexterityEffect(this, hero, duration, dexterityReduction, slownessAmplitude, applyText, expireText);
         targCT.addEffect(cEffect);
 
         return SkillResult.NORMAL;
     }
 
-    private class ChillingStrikeAgilityEffect extends AttributeDecreaseEffect {
+    private class ChillingStrikeDexterityEffect extends AttributeDecreaseEffect {
 
         private BukkitTask effect;
 
-        public ChillingStrikeAgilityEffect(SkillEarthernFury skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude, String applyText, String expireText) {
-            super(skill, "ChillingStrikeAgilityEffect", applier.getPlayer(), duration, AttributeType.AGILITY, decreaseValue, applyText, expireText);
+        public ChillingStrikeDexterityEffect(SkillEarthernFury skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude, String applyText, String expireText) {
+            super(skill, "ChillingStrikeDexterityEffect", applier.getPlayer(), duration, AttributeType.DEXTERITY, decreaseValue, applyText, expireText);
             types.add(EffectType.SLOW);
             int tickDuration = (int) ((duration / 1000) * 20);
             addMobEffect(2, tickDuration, slownessAmplitude, false);

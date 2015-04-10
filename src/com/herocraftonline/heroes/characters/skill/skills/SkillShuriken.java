@@ -57,8 +57,8 @@ public class SkillShuriken extends PassiveSkill {
             numShurikenText = "a Shuriken! Shuriken deal";
 
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 0.6, false);
-        damage += (int) (hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.6, false);
+        damage += (int) (hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease);
 
         int cooldown = SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1000, false);
         String formattedCooldown = Util.decFormat.format(cooldown / 1000.0);
@@ -70,7 +70,7 @@ public class SkillShuriken extends PassiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DAMAGE.node(), 20);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_AGILITY.node(), 0.4);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.4);
         node.set(SkillSetting.STAMINA.node(), 100);
         node.set("shuriken-toss-cooldown", 1000);
         node.set("num-shuriken", 3);
@@ -195,8 +195,8 @@ public class SkillShuriken extends PassiveSkill {
 
             // Damage the target
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 20, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_AGILITY, 0.4, false);
-            damage += hero.getAttributeValue(AttributeType.AGILITY) * damageIncrease;
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.4, false);
+            damage += hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease;
 
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC, false);

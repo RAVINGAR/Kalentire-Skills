@@ -30,7 +30,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
     public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
-        setDescription("FlyingKick towards your target and deal $1 damage! Targetting distance for this ability is increased by your Agility.");
+        setDescription("FlyingKick towards your target and deal $1 damage! Targetting distance for this ability is increased by your Dexterity.");
         setUsage("/skill flyingkick");
         setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
@@ -53,7 +53,7 @@ public class SkillFlyingKick extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 8);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_AGILITY.node(), 0.15);
+        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_DEXTERITY.node(), 0.15);
         node.set(SkillSetting.DAMAGE.node(), 40);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.125);
         node.set("vertical-power", 1.0);
@@ -75,8 +75,8 @@ public class SkillFlyingKick extends TargettedSkill {
         player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 18.0F, 0.4F);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0075, false);
-        vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.AGILITY));
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0075, false);
+        vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
         final Vector pushUpVector = new Vector(0, vPower, 0);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {

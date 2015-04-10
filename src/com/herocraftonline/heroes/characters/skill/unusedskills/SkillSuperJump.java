@@ -51,9 +51,9 @@ public class SkillSuperJump extends ActiveSkill {
 
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set("horizontal-power", 0.5);
-        node.set("horizontal-power-increase-per-agility", 0.0125);
+        node.set("horizontal-power-increase-per-dexterity", 0.0125);
         node.set("vertical-power", 0.5);
-        node.set("vertical-power-increase-per-agility", 0.00625);
+        node.set("vertical-power-increase-per-dexterity", 0.00625);
         node.set("ncp-exemption-duration", 2000);
 
         return node;
@@ -67,11 +67,11 @@ public class SkillSuperJump extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int agility = hero.getAttributeValue(AttributeType.AGILITY);
+        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-agility", 0.0125, false);
-        vPower += agility * vPowerIncrease;
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
+        vPower += dexterity * vPowerIncrease;
 
         if (vPower > 4.0)
             vPower = 4.0;
@@ -94,8 +94,8 @@ public class SkillSuperJump extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-agility", 0.0125, false);
-        hPower += agility * hPowerIncrease;
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
+        hPower += dexterity * hPowerIncrease;
 
         if (hPower > 8.0)
             hPower = 8.0;
