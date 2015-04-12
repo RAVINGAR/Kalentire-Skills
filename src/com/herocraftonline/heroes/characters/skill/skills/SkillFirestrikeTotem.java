@@ -31,17 +31,17 @@ import java.util.Map.Entry;
 
 public class SkillFirestrikeTotem extends SkillBaseTotem {
     
-    private final Map<Snowball, LivingEntity> homingFireballs = new LinkedHashMap<Snowball, LivingEntity>();
-    private final Map<Snowball, Double> snowballVelocities = new LinkedHashMap<Snowball, Double>();
+    private final Map<SmallFireball, LivingEntity> homingFireballs = new LinkedHashMap<SmallFireball, LivingEntity>();
+    private final Map<SmallFireball, Double> fireballVelocities = new LinkedHashMap<SmallFireball, Double>();
     // Order of the faces matters, don't reorder them :(
     private final BlockFace[] firingFaces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST,};
-    
+
     public SkillFirestrikeTotem(Heroes plugin) {
         super(plugin, "FirestrikeTotem");
         setArgumentRange(0,0);
         setUsage("/skill firestriketotem");
         setIdentifiers("skill firestriketotem");
-        setDescription("Places a firestrike totem at target location that shoots snowballs at entities in a $1 radius dealing $2 damage. Lasts for $3 seconds.");
+        setDescription("Places a firestrike totem at target location that shoots fireballs at entities in a $1 radius dealing $2 damage. Lasts for $3 seconds.");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
         material = Material.NETHERRACK;
         plugin.getServer().getPluginManager().registerEvents(new FirestrikeEntityListener(this), plugin);
@@ -60,7 +60,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
     public void usePower(Hero hero, Totem totem) {
         Player heroP = hero.getPlayer();
         Block locForRel = totem.getLocation().getBlock().getRelative(BlockFace.UP, 2);
-        
+
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
         int targetsHit = 0;
         for(LivingEntity entity : totem.getTargets(hero)) {
@@ -72,27 +72,27 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 continue;
             }
             for(int i = 0; i < 4; i++) {
-                Snowball snowball = entity.getWorld().spawn(locForRel.getRelative(firingFaces[i], 2).getLocation(), Snowball.class);
-                homingFireballs.put(snowball, entity);
-                snowballVelocities.put(snowball, getVelocity(hero));
-                setVelocity(snowball, entity);
-                snowball.setShooter(heroP);
+                SmallFireball fireball = entity.getWorld().spawn(locForRel.getRelative(firingFaces[i], 2).getLocation(), SmallFireball.class);
+                homingFireballs.put(fireball, entity);
+                fireballVelocities.put(fireball, getVelocity(hero));
+                setVelocity(fireball, entity);
+                fireball.setShooter(heroP);
             }
             targetsHit++;
         }
     }
 
-    private void setVelocity(Snowball snowball, LivingEntity target) {
+    private void setVelocity(SmallFireball fireball, LivingEntity target) {
         Vector tLoc = target.getEyeLocation().toVector();
-        Vector aLoc = snowball.getLocation().toVector();
-        snowball.setVelocity(tLoc.subtract(aLoc).normalize().multiply(snowballVelocities.get(snowball)));
+        Vector aLoc = fireball.getLocation().toVector();
+        fireball.setVelocity(tLoc.subtract(aLoc).normalize().multiply(fireballVelocities.get(fireball)));
     }
 
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
         node.set(SkillSetting.DAMAGE.node(), 50.0);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5.0);
-        node.set("fire-ticks", 0);
+        node.set("fire-ticks", 50);
         node.set("velocity", 1.5);
         node.set("max-targets", 5);
         return node;
@@ -104,7 +104,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
     }
 
     public int getFireTicks(Hero h) {
-        return SkillConfigManager.getUseSetting(h, this, "fire-ticks", 0, false);
+        return SkillConfigManager.getUseSetting(h, this, "fire-ticks", 50, false);
     }
 
     public double getVelocity(Hero h) {
@@ -114,18 +114,18 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
     private class FirestrikeFireballTask implements Runnable {
 
         public void run() {
-            Iterator<Entry<Snowball, LivingEntity>> snowballs = homingFireballs.entrySet().iterator();
-            while(snowballs.hasNext()) {
-                Entry<Snowball, LivingEntity> pair = snowballs.next();
-                Snowball snowball = pair.getKey();
+            Iterator<Entry<SmallFireball, LivingEntity>> fireballs = homingFireballs.entrySet().iterator();
+            while(fireballs.hasNext()) {
+                Entry<SmallFireball, LivingEntity> pair = fireballs.next();
+                SmallFireball fireball = pair.getKey();
                 LivingEntity target = pair.getValue();
-                if(!snowball.isValid() || !target.isValid()) {
-                    snowball.remove();
-                    snowballs.remove();
-                    snowballVelocities.remove(snowball);
+                if(!fireball.isValid() || !target.isValid()) {
+                    fireball.remove();
+                    fireballs.remove();
+                    fireballVelocities.remove(fireball);
                     continue;
                 }
-                setVelocity(snowball, target);
+                setVelocity(fireball, target);
             }
         }
     }
@@ -141,12 +141,12 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
         public void onEntityDamage(EntityDamageByEntityEvent event) {
 
             Entity projectile = event.getDamager();
-            if (!(event.getEntity() instanceof LivingEntity) || (!(projectile instanceof Snowball)) || (!skill.homingFireballs.containsKey(projectile))) {
+            if (!(event.getEntity() instanceof LivingEntity) || (!(projectile instanceof SmallFireball)) || (!skill.homingFireballs.containsKey(projectile))) {
                 return;
             }
 
             skill.homingFireballs.remove(projectile);
-            skill.snowballVelocities.remove(projectile);
+            skill.fireballVelocities.remove(projectile);
             event.setCancelled(true);
 
             LivingEntity targetLE = (LivingEntity)event.getEntity();
@@ -168,7 +168,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 // skill.plugin.getCharacterManager().getCharacter(targetLE).addEffect(new CombustEffect(this.skill, player));
                 skill.plugin.getDamageManager().addSpellTarget(targetLE, hero, skill);
                 skill.damageEntity(targetLE, player, skill.getDamage(hero));
-                
+
                 /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
                  * offset controls how spread out the particles are
                  * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
@@ -176,16 +176,16 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 150, 16);
             }
         }
-        
+
         @EventHandler(ignoreCancelled=true)
         public void onBlockIgnite(BlockIgniteEvent event) {
             if(event.getCause() != IgniteCause.FIREBALL || event.getIgnitingEntity().getType() != EntityType.SMALL_FIREBALL) {
                 return;
             }
-            Snowball snowball = (Snowball) event.getIgnitingEntity();
-            if(skill.homingFireballs.containsKey(snowball)) {
-                skill.homingFireballs.remove(snowball);
-                skill.snowballVelocities.remove(snowball);
+            SmallFireball fireball = (SmallFireball) event.getIgnitingEntity();
+            if(skill.homingFireballs.containsKey(fireball)) {
+                skill.homingFireballs.remove(fireball);
+                skill.fireballVelocities.remove(fireball);
                 event.setCancelled(true); 
             }
         }
