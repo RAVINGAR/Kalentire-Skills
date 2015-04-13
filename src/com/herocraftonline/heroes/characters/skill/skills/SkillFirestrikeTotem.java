@@ -21,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
@@ -90,7 +91,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
 
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.DAMAGE.node(), 50.0);
+        //node.set(SkillSetting.DAMAGE.node(), 50.0);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5.0);
         node.set("fire-ticks", 50);
         node.set("velocity", 1.5);
@@ -174,6 +175,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                  * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                  * */
                 targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 150, 16);
+
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 80, false);
+                addSpellTarget(targetLE, hero);
+                damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
             }
         }
 
