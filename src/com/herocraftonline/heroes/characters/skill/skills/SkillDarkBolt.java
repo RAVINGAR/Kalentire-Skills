@@ -10,13 +10,12 @@ import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductio
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class SkillDarkBolt extends ActiveSkill {
 
@@ -37,11 +35,11 @@ public class SkillDarkBolt extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    private Map<Snowball, Long> darkBolts = new LinkedHashMap<Snowball, Long>(100) {
+    private Map<WitherSkull, Long> darkBolts = new LinkedHashMap<WitherSkull, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<WitherSkull, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -109,7 +107,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.4F, 2.0F);
 
-        final Snowball darkBolt = player.launchProjectile(Snowball.class);
+        final WitherSkull darkBolt = player.launchProjectile(WitherSkull.class);
         darkBolts.put(darkBolt, System.currentTimeMillis());
 
         darkBolt.setShooter(player);
@@ -117,7 +115,7 @@ public class SkillDarkBolt extends ActiveSkill {
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         darkBolt.setVelocity(darkBolt.getVelocity().multiply(mult));
 
-       // remove for now while we set this to a snowball
+       // remove for now while we set this to a witherskull
        // darkBolt.setIsIncendiary(false);
        // darkBolt.setYield(0.0F);
 
@@ -144,10 +142,10 @@ public class SkillDarkBolt extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
-            if (!(event.getEntity() instanceof Snowball))
+            if (!(event.getEntity() instanceof WitherSkull))
                 return;
 
-            final Snowball darkBolt = (Snowball) event.getEntity();
+            final WitherSkull darkBolt = (WitherSkull) event.getEntity();
             if ((!(darkBolt.getShooter() instanceof Player)))
                 return;
 
@@ -172,7 +170,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball) || !darkBolts.containsKey(projectile)) {
+            if (!(projectile instanceof WitherSkull) || !darkBolts.containsKey(projectile)) {
                 return;
             }
 
@@ -199,7 +197,7 @@ public class SkillDarkBolt extends ActiveSkill {
 		return locations;
 	}
 
-    private void explodeDarkBolt(Snowball darkBolt) {
+    private void explodeDarkBolt(WitherSkull darkBolt) {
 
         Player player = (Player) darkBolt.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
