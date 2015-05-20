@@ -51,6 +51,10 @@ public class SkillTrack extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
+            return SkillResult.INVALID_TARGET;
+        }
+        
         Player player = hero.getPlayer();
 
         Player target = plugin.getServer().getPlayer(args[0]);
