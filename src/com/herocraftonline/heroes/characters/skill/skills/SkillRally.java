@@ -53,7 +53,7 @@ public class SkillRally extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
         final Player player = hero.getPlayer();
-        if (!(target instanceof Player)) {
+        if (!(target instanceof Player))  {
             return SkillResult.INVALID_TARGET;
         }
 
