@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class SkillFireSwell extends ActiveSkill {
-
+    
     private Map<Fireball, Long> fireballs = new LinkedHashMap<Fireball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
@@ -103,17 +103,17 @@ public class SkillFireSwell extends ActiveSkill {
             public void execute()
             {
                 for (double i = 0; i < numFireballs; i++) {
-                    Fireball doomPearl = player.launchProjectile(Fireball.class);
-                    doomPearl.setFireTicks(100);
+                    Fireball fireBall = player.launchProjectile(Fireball.class);
+                    fireBall.setFireTicks(100);
 
                     double randomX = ranGen.nextGaussian();
                     double randomY = ranGen.nextGaussian();
                     double randomZ = ranGen.nextGaussian();
 
                     Vector vel = new Vector(randomX, randomY, randomZ);
-                    doomPearl.setVelocity(vel.multiply(velocityMultiplier));
+                    fireBall.setVelocity(vel.multiply(velocityMultiplier));
 
-                    fireballs.put(doomPearl, time);
+                    fireballs.put(fireBall, time);
                 }
             }
         }, Lists.newArrayList(CheckType.BLOCKPLACE_SPEED), 0);
