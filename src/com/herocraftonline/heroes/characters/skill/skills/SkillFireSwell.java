@@ -30,10 +30,10 @@ import java.util.Random;
 public class SkillFireSwell extends ActiveSkill {
     
     private Map<Fireball, Long> fireballs = new LinkedHashMap<Fireball, Long>(100) {
-        private static final long serialVersionUID = 4329526013158603251L;
+        private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<Fireball, Long> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<Fireball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
