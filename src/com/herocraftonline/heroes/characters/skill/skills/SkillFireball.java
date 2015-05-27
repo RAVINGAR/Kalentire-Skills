@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
@@ -22,7 +21,6 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class SkillFireball extends ActiveSkill {
 
@@ -30,7 +28,7 @@ public class SkillFireball extends ActiveSkill {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<Snowball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };

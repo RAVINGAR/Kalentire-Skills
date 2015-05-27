@@ -1,18 +1,20 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-
+import com.google.common.collect.Lists;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import fr.neatmonster.nocheatplus.checks.CheckType;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -21,22 +23,9 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import com.google.common.collect.Lists;
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
-import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class SkillDoomwave extends ActiveSkill {
 
@@ -44,7 +33,7 @@ public class SkillDoomwave extends ActiveSkill {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<EnderPearl, Long> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<EnderPearl, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
