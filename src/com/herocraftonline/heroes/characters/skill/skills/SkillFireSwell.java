@@ -29,11 +29,11 @@ import java.util.Random;
 
 public class SkillFireSwell extends ActiveSkill {
 
-    private Map<EnderPearl, Long> fireballs = new LinkedHashMap<EnderPearl, Long>(100) {
+    private Map<Fireball, Long> fireballs = new LinkedHashMap<Fireball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<EnderPearl, Long> eldest) {
+        protected boolean removeEldestEntry(Entry<Fireball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -103,7 +103,7 @@ public class SkillFireSwell extends ActiveSkill {
             public void execute()
             {
                 for (double i = 0; i < numFireballs; i++) {
-                    EnderPearl doomPearl = player.launchProjectile(EnderPearl.class);
+                    Fireball doomPearl = player.launchProjectile(Fireball.class);
                     doomPearl.setFireTicks(100);
 
                     double randomX = ranGen.nextGaussian();
