@@ -15,12 +15,12 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class SkillMind_and_Body extends ActiveSkill {
+public class SkillMindandBody extends ActiveSkill {
 
-    public SkillMind_and_Body(Heroes plugin) {
+    public SkillMindandBody(Heroes plugin) {
         super(plugin, "Mind and Body");
         setDescription("You break free of any effects that impede your movement.");
-        setUsage("/skill mind_and_body");
+        setUsage("/skill mindandbody");
         setArgumentRange(0, 0);
         setIdentifiers("skill mindandbody", "skill mind_and_body", "skill mind");
         setTypes(SkillType.MOVEMENT_PREVENTION_COUNTERING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
