@@ -112,7 +112,7 @@ public class SkillRuneshard extends ActiveSkill {
                 arrow = true;
             }
             else {
-                if (event.getCause() != DamageCause.MAGIC)
+                if (event.getCause() != DamageCause.ENTITY_ATTACK)
                     return;
 
                 LivingEntity target = (LivingEntity) event.getEntity();
@@ -149,7 +149,7 @@ public class SkillRuneshard extends ActiveSkill {
                         return;
 
                     double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 5, false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.5, false);
+                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
                     damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
                     // Damage the target
