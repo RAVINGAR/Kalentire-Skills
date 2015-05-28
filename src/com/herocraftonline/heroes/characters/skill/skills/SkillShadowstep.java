@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -61,6 +62,10 @@ public class SkillShadowstep extends TargettedSkill {
 
         Player player = hero.getPlayer();
 
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
+        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
         if (target == player || !(target instanceof Player)) {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -105,6 +110,7 @@ public class SkillShadowstep extends TargettedSkill {
 
             broadcastExecuteText(hero, target);
 
+            plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
             player.getWorld().playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
 

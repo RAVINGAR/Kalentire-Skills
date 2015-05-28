@@ -22,7 +22,6 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -114,9 +113,9 @@ public class SkillConflux extends ActiveSkill {
 
 
         player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        //double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
+        //double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+        //damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
@@ -138,7 +137,7 @@ public class SkillConflux extends ActiveSkill {
                 continue;
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+            //damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             ConfuseEffect confluxEffect = new ConfuseEffect(this, player, duration, period, maxDrift);

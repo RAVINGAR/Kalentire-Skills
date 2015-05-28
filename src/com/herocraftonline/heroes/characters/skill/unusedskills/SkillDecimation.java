@@ -1,16 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.WitherSkull;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -18,15 +15,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SkillDecimation extends ActiveSkill {
 
@@ -34,7 +24,7 @@ public class SkillDecimation extends ActiveSkill {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<WitherSkull, Long> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<WitherSkull, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
