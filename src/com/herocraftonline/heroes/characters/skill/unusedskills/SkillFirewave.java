@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 //http://pastie.org/private/oz5iqyfjto1vgoova1qn2g (original source)
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
