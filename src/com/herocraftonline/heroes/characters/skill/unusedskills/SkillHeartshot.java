@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;

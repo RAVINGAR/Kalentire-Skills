@@ -105,7 +105,7 @@ public class SkillBloodWell extends ActiveSkill {
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
                 Hero hero = (Hero) event.getDamager();
-                if (hero.hasEffect("BloodDrinking")) {
+                if (hero.hasEffect("BloodWelling")) {
                     if (!damageCheck(hero.getPlayer(), (LivingEntity) event.getEntity()))
                         return;
 
@@ -127,14 +127,14 @@ public class SkillBloodWell extends ActiveSkill {
             if (attacker instanceof Player) {
                 Player player = (Player) attacker;
                 Hero hero = plugin.getCharacterManager().getHero(player);
-                if (hero.hasEffect("BloodDrinking"))
+                if (hero.hasEffect("BloodWelling"))
                     bloodDrinkHeal(hero, event.getDamage());
             }
         }
     }
 
     private void bloodDrinkHeal(Hero hero, double damage) {
-        BloodDrinkEffect bdEffect = (BloodDrinkEffect) hero.getEffect("BloodDrinking");
+        BloodDrinkEffect bdEffect = (BloodDrinkEffect) hero.getEffect("BloodWelling");
 
         if (bdEffect != null) {
             int maxHealing = bdEffect.getMaximumHealing();
@@ -170,7 +170,7 @@ public class SkillBloodWell extends ActiveSkill {
         private int maximumHealing;
 
         public BloodDrinkEffect(Skill skill, Player applier, long duration, double damageHealingPercent, int maximumHealing) {
-            super(skill, "BloodDrinking", applier, duration, applyText, expireText);
+            super(skill, "BloodWelling", applier, duration, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);

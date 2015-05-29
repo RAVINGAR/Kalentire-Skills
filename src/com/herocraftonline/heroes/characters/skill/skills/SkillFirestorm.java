@@ -1,19 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.FireworkEffect.Type;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -22,6 +7,16 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import org.bukkit.*;
+import org.bukkit.FireworkEffect.Type;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillFirestorm extends ActiveSkill {
 
@@ -32,7 +27,7 @@ public class SkillFirestorm extends ActiveSkill {
 		setIdentifiers("skill firestorm");
 		setUsage("/skill firestorm");
 		setArgumentRange(0, 0);
-		setDescription("Summons a fire stormt in the area around your feet, dealing $1 damage to all targets within a $2 block radius.");
+		setDescription("Summons a fire storm in the area around your feet, dealing $1 damage to all targets within a $2 block radius.");
 	}
 
 	public ConfigurationSection getDefaultConfig() {
