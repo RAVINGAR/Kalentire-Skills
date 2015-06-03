@@ -1,6 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.characters.effects.common.StunEffect;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -12,24 +21,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
-
 public class SkillShadowstep extends TargettedSkill {
 
     //private final BlockFace[] faces = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
 
     public SkillShadowstep(Heroes plugin) {
         super(plugin, "Shadowstep");
-        setDescription("Shadow step your target, teleporting behind them. Has a maximum targetting range of $1 blocks.");
+        setDescription("Shadow step your target, teleporting behind them. Has a maximum targeting range of $1 blocks.");
         setUsage("/skill shadowstep");
         setArgumentRange(0, 0);
         setIdentifiers("skill shadowstep");
@@ -110,7 +108,7 @@ public class SkillShadowstep extends TargettedSkill {
 
             broadcastExecuteText(hero, target);
 
-            plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
+            //plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
             player.getWorld().playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
 

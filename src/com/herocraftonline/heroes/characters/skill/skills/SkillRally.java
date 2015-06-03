@@ -22,11 +22,12 @@ public class SkillRally extends TargettedSkill {
 
     public SkillRally(Heroes plugin) {
         super(plugin, "Rally");
-        setDescription("Rally towards your target! Targetting distance for this ability is increased by your Strength.");
+        setDescription("Rally towards your target! Targeting distance for this ability is increased by your Strength.");
         setUsage("/skill rally");
         setArgumentRange(0, 0);
         setIdentifiers("skill rally");
-        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.VELOCITY_INCREASING);
+        setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.NO_SELF_TARGETTING,
+                SkillType.BUFFING, SkillType.VELOCITY_INCREASING);
     }
 
     @Override

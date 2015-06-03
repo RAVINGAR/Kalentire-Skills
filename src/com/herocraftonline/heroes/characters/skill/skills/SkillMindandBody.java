@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 public class SkillMindandBody extends ActiveSkill {
 
     public SkillMindandBody(Heroes plugin) {
-        super(plugin, "Mind and Body");
+        super(plugin, "MindandBody");
         setDescription("You break free of any effects that impede your movement.");
         setUsage("/skill mindandbody");
         setArgumentRange(0, 0);
