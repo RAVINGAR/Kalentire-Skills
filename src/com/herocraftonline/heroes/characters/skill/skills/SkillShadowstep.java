@@ -60,9 +60,9 @@ public class SkillShadowstep extends TargettedSkill {
 
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+        //int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 1500, false);
+        //int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 30, false);
+        //duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
         if (target == player || !(target instanceof Player)) {
             return SkillResult.INVALID_TARGET_NO_MSG;
