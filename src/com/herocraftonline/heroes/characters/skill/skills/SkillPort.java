@@ -86,6 +86,11 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 			return SkillResult.SKIP_POST_USAGE;
 		}
 
+        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
+            Messaging.send(player, "You must specify a location when using this skill!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
 		String portInfo = SkillConfigManager.getUseSetting(hero, this, args[0].toLowerCase(), (String) null);
 		if (portInfo != null) {
 		    List<String> portArgs = getPortArgs(portInfo);
