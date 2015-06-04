@@ -1,5 +1,6 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSteed;
 import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Variant;
 

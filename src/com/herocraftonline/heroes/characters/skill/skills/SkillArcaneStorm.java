@@ -1,21 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 //http://pastie.org/private/i04dtc6t4oannstqls6sq
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.FireworkEffect.Type;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -24,6 +9,15 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import org.bukkit.*;
+import org.bukkit.FireworkEffect.Type;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillArcaneStorm extends ActiveSkill  {
 
@@ -39,13 +33,13 @@ public class SkillArcaneStorm extends ActiveSkill  {
 
 	@Override
 	public SkillResult use(final Hero hero, String[] arg1) {
-		hero.addEffect(new RootEffect(this, hero.getPlayer(), 1000, 5000L) {
+		hero.addEffect(new RootEffect(this, hero.getPlayer(), 1000, 2000L) {
 			@Override
 			public void applyToHero(Hero hero) {
 				super.applyToHero(hero);
 			    final Player player = hero.getPlayer();
-			    broadcast(hero.getEntity().getLocation(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] $1 has begun channeling an arcane storm!", new Object[] 
-			    		{hero.getPlayer().getName()});
+			    broadcast(hero.getEntity().getLocation(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] $1 has begun channeling an arcane storm!",
+						hero.getPlayer().getName());
 			    List<Location> fireworkLocations = circle(hero.getPlayer(),hero.getPlayer().getLocation(),10,1,true,false,15);
 			    long ticksPerFirework = (int) (100.00/((double)fireworkLocations.size()));
 			    final VisualEffect fplayer = new VisualEffect();
@@ -60,8 +54,6 @@ public class SkillArcaneStorm extends ActiveSkill  {
 										.withColor(Color.AQUA)
 										.with(Type.BURST)
 										.build());
-							} catch (IllegalArgumentException e) {
-								e.printStackTrace();
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -73,16 +65,14 @@ public class SkillArcaneStorm extends ActiveSkill  {
 
 					@Override
 					public void run() {
-						Iterator<Entity> nearby = player.getNearbyEntities(16, 5, 16).iterator();
-						while(nearby.hasNext()) {
-							Entity entity = nearby.next();
-							if(!(entity instanceof LivingEntity)) {
+						for (Entity entity : player.getNearbyEntities(16, 5, 16)) {
+							if (!(entity instanceof LivingEntity)) {
 								continue;
 							}
-							if(!Skill.damageCheck(player, (LivingEntity) entity)) {
+							if (!Skill.damageCheck(player, (LivingEntity) entity)) {
 								continue;
 							}
-							Skill.damageEntity((LivingEntity)entity, player, 50D, DamageCause.MAGIC);
+							Skill.damageEntity((LivingEntity) entity, player, 200D, DamageCause.MAGIC);
 							player.getWorld().strikeLightningEffect(entity.getLocation());
 						}
 					}
@@ -92,14 +82,14 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			@Override
 			public void removeFromHero(Hero hero) {
 				super.removeFromHero(hero);
-			    broadcast(hero.getPlayer().getLocation(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] Arcane Storm Unleashed!", new Object[] {});
+			    broadcast(hero.getPlayer().getLocation(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] Arcane Storm Unleashed!");
 			}
 
 		});
 		return SkillResult.NORMAL;
 	}
 	protected List<Location> circle(Player player, Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
-		List<Location> circleblocks = new ArrayList<Location>();
+		List<Location> circleBlocks = new ArrayList<Location>();
         int cx = loc.getBlockX();
         int cy = loc.getBlockY();
         int cz = loc.getBlockZ();
@@ -109,11 +99,11 @@ public class SkillArcaneStorm extends ActiveSkill  {
                     double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? (cy - y) * (cy - y) : 0);
                     if (dist < r*r && !(hollow && dist < (r-1)*(r-1))) {
                         Location l = new Location(loc.getWorld(), x, y + plus_y, z);
-                        circleblocks.add(l);
+                        circleBlocks.add(l);
                         }
                     }
      
-        return circleblocks;
+        return circleBlocks;
     }
 	@Override
 	public String getDescription(Hero arg0) {
