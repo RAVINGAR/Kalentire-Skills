@@ -66,9 +66,6 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
-        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
-            return SkillResult.INVALID_TARGET;
-        }
 		Player player = hero.getPlayer();
 
 		List<String> keys = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, null));
@@ -169,13 +166,13 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 	@Override
 	public boolean isWarmupRequired(String[] args)
 	{
-	    return args == null || !"list".equalsIgnoreCase(args[0]);
+	    return args == null || args.length < 1 || !"list".equalsIgnoreCase(args[0]);
 	}
 
 	@Override
 	public boolean isCoolDownRequired(String[] args)
 	{
-        return args == null || !"list".equalsIgnoreCase(args[0]);
+        return args == null || args.length < 1 || !"list".equalsIgnoreCase(args[0]);
 	}
 
     private SkillResult doPort(Hero hero, String portInfo, boolean isDeparting)
