@@ -1,33 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -43,6 +15,19 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
 
 public class SkillPort extends ActiveSkill implements Listener, PluginMessageListener {
 
@@ -81,6 +66,9 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
+        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
+            return SkillResult.INVALID_TARGET;
+        }
 		Player player = hero.getPlayer();
 
 		List<String> keys = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, null));
@@ -181,13 +169,13 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 	@Override
 	public boolean isWarmupRequired(String[] args)
 	{
-	    return args != null ? !"list".equalsIgnoreCase(args[0]) : true;
+	    return args == null || !"list".equalsIgnoreCase(args[0]);
 	}
 
 	@Override
 	public boolean isCoolDownRequired(String[] args)
 	{
-        return args != null ? !"list".equalsIgnoreCase(args[0]) : true;
+        return args == null || !"list".equalsIgnoreCase(args[0]);
 	}
 
     private SkillResult doPort(Hero hero, String portInfo, boolean isDeparting)
