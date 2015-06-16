@@ -366,7 +366,6 @@ public class SkillRecall extends ActiveSkill implements Listener {
         } else {
             delayJoin(plugin.getCharacterManager().getHero(player));
         }
-
     }
 
     private void delayJoin(Hero hero) {
