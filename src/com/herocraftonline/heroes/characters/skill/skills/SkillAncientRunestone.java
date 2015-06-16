@@ -1,10 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.google.common.base.Function;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,10 +21,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SkillAncientRunestone extends SkillBaseRunestone {
 
@@ -83,7 +84,25 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
         public void onPlayerJoin(PlayerJoinEvent event) throws InvalidConfigurationException {
 
             Player player = event.getPlayer();
-            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (plugin.getCharacterManager().getCurrAsyncLoads().containsKey(player.getUniqueId())) {
+                plugin.getCharacterManager().getCurrAsyncLoads().get(player.getUniqueId()).get().add(new Function<Hero, Void>() {
+                    @Nullable
+                    @Override
+                    public Void apply(Hero hero) {
+                        try {
+                            delayJoin(hero);
+                        } catch (InvalidConfigurationException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    };
+                });
+            } else {
+                delayJoin(plugin.getCharacterManager().getHero(player));
+            }
+        }
+
+        private void delayJoin(Hero hero) throws InvalidConfigurationException {
             ConfigurationSection skillSettings = hero.getSkillSettings("ancientrunestone");
             if (skillSettings == null)
                 return;
@@ -93,7 +112,7 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
                 for (String key : skillSettings.getKeys(false)) {
                     ItemStack runeStone = (ItemStack) skillSettings.get(key);
                     if (runeStone != null) {
-                        addRunestoneToSoulBoundList(player, runeStone);
+                        addRunestoneToSoulBoundList(hero.getPlayer(), runeStone);
                         skillSettings.set(key, null);
                         i++;
                     }
