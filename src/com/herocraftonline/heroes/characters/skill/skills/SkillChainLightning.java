@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 // old src  http://pastie.org/private/gfhf451ziiv1tbnkpufcwq
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
@@ -9,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -70,6 +72,7 @@ public class SkillChainLightning extends TargettedSkill {
     private LivingEntity getTarget(Hero hero, int maxDistance, String[] args) {
         final Player player = hero.getPlayer();
         LivingEntity target = null;
+        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(hero), 1.0F);
         if (args.length > 0) {
             target = plugin.getServer().getPlayer(args[0]);
             if (target == null) {
@@ -244,7 +247,9 @@ public class SkillChainLightning extends TargettedSkill {
         }
 
     }
-
+    public float getLightningVolume(Hero h) {
+        return (float) SkillConfigManager.getUseSetting(h, this, "lightning-volume", 0.0F, false);
+    }
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
@@ -253,6 +258,7 @@ public class SkillChainLightning extends TargettedSkill {
         node.set("bounceRadius", 5);
         node.set("bounceDamageMultiplier", 0.75);
         node.set("bounceCooldownReduction", (long) 1000);
+        node.set("lightning-volume", 0.0F);
         return node;
 
     }
