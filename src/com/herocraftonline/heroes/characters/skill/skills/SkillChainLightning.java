@@ -147,6 +147,7 @@ public class SkillChainLightning extends TargettedSkill {
         CharacterTemplate cT = plugin.getCharacterManager().getCharacter(target);
         cT.addEffect(new MultiboltEffect(this,plugin,bounceTime,damage,hero,damageReductionPercent,bounceRadius,cdr));
         broadcast(hero.getPlayer().getLocation(), ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] " + hero.getName() + " used ChainLightning!");
+        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(hero), 1.0F);
         return SkillResult.NORMAL;
     }
 
