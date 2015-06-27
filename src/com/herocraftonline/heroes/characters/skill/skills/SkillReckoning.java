@@ -1,16 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.Vector;
-
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -26,8 +15,17 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
-
 import fr.neatmonster.nocheatplus.checks.CheckType;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class SkillReckoning extends ActiveSkill {
 
@@ -67,6 +65,7 @@ public class SkillReckoning extends ActiveSkill {
         node.set("slow-amplifier", 0);
         node.set("slow-amplifier-increase-per-intellect", 0.075);
         node.set("ncp-exemption-duration", 500);
+        node.set("lightning-volume", 0.0F);
 
         return node;
     }
@@ -144,7 +143,7 @@ public class SkillReckoning extends ActiveSkill {
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.4F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.0F, 0.0F);
         player.getWorld().strikeLightningEffect(player.getLocation());
 
 
