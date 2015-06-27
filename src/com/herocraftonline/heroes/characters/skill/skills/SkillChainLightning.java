@@ -145,9 +145,8 @@ public class SkillChainLightning extends TargettedSkill {
         double damageReductionPercent = SkillConfigManager.getUseSetting(hero, this, "bounceDamageMultiplier", 0.75, false);
         long cdr = (long) (SkillConfigManager.getUseSetting(hero, this, "bounceCooldownReduction", 1000, false));
         CharacterTemplate cT = plugin.getCharacterManager().getCharacter(target);
-        cT.addEffect(new MultiboltEffect(this,plugin,bounceTime,damage,hero,damageReductionPercent,bounceRadius,cdr));
+        cT.addEffect(new MultiboltEffect(this, plugin, bounceTime, damage, hero, damageReductionPercent, bounceRadius, cdr));
         broadcast(hero.getPlayer().getLocation(), ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] " + hero.getName() + " used ChainLightning!");
-        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(hero), 1.0F);
         return SkillResult.NORMAL;
     }
 
@@ -198,6 +197,7 @@ public class SkillChainLightning extends TargettedSkill {
                 ((Player)(cT.getEntity())).sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Hit by Arcane Multibolt from " + caster.getName() + "!");
             }
             cT.getEntity().getLocation().getWorld().strikeLightningEffect(cT.getEntity().getLocation());
+            cT.getEntity().getWorld().playSound(cT.getEntity().getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(caster), 1.0F);
         }
 
         @Override
