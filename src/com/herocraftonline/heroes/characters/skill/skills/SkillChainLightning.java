@@ -72,7 +72,6 @@ public class SkillChainLightning extends TargettedSkill {
     private LivingEntity getTarget(Hero hero, int maxDistance, String[] args) {
         final Player player = hero.getPlayer();
         LivingEntity target = null;
-        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(hero), 1.0F);
         if (args.length > 0) {
             target = plugin.getServer().getPlayer(args[0]);
             if (target == null) {
