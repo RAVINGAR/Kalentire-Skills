@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.MobEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -82,7 +81,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         sheepMap.put(sheep.getEntityId(), player);
 
         EntityLiving cbSheep = ((CraftLivingEntity) sheep).getHandle();
-        cbSheep.addEffect(new MobEffect(19, 10000, 0));
+        //cbSheep.addEffect(new MobEffect(19, 10000, 0));
         cbSheep.setHealth(10000);
 
         double velocity = SkillConfigManager.getUseSetting(hero, this, "velocity", 1.0D, false);
