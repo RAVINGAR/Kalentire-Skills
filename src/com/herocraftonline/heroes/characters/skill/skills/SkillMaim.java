@@ -1,11 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -18,6 +12,12 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillMaim extends TargettedSkill {
     private String applyText;
@@ -47,7 +47,7 @@ public class SkillMaim extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        node.set("weapons", Util.axes);
+        node.set("weapons", Util.weapons);
         node.set("amplitude", 3);
         node.set(SkillSetting.DAMAGE.node(), 60);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);
@@ -69,7 +69,7 @@ public class SkillMaim extends TargettedSkill {
         Player player = hero.getPlayer();
 
         Material item = player.getItemInHand().getType();
-        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
+        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.weapons).contains(item.name())) {
             Messaging.send(player, "You can't use Maim with that weapon!");
             return SkillResult.FAIL;
         }
@@ -77,7 +77,7 @@ public class SkillMaim extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // Prep variables
-        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 
         // Damage the target and add the slow effect.
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
@@ -93,7 +93,7 @@ public class SkillMaim extends TargettedSkill {
         SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
         targCT.addEffect(sEffect);
 
-        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.8F, 1.0F);
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
 
