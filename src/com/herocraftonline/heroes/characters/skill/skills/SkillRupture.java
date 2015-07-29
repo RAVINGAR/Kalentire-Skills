@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.google.common.base.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -28,8 +27,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-
-import javax.annotation.Nullable;
 
 public class SkillRupture extends TargettedSkill {
 
@@ -124,28 +121,13 @@ public class SkillRupture extends TargettedSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerTeleport(PlayerTeleportEvent event) {
-            final Location to = event.getTo();
-            if (plugin.getCharacterManager().getCurrAsyncLoads().containsKey(event.getPlayer().getUniqueId())) {
-                plugin.getCharacterManager().getCurrAsyncLoads().get(event.getPlayer().getUniqueId()).get().add(new Function<Hero, Void>() {
-                    @Nullable
-                    @Override
-                    public Void apply(Hero input) {
-                        run(input, to);
-                        return null;
-                    }
-                });
-            } else {
-                run(plugin.getCharacterManager().getHero(event.getPlayer()), to);
-            }
-        }
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
 
-        public void run(Hero hero, Location to) {
             if (hero.hasEffect("RuptureBleed")) {
                 RuptureBleedEffect rbEffect = (RuptureBleedEffect) hero.getEffect("RuptureBleed");
-                rbEffect.setLastLoc(to);
+                rbEffect.setLastLoc(event.getTo());
             }
         }
-
     }
 
     public class RuptureBleedEffect extends PeriodicExpirableEffect {
