@@ -34,7 +34,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
  * RuneQueue.java				// The actual Rune Queue List. A unique object of this kind is attached to every player that has this skill.
  */
 
-import com.google.common.base.Function;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.ClassChangeEvent;
@@ -64,17 +63,12 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SkillAbsorbRunes extends ActiveSkill {
     // Runequeue Hashmap for holding all player RuneQueue tables
-    HashMap<UUID, RuneQueue> heroRunes;
+    HashMap<Hero, RuneQueue> heroRunes;
 
     public SkillAbsorbRunes(Heroes plugin) {
         // Heroes stuff
@@ -140,14 +134,14 @@ public class SkillAbsorbRunes extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         // Check to see if the hero is contained within the hashmap and is actually allowed to use runeList
-        if (!heroRunes.containsKey(hero.getPlayer().getUniqueId())) {
+        if (!heroRunes.containsKey(hero)) {
             return SkillResult.FAIL;
         }
 
         Player player = hero.getPlayer();
 
         // Check to see if they actually have Runes to absorb
-        RuneQueue runeList = heroRunes.get(hero.getPlayer().getUniqueId());
+        RuneQueue runeList = heroRunes.get(hero);
         if (runeList.isEmpty()) {
             String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "You have no Runes to absorb!");
             Messaging.send(player, failText);
@@ -179,7 +173,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.5F, 1.0F);
         player.getWorld().spigot().playEffect(player.getLocation(), Effect.FLYING_GLYPH, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
         // Save the altered list to the hashmap
-        heroRunes.put(hero.getPlayer().getUniqueId(), runeList);
+        heroRunes.put(hero, runeList);
 
         for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
 		{
@@ -215,7 +209,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             LivingEntity target = (LivingEntity) defender;
 
             // Check to see if we actually have a Runelist bound to this player
-            if (!heroRunes.containsKey(hero.getPlayer().getUniqueId()))
+            if (!heroRunes.containsKey(hero))
                 return;		// Player isn't on the hashmap. Do not continue
 
             Material item = player.getItemInHand().getType();
@@ -230,7 +224,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 return;		// Rune application is on cooldown. Do not continue.
 
             // We have a runelist bound to the player, check to see if it actually has any Runes in it
-            RuneQueue runeList = heroRunes.get(hero.getPlayer().getUniqueId());
+            RuneQueue runeList = heroRunes.get(hero);
 
             // Make sure the rune list isn't empty
             if (runeList.isEmpty())
@@ -261,10 +255,10 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Rune rune = event.getRune();
 
             // Check to see if the hero is contained within the hashmap and is actually allowed to use runeList
-            if (!heroRunes.containsKey(hero.getPlayer().getUniqueId()))
+            if (!heroRunes.containsKey(hero))
                 return;			// Not on the hashmap. Do not continue
 
-            RuneQueue runeList = heroRunes.get(hero.getPlayer().getUniqueId());
+            RuneQueue runeList = heroRunes.get(hero);
 
             // Ensure that there is an actual Runelist
             if (runeList.isEmpty())
@@ -274,7 +268,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             runeList.push(rune);
 
             // Save the list to the hashmap
-            heroRunes.put(hero.getPlayer().getUniqueId(), runeList);
+            heroRunes.put(hero, runeList);
 
             // Display the Runequeue to the player
             displayRuneQueue(hero, runeList);
@@ -286,8 +280,8 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Hero hero = event.getHero();
 
             // Check to see if the hero is contained within the hashmap and is actually allowed to use runeList
-            if (heroRunes.containsKey(hero.getPlayer().getUniqueId())) {
-                RuneQueue runeList = heroRunes.get(hero.getPlayer().getUniqueId());
+            if (heroRunes.containsKey(hero)) {
+                RuneQueue runeList = heroRunes.get(hero);
 
                 // Ensure that there is an actual Runelist
                 if (runeList.isEmpty())
@@ -299,7 +293,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 }
 
                 // Save the list to the hashmap
-                heroRunes.put(hero.getPlayer().getUniqueId(), runeList);
+                heroRunes.put(hero, runeList);
 
                 // Display the Runequeue to the player
                 displayRuneQueue(hero, runeList);
@@ -314,7 +308,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Hero hero = skill.plugin.getCharacterManager().getHero(event.getEntity());
 
             // Check to see if the player is on the hash map
-            if (!heroRunes.containsKey(hero.getPlayer().getUniqueId()))
+            if (!heroRunes.containsKey(hero))
                 return;
 
             clearRuneList(hero);
@@ -329,7 +323,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Hero hero = skill.plugin.getCharacterManager().getHero(event.getPlayer());
 
             // Check to see if the player is on the hash map
-            if (!heroRunes.containsKey(hero.getPlayer().getUniqueId()))
+            if (!heroRunes.containsKey(hero))
                 return;
 
             clearRuneList(hero);
@@ -340,31 +334,8 @@ public class SkillAbsorbRunes extends ActiveSkill {
         // Manipulate the RuneList hashmap on player join
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerJoin(PlayerJoinEvent event) {
-            // Check async load hashmap
-            ConcurrentHashMap<UUID, AtomicReference<Queue<Function<Hero, Void>>>> loads
-                    = skill.plugin.getCharacterManager().getCurrAsyncLoads();
-            if (loads.get(event.getPlayer().getUniqueId()) != null) { // All cancellations must be synchronous
-                Queue<Function<Hero, Void>> ref = loads.get(event.getPlayer().getUniqueId()).get();
-                ref.add(new Function<Hero, Void>() {
-
-                    @Nullable
-                    @Override
-                    public Void apply(Hero hero) {
-                        delayedPlayerJoin(hero);
-                        return null;
-                    }
-                });
-            } else { // Should never be called
-                Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-                delayedPlayerJoin(hero);
-            }
-
-
-            //return;
-        }
-
-        private void delayedPlayerJoin(Hero hero) {
             // Prep variables
+            Hero hero = skill.plugin.getCharacterManager().getHero(event.getPlayer());
             HeroClass heroClass = hero.getHeroClass();
             int level = hero.getLevel(heroClass);
 
@@ -374,9 +345,11 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 int levelReq = SkillConfigManager.getSetting(heroClass, skill, SkillSetting.LEVEL.node(), 1);
                 if (level >= levelReq) {
                     // They are high enough level, add them to the hashmap
-                    heroRunes.put(hero.getPlayer().getUniqueId(), new RuneQueue());
+                    heroRunes.put(hero, new RuneQueue());
                 }
             }
+
+            //return;
         }
 
         // Manipulate the HashMap upon player logout
@@ -385,12 +358,11 @@ public class SkillAbsorbRunes extends ActiveSkill {
             Hero hero = skill.plugin.getCharacterManager().getHero(event.getPlayer());
 
             // If the player is on the hashmap, remove him from it.
-            if (heroRunes.containsKey(hero.getPlayer().getUniqueId()))
-                heroRunes.remove(hero.getPlayer().getUniqueId());
+            if (heroRunes.containsKey(hero))
+                heroRunes.remove(hero);
 
             //return;
         }
-
 
         // Manipulate the HashMap on hero level changes
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -404,7 +376,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 return;					// Class does not have the skill. Do nothing.
 
             // Check to see if the player is on the hash map or not (He could be if he is being de-leveled)
-            if (!heroRunes.containsKey(hero.getPlayer().getUniqueId())) {
+            if (!heroRunes.containsKey(hero)) {
                 // Player is not on the hashmap. Check to see if he should be.
 
                 int toLevel = event.getTo();
@@ -413,7 +385,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 int levelReq = SkillConfigManager.getSetting(event.getHeroClass(), skill, SkillSetting.LEVEL.node(), 1);
                 if (toLevel >= levelReq) {
                     // Player is high enough level to use the skill, put him on the hashmap.
-                    heroRunes.put(hero.getPlayer().getUniqueId(), new RuneQueue());
+                    heroRunes.put(hero, new RuneQueue());
                 }
 
                 //return;
@@ -427,7 +399,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 int levelReq = SkillConfigManager.getSetting(event.getHeroClass(), skill, SkillSetting.LEVEL.node(), 1);
                 if (toLevel < levelReq) {
                     // Player is not high enough level to use the skill, remove him from the hashmap.
-                    heroRunes.remove(hero.getPlayer().getUniqueId());
+                    heroRunes.remove(hero);
                 }
 
                 //return;
@@ -446,8 +418,8 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 // Check if the class actually has the skill available
                 if (!to.hasSkill(skill.getName())) {
                     // If they don't have the skill but are on the hashmap, remove them from it.
-                    if (heroRunes.containsKey(hero.getPlayer().getUniqueId())) {
-                        heroRunes.remove(hero.getPlayer().getUniqueId());
+                    if (heroRunes.containsKey(hero)) {
+                        heroRunes.remove(hero);
                     }
 
                     //return;
@@ -460,9 +432,9 @@ public class SkillAbsorbRunes extends ActiveSkill {
                         // They aren't high enough level
 
                         // Check to see if they're already on the hashmap
-                        if (heroRunes.containsKey(hero.getPlayer().getUniqueId())) {
+                        if (heroRunes.containsKey(hero)) {
                             // Remove them until they are high enough
-                            heroRunes.remove(hero.getPlayer().getUniqueId());
+                            heroRunes.remove(hero);
                         }
 
                        //return;
@@ -471,9 +443,9 @@ public class SkillAbsorbRunes extends ActiveSkill {
                         // They are high enough level
 
                         // Check to see if they're already on the hashmap
-                        if (!heroRunes.containsKey(hero.getPlayer().getUniqueId())) {
+                        if (!heroRunes.containsKey(hero)) {
                             // They aren't on the map for some reason. Put them on it.
-                            heroRunes.put(hero.getPlayer().getUniqueId(), new RuneQueue());
+                            heroRunes.put(hero, new RuneQueue());
                         }
 
                         //return;
@@ -486,7 +458,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
     // Clears the hero's rune list
     private void clearRuneList(Hero hero) {
         // If the player is on the hashmap, empty his Rune list.
-        RuneQueue runeList = heroRunes.get(hero.getPlayer().getUniqueId());
+        RuneQueue runeList = heroRunes.get(hero);
 
         if (runeList != null) {
             while (!runeList.isEmpty()) {
@@ -495,7 +467,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             }
 
             // Save the new list to the hashmap
-            heroRunes.put(hero.getPlayer().getUniqueId(), runeList);
+            heroRunes.put(hero, runeList);
         }
     }
 
