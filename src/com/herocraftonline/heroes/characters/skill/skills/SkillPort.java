@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -26,7 +25,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -304,22 +302,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (plugin.getCharacterManager().getCurrAsyncLoads().containsKey(player.getUniqueId())) {
-            plugin.getCharacterManager().getCurrAsyncLoads().get(player.getUniqueId()).get().add(new Function<Hero, Void>() {
-                @Nullable
-                @Override
-                public Void apply(Hero hero) {
-                    delayJoin(hero);
-                    return null;
-                };
-            });
-        } else {
-            delayJoin(plugin.getCharacterManager().getHero(player));
-        }
-    }
-
-    private void delayJoin(Hero hero) {
-        Player player = hero.getPlayer();
+        Hero hero = plugin.getCharacterManager().getHero(player);
         Info<String> portInfo = onJoinSkillSettings.remove(player.getName());
         if (portInfo != null && portInfo.isNotExpired()) {
             SkillResult result = doPort(hero, portInfo.getInfo(), false);

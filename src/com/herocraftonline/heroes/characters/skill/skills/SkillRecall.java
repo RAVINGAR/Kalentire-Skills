@@ -1,6 +1,27 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.google.common.base.Function;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.herocraftonline.heroes.Heroes;
@@ -12,23 +33,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
 
 public class SkillRecall extends ActiveSkill implements Listener {
 
@@ -354,23 +360,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (plugin.getCharacterManager().getCurrAsyncLoads().containsKey(player.getUniqueId())) {
-            plugin.getCharacterManager().getCurrAsyncLoads().get(player.getUniqueId()).get().add(new Function<Hero, Void>() {
-                @Nullable
-                @Override
-                public Void apply(Hero hero) {
-                    delayJoin(hero);
-                    return null;
-                };
-            });
-        } else {
-            delayJoin(plugin.getCharacterManager().getHero(player));
-        }
-
-    }
-
-    private void delayJoin(Hero hero) {
-        Player player = hero.getPlayer();
+        Hero hero = plugin.getCharacterManager().getHero(player);
         ConfigurationSection skillSettings = hero.getSkillSettings(this);
         if (skillSettings != null) {
             ConfigurationSection teleportSettings = null;
