@@ -26,10 +26,9 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	protected final void castBeam(Hero hero, Beam beam, Predicate<LivingEntity> targetFilter) {
 		List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.rangeBounds, beam.rangeBounds, beam.rangeBounds);
 		for (Entity possibleTarget : possibleTargets) {
-			LivingEntity target = (LivingEntity) possibleTarget;
-			if (possibleTarget instanceof LivingEntity && targetFilter.apply(target)) {
-				// TODO Should I calculate the point data based on a targets eye location vector?
-				Optional<Beam.PointData> pointData = beam.calculatePointData(possibleTarget.getLocation().toVector());
+			LivingEntity target;
+			if (possibleTarget instanceof LivingEntity && targetFilter.apply(target = (LivingEntity) possibleTarget)) {
+				Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
 				if (pointData.isPresent()) {
 					onTargetHit(hero, target, pointData.get());
 				}

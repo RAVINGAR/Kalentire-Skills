@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 public class SkillAttackOnSight extends PassiveSkill {
 
     public SkillAttackOnSight(Heroes plugin) {
-        super(plugin, "Attack On Sight");
+        super(plugin, "AttackOnSight");
         setDescription("Allows the hero to be attacked anywhere.");
         setArgumentRange(0, 0);
         Bukkit.getServer().getPluginManager().registerEvents(new AttackOnSightListener(), plugin);
