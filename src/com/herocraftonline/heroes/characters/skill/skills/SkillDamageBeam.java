@@ -5,7 +5,9 @@ import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.MAGIC;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.skills.utils.Beam;
 import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
@@ -16,7 +18,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class SkillDamageBeam extends SkillBaseBeam {
+public class SkillDamageBeam extends ActiveSkill implements Beam.TargetFunction<LivingEntity> {
 
 	private static final double TEMP_DAMAGE = 10;
 
@@ -49,16 +51,17 @@ public class SkillDamageBeam extends SkillBaseBeam {
 
 		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
 
-		castBeam(hero, beam);
+		Beam.castOnLivingEntities(hero, beam, this);
 		return SkillResult.NORMAL;
 	}
 
 	@Override
-	protected void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData) {
-		if (damageCheck(hero.getPlayer(), target)) {
+	public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
+		Player player = hero.getPlayer();
+		if (damageCheck(player, target)) {
 			target.setVelocity(pointData.calculateVectorFromBeam().normalize().multiply(2));
 			addSpellTarget(target, hero);
-			damageEntity(target, hero.getPlayer(), TEMP_DAMAGE, MAGIC);
+			damageEntity(target, player, TEMP_DAMAGE, MAGIC);
 		}
 	}
 }
