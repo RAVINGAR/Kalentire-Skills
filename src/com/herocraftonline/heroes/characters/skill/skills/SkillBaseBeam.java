@@ -96,7 +96,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}
 
 		public Beam(LivingEntity origin, Set<Material> transparentBlocks, int maxLength, double radius) {
-			this(origin.getEyeLocation(), origin.getTargetBlock(transparentBlocks, maxLength).getLocation().subtract(origin.getEyeLocation()).toVector(), radius);
+			this(origin.getEyeLocation(), origin.getTargetBlock(transparentBlocks, maxLength).getLocation().add(0.5, 0.5, 0.5).distance(origin.getEyeLocation()), radius);
 		}
 
 		public double getOriginX() {
