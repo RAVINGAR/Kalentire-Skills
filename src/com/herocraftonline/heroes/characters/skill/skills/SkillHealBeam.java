@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
@@ -21,6 +22,10 @@ public class SkillHealBeam extends SkillBaseBeam {
 	public SkillHealBeam(Heroes plugin) {
 		super(plugin, "HealBeam");
 		setDescription("Heal stuff in a beam");
+		setUsage("/skill HealBeam");
+		setIdentifiers("skill " + getName());
+		setTypes(SkillType.HEALING);
+		setArgumentRange(0, 0);
 	}
 
 	@Override

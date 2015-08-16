@@ -5,6 +5,7 @@ import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.MAGIC;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
@@ -22,6 +23,10 @@ public class SkillDamageBeam extends SkillBaseBeam {
 	public SkillDamageBeam(Heroes plugin) {
 		super(plugin, "DamageBeam");
 		setDescription("Damage stuff in a beam");
+		setUsage("/skill DamageBeam");
+		setIdentifiers("skill " + getName());
+		setTypes(SkillType.DAMAGING);
+		setArgumentRange(0, 0);
 	}
 
 	@Override
