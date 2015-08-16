@@ -28,7 +28,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		for (Entity possibleTarget : possibleTargets) {
 			LivingEntity target;
 			if (possibleTarget instanceof LivingEntity
-					&& possibleTarget.equals(hero.getPlayer()) && targetFilter.apply(target = (LivingEntity) possibleTarget)) {
+					&& !possibleTarget.equals(hero.getPlayer()) && targetFilter.apply(target = (LivingEntity) possibleTarget)) {
 				Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
 				if (pointData.isPresent()) {
 					onTargetHit(hero, target, pointData.get());
