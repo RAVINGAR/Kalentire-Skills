@@ -3,8 +3,11 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.MAGIC;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class SkillDamageBeam extends SkillBaseBeam {
 
@@ -21,8 +24,17 @@ public class SkillDamageBeam extends SkillBaseBeam {
 	}
 
 	@Override
-	protected void onTargetHit(Hero hero, LivingEntity target) {
+	public SkillResult use(Hero hero, String[] strings) {
+		Player player = hero.getPlayer();
+		Beam beam = new Beam(player, Util.transparentBlocks, 20, 5);
+		castBeam(hero, beam);
+		return SkillResult.NORMAL;
+	}
+
+	@Override
+	protected void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData) {
 		if (damageCheck(hero.getPlayer(), target)) {
+			hero.getPlayer().setVelocity(pointData.getPoint().subtract(pointData.calculateClosestPointOnBeam()).normalize().multiply(5));
 			addSpellTarget(target, hero);
 			damageEntity(target, hero.getPlayer(), TEMP_DAMAGE, MAGIC);
 		}
