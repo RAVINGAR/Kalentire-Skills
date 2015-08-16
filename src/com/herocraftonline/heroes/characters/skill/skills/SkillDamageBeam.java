@@ -44,7 +44,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
 				player.getEyeLocation().add(beam.getDirectionX(), beam.getDirectionY(), beam.getDirectionZ()), (int) beam.calculateLength() * 2);
 		for (int i = 0; i < fxLine.size(); i++) {
-			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.CRIT, 0, 0, 0.4f, 0.4f, 0.4f, 1, 25, 16);
+			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.PORTAL, 0, 0, 0.4f, 0.4f, 0.4f, 1, 25, 8);
 		}
 
 		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
