@@ -42,7 +42,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 
 		List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
 				player.getEyeLocation().add(beam.getDirectionX(), beam.getDirectionY(), beam.getDirectionZ()), (int) beam.calculateLength() * 4);
-		for (int i = 0; i < fxLine.size(); i++) {
+		for (int i = 4; i < fxLine.size(); i++) {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.HAPPY_VILLAGER, 0, 0, 0.1f, 0.1f, 0.1f, 0.1f, 16, 16);
 		}
 
