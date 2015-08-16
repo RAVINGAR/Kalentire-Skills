@@ -3,6 +3,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -21,17 +23,22 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	protected final void castBeam(Hero hero, Beam beam) {
+	protected final void castBeam(Hero hero, Beam beam, Predicate<LivingEntity> targetFilter) {
 		List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.rangeBounds, beam.rangeBounds, beam.rangeBounds);
 		for (Entity possibleTarget : possibleTargets) {
-			if (possibleTarget instanceof LivingEntity) {
+			LivingEntity target = (LivingEntity) possibleTarget;
+			if (possibleTarget instanceof LivingEntity && targetFilter.apply(target)) {
 				// TODO Should I calculate the point data based on a targets eye location vector?
 				Optional<Beam.PointData> pointData = beam.calculatePointData(possibleTarget.getLocation().toVector());
 				if (pointData.isPresent()) {
-					onTargetHit(hero, (LivingEntity) possibleTarget, pointData.get());
+					onTargetHit(hero, target, pointData.get());
 				}
 			}
 		}
+	}
+
+	protected final void castBeam(Hero hero, Beam beam) {
+		castBeam(hero, beam, Predicates.<LivingEntity>alwaysTrue());
 	}
 
 	protected abstract void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData);

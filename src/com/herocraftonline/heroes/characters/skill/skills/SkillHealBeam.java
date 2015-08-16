@@ -12,7 +12,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 	private static final double TEMP_HEAL = 10;
 
 	public SkillHealBeam(Heroes plugin) {
-		super(plugin, "Heal_Beam");
+		super(plugin, "HealBeam");
 		setDescription("Heal stuff in a beam");
 	}
 

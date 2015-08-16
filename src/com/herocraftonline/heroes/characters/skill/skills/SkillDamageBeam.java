@@ -14,7 +14,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 	private static final double TEMP_DAMAGE = 10;
 
 	public SkillDamageBeam(Heroes plugin) {
-		super(plugin, "Damage_Beam");
+		super(plugin, "DamageBeam");
 		setDescription("Damage stuff in a beam");
 	}
 
