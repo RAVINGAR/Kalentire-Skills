@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -42,15 +43,18 @@ public class SkillHealBeam extends SkillBaseBeam {
 
 		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
 
-		castBeam(hero, beam);
+		castBeam(hero, beam, new Predicate<LivingEntity>() {
+			@Override
+			public boolean apply(LivingEntity livingEntity) {
+				return livingEntity instanceof Player;
+			}
+		});
 		return SkillResult.NORMAL;
 	}
 
 	@Override
 	protected void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData) {
-		if (target instanceof Player) {
-			Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-			targetHero.heal(TEMP_HEAL);
-		}
+		Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+		targetHero.heal(TEMP_HEAL);
 	}
 }
