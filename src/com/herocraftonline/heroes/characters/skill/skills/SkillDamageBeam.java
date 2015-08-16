@@ -34,7 +34,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 	@Override
 	protected void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData) {
 		if (damageCheck(hero.getPlayer(), target)) {
-			hero.getPlayer().setVelocity(pointData.getPoint().subtract(pointData.calculateClosestPointOnBeam()).normalize().multiply(5));
+			hero.getPlayer().setVelocity(pointData.calculateVectorFromBeam().normalize().multiply(5));
 			addSpellTarget(target, hero);
 			damageEntity(target, hero.getPlayer(), TEMP_DAMAGE, MAGIC);
 		}

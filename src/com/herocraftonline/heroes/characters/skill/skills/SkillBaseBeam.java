@@ -4,14 +4,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Optional;
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -24,9 +22,10 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	}
 
 	protected final void castBeam(Hero hero, Beam beam) {
-		List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.targetRange, beam.targetRange, beam.targetRange);
+		List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.rangeBounds, beam.rangeBounds, beam.rangeBounds);
 		for (Entity possibleTarget : possibleTargets) {
 			if (possibleTarget instanceof LivingEntity) {
+				// TODO Should I calculate the point data based on a targets eye location vector?
 				Optional<Beam.PointData> pointData = beam.calculatePointData(possibleTarget.getLocation().toVector());
 				if (pointData.isPresent()) {
 					onTargetHit(hero, (LivingEntity) possibleTarget, pointData.get());
@@ -42,29 +41,31 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 		See that site for more documentation about the following math.
 	 */
-	protected final class Beam {
+	protected static final class Beam {
 
-		private final Vector origin;
-		private final double dx, dy, dz;
-		private final double lengthSq;
-		private final double radiusSq;
-		private final double targetRange;
+		private final double ox, oy, oz;    // Beam origin vector
+		private final double dx, dy, dz;    // Beam direction vector
+		private final double lengthSq;      // Pre-calculated length squared of the beam
+		private final double radiusSq;      // Pre-calculated radius squared of the beam
+		private final double rangeBounds;   // Pre-calculated range bounds (for use with `getNearbyEntities()`)
 
-		private Beam(Vector origin, double dx, double dy, double dz, double lengthSq, double radiusSq) {
+		private Beam(double ox, double oy, double oz, double dx, double dy, double dz, double lengthSq, double radiusSq) {
 			checkArgument(lengthSq > 0, "Beam length must be greater than 0");
 			checkArgument(radiusSq > 0, "Beam radius must be greater than 0");
 
-			this.origin = origin;
+			this.ox = ox;
+			this.oy = oy;
+			this.oz = oz;
 			this.dx = dx;
 			this.dy = dy;
 			this.dz = dz;
 			this.lengthSq = lengthSq;
 			this.radiusSq = radiusSq;
-			this.targetRange = Math.sqrt(lengthSq) + Math.sqrt(radiusSq);
+			this.rangeBounds = calculateLength() + calculateRadius();
 		}
 
 		public Beam(Vector origin, Vector beam, double radius) {
-			this(origin, beam.getX(), beam.getY(), beam.getZ(), beam.lengthSquared(), radius * radius);
+			this(origin.getX(), origin.getY(), origin.getZ(), beam.getX(), beam.getY(), beam.getZ(), beam.lengthSquared(), radius * radius);
 		}
 
 		public Beam(Location origin, Vector beam, double radius) {
@@ -72,7 +73,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}
 
 		public Beam(Vector origin, Vector direction, double length, double radius) {
-			this(origin, direction.normalize().multiply(length), radius);
+			this(origin, direction.clone().normalize().multiply(length), radius);
 		}
 
 		public Beam(Location origin, Vector direction, double length, double radius) {
@@ -80,7 +81,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}
 
 		public Beam(Location origin, double length, double radius) {
-			this(origin, origin.getDirection(), length, radius);
+			this(origin, origin.getDirection().multiply(length), radius);
 		}
 
 		public Beam(LivingEntity origin, double length, double radius) {
@@ -91,13 +92,65 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			this(origin.getEyeLocation(), origin.getTargetBlock(transparentBlocks, maxLength).getLocation().subtract(origin.getEyeLocation()).toVector(), radius);
 		}
 
+		public double getOriginX() {
+			return ox;
+		}
+
+		public double getOriginY() {
+			return oy;
+		}
+
+		public double getOriginZ() {
+			return oz;
+		}
+
+		public Vector getOrigin() {
+			return new Vector(getOriginX(), getOriginY(), getOriginZ());
+		}
+
+		public double getDirectionX() {
+			return dx;
+		}
+
+		public double getDirectionY() {
+			return dy;
+		}
+
+		public double getDirectionZ() {
+			return dz;
+		}
+
+		public Vector getDirection() {
+			return new Vector(getDirectionX(), getDirectionY(), getDirectionZ());
+		}
+
+		public double getLengthSquared() {
+			return lengthSq;
+		}
+
+		public double calculateLength() {
+			return Math.sqrt(getLengthSquared());
+		}
+
+		public double getRadiusSquared() {
+			return radiusSq;
+		}
+
+		public double calculateRadius() {
+			return Math.sqrt(getRadiusSquared());
+		}
+
+		public double getRangeBounds() {
+			return rangeBounds;
+		}
+
 		public Optional<PointData> calculatePointData(Vector point) {
 			double pdx, pdy, pdz;
 			double dot;
 
-			pdx = point.getX() - origin.getX();
-			pdy = point.getY() - origin.getY();
-			pdz = point.getZ() - origin.getZ();
+			pdx = point.getX() - ox;
+			pdy = point.getY() - oy;
+			pdz = point.getZ() - oz;
 
 			dot = pdx * dx + pdy * dy + pdz * dz;
 
@@ -112,47 +165,91 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 					return Optional.absent();
 				}
 				else {
-					return Optional.of(new PointData(point, dsq, dot));
+					return Optional.of(new PointData(point, pdx, pdy, pdz, dsq, dot));
 				}
 			}
 		}
 
 		public final class PointData {
 
-			private final double px, py, pz;
-			private final double distanceFromAxisSq;
-			private final double distanceFromOrigin;
+			private final double px, py, pz;            // The point tested
+			private final double pdx, pdy, pdz;         // The vector from the beam origin to the point
+			private final double distanceFromBeamSq;    // Distance squared from the line that represents the beam
+			private final double dotProduct;            // The dot product between the beam and the point
 
-			private PointData(Vector point, double distanceFromAxisSq, double distanceFromOrigin) {
+			private PointData(Vector point, double pdx, double pdy, double pdz, double distanceFromBeamSq, double dotProduct) {
 				px = point.getX();
 				py = point.getY();
 				pz = point.getZ();
-				this.distanceFromAxisSq = distanceFromAxisSq;
-				this.distanceFromOrigin = distanceFromOrigin;
+				this.pdx = pdx;
+				this.pdy = pdy;
+				this.pdz = pdz;
+				this.distanceFromBeamSq = distanceFromBeamSq;
+				this.dotProduct = dotProduct;
 			}
 
-			public double getDistanceFromBeamSquared() {
-				return distanceFromAxisSq;
+			public Beam getBeam() {
+				return Beam.this;
 			}
 
-			public double getDistanceFromOrigin() {
-				return distanceFromOrigin;
+			public double getPointX() {
+				return px;
 			}
 
-			public Vector getOrigin() {
-				return origin.clone();
+			public double getPointY() {
+				return py;
 			}
 
-			public Vector getBeam() {
-				return new Vector(dx, dy, dz);
+			public double getPointZ() {
+				return pz;
 			}
 
 			public Vector getPoint() {
-				return new Vector(px, py, pz);
+				return new Vector(getPointX(), getPointY(), getPointZ());
+			}
+
+			public double getDirectionX() {
+				return pdx;
+			}
+
+			public double getDirectionY() {
+				return pdy;
+			}
+
+			public double getDirectionZ() {
+				return pdz;
+			}
+
+			public Vector getDirection() {
+				return new Vector(getDirectionX(), getDirectionY(), getDirectionZ());
+			}
+
+			public double getDistanceFromBeamSquared() {
+				return distanceFromBeamSq;
+			}
+
+			public double calculateDistanceFromBeam() {
+				return Math.sqrt(getDistanceFromBeamSquared());
+			}
+
+			public double getDotProduct() {
+				return dotProduct;
+			}
+
+			public double calculateDistanceAlongBeam() {
+				return calculateLength() * (getDotProduct() / getLengthSquared());
 			}
 
 			public Vector calculateClosestPointOnBeam() {
-				return new Vector(dx, dy, dz).normalize().multiply(distanceFromOrigin).add(origin);
+				Vector result = new Vector(dx, dy, dz).normalize().multiply(calculateDistanceAlongBeam());
+				result.setX(result.getX() + ox);
+				result.setY(result.getY() + oy);
+				result.setZ(result.getZ() + oz);
+				return result;
+			}
+
+			public Vector calculateVectorFromBeam() {
+				return getPoint().subtract(calculateClosestPointOnBeam());
 			}
 		}
 	}
