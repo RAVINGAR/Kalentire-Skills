@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -8,6 +9,7 @@ import com.google.common.base.Predicates;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -151,7 +153,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			return rangeBounds;
 		}
 
-		public Optional<PointData> calculatePointData(Vector point) {
+		public Optional<PointData> calculatePointData(Vector point, boolean roundedCap) {
 			double pdx, pdy, pdz;       // Vector from origin to point (point distance)
 			double dot;                 // Reference to dot product of vector[pd] (point distance) and vector[o] (origin)
 
@@ -161,20 +163,49 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 			dot = pdx * dx + pdy * dy + pdz * dz;
 
+			// If the dot product is not within the range of the beam shaft...
 			if (dot < 0 || dot > lengthSq) {
+				// ... check if we test for rounded caps...
+				if (roundedCap) {
+					// ... if so declare a reference point...
+					Vector refPoint = getOrigin();
+					// ... and a reference distance squared.
+					double redDistanceSq;
+
+					// If the distance squared from the refPoint to point is <= radius squared...
+					if ((redDistanceSq = refPoint.distanceSquared(point)) <= radiusSq) {
+						// ... eturn a point data of location origin cap as the current reference is origin
+						return Optional.of(new PointData(point, pdx, pdy, pdz, redDistanceSq, dot, PointLocation.ORIGIN_CAP));
+					}
+					// If the distance squared from the refPoint to point is <= radius squared...
+					else if ((redDistanceSq = refPoint.add(getDirection()).distanceSquared(point)) <= radiusSq) {
+						// ... return a point data of location end cap as the current ref point is the opposit origin.
+						return Optional.of(new PointData(point, pdx, pdy, pdz, redDistanceSq, dot, PointLocation.END_CAP));
+					}
+				}
+
+				// Return absent if no testing for rounded caps, or no passing rounding cap tests.
 				return Optional.absent();
 			}
 			else {
+				// ... else test for beam shaft radius (that sounds so... dirty...)
 				// This is a fancy way to check if the point is within the radius of the cylinder without trigonometric functions
 				double dsq = (pdx * pdx + pdy * pdy + pdz * pdz) - dot * dot / lengthSq;
 
-				if (dsq > radiusSq) {
-					return Optional.absent();
+				// if distance squared from beam is <= radius squared...
+				if (dsq <= radiusSq) {
+					// ... return a point data of location beam shaft.
+					return Optional.of(new PointData(point, pdx, pdy, pdz, dsq, dot, PointLocation.BEAM_SHAFT));
 				}
 				else {
-					return Optional.of(new PointData(point, pdx, pdy, pdz, dsq, dot));
+					// ... else return absent.
+					return Optional.absent();
 				}
 			}
+		}
+
+		public Optional<PointData> calculatePointData(Vector point) {
+			return calculatePointData(point, false);
 		}
 
 		public final class PointData {
@@ -183,8 +214,10 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			private final double pdx, pdy, pdz;         // The vector from the beam origin to the point
 			private final double distanceFromBeamSq;    // Distance squared from the line that represents the beam
 			private final double dotProduct;            // The dot product between the beam and the point
+			private final PointLocation pointLocation;       // Section of the beam the point resides.
 
-			private PointData(Vector point, double pdx, double pdy, double pdz, double distanceFromBeamSq, double dotProduct) {
+			private PointData(Vector point, double pdx, double pdy, double pdz,
+			                  double distanceFromBeamSq, double dotProduct, PointLocation pointLocation) {
 				px = point.getX();
 				py = point.getY();
 				pz = point.getZ();
@@ -193,6 +226,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				this.pdz = pdz;
 				this.distanceFromBeamSq = distanceFromBeamSq;
 				this.dotProduct = dotProduct;
+				this.pointLocation = pointLocation;
 			}
 
 			public Beam getBeam() {
@@ -243,21 +277,43 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				return dotProduct;
 			}
 
+			public Vector calculateVectorAlongBeam() {
+				return getDirection().multiply(getDotProduct() / getLengthSquared());
+			}
+
 			public double calculateDistanceAlongBeam() {
 				return calculateLength() * (getDotProduct() / getLengthSquared());
 			}
 
 			public Vector calculateClosestPointOnBeam() {
-				Vector result = new Vector(dx, dy, dz).normalize().multiply(calculateDistanceAlongBeam());
-				result.setX(result.getX() + ox);
-				result.setY(result.getY() + oy);
-				result.setZ(result.getZ() + oz);
-				return result;
+				switch (getPointLocation()) {
+					case BEAM_SHAFT:
+						return getOrigin().add(calculateVectorAlongBeam());
+						/*Vector result = new Vector(dx, dy, dz).normalize().multiply(calculateDistanceAlongBeam());
+						result.setX(result.getX() + ox);
+						result.setY(result.getY() + oy);
+						result.setZ(result.getZ() + oz);
+						return result;*/
+					case ORIGIN_CAP:
+						return getOrigin();
+					case END_CAP:
+						return getOrigin().add(getDirection());
+					default:
+						throw new RuntimeException("Java should never let this happen, all enum cases accounted for");
+				}
 			}
 
 			public Vector calculateVectorFromBeam() {
 				return getPoint().subtract(calculateClosestPointOnBeam());
 			}
+
+			public PointLocation getPointLocation() { return pointLocation; }
+		}
+
+		public enum PointLocation {
+			BEAM_SHAFT,
+			ORIGIN_CAP,
+			END_CAP
 		}
 	}
 }
