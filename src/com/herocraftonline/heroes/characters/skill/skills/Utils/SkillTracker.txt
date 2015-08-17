@@ -5,3 +5,4 @@ SkillDamageBeam
 SkillHealBeam
 SkillSoulEnlightened
 SkillLastLocation
+SkillBaseGroundEffect

@@ -51,7 +51,7 @@ public class SkillLastLocation extends ActiveSkill {
 		Player player = hero.getPlayer();
 		Marker marker = activeMarkers.get(player.getUniqueId());
 		if (marker != null) {
-			marker.activate();
+			marker.activate(1000);
 		}
 		else {
 			double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
@@ -77,7 +77,7 @@ public class SkillLastLocation extends ActiveSkill {
 			runTaskLater(plugin, (long) (duration * 20));
 		}
 
-		public void activate() {
+		public void activate(double maxHealAmount) {
 			cancel();
 			run();
 			hero.getPlayer().teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
@@ -86,7 +86,7 @@ public class SkillLastLocation extends ActiveSkill {
 			if (healScale > 1)
 				healScale = 1;
 
-			//TODO heal the hero
+			hero.heal(maxHealAmount * healScale);
 		}
 
 		@Override
