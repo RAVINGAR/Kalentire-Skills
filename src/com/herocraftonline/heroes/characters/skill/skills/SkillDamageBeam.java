@@ -49,7 +49,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 
 		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
 
-		castBeam(hero, beam);
+		fireBeam(hero, beam);
 		return SkillResult.NORMAL;
 	}
 

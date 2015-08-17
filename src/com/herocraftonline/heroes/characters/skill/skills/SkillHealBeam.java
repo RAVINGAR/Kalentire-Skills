@@ -48,7 +48,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 
 		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
 
-		castBeam(hero, beam, new Predicate<LivingEntity>() {
+		fireBeam(hero, beam, new Predicate<LivingEntity>() {
 			@Override
 			public boolean apply(LivingEntity livingEntity) {
 				return livingEntity instanceof Player;

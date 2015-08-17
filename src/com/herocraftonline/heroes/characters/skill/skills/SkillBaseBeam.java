@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -9,7 +8,6 @@ import com.google.common.base.Predicates;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -25,7 +23,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	protected final void castBeam(Hero hero, Beam beam, Predicate<LivingEntity> targetFilter) {
+	protected final void fireBeam(Hero hero, Beam beam, Predicate<LivingEntity> targetFilter) {
 		List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.rangeBounds, beam.rangeBounds, beam.rangeBounds);
 		for (Entity possibleTarget : possibleTargets) {
 			LivingEntity target;
@@ -39,8 +37,8 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}
 	}
 
-	protected final void castBeam(Hero hero, Beam beam) {
-		castBeam(hero, beam, Predicates.<LivingEntity>alwaysTrue());
+	protected final void fireBeam(Hero hero, Beam beam) {
+		fireBeam(hero, beam, Predicates.<LivingEntity>alwaysTrue());
 	}
 
 	protected abstract void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData);
@@ -99,6 +97,26 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 		public Beam(LivingEntity origin, Set<Material> transparentBlocks, int maxLength, double radius) {
 			this(origin.getEyeLocation(), origin.getTargetBlock(transparentBlocks, maxLength).getLocation().add(0.5, 0.5, 0.5).distance(origin.getEyeLocation()), radius);
+		}
+
+		public Beam withAlteredOrigin(Vector origin) {
+			return new Beam(origin.getX(), origin.getY(), origin.getZ(), dx, dy, dz, lengthSq, radiusSq);
+		}
+
+		public Beam withAlteredOrigin(Location origin) {
+			return withAlteredOrigin(origin.toVector());
+		}
+
+		public Beam withTranslatedOrigin(Vector v) {
+			return withAlteredOrigin(getOrigin().add(v));
+		}
+
+		public Beam withAlteredTrajectory(Vector beam) {
+			return new Beam(ox, oy, oz, beam.getX(), beam.getY(), beam.getZ(), beam.lengthSquared(), radiusSq);
+		}
+
+		public Beam withAlteredLength(double length) {
+			return withAlteredTrajectory(getDirection().normalize().multiply(length));
 		}
 
 		public double getOriginX() {
