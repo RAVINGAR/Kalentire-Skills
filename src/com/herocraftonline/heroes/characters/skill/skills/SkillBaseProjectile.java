@@ -9,4 +9,6 @@ public abstract class SkillBaseProjectile extends ActiveSkill {
 	public SkillBaseProjectile(Heroes plugin, String name) {
 		super(plugin, name);
 	}
+
+
 }
