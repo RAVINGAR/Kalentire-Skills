@@ -7,13 +7,11 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +19,15 @@ import java.util.UUID;
 
 public class SkillLastLocation extends ActiveSkill {
 
+	private static final String HEAL_PERCENTAGE_NODE = "heal-percentage";
+
 	private Map<UUID, Marker> activeMarkers = new HashMap<>();
 
 	public SkillLastLocation(Heroes plugin) {
 		super(plugin, "LastLocation");
-		setDescription("Saves your current location allowing you to teleport back at any time over the course of $1 seconds. "
-				+ "When you do, you are healed for an amount based on how long you waited, for a max of $2 at full duration.");
+		setDescription("Saves your current location allowing you to use the skill again to teleport back at any time over the course of $1 seconds. "
+				+ "When you do, you are healed for up to $2% your max health ($3) scaled by how long you wait to teleport. "
+				+ "If you choose not to teleport, you are healed for the full amount of $3 at the end of the duration");
 		setUsage("/skill LastLocation");
 		setIdentifiers("skill LastLocation");
 		setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.TELEPORTING, SkillType.UNINTERRUPTIBLE);
@@ -35,13 +36,18 @@ public class SkillLastLocation extends ActiveSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-		return getDescription();
+		double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
+		double healPercentage  = SkillConfigManager.getUseSetting(hero, this, HEAL_PERCENTAGE_NODE, 0.25d, false);
+		double maxHealAmount = hero.getPlayer().getMaxHealth() * healPercentage;
+
+		return getDescription().replace("$1", duration + "").replace("$2", healPercentage + "").replace("$3", maxHealAmount + "");
 	}
 
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.DURATION.node(), 4d);
+		node.set(HEAL_PERCENTAGE_NODE, 0.25d);
 
 		return node;
 	}
@@ -50,8 +56,9 @@ public class SkillLastLocation extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] strings) {
 		Player player = hero.getPlayer();
 		Marker marker = activeMarkers.get(player.getUniqueId());
+
 		if (marker != null) {
-			marker.activate(1000);
+			marker.activate();
 		}
 		else {
 			double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
@@ -60,6 +67,11 @@ public class SkillLastLocation extends ActiveSkill {
 		}
 
 		return SkillResult.NORMAL;
+	}
+
+	private double getMaxHealAmount(Hero hero) {
+		double healPercentage = SkillConfigManager.getUseSetting(hero, this, HEAL_PERCENTAGE_NODE, 0.25d, false);
+		return hero.getPlayer().getMaxHealth() * healPercentage;
 	}
 
 	private class Marker extends BukkitRunnable {
@@ -77,21 +89,31 @@ public class SkillLastLocation extends ActiveSkill {
 			runTaskLater(plugin, this.duration);
 		}
 
-		public void activate(double maxHealAmount) {
+		public void activate() {
 			cancel();
-			run();
-			hero.getPlayer().teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
-
-			double healScale = (hero.getPlayer().getWorld().getFullTime() - startTime) / duration;
-			if (healScale > 1)
-				healScale = 1;
-
-			hero.heal(maxHealAmount * healScale);
+			Player player = hero.getPlayer();
+			player.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+			run(true);
 		}
 
 		@Override
 		public void run() {
+			run(false);
+		}
+
+		private void run(boolean teleported) {
 			activeMarkers.remove(hero.getPlayer().getUniqueId());
+			double healAmount = getMaxHealAmount(hero);
+
+			if (teleported) {
+				double healScale = (hero.getPlayer().getWorld().getFullTime() - startTime) / duration;
+				if (healScale > 1) {
+					healScale = 1;
+				}
+				healAmount *= healScale;
+			}
+
+			hero.heal(healAmount);
 		}
 	}
 }
