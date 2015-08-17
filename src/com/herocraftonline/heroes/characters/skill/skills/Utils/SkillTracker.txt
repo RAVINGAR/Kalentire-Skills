@@ -1,0 +1,7 @@
+SkillBaseBeam
+SkillBaseWave
+SkillBaseProjectile
+SkillDamageBeam
+SkillHealBeam
+SkillSoulEnlightened
+SkillLastLocation
