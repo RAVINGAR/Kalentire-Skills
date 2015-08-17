@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills.codari;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;

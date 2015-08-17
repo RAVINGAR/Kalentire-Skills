@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills.codari;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.MAGIC;
 
@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.codari.SkillBaseBeam;
 import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;

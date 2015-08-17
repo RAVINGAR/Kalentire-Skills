@@ -1,11 +1,10 @@
-package com.herocraftonline.heroes.characters.skill.skills.codari;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.codari.SkillBaseBeam;
 import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;

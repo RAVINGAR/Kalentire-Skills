@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills.codari;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
