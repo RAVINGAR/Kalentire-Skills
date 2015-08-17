@@ -57,12 +57,14 @@ public class SkillLastLocation extends ActiveSkill {
 		Player player = hero.getPlayer();
 		Marker marker = activeMarkers.get(player.getUniqueId());
 
+		broadcastExecuteText(hero);
+
 		if (marker != null) {
 			marker.activate();
 		}
 		else {
 			double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
-			marker = new Marker(hero, player.getLocation(), duration);
+			marker = new Marker(hero, duration);
 			activeMarkers.put(player.getUniqueId(), marker);
 		}
 
@@ -81,9 +83,9 @@ public class SkillLastLocation extends ActiveSkill {
 		final long duration;
 		final long startTime;
 
-		Marker(Hero hero, Location location, double duration) {
+		Marker(Hero hero, double duration) {
 			this.hero = hero;
-			this.location = location;
+			this.location = hero.getPlayer().getLocation();
 			this.duration = (long) (duration * 20);
 			startTime = hero.getPlayer().getWorld().getFullTime();
 			runTaskLater(plugin, this.duration);
