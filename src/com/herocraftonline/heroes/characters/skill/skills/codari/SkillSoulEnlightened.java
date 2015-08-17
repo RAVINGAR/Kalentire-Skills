@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.skills.codari;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -8,11 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class SkillAttackOnSight extends PassiveSkill {
+public class SkillSoulEnlightened extends PassiveSkill {
 
-    public SkillAttackOnSight(Heroes plugin) {
-        super(plugin, "AttackOnSight");
-        setDescription("Allows the hero to be attacked anywhere.");
+    public SkillSoulEnlightened(Heroes plugin) {
+        super(plugin, "SoulEnlightened");
+        setDescription("Your soul has been enlightened!");
         setArgumentRange(0, 0);
         Bukkit.getServer().getPluginManager().registerEvents(new AttackOnSightListener(), plugin);
     }
@@ -27,7 +27,7 @@ public class SkillAttackOnSight extends PassiveSkill {
         @EventHandler()
         public void onDisallowedPVP(DisallowedPVPEvent event) {
             Hero defender = plugin.getCharacterManager().getHero(event.getDefender());
-            if (defender.canUseSkill(SkillAttackOnSight.this)) {
+            if (defender.canUseSkill(SkillSoulEnlightened.this)) {
                 event.setCancelled(true);
             }
         }

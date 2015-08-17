@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.skills.codari;
 
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.MAGIC;
 
@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.skills.codari.SkillBaseBeam;
 import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
@@ -42,7 +43,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		broadcastExecuteText(hero);
 
 		List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
-				player.getEyeLocation().add(beam.getDirectionX(), beam.getDirectionY(), beam.getDirectionZ()), (int) beam.calculateLength() * 4);
+				player.getEyeLocation().add(beam.getDirectionX(), beam.getDirectionY(), beam.getDirectionZ()), (int) beam.calculateLength() * 2);
 		for (int i = 4; i < fxLine.size(); i++) {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.FLAME, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
 		}

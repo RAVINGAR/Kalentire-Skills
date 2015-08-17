@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.skills.codari;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -28,7 +28,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		for (Entity possibleTarget : possibleTargets) {
 			LivingEntity target;
 			if (possibleTarget instanceof LivingEntity
-					&& !possibleTarget.equals(hero.getPlayer()) && targetFilter.apply(target = (LivingEntity) possibleTarget)) {
+					&& targetFilter.apply(target = (LivingEntity) possibleTarget) && !possibleTarget.equals(hero.getPlayer())) {
 				Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
 				if (pointData.isPresent()) {
 					onTargetHit(hero, target, pointData.get());
@@ -152,8 +152,8 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}
 
 		public Optional<PointData> calculatePointData(Vector point) {
-			double pdx, pdy, pdz;
-			double dot;
+			double pdx, pdy, pdz;       // Vector from origin to point (point distance)
+			double dot;                 // Reference to dot product of vector[pd] (point distance) and vector[o] (origin)
 
 			pdx = point.getX() - ox;
 			pdy = point.getY() - oy;
@@ -165,7 +165,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				return Optional.absent();
 			}
 			else {
-				// Accessing this value can make variable effects based on distance from beam line.
+				// This is a fancy way to check if the point is within the radius of the cylinder without trigonometric functions
 				double dsq = (pdx * pdx + pdy * pdy + pdz * pdz) - dot * dot / lengthSq;
 
 				if (dsq > radiusSq) {
