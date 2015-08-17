@@ -10,6 +10,6 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 	}
 
 	protected static final class EffectArea {
-		
+
 	}
 }

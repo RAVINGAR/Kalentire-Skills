@@ -66,15 +66,15 @@ public class SkillLastLocation extends ActiveSkill {
 
 		final Hero hero;
 		final Location location;
-		final double duration;
+		final long duration;
 		final long startTime;
 
 		Marker(Hero hero, Location location, double duration) {
 			this.hero = hero;
 			this.location = location;
-			this.duration = duration;
+			this.duration = (long) (duration * 20);
 			startTime = hero.getPlayer().getWorld().getFullTime();
-			runTaskLater(plugin, (long) (duration * 20));
+			runTaskLater(plugin, this.duration);
 		}
 
 		public void activate(double maxHealAmount) {
