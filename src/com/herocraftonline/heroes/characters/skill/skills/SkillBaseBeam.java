@@ -3,8 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -20,7 +18,6 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -75,8 +72,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	}
 
 	protected final void castBeam(final Hero hero, final Beam beam, final TargetHandler targetHandler) {
-		final Location midPoint = beam.midPoint().toLocation(hero.getPlayer().getWorld());
-		final List<Entity> possibleTargets = hero.getPlayer().getWorld().getEntities();
+		final List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.bounds, beam.bounds, beam.bounds);
 
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			@Override
@@ -84,8 +80,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				final List<Pair<LivingEntity, Beam.PointData>> targets = new ArrayList<>();
 
 				for (Entity possibleTarget : possibleTargets) {
-					if (possibleTarget instanceof LivingEntity && !possibleTarget.equals(hero.getPlayer())
-							&& possibleTarget.getLocation().distanceSquared(midPoint) <= beam.midpointRadiusSq) {
+					if (possibleTarget instanceof LivingEntity && !possibleTarget.equals(hero.getPlayer())) {
 
 						LivingEntity target = (LivingEntity) possibleTarget;
 						Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
@@ -156,7 +151,8 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		private final double tx, ty, tz;        // Beam direction vector
 		private final double length;            // Length of the beam
 		private final double radius;            // Radius of the beam
-		private final double midpointRadiusSq;  // Pre-calculated range bounds (for use with `getNearbyEntities()`)
+
+		private final double bounds;  // Pre-calculated range bounds (for use with `getNearbyEntities()`)
 
 		// TODO Should this be predetermined?
 		//private final boolean roundedCaps;    // Does this beam have rounded caps (is it a capsule)
@@ -174,8 +170,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			this.length = length;
 			this.radius = radius;
 
-			double midpointRadius = length / 2 + radius;
-			midpointRadiusSq = midpointRadius * midpointRadius;
+			bounds = length / 2 + radius;
 		}
 
 		private Beam(Vector origin, Vector trajectory, double radius) {
@@ -237,10 +232,6 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 		public Vector getTrajectory() {
 			return new Vector(getTrajectoryX(), getTrajectoryY(), getTrajectoryZ());
-		}
-
-		public Vector midPoint() {
-			return getOrigin().add(getTrajectory().multiply(0.5));
 		}
 
 		public double length() {
