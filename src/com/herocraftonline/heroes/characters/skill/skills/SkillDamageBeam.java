@@ -43,12 +43,15 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		EffectManager em = new EffectManager(plugin);
 
 		LineEffect line = new LineEffect(em);
+		line.setLocation(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2)));
+		line.setTarget(player.getEyeLocation().add(beam.getTrajectory()));
 		line.asynchronous = true;
 		line.particles = (int) beam.length() * 2;
 		line.isZigZag = true;
 		line.zigZags = (int) beam.length();
 		line.particle = ParticleEffect.FLAME;
 		line.start();
+
 		em.disposeOnTermination();
 
 		/*List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
