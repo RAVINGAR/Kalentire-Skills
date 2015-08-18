@@ -12,6 +12,7 @@ public abstract class SkillBaseWave extends ActiveSkill {
 	protected static final class Wave {
 
 		private final double ox, oy, oz;        // Wave origin vector.
+		
 
 		private Wave(double ox, double oy, double oz) {
 			this.ox = ox;

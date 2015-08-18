@@ -24,8 +24,8 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	protected final void castBeam(final Hero hero, final Beam beam) {
-		final Location midPoint = beam.calculateMidpoint().toLocation(hero.getPlayer().getWorld());
+	protected final void castBeam(final Hero hero, final Beam beam, final TargetHandler targetHandler, final Predicate<LivingEntity> filter) {
+		final Location midPoint = beam.midPoint().toLocation(hero.getPlayer().getWorld());
 		final List<Entity> possibleTargets = hero.getPlayer().getWorld().getEntities();
 
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -34,7 +34,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				for (Entity possibleTarget : possibleTargets) {
 					final LivingEntity target;
 					if (possibleTarget instanceof LivingEntity
-							&& !possibleTarget.equals(hero.getPlayer()) && isValidTarget(target = (LivingEntity) possibleTarget)
+							&& !possibleTarget.equals(hero.getPlayer()) && filter.apply(target = (LivingEntity) possibleTarget)
 
 							// TODO I would like to determine if this check helps in any way.
 							&& target.getLocation().distanceSquared(midPoint) <= beam.midpointRadiusSq) {
@@ -44,7 +44,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 							Bukkit.getServer().getScheduler().runTask(plugin, new Runnable() {
 								@Override
 								public void run() {
-									onTargetHit(hero, target, pointData.get());
+									targetHandler.handle(hero, target, pointData.get());
 								}
 							});
 						}
@@ -67,9 +67,13 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}*/
 	}
 
-	protected boolean isValidTarget(LivingEntity target) { return true; }
+	protected final void castBeam(final Hero hero, final Beam beam, TargetHandler targetHandler) {
+		castBeam(hero, beam, targetHandler, Predicates.<LivingEntity>alwaysTrue());
+	}
 
-	protected abstract void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData);
+	public interface TargetHandler {
+		void handle(Hero hero, LivingEntity target, Beam.PointData pointData);
+	}
 
 	/*
 		Math involved with this class comes from http://www.flipcode.com/archives/Fast_Point-In-Cylinder_Test.shtml
@@ -80,8 +84,8 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 		private final double ox, oy, oz;        // Beam origin vector
 		private final double dx, dy, dz;        // Beam direction vector
-		private final double lengthSq;          // Pre-calculated length squared of the beam
-		private final double radiusSq;          // Pre-calculated radius squared of the beam
+		private final double length;            // Length of the beam
+		private final double radius;            // Radius of the beam
 		private final double midpointRadiusSq;  // Pre-calculated range bounds (for use with `getNearbyEntities()`)
 
 		private Beam(double ox, double oy, double oz, double dx, double dy, double dz, double length, double radius) {
@@ -94,8 +98,8 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			this.dx = dx;
 			this.dy = dy;
 			this.dz = dz;
-			this.lengthSq = length * length;
-			this.radiusSq = radius * radius;
+			this.length = length;
+			this.radius = radius;
 
 			double midpointRadius = length / 2 + radius;
 			midpointRadiusSq = midpointRadius * midpointRadius;
@@ -130,7 +134,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}
 
 		public Beam withAlteredOrigin(Vector origin) {
-			return new Beam(origin.getX(), origin.getY(), origin.getZ(), dx, dy, dz, lengthSq, radiusSq);
+			return new Beam(origin.getX(), origin.getY(), origin.getZ(), dx, dy, dz, length, radius);
 		}
 
 		public Beam withAlteredOrigin(Location origin) {
@@ -142,11 +146,11 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}
 
 		public Beam withAlteredTrajectory(Vector beam) {
-			return new Beam(ox, oy, oz, beam.getX(), beam.getY(), beam.getZ(), beam.lengthSquared(), radiusSq);
+			return new Beam(ox, oy, oz, beam.getX(), beam.getY(), beam.getZ(), beam.length(), radius);
 		}
 
 		public Beam withAlteredLength(double length) {
-			return withAlteredTrajectory(getDirection().normalize().multiply(length));
+			return new Beam(getOrigin(), getDirection(), length, radius);
 		}
 
 		public double getOriginX() {
@@ -181,29 +185,31 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			return new Vector(getDirectionX(), getDirectionY(), getDirectionZ());
 		}
 
-		public Vector calculateMidpoint() {
+		public Vector midPoint() {
 			return getOrigin().add(getDirection().multiply(0.5));
 		}
 
-		public double getLengthSquared() {
-			return lengthSq;
+		public double lengthSquared() {
+			return length * length;
 		}
 
-		public double calculateLength() {
-			return Math.sqrt(getLengthSquared());
+		public double length() {
+			return length;
 		}
 
-		public double getRadiusSquared() {
-			return radiusSq;
+		public double radiusSquared() {
+			return radius * radius;
 		}
 
-		public double calculateRadius() {
-			return Math.sqrt(getRadiusSquared());
-		}
+		public double radius()  { return radius; }
 
 		public Optional<PointData> calculatePointData(Vector point, boolean roundedCap) {
 			double pdx, pdy, pdz;       // Vector from origin to point (point distance)
 			double dot;                 // Reference to dot product of vector[pd] (point distance) and vector[o] (origin)
+
+			// TODO Determine if caching these here is beneficial
+			double lengthSq = lengthSquared();
+			double radiusSq = radiusSquared();
 
 			pdx = point.getX() - ox;
 			pdy = point.getY() - oy;
@@ -218,17 +224,17 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 					// ... if so declare a reference point...
 					Vector refPoint = getOrigin();
 					// ... and a reference distance squared.
-					double redDistanceSq;
+					double refDistanceSq;
 
 					// If the distance squared from the refPoint to point is <= radius squared...
-					if ((redDistanceSq = refPoint.distanceSquared(point)) <= radiusSq) {
-						// ... eturn a point data of location origin cap as the current reference is origin
-						return Optional.of(new PointData(point, pdx, pdy, pdz, redDistanceSq, dot, PointLocation.ORIGIN_CAP));
+					if ((refDistanceSq = refPoint.distanceSquared(point)) <= radiusSq) {
+						// ... return a point data of location origin cap as the current reference is origin
+						return Optional.of(new PointData(point, pdx, pdy, pdz, refDistanceSq, dot, PointLocation.ORIGIN_CAP));
 					}
 					// If the distance squared from the refPoint to point is <= radius squared...
-					else if ((redDistanceSq = refPoint.add(getDirection()).distanceSquared(point)) <= radiusSq) {
-						// ... return a point data of location end cap as the current ref point is the opposit origin.
-						return Optional.of(new PointData(point, pdx, pdy, pdz, redDistanceSq, dot, PointLocation.END_CAP));
+					else if ((refDistanceSq = refPoint.add(getDirection()).distanceSquared(point)) <= radiusSq) {
+						// ... return a point data of location end cap as the current ref point is the opposite origin.
+						return Optional.of(new PointData(point, pdx, pdy, pdz, refDistanceSq, dot, PointLocation.END_CAP));
 					}
 				}
 
@@ -321,16 +327,16 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				return Math.sqrt(getDistanceFromBeamSquared());
 			}
 
-			public double getDotProduct() {
+			public double dotProduct() {
 				return dotProduct;
 			}
 
 			public Vector calculateVectorAlongBeam() {
-				return getDirection().multiply(getDotProduct() / getLengthSquared());
+				return getDirection().multiply(dotProduct() / lengthSquared());
 			}
 
 			public double calculateDistanceAlongBeam() {
-				return calculateLength() * (getDotProduct() / getLengthSquared());
+				return length() * (dotProduct() / lengthSquared());
 			}
 
 			public Vector calculateClosestPointOnBeam() {

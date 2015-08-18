@@ -22,11 +22,11 @@ public abstract class SkillBaseBeamShot extends SkillBaseBeam {
 		super(plugin, name);
 	}
 
-	protected void fireShot(Hero hero, BeamShot shot, Predicate<LivingEntity> targetFilter) {
-		Set<UUID> processedTargets = new HashSet<>();
+	protected void castBeamShot(Hero hero, Beam beam, long tickLife) {
+		final Set<UUID> processedTargets = new HashSet<>();
 	}
 
-	protected static final class BeamShot {
+	/*protected static final class BeamShot {
 
 		private final Beam base;           // Base beam to shoot
 
@@ -95,5 +95,5 @@ public abstract class SkillBaseBeamShot extends SkillBaseBeam {
 				}
 			});
 		}
-	}
+	}*/
 }
