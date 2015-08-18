@@ -1,4 +1,3 @@
-SkillBaseBeam
 SkillBaseWave
 SkillBaseBeamShot
 SkillDamageBeam
@@ -6,3 +5,8 @@ SkillHealBeam
 SkillSoulEnlightened
 SkillLastLocation
 SkillBaseGroundEffect
+
+--- BEAM ---
+SkillBaseBeam
+SkillDisarray
+SkillOrdain

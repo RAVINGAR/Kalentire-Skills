@@ -8,13 +8,19 @@ import com.google.common.base.Predicates;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,17 +30,83 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	protected final void castBeam(final Hero hero, final Beam beam, final TargetHandler targetHandler, final Predicate<LivingEntity> filter) {
+	protected static Beam createBeam(Vector origin, Vector trajectory, double radius) {
+		return new Beam(origin, trajectory, radius);
+	}
+
+	protected static Beam createBeam(Vector origin, Vector direction, double length, double radius) {
+		return createBeam(origin, origin.add(direction.normalize().multiply(length)), radius);
+	}
+
+	protected static Beam createBeam(Location origin, double length, double radius) {
+		return createBeam(origin.toVector(), origin.getDirection().multiply(length), radius);
+	}
+
+	protected static Beam createObstructedBeam(World world, Vector origin, Vector direction, int maxLength, double radius, Set<Material> transparent) {
+		Block target = getTargetBlock(new BlockIterator(world, origin, direction, 0, maxLength), transparent);
+		return createBeam(origin, direction, target.getLocation().add(0.5, 0.5, 0.5).toVector().distance(origin), radius);
+	}
+
+	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius, Set<Material> transparent) {
+		Block target = getTargetBlock(new BlockIterator(origin, 0, maxLength), transparent);
+		return createBeam(origin, target.getLocation().add(0.5, 0.5, 0.5).distance(origin), radius);
+	}
+
+	/*
+		NOTE: It is probably not a good idea to pass in a block iterator without a max distance set.
+			  Keep that in mind whoever is working on the internals of this class.
+	 */
+	private static Block getTargetBlock(BlockIterator blockIterator, Set<Material> transparent) {
+		Block block = null;
+		while (blockIterator.hasNext()) {
+			block = blockIterator.next();
+			if (transparent != null) {
+				if (transparent.contains(block.getType())) {
+					return block;
+				}
+			}
+			else {
+				if (block.getType() == Material.AIR) {
+					return block;
+				}
+			}
+		}
+		return block;
+	}
+
+	protected final void castBeam(final Hero hero, final Beam beam, final TargetHandler targetHandler) {
 		final Location midPoint = beam.midPoint().toLocation(hero.getPlayer().getWorld());
 		final List<Entity> possibleTargets = hero.getPlayer().getWorld().getEntities();
 
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			@Override
 			public void run() {
+				final List<Pair<LivingEntity, Beam.PointData>> targets = new ArrayList<>();
+
 				for (Entity possibleTarget : possibleTargets) {
-					final LivingEntity target;
-					if (possibleTarget instanceof LivingEntity
-							&& !possibleTarget.equals(hero.getPlayer()) && filter.apply(target = (LivingEntity) possibleTarget)
+					if (possibleTarget instanceof LivingEntity && !possibleTarget.equals(hero.getPlayer())
+							&& possibleTarget.getLocation().distanceSquared(midPoint) <= beam.midpointRadiusSq) {
+
+						LivingEntity target = (LivingEntity) possibleTarget;
+						Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
+
+						if (pointData.isPresent()) {
+							targets.add(new Pair<>(target, pointData.get()));
+						}
+					}
+
+					Bukkit.getServer().getScheduler().runTask(plugin, new Runnable() {
+						@Override
+						public void run() {
+							for (Pair<LivingEntity, Beam.PointData> targetPair : targets) {
+								targetHandler.handle(hero, targetPair.getLeft(), targetPair.getRight());
+							}
+						}
+					});
+
+					// Method involving the creation of a bukkit task for each valid target
+					/*final LivingEntity target;
+					if (possibleTarget instanceof LivingEntity && !possibleTarget.equals(hero.getPlayer())
 
 							// TODO I would like to determine if this check helps in any way.
 							&& target.getLocation().distanceSquared(midPoint) <= beam.midpointRadiusSq) {
@@ -48,10 +120,12 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 								}
 							});
 						}
-					}
+					}*/
 				}
 			}
 		});
+
+
 
 		// Non async entity targeting
 		/*List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.rangeBounds, beam.rangeBounds, beam.rangeBounds);
@@ -67,10 +141,6 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		}*/
 	}
 
-	protected final void castBeam(final Hero hero, final Beam beam, TargetHandler targetHandler) {
-		castBeam(hero, beam, targetHandler, Predicates.<LivingEntity>alwaysTrue());
-	}
-
 	public interface TargetHandler {
 		void handle(Hero hero, LivingEntity target, Beam.PointData pointData);
 	}
@@ -83,21 +153,24 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	protected static final class Beam {
 
 		private final double ox, oy, oz;        // Beam origin vector
-		private final double dx, dy, dz;        // Beam direction vector
+		private final double tx, ty, tz;        // Beam direction vector
 		private final double length;            // Length of the beam
 		private final double radius;            // Radius of the beam
 		private final double midpointRadiusSq;  // Pre-calculated range bounds (for use with `getNearbyEntities()`)
 
-		private Beam(double ox, double oy, double oz, double dx, double dy, double dz, double length, double radius) {
+		// TODO Should this be predetermined?
+		//private final boolean roundedCaps;    // Does this beam have rounded caps (is it a capsule)
+
+		private Beam(double ox, double oy, double oz, double tx, double ty, double tz, double length, double radius) {
 			checkArgument(length > 0, "Beam length must be greater than 0");
 			checkArgument(radius > 0, "Beam radius must be greater than 0");
 
 			this.ox = ox;
 			this.oy = oy;
 			this.oz = oz;
-			this.dx = dx;
-			this.dy = dy;
-			this.dz = dz;
+			this.tx = tx;
+			this.ty = ty;
+			this.tz = tz;
 			this.length = length;
 			this.radius = radius;
 
@@ -105,32 +178,13 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			midpointRadiusSq = midpointRadius * midpointRadius;
 		}
 
-		public Beam(Vector origin, Vector beam, double radius) {
-			this(origin.getX(), origin.getY(), origin.getZ(), beam.getX(), beam.getY(), beam.getZ(), beam.length(), radius);
+		private Beam(Vector origin, Vector trajectory, double radius) {
+			this(origin.getX(), origin.getY(), origin.getZ(), trajectory.getX(), trajectory.getY(), trajectory.getZ(), trajectory.length(), radius);
 		}
 
-		public Beam(Location origin, Vector beam, double radius) {
+		// TODO Implement a way to create new beams from existing beams and reuse information from the old beam
+		/*public Beam(Location origin, Vector beam, double radius) {
 			this(origin.toVector(), beam, radius);
-		}
-
-		public Beam(Vector origin, Vector direction, double length, double radius) {
-			this(origin, direction.clone().normalize().multiply(length), radius);
-		}
-
-		public Beam(Location origin, Vector direction, double length, double radius) {
-			this(origin.toVector(), direction, length, radius);
-		}
-
-		public Beam(Location origin, double length, double radius) {
-			this(origin, origin.getDirection().multiply(length), radius);
-		}
-
-		public Beam(LivingEntity origin, double length, double radius) {
-			this(origin.getEyeLocation(), length, radius);
-		}
-
-		public Beam(LivingEntity origin, Set<Material> transparentBlocks, int maxLength, double radius) {
-			this(origin.getEyeLocation(), origin.getTargetBlock(transparentBlocks, maxLength).getLocation().add(0.5, 0.5, 0.5).distance(origin.getEyeLocation()), radius);
 		}
 
 		public Beam withAlteredOrigin(Vector origin) {
@@ -151,7 +205,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 		public Beam withAlteredLength(double length) {
 			return new Beam(getOrigin(), getDirection(), length, radius);
-		}
+		}*/
 
 		public double getOriginX() {
 			return ox;
@@ -169,56 +223,58 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			return new Vector(getOriginX(), getOriginY(), getOriginZ());
 		}
 
-		public double getDirectionX() {
-			return dx;
+		public double getTrajectoryX() {
+			return tx;
 		}
 
-		public double getDirectionY() {
-			return dy;
+		public double getTrajectoryY() {
+			return ty;
 		}
 
-		public double getDirectionZ() {
-			return dz;
+		public double getTrajectoryZ() {
+			return tz;
 		}
 
-		public Vector getDirection() {
-			return new Vector(getDirectionX(), getDirectionY(), getDirectionZ());
+		public Vector getTrajectory() {
+			return new Vector(getTrajectoryX(), getTrajectoryY(), getTrajectoryZ());
 		}
 
 		public Vector midPoint() {
-			return getOrigin().add(getDirection().multiply(0.5));
-		}
-
-		public double lengthSquared() {
-			return length * length;
+			return getOrigin().add(getTrajectory().multiply(0.5));
 		}
 
 		public double length() {
 			return length;
 		}
 
+		public double lengthSquared() {
+			return length * length;
+		}
+
+		public double radius() {
+			return radius;
+		}
+
 		public double radiusSquared() {
 			return radius * radius;
 		}
-
-		public double radius()  { return radius; }
 
 		public Optional<PointData> calculatePointData(Vector point, boolean roundedCap) {
 			double pdx, pdy, pdz;       // Vector from origin to point (point distance)
 			double dot;                 // Reference to dot product of vector[pd] (point distance) and vector[o] (origin)
 
 			// TODO Determine if caching these here is beneficial
-			double lengthSq = lengthSquared();
-			double radiusSq = radiusSquared();
+			//double lengthSq = lengthSquared();
+			//double radiusSq = radiusSquared();
 
 			pdx = point.getX() - ox;
 			pdy = point.getY() - oy;
 			pdz = point.getZ() - oz;
 
-			dot = pdx * dx + pdy * dy + pdz * dz;
+			dot = pdx * tx + pdy * ty + pdz * tz;
 
 			// If the dot product is not within the range of the beam shaft...
-			if (dot < 0 || dot > lengthSq) {
+			if (dot < 0 || dot > lengthSquared()) {
 				// ... check if we test for rounded caps...
 				if (roundedCap) {
 					// ... if so declare a reference point...
@@ -227,12 +283,12 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 					double refDistanceSq;
 
 					// If the distance squared from the refPoint to point is <= radius squared...
-					if ((refDistanceSq = refPoint.distanceSquared(point)) <= radiusSq) {
+					if ((refDistanceSq = refPoint.distanceSquared(point)) <= radiusSquared()) {
 						// ... return a point data of location origin cap as the current reference is origin
 						return Optional.of(new PointData(point, pdx, pdy, pdz, refDistanceSq, dot, PointLocation.ORIGIN_CAP));
 					}
 					// If the distance squared from the refPoint to point is <= radius squared...
-					else if ((refDistanceSq = refPoint.add(getDirection()).distanceSquared(point)) <= radiusSq) {
+					else if ((refDistanceSq = refPoint.add(getTrajectory()).distanceSquared(point)) <= lengthSquared()) {
 						// ... return a point data of location end cap as the current ref point is the opposite origin.
 						return Optional.of(new PointData(point, pdx, pdy, pdz, refDistanceSq, dot, PointLocation.END_CAP));
 					}
@@ -244,10 +300,10 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			else {
 				// ... else test for beam shaft radius (that sounds so... dirty...)
 				// This is a fancy way to check if the point is within the radius of the cylinder without trigonometric functions
-				double dsq = (pdx * pdx + pdy * pdy + pdz * pdz) - dot * dot / lengthSq;
+				double dsq = (pdx * pdx + pdy * pdy + pdz * pdz) - dot * dot / lengthSquared();
 
 				// if distance squared from beam is <= radius squared...
-				if (dsq <= radiusSq) {
+				if (dsq <= radiusSquared()) {
 					// ... return a point data of location beam shaft.
 					return Optional.of(new PointData(point, pdx, pdy, pdz, dsq, dot, PointLocation.BEAM_SHAFT));
 				}
@@ -303,18 +359,22 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				return new Vector(getPointX(), getPointY(), getPointZ());
 			}
 
+			// TODO Direction I feel is a bad name for the relative vector from origin to point, change in the future
 			public double getDirectionX() {
 				return pdx;
 			}
 
+			// TODO Direction I feel is a bad name for the relative vector from origin to point, change in the future
 			public double getDirectionY() {
 				return pdy;
 			}
 
+			// TODO Direction I feel is a bad name for the relative vector from origin to point, change in the future
 			public double getDirectionZ() {
 				return pdz;
 			}
 
+			// TODO Direction I feel is a bad name for the relative vector from origin to point, change in the future
 			public Vector getDirection() {
 				return new Vector(getDirectionX(), getDirectionY(), getDirectionZ());
 			}
@@ -332,7 +392,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			}
 
 			public Vector calculateVectorAlongBeam() {
-				return getDirection().multiply(dotProduct() / lengthSquared());
+				return getTrajectory().multiply(dotProduct() / lengthSquared());
 			}
 
 			public double calculateDistanceAlongBeam() {
@@ -351,9 +411,9 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 					case ORIGIN_CAP:
 						return getOrigin();
 					case END_CAP:
-						return getOrigin().add(getDirection());
+						return getOrigin().add(getTrajectory());
 					default:
-						throw new RuntimeException("Java should never let this happen, all enum cases accounted for");
+						throw new RuntimeException("This shouldn't happen");
 				}
 			}
 
@@ -364,6 +424,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			public PointLocation getPointLocation() { return pointLocation; }
 		}
 
+		//TODO PointLocation is a terrible name but I cant think of anything better atm
 		public enum PointLocation {
 			BEAM_SHAFT,
 			ORIGIN_CAP,

@@ -37,12 +37,12 @@ public class SkillDamageBeam extends SkillBaseBeam {
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
 		Player player = hero.getPlayer();
-		Beam beam = new Beam(player, Util.transparentBlocks, 20, 2);
+		Beam beam = createObstructedBeam(player.getEyeLocation(), 20, 2, Util.transparentBlocks);
 
 		broadcastExecuteText(hero);
 
 		List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
-				player.getEyeLocation().add(beam.getDirectionX(), beam.getDirectionY(), beam.getDirectionZ()), (int) beam.length() * 2);
+				player.getEyeLocation().add(beam.getTrajectoryX(), beam.getTrajectoryX(), beam.getTrajectoryX()), (int) beam.length() * 2);
 		for (int i = 4; i < fxLine.size(); i++) {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.FLAME, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
 		}
