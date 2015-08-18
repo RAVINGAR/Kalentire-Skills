@@ -1,19 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Effect;
-import org.bukkit.Location;
+import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.LineEffect;
+import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 public class SkillHealBeam extends SkillBaseBeam {
 
@@ -40,11 +38,23 @@ public class SkillHealBeam extends SkillBaseBeam {
 
 		broadcastExecuteText(hero);
 
-		List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
+		EffectManager em = new EffectManager(plugin);
+
+		LineEffect line = new LineEffect(em);
+		line.setLocation(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2)));
+		line.setTarget(player.getEyeLocation().add(beam.getTrajectory()));
+		line.color = Color.GREEN;
+		line.asynchronous = true;
+		line.particles = (int) beam.length() * 2;
+		line.particle = ParticleEffect.SPELL_MOB;
+		line.start();
+		em.disposeOnTermination();
+
+		/*List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
 				player.getEyeLocation().add(beam.getTrajectoryX(), beam.getTrajectoryX(), beam.getTrajectoryX()), (int) beam.length() * 2);
 		for (int i = 4; i < fxLine.size(); i++) {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.HAPPY_VILLAGER, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
-		}
+		}*/
 
 		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
 

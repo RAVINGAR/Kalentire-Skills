@@ -159,6 +159,12 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/Residence.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>de.slikey</groupId>
+            <artifactId>EffectLib</artifactId>
+            <version>3.4</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
