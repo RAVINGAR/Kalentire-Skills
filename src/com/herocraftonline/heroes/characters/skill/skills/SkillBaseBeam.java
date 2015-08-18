@@ -68,7 +68,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	}
 
 	protected boolean isValidTarget(LivingEntity target) { return true; }
-	
+
 	protected abstract void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData);
 
 	/*

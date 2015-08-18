@@ -1,6 +1,6 @@
 SkillBaseBeam
 SkillBaseWave
-SkillBaseProjectile
+SkillBaseBeamShot
 SkillDamageBeam
 SkillHealBeam
 SkillSoulEnlightened
