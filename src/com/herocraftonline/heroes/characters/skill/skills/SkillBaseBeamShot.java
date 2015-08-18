@@ -50,21 +50,35 @@ public abstract class SkillBaseBeamShot extends SkillBaseBeam {
 		private final Predicate<LivingEntity> targetFilter;
 
 		private final Set<UUID> processedTargets = new HashSet<>();
+
+		private final long tickLife;
+		private long currentTick = 0;
+
 		private Beam currentBeam;
 
-		private BeamShotRunnable(Hero hero, BeamShot shot, Predicate<LivingEntity> targetFilter) {
+		private BeamShotRunnable(Hero hero, BeamShot shot, Predicate<LivingEntity> targetFilter, long tickLife) {
+			checkArgument(tickLife > 0, "BeamShot tick life must be greater than 0");
+
 			this.hero = hero;
 			this.shot = shot;
 			this.targetFilter = targetFilter;
 
+			this.tickLife = tickLife;
 			currentBeam = shot.base;
+
 			asyncTargetProcessing();
 			runTaskTimer(plugin, 1, 1);
 		}
 
 		@Override
 		public void run() {
+			if (currentTick++ < tickLife) {
+				currentBeam = currentBeam.withTranslatedOrigin(currentBeam.getDirection());
 
+				asyncTargetProcessing();
+			} else {
+				cancel();
+			}
 		}
 
 		private void asyncTargetProcessing() {
@@ -73,7 +87,8 @@ public abstract class SkillBaseBeamShot extends SkillBaseBeam {
 				@Override
 				public void run() {
 					for (Entity possibleTarget : possibleTargets) {
-						if (possibleTarget instanceof LivingEntity) {
+						LivingEntity target;
+						if (possibleTarget instanceof LivingEntity && targetFilter.apply(target = (LivingEntity) possibleTarget)) {
 
 						}
 					}

@@ -8,6 +8,7 @@ import com.google.common.base.Predicates;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -23,8 +24,37 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	protected final void fireBeam(Hero hero, Beam beam, Predicate<LivingEntity> targetFilter) {
-		List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.rangeBounds, beam.rangeBounds, beam.rangeBounds);
+	protected final void castBeam(final Hero hero, final Beam beam) {
+		final Location midPoint = beam.calculateMidpoint().toLocation(hero.getPlayer().getWorld());
+		final List<Entity> possibleTargets = hero.getPlayer().getWorld().getEntities();
+
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			@Override
+			public void run() {
+				for (Entity possibleTarget : possibleTargets) {
+					final LivingEntity target;
+					if (possibleTarget instanceof LivingEntity
+							&& !possibleTarget.equals(hero.getPlayer()) && isValidTarget(target = (LivingEntity) possibleTarget)
+
+							// TODO I would like to determine if this check helps in any way.
+							&& target.getLocation().distanceSquared(midPoint) <= beam.midpointRadiusSq) {
+
+						final Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
+						if (pointData.isPresent()) {
+							Bukkit.getServer().getScheduler().runTask(plugin, new Runnable() {
+								@Override
+								public void run() {
+									onTargetHit(hero, target, pointData.get());
+								}
+							});
+						}
+					}
+				}
+			}
+		});
+
+		// Non async entity targeting
+		/*List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.rangeBounds, beam.rangeBounds, beam.rangeBounds);
 		for (Entity possibleTarget : possibleTargets) {
 			LivingEntity target;
 			if (possibleTarget instanceof LivingEntity
@@ -34,13 +64,11 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 					onTargetHit(hero, target, pointData.get());
 				}
 			}
-		}
+		}*/
 	}
 
-	protected final void fireBeam(Hero hero, Beam beam) {
-		fireBeam(hero, beam, Predicates.<LivingEntity>alwaysTrue());
-	}
-
+	protected boolean isValidTarget(LivingEntity target) { return true; }
+	
 	protected abstract void onTargetHit(Hero hero, LivingEntity target, Beam.PointData pointData);
 
 	/*
@@ -50,15 +78,15 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	 */
 	protected static final class Beam {
 
-		private final double ox, oy, oz;    // Beam origin vector
-		private final double dx, dy, dz;    // Beam direction vector
-		private final double lengthSq;      // Pre-calculated length squared of the beam
-		private final double radiusSq;      // Pre-calculated radius squared of the beam
-		private final double rangeBounds;   // Pre-calculated range bounds (for use with `getNearbyEntities()`)
+		private final double ox, oy, oz;        // Beam origin vector
+		private final double dx, dy, dz;        // Beam direction vector
+		private final double lengthSq;          // Pre-calculated length squared of the beam
+		private final double radiusSq;          // Pre-calculated radius squared of the beam
+		private final double midpointRadiusSq;  // Pre-calculated range bounds (for use with `getNearbyEntities()`)
 
-		private Beam(double ox, double oy, double oz, double dx, double dy, double dz, double lengthSq, double radiusSq) {
-			checkArgument(lengthSq > 0, "Beam length must be greater than 0");
-			checkArgument(radiusSq > 0, "Beam radius must be greater than 0");
+		private Beam(double ox, double oy, double oz, double dx, double dy, double dz, double length, double radius) {
+			checkArgument(length > 0, "Beam length must be greater than 0");
+			checkArgument(radius > 0, "Beam radius must be greater than 0");
 
 			this.ox = ox;
 			this.oy = oy;
@@ -66,13 +94,15 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			this.dx = dx;
 			this.dy = dy;
 			this.dz = dz;
-			this.lengthSq = lengthSq;
-			this.radiusSq = radiusSq;
-			this.rangeBounds = calculateLength() + calculateRadius();
+			this.lengthSq = length * length;
+			this.radiusSq = radius * radius;
+
+			double midpointRadius = length / 2 + radius;
+			midpointRadiusSq = midpointRadius * midpointRadius;
 		}
 
 		public Beam(Vector origin, Vector beam, double radius) {
-			this(origin.getX(), origin.getY(), origin.getZ(), beam.getX(), beam.getY(), beam.getZ(), beam.lengthSquared(), radius * radius);
+			this(origin.getX(), origin.getY(), origin.getZ(), beam.getX(), beam.getY(), beam.getZ(), beam.length(), radius);
 		}
 
 		public Beam(Location origin, Vector beam, double radius) {
@@ -151,6 +181,10 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			return new Vector(getDirectionX(), getDirectionY(), getDirectionZ());
 		}
 
+		public Vector calculateMidpoint() {
+			return getOrigin().add(getDirection().multiply(0.5));
+		}
+
 		public double getLengthSquared() {
 			return lengthSq;
 		}
@@ -165,10 +199,6 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 		public double calculateRadius() {
 			return Math.sqrt(getRadiusSquared());
-		}
-
-		public double getRangeBounds() {
-			return rangeBounds;
 		}
 
 		public Optional<PointData> calculatePointData(Vector point, boolean roundedCap) {
