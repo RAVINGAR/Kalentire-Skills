@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.util.Pair;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,9 +31,10 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 	protected final void castBeam(final Hero hero, final Beam beam, final TargetHandler targetHandler) {
 
-		// TODO Check post 2 out from here https://www.spigotmc.org/threads/invisible-entity-or-getnearbyentities-from-location.46013/
 		//final List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.bounds, beam.bounds, beam.bounds);
-		final Set<Entity> possibleTargets = getEntitiesInChunks(beam.midPoint().toLocation(hero.getPlayer().getWorld()), (int) (beam.bounds + 16) / 16);
+
+		// Check post 2 out from here https://www.spigotmc.org/threads/invisible-entity-or-getnearbyentities-from-location.46013/
+		final Set<Entity> possibleTargets = getEntitiesInChunks(beam.midPoint().toLocation(hero.getPlayer().getWorld()), beam.chunkRadius);
 
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			@Override
@@ -130,9 +132,17 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		return createBeam(origin, direction, target.getLocation().add(0.5, 0.5, 0.5).toVector().distance(origin), radius);
 	}
 
+	protected static Beam createObstructedBeam(World world, Vector origin, Vector direction, int maxLength, double radius) {
+		return createObstructedBeam(world, origin, direction, maxLength, radius, Util.transparentBlocks);
+	}
+
 	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius, Set<Material> transparent) {
 		Block target = getTargetBlock(new BlockIterator(origin, 0, maxLength), transparent);
 		return createBeam(origin, target.getLocation().add(0.5, 0.5, 0.5).distance(origin), radius);
+	}
+
+	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius) {
+		return createObstructedBeam(origin, maxLength, radius, Util.transparentBlocks);
 	}
 
 	/*
@@ -169,7 +179,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		private final double length;            // Length of the beam
 		private final double radius;            // Radius of the beam
 
-		private final double bounds;  // Pre-calculated range bounds (for use with `getNearbyEntities()`)
+		private final int chunkRadius;       // Pre-calculated chunk radius for filtering target entities.
 
 		// TODO Should this be predetermined?
 		//private final boolean roundedCaps;    // Does this beam have rounded caps (is it a capsule)
@@ -187,7 +197,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			this.length = length;
 			this.radius = radius;
 
-			bounds = length / 2 + radius;
+			chunkRadius = (int) ((Math.sqrt(tx * tx + tz * tz) + radius + 16) / 16);
 		}
 
 		private Beam(Vector origin, Vector trajectory, double radius) {
