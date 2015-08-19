@@ -18,6 +18,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,10 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	}
 
 	protected final void castBeam(final Hero hero, final Beam beam, final TargetHandler targetHandler) {
-		final List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.bounds, beam.bounds, beam.bounds);
+
+		// TODO Check post 2 out from here https://www.spigotmc.org/threads/invisible-entity-or-getnearbyentities-from-location.46013/
+		//final List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.bounds, beam.bounds, beam.bounds);
+		final Set<Entity> possibleTargets = getEntitiesInChunks(beam.midPoint().toLocation(hero.getPlayer().getWorld()), (int) (beam.bounds + 16) / 16);
 
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			@Override
@@ -36,7 +40,23 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				final List<Pair<LivingEntity, Beam.PointData>> targets = new ArrayList<>();
 
 				for (Entity possibleTarget : possibleTargets) {
+
 					if (possibleTarget instanceof LivingEntity && !possibleTarget.equals(hero.getPlayer())) {
+
+						final LivingEntity target = (LivingEntity) possibleTarget;
+						final Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
+
+						if (pointData.isPresent()) {
+							Bukkit.getServer().getScheduler().runTask(plugin, new Runnable() {
+								@Override
+								public void run() {
+									targetHandler.handle(hero, target, pointData.get());
+								}
+							});
+						}
+					}
+
+					/*if (possibleTarget instanceof LivingEntity && !possibleTarget.equals(hero.getPlayer())) {
 
 						LivingEntity target = (LivingEntity) possibleTarget;
 						Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
@@ -53,25 +73,9 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 								targetHandler.handle(hero, targetPair.getLeft(), targetPair.getRight());
 							}
 						}
-					});
+					});*/
 
-					// Method involving the creation of a bukkit task for each valid target
-					/*final LivingEntity target;
-					if (possibleTarget instanceof LivingEntity && !possibleTarget.equals(hero.getPlayer())
 
-							// TODO I would like to determine if this check helps in any way.
-							&& target.getLocation().distanceSquared(midPoint) <= beam.midpointRadiusSq) {
-
-						final Optional<Beam.PointData> pointData = beam.calculatePointData(target.getEyeLocation().toVector());
-						if (pointData.isPresent()) {
-							Bukkit.getServer().getScheduler().runTask(plugin, new Runnable() {
-								@Override
-								public void run() {
-									targetHandler.handle(hero, target, pointData.get());
-								}
-							});
-						}
-					}*/
 				}
 			}
 		});
@@ -90,6 +94,19 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				}
 			}
 		}*/
+	}
+
+	private static Set<Entity> getEntitiesInChunks(Location l, int chunkRadius) {
+		Block b = l.getBlock();
+		Set<Entity> entities = new HashSet<Entity>();
+		for (int x = -16 * chunkRadius; x <= 16 * chunkRadius; x += 16) {
+			for (int z = -16 * chunkRadius; z <= 16 * chunkRadius; z += 16) {
+				for (Entity e : b.getRelative(x, 0, z).getChunk().getEntities()) {
+					entities.add(e);
+				}
+			}
+		}
+		return entities;
 	}
 
 	public interface TargetHandler {
@@ -232,6 +249,10 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 		public Vector getTrajectory() {
 			return new Vector(getTrajectoryX(), getTrajectoryY(), getTrajectoryZ());
+		}
+
+		public Vector midPoint() {
+			return getOrigin().midpoint(getOrigin().add(getTrajectory()));
 		}
 
 		public double length() {

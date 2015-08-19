@@ -42,13 +42,20 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		EffectManager em = new EffectManager(plugin);
 
 		CylinderEffect cyl = new CylinderEffect(em);
-		cyl.setLocation(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(1.5)));
-		//cyl.setTarget(player.getEyeLocation().add(beam.getTrajectory()));
+		cyl.setLocation(beam.midPoint().toLocation(player.getWorld()).add(beam.getTrajectory().normalize().multiply(0.5)));
 		cyl.asynchronous = true;
 
-		cyl.radius = (float) beam.radius() / 4;
-		cyl.height = (float) beam.length();
+		cyl.radius = (float) beam.radius() / 12;
+		cyl.height = (float) beam.length() - 1;
+		cyl.particles = 40;
 		cyl.solid = true;
+		cyl.rotationX = Math.toRadians(player.getLocation().getPitch() + 90);
+		cyl.rotationY = -Math.toRadians(player.getLocation().getYaw());
+		cyl.angularVelocityX = 0;
+		cyl.angularVelocityY = 0;
+		cyl.angularVelocityZ = 0;
+		cyl.iterations = 20;
+		cyl.visibleRange = 40;
 
 		cyl.start();
 		em.disposeOnTermination();
