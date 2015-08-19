@@ -27,50 +27,6 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	protected static Beam createBeam(Vector origin, Vector trajectory, double radius) {
-		return new Beam(origin, trajectory, radius);
-	}
-
-	protected static Beam createBeam(Vector origin, Vector direction, double length, double radius) {
-		return createBeam(origin, origin.add(direction.normalize().multiply(length)), radius);
-	}
-
-	protected static Beam createBeam(Location origin, double length, double radius) {
-		return createBeam(origin.toVector(), origin.getDirection().multiply(length), radius);
-	}
-
-	protected static Beam createObstructedBeam(World world, Vector origin, Vector direction, int maxLength, double radius, Set<Material> transparent) {
-		Block target = getTargetBlock(new BlockIterator(world, origin, direction, 0, maxLength), transparent);
-		return createBeam(origin, direction, target.getLocation().add(0.5, 0.5, 0.5).toVector().distance(origin), radius);
-	}
-
-	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius, Set<Material> transparent) {
-		Block target = getTargetBlock(new BlockIterator(origin, 0, maxLength), transparent);
-		return createBeam(origin, target.getLocation().add(0.5, 0.5, 0.5).distance(origin), radius);
-	}
-
-	/*
-		NOTE: It is probably not a good idea to pass in a block iterator without a max distance set.
-			  Keep that in mind whoever is working on the internals of this class.
-	 */
-	private static Block getTargetBlock(BlockIterator blockIterator, Set<Material> transparent) {
-		Block block = null;
-		while (blockIterator.hasNext()) {
-			block = blockIterator.next();
-			if (transparent != null) {
-				if (transparent.contains(block.getType())) {
-					return block;
-				}
-			}
-			else {
-				if (block.getType() == Material.AIR) {
-					return block;
-				}
-			}
-		}
-		return block;
-	}
-
 	protected final void castBeam(final Hero hero, final Beam beam, final TargetHandler targetHandler) {
 		final List<Entity> possibleTargets = hero.getPlayer().getNearbyEntities(beam.bounds, beam.bounds, beam.bounds);
 
@@ -138,6 +94,50 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 	public interface TargetHandler {
 		void handle(Hero hero, LivingEntity target, Beam.PointData pointData);
+	}
+
+	protected static Beam createBeam(Vector origin, Vector trajectory, double radius) {
+		return new Beam(origin, trajectory, radius);
+	}
+
+	protected static Beam createBeam(Vector origin, Vector direction, double length, double radius) {
+		return createBeam(origin, origin.add(direction.normalize().multiply(length)), radius);
+	}
+
+	protected static Beam createBeam(Location origin, double length, double radius) {
+		return createBeam(origin.toVector(), origin.getDirection().multiply(length), radius);
+	}
+
+	protected static Beam createObstructedBeam(World world, Vector origin, Vector direction, int maxLength, double radius, Set<Material> transparent) {
+		Block target = getTargetBlock(new BlockIterator(world, origin, direction, 0, maxLength), transparent);
+		return createBeam(origin, direction, target.getLocation().add(0.5, 0.5, 0.5).toVector().distance(origin), radius);
+	}
+
+	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius, Set<Material> transparent) {
+		Block target = getTargetBlock(new BlockIterator(origin, 0, maxLength), transparent);
+		return createBeam(origin, target.getLocation().add(0.5, 0.5, 0.5).distance(origin), radius);
+	}
+
+	/*
+		NOTE: It is probably not a good idea to pass in a block iterator without a max distance set.
+			  Keep that in mind whoever is working on the internals of this class.
+	 */
+	private static Block getTargetBlock(BlockIterator blockIterator, Set<Material> transparent) {
+		Block block = null;
+		while (blockIterator.hasNext()) {
+			block = blockIterator.next();
+			if (transparent != null) {
+				if (!transparent.contains(block.getType())) {
+					return block;
+				}
+			}
+			else {
+				if (block.getType() == Material.AIR) {
+					return block;
+				}
+			}
+		}
+		return block;
 	}
 
 	/*

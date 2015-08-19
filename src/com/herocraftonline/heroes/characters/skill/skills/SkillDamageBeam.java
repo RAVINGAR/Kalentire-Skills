@@ -8,12 +8,11 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.LineEffect;
-import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
+import de.slikey.effectlib.effect.CylinderEffect;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 public class SkillDamageBeam extends SkillBaseBeam {
 
@@ -42,16 +41,16 @@ public class SkillDamageBeam extends SkillBaseBeam {
 
 		EffectManager em = new EffectManager(plugin);
 
-		LineEffect line = new LineEffect(em);
-		line.setLocation(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2)));
-		line.setTarget(player.getEyeLocation().add(beam.getTrajectory()));
-		line.asynchronous = true;
-		line.particles = (int) beam.length() * 2;
-		line.isZigZag = true;
-		line.zigZags = (int) beam.length();
-		line.particle = ParticleEffect.FLAME;
-		line.start();
+		CylinderEffect cyl = new CylinderEffect(em);
+		cyl.setLocation(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(1.5)));
+		//cyl.setTarget(player.getEyeLocation().add(beam.getTrajectory()));
+		cyl.asynchronous = true;
 
+		cyl.radius = (float) beam.radius() / 4;
+		cyl.height = (float) beam.length();
+		cyl.solid = true;
+
+		cyl.start();
 		em.disposeOnTermination();
 
 		/*List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
@@ -74,5 +73,61 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		});
 
 		return SkillResult.NORMAL;
+	}
+
+	private static Vector vectorToEuler(Vector direction, Vector to_frame) {
+		double[][] matrix1 = new double[3][3];
+		double[][] matrix2 = new double[3][3];
+
+		Vector axis = direction.crossProduct(to_frame).normalize();
+
+		matrix1[0] = vectorToArray(direction);
+		matrix2[0] = vectorToArray(to_frame);
+
+		matrix1[1] = vectorToArray(axis);
+		matrix2[1] = vectorToArray(axis);
+
+		matrix1[2] = vectorToArray(axis.crossProduct(direction));
+		matrix2[2] = vectorToArray(axis.crossProduct(to_frame));
+
+		matrix1 = transposeMatrix(matrix1);
+
+		double a = -Math.asin(matrixMultiplyE(matrix1, matrix2, 0, 2));
+		double b = Math.atan2(matrixMultiplyE(matrix1, matrix2, 1, 2),
+				matrixMultiplyE(matrix1, matrix2, 2, 2));
+		double y = Math.atan2(matrixMultiplyE(matrix1, matrix2, 0, 1),
+				matrixMultiplyE(matrix1, matrix2, 0, 0));
+
+		return new Vector(a, b, y);
+	}
+
+	private static double matrixMultiplyE(double[][] m1, double[][] m2, int x, int y) {
+		double ans = 0;
+
+		for (int e = 0; e < m1.length; e++) {
+			ans += m1[e][y] + m2[x][e];
+		}
+
+		return ans;
+	}
+
+	private static double[] vectorToArray(Vector v) {
+		double[] a = new double[3];
+		a[0] = v.getX();
+		a[1] = v.getY();
+		a[2] = v.getZ();
+		return a;
+	}
+
+	private static double[][] transposeMatrix(double[][] matrix) {
+		double[][] transpose = new double[matrix.length][matrix[0].length];
+
+		for (int c = 0 ; c < matrix.length ; c++ )
+		{
+			for (int d = 0 ; d < matrix[0].length ; d++ )
+				transpose[d][c] = matrix[c][d];
+		}
+
+		return transpose;
 	}
 }
