@@ -8,9 +8,10 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.CircleEffect;
-import de.slikey.effectlib.particle.ParticlePacket;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -18,6 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,9 +69,9 @@ public class SkillLastLocation extends ActiveSkill {
 
 		if (marker != null) {
 			marker.activate();
-			player.getWorld().playSound(player.getLocation(), Sound.PORTAL_TRAVEL, 0.5f, 1);
-			player.getWorld().playSound(marker.location, Sound.PORTAL_TRAVEL, 0.5f, 1);
-			player.getWorld().spigot().playEffect(player.getLocation(), Effect.SMOKE);
+			player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
+			player.getWorld().playSound(marker.location, Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
+			player.getWorld().spigot().playEffect(player.getLocation(), Effect.SMOKE, 0, 0, 0.4f, 0.4f, 0.4f, 1, 16, 32);
 		}
 		else {
 			double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
@@ -94,7 +96,7 @@ public class SkillLastLocation extends ActiveSkill {
 		final long startTime;
 
 		final EffectManager em;
-		final CircleEffect effect;
+		final LastLocationEffect effect;
 
 		Marker(Hero hero, double duration) {
 			this.hero = hero;
@@ -104,16 +106,17 @@ public class SkillLastLocation extends ActiveSkill {
 			runTaskLater(plugin, this.duration);
 
 			em = new EffectManager(plugin);
-			effect = new CircleEffect(em);
+			effect = new LastLocationEffect(em);
 
-			effect.setLocation(location.add(0, 0.1, 0));
+			effect.setLocation(location.clone().add(0, 0.1, 0));
 			effect.radius = 0.4f;
-			effect.enableRotation = false;
+			//effect.enableRotation = false;
 			effect.asynchronous = true;
 
-			effect.particle = ParticleEffect.FIREWORKS_SPARK;
-			effect.particles = 32;
-			effect.iterations = -1;
+			effect.particle = ParticleEffect.REDSTONE;
+			effect.color = Color.WHITE;
+			effect.particles = 16;
+			effect.infinite();
 
 			effect.start();
 			em.disposeOnTermination();
@@ -147,4 +150,26 @@ public class SkillLastLocation extends ActiveSkill {
 			em.done(effect);
 		}
 	}
-}
+
+	public class LastLocationEffect extends de.slikey.effectlib.Effect {
+
+		public double radius;
+
+		public ParticleEffect particle;
+
+		public double particles;
+
+		public LastLocationEffect(EffectManager effectManager) {
+			super(effectManager);
+		}
+
+		@Override
+		public void onRun() {
+			double inc = Math.PI * 2 / particles;
+			for (double angle = 0; angle <= 360; angle += inc) {
+				Vector v = new Vector(Math.cos(angle), 0, Math.sin(angle)).multiply(radius);
+				display(particle, getLocation().clone().add(v));
+			}
+		}
+	}
+ }

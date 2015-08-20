@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
@@ -27,6 +28,7 @@ public class SkillOrdain extends SkillBaseBeam {
 		setDescription("You summon the calling of order to project a beam that heals $1 health in its path.");
 		setUsage("/skill ordain");
 		setIdentifiers("skill ordain");
+		setTypes(SkillType.HEALING, SkillType.AREA_OF_EFFECT, SkillType.NO_SELF_TARGETTING, SkillType.UNINTERRUPTIBLE);
 	}
 
 	@Override
@@ -98,7 +100,9 @@ public class SkillOrdain extends SkillBaseBeam {
 		effect.start();
 		em.disposeOnTermination();
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.ANVIL_LAND, 3, 0.01f);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_RAIN, 10, 5f);
+		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.AMBIENCE_RAIN, 10, 5f);
+		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.AMBIENCE_RAIN, 10, 5f);
 
 		return SkillResult.NORMAL;
 	}

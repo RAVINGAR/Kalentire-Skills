@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
@@ -26,6 +27,7 @@ public class SkillDisarray extends SkillBaseBeam {
 		setDescription("Surfing with chaos, you fire off a beam that deals $1 damage to everything in its path.");
 		setUsage("/skill disarray");
 		setIdentifiers("skill disarray");
+		setTypes(SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.NO_SELF_TARGETTING, SkillType.UNINTERRUPTIBLE);
 	}
 
 	@Override
@@ -100,7 +102,9 @@ public class SkillDisarray extends SkillBaseBeam {
 		effect.start();
 		em.disposeOnTermination();
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.PORTAL_TRIGGER, 3, 0.01f);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.ENDERMAN_SCREAM, 5, 0.0001f);
+		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENDERMAN_SCREAM, 5, 0.0001f);
+		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENDERMAN_SCREAM, 5, 0.0001f);
 
 		return SkillResult.NORMAL;
 	}
