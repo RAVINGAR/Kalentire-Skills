@@ -7,7 +7,13 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.CircleEffect;
+import de.slikey.effectlib.particle.ParticlePacket;
+import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -61,11 +67,15 @@ public class SkillLastLocation extends ActiveSkill {
 
 		if (marker != null) {
 			marker.activate();
+			player.getWorld().playSound(player.getLocation(), Sound.PORTAL_TRAVEL, 0.5f, 1);
+			player.getWorld().playSound(marker.location, Sound.PORTAL_TRAVEL, 0.5f, 1);
+			player.getWorld().spigot().playEffect(player.getLocation(), Effect.SMOKE);
 		}
 		else {
 			double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
 			marker = new Marker(hero, duration);
 			activeMarkers.put(player.getUniqueId(), marker);
+			player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 1, 0.001f);
 		}
 
 		return SkillResult.NORMAL;
@@ -83,12 +93,30 @@ public class SkillLastLocation extends ActiveSkill {
 		final long duration;
 		final long startTime;
 
+		final EffectManager em;
+		final CircleEffect effect;
+
 		Marker(Hero hero, double duration) {
 			this.hero = hero;
 			this.location = hero.getPlayer().getLocation();
 			this.duration = (long) (duration * 20);
 			startTime = hero.getPlayer().getWorld().getFullTime();
 			runTaskLater(plugin, this.duration);
+
+			em = new EffectManager(plugin);
+			effect = new CircleEffect(em);
+
+			effect.setLocation(location.add(0, 0.1, 0));
+			effect.radius = 0.4f;
+			effect.enableRotation = false;
+			effect.asynchronous = true;
+
+			effect.particle = ParticleEffect.FIREWORKS_SPARK;
+			effect.particles = 32;
+			effect.iterations = -1;
+
+			effect.start();
+			em.disposeOnTermination();
 		}
 
 		public void activate() {
@@ -108,7 +136,7 @@ public class SkillLastLocation extends ActiveSkill {
 			double healAmount = getMaxHealAmount(hero);
 
 			if (teleported) {
-				double healScale = (hero.getPlayer().getWorld().getFullTime() - startTime) / duration;
+				double healScale = (double) (hero.getPlayer().getWorld().getFullTime() - startTime) / duration;
 				if (healScale > 1) {
 					healScale = 1;
 				}
@@ -116,6 +144,7 @@ public class SkillLastLocation extends ActiveSkill {
 			}
 
 			hero.heal(healAmount);
+			em.done(effect);
 		}
 	}
 }

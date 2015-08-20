@@ -10,3 +10,14 @@ SkillBaseGroundEffect
 SkillBaseBeam
 SkillDisarray
 SkillOrdain
+
+SkillBaseDelayedTeleport
+
+--- UTILITY ---
+Utility classes are classes that extend skill in order to be built but are not skills rather static utility classes.
+This is a temporary solution to prevent code reuse within skills.
+---------------
+SkillBaseUtility
+
+--- SkillParticleTester --
+SkillPartic

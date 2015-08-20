@@ -12,7 +12,6 @@ import de.slikey.effectlib.effect.CylinderEffect;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 public class SkillDamageBeam extends SkillBaseBeam {
 
@@ -82,7 +81,10 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		return SkillResult.NORMAL;
 	}
 
-	private static Vector vectorToEuler(Vector direction, Vector to_frame) {
+	/*
+		Have not tested this properly, was originally going to be used
+	 */
+	/*private static Vector vectorToEuler(Vector direction, Vector to_frame) {
 		double[][] matrix1 = new double[3][3];
 		double[][] matrix2 = new double[3][3];
 
@@ -136,5 +138,5 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		}
 
 		return transpose;
-	}
+	}*/
 }

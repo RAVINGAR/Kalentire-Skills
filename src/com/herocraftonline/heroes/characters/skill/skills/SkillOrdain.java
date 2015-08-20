@@ -98,7 +98,7 @@ public class SkillOrdain extends SkillBaseBeam {
 		effect.start();
 		em.disposeOnTermination();
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.PORTAL, 3, 3);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.ANVIL_LAND, 3, 0.01f);
 
 		return SkillResult.NORMAL;
 	}

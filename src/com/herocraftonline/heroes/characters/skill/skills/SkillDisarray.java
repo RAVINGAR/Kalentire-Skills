@@ -100,7 +100,7 @@ public class SkillDisarray extends SkillBaseBeam {
 		effect.start();
 		em.disposeOnTermination();
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.ENDERMAN_SCREAM, 3, 0.2f);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.PORTAL_TRIGGER, 3, 0.01f);
 
 		return SkillResult.NORMAL;
 	}
