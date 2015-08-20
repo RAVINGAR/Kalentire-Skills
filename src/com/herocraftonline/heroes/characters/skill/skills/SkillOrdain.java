@@ -84,7 +84,7 @@ public class SkillOrdain extends SkillBaseBeam {
 			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
 				if (target instanceof Player) {
 					Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-					if (hero.getParty().isPartyMember(targetHero)) {
+					if (hero.hasParty() && hero.getParty().isPartyMember(targetHero)) {
 						double beamHeal = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING, 150d, false);
 						double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
 						beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
