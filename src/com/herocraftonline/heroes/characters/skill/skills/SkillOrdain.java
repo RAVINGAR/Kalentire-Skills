@@ -43,11 +43,11 @@ public class SkillOrdain extends SkillBaseBeam {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set("beam-max-length", 15);
-		node.set("beam-radius", 2d);
+		node.set(SETTING_BEAM_MAX_LENGTH, 15);
+		node.set(SETTING_BEAM_RADIUS, 2d);
 
 		node.set(SkillSetting.HEALING.node(), 200);
-		node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 5);
+		node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1d);
 
 		return node;
 	}
@@ -56,8 +56,8 @@ public class SkillOrdain extends SkillBaseBeam {
 	public SkillResult use(Hero hero, String[] strings) {
 		Player player = hero.getPlayer();
 
-		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, "beam-max-length", 15, false);
-		double beamRadius = SkillConfigManager.getUseSetting(hero, this, "beam-radius", 2d, false);
+		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, SETTING_BEAM_MAX_LENGTH, 15, false);
+		double beamRadius = SkillConfigManager.getUseSetting(hero, this, SETTING_BEAM_RADIUS, 2d, false);
 		Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
 
 		EffectManager em = new EffectManager(plugin);

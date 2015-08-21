@@ -25,6 +25,9 @@ import java.util.Set;
 
 public abstract class SkillBaseBeam extends ActiveSkill {
 
+	protected static final String SETTING_BEAM_MAX_LENGTH = "beam-max-length";
+	protected static final String SETTING_BEAM_RADIUS = "beam-radius";
+
 	public SkillBaseBeam(Heroes plugin, String name) {
 		super(plugin, name);
 	}
