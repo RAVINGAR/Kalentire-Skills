@@ -4,19 +4,17 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
+
+import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
 public class SkillOrdain extends SkillBaseBeam {
 
@@ -27,13 +25,18 @@ public class SkillOrdain extends SkillBaseBeam {
 		super(plugin, "Ordain");
 		setDescription("You summon the calling of order to project a beam that heals $1 health in its path.");
 		setUsage("/skill ordain");
+		setArgumentRange(0, 0);
 		setIdentifiers("skill ordain");
-		setTypes(SkillType.HEALING, SkillType.AREA_OF_EFFECT, SkillType.NO_SELF_TARGETTING, SkillType.UNINTERRUPTIBLE);
+		setTypes(HEALING, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
-		return null;
+		double beamHeal = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING, 150d, false);
+		double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
+		beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
+
+		return getDescription().replace("$1", beamHeal + "");
 	}
 
 	@Override
@@ -45,9 +48,6 @@ public class SkillOrdain extends SkillBaseBeam {
 
 		node.set(SkillSetting.HEALING.node(), 200);
 		node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 5);
-
-		node.set(SkillSetting.COOLDOWN.node(), 10000);
-		node.set(SkillSetting.MANA.node(), 250);
 
 		return node;
 	}

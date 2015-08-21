@@ -13,6 +13,8 @@ import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import static com.herocraftonline.heroes.characters.skill.SkillType.*;
+
 public class SkillDamageBeam extends SkillBaseBeam {
 
 	private static final double TEMP_DAMAGE = 10;
@@ -22,7 +24,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		setDescription("Damage stuff in a beam");
 		setUsage("/skill DamageBeam");
 		setIdentifiers("skill " + getName());
-		setTypes(SkillType.DAMAGING);
+		setTypes(DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
 		setArgumentRange(0, 0);
 	}
 
@@ -53,7 +55,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 		cyl.angularVelocityX = 0;
 		cyl.angularVelocityY = 0;
 		cyl.angularVelocityZ = 0;
-		cyl.iterations = 20;
+		cyl.iterations = 10;
 		cyl.visibleRange = 40;
 
 		cyl.start();
@@ -65,7 +67,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.FLAME, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
 		}*/
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 10, 5);
 
 		castBeam(hero, beam, new TargetHandler() {
 			@Override

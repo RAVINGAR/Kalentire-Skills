@@ -100,7 +100,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 	private static Set<Entity> getEntitiesInChunks(Location l, int chunkRadius) {
 		Block b = l.getBlock();
-		Set<Entity> entities = new HashSet<Entity>();
+		Set<Entity> entities = new HashSet<>();
 		for (int x = -16 * chunkRadius; x <= 16 * chunkRadius; x += 16) {
 			for (int z = -16 * chunkRadius; z <= 16 * chunkRadius; z += 16) {
 				for (Entity e : b.getRelative(x, 0, z).getChunk().getEntities()) {

@@ -77,7 +77,7 @@ public class SkillLastLocation extends ActiveSkill {
 			double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
 			marker = new Marker(hero, duration);
 			activeMarkers.put(player.getUniqueId(), marker);
-			player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 1, 0.001f);
+			player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 100000);
 		}
 
 		return SkillResult.NORMAL;
@@ -144,6 +144,9 @@ public class SkillLastLocation extends ActiveSkill {
 					healScale = 1;
 				}
 				healAmount *= healScale;
+			}
+			else {
+				hero.getPlayer().getWorld().playSound(location, Sound.FIZZ, 1, 0.0001f);
 			}
 
 			hero.heal(healAmount);

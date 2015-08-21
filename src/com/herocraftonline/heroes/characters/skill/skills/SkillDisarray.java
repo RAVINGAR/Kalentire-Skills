@@ -6,16 +6,16 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+
+import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
 public class SkillDisarray extends SkillBaseBeam {
 
@@ -26,15 +26,16 @@ public class SkillDisarray extends SkillBaseBeam {
 		super(plugin, "Disarray");
 		setDescription("Surfing with chaos, you fire off a beam that deals $1 damage to everything in its path.");
 		setUsage("/skill disarray");
+		setArgumentRange(0, 0);
 		setIdentifiers("skill disarray");
-		setTypes(SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.NO_SELF_TARGETTING, SkillType.UNINTERRUPTIBLE);
+		setTypes(DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
 		double beamDamage = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE, 150d, false);
 		double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5d, false);
-		beamDamage *= hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
+		beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
 
 		return getDescription().replace("$1", beamDamage + "");
 	}
@@ -48,9 +49,6 @@ public class SkillDisarray extends SkillBaseBeam {
 
 		node.set(SkillSetting.DAMAGE.node(), 150d);
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1d);
-
-		node.set(SkillSetting.COOLDOWN.node(), 10d);
-		node.set(SkillSetting.MANA.node(), 200);
 
 		return node;
 	}
