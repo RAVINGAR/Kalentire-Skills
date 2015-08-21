@@ -8,10 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.util.Pair;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -102,8 +99,20 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 	}
 
 	private static Set<Entity> getEntitiesInChunks(Location l, int chunkRadius) {
-		Block b = l.getBlock();
 		Set<Entity> entities = new HashSet<>();
+
+		// TODO Test which one is more efficient.
+
+		Chunk origin = l.getChunk();
+		for (int x = -chunkRadius; x <= chunkRadius; x++) {
+			for (int z = -chunkRadius; z <= chunkRadius; z++) {
+				for (Entity e : origin.getWorld().getChunkAt(origin.getX() + x, origin.getZ() + z).getEntities()) {
+					entities.add(e);
+				}
+			}
+		}
+
+		/*Block b = l.getBlock();
 		for (int x = -16 * chunkRadius; x <= 16 * chunkRadius; x += 16) {
 			for (int z = -16 * chunkRadius; z <= 16 * chunkRadius; z += 16) {
 				for (Entity e : b.getRelative(x, 0, z).getChunk().getEntities()) {
@@ -111,6 +120,8 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 				}
 			}
 		}
+		*/
+
 		return entities;
 	}
 
@@ -200,7 +211,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 			this.length = length;
 			this.radius = radius;
 
-			chunkRadius = (int) ((Math.sqrt(tx * tx + tz * tz) + radius + 16) / 16);
+			chunkRadius = (int) ((Math.sqrt(tx * tx + tz * tz) / 2 + radius + 16) / 16);
 		}
 
 		private Beam(Vector origin, Vector trajectory, double radius) {

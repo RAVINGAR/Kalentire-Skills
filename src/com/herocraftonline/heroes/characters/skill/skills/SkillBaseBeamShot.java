@@ -26,6 +26,11 @@ public abstract class SkillBaseBeamShot extends SkillBaseBeam {
 		final Set<UUID> processedTargets = new HashSet<>();
 	}
 
+	protected final class BeamShot {
+
+
+	}
+
 	/*protected static final class BeamShot {
 
 		private final Beam base;           // Base beam to shoot
