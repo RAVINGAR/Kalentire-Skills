@@ -80,6 +80,11 @@
             <version>1.8.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.herocraftonline.heroes</groupId>
+            <artifactId>NMSHandler-v1_8_R3</artifactId>
+            <version>v1_8_R3-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.8.6-R0.1-SNAPSHOT</version>
