@@ -59,7 +59,7 @@ public class SkillDamageSpike extends SkillBaseSpike {
 			double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 200d, false);
 			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-			double knockUp = 0.4;//SkillConfigManager.getUseSetting(hero, this, KNOCKUP_STRENGTH, 2d, false);
+			double knockUp = 0.6;//SkillConfigManager.getUseSetting(hero, this, KNOCKUP_STRENGTH, 2d, false);
 
 			damageEntity(livingEntity, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 			livingEntity.setVelocity(new Vector(0, knockUp, 0));
