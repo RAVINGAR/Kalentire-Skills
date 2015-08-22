@@ -2,7 +2,7 @@ SkillBaseWave
 SkillBaseBeamShot
 SkillHealBeam
 SkillSoulEnlightened
-SkillLastLocation
+SkillLastLocation <- reference SkillDreadAura toggle skill.
 SkillBaseGroundEffect
 
 --- BEAM ---

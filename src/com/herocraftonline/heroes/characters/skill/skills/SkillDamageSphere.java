@@ -65,6 +65,8 @@ public class SkillDamageSphere extends SkillBaseSphere {
 			return SkillResult.FAIL;
 		}
 		else {
+			broadcastExecuteText(hero);
+
 			double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
 			long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 			long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
@@ -121,6 +123,10 @@ public class SkillDamageSphere extends SkillBaseSphere {
 			effect.setLocation(hero.getPlayer().getLocation());
 			effect.radius = radius;
 			effect.particle = ParticleEffect.FLAME;
+			effect.particles = (int) radius * 100;
+			effect.type = de.slikey.effectlib.EffectType.INSTANT;
+			effect.iterations = 1;
+			effect.asynchronous = true;
 
 			effect.start();
 			em.disposeOnTermination();
