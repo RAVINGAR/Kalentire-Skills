@@ -17,6 +17,14 @@ SkillDamageSphere
 
 SkillBaseSphere
 
+--- Spike ---
+SkillDamageSpike
+
+SkillBaseSpike
+
+
+
+
 SkillBaseDelayedTeleport
 SkillBaseBlockPulse
 
