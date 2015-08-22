@@ -53,27 +53,17 @@ public class SkillSoulEnlightened extends PassiveSkill {
             Hero defender = plugin.getCharacterManager().getHero(event.getDefender());
             if (defender.canUseSkill(SkillSoulEnlightened.this)) {
 
+                RegionManager manager = worldGuard.getRegionManager(defender.getPlayer().getLocation().getWorld());
+                Set<ProtectedRegion> set = manager.getApplicableRegions(defender.getPlayer().getLocation()).getRegions();
+
                 for (String noPvpRegion : SkillConfigManager.getUseSetting(defender, SkillSoulEnlightened.this, NO_PVP_REGIONS, Collections.<String>emptyList())) {
-                    if (isWithinRegion(defender.getPlayer(), noPvpRegion)) {
-                        return;
-                    }
+                   if (set.contains(noPvpRegion)) {
+                       return;
+                   }
                 }
 
                 event.setCancelled(true);
             }
-        }
-
-        public boolean isWithinRegion(Player player, String region) {
-            return isWithinRegion(player.getLocation(), region);
-        }
-
-        public boolean isWithinRegion(Location loc, String region) {
-            RegionManager manager = worldGuard.getRegionManager(loc.getWorld());
-            ApplicableRegionSet set = manager.getApplicableRegions(loc);
-            for (ProtectedRegion each : set)
-                if (each.getId().equalsIgnoreCase(region))
-                    return true;
-            return false;
         }
     }
 }
