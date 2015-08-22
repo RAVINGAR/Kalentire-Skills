@@ -6,10 +6,11 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.ConeEffect;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -56,7 +57,12 @@ public abstract class SkillBaseSpike extends TargettedSkill {
 	}
 
 	private void renderSpike(final Location location, final EffectManager em, final ConeEffect effect, final double height) {
-		new BukkitRunnable() {
+		location.setDirection(new Vector(0, -1, 0));
+		effect.setLocation(location.add(0, height, 0));
+		effect.start();
+		em.disposeOnTermination();
+
+		/*new BukkitRunnable() {
 
 			private int life = 0;
 			private double increment = height / TICK_RISE_TIME;
@@ -67,12 +73,14 @@ public abstract class SkillBaseSpike extends TargettedSkill {
 				effect.setLocation(location);
 				effect.start();
 
+				Bukkit.getPlayer("Soren_Endon").sendMessage(location.getY() + "");
+
 				if (++life >= TICK_RISE_TIME) {
 					cancel();
 					em.disposeOnTermination();
 				}
 			}
 
-		}.runTaskTimer(plugin, 0, 1);
+		}.runTaskTimer(plugin, 0, 5);*/
 	}
 }

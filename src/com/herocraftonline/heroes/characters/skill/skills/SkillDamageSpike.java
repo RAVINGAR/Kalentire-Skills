@@ -15,9 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
-/**
- * Created by Wally on 8/22/2015.
- */
 public class SkillDamageSpike extends SkillBaseSpike {
 
 	private static final String KNOCKUP_STRENGTH = "knockup-strength";
@@ -27,7 +24,7 @@ public class SkillDamageSpike extends SkillBaseSpike {
 		setDescription("Summon a fire spike that damages foes for $1 and knocks them up into the air.");
 		setUsage("/skill damagespike");
 		setIdentifiers("skill damagespike");
-		setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.AGGRESSIVE);
+		setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.FORCE);
 	}
 
 	@Override
@@ -44,7 +41,7 @@ public class SkillDamageSpike extends SkillBaseSpike {
 
 		node.set(SkillSetting.DAMAGE.node(), 200d);
 		node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 2d);
-		node.set(KNOCKUP_STRENGTH, 2d);
+		node.set(KNOCKUP_STRENGTH, 0.4d);
 
 		return node;
 	}
@@ -53,20 +50,21 @@ public class SkillDamageSpike extends SkillBaseSpike {
 	public SkillResult use(Hero hero, LivingEntity livingEntity, String[] strings) {
 		Player player = hero.getPlayer();
 
-		broadcastExecuteText(hero);
-
-		renderSpike(livingEntity.getLocation(), 2, 0.5, ParticleEffect.FLAME);
-
-		player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
-
 		if (damageCheck(player, livingEntity)) {
+
+			broadcastExecuteText(hero, livingEntity);
+
+			renderSpike(livingEntity.getLocation(), 2, 0.5, ParticleEffect.FLAME);
+
 			double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 200d, false);
 			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-			double knockUp = SkillConfigManager.getUseSetting(hero, this, KNOCKUP_STRENGTH, 2d, false);
+			double knockUp = 0.4;//SkillConfigManager.getUseSetting(hero, this, KNOCKUP_STRENGTH, 2d, false);
 
 			damageEntity(livingEntity, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 			livingEntity.setVelocity(new Vector(0, knockUp, 0));
+
+			player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {
