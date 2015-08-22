@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.SortedSet;
@@ -31,6 +32,8 @@ public abstract class SkillBaseBlockPulse extends ActiveSkill {
 	private final double distance(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(x1 * x2 + y1 * y2);
 	}
+
+
 
 	private final class PulseBlock implements Comparable<PulseBlock> {
 

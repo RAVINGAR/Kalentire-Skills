@@ -1,15 +1,21 @@
 SkillBaseWave
 SkillBaseBeamShot
-SkillDamageBeam
 SkillHealBeam
 SkillSoulEnlightened
 SkillLastLocation
 SkillBaseGroundEffect
 
 --- BEAM ---
+SkillDamageBeam
+
 SkillBaseBeam
 SkillDisarray
 SkillOrdain
+
+--- SPHERE ---
+SkillDamageSphere
+
+SkillBaseSphere
 
 SkillBaseDelayedTeleport
 SkillBaseBlockPulse
