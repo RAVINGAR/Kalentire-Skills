@@ -26,7 +26,7 @@ public class SkillSoulEnlightened extends PassiveSkill {
 
     public SkillSoulEnlightened(Heroes plugin) {
         super(plugin, "SoulEnlightened");
-        setDescription("Your soul has been enlightened!");
+        setDescription("You are soul enlightened and have proven yourself worthy.  Those who wield these powers are at constant risk of attacks.");
         setArgumentRange(0, 0);
         Bukkit.getServer().getPluginManager().registerEvents(new AttackOnSightListener(), plugin);
         worldGuard = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
