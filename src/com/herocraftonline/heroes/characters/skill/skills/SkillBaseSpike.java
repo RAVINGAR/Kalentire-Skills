@@ -16,23 +16,22 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public abstract class SkillBaseSpike extends TargettedSkill {
 
+	private static final Vector DOWN = new Vector(0, -1, 0);
 	private static final long TICK_RISE_TIME = 5;
 
 	public SkillBaseSpike(Heroes plugin, String name) {
 		super(plugin, name);
 	}
 
-	private static ConeEffect createCone(EffectManager em, ParticleEffect particle, int particlesCone, double height, double radius) {
-		checkArgument(particlesCone > 0, "particlesCone must be greater than 0");
-
+	private static ConeEffect createCone(EffectManager em, ParticleEffect particle, double height, double radius) {
 		ConeEffect effect = new ConeEffect(em);
 
 		effect.particle = particle;
 		effect.angularVelocity = Math.PI / 10;
-		effect.particles = particlesCone;
-		effect.particlesCone = particlesCone;
-		effect.lengthGrow =  (float) height / particlesCone;
-		effect.radiusGrow = (float) radius / particlesCone;
+		effect.particles = (int) (height * 60);
+		effect.particlesCone = effect.particles;
+		effect.lengthGrow =  (float) height / effect.particles;
+		effect.radiusGrow = (float) radius / effect.particles;
 		effect.asynchronous = true;
 		effect.type = EffectType.INSTANT;
 		effect.iterations = 1;
@@ -40,47 +39,55 @@ public abstract class SkillBaseSpike extends TargettedSkill {
 		return effect;
 	}
 
-	private static ConeEffect createCone(EffectManager em, ParticleEffect particle, int particlesCone, double height, double radius, Color color) {
-		ConeEffect effect = createCone(em, particle, particlesCone, height, radius);
+	private static ConeEffect createCone(EffectManager em, ParticleEffect particle, double height, double radius, Color color) {
+		ConeEffect effect = createCone(em, particle, height, radius);
 		effect.color = color;
 		return effect;
 	}
 
-	protected void renderSpike(Location location, double height, double radius, ParticleEffect particle, Color color) {
-		EffectManager em = new EffectManager(plugin);
-		renderSpike(location.clone(), em, createCone(em, particle, 120, height, radius, color), height);
-	}
+	protected void renderSpike(final Location location, final double height, final double radius, final ParticleEffect particle, final Color color) {
 
-	protected void renderSpike(Location location, double height, double radius, ParticleEffect particle) {
-		EffectManager em = new EffectManager(plugin);
-		renderSpike(location.clone(), em, createCone(em, particle, 120, height, radius), height);
-	}
+		location.setDirection(DOWN);
 
-	private void renderSpike(final Location location, final EffectManager em, final ConeEffect effect, final double height) {
-		location.setDirection(new Vector(0, -1, 0));
-		effect.setLocation(location.add(0, height, 0));
-		effect.start();
-		em.disposeOnTermination();
-
-		/*new BukkitRunnable() {
+		new BukkitRunnable() {
 
 			private int life = 0;
-			private double increment = height / TICK_RISE_TIME;
 
 			@Override
 			public void run() {
-				location.setY(location.getY() + increment);
-				effect.setLocation(location);
+				EffectManager em = new EffectManager(plugin);
+				ConeEffect effect = createCone(em, particle, height, radius, color);
+				effect.setLocation(location.clone().add(0, height / TICK_RISE_TIME * life, 0));
 				effect.start();
+				em.disposeOnTermination();
 
-				Bukkit.getPlayer("Soren_Endon").sendMessage(location.getY() + "");
-
-				if (++life >= TICK_RISE_TIME) {
+				if (++life > TICK_RISE_TIME) {
 					cancel();
-					em.disposeOnTermination();
 				}
 			}
+		}.runTaskTimer(plugin, 0, 1);
+	}
 
-		}.runTaskTimer(plugin, 0, 5);*/
+	protected void renderSpike(final Location location, final double height, final double radius, final ParticleEffect particle) {
+
+		location.setDirection(DOWN);
+
+		new BukkitRunnable() {
+
+			private int life = 0;
+
+			@Override
+			public void run() {
+				EffectManager em = new EffectManager(plugin);
+				ConeEffect effect = createCone(em, particle, height / TICK_RISE_TIME * life, radius);
+				effect.setLocation(location.clone().add(0, height / TICK_RISE_TIME * life, 0));
+				effect.start();
+				em.disposeOnTermination();
+
+				if (++life > TICK_RISE_TIME) {
+					cancel();
+				}
+			}
+		}.runTaskTimer(plugin, 0, 1);
 	}
 }

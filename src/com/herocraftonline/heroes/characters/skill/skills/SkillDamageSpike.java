@@ -54,7 +54,7 @@ public class SkillDamageSpike extends SkillBaseSpike {
 
 			broadcastExecuteText(hero, livingEntity);
 
-			renderSpike(livingEntity.getLocation(), 2, 0.5, ParticleEffect.FLAME);
+			renderSpike(livingEntity.getLocation(), 3, 0.5, ParticleEffect.FLAME);
 
 			double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 200d, false);
 			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
