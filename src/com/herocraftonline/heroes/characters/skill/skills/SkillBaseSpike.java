@@ -17,6 +17,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 public abstract class SkillBaseSpike extends TargettedSkill {
 
 	private static final Vector DOWN = new Vector(0, -1, 0);
+	private static final int PARTICLES_PER_HEIGHT = 10;
+	private static final double CONE_ANGULAR_VELOCITY = Math.PI / 5;
 	private static final long TICK_RISE_TIME = 5;
 
 	public SkillBaseSpike(Heroes plugin, String name) {
@@ -27,8 +29,8 @@ public abstract class SkillBaseSpike extends TargettedSkill {
 		ConeEffect effect = new ConeEffect(em);
 
 		effect.particle = particle;
-		effect.angularVelocity = Math.PI / 10;
-		effect.particles = (int) (height * 60);
+		effect.angularVelocity = CONE_ANGULAR_VELOCITY;
+		effect.particles = (int) (height * PARTICLES_PER_HEIGHT);
 		effect.particlesCone = effect.particles;
 		effect.lengthGrow =  (float) height / effect.particles;
 		effect.radiusGrow = (float) radius / effect.particles;

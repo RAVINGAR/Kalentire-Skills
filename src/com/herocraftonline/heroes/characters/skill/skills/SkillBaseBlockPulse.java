@@ -6,11 +6,12 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public abstract class SkillBaseBlockPulse extends ActiveSkill {
 
@@ -18,15 +19,19 @@ public abstract class SkillBaseBlockPulse extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	private final SortedSet<PulseBlock> calculatePulseSet(Player player, double velocity) {
-		SortedSet<PulseBlock> result = new TreeSet<>();
+	private final LinkedList<PulseBlock> calculatePulseList(Player player, double velocity, double radius, int slopeLimit, double arcLength) {
+		LinkedList<PulseBlock> list = new LinkedList<>();
+		Set<Block> tracked = new HashSet<>();
 
-		Block origin = player.getLocation().getBlock();
-		if (origin.getType() == Material.AIR && player.getEyeLocation().getBlock().getType() == Material.AIR) {
-			
+		if (player.getLocation().getBlock().getType() == Material.AIR && player.getEyeLocation().getBlock().getType() == Material.AIR) {
+			Location origin = player.getLocation();
+			Block centerBlock = origin.getBlock().getRelative(BlockFace.DOWN);
+			if (!Util.transparentBlocks.contains(centerBlock.getType())) {
+
+			}
 		}
 
-		return result;
+		return list;
 	}
 
 	private final double distance(double x1, double y1, double x2, double y2) {

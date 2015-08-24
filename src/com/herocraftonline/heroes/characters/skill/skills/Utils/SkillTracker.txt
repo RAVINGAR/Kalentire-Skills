@@ -23,7 +23,12 @@ SkillDamageSpike
 SkillBaseSpike
 
 
+--- Block Pulse ---
+SkillBlockLaunch
+
+SkillBaseBlockPulse
+
+
 
 
 SkillBaseDelayedTeleport
-SkillBaseBlockPulse
