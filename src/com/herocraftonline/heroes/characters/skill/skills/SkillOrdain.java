@@ -100,9 +100,9 @@ public class SkillOrdain extends SkillBaseBeam {
 		effect.start();
 		em.disposeOnTermination();
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_RAIN, 10, 5f);
-		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.AMBIENCE_RAIN, 10, 5f);
-		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.AMBIENCE_RAIN, 10, 5f);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_RAIN, 0.2f, 5f);
+		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.AMBIENCE_RAIN, 0.2f, 5f);
+		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.AMBIENCE_RAIN, 0.2f, 5f);
 
 		return SkillResult.NORMAL;
 	}
