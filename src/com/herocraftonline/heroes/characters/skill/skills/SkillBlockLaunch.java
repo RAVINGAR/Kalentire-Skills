@@ -9,12 +9,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
+
+import java.util.Set;
 
 public class SkillBlockLaunch extends ActiveSkill implements Listener {
 
@@ -35,7 +38,7 @@ public class SkillBlockLaunch extends ActiveSkill implements Listener {
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
-		Block block = hero.getPlayer().getTargetBlock(Util.transparentBlocks, 50);
+		Block block = hero.getPlayer().getTargetBlock((Set<Material>) null, 50);
 		if (blockLaunch(block)) {
 			broadcastExecuteText(hero);
 			return SkillResult.NORMAL;
@@ -45,11 +48,16 @@ public class SkillBlockLaunch extends ActiveSkill implements Listener {
 	}
 
 	private boolean blockLaunch(Block block) {
-		if (!Util.transparentBlocks.contains(block.getType()) && block.getRelative(BlockFace.UP).getType() == Material.AIR) {
+		if (block.getType() != Material.AIR && block.getRelative(BlockFace.UP).getType() == Material.AIR) {
 
-			@SuppressWarnings("deprecation")// Bukkit can sukkit
-			FallingBlock fb = block.getWorld().spawnFallingBlock(block.getLocation().add(0, 0.5, 0), block.getType(), block.getData());
-			fb.setVelocity(new Vector(0, 1, 0));
+			@SuppressWarnings("deprecation")// Bukkit can Sukkit
+			FallingBlock fb = block.getWorld().spawnFallingBlock(block
+					// Comment this out when testing fixes to client remove block thingy
+					.getRelative(BlockFace.UP)
+					.getLocation(), block.getType(), block.getData());
+
+			fb.setDropItem(false);
+			fb.setVelocity(new Vector(0, 0.4, 0));
 			fb.setMetadata("block-pulse", new FixedMetadataValue(plugin, new Object()));
 
 			return true;
@@ -60,9 +68,8 @@ public class SkillBlockLaunch extends ActiveSkill implements Listener {
 
 	@EventHandler
 	private void onFallingBlockFall(EntityChangeBlockEvent event) {
-		if (event.getEntity() instanceof FallingBlock && event.getEntity().hasMetadata("block-pulse")) {
+		if (event.getEntity().getType() == EntityType.FALLING_BLOCK && event.getEntity().hasMetadata("block-pulse")) {
 			event.setCancelled(true);
-			event.getEntity().remove();
 		}
 	}
 }
