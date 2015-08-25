@@ -28,6 +28,10 @@ public abstract class SkillBaseSpike extends TargettedSkill {
 
 	protected static final double BLOCK_SPIKE_RADIUS = 0.5;
 
+	protected static final String SPIKE_HEIGHT = "spike-height";
+	protected static final String DOES_KNOCK_UP = "does-knock-up";
+	protected static final String KNOCK_UP_STRENGTH = "knock-up-strength";
+
 	public SkillBaseSpike(Heroes plugin, String name) {
 		super(plugin, name);
 	}
