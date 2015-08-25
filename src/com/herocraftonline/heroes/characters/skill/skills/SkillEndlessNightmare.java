@@ -26,7 +26,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 	private static final ParticleEffect PARTICLE = ParticleEffect.REDSTONE;
 
 	private static final String SLOW_AMPLIFIER = "slow-amplifier";
-	private static final String HUNGER_AMPLIFIER = "hungar-amplifier";
+	private static final String HUNGER_AMPLIFIER = "hunger-amplifier";
 
 	public SkillEndlessNightmare(Heroes plugin) {
 		super(plugin, "EndlessNightmare");
