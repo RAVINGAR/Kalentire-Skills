@@ -8,6 +8,7 @@ import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
@@ -73,5 +74,13 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 
 	public interface TargetHandler {
 		void handle(Hero hero, Entity target);
+	}
+
+	protected void renderSphere(Location center, double radius, ParticleEffect particle) {
+
+	}
+
+	protected void renderSphere(Location center, double radius, ParticleEffect particle, Color color) {
+
 	}
 }

@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -58,6 +59,7 @@ public class SkillBlockLaunch extends ActiveSkill implements Listener {
 
 			fb.setDropItem(false);
 			fb.setVelocity(new Vector(0, 0.4, 0));
+
 			fb.setMetadata("block-pulse", new FixedMetadataValue(plugin, new Object()));
 
 			return true;

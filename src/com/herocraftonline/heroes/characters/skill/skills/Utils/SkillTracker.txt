@@ -21,6 +21,8 @@ SkillBaseSphere
 SkillDamageSpike
 
 SkillBaseSpike
+SkillEndlessNightmare
+SkillJudgementSpike
 
 
 --- Block Pulse ---
