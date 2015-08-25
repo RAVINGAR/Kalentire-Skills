@@ -9,10 +9,12 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
@@ -54,11 +56,11 @@ public class SkillOrdain extends SkillBaseBeam {
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
-		Player player = hero.getPlayer();
+		final Player player = hero.getPlayer();
 
 		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, SETTING_BEAM_MAX_LENGTH, 15, false);
 		double beamRadius = SkillConfigManager.getUseSetting(hero, this, SETTING_BEAM_RADIUS, 2d, false);
-		Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
+		final Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
 
 		EffectManager em = new EffectManager(plugin);
 		CylinderEffect effect = new CylinderEffect(em);
@@ -72,6 +74,7 @@ public class SkillOrdain extends SkillBaseBeam {
 		effect.iterations = 10;
 		effect.visibleRange = 40;
 		effect.solid = true;
+		effect.color = Color.BLUE;
 
 		effect.rotationX = Math.toRadians(player.getLocation().getPitch() + 90);
 		effect.rotationY = -Math.toRadians(player.getLocation().getYaw());
@@ -100,9 +103,22 @@ public class SkillOrdain extends SkillBaseBeam {
 		effect.start();
 		em.disposeOnTermination();
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_RAIN, 0.2f, 5f);
-		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.AMBIENCE_RAIN, 0.2f, 5f);
-		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.AMBIENCE_RAIN, 0.2f, 5f);
+		new BukkitRunnable() {
+
+			private float volume = 0.25f;
+
+			@Override
+			public void run() {
+				if ((volume -= 0.025f) <= 0) {
+					cancel();
+				}
+				else {
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ORB_PICKUP, volume, 5f);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ORB_PICKUP, volume, 0.0001f);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ORB_PICKUP, volume, 0.0001f);
+				}
+			}
+		}.runTaskTimer(plugin, 0, 1);
 
 		return SkillResult.NORMAL;
 	}

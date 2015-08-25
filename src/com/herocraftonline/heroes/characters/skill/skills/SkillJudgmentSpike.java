@@ -19,15 +19,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
-public class SkillJudgementSpike extends SkillBaseSpike {
+public class SkillJudgmentSpike extends SkillBaseSpike {
 
-	private static final ParticleEffect PARTICLE = ParticleEffect.REDSTONE;
+	private static final ParticleEffect PARTICLE = ParticleEffect.FLAME;
 
-	public SkillJudgementSpike(Heroes plugin) {
-		super(plugin, "JudgementSpike");
+	public SkillJudgmentSpike(Heroes plugin) {
+		super(plugin, "JudgmentSpike");
 		setDescription("Impales the target with a spike of order silencing them for $1 seconds, dealing $2 damage.");
-		setUsage("/skill judgementspike");
-		setIdentifiers("skill judgementspike");
+		setUsage("/skill judgmentspike");
+		setIdentifiers("skill judgmentspike");
 		setArgumentRange(0, 0);
 		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCING);
 	}
@@ -77,14 +77,14 @@ public class SkillJudgementSpike extends SkillBaseSpike {
 			targetCT.addEffect(effect);
 
 			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT, 3d, false);
-			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE, Color.WHITE);
+			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE);
 
 			if (SkillConfigManager.getUseSetting(hero, this, DOES_KNOCK_UP, true)) {
 				Vector knockUpVector = new Vector(0, SkillConfigManager.getUseSetting(hero, this, KNOCK_UP_STRENGTH, 0.6, false), 0);
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), Sound.DIG_WOOL, 1, 0.0001f);
+			target.getWorld().playSound(target.getLocation(), Sound.GHAST_FIREBALL, 1, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {

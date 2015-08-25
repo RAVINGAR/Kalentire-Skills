@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -22,10 +23,10 @@ import org.bukkit.util.Vector;
 
 public class SkillEndlessNightmare extends SkillBaseSpike {
 
-	private static final ParticleEffect PARTICLE = ParticleEffect.SPELL_MOB;
+	private static final ParticleEffect PARTICLE = ParticleEffect.REDSTONE;
 
 	private static final String SLOW_AMPLIFIER = "slow-amplifier";
-	private static final String HUNGAR_AMPLIFIER = "hungar-amplifier";
+	private static final String HUNGER_AMPLIFIER = "hungar-amplifier";
 
 	public SkillEndlessNightmare(Heroes plugin) {
 		super(plugin, "EndlessNightmare");
@@ -60,7 +61,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 
 		node.set(SkillSetting.DURATION.node(), 5000);
 		node.set(SLOW_AMPLIFIER, 1);
-		node.set(HUNGAR_AMPLIFIER, 1);
+		node.set(HUNGER_AMPLIFIER, 1);
 
 		return node;
 	}
@@ -79,21 +80,22 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 
 			int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 			int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, SLOW_AMPLIFIER, 1, false);
-			int hungerAmplifier = SkillConfigManager.getUseSetting(hero, this, HUNGAR_AMPLIFIER, 1, false);
+			int hungerAmplifier = SkillConfigManager.getUseSetting(hero, this, HUNGER_AMPLIFIER, 1, false);
 
 			CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 			EndlessNightmareEffect effect = new EndlessNightmareEffect(player, duration, slowAmplifier, hungerAmplifier);
 			targetCT.addEffect(effect);
 
 			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT, 3d, false);
-			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE);
+			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE, Color.PURPLE);
 
 			if (SkillConfigManager.getUseSetting(hero, this, DOES_KNOCK_UP, true)) {
 				Vector knockUpVector = new Vector(0, SkillConfigManager.getUseSetting(hero, this, KNOCK_UP_STRENGTH, 0.6, false), 0);
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), Sound.GHAST_MOAN, 1, 0.0001f);
+			target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.25f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), Sound.GHAST_CHARGE, 0.25f, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {
@@ -106,20 +108,21 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		public EndlessNightmareEffect(Player applier, int duration, int slowAmplifier, int hungerAmplifier) {
 			super(SkillEndlessNightmare.this, SkillEndlessNightmare.this.getName(), applier, duration);
 
+			types.add(EffectType.MAGIC);
 			types.add(EffectType.HARMFUL);
 			types.add(EffectType.DISPELLABLE);
-			types.add(EffectType.MAGIC);
+			types.add(EffectType.STAMINA_REGEN_FREEZING);
+			types.add(EffectType.STAMINA_DECREASING);
 
 			types.add(EffectType.SLOW);
 			types.add(EffectType.BLIND);
 			types.add(EffectType.HUNGER);
-			types.add(EffectType.CONFUSION);
 			types.add(EffectType.NAUSEA);
 
-			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000, slowAmplifier, true, false), false);
-			addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000, 1, true, false), false);
-			addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 1000, hungerAmplifier, true, false), false);
-			addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 1000, 1, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration / 50 + 20, slowAmplifier, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration / 50 + 20, 1, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, duration / 50 + 20, hungerAmplifier, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, duration / 50 + 20, 1, true, false), false);
 		}
 	}
 }

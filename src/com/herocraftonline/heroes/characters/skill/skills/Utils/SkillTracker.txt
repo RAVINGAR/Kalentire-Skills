@@ -16,13 +16,15 @@ SkillOrdain
 SkillDamageSphere
 
 SkillBaseSphere
+SkillCallOfChaos
+SkillCallOfOrder
 
 --- Spike ---
 SkillDamageSpike
 
 SkillBaseSpike
 SkillEndlessNightmare
-SkillJudgementSpike
+SkillJudgmentSpike
 
 
 --- Block Pulse ---
