@@ -11,6 +11,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,7 +21,7 @@ import org.bukkit.util.Vector;
 
 public class SkillJudgementSpike extends SkillBaseSpike {
 
-	private static final ParticleEffect PARTICLE = ParticleEffect.CLOUD;
+	private static final ParticleEffect PARTICLE = ParticleEffect.REDSTONE;
 
 	public SkillJudgementSpike(Heroes plugin) {
 		super(plugin, "JudgementSpike");
@@ -75,12 +77,14 @@ public class SkillJudgementSpike extends SkillBaseSpike {
 			targetCT.addEffect(effect);
 
 			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT, 3d, false);
-			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE);
+			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE, Color.WHITE);
 
 			if (SkillConfigManager.getUseSetting(hero, this, DOES_KNOCK_UP, true)) {
 				Vector knockUpVector = new Vector(0, SkillConfigManager.getUseSetting(hero, this, KNOCK_UP_STRENGTH, 0.6, false), 0);
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
+
+			target.getWorld().playSound(target.getLocation(), Sound.DIG_WOOL, 1, 0.0001f);
 
 			return SkillResult.NORMAL;
 		} else {

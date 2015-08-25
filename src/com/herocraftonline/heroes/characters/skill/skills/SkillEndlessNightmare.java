@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ import org.bukkit.util.Vector;
 
 public class SkillEndlessNightmare extends SkillBaseSpike {
 
-	private static final ParticleEffect PARTICLE = ParticleEffect.VILLAGER_ANGRY;
+	private static final ParticleEffect PARTICLE = ParticleEffect.SPELL_MOB;
 
 	private static final String SLOW_AMPLIFIER = "slow-amplifier";
 	private static final String HUNGAR_AMPLIFIER = "hungar-amplifier";
@@ -92,6 +93,8 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
+			target.getWorld().playSound(target.getLocation(), Sound.GHAST_MOAN, 1, 0.0001f);
+
 			return SkillResult.NORMAL;
 		} else {
 			return SkillResult.INVALID_TARGET;
@@ -113,10 +116,10 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 			types.add(EffectType.CONFUSION);
 			types.add(EffectType.NAUSEA);
 
-			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration / 50, slowAmplifier, true, false), false);
-			addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration / 50, 1, true, false), false);
-			addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, duration / 50, hungerAmplifier, true, false), false);
-			addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, duration / 50, 1, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000, slowAmplifier, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000, 1, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 1000, hungerAmplifier, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 1000, 1, true, false), false);
 		}
 	}
 }
