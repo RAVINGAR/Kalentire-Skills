@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.CircleEffect;
@@ -65,22 +66,37 @@ public class SkillLastLocation extends ActiveSkill {
 		Player player = hero.getPlayer();
 		Marker marker = activeMarkers.get(player.getUniqueId());
 
-		broadcastExecuteText(hero);
-
 		if (marker != null) {
+
+			hero.setCooldown(getName(), SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 10000, false));
+
 			marker.activate();
 			player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
 			player.getWorld().playSound(marker.location, Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
 			player.getWorld().spigot().playEffect(player.getLocation(), Effect.SMOKE, 0, 0, 0.4f, 0.4f, 0.4f, 1, 16, 32);
 		}
 		else {
-			double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
-			marker = new Marker(hero, duration);
-			activeMarkers.put(player.getUniqueId(), marker);
-			player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 100000);
+
+			int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 100, false);
+			if (hero.getCooldown(getName()) > 0) {
+				if (hero.getMana() >= mana) {
+
+					hero.setMana(hero.getMana() - mana);
+					broadcastExecuteText(hero);
+
+					double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
+					marker = new Marker(hero, duration);
+					activeMarkers.put(player.getUniqueId(), marker);
+					player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 100000);
+				} else {
+					return SkillResult.LOW_MANA;
+				}
+			} else {
+				// What do here?
+			}
 		}
 
-		return SkillResult.NORMAL;
+		return SkillResult.INVALID_TARGET_NO_MSG;
 	}
 
 	private double getMaxHealAmount(Hero hero) {
