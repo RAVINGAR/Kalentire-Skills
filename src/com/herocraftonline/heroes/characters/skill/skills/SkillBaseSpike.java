@@ -1,8 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Supplier;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import de.slikey.effectlib.EffectManager;
@@ -12,11 +9,8 @@ import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 public abstract class SkillBaseSpike extends TargettedSkill {
 

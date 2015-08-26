@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Sound;
@@ -63,6 +64,9 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		node.set(SLOW_AMPLIFIER, 1);
 		node.set(HUNGER_AMPLIFIER, 1);
 
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cast into an endless nightmare!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has awoken from an endless nightmare!");
+
 		return node;
 	}
 
@@ -83,7 +87,11 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 			int hungerAmplifier = SkillConfigManager.getUseSetting(hero, this, HUNGER_AMPLIFIER, 1, false);
 
 			CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+			String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cast into an endless nightmare!").replace("%target%", "$1");
+			String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has awoken from an endless nightmare!").replace("%target%", "$1");
 			EndlessNightmareEffect effect = new EndlessNightmareEffect(player, duration, slowAmplifier, hungerAmplifier);
+			effect.setApplyText(applyText);
+			effect.setExpireText(expireText);
 			targetCT.addEffect(effect);
 
 			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT, 3d, false);
@@ -94,8 +102,8 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.25f, 0.00001f);
-			target.getWorld().playSound(target.getLocation(), Sound.GHAST_CHARGE, 0.25f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.2f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), Sound.GHAST_CHARGE, 0.2f, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {
@@ -123,6 +131,20 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 			addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration / 50 + 20, 1, true, false), false);
 			addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, duration / 50 + 20, hungerAmplifier, true, false), false);
 			addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, duration / 50 + 20, 1, true, false), false);
+		}
+
+		@Override
+		public void applyToHero(Hero hero) {
+			super.applyToHero(hero);
+			Player player = hero.getPlayer();
+			broadcast(player.getLocation(), "    " + getApplyText(), player.getName());
+		}
+
+		@Override
+		public void removeFromHero(Hero hero) {
+			super.removeFromHero(hero);
+			Player player = hero.getPlayer();
+			broadcast(player.getLocation(), "    " + getExpireText(), player.getName());
 		}
 	}
 }
