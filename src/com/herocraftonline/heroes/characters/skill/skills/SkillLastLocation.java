@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.ManaChangeEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -12,10 +13,7 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.CircleEffect;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -29,6 +27,7 @@ import java.util.UUID;
 public class SkillLastLocation extends ActiveSkill {
 
 	private static final String HEAL_PERCENTAGE_NODE = "heal-percentage";
+	private static final String MANA_FIRST_ACTIVATION = "mana-first-activation";
 
 	private Map<UUID, Marker> activeMarkers = new HashMap<>();
 
@@ -55,7 +54,7 @@ public class SkillLastLocation extends ActiveSkill {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.DURATION.node(), 4d);
+		node.set(SkillSetting.DURATION.node(), 6d);
 		node.set(HEAL_PERCENTAGE_NODE, 0.25d);
 
 		return node;
@@ -67,36 +66,36 @@ public class SkillLastLocation extends ActiveSkill {
 		Marker marker = activeMarkers.get(player.getUniqueId());
 
 		if (marker != null) {
-
-			hero.setCooldown(getName(), SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 10000, false));
+			hero.setCooldown(getName(),
+					System.currentTimeMillis() + SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 10000, false));
 
 			marker.activate();
 			player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
 			player.getWorld().playSound(marker.location, Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
 			player.getWorld().spigot().playEffect(player.getLocation(), Effect.SMOKE, 0, 0, 0.4f, 0.4f, 0.4f, 1, 16, 32);
-		}
-		else {
 
-			int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 100, false);
-			if (hero.getCooldown(getName()) > 0) {
-				if (hero.getMana() >= mana) {
+			return SkillResult.NORMAL;
+		} else {
 
-					hero.setMana(hero.getMana() - mana);
-					broadcastExecuteText(hero);
-
-					double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
-					marker = new Marker(hero, duration);
-					activeMarkers.put(player.getUniqueId(), marker);
-					player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 100000);
-				} else {
-					return SkillResult.LOW_MANA;
+			int manaCost = SkillConfigManager.getUseSetting(hero, this, "mana-first-activation", 100, false);
+			if (hero.getMana() >= manaCost) {
+				ManaChangeEvent event = new ManaChangeEvent(hero, hero.getMana(), hero.getMana() - manaCost);
+				Bukkit.getPluginManager().callEvent(event);
+				if (!event.isCancelled()) {
+					hero.setMana(event.getFinalMana());
 				}
-			} else {
-				// What do here?
-			}
-		}
+				broadcastExecuteText(hero);
 
-		return SkillResult.INVALID_TARGET_NO_MSG;
+				double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
+				marker = new Marker(hero, duration);
+				activeMarkers.put(player.getUniqueId(), marker);
+				player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 100000);
+			} else {
+				return SkillResult.LOW_MANA;
+			}
+
+			return SkillResult.INVALID_TARGET_NO_MSG;
+		}
 	}
 
 	private double getMaxHealAmount(Hero hero) {

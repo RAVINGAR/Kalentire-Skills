@@ -40,4 +40,15 @@ public abstract class SkillBaseDelayedTeleport extends TargettedSkill {
 			return location.clone();
 		}
 	}
+
+	protected abstract class Marker {
+
+		private final LivingEntity target;
+		private final Location location;
+
+		protected Marker(LivingEntity target, Location location) {
+			this.target = target;
+			this.location = location;
+		}
+	}
 }
