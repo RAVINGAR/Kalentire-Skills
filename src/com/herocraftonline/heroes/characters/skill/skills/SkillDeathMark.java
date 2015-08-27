@@ -60,19 +60,19 @@ public class SkillDeathMark extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
+            return SkillResult.INVALID_TARGET;
+        }
+
         Player player = hero.getPlayer();
 
         Player target = plugin.getServer().getPlayer(args[0]);
         if (target == null)
             return SkillResult.INVALID_TARGET;
-        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments())
-            return SkillResult.INVALID_TARGET;
         if (!target.getWorld().equals(player.getWorld())) {
             Messaging.send(player, "$1 is not in this world...", target.getName());
             return SkillResult.NORMAL;
         }
-
-
 
         broadcastExecuteText(hero);
 
