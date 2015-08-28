@@ -7,6 +7,8 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -14,7 +16,11 @@ import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,23 +28,42 @@ import java.util.UUID;
 
 public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
-	private final Map<UUID, TeleportMarker> activeMarkers = new HashMap<>();
+	protected static final String MANA_ACTIVATION_NODE = "mana-activation";
+
+	protected static final String PRESERVE_VELOCITY_NODE = "preserve-velocity";
+	protected static final String PRESERVE_LOOK_DIRECTION_NODE = "preserve-look-direction";
+
+	private final Map<UUID, Marker> activeMarkers = new HashMap<>();
 
 	public SkillBaseMarkedTeleport(Heroes plugin, String name) {
 		super(plugin, name);
 	}
 
 	@Override
-	public final SkillResult use(Hero hero, String[] strings) {
-		Player player = hero.getPlayer();
-		TeleportMarker teleportMarker = activeMarkers.get(player.getUniqueId());
+	public ConfigurationSection getDefaultConfig() {
+		ConfigurationSection node = super.getDefaultConfig();
 
-		if (teleportMarker != null) {
-			hero.setCooldown(getName(), System.currentTimeMillis() + getAppliedCooldown(hero));
+		node.set(SkillSetting.MAX_DISTANCE.node(), 8d);
+		node.set(SkillSetting.DURATION.node(), 6000);
+
+		return node;
+	}
+
+	@Override
+	public SkillResult use(Hero hero, LivingEntity target, String[] strings) {
+		Player player = hero.getPlayer();
+		Marker marker = activeMarkers.get(player.getUniqueId());
+
+		if (marker != null) {
+			// Test if returning SkillResult.NORMAL does the cooldown stuff
+			//hero.setCooldown(getName(), System.currentTimeMillis() + SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 10000, false));
+
+			marker.activate();
 
 			return SkillResult.NORMAL;
 		} else {
-			int manaCost = getManaCost(hero);
+			int manaCost = SkillConfigManager.getUseSetting(hero, this, MANA_ACTIVATION_NODE, 0, false);
+
 			if (manaCost <= hero.getMana()) {
 
 				ManaChangeEvent event = new ManaChangeEvent(hero, hero.getMana(), hero.getMana() - manaCost);
@@ -56,9 +81,6 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 	}
-
-	protected long getAppliedCooldown(Hero hero) { return 0; }
-	protected int getManaCost(Hero hero) { return 0; }
 
 	public class MarkedTeleportEffect extends ExpirableEffect {
 
@@ -98,29 +120,28 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 		@Override
 		public void removeFromHero(Hero hero) {
 			super.removeFromHero(hero);
-			disableMarker(hero);
+			disableMarker();
 		}
 
 		@Override
 		public void removeFromMonster(Monster monster) {
 			super.removeFromMonster(monster);
-			disableMarker(monster);
+			disableMarker();
 		}
 
 		private void enableMarker(CharacterTemplate target) {
-			TeleportMarker marker = new TeleportMarker(getApplier(), target, target.getEntity().getLocation(), preserveVelocity, preserveLookDirection, particle, color);
-			activeMarkers.put(target.getEntity().getUniqueId(), marker);
+			Marker marker = new Marker(target, preserveVelocity, preserveLookDirection, particle, color);
+			activeMarkers.put(getApplier().getUniqueId(), marker);
 		}
 
-		private void disableMarker(CharacterTemplate target) {
-			TeleportMarker marker = activeMarkers.remove(target.getEntity().getUniqueId());
+		private void disableMarker() {
+			Marker marker = activeMarkers.remove(getApplier().getUniqueId());
 			marker.effect.cancel();
 		}
 	}
 
-	private final class TeleportMarker {
+	private final class Marker {
 
-		private final Player caster;
 		private final CharacterTemplate target;
 		private final Location location;
 
@@ -129,10 +150,9 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 		private final RingEffect effect;
 
-		public TeleportMarker(Player caster, CharacterTemplate target, Location location, boolean preserveVelocity, boolean preserveLookDirection, ParticleEffect particle, Color color) {
-			this.caster = caster;
+		public Marker(CharacterTemplate target, boolean preserveVelocity, boolean preserveLookDirection, ParticleEffect particle, Color color) {
 			this.target = target;
-			this.location = location;
+			this.location = target.getEntity().getLocation();
 
 			this.preserveVelocity = preserveVelocity;
 			this.preserveLookDirection = preserveLookDirection;
@@ -146,6 +166,22 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 			effect.start();
 			em.disposeOnTermination();
+		}
+
+		public void activate() {
+			Vector currentVelocity = target.getEntity().getVelocity();
+
+			if (preserveLookDirection) {
+				location.setDirection(target.getEntity().getLocation().getDirection());
+			}
+
+			target.getEntity().teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+
+			if (preserveVelocity) {
+				target.getEntity().setVelocity(currentVelocity);
+			}
+
+			target.removeEffect(target.getEffect(getName()));
 		}
 
 		private class RingEffect extends Effect {

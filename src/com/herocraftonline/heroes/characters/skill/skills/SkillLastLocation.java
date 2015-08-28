@@ -90,11 +90,11 @@ public class SkillLastLocation extends ActiveSkill {
 				marker = new Marker(hero, duration);
 				activeMarkers.put(player.getUniqueId(), marker);
 				player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 100000);
+
+				return SkillResult.INVALID_TARGET_NO_MSG;
 			} else {
 				return SkillResult.LOW_MANA;
 			}
-
-			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 	}
 
