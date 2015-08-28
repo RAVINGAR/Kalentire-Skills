@@ -130,7 +130,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 		@Override
 		public void applyToHero(Hero hero) {
-			super.removeFromHero(hero);
+			super.applyToHero(hero);
 			createMarker(hero);
 		}
 
