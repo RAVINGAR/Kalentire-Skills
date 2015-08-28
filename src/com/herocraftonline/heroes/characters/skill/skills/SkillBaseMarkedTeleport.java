@@ -15,6 +15,7 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -40,7 +41,8 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 	private final ParticleEffect particle;
 	private final Color[] colors;
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, EffectType[] markerEffectTypes, ParticleEffect particle, Color[] colors) {
+	public SkillBaseMarkedTeleport(Heroes plugin, String name,
+	                               EffectType[] markerEffectTypes, ParticleEffect particle, Color[] colors) {
 		super(plugin, name);
 		this.markerEffectTypes = markerEffectTypes;
 		this.particle = particle;
@@ -61,41 +63,43 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 	@Override
 	public final SkillResult use(Hero hero, String[] args) {
-		return super.use(hero, args);
+		Marker marker = activeMarkers.get(hero.getPlayer().getUniqueId());
+		if (marker != null) {
+			marker.activate();
+			return SkillResult.INVALID_TARGET_NO_MSG;
+		} else {
+			return super.use(hero, args);
+		}
 	}
 
 	@Override
 	public final SkillResult use(Hero hero, LivingEntity target, String[] strings) {
 		Player player = hero.getPlayer();
-		Marker marker = activeMarkers.get(player.getUniqueId());
 
-		if (marker != null) {
-			marker.activate();
-		} else {
-			int manaCost = SkillConfigManager.getUseSetting(hero, this, MANA_ACTIVATION_NODE, 0, false);
+		broadcastExecuteText(hero, target);
 
-			if (manaCost <= hero.getMana()) {
+		int manaCost = SkillConfigManager.getUseSetting(hero, this, MANA_ACTIVATION_NODE, 0, false);
 
-				ManaChangeEvent event = new ManaChangeEvent(hero, hero.getMana(), hero.getMana() - manaCost);
-				Bukkit.getPluginManager().callEvent(event);
-				if (!event.isCancelled()) {
-					hero.setMana(event.getFinalMana());
-				}
+		if (manaCost <= hero.getMana()) {
 
-				CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
-
-				MarkedTeleportEffect effect = new MarkedTeleportEffect(player,
-						SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false),
-						SkillConfigManager.getUseSetting(hero, this, PRESERVE_LOOK_DIRECTION_NODE, true),
-						SkillConfigManager.getUseSetting(hero, this, PRESERVE_VELOCITY_NODE, true));
-
-				Collections.addAll(effect.types, markerEffectTypes);
-
-				targetCt.addEffect(effect);
-
-			} else {
-				return SkillResult.LOW_MANA;
+			ManaChangeEvent event = new ManaChangeEvent(hero, hero.getMana(), hero.getMana() - manaCost);
+			Bukkit.getPluginManager().callEvent(event);
+			if (!event.isCancelled()) {
+				hero.setMana(event.getFinalMana());
 			}
+
+			CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
+
+			MarkedTeleportEffect effect = new MarkedTeleportEffect(player,
+					SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false),
+					SkillConfigManager.getUseSetting(hero, this, PRESERVE_LOOK_DIRECTION_NODE, true),
+					SkillConfigManager.getUseSetting(hero, this, PRESERVE_VELOCITY_NODE, true));
+
+			Collections.addAll(effect.types, markerEffectTypes);
+
+			targetCt.addEffect(effect);
+		} else {
+			return SkillResult.LOW_MANA;
 		}
 
 		return SkillResult.INVALID_TARGET_NO_MSG;
@@ -106,7 +110,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 	protected void onMarkerActivate(Marker marker, long activateTime) { }
 
 	private void applyCooldown(Hero hero) {
-		hero.setCooldown(getName(), System.currentTimeMillis() + SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 10000, false));
+		hero.setCooldown(getName(), System.currentTimeMillis() + SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false));
 	}
 
 	private final class MarkedTeleportEffect extends ExpirableEffect {
@@ -261,15 +265,16 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			@Override
 			public void onRun() {
 				double inc = Math.PI * 2 / particles;
-				if (colors.length > 0) {
-					if (colorIndex >= colors.length) {
-						colorIndex = 0;
-					}
-
-					color = colors[colorIndex];
-				}
 
 				for (double angle = 0; angle <= 360; angle += inc) {
+					if (colors.length > 0) {
+						if (colorIndex >= colors.length) {
+							colorIndex = 0;
+						}
+
+						color = colors[colorIndex++];
+					}
+
 					Vector v = new Vector(Math.cos(angle), 0, Math.sin(angle)).multiply(radius);
 					display(particle, getLocation().clone().add(v));
 				}
