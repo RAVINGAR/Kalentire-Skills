@@ -53,7 +53,7 @@ public class SkillTimeReverse extends SkillBaseMarkedTeleport {
 		double healing = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DAMAGE, 250d, false);
 
 		double totalDuration = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DURATION, 10000, false);
-		double healScale = 1 - (activateTime - marker.getCreateTime() / totalDuration);
+		double healScale = 1 - ((activateTime - marker.getCreateTime()) / totalDuration);
 		if (healScale < 0) {
 			healScale = 0;
 		}

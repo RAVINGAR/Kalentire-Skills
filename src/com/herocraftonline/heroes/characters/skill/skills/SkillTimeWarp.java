@@ -53,12 +53,12 @@ public class SkillTimeWarp extends SkillBaseMarkedTeleport {
 			double damage = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DAMAGE, 250d, false);
 
 			double totalDuration = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DURATION, 10000, false);
-			double damageScale = 1 - (activateTime - marker.getCreateTime() / totalDuration);
+			double damageScale = 1 - ((activateTime - marker.getCreateTime()) / totalDuration);
 			if (damageScale < 0) {
 				damageScale = 0;
 			}
 
-			damageEntity(marker.getTarget().getEntity(), marker.getHero().getPlayer(), damage * damageScale, EntityDamageEvent.DamageCause.MAGIC);
+			damageEntity(marker.getTarget().getEntity(), marker.getHero().getPlayer(), damage * damageScale, EntityDamageEvent.DamageCause.MAGIC, false);
 		}
 	}
 }
