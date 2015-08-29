@@ -15,9 +15,9 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -37,12 +37,12 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 	private final Map<UUID, Marker> activeMarkers = new HashMap<>();
 
-	private final boolean selfTarget;// TODO This is a stupid solution, to a bigger problem. (entire class needs a rework at some point)
+	private final Boolean selfTarget;// TODO This is a stupid solution, to a bigger problem. (entire class needs a rework at some point)
 	private final EffectType[] markerEffectTypes;
 	private final ParticleEffect particle;
 	private final Color[] colors;
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget,
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, Boolean selfTarget,
 	                               EffectType[] markerEffectTypes, ParticleEffect particle, Color[] colors) {
 		super(plugin, name);
 		this.selfTarget = selfTarget;
@@ -51,15 +51,15 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 		this.colors = colors;
 	}
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget, EffectType[] markerEffectTypes, ParticleEffect particle) {
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, Boolean selfTarget, EffectType[] markerEffectTypes, ParticleEffect particle) {
 		this(plugin, name, selfTarget, markerEffectTypes, particle, new Color[0]);
 	}
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget, ParticleEffect particle) {
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, Boolean selfTarget, ParticleEffect particle) {
 		this(plugin, name, selfTarget, new EffectType[0], particle, new Color[0]);
 	}
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget, ParticleEffect particle, Color[] colors) {
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, Boolean selfTarget, ParticleEffect particle, Color[] colors) {
 		this(plugin, name, selfTarget, new EffectType[0], particle, colors);
 	}
 
@@ -79,7 +79,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 		Player player = hero.getPlayer();
 
 		// TODO This is a stupid solution, to a bigger problem. (entire class needs a rework at some point)
-		if (selfTarget && player != target) {
+		if (selfTarget != null && (selfTarget == (player != target))) {
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 
@@ -163,6 +163,8 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			Marker marker = new Marker(plugin.getCharacterManager().getHero(getApplier()), target, preserveVelocity, preserveLookDirection);
 			activeMarkers.put(getApplier().getUniqueId(), marker);
 
+			target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENDERMAN_TELEPORT, 0.4f, 100000);
+
 			onMarkerCreate(marker);
 		}
 
@@ -170,6 +172,10 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			Marker marker = activeMarkers.remove(getApplier().getUniqueId());
 			applyCooldown(marker.hero);
 			marker.effect.cancel();
+
+			if (!marker.activated) {
+				marker.getTarget().getEntity().getWorld().playSound(marker.location, Sound.FIZZ, 0.4f, 0.0001f);
+			}
 
 			onMarkerRemove(marker);
 		}
@@ -236,6 +242,9 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 		private void activate() {
 			if (!isActivated()) {
+				target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
+				target.getEntity().getWorld().playSound(location, Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
+
 				Vector currentVelocity = target.getEntity().getVelocity();
 
 				if (preserveLookDirection) {
@@ -258,7 +267,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 		private final class RingEffect extends Effect {
 
 			public double radius = 0.5;
-			public double particles = 16;
+			public double particles = 15;
 
 			private int colorIndex = 0;
 
@@ -267,6 +276,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 				infinite();
 				asynchronous = true;
 				color = Color.WHITE;
+				period = 2;
 			}
 
 			@Override
