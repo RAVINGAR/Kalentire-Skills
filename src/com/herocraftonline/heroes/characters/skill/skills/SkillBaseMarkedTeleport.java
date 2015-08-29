@@ -293,7 +293,8 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 					}
 
 					Vector v = new Vector(Math.cos(angle), 0, Math.sin(angle)).multiply(radius);
-					display(particle, getLocation().clone().add(v));
+					display(particle, getLocation().add(v));
+					getLocation().subtract(v);
 				}
 			}
 		}
