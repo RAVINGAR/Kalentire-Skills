@@ -37,28 +37,30 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 	private final Map<UUID, Marker> activeMarkers = new HashMap<>();
 
+	private final boolean selfTarget;// TODO This is a stupid solution, to a bigger problem. (entire class needs a rework at some point)
 	private final EffectType[] markerEffectTypes;
 	private final ParticleEffect particle;
 	private final Color[] colors;
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name,
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget,
 	                               EffectType[] markerEffectTypes, ParticleEffect particle, Color[] colors) {
 		super(plugin, name);
+		this.selfTarget = selfTarget;
 		this.markerEffectTypes = markerEffectTypes;
 		this.particle = particle;
 		this.colors = colors;
 	}
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, EffectType[] markerEffectTypes, ParticleEffect particle) {
-		this(plugin, name, markerEffectTypes, particle, new Color[0]);
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget, EffectType[] markerEffectTypes, ParticleEffect particle) {
+		this(plugin, name, selfTarget, markerEffectTypes, particle, new Color[0]);
 	}
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, ParticleEffect particle) {
-		this(plugin, name, new EffectType[0], particle, new Color[0]);
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget, ParticleEffect particle) {
+		this(plugin, name, selfTarget, new EffectType[0], particle, new Color[0]);
 	}
 
-	public SkillBaseMarkedTeleport(Heroes plugin, String name, ParticleEffect particle, Color[] colors) {
-		this(plugin, name, new EffectType[0], particle, colors);
+	public SkillBaseMarkedTeleport(Heroes plugin, String name, boolean selfTarget, ParticleEffect particle, Color[] colors) {
+		this(plugin, name, selfTarget, new EffectType[0], particle, colors);
 	}
 
 	@Override
@@ -75,6 +77,11 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 	@Override
 	public final SkillResult use(Hero hero, LivingEntity target, String[] strings) {
 		Player player = hero.getPlayer();
+
+		// TODO This is a stupid solution, to a bigger problem. (entire class needs a rework at some point)
+		if (selfTarget && player != target) {
+			return SkillResult.INVALID_TARGET_NO_MSG;
+		}
 
 		broadcastExecuteText(hero, target);
 
