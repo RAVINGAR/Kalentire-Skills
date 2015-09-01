@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -8,6 +9,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.NumberConversions;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -18,7 +23,19 @@ public abstract class SkillBaseMassBlockEffector extends ActiveSkill {
         super(plugin, name);
     }
 
-    protected static final class BlockRegion {
+    protected void process(Hero hero, BlockRegion region, BlockProcessor processor, Predicate<BlockState> filter) {
+        for (BlockState block : region) {
+            if (filter.apply(block)) {
+                processor.process(hero, block, region);
+            }
+        }
+    }
+
+    public interface BlockProcessor {
+        void process(Hero hero, BlockState state, BlockRegion region);
+    }
+
+    protected static final class BlockRegion implements Iterable<BlockState> {
 
         public static BlockRegion bounds(Block center, int boundsX, int boundsY, int boundsZ) {
             return new BlockRegion(center.getRelative(-boundsX, -boundsY, -boundsZ), boundsX * 2 + 1, boundsY * 2 + 1, boundsZ * 2 + 1);
@@ -92,7 +109,7 @@ public abstract class SkillBaseMassBlockEffector extends ActiveSkill {
             return region[ix][iy][iz];
         }
 
-        public BlockState getRelative(Block block, int x, int y, int z) {
+        public BlockState getRelative(BlockState block, int x, int y, int z) {
             int rx = block.getX() - ox + x;
             int ry = block.getY() - oy + y;
             int rz = block.getZ() - oz + z;
@@ -104,12 +121,57 @@ public abstract class SkillBaseMassBlockEffector extends ActiveSkill {
             return getBlock(rx, ry, rz);
         }
 
-        public BlockState getRelative(Block block, BlockFace face, int distance) {
+        public BlockState getRelative(BlockState block, BlockFace face, int distance) {
             return getRelative(block, face.getModX() * distance, face.getModY() * distance, face.getModZ() * distance);
         }
 
-        public BlockState getRelative(Block block, BlockFace face) {
+        public BlockState getRelative(BlockState block, BlockFace face) {
             return getRelative(block, face, 1);
+        }
+
+        public BlockState getCenter() {
+            return getBlock(
+                    NumberConversions.ceil(getSizeX() / 2d),
+                    NumberConversions.ceil(getSizeY() / 2d),
+                    NumberConversions.ceil(getSizeZ() / 2d));
+        }
+
+        @Override
+        public Iterator<BlockState> iterator() {
+            return new Iterator<BlockState>() {
+
+                private int x = 0, y = 0, z = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return z < getSizeZ() || y < getSizeY() || x < getSizeX();
+                }
+
+                @Override
+                public BlockState next() {
+                    BlockState result;
+                    try {
+                        result = getBlock(x, y, z);
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        throw new NoSuchElementException();
+                    }
+
+                    if (++z == getSizeZ()) {
+                        z = 0;
+                        if (++y == getSizeY()) {
+                            y = 0;
+                            x++;
+                        }
+                    }
+
+                    return result;
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException("remove");
+                }
+            };
         }
     }
 }
