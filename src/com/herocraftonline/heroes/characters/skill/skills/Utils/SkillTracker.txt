@@ -5,6 +5,8 @@ SkillSoulEnlightened
 SkillLastLocation <- reference SkillDreadAura toggle skill.
 SkillBaseGroundEffect
 
+SkillBaseMassBlockEffector
+
 --- BEAM ---
 SkillDamageBeam
 

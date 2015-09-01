@@ -8,8 +8,4 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 	public SkillBaseGroundEffect(Heroes plugin, String name) {
 		super(plugin, name);
 	}
-
-	protected static final class EffectArea {
-
-	}
 }
