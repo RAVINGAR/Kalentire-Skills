@@ -23,14 +23,6 @@ public abstract class SkillBaseMassBlockEffector extends ActiveSkill {
         super(plugin, name);
     }
 
-    protected void process(Hero hero, BlockRegion region, BlockProcessor processor, Predicate<BlockState> filter) {
-        for (BlockState block : region) {
-            if (filter.apply(block)) {
-                processor.process(hero, block, region);
-            }
-        }
-    }
-
     public interface BlockProcessor {
         void process(Hero hero, BlockState state, BlockRegion region);
     }
