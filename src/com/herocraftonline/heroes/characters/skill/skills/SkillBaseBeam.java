@@ -8,10 +8,14 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.util.Pair;
 import com.herocraftonline.heroes.util.Util;
+import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.CylinderEffect;
+import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
@@ -22,8 +26,8 @@ import java.util.Set;
 
 public abstract class SkillBaseBeam extends ActiveSkill {
 
-	protected static final String SETTING_BEAM_MAX_LENGTH = "beam-max-length";
-	protected static final String SETTING_BEAM_RADIUS = "beam-radius";
+	protected static final String BEAM_MAX_LENGTH_NODE = "beam-max-length";
+	protected static final String BEAM_RADIUS_NODE = "beam-radius";
 
 	public SkillBaseBeam(Heroes plugin, String name) {
 		super(plugin, name);
@@ -123,6 +127,34 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		*/
 
 		return entities;
+	}
+
+	protected void renderBeam(Location start, Beam beam, ParticleEffect particle, int particles, int iterations, float visibleRange, double radiusScale, double startOffset) {
+		EffectManager em = new EffectManager(plugin);
+
+		CylinderEffect cyl = new CylinderEffect(em);
+		cyl.setLocation(beam.midPoint().toLocation(start.getWorld()).add(beam.getTrajectory().normalize().multiply(startOffset / 2)));
+		cyl.asynchronous = true;
+
+		cyl.radius = (float) (beam.radius() * radiusScale);
+		cyl.height = (float) (beam.length() - startOffset);
+		cyl.particle = particle;
+		cyl.particles = particles;
+		cyl.solid = true;
+		cyl.rotationX = Math.toRadians(start.getPitch() + 90);
+		cyl.rotationY = -Math.toRadians(start.getYaw());
+		cyl.angularVelocityX = 0;
+		cyl.angularVelocityY = 0;
+		cyl.angularVelocityZ = 0;
+		cyl.iterations = iterations;
+		cyl.visibleRange = visibleRange;
+
+		cyl.start();
+		em.disposeOnTermination();
+	}
+
+	protected void renderEyeBeam(Player player, Beam beam, ParticleEffect particle, int particles, int iterations, float visibleRange, double radiusScale, double eyeOffset) {
+		renderBeam(player.getEyeLocation(), beam, particle, particles, iterations, visibleRange, radiusScale, eyeOffset);
 	}
 
 	public interface TargetHandler {

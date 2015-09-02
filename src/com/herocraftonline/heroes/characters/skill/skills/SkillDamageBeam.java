@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
+import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,26 +41,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 
 		broadcastExecuteText(hero);
 
-		EffectManager em = new EffectManager(plugin);
-
-		CylinderEffect cyl = new CylinderEffect(em);
-		cyl.setLocation(beam.midPoint().toLocation(player.getWorld()).add(beam.getTrajectory().normalize().multiply(0.5)));
-		cyl.asynchronous = true;
-
-		cyl.radius = (float) beam.radius() / 12;
-		cyl.height = (float) beam.length() - 1;
-		cyl.particles = 40;
-		cyl.solid = true;
-		cyl.rotationX = Math.toRadians(player.getLocation().getPitch() + 90);
-		cyl.rotationY = -Math.toRadians(player.getLocation().getYaw());
-		cyl.angularVelocityX = 0;
-		cyl.angularVelocityY = 0;
-		cyl.angularVelocityZ = 0;
-		cyl.iterations = 10;
-		cyl.visibleRange = 40;
-
-		cyl.start();
-		em.disposeOnTermination();
+		renderEyeBeam(player, beam, ParticleEffect.FLAME, 40, 10, 40, 1 / 12, 1);
 
 		/*List<Location> fxLine = MathUtils.getLinePoints(player.getEyeLocation(),
 				player.getEyeLocation().add(beam.getTrajectoryX(), beam.getTrajectoryX(), beam.getTrajectoryX()), (int) beam.length() * 2);

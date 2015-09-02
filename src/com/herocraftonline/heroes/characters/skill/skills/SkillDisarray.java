@@ -44,8 +44,8 @@ public class SkillDisarray extends SkillBaseBeam {
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SETTING_BEAM_MAX_LENGTH, 15);
-		node.set(SETTING_BEAM_RADIUS, 2d);
+		node.set(BEAM_MAX_LENGTH_NODE, 15);
+		node.set(BEAM_RADIUS_NODE, 2d);
 
 		node.set(SkillSetting.DAMAGE.node(), 150d);
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1d);
@@ -59,28 +59,9 @@ public class SkillDisarray extends SkillBaseBeam {
 	public SkillResult use(Hero hero, String[] strings) {
 		Player player = hero.getPlayer();
 
-		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, SETTING_BEAM_MAX_LENGTH, 15, false);
-		double beamRadius = SkillConfigManager.getUseSetting(hero, this, SETTING_BEAM_RADIUS, 2d, false);
+		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, BEAM_MAX_LENGTH_NODE, 15, false);
+		double beamRadius = SkillConfigManager.getUseSetting(hero, this, BEAM_RADIUS_NODE, 2d, false);
 		Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
-
-		EffectManager em = new EffectManager(plugin);
-		CylinderEffect effect = new CylinderEffect(em);
-
-		effect.setLocation(beam.midPoint().add(beam.getTrajectory().normalize().multiply(PARTICLE_OFFSET_FROM_FACE / 2)).toLocation(player.getWorld()));
-		effect.height = (float) beam.length() - PARTICLE_OFFSET_FROM_FACE;
-		effect.radius = (float) beamRadius / 8;
-
-		effect.particle = BEAM_PARTICLE;
-		effect.particles = 60;
-		effect.iterations = 10;
-		effect.visibleRange = 40;
-		effect.solid = true;
-
-		effect.rotationX = Math.toRadians(player.getLocation().getPitch() + 90);
-		effect.rotationY = -Math.toRadians(player.getLocation().getYaw());
-		effect.angularVelocityX = 0;
-		effect.angularVelocityY = 0;
-		effect.angularVelocityZ = 0;
 
 		broadcastExecuteText(hero);
 
@@ -97,8 +78,7 @@ public class SkillDisarray extends SkillBaseBeam {
 			}
 		});
 
-		effect.start();
-		em.disposeOnTermination();
+		renderEyeBeam(player, beam, BEAM_PARTICLE, 60, 10, 40, 0.125, 1);
 
 		player.getWorld().playSound(player.getEyeLocation(), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
 		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
