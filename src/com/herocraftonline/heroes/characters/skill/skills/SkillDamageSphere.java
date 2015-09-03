@@ -118,19 +118,7 @@ public class SkillDamageSphere extends SkillBaseSphere {
 				}
 			});
 
-			EffectManager em = new EffectManager(plugin);
-			SphereEffect effect = new SphereEffect(em);
-
-			effect.setLocation(hero.getPlayer().getLocation());
-			effect.radius = radius;
-			effect.particle = ParticleEffect.FLAME;
-			effect.particles = (int) radius * 100;
-			effect.type = de.slikey.effectlib.EffectType.INSTANT;
-			effect.iterations = 1;
-			effect.asynchronous = true;
-
-			effect.start();
-			em.disposeOnTermination();
+			renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
 
 			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
 		}

@@ -129,7 +129,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		return entities;
 	}
 
-	protected void renderBeam(Location start, Beam beam, ParticleEffect particle, int particles, int iterations, float visibleRange, double radiusScale, double startOffset) {
+	protected void renderBeam(Location start, Beam beam, ParticleEffect particle, Color color, int particles, int iterations, float visibleRange, double radiusScale, double startOffset) {
 		EffectManager em = new EffectManager(plugin);
 
 		CylinderEffect cyl = new CylinderEffect(em);
@@ -139,6 +139,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		cyl.radius = (float) (beam.radius() * radiusScale);
 		cyl.height = (float) (beam.length() - startOffset);
 		cyl.particle = particle;
+		cyl.color = color;
 		cyl.particles = particles;
 		cyl.solid = true;
 		cyl.rotationX = Math.toRadians(start.getPitch() + 90);
@@ -153,8 +154,16 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		em.disposeOnTermination();
 	}
 
+	protected void renderBeam(Location start, Beam beam, ParticleEffect particle, int particles, int iterations, float visibleRange, double radiusScale, double startOffset) {
+		renderBeam(start, beam, particle, Color.WHITE, particles, iterations, visibleRange, radiusScale, startOffset);
+	}
+
+	protected void renderEyeBeam(Player player, Beam beam, ParticleEffect particle, Color color, int particles, int iterations, float visibleRange, double radiusScale, double eyeOffset) {
+		renderBeam(player.getEyeLocation(), beam, particle, color, particles, iterations, visibleRange, radiusScale, eyeOffset);
+	}
+
 	protected void renderEyeBeam(Player player, Beam beam, ParticleEffect particle, int particles, int iterations, float visibleRange, double radiusScale, double eyeOffset) {
-		renderBeam(player.getEyeLocation(), beam, particle, particles, iterations, visibleRange, radiusScale, eyeOffset);
+		renderEyeBeam(player, beam, particle, Color.WHITE, particles, iterations, visibleRange, radiusScale, eyeOffset);
 	}
 
 	public interface TargetHandler {

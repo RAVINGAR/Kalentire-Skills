@@ -76,11 +76,24 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		void handle(Hero hero, Entity target);
 	}
 
-	protected void renderSphere(Location center, double radius, ParticleEffect particle) {
+	protected void renderSphere(Location center, double radius, ParticleEffect particle, Color color) {
+		EffectManager em = new EffectManager(plugin);
+		SphereEffect effect = new SphereEffect(em);
 
+		effect.setLocation(center);
+		effect.radius = radius;
+		effect.particle = particle;
+		effect.color = color;
+		effect.particles = (int) radius * 100;
+		effect.type = de.slikey.effectlib.EffectType.INSTANT;
+		effect.iterations = 1;
+		effect.asynchronous = true;
+
+		effect.start();
+		em.disposeOnTermination();
 	}
 
-	protected void renderSphere(Location center, double radius, ParticleEffect particle, Color color) {
-
+	protected void renderSphere(Location center, double radius, ParticleEffect particle) {
+		renderSphere(center, radius, particle, Color.WHITE);
 	}
 }
