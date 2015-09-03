@@ -2,6 +2,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
@@ -11,7 +14,9 @@ import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,10 +34,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 			@Override
 			public void run() {
 				for (final Entity target : possibleTargets) {
-					if (!target.equals(hero.getPlayer())
-							// TODO Use line of sight?
-							//&& hero.getPlayer().hasLineOfSight(target)
-							&& hero.getPlayer().getLocation().distanceSquared(target.getLocation()) <= radius * radius) {
+					if (hero.getPlayer().getLocation().distanceSquared(target.getLocation()) <= radius * radius && hero.getPlayer().hasLineOfSight(target)) {
 						Bukkit.getScheduler().runTask(plugin, new Runnable() {
 							@Override
 							public void run() {
@@ -76,6 +78,10 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		void handle(Hero hero, Entity target);
 	}
 
+	public interface EffectTickHandler {
+		void handle(Hero hero, AreaSphereEffect effect);
+	}
+
 	protected void renderSphere(Location center, double radius, ParticleEffect particle, Color color) {
 		EffectManager em = new EffectManager(plugin);
 		SphereEffect effect = new SphereEffect(em);
@@ -95,5 +101,64 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 
 	protected void renderSphere(Location center, double radius, ParticleEffect particle) {
 		renderSphere(center, radius, particle, Color.WHITE);
+	}
+
+	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius, TargetHandler targetHandler,
+	                                     EffectTickHandler effectTickHandler, String applyText, String expireText, EffectType... effectTypes) {
+		AreaSphereEffect effect = new AreaSphereEffect(hero.getPlayer(), period, duration, radius, targetHandler, effectTickHandler, applyText, expireText);
+		Collections.addAll(effect.types, effectTypes);
+		hero.addEffect(effect);
+	}
+
+	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius, TargetHandler targetHandler,
+	                                     EffectTickHandler effectTickHandler, EffectType... effectTypes) {
+		applyAreaSphereEffect(hero, period, duration, radius, targetHandler, effectTickHandler, effectTypes);
+	}
+
+	protected boolean isAreaSphereApplied(Hero hero) {
+		return hero.hasEffect(getName());
+	}
+
+	protected final class AreaSphereEffect extends PeriodicExpirableEffect {
+
+		protected double radius;
+		protected final TargetHandler targetHandler;
+		protected final EffectTickHandler effectTickHandler;
+
+		private AreaSphereEffect(Player applier, long period, long duration, double radius,
+		                        TargetHandler targetHandler, EffectTickHandler effectTickHandler, String applyText, String expireText) {
+			super(SkillBaseSphere.this, SkillBaseSphere.this.getName(), applier, period, duration, applyText, expireText);
+			this.radius = radius;
+			this.targetHandler = targetHandler;
+			this.effectTickHandler = effectTickHandler;
+
+			types.add(EffectType.AREA_OF_EFFECT);
+			types.add(EffectType.BENEFICIAL);
+			types.add(EffectType.MAGIC);
+		}
+
+		private AreaSphereEffect(Player applier, long period, long duration, double radius,
+		                        TargetHandler targetHandler, EffectTickHandler effectTickHandler) {
+			this(applier, period, duration, radius, targetHandler, effectTickHandler, null, null);
+		}
+
+		public double getRadius() {
+			return radius;
+		}
+
+		public void setRadius(double radius) {
+			this.radius = radius;
+		}
+
+		@Override
+		public void tickHero(Hero hero) {
+			effectTickHandler.handle(hero, this);
+			castSphere(hero, radius, targetHandler);
+		}
+
+		@Override
+		public void tickMonster(Monster monster) {
+			throw new UnsupportedOperationException("Area Sphere tick on monster");
+		}
 	}
 }

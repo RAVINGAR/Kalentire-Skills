@@ -62,50 +62,20 @@ public class SkillDamageSphere extends SkillBaseSphere {
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
-		if (hero.hasEffect("DamageSphereEffect")) {
-			return SkillResult.FAIL;
+		if (isAreaSphereApplied(hero)) {
+			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 		else {
 			broadcastExecuteText(hero);
 
-			double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
+			final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
 			long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 			long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
-			double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false);
-			damageTick += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+			final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
+					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-			hero.addEffect(new DamageSphereEffect(radius, duration, hero.getPlayer(), period, damageTick));
-
-			return SkillResult.NORMAL;
-		}
-	}
-
-	public class DamageSphereEffect extends PeriodicExpirableEffect {
-
-		private final double radius;
-		private final double damageTick;
-
-		public DamageSphereEffect(double radius, long duration, Player player, long period, double damageTick) {
-			super(SkillDamageSphere.this, "DamageSphereEffect", player, period, duration);
-			this.radius = radius;
-			this.damageTick = damageTick;
-
-			types.add(EffectType.AREA_OF_EFFECT);
-			types.add(EffectType.FIRE);
-			types.add(EffectType.FORCE);
-			types.add(EffectType.UNTARGETABLE);
-			types.add(EffectType.UNBREAKABLE);
-		}
-
-		@Override
-		public void tickMonster(Monster monster) {
-			throw new RuntimeException("This should never be on a moster... atleast on the prototype");
-		}
-
-		@Override
-		public void tickHero(Hero hero) {
-			castSphere(hero, radius, new TargetHandler() {
+			applyAreaSphereEffect(hero, period, duration, radius, new TargetHandler() {
 				@Override
 				public void handle(Hero hero, Entity target) {
 					Player player = hero.getPlayer();
@@ -116,11 +86,15 @@ public class SkillDamageSphere extends SkillBaseSphere {
 						}
 					}
 				}
+			}, new EffectTickHandler() {
+				@Override
+				public void handle(Hero hero, AreaSphereEffect effect) {
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
+				}
 			});
 
-			renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
-
-			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
+			return SkillResult.NORMAL;
 		}
 	}
 }
