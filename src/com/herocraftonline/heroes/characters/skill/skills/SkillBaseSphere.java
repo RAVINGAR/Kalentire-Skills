@@ -26,7 +26,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	protected void castSphere(final Hero hero, final double radius, final TargetHandler targetHandler) {
+	protected void castSphere(final Hero hero, final double radius, final SphereActions sphereActions) {
 		final Set<Entity> possibleTargets = getEntitiesInChunks(hero.getPlayer().getLocation(), (int) (radius + 16) / 16);
 
 		// TODO Not much logic needed with sphere casting, look into if async filtering is needed.
@@ -38,7 +38,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 						Bukkit.getScheduler().runTask(plugin, new Runnable() {
 							@Override
 							public void run() {
-								targetHandler.handle(hero, target);
+								sphereActions.sphereTargetAction(hero, target);
 							}
 						});
 					}
@@ -74,12 +74,9 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		return entities;
 	}
 
-	public interface TargetHandler {
-		void handle(Hero hero, Entity target);
-	}
-
-	public interface EffectTickHandler {
-		void handle(Hero hero, AreaSphereEffect effect);
+	public interface SphereActions {
+		void sphereTickAction(Hero hero, AreaSphereEffect effect);
+		void sphereTargetAction(Hero hero, Entity target);
 	}
 
 	protected void renderSphere(Location center, double radius, ParticleEffect particle, Color color) {
@@ -103,16 +100,16 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		renderSphere(center, radius, particle, Color.WHITE);
 	}
 
-	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius, TargetHandler targetHandler,
-	                                     EffectTickHandler effectTickHandler, String applyText, String expireText, EffectType... effectTypes) {
-		AreaSphereEffect effect = new AreaSphereEffect(hero.getPlayer(), period, duration, radius, targetHandler, effectTickHandler, applyText, expireText);
+	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius,
+	                                     SphereActions sphereActions, String applyText, String expireText, EffectType... effectTypes) {
+		AreaSphereEffect effect = new AreaSphereEffect(hero.getPlayer(), period, duration, radius, sphereActions, applyText, expireText);
 		Collections.addAll(effect.types, effectTypes);
 		hero.addEffect(effect);
 	}
 
-	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius, TargetHandler targetHandler,
-	                                     EffectTickHandler effectTickHandler, EffectType... effectTypes) {
-		applyAreaSphereEffect(hero, period, duration, radius, targetHandler, effectTickHandler, effectTypes);
+	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius,
+	                                     SphereActions sphereActions, EffectType... effectTypes) {
+		applyAreaSphereEffect(hero, period, duration, radius, sphereActions, effectTypes);
 	}
 
 	protected boolean isAreaSphereApplied(Hero hero) {
@@ -122,24 +119,20 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 	protected final class AreaSphereEffect extends PeriodicExpirableEffect {
 
 		protected double radius;
-		protected final TargetHandler targetHandler;
-		protected final EffectTickHandler effectTickHandler;
+		protected final SphereActions sphereActions;
 
-		private AreaSphereEffect(Player applier, long period, long duration, double radius,
-		                        TargetHandler targetHandler, EffectTickHandler effectTickHandler, String applyText, String expireText) {
+		private AreaSphereEffect(Player applier, long period, long duration, double radius, SphereActions sphereActions, String applyText, String expireText) {
 			super(SkillBaseSphere.this, SkillBaseSphere.this.getName(), applier, period, duration, applyText, expireText);
 			this.radius = radius;
-			this.targetHandler = targetHandler;
-			this.effectTickHandler = effectTickHandler;
+			this.sphereActions = sphereActions;
 
 			types.add(EffectType.AREA_OF_EFFECT);
 			types.add(EffectType.BENEFICIAL);
 			types.add(EffectType.MAGIC);
 		}
 
-		private AreaSphereEffect(Player applier, long period, long duration, double radius,
-		                        TargetHandler targetHandler, EffectTickHandler effectTickHandler) {
-			this(applier, period, duration, radius, targetHandler, effectTickHandler, null, null);
+		private AreaSphereEffect(Player applier, long period, long duration, double radius, SphereActions sphereActions) {
+			this(applier, period, duration, radius, sphereActions, null, null);
 		}
 
 		public double getRadius() {
@@ -152,8 +145,8 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 
 		@Override
 		public void tickHero(Hero hero) {
-			effectTickHandler.handle(hero, this);
-			castSphere(hero, radius, targetHandler);
+			sphereActions.sphereTickAction(hero, this);
+			castSphere(hero, radius, sphereActions);
 		}
 
 		@Override

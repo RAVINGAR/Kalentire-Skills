@@ -75,9 +75,16 @@ public class SkillDamageSphere extends SkillBaseSphere {
 			final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-			applyAreaSphereEffect(hero, period, duration, radius, new TargetHandler() {
+			applyAreaSphereEffect(hero, period, duration, radius, new SphereActions() {
+
 				@Override
-				public void handle(Hero hero, Entity target) {
+				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
+				}
+
+				@Override
+				public void sphereTargetAction(Hero hero, Entity target) {
 					Player player = hero.getPlayer();
 					if (target instanceof LivingEntity) {
 						LivingEntity livingTarget = (LivingEntity) target;
@@ -85,12 +92,6 @@ public class SkillDamageSphere extends SkillBaseSphere {
 							damageEntity(livingTarget, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, true);
 						}
 					}
-				}
-			}, new EffectTickHandler() {
-				@Override
-				public void handle(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
 				}
 			});
 
