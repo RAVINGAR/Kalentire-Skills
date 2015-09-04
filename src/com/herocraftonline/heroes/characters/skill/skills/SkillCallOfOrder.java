@@ -82,7 +82,7 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 				public void sphereTargetAction(Hero hero, Entity target) {
 					if (target instanceof Player) {
 						Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-						if (hero.hasParty() && hero.getParty().isPartyMember(targetHero)) {
+						if (targetHero == hero || (hero.hasParty() && hero.getParty().isPartyMember(targetHero))) {
 							targetHero.heal(healTick);
 						}
 					}

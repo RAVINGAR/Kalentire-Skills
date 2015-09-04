@@ -36,8 +36,8 @@ public class SkillTimeReverse extends SkillBaseMarkedTeleport {
 
 	@Override
 	public String getDescription(Hero hero) {
-		double healing = SkillConfigManager.getUseSetting(hero, this, HEALING_PERCENTAGE_NODE, 250d, false);
-		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, HEALING_PERCENTAGE_PER_WISDOM_NODE, 1d, false);
+		double healing = SkillConfigManager.getUseSetting(hero, this, HEALING_PERCENTAGE_NODE, 0.25d, false);
+		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, HEALING_PERCENTAGE_PER_WISDOM_NODE, 0.005d, false);
 		healing += hero.getAttributeValue(AttributeType.INTELLECT) * healingIncrease;
 
 		double totalDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
@@ -54,7 +54,7 @@ public class SkillTimeReverse extends SkillBaseMarkedTeleport {
 
 		node.set(SkillSetting.DURATION.node(), 10000);
 		node.set(HEALING_PERCENTAGE_NODE, 0.25d);
-		node.set(HEALING_PERCENTAGE_PER_WISDOM_NODE, 0.5d);
+		node.set(HEALING_PERCENTAGE_PER_WISDOM_NODE, 0.005d);
 
 		node.set(PRESERVE_LOOK_DIRECTION_NODE, true);
 		node.set(PRESERVE_VELOCITY_NODE, true);
@@ -64,8 +64,8 @@ public class SkillTimeReverse extends SkillBaseMarkedTeleport {
 
 	@Override
 	protected void onMarkerActivate(SkillBaseMarkedTeleport.Marker marker, long activateTime) {
-		double healing = SkillConfigManager.getUseSetting(marker.getHero(), this, HEALING_PERCENTAGE_NODE, 250d, false);
-		double healingIncrease = SkillConfigManager.getUseSetting(marker.getHero(), this, HEALING_PERCENTAGE_PER_WISDOM_NODE, 1d, false);
+		double healing = SkillConfigManager.getUseSetting(marker.getHero(), this, HEALING_PERCENTAGE_NODE, 0.25d, false);
+		double healingIncrease = SkillConfigManager.getUseSetting(marker.getHero(), this, HEALING_PERCENTAGE_PER_WISDOM_NODE, 0.005d, false);
 		healing += marker.getHero().getAttributeValue(AttributeType.INTELLECT) * healingIncrease;
 
 		double totalDuration = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DURATION, 10000, false);
