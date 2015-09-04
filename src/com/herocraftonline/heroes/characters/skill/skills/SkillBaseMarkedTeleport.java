@@ -267,7 +267,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 		private final class RingEffect extends Effect {
 
 			public double radius = 0.5;
-			public double particles = 15;
+			public double particles = 5;
 
 			private int colorIndex = 0;
 
@@ -276,7 +276,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 				infinite();
 				asynchronous = true;
 				color = Color.WHITE;
-				period = 2;
+				period = 4;
 			}
 
 			@Override
