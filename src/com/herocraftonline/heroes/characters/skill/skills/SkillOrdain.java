@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
@@ -38,7 +39,7 @@ public class SkillOrdain extends SkillBaseBeam {
 		double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
 		beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
 
-		return getDescription().replace("$1", beamHeal + "");
+		return getDescription().replace("$1", Util.decFormat.format(beamHeal));
 	}
 
 	@Override

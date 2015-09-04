@@ -39,8 +39,8 @@ public class SkillCallOfChaos extends SkillBaseSphere {
 				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
 		return getDescription()
-				.replace("$1", radius + "")
-				.replace("$2", damageTick + "")
+				.replace("$1", Util.decFormat.format(radius))
+				.replace("$2", Util.decFormat.format(damageTick))
 				.replace("$3", Util.decFormat.format((double) period / 1000))
 				.replace("$4", Util.decFormat.format((double) duration / 1000));
 	}

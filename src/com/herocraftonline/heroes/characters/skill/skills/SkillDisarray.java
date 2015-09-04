@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
@@ -37,7 +38,7 @@ public class SkillDisarray extends SkillBaseBeam {
 		double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5d, false);
 		beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
 
-		return getDescription().replace("$1", beamDamage + "");
+		return getDescription().replace("$1", Util.decFormat.format(beamDamage));
 	}
 
 	@Override

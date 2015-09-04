@@ -37,8 +37,8 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
 
 		return getDescription()
-				.replace("$1", radius + "")
-				.replace("$2", healTick + "")
+				.replace("$1", Util.decFormat.format(radius))
+				.replace("$2", Util.decFormat.format(healTick))
 				.replace("$3", Util.decFormat.format((double) period / 1000))
 				.replace("$4", Util.decFormat.format((double) duration / 1000));
 	}

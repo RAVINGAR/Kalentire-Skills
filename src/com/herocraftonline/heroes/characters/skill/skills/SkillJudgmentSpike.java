@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,7 +38,9 @@ public class SkillJudgmentSpike extends SkillBaseSpike {
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 250d, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		return getDescription().replace("$1", duration + "").replace("$2", damage + "");
+		return getDescription()
+				.replace("$1", duration + "")
+				.replace("$2", Util.decFormat.format(damage));
 	}
 
 	@Override
@@ -48,9 +51,9 @@ public class SkillJudgmentSpike extends SkillBaseSpike {
 		node.set(SkillSetting.DAMAGE.node(), 250d);
 		node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 1d);
 
-		node.set(SPIKE_HEIGHT, 3d);
-		node.set(DOES_KNOCK_UP, true);
-		node.set(KNOCK_UP_STRENGTH, 0.6);
+		node.set(SPIKE_HEIGHT_NODE, 3d);
+		node.set(DOES_KNOCK_UP_NODE, true);
+		node.set(KNOCK_UP_STRENGTH_NODE, 0.6);
 
 		node.set(SkillSetting.DURATION.node(), 5000);
 
@@ -74,11 +77,11 @@ public class SkillJudgmentSpike extends SkillBaseSpike {
 			SilenceEffect effect = new SilenceEffect(this, getName(), player, duration);
 			targetCT.addEffect(effect);
 
-			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT, 3d, false);
+			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT_NODE, 3d, false);
 			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE);
 
-			if (SkillConfigManager.getUseSetting(hero, this, DOES_KNOCK_UP, true)) {
-				Vector knockUpVector = new Vector(0, SkillConfigManager.getUseSetting(hero, this, KNOCK_UP_STRENGTH, 0.6, false), 0);
+			if (SkillConfigManager.getUseSetting(hero, this, DOES_KNOCK_UP_NODE, true)) {
+				Vector knockUpVector = new Vector(0, SkillConfigManager.getUseSetting(hero, this, KNOCK_UP_STRENGTH_NODE, 0.6, false), 0);
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
