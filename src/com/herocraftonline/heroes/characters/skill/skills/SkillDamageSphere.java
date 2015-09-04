@@ -79,8 +79,8 @@ public class SkillDamageSphere extends SkillBaseSphere {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 5, 0.00001f);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, 150, ParticleEffect.FLAME);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 1, 0.00001f);
 				}
 
 				@Override

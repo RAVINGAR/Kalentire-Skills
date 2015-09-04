@@ -4,29 +4,43 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 public class SkillCallOfOrder extends SkillBaseSphere {
 
 	public SkillCallOfOrder(Heroes plugin) {
 		super(plugin, "CallOfOrder");
-		setDescription("");
+		setDescription("Call upon the forces of order to heal allies within $1 for $2 every $3 seconds for $4 seconds.");
 		setUsage("/skill calloforder");
 		setIdentifiers("skill calloforder");
 		setArgumentRange(0, 0);
+		setTypes(SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.HEALING);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
-		return getDescription();
+		final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
+		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+		long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+
+		final double healTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 100d, false)
+				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
+
+		return getDescription()
+				.replace("$1", radius + "")
+				.replace("$2", healTick + "")
+				.replace("$3", Util.decFormat.format((double) period / 1000))
+				.replace("$4", Util.decFormat.format((double) duration / 1000));
 	}
 
 	@Override
@@ -60,8 +74,8 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.PORTAL);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.COW_HURT, 0.25f, 0.00001f);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.REDSTONE, Color.YELLOW);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIREWORK_LARGE_BLAST, 0.5f, 0.00001f);
 				}
 
 				@Override
@@ -73,7 +87,7 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 						}
 					}
 				}
-			});
+			}, EffectType.DISPELLABLE, EffectType.HEALING);
 
 			return SkillResult.NORMAL;
 		}

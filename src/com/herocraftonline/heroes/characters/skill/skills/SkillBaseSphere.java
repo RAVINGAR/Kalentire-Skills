@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.ParticleEffect;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Color;
@@ -79,7 +80,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		void sphereTargetAction(Hero hero, Entity target);
 	}
 
-	protected void renderSphere(Location center, double radius, ParticleEffect particle, Color color) {
+	protected void renderSphere(Location center, double radius, int particlesPerRadius, ParticleEffect particle, Color color) {
 		EffectManager em = new EffectManager(plugin);
 		SphereEffect effect = new SphereEffect(em);
 
@@ -87,7 +88,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		effect.radius = radius;
 		effect.particle = particle;
 		effect.color = color;
-		effect.particles = (int) radius * 100;
+		effect.particles = (int) radius * particlesPerRadius;
 		effect.type = de.slikey.effectlib.EffectType.INSTANT;
 		effect.iterations = 1;
 		effect.asynchronous = true;
@@ -96,8 +97,16 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		em.disposeOnTermination();
 	}
 
+	protected void renderSphere(Location center, double radius, int particlesPerRadius, ParticleEffect particle) {
+		renderSphere(center, radius, particlesPerRadius, particle, Color.WHITE);
+	}
+
+	protected void renderSphere(Location center, double radius, ParticleEffect particle, Color color) {
+		renderSphere(center, radius, 100, particle, color);
+	}
+
 	protected void renderSphere(Location center, double radius, ParticleEffect particle) {
-		renderSphere(center, radius, particle, Color.WHITE);
+		renderSphere(center, radius, 100, particle);
 	}
 
 	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius,
@@ -122,7 +131,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		protected final SphereActions sphereActions;
 
 		private AreaSphereEffect(Player applier, long period, long duration, double radius, SphereActions sphereActions, String applyText, String expireText) {
-			super(SkillBaseSphere.this, SkillBaseSphere.this.getName(), applier, period, duration, applyText, expireText);
+			super(SkillBaseSphere.this, SkillBaseSphere.this.getName(), applier, period, duration - (period / 2), applyText, expireText);
 			this.radius = radius;
 			this.sphereActions = sphereActions;
 
@@ -147,6 +156,9 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		public void tickHero(Hero hero) {
 			sphereActions.sphereTickAction(hero, this);
 			castSphere(hero, radius, sphereActions);
+
+			// TODO Tests the issue with inconsistent tick amounts over a fixed time (hint: its because effects use milliseconds)
+			hero.getPlayer().sendMessage(ChatColor.GREEN + "Expire Time: " + ChatColor.WHITE + (getExpiry() - getApplyTime()) + ChatColor.GREEN + " Current Tick: " + (getLastTickTime() - getApplyTime()));
 		}
 
 		@Override

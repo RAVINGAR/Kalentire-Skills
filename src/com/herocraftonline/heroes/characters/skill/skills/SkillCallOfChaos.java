@@ -4,8 +4,11 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Sound;
@@ -19,15 +22,27 @@ public class SkillCallOfChaos extends SkillBaseSphere {
 
 	public SkillCallOfChaos(Heroes plugin) {
 		super(plugin, "CallOfChaos");
-		setDescription("");
+		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds.");
 		setUsage("/skill callofchaos");
 		setIdentifiers("skill callofchaos");
 		setArgumentRange(0, 0);
+		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
-		return getDescription();
+		final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
+		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+		long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+
+		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
+				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+
+		return getDescription()
+				.replace("$1", radius + "")
+				.replace("$2", damageTick + "")
+				.replace("$3", Util.decFormat.format((double) period / 1000))
+				.replace("$4", Util.decFormat.format((double) duration / 1000));
 	}
 
 	@Override
@@ -61,8 +76,8 @@ public class SkillCallOfChaos extends SkillBaseSphere {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.REDSTONE, Color.WHITE);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIREWORK_TWINKLE, 0.25f, 2);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.SPELL_MOB, Color.BLACK);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_DEATH, 0.5f, 0.000001f);
 				}
 
 				@Override
@@ -75,7 +90,7 @@ public class SkillCallOfChaos extends SkillBaseSphere {
 						}
 					}
 				}
-			});
+			}, EffectType.DISPELLABLE);
 
 			return SkillResult.NORMAL;
 		}
