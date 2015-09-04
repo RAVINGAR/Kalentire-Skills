@@ -131,7 +131,10 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 		protected final SphereActions sphereActions;
 
 		private AreaSphereEffect(Player applier, long period, long duration, double radius, SphereActions sphereActions, String applyText, String expireText) {
-			super(SkillBaseSphere.this, SkillBaseSphere.this.getName(), applier, period, duration - (period / 2), applyText, expireText);
+			super(SkillBaseSphere.this, SkillBaseSphere.this.getName(), applier, period
+					// TODO This is an experiment to attempt to make the effect tick amount more consistent
+					, duration/* - (period / 2)*/
+					, applyText, expireText);
 			this.radius = radius;
 			this.sphereActions = sphereActions;
 
@@ -158,7 +161,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 			castSphere(hero, radius, sphereActions);
 
 			// TODO Tests the issue with inconsistent tick amounts over a fixed time (hint: its because effects use milliseconds)
-			hero.getPlayer().sendMessage(ChatColor.GREEN + "Expire Time: " + ChatColor.WHITE + (getExpiry() - getApplyTime()) + ChatColor.GREEN + " Current Tick: " + (getLastTickTime() - getApplyTime()));
+			//hero.getPlayer().sendMessage(ChatColor.GREEN + "Expire Time: " + ChatColor.WHITE + (getExpiry() - getApplyTime()) + ChatColor.GREEN + " Current Tick: " + (getLastTickTime() - getApplyTime()));
 		}
 
 		@Override
