@@ -109,7 +109,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 
 	protected void applyAreaSphereEffect(Hero hero, long period, long duration, double radius,
 	                                     SphereActions sphereActions, EffectType... effectTypes) {
-		applyAreaSphereEffect(hero, period, duration, radius, sphereActions, effectTypes);
+		applyAreaSphereEffect(hero, period, duration, radius, sphereActions, null, null, effectTypes);
 	}
 
 	protected boolean isAreaSphereApplied(Hero hero) {
