@@ -144,8 +144,8 @@ public class SkillReckoning extends ActiveSkill {
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
         player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.0F, 0.0F);
-        player.getWorld().strikeLightningEffect(player.getLocation());
-
+        //player.getWorld().strikeLightningEffect(player.getLocation());
+        // remove because of things and stuff.
 
         return SkillResult.NORMAL;
     }
