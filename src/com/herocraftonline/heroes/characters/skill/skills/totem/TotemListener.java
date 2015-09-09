@@ -3,12 +3,15 @@ package com.herocraftonline.heroes.characters.skill.skills.totem;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -92,4 +95,26 @@ public class TotemListener implements Listener {
         }
         e.setCancelled(true);
     }
+
+    // This should prevent Piston movement of Totem blocks as listed in Exploit Reports.
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPistonExtend(BlockPistonExtendEvent e) {
+        for(Block block : e.getBlocks()) {
+            if(SkillBaseTotem.isTotemBlock(block)) {
+                e.setCancelled(true);
+                return; // Since loop could continue if not returned
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPistonRetract(BlockPistonRetractEvent e) {
+        for(Block block : e.getBlocks()) { // This is Spigot exclusive, bukkit doesn't have getBlocks() on Retract.
+            if(SkillBaseTotem.isTotemBlock(block)) {
+                e.setCancelled(true);
+                return; // Since loop could continue if not returned
+            }
+        }
+    }
+
 }
