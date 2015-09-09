@@ -283,7 +283,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			public void onRun() {
 				double inc = Math.PI * 2 / particles;
 
-				for (double angle = 0; angle <= 360; angle += inc) {
+				for (double angle = 0; angle <= 2 * Math.PI; angle += inc) {
 					if (colors.length > 0) {
 						if (colorIndex >= colors.length) {
 							colorIndex = 0;
