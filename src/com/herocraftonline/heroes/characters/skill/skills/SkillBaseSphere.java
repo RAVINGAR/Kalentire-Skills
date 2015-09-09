@@ -35,7 +35,7 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 			@Override
 			public void run() {
 				for (final Entity target : possibleTargets) {
-					if (hero.getPlayer().getLocation().distanceSquared(target.getLocation()) <= radius * radius && hero.getPlayer().hasLineOfSight(target)) {
+					if (hero.getPlayer().getLocation().distanceSquared(target.getLocation()) <= radius * radius) {
 						Bukkit.getScheduler().runTask(plugin, new Runnable() {
 							@Override
 							public void run() {
