@@ -3,7 +3,9 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -50,6 +52,8 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 		if (isAreaGroundEffectApplied(hero)) {
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		} else {
+			final Player player = hero.getPlayer();
+
 			broadcastExecuteText(hero);
 
 			final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
@@ -60,7 +64,8 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 			final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-			applyAreaGroundEffectEffect(hero, period, duration, hero.getPlayer().getLocation(), radius, height, new GroundEffectActions() {
+			applyAreaGroundEffectEffect(hero, period, duration, player.getLocation(), radius, height, new GroundEffectActions() {
+
 				@Override
 				public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
 
@@ -73,8 +78,8 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 						damageEntity(target, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, false);
 					}
 
-					//CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
-					//targetCt.addEffect(new SlowEffect(SkillConsecration.this, player, 0, 0));
+					CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
+					targetCt.addEffect(new SlowEffect(SkillDesecration.this, player, 0, 0));
 				}
 			});
 

@@ -52,6 +52,8 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 		if (isAreaGroundEffectApplied(hero)) {
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		} else {
+			final Player player = hero.getPlayer();
+
 			broadcastExecuteText(hero);
 
 			final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
@@ -62,7 +64,8 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 			final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-			applyAreaGroundEffectEffect(hero, period, duration, hero.getPlayer().getLocation(), radius, height, new GroundEffectActions() {
+			applyAreaGroundEffectEffect(hero, period, duration, player.getLocation(), radius, height, new GroundEffectActions() {
+				
 				@Override
 				public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
 
@@ -75,8 +78,8 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 						damageEntity(target, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, false);
 					}
 
-					//CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
-					//targetCt.addEffect(new SpeedEffect(SkillConsecration.this, player, 0, 0));
+					CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
+					targetCt.addEffect(new SpeedEffect(SkillConsecration.this, player, 0, 0));
 				}
 			});
 
