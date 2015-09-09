@@ -19,6 +19,8 @@ import java.util.Set;
 
 public abstract class SkillBaseGroundEffect extends ActiveSkill {
 
+	protected static final String HEIGHT_NODE = "height";
+
 	public SkillBaseGroundEffect(Heroes plugin, String name) {
 		super(plugin, name);
 	}
@@ -110,6 +112,10 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 			this.radius = radius;
 			this.height = height;
 			this.actions = actions;
+
+			types.add(EffectType.AREA_OF_EFFECT);
+			types.add(EffectType.BENEFICIAL);
+			types.add(EffectType.MAGIC);
 		}
 
 		public double getRadius() {
