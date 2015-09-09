@@ -27,7 +27,7 @@ public class SkillTimeReverse extends SkillBaseMarkedTeleport {
 		});
 		setDescription("Mark your current position in time for the next $1 seconds. At any point during that time you may re activate the skill to teleport" +
 				" your self back to that location healing you for an amount starting at $3 ($2% of max health) and decaying towards 0 as the skills duration reaches end. If you do not" +
-				" re activate the skill within the duration no healing is applied and no teleport occurs.");
+				" re activate the skill within the duration no healing is applied and no teleport occurs. $4 $5");
 		setUsage("/skill timereverse");
 		setIdentifiers("skill timereverse");
 
@@ -42,10 +42,15 @@ public class SkillTimeReverse extends SkillBaseMarkedTeleport {
 
 		double totalDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 
+		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+
 		return getDescription()
 				.replace("$1", Util.decFormat.format(totalDuration / 1000))
 				.replace("$2", Util.largeDecFormat.format(healing * 100))
-				.replace("$3", Util.decFormat.format(hero.getPlayer().getMaxHealth() * healing));
+				.replace("$3", Util.decFormat.format(hero.getPlayer().getMaxHealth() * healing))
+				.replace("$4", mana > 0 ? "Mana: " + mana : "")
+				.replace("$5", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
 	}
 
 	@Override

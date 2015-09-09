@@ -26,7 +26,7 @@ public class SkillOrdain extends SkillBaseBeam {
 
 	public SkillOrdain(Heroes plugin) {
 		super(plugin, "Ordain");
-		setDescription("You summon the calling of order to project a beam that heals $1 health in its path.");
+		setDescription("You summon the calling of order to project a beam that heals $1 health in its path. $2 $3");
 		setUsage("/skill ordain");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill ordain");
@@ -39,7 +39,13 @@ public class SkillOrdain extends SkillBaseBeam {
 		double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
 		beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
 
-		return getDescription().replace("$1", Util.decFormat.format(beamHeal));
+		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+
+		return getDescription()
+				.replace("$1", Util.decFormat.format(beamHeal))
+				.replace("$2", mana > 0 ? "Mana: " + mana : "")
+				.replace("$3", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
 	}
 
 	@Override

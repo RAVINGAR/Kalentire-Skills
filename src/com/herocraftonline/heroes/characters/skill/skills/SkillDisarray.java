@@ -25,7 +25,7 @@ public class SkillDisarray extends SkillBaseBeam {
 	
 	public SkillDisarray(Heroes plugin) {
 		super(plugin, "Disarray");
-		setDescription("Surfing with chaos, you fire off a beam that deals $1 damage to everything in its path.");
+		setDescription("Surfing with chaos, you fire off a beam that deals $1 damage to everything in its path. $2 $3");
 		setUsage("/skill disarray");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill disarray");
@@ -38,7 +38,13 @@ public class SkillDisarray extends SkillBaseBeam {
 		double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5d, false);
 		beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
 
-		return getDescription().replace("$1", Util.decFormat.format(beamDamage));
+		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+
+		return getDescription()
+				.replace("$1", Util.decFormat.format(beamDamage))
+				.replace("$2", mana > 0 ? "Mana: " + mana : "")
+				.replace("$3", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
 	}
 
 	@Override

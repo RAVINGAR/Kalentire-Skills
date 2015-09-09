@@ -32,7 +32,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 
 	public SkillEndlessNightmare(Heroes plugin) {
 		super(plugin, "EndlessNightmare");
-		setDescription("Impales the target with a spike of chaos casting them into a nightmarish state for $1 seconds, dealing $2 damage.");
+		setDescription("Impales the target with a spike of chaos casting them into a nightmarish state for $1 seconds, dealing $2 damage. $3 $4");
 		setUsage("/skill endlessnightmare");
 		setIdentifiers("skill endlessnightmare");
 		setArgumentRange(0, 0);
@@ -46,9 +46,14 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 250d, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
+		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+
 		return getDescription()
 				.replace("$1", duration + "")
-				.replace("$2", Util.decFormat.format(damage));
+				.replace("$2", Util.decFormat.format(damage))
+				.replace("$3", mana > 0 ? "Mana: " + mana : "")
+				.replace("$4", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
 	}
 
 	@Override
