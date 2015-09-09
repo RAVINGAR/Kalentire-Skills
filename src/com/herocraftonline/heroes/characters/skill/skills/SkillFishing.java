@@ -73,48 +73,45 @@ public class SkillFishing extends PassiveSkill {
 
                 int leatherlvl = SkillConfigManager.getUseSetting(hero, skill, "leather-level", 5, true);
                 if (hero.getLevel() >= leatherlvl && SkillConfigManager.getUseSetting(hero, skill, "enable-leather", false)){ //if fishing leather is enabled and have the level
-
-                    if (getCaught != null){ //If not null
-                        switch(Util.nextInt(8)){
-                        case 0: 
-                            getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
-                            Messaging.send(player, "You found leather boots!");
-                            getCaught.getItemStack().setDurability((short) (Math.random() * 40));
-                            break;
-                        case 1: 
-                            getCaught.setItemStack(new ItemStack(Material.LEATHER_LEGGINGS, 1));
-                            Messaging.send(player, "You found leather leggings!");
-                            getCaught.getItemStack().setDurability((short) (Math.random() * 46));
-                            break;
-                        case 2: 
-                            getCaught.setItemStack(new ItemStack(Material.LEATHER_HELMET, 1));
-                            Messaging.send(player, "You found a leather helmet!");
-                            getCaught.getItemStack().setDurability((short) (Math.random() * 34));
-                            break;
-                        case 3: 
-                            getCaught.setItemStack(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-                            Messaging.send(player, "You found a leather chestplate!");
-                            getCaught.getItemStack().setDurability((short) (Math.random() * 49));
-                            break;
-                        case 4: 
-                            getCaught.setItemStack(new ItemStack(Material.GOLDEN_APPLE, 1));
-                            Messaging.send(player, "You found a golden apple, woo!");
-                            getCaught.getItemStack().setDurability((short) (Math.random() * 10));
-                            break;
-                        case 5: 
-                            getCaught.setItemStack(new ItemStack(Material.APPLE, 1));
-                            Messaging.send(player, "You found an apple!");
-                            getCaught.getItemStack().setDurability((short) (Math.random() * 29));
-                            break;
-                        case 6: 
-                            getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                            Messaging.send(player, "You found 2 Fish!");
-                            break;
-                        case 7: 
-                            getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
-                            Messaging.send(player, "You found 1 Fish!");
-                            break;
-                        }
+                    //if (getCaught != null){ //If not null
+                    //If not null
+                    switch(Util.nextInt(8)){
+                    case 0:
+                        getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
+                        Messaging.send(player, "You found leather boots!");
+                        getCaught.getItemStack().setDurability((short) (Math.random() * 40));
+                        break;
+                    case 1:
+                        getCaught.setItemStack(new ItemStack(Material.LEATHER_LEGGINGS, 1));
+                        Messaging.send(player, "You found leather leggings!");
+                        getCaught.getItemStack().setDurability((short) (Math.random() * 46));
+                        break;
+                    case 2:
+                        getCaught.setItemStack(new ItemStack(Material.LEATHER_HELMET, 1));
+                        Messaging.send(player, "You found a leather helmet!");
+                        getCaught.getItemStack().setDurability((short) (Math.random() * 34));
+                        break;
+                    case 3:
+                        getCaught.setItemStack(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+                        Messaging.send(player, "You found a leather chestplate!");
+                        getCaught.getItemStack().setDurability((short) (Math.random() * 49));
+                        break;
+                    case 4:
+                        getCaught.setItemStack(new ItemStack(Material.GOLDEN_APPLE, 1));
+                        Messaging.send(player, "You found a golden apple, woo!");
+                        break;
+                    case 5:
+                        getCaught.setItemStack(new ItemStack(Material.APPLE, 1));
+                        Messaging.send(player, "You found an apple!");
+                        break;
+                    case 6:
+                        getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
+                        Messaging.send(player, "You found 2 Fish!");
+                        break;
+                    case 7:
+                        getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
+                        Messaging.send(player, "You found 1 Fish!");
+                        break;
                     }
                 } else {
                     switch(Util.nextInt(2)){
