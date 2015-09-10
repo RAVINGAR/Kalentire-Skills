@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
@@ -16,6 +17,7 @@ import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,7 +29,8 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 
 	public SkillDesecration(Heroes plugin) {
 		super(plugin, "Desecration");
-		setDescription("");
+		setDescription("Marks the ground with unholy power, dealing $1 damage every $2 seconds for $3 seconds within $4 blocks to the side and $5 blocks up and down (cylinder). " +
+				"Enemies within the area are slowed. $6 $7");
 		setUsage("/skill desecration");
 		setIdentifiers("skill desecration");
 		setArgumentRange(0, 0);
@@ -36,7 +39,25 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 
 	@Override
 	public String getDescription(Hero hero) {
-		return getDescription();
+		final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
+		double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
+		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+		final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+
+		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
+				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+
+		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+
+		return getDescription()
+				.replace("$1", Util.decFormat.format(damageTick))
+				.replace("$2", Util.decFormat.format((double) period / 1000))
+				.replace("$3", Util.decFormat.format((double) duration / 1000))
+				.replace("$4", Util.decFormat.format(radius))
+				.replace("$4", Util.decFormat.format(height))
+				.replace("$5", mana > 0 ? "Mana: " + mana : "")
+				.replace("$6", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
 	}
 
 	@Override
@@ -100,6 +121,8 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 							}
 
 							Location originalLocation = getLocation();
+							Color originalColor = color;
+							color = Color.RED;
 
 							for (int i = 0; i < pentPoints.length; i++) {
 								Vector line = pentPoints[(i + 2) % 5].clone().subtract(pentPoints[i]);
@@ -114,6 +137,7 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 							}
 
 							setLocation(originalLocation);
+							color = originalColor;
 						}
 					};
 
@@ -121,10 +145,12 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 					e.asynchronous = true;
 					e.iterations = 1;
 					e.type = EffectType.INSTANT;
-					e.color = Color.RED;
+					e.color = Color.BLACK;
 
 					e.start();
 					em.disposeOnTermination();
+
+					player.getWorld().playSound(effect.getLocation(), Sound.CAT_HISS, 0.25f, 0.1f);
 				}
 
 				@Override
@@ -136,7 +162,8 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 						final CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
 
 						if (!targetCt.hasEffect("Slow")) {
-							final SlowEffect effect = new SlowEffect(SkillDesecration.this, player, groundEffect.getExpiry() - System.currentTimeMillis() + 200, 1);
+							final SlowEffect effect = new SlowEffect(SkillDesecration.this,
+									player, groundEffect.getExpiry() - System.currentTimeMillis() + 200, 1, null, null);
 							targetCt.addEffect(effect);
 
 							new BukkitRunnable() {

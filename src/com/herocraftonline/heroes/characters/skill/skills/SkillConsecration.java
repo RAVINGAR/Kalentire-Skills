@@ -10,12 +10,14 @@ import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,7 +29,8 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 
 	public SkillConsecration(Heroes plugin) {
 		super(plugin, "Consecration");
-		setDescription("");
+		setDescription("Marks the ground with holy power, dealing $1 damage every $2 seconds for $3 seconds within $4 blocks blocks to the side and $5 blocks up and down (cylinder). " +
+				"Allies within the area are granted movement speed. $6 $7");
 		setUsage("/skill consecration");
 		setIdentifiers("skill consecration");
 		setArgumentRange(0, 0);
@@ -36,7 +39,25 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 
 	@Override
 	public String getDescription(Hero hero) {
-		return getDescription();
+		final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
+		double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
+		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+		final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+
+		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
+				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+
+		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+
+		return getDescription()
+				.replace("$1", Util.decFormat.format(damageTick))
+				.replace("$2", Util.decFormat.format((double) period / 1000))
+				.replace("$3", Util.decFormat.format((double) duration / 1000))
+				.replace("$4", Util.decFormat.format(radius))
+				.replace("$4", Util.decFormat.format(height))
+				.replace("$5", mana > 0 ? "Mana: " + mana : "")
+				.replace("$6", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
 	}
 
 	@Override
@@ -92,22 +113,35 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 							}
 
 							Location originalLocation = getLocation();
+							Color originalColor = color;
+							color = Color.BLUE;
 
 							int particles = (int) (2 * radius * particlesPerRadius);
 							Vector crossXLine = new Vector(-radius * 2, 0, 0).multiply(1d / particles);
 							Vector crossZLine = new Vector(0, 0, -radius * 2).multiply(1d / particles);
 
-							setLocation(new Vector(radius, 0, 0).toLocation(getLocation().getWorld()).add(originalLocation));
+							setLocation(new Vector(radius, 0, radius / 10).toLocation(getLocation().getWorld()).add(originalLocation));
 							for (int l = 0; l < particles; l++, getLocation().add(crossXLine)) {
 								display(particle, getLocation());
 							}
 
-							setLocation(new Vector(0, 0, radius).toLocation(getLocation().getWorld()).add(originalLocation));
+							setLocation(new Vector(radius / 10, 0, radius).toLocation(getLocation().getWorld()).add(originalLocation));
+							for (int l = 0; l < particles; l++, getLocation().add(crossZLine)) {
+								display(particle, getLocation());
+							}
+
+							setLocation(new Vector(radius, 0, radius / -10).toLocation(getLocation().getWorld()).add(originalLocation));
+							for (int l = 0; l < particles; l++, getLocation().add(crossXLine)) {
+								display(particle, getLocation());
+							}
+
+							setLocation(new Vector(radius / -10, 0, radius).toLocation(getLocation().getWorld()).add(originalLocation));
 							for (int l = 0; l < particles; l++, getLocation().add(crossZLine)) {
 								display(particle, getLocation());
 							}
 
 							setLocation(originalLocation);
+							color = originalColor;
 						}
 					};
 
@@ -115,10 +149,12 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 					e.asynchronous = true;
 					e.iterations = 1;
 					e.type = EffectType.INSTANT;
-					e.color = Color.SILVER;
+					e.color = Color.YELLOW;
 
 					e.start();
 					em.disposeOnTermination();
+
+					player.getWorld().playSound(effect.getLocation(), Sound.FIZZ, 0.25f, 0.0001f);
 				}
 
 				@Override
@@ -134,7 +170,8 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 							final CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
 
 							if (!targetCt.hasEffect("Speed")) {
-								final SpeedEffect effect = new SpeedEffect(SkillConsecration.this, player, groundEffect.getExpiry() - System.currentTimeMillis() + 200, 1);
+								final SpeedEffect effect = new SpeedEffect(SkillConsecration.this,
+										player, groundEffect.getExpiry() - System.currentTimeMillis() + 200, 1, null, null);
 								targetCt.addEffect(effect);
 
 								new BukkitRunnable() {
