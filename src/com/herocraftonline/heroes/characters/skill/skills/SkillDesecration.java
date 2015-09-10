@@ -5,9 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -15,21 +13,17 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 public class SkillDesecration extends SkillBaseGroundEffect {
-
-	private Set<UUID> effected = new HashSet<>();
 
 	public SkillDesecration(Heroes plugin) {
 		super(plugin, "Desecration");
@@ -106,7 +100,6 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 							}
 
 							Location originalLocation = getLocation();
-							setLocation(originalLocation.clone());
 
 							for (int i = 0; i < pentPoints.length; i++) {
 								Vector line = pentPoints[(i + 2) % 5].clone().subtract(pentPoints[i]);
@@ -135,18 +128,33 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 				}
 
 				@Override
-				public void groundEffectTargetAction(Hero hero, LivingEntity target) {
-					Player player = hero.getPlayer();
+				public void groundEffectTargetAction(Hero hero, final LivingEntity target, final AreaGroundEffectEffect groundEffect) {
+					final Player player = hero.getPlayer();
 					if (damageCheck(player, target)) {
 						damageEntity(target, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, false);
 
-						CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
+						final CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
 
-						com.herocraftonline.heroes.characters.effects.Effect effect = targetCt.getEffect("Slow");
-						if (effect instanceof RepeatingSlow) {
+						if (!targetCt.hasEffect("Slow")) {
+							final SlowEffect effect = new SlowEffect(SkillDesecration.this, player, groundEffect.getExpiry() - System.currentTimeMillis() + 200, 1);
+							targetCt.addEffect(effect);
 
-						} else {
-							targetCt.addEffect(new SlowEffect(SkillDesecration.this, player, period + 500, 1));
+							new BukkitRunnable() {
+								@Override
+								public void run() {
+									Location targetLocation = target.getLocation();
+									double targetY = targetLocation.getY();
+									targetLocation.setY(targetLocation.getY());
+									Location effectLocation = groundEffect.getLocation();
+									double groundEffectHeight = groundEffect.getHeight();
+
+									if (groundEffect.isExpired() || effectLocation.distanceSquared(targetLocation) > radius * radius ||
+											targetY > effectLocation.getY() + groundEffectHeight || targetY < effectLocation.getY() - groundEffectHeight) {
+										targetCt.removeEffect(effect);
+										cancel();
+									}
+								}
+							}.runTaskTimer(plugin, 4, 4);
 						}
 					}
 				}
@@ -154,35 +162,5 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 
 			return SkillResult.NORMAL;
 		}
-	}
-
-	private class RepeatingSlow extends SlowEffect {
-
-		public RepeatingSlow(Skill skill, Player applier, long duration, int amplifier) {
-			super(skill, applier, duration, amplifier);
-		}
-
-		@Override
-		public void applyToHero(Hero hero) {
-			effected.add(hero.getPlayer().getUniqueId());
-		}
-
-		@Override
-		public void applyToMonster(Monster monster) {
-			effected.add(monster.getEntity().getUniqueId());
-		}
-
-		@Override
-		public void removeFromHero(Hero hero) {
-			effected.remove(hero.getPlayer().getUniqueId());
-		}
-
-		@Override
-		public void removeFromMonster(Monster monster) {
-			effected.remove(monster.getEntity().getUniqueId());
-		}
-
-		//removeFrom(Hero h) { h.addEffect(new ExpirableEffect("mySkillFlag", 1000));}
-		//applyToHero(Hero h) { if (!h.hasEffect("mySkillFlag")) {// Send message about being slowed here } // do stuff }
 	}
 }

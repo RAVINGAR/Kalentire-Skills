@@ -25,7 +25,7 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 		super(plugin, name);
 	}
 
-	private void castGroundEffect(final Hero hero, final Location location, final double radius, final double height, final GroundEffectActions actions) {
+	private void castGroundEffect(final Hero hero, final Location location, final double radius, final double height, final GroundEffectActions actions, final AreaGroundEffectEffect effect) {
 		final Set<Entity> possibleTargets = getEntitiesInChunks(hero.getPlayer().getLocation(), (int) (radius + 16) / 16);
 
 		// TODO Not much logic needed with sphere casting, look into if async filtering is needed.
@@ -41,7 +41,7 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 							Bukkit.getScheduler().runTask(plugin, new Runnable() {
 								@Override
 								public void run() {
-									actions.groundEffectTargetAction(hero, (LivingEntity) target);
+									actions.groundEffectTargetAction(hero, (LivingEntity) target, effect);
 								}
 							});
 						}
@@ -80,7 +80,7 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 
 	public interface GroundEffectActions {
 		void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect);
-		void groundEffectTargetAction(Hero hero, LivingEntity target);
+		void groundEffectTargetAction(Hero hero, LivingEntity target, AreaGroundEffectEffect effect);
 	}
 
 	protected void applyAreaGroundEffectEffect(Hero hero, long period, long duration, Location location, double radius, double height,
@@ -145,7 +145,7 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 		@Override
 		public void tickHero(Hero hero) {
 			actions.groundEffectTickAction(hero, this);
-			castGroundEffect(hero, location, radius, height, actions);
+			castGroundEffect(hero, location, radius, height, actions, this);
 		}
 
 		@Override
