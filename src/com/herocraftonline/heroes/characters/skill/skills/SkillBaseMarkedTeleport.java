@@ -11,9 +11,12 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.ParticleEffect;
+import de.slikey.effectlib.util.RandomUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -267,7 +270,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 		private final class RingEffect extends Effect {
 
 			public double radius = 0.5;
-			public double particles = 5;
+			public double particles = 9;
 
 			private int colorIndex = 0;
 
@@ -276,14 +279,14 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 				infinite();
 				asynchronous = true;
 				color = Color.WHITE;
-				period = 4;
+				period = 2;
 			}
 
 			@Override
 			public void onRun() {
 				double inc = Math.PI * 2 / particles;
 
-				for (double angle = 0; angle <= 2 * Math.PI; angle += inc) {
+				for (double angle = 0; angle < 4 * Math.PI; angle += inc) {
 					if (colors.length > 0) {
 						if (colorIndex >= colors.length) {
 							colorIndex = 0;
@@ -296,6 +299,11 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 					display(particle, getLocation().add(v));
 					getLocation().subtract(v);
 				}
+
+				//ParticleEffect.CRIT.display(new Vector((Util.nextRand() - 0.5) * 2, 1, (Util.nextRand() - 0.5) * 2), 0.5f, getLocation(), visibleRange);
+				//ParticleEffect.CRIT.display(new Vector((Util.nextRand() - 0.5) * 2, 1, (Util.nextRand() - 0.5) * 2), 0.5f, getLocation(), visibleRange);
+				//ParticleEffect.CRIT.display(new Vector((Util.nextRand() - 0.5) * 2, 1, (Util.nextRand() - 0.5) * 2), 0.5f, getLocation(), visibleRange);
+				//ParticleEffect.CRIT.display(new Vector((Util.nextRand() - 0.5) * 2, 1, (Util.nextRand() - 0.5) * 2), 0.5f, getLocation(), visibleRange);
 			}
 		}
 	}
