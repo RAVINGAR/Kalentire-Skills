@@ -118,6 +118,14 @@ public abstract class SkillBaseGroundEffect extends ActiveSkill {
 			types.add(EffectType.MAGIC);
 		}
 
+		public Location getLocation() {
+			return location;
+		}
+
+		public void setLocation(Location location) {
+			this.location = location;
+		}
+
 		public double getRadius() {
 			return radius;
 		}

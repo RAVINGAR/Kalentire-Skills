@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -59,7 +58,7 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 			final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
 			double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
 			long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
-			long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+			final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
 			final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
@@ -77,9 +76,12 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 					if (damageCheck(player, target)) {
 						damageEntity(target, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, false);
 					}
-
-					CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
-					targetCt.addEffect(new SpeedEffect(SkillConsecration.this, player, 0, 0));
+					if (target instanceof Player) {
+						Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+						if (targetHero == hero || (hero.hasParty() && hero.getParty().isPartyMember(targetHero))) {
+							targetHero.addEffect(new SpeedEffect(SkillConsecration.this, player, period + 100, 1));
+						}
+					}
 				}
 			});
 
