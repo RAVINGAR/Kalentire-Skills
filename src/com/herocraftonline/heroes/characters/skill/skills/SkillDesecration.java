@@ -55,9 +55,9 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 				.replace("$2", Util.decFormat.format((double) period / 1000))
 				.replace("$3", Util.decFormat.format((double) duration / 1000))
 				.replace("$4", Util.decFormat.format(radius))
-				.replace("$4", Util.decFormat.format(height))
-				.replace("$5", mana > 0 ? "Mana: " + mana : "")
-				.replace("$6", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$5", Util.decFormat.format(height))
+				.replace("$6", mana > 0 ? "Mana: " + mana : "")
+				.replace("$7", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
 	}
 
 	@Override
