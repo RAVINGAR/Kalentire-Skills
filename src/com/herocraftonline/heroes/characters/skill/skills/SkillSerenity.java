@@ -14,21 +14,19 @@ import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 
-public class SkillArcaneStorm extends SkillBaseSphere {
+public class SkillSerenity extends SkillBaseSphere {
 
-	public SkillArcaneStorm(Heroes plugin) {
-		super(plugin, "ArcaneStorm");
+	public SkillSerenity(Heroes plugin) {
+		super(plugin, "Serenity");
 		//TODO Description change
-		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds. $5 $6");
-		setUsage("/skill arcanestorm");
-		setIdentifiers("skill arcanestorm");
+		setDescription("Call upon the forces of order to heal allies within $1 for $2 every $3 seconds for $4 seconds. $5 $6");
+		setUsage("/skill serenity");
+		setIdentifiers("skill serenity");
 		setArgumentRange(0, 0);
 		//TODO edit types
-		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
+		setTypes(SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.HEALING);
 	}
 
 	@Override
@@ -37,15 +35,15 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 		long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
-		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
-				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+		final double healTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 100d, false)
+				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
 
 		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
 		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
 
 		return getDescription()
 				.replace("$1", Util.decFormat.format(radius))
-				.replace("$2", Util.decFormat.format(damageTick))
+				.replace("$2", Util.decFormat.format(healTick))
 				.replace("$3", Util.decFormat.format((double) period / 1000))
 				.replace("$4", Util.decFormat.format((double) duration / 1000))
 				.replace("$5", mana > 0 ? "Mana: " + mana : "")
@@ -59,8 +57,8 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 		node.set(SkillSetting.RADIUS.node(), 5d);
 		node.set(SkillSetting.DURATION.node(), 6000);
 		node.set(SkillSetting.PERIOD.node(), 1000);
-		node.set(SkillSetting.DAMAGE_TICK.node(), 100d);
-		node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 1d);
+		node.set(SkillSetting.HEALING_TICK.node(), 100d);
+		node.set(SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM.node(), 1d);
 
 		return node;
 	}
@@ -76,29 +74,27 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 			long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 			long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
-			final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
-					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+			final double healTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 100d, false)
+					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
 
 			applyAreaSphereEffect(hero, period, duration, radius, new SphereActions() {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.SPELL_MOB, Color.AQUA);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5f, 0.000001f);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.5f, 0.000001f);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.SPELL_MOB, Color.GREEN);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIREWORK_LARGE_BLAST, 0.5f, 0.00001f);
 				}
 
 				@Override
 				public void sphereTargetAction(Hero hero, Entity target) {
-					Player player = hero.getPlayer();
-					if (target instanceof LivingEntity && !target.equals(player)) {
-						LivingEntity livingTarget = (LivingEntity) target;
-						if (damageCheck(player, livingTarget)) {
-							damageEntity(livingTarget, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, true);
+					if (target instanceof Player) {
+						Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+						if (targetHero == hero || (hero.hasParty() && hero.getParty().isPartyMember(targetHero))) {
+							targetHero.heal(healTick);
 						}
 					}
 				}
-			}, EffectType.DISPELLABLE);
+			}, EffectType.DISPELLABLE, EffectType.HEALING);
 
 			return SkillResult.NORMAL;
 		}

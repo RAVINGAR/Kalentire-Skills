@@ -23,19 +23,21 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-public class SkillEndlessNightmare extends SkillBaseSpike {
+public class SkillSoulSpike extends SkillBaseSpike {
 
 	private static final ParticleEffect PARTICLE = ParticleEffect.SPELL_MOB_AMBIENT;
 
 	private static final String SLOW_AMPLIFIER = "slow-amplifier";
 	private static final String HUNGER_AMPLIFIER = "hunger-amplifier";
 
-	public SkillEndlessNightmare(Heroes plugin) {
-		super(plugin, "EndlessNightmare");
+	public SkillSoulSpike(Heroes plugin) {
+		super(plugin, "SoulSpike");
+		//TODO Description change
 		setDescription("Impales the target with a spike of chaos casting them into a nightmarish state for $1 seconds, dealing $2 damage. $3 $4");
-		setUsage("/skill endlessnightmare");
-		setIdentifiers("skill endlessnightmare");
+		setUsage("/skill soulspike");
+		setIdentifiers("skill soulspike");
 		setArgumentRange(0, 0);
+		//TODO edit types
 		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_SLOWING, SkillType.BLINDING);
 	}
 
@@ -72,8 +74,8 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		node.set(SLOW_AMPLIFIER, 1);
 		node.set(HUNGER_AMPLIFIER, 1);
 
-		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cast into an endless nightmare!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has awoken from an endless nightmare!");
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s soul was spiked!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer spiked!");
 
 		return node;
 	}
@@ -95,15 +97,15 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 			int hungerAmplifier = SkillConfigManager.getUseSetting(hero, this, HUNGER_AMPLIFIER, 1, false);
 
 			CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-			String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cast into an endless nightmare!").replace("%target%", "$1");
-			String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has awoken from an endless nightmare!").replace("%target%", "$1");
-			EndlessNightmareEffect effect = new EndlessNightmareEffect(player, duration, slowAmplifier, hungerAmplifier);
+			String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s soul was spiked!").replace("%target%", "$1");
+			String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer spiked!").replace("%target%", "$1");
+			SkillSoulSpikeEffect effect = new SkillSoulSpikeEffect(player, duration, slowAmplifier, hungerAmplifier);
 			effect.setApplyText(applyText);
 			effect.setExpireText(expireText);
 			targetCT.addEffect(effect);
 
 			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT_NODE, 3d, false);
-			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE, Color.BLACK);
+			renderSpike(target.getLocation(), spikeHeight, BLOCK_SPIKE_RADIUS, PARTICLE, Color.fromRGB(70, 0, 130));//TODO Testing
 
 			if (SkillConfigManager.getUseSetting(hero, this, DOES_KNOCK_UP_NODE, true)) {
 				Vector knockUpVector = new Vector(0, SkillConfigManager.getUseSetting(hero, this, KNOCK_UP_STRENGTH_NODE, 0.6, false), 0);
@@ -111,7 +113,6 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 			}
 
 			target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.2f, 0.00001f);
-			target.getWorld().playSound(target.getLocation(), Sound.GHAST_CHARGE, 0.2f, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {
@@ -119,10 +120,10 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		}
 	}
 
-	public class EndlessNightmareEffect extends ExpirableEffect {
+	public class SkillSoulSpikeEffect extends ExpirableEffect {
 
-		public EndlessNightmareEffect(Player applier, int duration, int slowAmplifier, int hungerAmplifier) {
-			super(SkillEndlessNightmare.this, SkillEndlessNightmare.this.getName(), applier, duration);
+		public SkillSoulSpikeEffect(Player applier, int duration, int slowAmplifier, int hungerAmplifier) {
+			super(SkillSoulSpike.this, SkillSoulSpike.this.getName(), applier, duration);
 
 			types.add(EffectType.MAGIC);
 			types.add(EffectType.HARMFUL);

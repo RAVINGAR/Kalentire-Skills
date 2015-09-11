@@ -11,26 +11,31 @@ import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.entity.EntityDamageEvent;
 
-public class SkillTimeReverse extends SkillBaseMarkedTeleport {
+public class SkillTimeRune extends SkillBaseMarkedTeleport {
 
 	private static final String HEALING_PERCENTAGE_NODE = "healing-percentage";
 	private static final String HEALING_PERCENTAGE_PER_WISDOM_NODE = "healing-percentage-per-wisdom";
 
-	public SkillTimeReverse(Heroes plugin) {
-		super(plugin, "TimeReverse", true, new EffectType[]{
+	public SkillTimeRune(Heroes plugin) {
+		super(plugin, "TimeRune", true, new EffectType[]{
+				//TODO possible type edit
 				EffectType.HEALING,
 				EffectType.BENEFICIAL,
 		}, ParticleEffect.REDSTONE, new Color[]{
+				//TODO Color change
 				Color.BLUE,
 				Color.SILVER
 		});
+		// TODO Dscription change
 		setDescription("Mark your current position in time for the next $1 seconds. At any point during that time you may re activate the skill to teleport" +
 				" your self back to that location healing you for an amount starting at $3 ($2% of max health) and decaying towards 0 as the skills duration reaches end. If you do not" +
 				" re activate the skill within the duration no healing is applied and no teleport occurs. $4 $5");
-		setUsage("/skill timereverse");
-		setIdentifiers("skill timereverse");
+		setUsage("/skill timerune");
+		setIdentifiers("skill timerune");
 
+		// TODO type edit
 		setTypes(SkillType.HEALING, SkillType.TELEPORTING);
 	}
 

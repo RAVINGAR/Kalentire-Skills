@@ -7,8 +7,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Sound;
@@ -18,25 +16,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
+import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
 
-public class SkillOrdain extends SkillBaseBeam {
+public class SkillSacredGlimmer extends SkillBaseBeam {
 
-	private static final float PARTICLE_OFFSET_FROM_FACE = 1;
-	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.VILLAGER_HAPPY;
+	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.SPELL;
 
-	public SkillOrdain(Heroes plugin) {
-		super(plugin, "Ordain");
+	public SkillSacredGlimmer(Heroes plugin) {
+		super(plugin, "SacredGlimmer");
+		//TODO Description change
 		setDescription("You summon the calling of order to project a beam that heals $1 health in its path. $2 $3");
-		setUsage("/skill ordain");
+		setUsage("/skill sacredglimmer");
 		setArgumentRange(0, 0);
-		setIdentifiers("skill ordain");
+		setIdentifiers("skill sacredglimmer");
+		//TODO Edit types
 		setTypes(HEALING, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
-		double beamHeal = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING, 150d, false);
-		double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
+		double beamHeal = SkillConfigManager.getUseSetting(hero, SkillSacredGlimmer.this, SkillSetting.HEALING, 150d, false);
+		double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillSacredGlimmer.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
 		beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
 
 		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
@@ -67,18 +67,18 @@ public class SkillOrdain extends SkillBaseBeam {
 
 		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, BEAM_MAX_LENGTH_NODE, 15, false);
 		double beamRadius = SkillConfigManager.getUseSetting(hero, this, BEAM_RADIUS_NODE, 2d, false);
-		final Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
+		final SkillBaseBeam.Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
 
 		broadcastExecuteText(hero);
 
-		castBeam(hero, beam, new TargetHandler() {
+		castBeam(hero, beam, new SkillBaseBeam.TargetHandler() {
 			@Override
-			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
+			public void handle(Hero hero, LivingEntity target, SkillBaseBeam.Beam.PointData pointData) {
 				if (target instanceof Player) {
 					Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 					if (targetHero == hero || (hero.hasParty() && hero.getParty().isPartyMember(targetHero))) {
-						double beamHeal = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING, 150d, false);
-						double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillOrdain.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
+						double beamHeal = SkillConfigManager.getUseSetting(hero, SkillSacredGlimmer.this, SkillSetting.HEALING, 150d, false);
+						double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillSacredGlimmer.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
 						beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
 
 						targetHero.heal(beamHeal);
@@ -87,7 +87,7 @@ public class SkillOrdain extends SkillBaseBeam {
 			}
 		});
 
-		renderEyeBeam(player, beam, BEAM_PARTICLE, 60, 10, 40, 0.125, 1);
+		renderEyeBeam(player, beam, BEAM_PARTICLE, Color.fromRGB(255, 255, 153), 60, 10, 40, 0.125, 1);
 
 		new BukkitRunnable() {
 
@@ -99,9 +99,9 @@ public class SkillOrdain extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.ORB_PICKUP, volume, 1);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ORB_PICKUP, volume, 1);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ORB_PICKUP, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.FIZZ, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.FIZZ, volume, 1);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.FIZZ, volume, 1);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);
