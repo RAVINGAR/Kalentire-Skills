@@ -25,7 +25,7 @@ public class SkillDisarray extends SkillBaseBeam {
 	
 	public SkillDisarray(Heroes plugin) {
 		super(plugin, "Disarray");
-		setDescription("Surfing with chaos, you fire off a beam that deals $1 damage to everything in its path. $2 $3");
+		setDescription("Surging with chaos, you fire off a beam that deals $1 damage to everything in its path. $2 $3");
 		setUsage("/skill disarray");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill disarray");
