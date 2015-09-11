@@ -18,16 +18,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class SkillArcaneStorm extends SkillBaseSphere {
+public class SkillFireStorm extends SkillBaseSphere {
 
-	public SkillArcaneStorm(Heroes plugin) {
-		super(plugin, "ArcaneStorm");
+	public SkillFireStorm(Heroes plugin) {
+		super(plugin, "FireStorm");
 		//TODO Description change
 		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds. $5 $6");
-		setUsage("/skill arcanestorm");
-		setIdentifiers("skill arcanestorm");
+		setUsage("/skill firestorm");
+		setIdentifiers("skill firestorm");
 		setArgumentRange(0, 0);
-		//TODO edit types
+		//TODO Edit types
 		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
 	}
 
@@ -83,9 +83,8 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.SPELL_MOB, Color.AQUA);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5f, 0.000001f);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_TELEPORT, 0.5f, 0.000001f);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 0.25f, 0.000001f);
 				}
 
 				@Override

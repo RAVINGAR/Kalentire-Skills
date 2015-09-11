@@ -173,6 +173,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 		private void removeMarker() {
 			Marker marker = activeMarkers.remove(getApplier().getUniqueId());
+			//TODO This is null sometimes (figure out why)
 			applyCooldown(marker.hero);
 			marker.effect.cancel();
 

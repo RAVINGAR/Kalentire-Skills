@@ -7,35 +7,37 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
+import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
+import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTIBLE;
 
-public class SkillDisarray extends SkillBaseBeam {
+public class SkillBloodbeam extends SkillBaseBeam {
 
-	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.SPELL;
-	
-	public SkillDisarray(Heroes plugin) {
-		super(plugin, "Disarray");
+	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.REDSTONE;
+
+	public SkillBloodbeam(Heroes plugin) {
+		super(plugin, "BloodBeam");
+		//TODO Description change
 		setDescription("Surging with chaos, you fire off a beam that deals $1 damage to everything in its path. $2 $3");
-		setUsage("/skill disarray");
+		setUsage("/skill bloodbeam");
 		setArgumentRange(0, 0);
-		setIdentifiers("skill disarray");
+		setIdentifiers("skill bloodbeam");
+		//TODO Edit types
 		setTypes(DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
-		double beamDamage = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE, 150d, false);
-		double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5d, false);
+		double beamDamage = SkillConfigManager.getUseSetting(hero, SkillBloodbeam.this, SkillSetting.DAMAGE, 150d, false);
+		double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillBloodbeam.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5d, false);
 		beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
 
 		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
@@ -62,11 +64,11 @@ public class SkillDisarray extends SkillBaseBeam {
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
-		Player player = hero.getPlayer();
+		final Player player = hero.getPlayer();
 
 		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, BEAM_MAX_LENGTH_NODE, 15, false);
 		double beamRadius = SkillConfigManager.getUseSetting(hero, this, BEAM_RADIUS_NODE, 2d, false);
-		Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
+		final Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
 
 		broadcastExecuteText(hero);
 
@@ -74,8 +76,8 @@ public class SkillDisarray extends SkillBaseBeam {
 			@Override
 			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
 				if (damageCheck(hero.getPlayer(), target)) {
-					double beamDamage = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE, 150d, false);
-					double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
+					double beamDamage = SkillConfigManager.getUseSetting(hero, SkillBloodbeam.this, SkillSetting.DAMAGE, 150d, false);
+					double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillBloodbeam.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
 					beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
 
 					damageEntity(target, hero.getPlayer(), beamDamage, EntityDamageEvent.DamageCause.MAGIC, false);
@@ -83,11 +85,24 @@ public class SkillDisarray extends SkillBaseBeam {
 			}
 		});
 
-		renderEyeBeam(player, beam, BEAM_PARTICLE, Color.RED, 60, 10, 40, 0.125, 1);
+		renderEyeBeam(player, beam, BEAM_PARTICLE, 60, 10, 40, 0.125, 1);
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
-		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
-		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
+		new BukkitRunnable() {
+
+			private float volume = 0.25f;
+
+			@Override
+			public void run() {
+				if ((volume -= 0.025f) <= 0) {
+					cancel();
+				}
+				else {
+					player.getWorld().playSound(player.getEyeLocation(), Sound.LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.LAVA_POP, volume, 0.5f);
+				}
+			}
+		}.runTaskTimer(plugin, 0, 1);
 
 		return SkillResult.NORMAL;
 	}

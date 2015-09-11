@@ -18,16 +18,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
-public class SkillJudgmentSpike extends SkillBaseSpike {
+public class SkillInfernoBlade extends SkillBaseSpike {
 
 	private static final ParticleEffect PARTICLE = ParticleEffect.FLAME;
 
-	public SkillJudgmentSpike(Heroes plugin) {
-		super(plugin, "JudgmentSpike");
+	public SkillInfernoBlade(Heroes plugin) {
+		super(plugin, "InfernoBlade");
+		//TODO Description change
 		setDescription("Impales the target with a spike of order silencing them for $1 seconds, dealing $2 damage. $3 $4");
-		setUsage("/skill judgmentspike");
-		setIdentifiers("skill judgmentspike");
+		setUsage("/skill infernoblade");
+		setIdentifiers("skill infernoblade");
 		setArgumentRange(0, 0);
+		//TODO edit types
 		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCING);
 	}
 
@@ -36,7 +38,7 @@ public class SkillJudgmentSpike extends SkillBaseSpike {
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false) / 1000;
 
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 250d, false);
-		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
 		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
 		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
@@ -74,7 +76,7 @@ public class SkillJudgmentSpike extends SkillBaseSpike {
 			broadcastExecuteText(hero, target);
 
 			double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 250d, false);
-			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 			damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
 			CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
