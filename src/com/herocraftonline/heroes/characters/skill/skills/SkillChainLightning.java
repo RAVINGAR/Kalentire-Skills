@@ -33,101 +33,6 @@ public class SkillChainLightning extends TargettedSkill {
         setIdentifiers("skill chainlightning");
         this.setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCEABLE);
     }
-    @Override
-    public SkillResult use(Hero hero, String[] args) {
-
-        if (hero.hasEffectType(EffectType.BLIND)) {
-            Messaging.send(hero.getPlayer(), "You can't target anything while blinded!");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-        final LivingEntity target = getTarget(hero, hero.hasEffect("PowerLocusEffect") ? 100 : 16, args);
-
-        if (target == null) {
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-        else if ((args.length > 1) && (target != null)) {
-            args = Arrays.copyOfRange(args, 1, args.length);
-        }
-
-        if (target != null && (target instanceof Player)) {
-            final Hero tHero = plugin.getCharacterManager().getHero((Player) target);
-            if (tHero.hasEffectType(EffectType.UNTARGETABLE)) {
-                Messaging.send(hero.getPlayer(), "You cannot currently target this player!");
-                return SkillResult.INVALID_TARGET_NO_MSG;
-            }
-            else if (tHero.hasEffectType(EffectType.UNTARGETABLE)) {
-                return SkillResult.INVALID_TARGET_NO_MSG;
-            }
-        }
-
-        final SkillResult result = use(hero, target, args);
-        if (this.isType(SkillType.INTERRUPTING) && result.equals(SkillResult.NORMAL) && (target instanceof Player)) {
-            final Hero tHero = plugin.getCharacterManager().getHero((Player) target);
-            if (tHero.getDelayedSkill() != null) {
-                tHero.cancelDelayedSkill();
-                tHero.setCooldown("global", Heroes.properties.globalCooldown + System.currentTimeMillis());
-            }
-        }
-        return result;
-    }
-    private LivingEntity getTarget(Hero hero, int maxDistance, String[] args) {
-        final Player player = hero.getPlayer();
-        LivingEntity target = null;
-        if (args.length > 0) {
-            target = plugin.getServer().getPlayer(args[0]);
-            if (target == null) {
-                Messaging.send(player, "Invalid target!");
-                return null;
-            }
-            if (!target.getLocation().getWorld().equals(player.getLocation().getWorld())) {
-                Messaging.send(player, "Target is in a different dimension.");
-                return null;
-            }
-            final int distSq = maxDistance * maxDistance;
-            if (target.getLocation().distanceSquared(player.getLocation()) > distSq) {
-                Messaging.send(player, "Target is too far away.");
-                return null;
-            }
-            if (!inLineOfSight(player, (Player) target)) {
-                Messaging.send(player, "Sorry, target is not in your line of sight!");
-                return null;
-            }
-            if (target.isDead() || (target.getHealth() == 0)) {
-                Messaging.send(player, "You can't target the dead!");
-                return null;
-            }
-        }
-        if (target == null) {
-            target = getPlayerTarget(player, maxDistance);
-            if (this.isType(SkillType.HEALING)) {
-                if ((target instanceof Player) && hero.hasParty() && hero.getParty().isPartyMember((Player) target)) {
-                    return target;
-                }
-                else if (target instanceof Player) {
-                    return null;
-                }
-                else {
-                    target = null;
-                }
-            }
-        }
-        if (target == null) {
-            // don't self-target harmful skills
-            if (this.isType(SkillType.DAMAGING)) {
-                return null;
-            }
-            target = player;
-        }
-
-        // Do a PvP check automatically for any harmful skill
-        if (this.isType(SkillType.DAMAGING)) {
-            if (player.equals(target) || hero.getSummons().contains(target) || !damageCheck(player, target)) {
-                Messaging.send(player, "Sorry, You can't damage that target!");
-                return null;
-            }
-        }
-        return target;
-    }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -255,9 +160,11 @@ public class SkillChainLightning extends TargettedSkill {
         }
 
     }
+
     public float getLightningVolume(Hero h) {
         return (float) SkillConfigManager.getUseSetting(h, this, "lightning-volume", 0.0F, false);
     }
+
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
