@@ -2,9 +2,10 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 
+import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -68,7 +69,7 @@ public class SkillInvuln extends ActiveSkill {
 
 	public ArrayList<Location> rectangle(Location center, double width, double effectSpacing)
 	{
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 		double minX = center.getX() - width;
 		double maxX = center.getX() + width;
 		double minZ = center.getZ() - width;
@@ -90,32 +91,58 @@ public class SkillInvuln extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
 		final Player p = player;
-		
-        new BukkitRunnable() {
+
+		EffectManager em = new EffectManager(plugin);
+		de.slikey.effectlib.Effect particleEffect = new de.slikey.effectlib.Effect(em) {
+
+			int step = 0;
+
+			@Override
+			public void onRun() {
+				for (double x = -1.5; x <= 1.6; x+= 0.5) {
+					for (double z = -1.5; z < 1.6; z+= 0.5) {
+						Location loc = getEntity().getLocation().add(x, 4 - (step * 0.5), z);
+						display(ParticleEffect.REDSTONE, loc);
+					}
+				}
+				step++;
+			}
+		};
+
+		particleEffect.iterations = 8;
+		particleEffect.period = 3;
+		particleEffect.type = de.slikey.effectlib.EffectType.REPEATING;
+		particleEffect.color = Color.YELLOW;
+		particleEffect.asynchronous = true;
+		particleEffect.setEntity(player);
+
+		em.start(particleEffect);
+		em.disposeOnTermination();
+
+       /* new BukkitRunnable() {
             
             private Location location = p.getLocation();
 
             private double height = 8;
-	        
-	        ParticleEffect.ParticleData data = new ParticleEffect.BlockData(Material.QUARTZ_BLOCK, (byte) 0);
 
-            @SuppressWarnings("deprecation")
             @Override
             public void run() 
             {
             	ArrayList<Location> particleLocations = rectangle(location.add(0, height, 0), 2, 1);
+	            location.subtract(0, height, 0);
             	for (Location l : particleLocations)
             	{
 		            // Old method
             		//l.getWorld().spigot().playEffect(l, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.2F, 0.3F, 0.0F, 10, 16);
 
-		            ParticleEffect.BLOCK_DUST.display(data, 0.3f, 0.2f, 0.3f, 0, 10, l, 16);
+		            ParticleEffect.REDSTONE.display(null, l, Color.YELLOW, 16, 0.0F, 0.0F, 0.0F, 0, 10);
             	}
             	height -= 1;
             	if (height == 0)
             		cancel();
             }
-        }.runTaskTimerAsynchronously(plugin, 1, 3);
+        }.runTaskTimerAsynchronously(plugin, 1, 3);*/
+
 		broadcastExecuteText(hero);
 
 		// Remove any harmful effects on the caster
