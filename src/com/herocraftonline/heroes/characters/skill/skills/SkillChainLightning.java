@@ -103,7 +103,7 @@ public class SkillChainLightning extends TargettedSkill {
         public void apply(CharacterTemplate cT) {
             super.apply(cT);
             addSpellTarget(cT.getEntity(),caster);
-            Skill.damageEntity(cT.getEntity(), caster.getEntity(), damage, DamageCause.MAGIC);
+            Skill.damageEntity(cT.getEntity(), caster.getEntity(), damage, DamageCause.MAGIC, false);
             if (cT instanceof Hero) {
                 ((Player)(cT.getEntity())).sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Hit by Arcane Multibolt from " + caster.getName() + "!");
             }
