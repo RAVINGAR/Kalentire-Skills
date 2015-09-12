@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 
+import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -95,6 +96,8 @@ public class SkillInvuln extends ActiveSkill {
             private Location location = p.getLocation();
 
             private double height = 8;
+	        
+	        ParticleEffect.ParticleData data = new ParticleEffect.BlockData(Material.QUARTZ_BLOCK, (byte) 0);
 
             @SuppressWarnings("deprecation")
             @Override
@@ -103,13 +106,16 @@ public class SkillInvuln extends ActiveSkill {
             	ArrayList<Location> particleLocations = rectangle(location.add(0, height, 0), 2, 1);
             	for (Location l : particleLocations)
             	{
-            		l.getWorld().spigot().playEffect(l, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.2F, 0.3F, 0.0F, 10, 16);
+		            // Old method
+            		//l.getWorld().spigot().playEffect(l, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.2F, 0.3F, 0.0F, 10, 16);
+
+		            ParticleEffect.BLOCK_DUST.display(data, 0.3f, 0.2f, 0.3f, 0, 10, l, 16);
             	}
             	height -= 1;
             	if (height == 0)
             		cancel();
             }
-        }.runTaskTimer(plugin, 1, 3);
+        }.runTaskTimerAsynchronously(plugin, 1, 3);
 		broadcastExecuteText(hero);
 
 		// Remove any harmful effects on the caster
