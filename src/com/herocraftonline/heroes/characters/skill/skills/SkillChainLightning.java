@@ -54,7 +54,7 @@ public class SkillChainLightning extends TargettedSkill {
         long cdr = (long) (SkillConfigManager.getUseSetting(hero, this, "bounceCooldownReduction", 1000, false));
         int maxBounce = (int) SkillConfigManager.getUseSetting(hero, this, "maxBounce", 5, false);
         CharacterTemplate cT = plugin.getCharacterManager().getCharacter(target);
-        cT.addEffect(new MultiboltEffect(this, plugin, bounceTime, damage, hero, damageReductionPercent, bounceRadius, cdr, maxBounce));
+        cT.addEffect(new ChainLightningEffect(this, plugin, bounceTime, damage, hero, damageReductionPercent, bounceRadius, cdr, maxBounce));
         broadcast(hero.getPlayer().getLocation(), ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] " + hero.getName() + " used ChainLightning!");
         return SkillResult.NORMAL;
     }
@@ -74,7 +74,7 @@ public class SkillChainLightning extends TargettedSkill {
                 .replace("$5", cdr + "");
     }
 
-    public class MultiboltEffect extends ExpirableEffect {
+    public class ChainLightningEffect extends ExpirableEffect {
 
         private double damage;
         private Hero caster;
@@ -83,10 +83,10 @@ public class SkillChainLightning extends TargettedSkill {
         private long cdr;
         private long bounceTime;
         private int remaining;
-        public MultiboltEffect(Skill skill, Heroes plugin, long duration, double damage, Hero caster, double bouncePercent, int bounceRadius, long cdr, int remaining) {
-            this(skill, "MultiboltEffect" + System.currentTimeMillis(), plugin , duration, damage, caster, bouncePercent, bounceRadius, cdr, remaining);
+        public ChainLightningEffect(Skill skill, Heroes plugin, long duration, double damage, Hero caster, double bouncePercent, int bounceRadius, long cdr, int remaining) {
+            this(skill, "ChainLightningEffect" + System.currentTimeMillis(), plugin , duration, damage, caster, bouncePercent, bounceRadius, cdr, remaining);
         }
-        public MultiboltEffect(Skill skill, String name, Heroes plugin, long duration, double damage, Hero caster, double bouncePercent, int bounceRadius, long cdr, int remaining) {
+        public ChainLightningEffect(Skill skill, String name, Heroes plugin, long duration, double damage, Hero caster, double bouncePercent, int bounceRadius, long cdr, int remaining) {
             super(skill, plugin, name, caster.getPlayer(), duration);
             this.damage = damage;
             this.caster = caster;
@@ -105,7 +105,7 @@ public class SkillChainLightning extends TargettedSkill {
             addSpellTarget(cT.getEntity(),caster);
             Skill.damageEntity(cT.getEntity(), caster.getEntity(), damage, DamageCause.MAGIC, false);
             if (cT instanceof Hero) {
-                ((Player)(cT.getEntity())).sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Hit by Arcane Multibolt from " + caster.getName() + "!");
+                ((Player)(cT.getEntity())).sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Hit by ChainLightning from " + caster.getName() + "!");
             }
             cT.getEntity().getLocation().getWorld().strikeLightningEffect(cT.getEntity().getLocation());
             cT.getEntity().getWorld().playSound(cT.getEntity().getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(caster), 1.0F);
@@ -155,7 +155,7 @@ public class SkillChainLightning extends TargettedSkill {
                     caster.setCooldown(skill.getName(), cd-cdr);
                 }
                 CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                targetCT.addEffect(new MultiboltEffect(skill,plugin,bounceTime,damage,caster,bouncePercent,bounceRadius,cdr,remaining));
+                targetCT.addEffect(new ChainLightningEffect(skill,plugin,bounceTime,damage,caster,bouncePercent,bounceRadius,cdr,remaining));
                 return;
             } else {
                 return;
