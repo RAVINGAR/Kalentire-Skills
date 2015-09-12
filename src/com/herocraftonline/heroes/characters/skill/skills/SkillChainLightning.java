@@ -31,19 +31,22 @@ public class SkillChainLightning extends TargettedSkill {
                 + "dealing $4% damage on bounce. "
                 + "Every successive hit will decrease the caster's cooldown of this skill by $5 seconds.");
         setIdentifiers("skill chainlightning");
-        this.setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCEABLE);
+        this.setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.MULTI_GRESSIVE, SkillType.SILENCEABLE);
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        if (target == null || hero.getEntity() == target) {
-            if (target == null) {
-                hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] No Target!");
-            } else {
-                hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Cannot Target Yourself!");
-            }
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
+
+        // Skill shouldn't be handling its own targetting
+        //if (target == null || hero.getEntity() == target) {
+        //    if (target == null) {
+        //        hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] No Target!");
+        //    } else {
+        //        hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Cannot Target Yourself!");
+        //    }
+        //    return SkillResult.INVALID_TARGET_NO_MSG;
+        //}
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
         long bounceTime = (long) (SkillConfigManager.getUseSetting(hero, this, "bounceTime", 2000, false));
         int bounceRadius = (int) SkillConfigManager.getUseSetting(hero, this, "bounceRadius", 5, false);
