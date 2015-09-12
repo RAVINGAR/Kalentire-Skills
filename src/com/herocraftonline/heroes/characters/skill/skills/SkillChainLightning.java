@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SkillChainLightning extends TargettedSkill {
@@ -84,7 +85,7 @@ public class SkillChainLightning extends TargettedSkill {
         private long bounceTime;
         private int remaining;
         public ChainLightningEffect(Skill skill, Heroes plugin, long duration, double damage, Hero caster, double bouncePercent, int bounceRadius, long cdr, int remaining) {
-            this(skill, "ChainLightningEffect" + System.currentTimeMillis(), plugin , duration, damage, caster, bouncePercent, bounceRadius, cdr, remaining);
+            this(skill, "ChainLightningEffect" + System.currentTimeMillis(), plugin, duration, damage, caster, bouncePercent, bounceRadius, cdr, remaining);
         }
         public ChainLightningEffect(Skill skill, String name, Heroes plugin, long duration, double damage, Hero caster, double bouncePercent, int bounceRadius, long cdr, int remaining) {
             super(skill, plugin, name, caster.getPlayer(), duration);
@@ -118,37 +119,41 @@ public class SkillChainLightning extends TargettedSkill {
             if (remaining <= 0) {
                 return;
             }
+
+            // Target is a Player if found, entityTarget is a non-player. After checks, target is set to entityTarget if blank and it exists.
             LivingEntity target = null;
+            LivingEntity entityTarget = null;
             List<Entity> nearby = cT.getEntity().getNearbyEntities(bounceRadius, bounceRadius, bounceRadius);
+            Collections.shuffle(nearby);
             for (Entity e : nearby) {
                 if (e instanceof Player) {
-                    if (((LivingEntity)e).equals(cT.getEntity())) {
+                    if (((LivingEntity) e).equals(cT.getEntity())) {
                         continue;
                     }
-                    if (((Player)e).equals(caster.getEntity())) {
+                    if (((Player) e).equals(caster.getEntity())) {
                         continue;
                     }
-                    if (Skill.damageCheck(caster.getPlayer(), (LivingEntity)e)) {
-                        target = (Player)e;
+                    if (Skill.damageCheck(caster.getPlayer(), (LivingEntity) e)) {
+                        target = (Player) e;
                         break;
                     }
-                }
-            }
-            if (target == null) {
-                for (Entity e : nearby) {
-                    if (e instanceof LivingEntity) {
-                        if (((LivingEntity)e).equals(cT.getEntity())) {
-                            continue;
-                        }
-                        if (((LivingEntity)e).equals(caster.getEntity())) {
-                            continue;
-                        }
-                        if (Skill.damageCheck(caster.getPlayer(), (LivingEntity)e)) {
-                            target = (LivingEntity)e;
-                        }
+                } else if (e instanceof LivingEntity) {
+                    if (((LivingEntity) e).equals(cT.getEntity())) {
+                        continue;
+                    }
+                    if (((LivingEntity) e).equals(caster.getEntity())) {
+                        continue;
+                    }
+                    if (Skill.damageCheck(caster.getPlayer(), (LivingEntity) e)) {
+                        entityTarget = (LivingEntity) e;
                     }
                 }
             }
+
+            if(target == null && entityTarget != null) {
+                target = entityTarget;
+            }
+
             if (target != null) {
                 Long cd = caster.getCooldown(skill.getName());
                 if (cd != null) {
