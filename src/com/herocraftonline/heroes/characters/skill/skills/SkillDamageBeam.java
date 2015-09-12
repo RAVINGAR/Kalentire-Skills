@@ -37,7 +37,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
 		Player player = hero.getPlayer();
-		Beam beam = createObstructedBeam(player.getEyeLocation(), 20, 2, Util.transparentBlocks);
+		Beam beam = createObstructedBeam(player.getEyeLocation(), 20, 2);
 
 		broadcastExecuteText(hero);
 

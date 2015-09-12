@@ -6,6 +6,8 @@ import com.google.common.base.Optional;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.nms.physics.RayTraceHit;
 import com.herocraftonline.heroes.util.Pair;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
@@ -182,22 +184,32 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 		return createBeam(origin.toVector(), origin.getDirection().multiply(length), radius);
 	}
 
-	protected static Beam createObstructedBeam(World world, Vector origin, Vector direction, int maxLength, double radius, Set<Material> transparent) {
-		Block target = getTargetBlock(new BlockIterator(world, origin, direction, 0, maxLength), transparent);
-		return createBeam(origin, direction, target.getLocation().add(0.5, 0.5, 0.5).toVector().distance(origin), radius);
-	}
-
 	protected static Beam createObstructedBeam(World world, Vector origin, Vector direction, int maxLength, double radius) {
-		return createObstructedBeam(world, origin, direction, maxLength, radius, Util.transparentBlocks);
-	}
+		Vector start = origin, end = direction.clone().normalize().multiply(maxLength).add(start);
+		RayTraceHit hit = NMSHandler.getInterface().getNMSPhysics().blockRayTrace(world, start, end, false, true);
+		Vector trajectory;
 
-	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius, Set<Material> transparent) {
-		Block target = getTargetBlock(new BlockIterator(origin, 0, maxLength), transparent);
-		return createBeam(origin, target.getLocation().add(0.5, 0.5, 0.5).distance(origin), radius);
+		if (hit != null) {
+			trajectory = hit.getPoint().subtract(start);
+		} else {
+			trajectory = end.subtract(start);
+		}
+
+		return createBeam(start, trajectory, radius);
 	}
 
 	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius) {
-		return createObstructedBeam(origin, maxLength, radius, Util.transparentBlocks);
+		Vector start = origin.toVector(), end = origin.getDirection().multiply(maxLength).add(start);
+		RayTraceHit hit = NMSHandler.getInterface().getNMSPhysics().blockRayTrace(origin.getWorld(), start, end, false, true);
+		Vector trajectory;
+
+		if (hit != null) {
+			trajectory = hit.getPoint().subtract(start);
+		} else {
+			trajectory = end.subtract(start);
+		}
+
+		return createBeam(start, trajectory, radius);
 	}
 
 	/*
