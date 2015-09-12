@@ -22,13 +22,11 @@ public class SkillFireStorm extends SkillBaseSphere {
 
 	public SkillFireStorm(Heroes plugin) {
 		super(plugin, "FireStorm");
-		//TODO Description change
-		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds. $5 $6");
+		setDescription("Call upon a storm of fire to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds. $5 $6");
 		setUsage("/skill firestorm");
 		setIdentifiers("skill firestorm");
 		setArgumentRange(0, 0);
-		//TODO Edit types
-		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
+		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_FIRE);
 	}
 
 	@Override

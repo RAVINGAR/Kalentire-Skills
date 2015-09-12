@@ -24,13 +24,11 @@ public class SkillInfernoBlade extends SkillBaseSpike {
 
 	public SkillInfernoBlade(Heroes plugin) {
 		super(plugin, "InfernoBlade");
-		//TODO Description change
-		setDescription("Impales the target with a spike of order silencing them for $1 seconds, dealing $2 damage. $3 $4");
+		setDescription("Impales the target with a spike of fire silencing them for $1 seconds, dealing $2 damage. $3 $4");
 		setUsage("/skill infernoblade");
 		setIdentifiers("skill infernoblade");
 		setArgumentRange(0, 0);
-		//TODO edit types
-		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCING);
+		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCING, SkillType.ABILITY_PROPERTY_FIRE);
 	}
 
 	@Override

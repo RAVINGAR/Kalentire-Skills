@@ -29,8 +29,7 @@ public class SkillSacredGlimmer extends SkillBaseBeam {
 		setUsage("/skill sacredglimmer");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill sacredglimmer");
-		//TODO Edit types
-		setTypes(HEALING, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
+		setTypes(HEALING, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE, ABILITY_PROPERTY_LIGHT);
 	}
 
 	@Override

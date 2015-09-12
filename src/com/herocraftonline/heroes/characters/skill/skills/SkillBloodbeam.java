@@ -25,13 +25,11 @@ public class SkillBloodbeam extends SkillBaseBeam {
 
 	public SkillBloodbeam(Heroes plugin) {
 		super(plugin, "BloodBeam");
-		//TODO Description change
-		setDescription("Surging with chaos, you fire off a beam that deals $1 damage to everything in its path. $2 $3");
+		setDescription("Surging with blood, you fire off a beam that deals $1 damage to everything in its path. $2 $3");
 		setUsage("/skill bloodbeam");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill bloodbeam");
-		//TODO Edit types
-		setTypes(DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
+		setTypes(DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE, ABILITY_PROPERTY_PROJECTILE, ABILITY_PROPERTY_BLEED);
 	}
 
 	@Override

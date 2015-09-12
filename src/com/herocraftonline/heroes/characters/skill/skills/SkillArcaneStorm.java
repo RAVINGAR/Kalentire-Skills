@@ -22,13 +22,11 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 
 	public SkillArcaneStorm(Heroes plugin) {
 		super(plugin, "ArcaneStorm");
-		//TODO Description change
-		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds. $5 $6");
+		setDescription("Call upon the forces of the arcane to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds. $5 $6");
 		setUsage("/skill arcanestorm");
 		setIdentifiers("skill arcanestorm");
 		setArgumentRange(0, 0);
-		//TODO edit types
-		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
+		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
 	}
 
 	@Override

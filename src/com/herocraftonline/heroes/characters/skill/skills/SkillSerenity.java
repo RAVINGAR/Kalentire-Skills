@@ -20,8 +20,7 @@ public class SkillSerenity extends SkillBaseSphere {
 
 	public SkillSerenity(Heroes plugin) {
 		super(plugin, "Serenity");
-		//TODO Description change
-		setDescription("Call upon the forces of order to heal allies within $1 for $2 every $3 seconds for $4 seconds. $5 $6");
+		setDescription("Call upon the forces of nature to heal allies within $1 for $2 every $3 seconds for $4 seconds. $5 $6");
 		setUsage("/skill serenity");
 		setIdentifiers("skill serenity");
 		setArgumentRange(0, 0);

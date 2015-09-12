@@ -32,13 +32,11 @@ public class SkillSoulSpike extends SkillBaseSpike {
 
 	public SkillSoulSpike(Heroes plugin) {
 		super(plugin, "SoulSpike");
-		//TODO Description change
-		setDescription("Impales the target with a spike of chaos casting them into a nightmarish state for $1 seconds, dealing $2 damage. $3 $4");
+		setDescription("Impales the target's soul with a spike of negative energy, casting them into a soul shaken state for $1 seconds, dealing $2 damage. $3 $4");
 		setUsage("/skill soulspike");
 		setIdentifiers("skill soulspike");
 		setArgumentRange(0, 0);
-		//TODO edit types
-		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_SLOWING, SkillType.BLINDING);
+		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_SLOWING, SkillType.BLINDING, SkillType.ABILITY_PROPERTY_DARK);
 	}
 
 	@Override

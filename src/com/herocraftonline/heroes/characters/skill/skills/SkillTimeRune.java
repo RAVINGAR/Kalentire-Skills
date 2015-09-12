@@ -20,13 +20,12 @@ public class SkillTimeRune extends SkillBaseMarkedTeleport {
 
 	public SkillTimeRune(Heroes plugin) {
 		super(plugin, "TimeRune", true, new EffectType[]{
-				//TODO possible type edit
 				EffectType.HEALING,
 				EffectType.BENEFICIAL,
 		}, ParticleEffect.REDSTONE, new Color[]{
 				//TODO Color change
-				Color.BLUE,
-				Color.SILVER
+				Color.MAROON,
+				Color.WHITE
 		});
 		// TODO Dscription change
 		setDescription("Mark your current position in time for the next $1 seconds. At any point during that time you may re activate the skill to teleport" +
