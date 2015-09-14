@@ -29,6 +29,7 @@ public class SkillLayhands extends TargettedSkill {
     public String getDescription(Hero hero) {
         String description = getDescription();
         if (SkillConfigManager.getUseSetting(hero, this, "drain-all-mana", false)) description += " Drains all mana on use.";
+        return description;
     }
 
     public ConfigurationSection getDefaultConfig() {
