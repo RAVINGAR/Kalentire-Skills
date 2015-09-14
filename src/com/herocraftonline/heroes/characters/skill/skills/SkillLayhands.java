@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
@@ -11,10 +12,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillLayhands extends TargettedSkill {
@@ -30,7 +27,8 @@ public class SkillLayhands extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        String description = getDescription();
+        if (SkillConfigManager.getUseSetting(hero, this, "drain-all-mana", false)) description += " Drains all mana on use.";
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -39,6 +37,7 @@ public class SkillLayhands extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_WISDOM.node(), 0.1);
         node.set(SkillSetting.COOLDOWN.node(), 900000);
+        node.set("drain-all-mana", false);
 
         return node;
     }
@@ -61,6 +60,9 @@ public class SkillLayhands extends TargettedSkill {
         }
 
         targetHero.heal(event.getAmount());
+        if (SkillConfigManager.getUseSetting(hero, this, "drain-all-mana", false)) {
+            hero.setMana(0);
+        }
 
         broadcastExecuteText(hero, target);
 
