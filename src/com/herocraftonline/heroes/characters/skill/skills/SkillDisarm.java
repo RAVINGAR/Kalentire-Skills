@@ -1,6 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
 import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -70,8 +73,11 @@ public class SkillDisarm extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
+
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int strDecrease = SkillConfigManager.getUseSetting(hero, this, "str-decrease", 90, false);
+
+        // Weird method used when items don't drop on death
+        /*int strDecrease = SkillConfigManager.getUseSetting(hero, this, "str-decrease", 90, false);
         //targetHero.addEffect(new StrDecreaseEffect(this, player, duration, applyText, expireText));
 
         AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "StrDecreaseEffect", player, duration, AttributeType.STRENGTH, strDecrease, applyText, expireText);
@@ -81,13 +87,27 @@ public class SkillDisarm extends TargettedSkill {
                 return SkillResult.CANCELLED;
             }
         }
-        Player targetPlayer = (Player) target;
+        targetHero.addEffect(aEffect);*/
+
+        Material heldItem = targetHero.getPlayer().getItemInHand().getType();
+
+        if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
+            Messaging.send(player, "You cannot disarm that target!");
+            return SkillResult.FAIL;
+        }
+
+        if (targetHero.hasEffectType(EffectType.DISARM)) {
+            Messaging.send(player, "%target% is already disarmed.");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+        targetHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
+
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
 
         broadcastExecuteText(hero, target);
 
-        targetHero.addEffect(aEffect);
+
         return SkillResult.NORMAL;
     }
 }
