@@ -51,7 +51,7 @@ public class SkillDisarm extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.DURATION.node(), 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has found his weapon again!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has found their weapon again!");
 
         return node;
     }
@@ -61,7 +61,7 @@ public class SkillDisarm extends TargettedSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% was disarmed by %hero%!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has found his weapon again!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has found their weapon again!").replace("%target%", "$1");
     }
 
     @Override
