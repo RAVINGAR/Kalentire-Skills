@@ -37,6 +37,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 	protected static final String PRESERVE_LOOK_DIRECTION_NODE = "preserve-look-direction";
 	protected static final String PRESERVE_VELOCITY_NODE = "preserve-velocity";
+	protected static final String RE_CAST_DELAY_NODE = "re-cast-delay";
 
 	private final Map<UUID, Marker> activeMarkers = new HashMap<>();
 
@@ -248,25 +249,28 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 		private void activate() {
 			if (!isActivated()) {
-				target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
-				target.getEntity().getWorld().playSound(location, Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
+				long reCastDelay = SkillConfigManager.getUseSetting(hero, SkillBaseMarkedTeleport.this, RE_CAST_DELAY_NODE, 0, false);
+				if (System.currentTimeMillis() - createTime > reCastDelay) {
+					target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
+					target.getEntity().getWorld().playSound(location, Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
 
-				Vector currentVelocity = target.getEntity().getVelocity();
+					Vector currentVelocity = target.getEntity().getVelocity();
 
-				if (preserveLookDirection) {
-					location.setDirection(target.getEntity().getLocation().getDirection());
+					if (preserveLookDirection) {
+						location.setDirection(target.getEntity().getLocation().getDirection());
+					}
+
+					target.getEntity().teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+
+					if (preserveVelocity) {
+						target.getEntity().setVelocity(currentVelocity);
+					}
+
+					activated = true;
+					target.removeEffect(target.getEffect(getName()));
+
+					onMarkerActivate(this, System.currentTimeMillis());
 				}
-
-				target.getEntity().teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
-
-				if (preserveVelocity) {
-					target.getEntity().setVelocity(currentVelocity);
-				}
-
-				activated = true;
-				target.removeEffect(target.getEffect(getName()));
-
-				onMarkerActivate(this, System.currentTimeMillis());
 			}
 		}
 
