@@ -71,9 +71,10 @@ public class SkillChronophage extends SkillBaseMarkedTeleport {
 			double damage = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DAMAGE, 250d, false);
 			double damageIncrease = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
 			damage += marker.getHero().getAttributeValue(AttributeType.INTELLECT) * damageIncrease;
+			long reCastDelay = SkillConfigManager.getUseSetting(marker.getHero(), this, RE_CAST_DELAY_NODE, 0, false);
 
 			double totalDuration = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DURATION, 10000, false);
-			double damageScale = 1 - ((activateTime - marker.getCreateTime()) / totalDuration);
+			double damageScale = 1 - ((activateTime - marker.getCreateTime() - reCastDelay) / (totalDuration - reCastDelay));
 			if (damageScale < 0) {
 				damageScale = 0;
 			}
