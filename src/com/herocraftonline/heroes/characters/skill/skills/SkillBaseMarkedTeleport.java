@@ -37,6 +37,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 	protected static final String PRESERVE_LOOK_DIRECTION_NODE = "preserve-look-direction";
 	protected static final String PRESERVE_VELOCITY_NODE = "preserve-velocity";
+
 	protected static final String RE_CAST_DELAY_NODE = "re-cast-delay";
 
 	private final Map<UUID, Marker> activeMarkers = new HashMap<>();
@@ -251,6 +252,8 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			if (!isActivated()) {
 				long reCastDelay = SkillConfigManager.getUseSetting(hero, SkillBaseMarkedTeleport.this, RE_CAST_DELAY_NODE, 0, false);
 				if (System.currentTimeMillis() - createTime > reCastDelay) {
+					onMarkerActivate(this, System.currentTimeMillis());
+
 					target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
 					target.getEntity().getWorld().playSound(location, Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
 
@@ -268,8 +271,6 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 
 					activated = true;
 					target.removeEffect(target.getEffect(getName()));
-
-					onMarkerActivate(this, System.currentTimeMillis());
 				}
 			}
 		}
