@@ -102,7 +102,7 @@ public class SkillTownSpawn extends ActiveSkill {
         // Check
         if(cost > 0) {
             EconomyResponse response = Heroes.econ.withdrawPlayer(player, cost);
-            if (response.transactionSuccess()) {
+            if (!response.transactionSuccess()) {
                 player.sendMessage(ChatColor.GRAY + "Transaction failed, teleport cancelled.");
                 player.sendMessage(ChatColor.GRAY + "You need " + Heroes.econ.format(cost) + " to teleport. You have " + Heroes.econ.format(Heroes.econ.getBalance(player)) + ".");
                 return SkillResult.FAIL;
