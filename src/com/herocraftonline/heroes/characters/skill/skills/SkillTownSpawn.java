@@ -108,7 +108,7 @@ public class SkillTownSpawn extends ActiveSkill {
                 return SkillResult.FAIL;
             }
             else {
-                player.sendMessage(ChatColor.GRAY + "Charged " + Heroes.econ.format(cost) + "to teleport to your town's spawn.");
+                player.sendMessage(ChatColor.GRAY + "Charged " + Heroes.econ.format(cost) + " to teleport to your town's spawn.");
             }
         }
 
