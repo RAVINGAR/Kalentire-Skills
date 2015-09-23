@@ -73,12 +73,15 @@ public class SkillTimeReverse extends SkillBaseMarkedTeleport {
 		double healingIncrease = SkillConfigManager.getUseSetting(marker.getHero(), this, HEALING_PERCENTAGE_PER_WISDOM_NODE, 0.005d, false);
 		healing += marker.getHero().getAttributeValue(AttributeType.INTELLECT) * healingIncrease;
 
+		double maxHeal = marker.getTarget().getEntity().getMaxHealth() * healing;
+		long reCastDelay = SkillConfigManager.getUseSetting(marker.getHero(), this, RE_CAST_DELAY_NODE, 0, false);
+
 		double totalDuration = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DURATION, 10000, false);
-		double healScale = 1 - ((activateTime - marker.getCreateTime()) / totalDuration);
+		double healScale = 1 - ((activateTime - marker.getCreateTime() + reCastDelay) / (totalDuration - reCastDelay));
 		if (healScale < 0) {
 			healScale = 0;
 		}
 
-		((Hero) marker.getTarget()).heal(healing * healScale);
+		((Hero) marker.getTarget()).heal(maxHeal * healScale);
 	}
 }
