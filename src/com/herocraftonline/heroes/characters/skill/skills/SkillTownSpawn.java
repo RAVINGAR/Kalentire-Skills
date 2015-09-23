@@ -33,6 +33,7 @@ public class SkillTownSpawn extends ActiveSkill {
         catch (TownyException e) {
             TownyMessaging.sendErrorMsg(hero.getPlayer(), e.getMessage());
         }
+        return SkillResult.NORMAL;
     }
 
 
