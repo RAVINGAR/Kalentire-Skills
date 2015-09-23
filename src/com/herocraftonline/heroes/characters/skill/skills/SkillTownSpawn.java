@@ -13,7 +13,11 @@ import com.palmergames.bukkit.towny.TownyMessaging;
 import com.palmergames.bukkit.towny.command.TownCommand;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -46,8 +50,12 @@ public class SkillTownSpawn extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        Location spawnLoc;
+        // Check if player is in a town, and grab location of town spawn if they are.
+        // Assumes the player is only allowed to teleport to their town, and that they are allowed to teleport to their own town.
+        // Bypasses Towny logic to choose a town and determine ability to teleport.
         try {
-            TownCommand.townSpawn(hero.getPlayer(), args, false);
+            spawnLoc = TownyUniverse.getDataSource().getResident(player.getName()).getTown().getSpawn();
         }
         catch (NotRegisteredException e) {
             Messaging.send(player, "You don't belong to a Town!");
@@ -57,6 +65,11 @@ public class SkillTownSpawn extends ActiveSkill {
             Messaging.send(player, e.getMessage());
             return SkillResult.FAIL;
         }
+
+        broadcastExecuteText(hero);
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F); // Sound stolen from Recall
+        player.teleport(spawnLoc);
+        player.getWorld().playSound(spawnLoc, Sound.WITHER_SPAWN, 0.5F, 1.0F); // Sound stolen from Recall
 
         return SkillResult.NORMAL;
     }
