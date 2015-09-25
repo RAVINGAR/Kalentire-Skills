@@ -9,13 +9,12 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.TreeType;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Tree;
 
 import java.util.HashSet;
 
@@ -52,27 +51,42 @@ public class SkillOvergrowth extends ActiveSkill {
         Material mat = targetBlock.getType();
         TreeType tType = null;
         if (mat == Material.SAPLING) {
-            tType = null;
-            switch (targetBlock.getData()) {
-                case 0x0:
+            MaterialData matDat = targetBlock.getState().getData();
+            if(!(matDat instanceof Tree)) {
+                player.sendMessage(ChatColor.GRAY + "This doesn't look like a tree... (ERROR)");
+                return SkillResult.FAIL;
+            }
+            Tree tDat = (Tree) matDat;
+            switch (tDat.getSpecies()) {
+                case GENERIC:
                     if (Util.nextInt(2) == 0) {
                         tType = TreeType.TREE;
                     } else {
                         tType = TreeType.BIG_TREE;
                     }
                     break;
-                case 0x1:
+                case REDWOOD:
                     if (Util.nextInt(2) == 0) {
                         tType = TreeType.REDWOOD;
                     } else {
                         tType = TreeType.TALL_REDWOOD;
                     }
                     break;
-                case 0x2:
-                    tType = TreeType.BIRCH;
+                case BIRCH:
+                    if (Util.nextInt(2) == 0) {
+                        tType = TreeType.BIRCH;
+                    } else {
+                        tType = TreeType.TALL_BIRCH;
+                    }
                     break;
-                case 0x3:
+                case JUNGLE:
                     tType = TreeType.JUNGLE;
+                    break;
+                case ACACIA:
+                    tType = TreeType.ACACIA;
+                    break;
+                case DARK_OAK:
+                    tType = TreeType.DARK_OAK;
                     break;
                 default:
                     tType = TreeType.TREE;
