@@ -49,13 +49,13 @@ public class SkillBlockLaunch extends ActiveSkill implements Listener {
 	}
 
 	private boolean blockLaunch(Block block) {
-		if (block.getType() != Material.AIR && block.getRelative(BlockFace.UP).getType() == Material.AIR) {
+		if (!block.getType().isTransparent() && block.getRelative(BlockFace.UP).getType().isTransparent()) {
 
 			@SuppressWarnings("deprecation")// Bukkit can Sukkit
 			FallingBlock fb = block.getWorld().spawnFallingBlock(block
 					// Comment this out when testing fixes to client remove block thingy
 					.getRelative(BlockFace.UP)
-					.getLocation(), block.getType(), block.getData());
+					.getLocation(), block.getType(), (byte) 125);
 
 			fb.setDropItem(false);
 			fb.setVelocity(new Vector(0, 0.4, 0));
