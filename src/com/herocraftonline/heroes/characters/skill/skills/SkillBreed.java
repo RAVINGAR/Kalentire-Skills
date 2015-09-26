@@ -145,6 +145,17 @@ public class SkillBreed extends PassiveSkill {
                     return;
                 }
             }
+            else if (targetEntity instanceof Rabbit) {
+                switch (material) {
+                    case CARROT:
+                    case GOLDEN_CARROT:
+                    case YELLOW_FLOWER:
+                        isBreedAttempt = true;
+                        break;
+                    default:
+                        return;
+                }
+            }
 
             // If we make it this far, they are trying to breed.
             if (isBreedAttempt && !hero.canUseSkill(getName())) {
