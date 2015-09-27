@@ -124,7 +124,7 @@ public class SkillTaunt extends ActiveSkill {
                 TauntEffect effect = (TauntEffect) damager.getEffect("Taunted");
                 Player applier = effect.getApplier();
 
-                if(applier != null && applier == event.getEntity()) {
+                if(applier == null || applier != event.getEntity()) {
                     double damageModifier = effect.getDamageModifier();
                     event.setDamage((event.getDamage() * damageModifier));
                 }
@@ -138,7 +138,7 @@ public class SkillTaunt extends ActiveSkill {
                 TauntEffect effect = (TauntEffect) damager.getEffect("Taunted");
                 Player applier = effect.getApplier();
 
-                if(applier != null && applier == event.getEntity()) {
+                if(applier == null || applier != event.getEntity()) {
                     double damageModifier = effect.getDamageModifier();
                     event.setDamage((event.getDamage() * damageModifier));
                 }
