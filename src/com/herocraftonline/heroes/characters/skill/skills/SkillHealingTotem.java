@@ -92,7 +92,7 @@ public class SkillHealingTotem extends SkillBaseTotem {
                 }
                 continue;
             }
-            if(memberLoc.distanceSquared(totemLoc) <= rangeSquared) {
+            else if(memberLoc.getWorld() == totemLoc.getWorld() && memberLoc.distanceSquared(totemLoc) <= rangeSquared) {
                 PeriodicHealEffect hEffect = new PeriodicHealEffect(this, "HealingTotemHealEffect", heroP, totem.getEffect().getPeriod(), totem.getEffect().getRemainingTime(), getHealing(hero));
                 final Player memberP = member.getPlayer();
                 new BukkitRunnable() {

@@ -71,7 +71,7 @@ public class SkillSageTotem extends SkillBaseTotem implements Listener {
                 }
                 continue;
             }
-            else if(memberLoc.distanceSquared(totemLoc) <= rangeSquared) {
+            else if(memberLoc.getWorld() == totemLoc.getWorld() && memberLoc.distanceSquared(totemLoc) <= rangeSquared) {
                 AttributeIncreaseEffect mEffect = new AttributeIncreaseEffect(this, "SageTotemWisdomEffect", heroP, totem.getEffect().getRemainingTime(), AttributeType.WISDOM, (int)getWisdomIncrease(hero), getApplyText(), getExpireText());
                 final Player memberP = member.getPlayer();
                 new BukkitRunnable() {
