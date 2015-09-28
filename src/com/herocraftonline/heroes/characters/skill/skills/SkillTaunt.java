@@ -121,8 +121,13 @@ public class SkillTaunt extends ActiveSkill {
         public void onWeaponDamage(WeaponDamageEvent event) {
             CharacterTemplate damager = event.getDamager();
             if (damager.hasEffect("Taunted")) {
-                double damageModifier = ((TauntEffect) damager.getEffect("Taunted")).getDamageModifier();
-                event.setDamage((event.getDamage() * damageModifier));
+                TauntEffect effect = (TauntEffect) damager.getEffect("Taunted");
+                Player applier = effect.getApplier();
+
+                if(applier == null || applier != event.getEntity()) {
+                    double damageModifier = effect.getDamageModifier();
+                    event.setDamage((event.getDamage() * damageModifier));
+                }
             }
         }
 
@@ -130,8 +135,13 @@ public class SkillTaunt extends ActiveSkill {
         public void onSkillDamage(SkillDamageEvent event) {
             CharacterTemplate damager = event.getDamager();
             if (damager.hasEffect("Taunted")) {
-                double damageModifier = ((TauntEffect) damager.getEffect("Taunted")).getDamageModifier();
-                event.setDamage((event.getDamage() * damageModifier));
+                TauntEffect effect = (TauntEffect) damager.getEffect("Taunted");
+                Player applier = effect.getApplier();
+
+                if(applier == null || applier != event.getEntity()) {
+                    double damageModifier = effect.getDamageModifier();
+                    event.setDamage((event.getDamage() * damageModifier));
+                }
             }
         }
     }
