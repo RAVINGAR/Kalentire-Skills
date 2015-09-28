@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
@@ -40,8 +41,11 @@ public class SkillDamageBlockWave extends SkillBaseBlockWave {
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
 
-		castBlockWave(hero, hero.getPlayer().getLocation());
-
-		return SkillResult.NORMAL;
+		if (castBlockWave(hero, hero.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN))) {
+			broadcastExecuteText(hero);
+			return SkillResult.NORMAL;
+		} else {
+			return SkillResult.INVALID_TARGET_NO_MSG;
+		}
 	}
 }
