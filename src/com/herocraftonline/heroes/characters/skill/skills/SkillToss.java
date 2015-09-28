@@ -31,7 +31,7 @@ public class SkillToss extends TargettedSkill {
         super(plugin, "Toss");
         setDescription("Grab your target and throw them in the opposite direction! Distance thrown is determined by your Strength.");
         setUsage("/skill toss");
-        setArgumentRange(0, 0);
+        setArgumentRange(0, 1);
         setIdentifiers("skill toss");
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.INTERRUPTING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
     }
