@@ -83,7 +83,8 @@ public class SkillSacrifice extends ActiveSkill {
         double strIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "str-increase-per-strength", 0.0, false);
         strIncrease += (int) (strIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        SacrificeEffect mEffect = new SacrificeEffect(this, player, duration, conIncrease, strIncrease);
+        AttributeIncreaseEffect cEffect = new AttributeIncreaseEffect(this, "SacrificeConstitutionIncreaseEffect",  player, duration, AttributeType.CONSTITUTION, conIncrease, applyText, expireText);
+        AttributeIncreaseEffect sEffect = new AttributeIncreaseEffect(this, "SacrificeStrengthIncreaseEffect",  player, duration, AttributeType.STRENGTH, strIncrease, null, null);
 
         if (!hero.hasParty()) {
             Messaging.send(player, "You must have a party to sacrifice for!");
@@ -96,7 +97,7 @@ public class SkillSacrifice extends ActiveSkill {
             if(maxHealth * 0.01 < player.getHealth()) {
                 player.setHealth(maxHealth * 0.01);
             }
-            hero.addEffect(new SlowEffect(this, "SacrificeSlow", player, 60000, 3, applyText, applyText));
+            hero.addEffect(new SlowEffect(this, "SacrificeSlowEffect", player, 60000, 3, applyText, applyText));
             int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false), 2);
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();
@@ -114,19 +115,25 @@ public class SkillSacrifice extends ActiveSkill {
                     continue;
                 }
 
-                if (pHero.hasEffect("Sacrifice")) {
-                    if (((SacrificeEffect) pHero.getEffect("Sacrifice")).getIncreaseValue() > mEffect.getIncreaseValue())
+                // The effects can have different values, so two checks
+                if (pHero.hasEffect("SacrificeConstitutionIncreaseEffect")) {
+                    if (((AttributeIncreaseEffect) pHero.getEffect("SacrificeConstitutionIncreaseEffect")).getIncreaseValue() > cEffect.getIncreaseValue())
                         continue;
                 }
+                pHero.addEffect(cEffect);
 
-                pHero.addEffect(mEffect);
+                if (pHero.hasEffect("SacrificeStrengthIncreaseEffect")) {
+                    if (((AttributeIncreaseEffect) pHero.getEffect("SacrificeConstitutionIncreaseEffect")).getIncreaseValue() > cEffect.getIncreaseValue())
+                        continue;
+                }
+                pHero.addEffect(sEffect);
             }
         }
         
         return SkillResult.NORMAL;
     }
 
-    public class SacrificeEffect extends AttributeIncreaseEffect {
+    /*public class SacrificeEffect extends AttributeIncreaseEffect {
 
         AttributeIncreaseEffect strengthEffect;
         
@@ -153,5 +160,5 @@ public class SkillSacrifice extends ActiveSkill {
             
             Messaging.send(hero.getPlayer(), expireText);
         }
-    }
+    }*/
 }
