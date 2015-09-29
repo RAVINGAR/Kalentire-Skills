@@ -93,7 +93,7 @@ public class SkillSacrifice extends ActiveSkill {
             broadcastExecuteText(hero);
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
             double maxHealth = player.getMaxHealth();
-            if(maxHealth * 0.01 > player.getHealth()) {
+            if(maxHealth * 0.01 < player.getHealth()) {
                 player.setHealth(maxHealth * 0.01);
             }
             hero.addEffect(new SlowEffect(this, "SacrificeSlow", player, 60000, 3, applyText, applyText));
