@@ -72,24 +72,25 @@ public class SkillMurasame extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        short dura = player.getItemInHand().getDurability();
-        short maxDura = player.getItemInHand().getType().getMaxDurability();
-        short duraCost = (short) (maxDura * (SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 10, false) * 0.01));
+        int duraPercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 10, false);
+        if (duraPercent > 0) {
+            short dura = player.getItemInHand().getDurability();
+            short maxDura = player.getItemInHand().getType().getMaxDurability();
+            short duraCost = (short) (maxDura * (duraPercent * 0.01));
 
-        if(dura == (short)0) {
-            player.getItemInHand().setDurability((short) (duraCost));
+            if (dura == (short) 0) {
+                player.getItemInHand().setDurability((short) (duraCost));
+            } else if (maxDura - dura > duraCost) {
+                player.getItemInHand().setDurability((short) (dura + duraCost));
+            } else if (maxDura - dura == duraCost) {
+                player.setItemInHand(null);
+                player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.5F, 1.0F);
+            } else {
+                Messaging.send(player, "Your Katana doesn't have enough durability to use Murasame!");
+                return SkillResult.INVALID_TARGET_NO_MSG;
+            }
         }
-        else if(maxDura - dura > duraCost) {
-            player.getItemInHand().setDurability((short) (dura + duraCost));
-        }
-        else if(maxDura - dura == duraCost) {
-            player.setItemInHand(null);
-            player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.5F, 1.0F);
-        }
-        else {
-            Messaging.send(player, "Your Katana doesn't have enough durability to use Murasame!");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
+
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
