@@ -18,6 +18,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -109,6 +110,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 		node.set("horizontal-power", Double.valueOf(1.1));
 		node.set("vertical-power", Double.valueOf(0.5));
 		node.set("ncp-exemption-duration", 500);
+		node.set("cancel-arrow-damage", true);
 		node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
 		node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive."));
 
@@ -193,97 +195,131 @@ public class SkillExplosiveShot extends ActiveSkill {
 			broadcast(player.getLocation(), shotText, player.getDisplayName());
 
 			// Add the projectile to the hashlist
-			Arrow explosiveShot = (Arrow) event.getProjectile();          
+			Arrow explosiveShot = (Arrow) event.getProjectile();
 			addParticleEffect(explosiveShot);
 			explosiveShot.setFireTicks(20);
 			explosiveShots.put(explosiveShot, Long.valueOf(System.currentTimeMillis()));
 		}
 
+        // Checks that it's an arrow shot by a player that's an ExplosiveShot, then waits a tick and does the exploding
 		@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 		public void onProjectileHit(ProjectileHitEvent event) {
 			if (!(event.getEntity() instanceof Arrow))
 				return;
 
-			Arrow projectile = (Arrow) event.getEntity();
-			if ((!(projectile.getShooter() instanceof Player)))
+			final Arrow projectile = (Arrow) event.getEntity();
+			if (!(projectile.getShooter() instanceof Player))
 				return;
 
 			if (!(explosiveShots.containsKey(projectile)))
 				return;
 
-			Player shooter = (Player) projectile.getShooter();
-			Hero hero = plugin.getCharacterManager().getHero(shooter);
+            // Wait a tick to explode, otherwise we can't cancel the damage since the shot is removed from the Map
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    // Run the explosion logic
+                    explode(projectile);
+                    // Remove the shot from the hashlist
+                    explosiveShots.remove(projectile);
+                }
+            });
 
-			// Remove the shot from the hashlist
-			explosiveShots.remove(projectile);
-
-			// BOOM - for some reason the code in the try/catch block down there isn't happy about the whole "working" thing.
-			projectile.getWorld().spigot().playEffect(projectile.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 10, 16);
-			projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
-
-			int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4, false);
-			double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 80, false);
-			double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
-			damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
-
-			// Play an effect, but only if we actually hit a target.
-			// Play explosion effect
-			projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
-			try {
-				projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
-
-				//projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			// Prep some variables
-			Location arrowLoc = projectile.getLocation();
-			List<Entity> targets = projectile.getNearbyEntities(radius, radius, radius);
-			double horizontalPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", 1.1, false);
-			double veticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.5, false);
-
-			// Loop through nearby targets and damage / knock them back
-			for (Entity entity : targets) {
-				// Check to see if the entity can be damaged
-				if (!(entity instanceof LivingEntity) || !damageCheck(shooter, (LivingEntity) entity))
-					continue;
-
-				// Damage target
-				LivingEntity target = (LivingEntity) entity;
-				addSpellTarget(target, hero);
-				damageEntity(target, shooter, damage, DamageCause.MAGIC);
-
-				// Do a knock up/back effect.
-				Location targetLoc = target.getLocation();
-
-				double xDir = targetLoc.getX() - arrowLoc.getX();
-				double zDir = targetLoc.getZ() - arrowLoc.getZ();
-				double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-
-				xDir = xDir / magnitude * horizontalPower;
-				zDir = zDir / magnitude * horizontalPower;
-
-				if (ncpEnabled) {
-					if (target instanceof Player) {
-						Player targetPlayer = (Player) target;
-						if (!targetPlayer.isOp()) {
-							long duration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
-							if (duration > 0) {
-								NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, duration);
-								CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-								targetCT.addEffect(ncpExemptEffect);
-							}
-						}
-					}
-				}
-
-				target.setVelocity(new Vector(xDir, veticalPower, zDir));
-
-			}
 		}
+
+        // Without this, the arrow itself will do additional damage. May not want.
+        @EventHandler(ignoreCancelled = true)
+        public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+            if (!(event.getDamager() instanceof Arrow))
+                return;
+
+            Arrow projectile = (Arrow) event.getDamager();
+            if(!(projectile.getShooter() instanceof Player))
+                return;
+
+            if (!(explosiveShots.containsKey(projectile)))
+                return;
+
+            Player shooter = (Player) projectile.getShooter();
+            Hero hero = plugin.getCharacterManager().getHero(shooter);
+
+            event.setCancelled(SkillConfigManager.getUseSetting(hero, skill, "cancel-arrow-damage", true));
+        }
 	}
+
+    // Runs the explosion effect and damage off the projectile that's hit something
+    public void explode(Arrow projectile) {
+
+        // Grab our shooter and hero from projectile info
+        Player shooter = (Player) projectile.getShooter();
+        Hero hero = plugin.getCharacterManager().getHero(shooter);
+
+        // BOOM - for some reason the code in the try/catch block down there isn't happy about the whole "working" thing
+        projectile.getWorld().spigot().playEffect(projectile.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 10, 16);
+        projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
+        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+
+        // Play an effect, but only if we actually hit a target.
+        // Play explosion effect
+        projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
+        try {
+            projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
+
+            //projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Prep some variables
+        Location arrowLoc = projectile.getLocation();
+        List<Entity> targets = projectile.getNearbyEntities(radius, radius, radius);
+        double horizontalPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.1, false);
+        double verticalPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+
+        // Loop through nearby targets and damage / knock them back
+        for (Entity entity : targets) {
+            // Check to see if the entity can be damaged
+            if (!(entity instanceof LivingEntity) || !damageCheck(shooter, (LivingEntity) entity))
+                continue;
+
+            // Damage target
+            LivingEntity target = (LivingEntity) entity;
+            addSpellTarget(target, hero);
+            damageEntity(target, shooter, damage, DamageCause.MAGIC);
+
+            // Do a knock up/back effect.
+            Location targetLoc = target.getLocation();
+
+            double xDir = targetLoc.getX() - arrowLoc.getX();
+            double zDir = targetLoc.getZ() - arrowLoc.getZ();
+            double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
+
+            xDir = xDir / magnitude * horizontalPower;
+            zDir = zDir / magnitude * horizontalPower;
+
+            if (ncpEnabled) {
+                if (target instanceof Player) {
+                    Player targetPlayer = (Player) target;
+                    if (!targetPlayer.isOp()) {
+                        long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
+                        if (duration > 0) {
+                            NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, duration);
+                            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                            targetCT.addEffect(ncpExemptEffect);
+                        }
+                    }
+                }
+            }
+
+            target.setVelocity(new Vector(xDir, verticalPower, zDir));
+
+        }
+    }
 
 	// Buff effect used to keep track of grappling hook uses
 	public class ExplosiveShotBuffEffect extends ExpirableEffect {
