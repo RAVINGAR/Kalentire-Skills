@@ -24,10 +24,11 @@ public class SkillEnlightenment extends TargettedSkill {
     
     public SkillEnlightenment(Heroes plugin) {
         super(plugin, "Enlightenment");
-        setArgumentRange(0,1);
+        setArgumentRange(0, 1);
         setUsage("/skill Enlightenment <target>");
         setIdentifiers("skill enlightenment");
-        setDescription("Prepare the target, granting them Enlightenment that increases their Intellect and Wisdom by $1 for $2 minutes");
+        //setDescription("Prepare the target, granting them Enlightenment that increases their Intellect and Wisdom by $1 for $2 minutes");
+        setDescription("Prepare the target, granting them Enlightenment that increases their Wisdom by $1 for $2 minutes");
         setTypes(SkillType.MAX_MANA_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     
@@ -74,15 +75,15 @@ public class SkillEnlightenment extends TargettedSkill {
         int attributeIncrease = SkillConfigManager.getUseSetting(hero, this, "attribute-increase", 15, false);
         
         // Only using the one effect for checks. Checking both of them would get crazy
-        AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "EnlightenmentIntIncreaseEffect", player, duration, AttributeType.INTELLECT, attributeIncrease, applyText, expireText);
-        if(hero.hasEffect("EnlightenmentIntIncreaseEffect")) {
-            if(((AttributeIncreaseEffect) hero.getEffect("EnlightenmentIntIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
+        AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "EnlightenmentWisIncreaseEffect", player, duration, AttributeType.WISDOM, attributeIncrease, applyText, expireText);
+        if(hero.hasEffect("EnlightenmentWisIncreaseEffect")) {
+            if(((AttributeIncreaseEffect) hero.getEffect("EnlightenmentWisIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }
         }
         
-        AttributeIncreaseEffect aEffectW = new AttributeIncreaseEffect(this, "EnlightenmentWisIncreaseEffect", player, duration, AttributeType.WISDOM, attributeIncrease, null, null);
+        AttributeIncreaseEffect aEffectI = new AttributeIncreaseEffect(this, "EnlightenmentIntIncreaseEffect", player, duration, AttributeType.INTELLECT, attributeIncrease, null, null);
 
         
         new BukkitRunnable() {
@@ -106,7 +107,7 @@ public class SkillEnlightenment extends TargettedSkill {
             }
         }.runTaskTimer(plugin, 1, 1);
         targetHero.addEffect(aEffect);
-        targetHero.addEffect(aEffectW);
+        //targetHero.addEffect(aEffectI);
         return SkillResult.NORMAL;
     }
     
