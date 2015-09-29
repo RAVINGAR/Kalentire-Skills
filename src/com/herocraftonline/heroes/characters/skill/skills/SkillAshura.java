@@ -31,18 +31,18 @@ public class SkillAshura extends TargettedSkill {
 
     public SkillAshura(Heroes plugin) {
         super(plugin, "Ashura");
-        setDescription("Deal $1 physical damage and force your target away from you. The push power is affected by your Strength. Costs $2% of your sword.");
+        setDescription("Deal $1 magical damage and force your target away from you. The push power is affected by your Strength. Costs $2% of your sword.");
         setUsage("/skill ashura");
         setArgumentRange(0, 0);
         setIdentifiers("skill ashura");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         int swordSacrificePercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 5, false);
 
@@ -55,7 +55,7 @@ public class SkillAshura extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 5);
         node.set(SkillSetting.DAMAGE.node(), 50);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.6);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.6);
         node.set("sword-sacrifice-percent", 5);
         node.set("horizontal-power", 1.5);
         node.set("horizontal-power-increase-per-strength", 0.0375);
@@ -104,8 +104,8 @@ public class SkillAshura extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         if (damage > 0) {
             addSpellTarget(target, hero);

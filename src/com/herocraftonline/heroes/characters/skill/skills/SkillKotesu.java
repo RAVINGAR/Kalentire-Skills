@@ -36,8 +36,8 @@ public class SkillKotesu extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         int swordSacrificePercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 5, false);
 
@@ -50,7 +50,7 @@ public class SkillKotesu extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 5);
         node.set(SkillSetting.DAMAGE.node(), 50);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.6);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.6);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "$1 is slowed by Kotesu's power!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "Kotesu's power fades from $1.");
         node.set("sword-sacrifice-percent", 5);
@@ -104,8 +104,8 @@ public class SkillKotesu extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "slowness-duration", 2000, false);
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "slowness-amplitude", 1, false);

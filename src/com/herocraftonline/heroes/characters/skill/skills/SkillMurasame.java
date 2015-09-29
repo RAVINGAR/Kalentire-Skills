@@ -34,8 +34,8 @@ public class SkillMurasame extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         int healingPercent = SkillConfigManager.getUseSetting(hero, this, "healing-percent", 25, false);
 
@@ -50,7 +50,7 @@ public class SkillMurasame extends TargettedSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 5);
         node.set(SkillSetting.DAMAGE.node(), 50);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.6);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.6);
         node.set("sword-sacrifice-percent", 10);
         node.set("healing-percent", 25);
 
@@ -94,8 +94,8 @@ public class SkillMurasame extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         int healingPercent = SkillConfigManager.getUseSetting(hero, this, "healing-percent", 25, false);
 
