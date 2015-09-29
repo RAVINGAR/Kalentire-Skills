@@ -20,7 +20,8 @@ public class SkillMasamune extends ActiveSkill {
 
     public SkillMasamune(Heroes plugin) {
         super(plugin, "Masamune");
-        setDescription("Increase movement speed for $1 seconds and heal yourself for $2 every $3 seconds for $4 seconds. Costs $5% of your sword.");
+        // setDescription("Increase movement speed for $1 seconds and heal yourself for $2 every $3 seconds for $4 seconds. Costs $5% of your sword.");
+        setDescription("Increase movement speed for $1 seconds. Costs $2% of your sword.");
         setUsage("/skill masamune");
         setArgumentRange(0, 0);
         setIdentifiers("skill masamune");
@@ -31,14 +32,16 @@ public class SkillMasamune extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         int speedDuration = SkillConfigManager.getUseSetting(hero, this, "speed-duration", 30000, false);
-        double healingPerTick = SkillConfigManager.getUseSetting(hero, this, "healing-per-tick", 20, false);
+        /*double healingPerTick = SkillConfigManager.getUseSetting(hero, this, "healing-per-tick", 20, false);
         healingPerTick += SkillConfigManager.getUseSetting(hero, this, "healing-per-intellect", 2, false);
         long healingPeriod = SkillConfigManager.getUseSetting(hero, this, "healing-period", 1000, false);
-        long healingDuration = SkillConfigManager.getUseSetting(hero, this, "healing-duration", 10000, false);
+        long healingDuration = SkillConfigManager.getUseSetting(hero, this, "healing-duration", 10000, false);*/
 
         int swordSacrificePercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 20, false);
 
-        return getDescription().replace("$1", (speedDuration / 1000) + "").replace("$2", healingPerTick + "").replace("$3", healingPeriod + "").replace("$4", healingDuration + "").replace("$5", swordSacrificePercent + "");
+        //return getDescription().replace("$1", (speedDuration / 1000) + "").replace("$2", healingPerTick + "").replace("$3", healingPeriod + "").replace("$4", healingDuration + "").replace("$5", swordSacrificePercent + "");
+        return getDescription().replace("$1", (speedDuration / 1000) + "").replace("$2", swordSacrificePercent + "");
+
     }
 
     @Override
@@ -48,10 +51,10 @@ public class SkillMasamune extends ActiveSkill {
         node.set("sword-sacrifice-percent", 20);
         node.set("speed-duration", 30000);
         node.set("speed-amplitude", 2);
-        node.set("healing-duration", 10000);
+        /*node.set("healing-duration", 10000);
         node.set("healing-period", 1000);
         node.set("healing-per-tick", 20);
-        node.set("healing-per-intellect", 2);
+        node.set("healing-per-intellect", 2);*/
 
         return node;
     }
@@ -90,15 +93,15 @@ public class SkillMasamune extends ActiveSkill {
         long speedDuration = SkillConfigManager.getUseSetting(hero, this, "speed-duration", 30000, false);
         int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "speed-amplitude", 3, false);
 
-        double healingPerTick = SkillConfigManager.getUseSetting(hero, this, "healing-per-tick", 20, false);
+        /*double healingPerTick = SkillConfigManager.getUseSetting(hero, this, "healing-per-tick", 20, false);
         healingPerTick += SkillConfigManager.getUseSetting(hero, this, "healing-per-intellect", 2, false);
         long healingPeriod = SkillConfigManager.getUseSetting(hero, this, "healing-period", 1000, false);
         long healingDuration = SkillConfigManager.getUseSetting(hero, this, "healing-duration", 10000, false);
 
-        PeriodicHealEffect healEffect = new PeriodicHealEffect(this, "MasamuneHealEffect", player, healingPeriod, healingDuration, healingPerTick);
+        PeriodicHealEffect healEffect = new PeriodicHealEffect(this, "MasamuneHealEffect", player, healingPeriod, healingDuration, healingPerTick);*/
         SpeedEffect slowEffect = new SpeedEffect(this, "MasamuneSpeedEffect", player, speedDuration, speedAmplifier, null, null);
 
-        hero.addEffect(healEffect);
+        // hero.addEffect(healEffect);
         hero.addEffect(slowEffect);        
 
         player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
