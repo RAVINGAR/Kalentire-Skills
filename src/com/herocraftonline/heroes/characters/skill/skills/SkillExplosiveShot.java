@@ -222,6 +222,8 @@ public class SkillExplosiveShot extends ActiveSkill {
                     explode(projectile);
                     // Remove the shot from the hashlist
                     explosiveShots.remove(projectile);
+                    // Remove the arrow from the world (because it can bounce)
+                    projectile.remove();
                 }
             });
 
