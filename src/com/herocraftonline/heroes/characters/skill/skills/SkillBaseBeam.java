@@ -7,7 +7,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.nms.physics.RayCastFlags;
+import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.util.Pair;
 import de.slikey.effectlib.EffectManager;
@@ -186,7 +186,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 	protected static Beam createObstructedBeam(World world, Vector origin, Vector direction, int maxLength, double radius) {
 		Vector start = origin, end = direction.clone().normalize().multiply(maxLength).add(start);
-		RayCastHit hit = NMSHandler.getInterface().getNMSPhysics().rayCastBlocks(world, start, end, RayCastFlags.BLOCK_IGNORE_NON_SOLID, RayCastFlags.BLOCK_HIGH_DETAIL);
+		RayCastHit hit = NMSHandler.getInterface().getNMSPhysics().rayCastBlocks(world, start, end, RayCastFlag.BLOCK_IGNORE_NON_SOLID, RayCastFlag.BLOCK_HIGH_DETAIL);
 		Vector trajectory;
 
 		if (hit != null) {
@@ -200,7 +200,7 @@ public abstract class SkillBaseBeam extends ActiveSkill {
 
 	protected static Beam createObstructedBeam(Location origin, int maxLength, double radius) {
 		Vector start = origin.toVector(), end = origin.getDirection().multiply(maxLength).add(start);
-		RayCastHit hit = NMSHandler.getInterface().getNMSPhysics().rayCastBlocks(origin.getWorld(), start, end, RayCastFlags.BLOCK_IGNORE_NON_SOLID, RayCastFlags.BLOCK_HIGH_DETAIL);
+		RayCastHit hit = NMSHandler.getInterface().getNMSPhysics().rayCastBlocks(origin.getWorld(), start, end, RayCastFlag.BLOCK_IGNORE_NON_SOLID, RayCastFlag.BLOCK_HIGH_DETAIL);
 		Vector trajectory;
 
 		if (hit != null) {
