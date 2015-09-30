@@ -6,29 +6,22 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.prefs.PreferenceChangeEvent;
 
-import static org.bukkit.Location.locToBlock;
 import static org.bukkit.util.NumberConversions.square;
 
 public abstract class SkillBaseBlockWave extends ActiveSkill {
@@ -55,7 +48,7 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockFallListener(), plugin);
 	}
 
-	protected boolean castBlockWave(Hero hero, Block source) {
+	protected boolean castBlockWave(Hero hero, final Block source) {
 		if (source != null && source.getType().isSolid()) {
 			final Location center = source.getLocation().add(0.5, 0.5, 0.5);
 
@@ -81,7 +74,7 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 						if (distance < radius) {
 							Vector blockDirection = blockCenter.toVector().subtract(center.toVector());
 							blockDirection.setY(0);
-							if ((blockDirection.getX() < Vector.getEpsilon() && blockDirection.getZ() < Vector.getEpsilon()) || direction.angle(blockDirection) <= waveArc) {
+							if ((block.getX() == source.getX() && block.getZ() == source.getZ()) || direction.angle(blockDirection) <= waveArc) {
 								Block aboveBlock = block.getRelative(BlockFace.UP);
 								if (aboveBlock != null && !aboveBlock.getType().isSolid()) {
 									long launchTime = (long) (distance / expansionRate);
