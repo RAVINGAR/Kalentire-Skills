@@ -6,10 +6,14 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.nms.physics.NMSPhysics;
+import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
@@ -19,6 +23,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import to.hc.common.bukkit.util.NMSHacks;
 
 import java.util.*;
 
@@ -48,7 +53,7 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockFallListener(), plugin);
 	}
 
-	protected boolean castBlockWave(Hero hero, final Block source) {
+	protected boolean castBlockWave(final Hero hero, final Block source, final WaveTargetAction targetAction) {
 		if (source != null && source.getType().isSolid()) {
 			final Location center = source.getLocation().add(0.5, 0.5, 0.5);
 
@@ -78,7 +83,7 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 								Block aboveBlock = block.getRelative(BlockFace.UP);
 								if (aboveBlock != null && !aboveBlock.getType().isSolid()) {
 									long launchTime = (long) (distance / expansionRate);
-									WaveBlock waveBlock = new WaveBlock(block, launchTime, launchForce);
+									WaveBlock waveBlock = new WaveBlock(hero, center, block, launchTime, launchForce, targetAction);
 									wave.add(waveBlock);
 								}
 							}
@@ -150,20 +155,26 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 		}
 	}
 
-	protected interface WaveTarget {
+	protected interface WaveTargetAction {
 		void onTarget(Hero hero, LivingEntity target, Location center);
 	}
 
 	private class WaveBlock implements Comparable<WaveBlock> {
 
+		private final Hero hero;
+		private final Location center;
 		private final Block block;
 		private final long launchTime;
 		private final double launchForce;
+		private final WaveTargetAction targetAction;
 
-		public WaveBlock(Block block, long launchTime, double launchForce) {
+		public WaveBlock(Hero hero, Location center, Block block, long launchTime, double launchForce, WaveTargetAction targetAction) {
+			this.hero = hero;
+			this.center = center;
 			this.block = block;
 			this.launchTime = launchTime;
 			this.launchForce = launchForce;
+			this.targetAction = targetAction;
 		}
 
 		public void launch() {
@@ -177,6 +188,18 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 			fb.setVelocity(new Vector(0, launchForce, 0));
 
 			fb.setMetadata(FALLING_BLOCK_METADATA_KEY, new FixedMetadataValue(plugin, new Object()));
+
+			NMSPhysics physics = NMSHandler.getInterface().getNMSPhysics();
+
+			AABB aabb = physics.createAABB(block.getX(), block.getY(), block.getZ(), block.getX() + 1, block.getY() + 3, block.getZ() + 1);
+			for (Entity target : physics.getEntitiesInVolume(block.getWorld(), hero.getPlayer(), aabb, new Predicate<Entity>() {
+				@Override
+				public boolean apply(Entity entity) {
+					return entity instanceof LivingEntity;
+				}
+			})) {
+				targetAction.onTarget(hero, (LivingEntity) target, center);
+			}
 		}
 
 		public long getLaunchTime() {
