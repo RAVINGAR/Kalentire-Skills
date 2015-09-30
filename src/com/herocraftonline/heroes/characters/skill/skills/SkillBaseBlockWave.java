@@ -41,14 +41,14 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 
 	private static final String FALLING_BLOCK_METADATA_KEY = "block-launch";
 
-	private static final BlockFace[] SPREAD_FACES = {
+	/*private static final BlockFace[] SPREAD_FACES = {
 			BlockFace.DOWN,
 			BlockFace.NORTH,
 			BlockFace.SOUTH,
 			BlockFace.EAST,
 			BlockFace.WEST,
 			BlockFace.UP
-	};
+	};*/
 
 	public SkillBaseBlockWave(Heroes plugin, String name) {
 		super(plugin, name);
