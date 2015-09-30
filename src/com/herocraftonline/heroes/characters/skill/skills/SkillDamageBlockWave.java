@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -13,7 +12,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,7 +43,7 @@ public class SkillDamageBlockWave extends SkillBaseBlockWave {
 		node.set(SkillSetting.RADIUS.node(), 5);
 		node.set(HEIGHT_NODE, 3);
 		node.set(DEPTH_NODE, 5);
-		node.set(EXPANSION_RATE, 1);
+		node.set(EXPANSION_RATE_NODE, 1);
 		node.set("knockback", 0.75);
 
 		return node;
@@ -53,7 +51,7 @@ public class SkillDamageBlockWave extends SkillBaseBlockWave {
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
-		if (castBlockWave(hero, hero.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN), new WaveTargetAction() {
+		castBlockWave(hero, hero.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN), new WaveTargetAction() {
 
 			Set<UUID> tracked = new HashSet<>();
 
@@ -72,11 +70,9 @@ public class SkillDamageBlockWave extends SkillBaseBlockWave {
 					tracked.add(target.getUniqueId());
 				}
 			}
-		})) {
-			broadcastExecuteText(hero);
-			return SkillResult.NORMAL;
-		} else {
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		}
+		});
+
+		broadcastExecuteText(hero);
+		return SkillResult.NORMAL;
 	}
 }
