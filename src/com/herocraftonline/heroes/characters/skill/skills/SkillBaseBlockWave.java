@@ -21,6 +21,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -40,6 +41,8 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 	protected static final String HIT_LIMIT_NODE = "hit-limit";
 
 	private static final String FALLING_BLOCK_METADATA_KEY = "block-launch";
+
+	private static final Set<FallingBlock> waveBlocks = new HashSet<>();
 
 	/*private static final BlockFace[] SPREAD_FACES = {
 			BlockFace.DOWN,
@@ -228,6 +231,7 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 			fb.setVelocity(new Vector(0, launchForce, 0));
 
 			fb.setMetadata(FALLING_BLOCK_METADATA_KEY, new FixedMetadataValue(plugin, new Object()));
+			waveBlocks.add(fb);
 
 			NMSPhysics physics = NMSHandler.getInterface().getNMSPhysics();
 
@@ -266,9 +270,19 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 	private class BlockFallListener implements Listener {
 		@EventHandler
 		private void onBlockWaveFall(EntityChangeBlockEvent event) {
-			if (event.getEntity().getType() == EntityType.FALLING_BLOCK && event.getEntity().hasMetadata(FALLING_BLOCK_METADATA_KEY)) {
+			if (event.getEntity() instanceof FallingBlock && event.getEntity().hasMetadata(FALLING_BLOCK_METADATA_KEY)) {
 				event.setCancelled(true);
 				event.getEntity().remove();
+				waveBlocks.remove(event.getEntity());
+			}
+		}
+
+		@EventHandler
+		public void onPluginDisable(PluginDisableEvent event) {
+			if (event.getPlugin() == plugin) {
+				for (FallingBlock waveBlock : waveBlocks) {
+					waveBlock.remove();
+				}
 			}
 		}
 	}
