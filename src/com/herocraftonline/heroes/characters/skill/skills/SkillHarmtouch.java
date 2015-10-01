@@ -90,7 +90,7 @@ public class SkillHarmtouch extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "slow-level", 2, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new HarmTouch(this, player, duration, amplifier, healMultiplier));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new HarmTouch(this, player, duration, amplifier, healMultiplier, applyText, expireText));
 
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.8F, 1.0F);
@@ -105,39 +105,12 @@ public class SkillHarmtouch extends TargettedSkill {
 
         private final double healMultiplier;
 
-        public HarmTouch(Skill skill, Player applier, long duration, int amplifier, double healMultiplier) {
-            super(skill, "HarmTouch", applier, duration, amplifier);
+        public HarmTouch(Skill skill, Player applier, long duration, int amplifier, double healMultiplier, String applyText, String expireText) {
+            super(skill, "HarmTouch", applier, duration, amplifier, applyText, expireText);
             this.healMultiplier = healMultiplier;
 
             types.add(EffectType.SLOW);
             types.add(EffectType.HARMFUL);
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + applyText, Messaging.getLivingEntityName(monster), applier.getName());
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster));
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
 
