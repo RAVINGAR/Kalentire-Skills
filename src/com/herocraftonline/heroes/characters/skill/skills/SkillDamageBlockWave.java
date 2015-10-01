@@ -3,9 +3,15 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import org.bukkit.block.BlockFace;
+import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.nms.physics.collision.AABB;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
@@ -33,19 +39,35 @@ public class SkillDamageBlockWave extends SkillBaseBlockWave {
 		node.set(SkillSetting.RADIUS.node(), 5);
 		node.set(HEIGHT_NODE, 3);
 		node.set(DEPTH_NODE, 5);
-		node.set(EXPANSION_RATE, 1);
+		node.set(EXPANSION_RATE_NODE, 1);
+		node.set("knockback", 0.75);
 
 		return node;
 	}
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
+		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), new WaveTargetAction() {
 
-		if (castBlockWave(hero, hero.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN))) {
-			broadcastExecuteText(hero);
-			return SkillResult.NORMAL;
-		} else {
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		}
+			@Override
+			public void onTarget(Hero hero, LivingEntity target, Location center) {
+				if (damageCheck(hero.getPlayer(), target)) {
+					damageEntity(target, hero.getPlayer(), 10d, EntityDamageEvent.DamageCause.MAGIC, false);
+
+					double knockback = SkillConfigManager.getUseSetting(hero, SkillDamageBlockWave.this, "knockback", 0.5, false);
+
+					AABB targetAABB = NMSHandler.getInterface().getNMSPhysics().getEntityAABB(target);
+					target.setVelocity(
+							target.getVelocity()
+									.add(targetAABB.getCenter()
+											.subtract(center.toVector())
+											.normalize().multiply(knockback)
+											.add(new Vector(0, 0.25, 0))));
+				}
+			}
+		});
+
+		broadcastExecuteText(hero);
+		return SkillResult.NORMAL;
 	}
 }
