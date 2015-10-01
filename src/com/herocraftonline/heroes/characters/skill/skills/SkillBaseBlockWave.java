@@ -86,19 +86,23 @@ public abstract class SkillBaseBlockWave extends ActiveSkill {
 				for (int y = blockDepth; y <= blockHeight; y++) {
 					for (int z = zMin; z <= zMax; z++) {
 						Block block = world.getBlockAt(x, y, z);
-						if (block.getY() >= blockDepth && block.getY() <= blockHeight) {
-							Location blockCenter = block.getLocation().add(0.5, 0.5, 0.5);
-							double distance = distanceXZ(blockCenter, center);
-							if (distance < radius) {
-								Vector blockDirection = blockCenter.toVector().subtract(center.toVector());
-								blockDirection.setY(0);
-								if ((block.getX() == centerBlock.getX() && block.getZ() == centerBlock.getZ()) || direction.angle(blockDirection) <= waveArc) {
-									Block aboveBlock = block.getRelative(BlockFace.UP);
-									if (aboveBlock != null && !aboveBlock.getType().isSolid()) {
-										long launchTime = (long) (distance / expansionRate);
-										WaveBlock waveBlock = new WaveBlock(hero, center, block, launchTime, launchForce, targetAction, hitTracker, hitLimit);
-										wave.add(waveBlock);
+						Block aboveBlock = block.getRelative(BlockFace.UP);
+						if (block != null && block.getType().isSolid() && aboveBlock != null && !aboveBlock.getType().isSolid()) {
+							if (block.getY() >= blockDepth && block.getY() <= blockHeight) {
+								Location blockCenter = block.getLocation().add(0.5, 0.5, 0.5);
+								double distance = distanceXZ(blockCenter, center);
+								if (distance < radius) {
+									if (waveArc < 180) {
+										Vector blockDirection = blockCenter.toVector().subtract(center.toVector());
+										blockDirection.setY(0);
+										if (!(block.getX() == centerBlock.getX() && block.getZ() == centerBlock.getZ()) && direction.angle(blockDirection) > waveArc) {
+											continue;
+										}
 									}
+
+									long launchTime = (long) (distance / expansionRate);
+									WaveBlock waveBlock = new WaveBlock(hero, center, block, launchTime, launchForce, targetAction, hitTracker, hitLimit);
+									wave.add(waveBlock);
 								}
 							}
 						}

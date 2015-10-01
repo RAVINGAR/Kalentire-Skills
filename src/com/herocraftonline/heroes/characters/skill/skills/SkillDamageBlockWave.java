@@ -53,21 +53,15 @@ public class SkillDamageBlockWave extends SkillBaseBlockWave {
 	public SkillResult use(Hero hero, String[] strings) {
 		castBlockWave(hero, hero.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN), new WaveTargetAction() {
 
-			Set<UUID> tracked = new HashSet<>();
-
 			@Override
 			public void onTarget(Hero hero, LivingEntity target, Location center) {
 				if (damageCheck(hero.getPlayer(), target)) {
-					if (!tracked.contains(target.getUniqueId())) {
-						damageEntity(target, hero.getPlayer(), 10d, EntityDamageEvent.DamageCause.MAGIC, false);
+					damageEntity(target, hero.getPlayer(), 10d, EntityDamageEvent.DamageCause.MAGIC, false);
 
-						double knockback = SkillConfigManager.getUseSetting(hero, SkillDamageBlockWave.this, "knockback", 0.5, false);
+					double knockback = SkillConfigManager.getUseSetting(hero, SkillDamageBlockWave.this, "knockback", 0.5, false);
 
-						AABB targetAABB = NMSHandler.getInterface().getNMSPhysics().getEntityAABB(target);
-						target.setVelocity(target.getVelocity().add(targetAABB.getCenter().subtract(center.toVector()).normalize().multiply(knockback)));
-					}
-
-					tracked.add(target.getUniqueId());
+					AABB targetAABB = NMSHandler.getInterface().getNMSPhysics().getEntityAABB(target);
+					target.setVelocity(target.getVelocity().add(targetAABB.getCenter().subtract(center.toVector()).normalize().multiply(knockback)));
 				}
 			}
 		});
