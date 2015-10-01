@@ -97,7 +97,7 @@ public class SkillSacrifice extends ActiveSkill {
             if(maxHealth * 0.01 < player.getHealth()) {
                 player.setHealth(maxHealth * 0.01);
             }
-            hero.addEffect(new SlowEffect(this, "SacrificeSlowEffect", player, 60000, 3, applyText, applyText));
+            hero.addEffect(new SlowEffect(this, "SacrificeSlowEffect", player, 60000, 3, null, null));
             int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false), 2);
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();
