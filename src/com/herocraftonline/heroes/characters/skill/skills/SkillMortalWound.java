@@ -69,7 +69,7 @@ public class SkillMortalWound extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("$2", "%hero%");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from their mortal wound!").replace("%target%", "$1");
     }
 
