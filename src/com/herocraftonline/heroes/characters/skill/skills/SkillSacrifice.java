@@ -83,7 +83,7 @@ public class SkillSacrifice extends ActiveSkill {
         double strIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "str-increase-per-strength", 0.0, false);
         strIncrease += (int) (strIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        AttributeIncreaseEffect cEffect = new AttributeIncreaseEffect(this, "SacrificeConstitutionIncreaseEffect",  player, duration, AttributeType.CONSTITUTION, conIncrease, applyText, expireText);
+        SacrificeConstitutionIncreaseEffect cEffect = new SacrificeConstitutionIncreaseEffect(this, player, duration, conIncrease);
         AttributeIncreaseEffect sEffect = new AttributeIncreaseEffect(this, "SacrificeStrengthIncreaseEffect",  player, duration, AttributeType.STRENGTH, strIncrease, null, null);
 
         if (!hero.hasParty()) {
@@ -133,22 +133,16 @@ public class SkillSacrifice extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    /*public class SacrificeEffect extends AttributeIncreaseEffect {
-
-        AttributeIncreaseEffect strengthEffect;
+    // So we can send apply/expire messages to players directly
+    public class SacrificeConstitutionIncreaseEffect extends AttributeIncreaseEffect {
         
-        public SacrificeEffect(Skill skill, Player applier, long duration, int conIncrease, int strIncrease) {
-            super(skill, "Sacrifice", applier, duration, AttributeType.CONSTITUTION, conIncrease, null, null);
-            strengthEffect = new AttributeIncreaseEffect(skill, "SacrificeStrength", applier, duration, AttributeType.STRENGTH, strIncrease, null, null);
-            
-            types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.MAGIC);
+        public SacrificeConstitutionIncreaseEffect(Skill skill, Player applier, long duration, int conIncrease) {
+            super(skill, "SacrificeConstitutionIncreaseEffect", applier, duration, AttributeType.CONSTITUTION, conIncrease, null, null);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            strengthEffect.applyToHero(hero);
             
             Messaging.send(hero.getPlayer(), applyText);
         }
@@ -156,9 +150,8 @@ public class SkillSacrifice extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            strengthEffect.removeFromHero(hero);
             
             Messaging.send(hero.getPlayer(), expireText);
         }
-    }*/
+    }
 }
