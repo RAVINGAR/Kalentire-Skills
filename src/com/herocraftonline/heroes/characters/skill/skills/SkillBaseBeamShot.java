@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
+import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import com.herocraftonline.heroes.nms.physics.collision.Capsule;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -90,8 +91,15 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 					hits.add(target.getUniqueId());
 					if (hits.size() > penetration) {
 						hitAction.onFinalHit(hero, (LivingEntity) target, originLocation, shot);
+
+						AABB entityAABB = physics.getEntityAABB(target);
+						Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
+						double lengthSq = shotRay.lengthSquared();
+						double dot = shotRay.dot(entityAABB.getCenter());
+						Vector newEndPoint = shotRay.multiply(dot / lengthSq);
+
 						cancel();
-						break;
+						return;
 					} else {
 						hitAction.onHit(hero, (LivingEntity) target, originLocation, shot);
 					}
@@ -123,5 +131,6 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 	protected interface BeamShotHit {
 		void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
 		void onFinalHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
+		void onRenderShot(Location origin, Capsule shot);
 	}
 }
