@@ -37,7 +37,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 	}
 
 	protected void fireBeamShot(final Hero hero, final double range, final double radius, final double velocity, final double penetration,
-	                            final BeamShotHit hitAction, final Predicate<Block> blockFilter, final EnumSet<RayCastFlag> blockCastFlags) {
+	                            final BeamShotHit hitAction, final Predicate<Block> blockFilter, final EnumSet<RayCastFlag> flags) {
 
 		new BukkitRunnable() {
 
@@ -63,7 +63,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 					finalTick = true;
 				}
 
-				RayCastHit blockHit = physics.rayCastBlocks(world, origin, shotEnd, blockFilter, blockCastFlags);
+				RayCastHit blockHit = physics.rayCastBlocks(world, origin, shotEnd, blockFilter, flags);
 				if (blockHit != null) {
 					shotEnd = blockHit.getPoint();
 					finalTick = true;
@@ -95,12 +95,12 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 								shotPoint = shotRay.multiply(dot / lengthSq);
 							}
 
-							return physics.rayCastBlocks(world, shotPoint, entityAABB.getCenter(), blockFilter, blockCastFlags) == null;
+							return physics.rayCastBlocks(world, shotPoint, entityAABB.getCenter(), blockFilter, flags) == null;
 						}
 
 						return false;
 					}
-				})) {
+				}, flags.contains(RayCastFlag.ENTITY_HIT_SPECTATORS))) {
 
 					// TODO I COULD TOTALLY MAKE IT SO ARROWS COULD STOP ITS PATH WHEN FIRED INTO IT
 
@@ -145,7 +145,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 						finalTick = true;
 					}
 
-					RayCastHit blockHit = physics.rayCastBlocks(world, shot.getPoint2(), newShotEnd, blockFilter, blockCastFlags);
+					RayCastHit blockHit = physics.rayCastBlocks(world, shot.getPoint2(), newShotEnd, blockFilter, flags);
 					if (blockHit != null) {
 						newShotEnd = blockHit.getPoint();
 						finalTick = true;

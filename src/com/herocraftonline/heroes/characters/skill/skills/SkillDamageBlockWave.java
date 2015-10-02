@@ -20,7 +20,8 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTI
 public class SkillDamageBlockWave extends SkillBaseBlockWave {
 
 	public SkillDamageBlockWave(Heroes plugin) {
-		super(plugin, "DamageBlockWave");setDescription("Damage stuff in a beam");
+		super(plugin, "DamageBlockWave");
+		setDescription("Damage stuff in a beam");
 		setUsage("/skill damageblockwave");
 		setIdentifiers("skill damageblockwave");
 		setTypes(DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
