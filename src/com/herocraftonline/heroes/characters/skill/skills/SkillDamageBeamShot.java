@@ -33,8 +33,8 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 	public SkillDamageBeamShot(Heroes plugin) {
 		super(plugin, "DamageBeamShot");
 		setDescription("Damage stuff in a beam shot");
-		setUsage("/skill damagedeamdhot");
-		setIdentifiers("skill damagedeamdhot");
+		setUsage("/skill damagebeamshot");
+		setIdentifiers("skill damagebeamshot");
 		setTypes(DAMAGING, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE);
 		setArgumentRange(0, 0);
 	}
@@ -95,12 +95,10 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 
 				line.setLocation(shot.getPoint1().toLocation(origin.getWorld()));
 				line.setTarget(shot.getPoint2().toLocation(origin.getWorld()));
-				line.isZigZag = true;
 				line.asynchronous = true;
-				line.particles = (int) (line.getLocation().distance(line.getTarget()) / 10);
+				line.particles = (int) (line.getLocation().distance(line.getTarget()) * 10);
 				line.particle = ParticleEffect.FLAME;
 				line.type = EffectType.INSTANT;
-				line.autoOrient = true;
 				line.visibleRange = 32;
 
 				em.start(line);

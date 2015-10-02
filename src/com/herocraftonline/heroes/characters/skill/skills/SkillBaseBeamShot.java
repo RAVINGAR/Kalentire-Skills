@@ -43,6 +43,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 
 			private World world;
 			private Vector origin;
+			private Vector directionNormal;
 			private Vector direction;
 			private Capsule shot;
 			private boolean finalTick = false;
@@ -52,14 +53,15 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 			{
 				world = hero.getPlayer().getWorld();
 				origin = hero.getPlayer().getEyeLocation().toVector();
-				direction = hero.getPlayer().getEyeLocation().getDirection().multiply(velocity);
+				directionNormal = hero.getPlayer().getEyeLocation().getDirection();
+				direction = directionNormal.clone().multiply(velocity);
 
 				Vector shotEnd;
 
 				if (velocity < range) {
 					shotEnd = origin.clone().add(direction);
 				} else {
-					shotEnd = origin.clone().add(hero.getPlayer().getEyeLocation().getDirection().multiply(range));
+					shotEnd = origin.clone().add(directionNormal.clone().multiply(range));
 					finalTick = true;
 				}
 
@@ -84,7 +86,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 							AABB entityAABB = physics.getEntityAABB(entity);
 							Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
 							double lengthSq = shotRay.lengthSquared();
-							double dot = shotRay.dot(entityAABB.getCenter());
+							double dot = shotRay.dot(entityAABB.getCenter().subtract(shot.getPoint1()));
 
 							Vector shotPoint;
 							if (dot <= 0) {
@@ -92,7 +94,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 							} else if (dot > lengthSq) {
 								shotPoint = shot.getPoint2();
 							} else {
-								shotPoint = shotRay.multiply(dot / lengthSq);
+								shotPoint = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
 							}
 
 							return physics.rayCastBlocks(world, shotPoint, entityAABB.getCenter(), blockFilter, flags) == null;
@@ -108,21 +110,22 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 					if (hits.size() > penetration) {
 						hitAction.onFinalHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
 
+
+						// For final rendering
 						AABB entityAABB = physics.getEntityAABB(target);
 						Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
 						double lengthSq = shotRay.lengthSquared();
-						double dot = shotRay.dot(entityAABB.getCenter());
+						double dot = shotRay.dot(entityAABB.getCenter().subtract(shot.getPoint1()));
 
 						Vector newEndPoint;
 						if (dot < lengthSq) {
-							newEndPoint = shotRay.multiply(dot / lengthSq);
+							newEndPoint = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
 						} else if (dot <= 0) {
 							newEndPoint = shot.getPoint1();
 						} else {
 							newEndPoint = shot.getPoint2();
 						}
 
-						// For final rendering
 						shot = physics.createCapsule(shot.getPoint1(), newEndPoint, shot.getRadius());
 
 						finalTick = true;
@@ -141,7 +144,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 					Vector newShotEnd = shot.getPoint2().add(direction);
 
 					if (origin.distanceSquared(newShotEnd) > square(range)) {
-						newShotEnd = origin.clone().add(hero.getPlayer().getEyeLocation().getDirection().multiply(range));
+						newShotEnd = origin.clone().add(directionNormal.clone().multiply(range));
 						finalTick = true;
 					}
 
