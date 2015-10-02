@@ -54,6 +54,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 				world = hero.getPlayer().getWorld();
 				origin = hero.getPlayer().getEyeLocation().toVector();
 				directionNormal = hero.getPlayer().getEyeLocation().getDirection();
+
 				direction = directionNormal.clone().multiply(velocity);
 
 				Vector shotEnd;
@@ -106,32 +107,31 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 
 					// TODO I COULD TOTALLY MAKE IT SO ARROWS COULD STOP ITS PATH WHEN FIRED INTO IT
 
-					hits.add(target.getUniqueId());
-					if (hits.size() > penetration) {
-						hitAction.onFinalHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
+					AABB entityAABB = physics.getEntityAABB(target);
+					Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
+					double lengthSq = shotRay.lengthSquared();
+					double dot = shotRay.dot(entityAABB.getCenter().subtract(shot.getPoint1()));
 
+					if (dot > 0) {
+						hits.add(target.getUniqueId());
+						if (hits.size() > penetration) {
+							hitAction.onFinalHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
 
-						// For final rendering
-						AABB entityAABB = physics.getEntityAABB(target);
-						Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
-						double lengthSq = shotRay.lengthSquared();
-						double dot = shotRay.dot(entityAABB.getCenter().subtract(shot.getPoint1()));
+							// Make sure shot renders not past hit entity
+							Vector renderShotEnd = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
+							if (origin.distanceSquared(renderShotEnd) > square(range)) {
+								renderShotEnd = origin.clone().add(directionNormal.clone().multiply(range));
+								finalTick = true;
+							}
 
-						Vector newEndPoint;
-						if (dot < lengthSq) {
-							newEndPoint = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
-						} else if (dot <= 0) {
-							newEndPoint = shot.getPoint1();
+							// Final render of shot
+							shot = physics.createCapsule(shot.getPoint1(), renderShotEnd, shot.getRadius());
+
+							finalTick = true;
+							break;
 						} else {
-							newEndPoint = shot.getPoint2();
+							hitAction.onHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
 						}
-
-						shot = physics.createCapsule(shot.getPoint1(), newEndPoint, shot.getRadius());
-
-						finalTick = true;
-						break;
-					} else {
-						hitAction.onHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
 					}
 				}
 
