@@ -4,6 +4,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.TownyPermission;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+import com.palmergames.bukkit.util.BukkitTools;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
@@ -40,6 +47,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
     private boolean herotowns = false;
     //private HeroTowns ht;
+    private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
 
@@ -53,6 +61,10 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 herotowns = true;
                 ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             }*/
+
+            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+                towny = true;
+            }
 
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
@@ -272,8 +284,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
             @Override
-            public void run()
-            {
+            public void run() {
                 Player player = Bukkit.getPlayerExact(playerName);
                 if (player != null) {
                     Hero hero = plugin.getCharacterManager().getHero(player);
@@ -322,6 +333,38 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 Messaging.send(player, "You cannot Recall to a Town you have no access to!");
                 return SkillResult.FAIL;
             }*/
+        }
+
+        // Validate Towny
+        if(towny) {
+            Messaging.send(player, "CHECKING TOWNY");
+            // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
+            Messaging.send(player, "CHECKING TOWN BLOCK");
+            TownBlock tBlock = TownyUniverse.getTownBlock(teleportLocation);
+            if(tBlock != null) {
+                // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
+                Messaging.send(player, "IS TOWN BLOCK");
+                try {
+                    Messaging.send(player, "CHECKING TOWN");
+                    tBlock.getTown();
+
+                    Messaging.send(player, "IS TOWN. CHECKING PERMS");
+                    Block block = teleportLocation.getBlock();
+                    // Since we know the block is within a town, check if the player can build there. This *should* be actual perms, not circumstances like War.
+                    boolean buildPerms = PlayerCacheUtil.getCachePermission(player, teleportLocation, BukkitTools.getTypeId(block), BukkitTools.getData(block), TownyPermission.ActionType.BUILD);
+
+                    // If the player can't build, no recall
+                    if (!buildPerms) {
+                        Messaging.send(player, "You cannot Recall to a Town you have no access to!");
+                        return SkillResult.FAIL;
+                    }
+                    else Messaging.send(player, "PERMS CHECKED. ACCESS GRANTED");
+                }
+                catch (NotRegisteredException e) {
+                    Messaging.send(player, "IS NOT TOWN");
+                }
+            }
+            else Messaging.send(player, "IS NOT TOWN BLOCK");
         }
 
         // Validate WorldGuard
