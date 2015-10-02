@@ -43,7 +43,6 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 
 			private World world;
 			private Vector origin;
-			private Location originLocation;
 			private Vector direction;
 			private Capsule shot;
 			private boolean finalTick = false;
@@ -53,7 +52,6 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 			{
 				world = hero.getPlayer().getWorld();
 				origin = hero.getPlayer().getEyeLocation().toVector();
-				originLocation = origin.toLocation(world);
 				direction = hero.getPlayer().getEyeLocation().getDirection().multiply(velocity);
 
 				Vector shotEnd;
@@ -82,7 +80,11 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 				for (Entity target : physics.getEntitiesInVolume(world, hero.getPlayer(), shot, new Predicate<Entity>() {
 					@Override
 					public boolean apply(Entity entity) {
-						return entity instanceof LivingEntity && !hits.contains(entity.getUniqueId());
+						if (entity instanceof LivingEntity && !hits.contains(entity.getUniqueId())) {
+
+						}
+
+						return false;
 					}
 				})) {
 
@@ -90,20 +92,33 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 
 					hits.add(target.getUniqueId());
 					if (hits.size() > penetration) {
-						hitAction.onFinalHit(hero, (LivingEntity) target, originLocation, shot);
+						hitAction.onFinalHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
 
 						AABB entityAABB = physics.getEntityAABB(target);
 						Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
 						double lengthSq = shotRay.lengthSquared();
 						double dot = shotRay.dot(entityAABB.getCenter());
-						Vector newEndPoint = shotRay.multiply(dot / lengthSq);
 
-						cancel();
-						return;
+						Vector newEndPoint;
+						if (dot < lengthSq) {
+							newEndPoint = shotRay.multiply(dot / lengthSq);
+						} else if (dot <= 0) {
+							newEndPoint = shot.getPoint1();
+						} else {
+							newEndPoint = shot.getPoint2();
+						}
+
+						// For final rendering
+						shot = physics.createCapsule(shot.getPoint1(), newEndPoint, shot.getRadius());
+
+						finalTick = true;
+						break;
 					} else {
-						hitAction.onHit(hero, (LivingEntity) target, originLocation, shot);
+						hitAction.onHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
 					}
 				}
+
+				hitAction.onRenderShot(origin.toLocation(world), shot);
 
 				if (finalTick) {
 					cancel();
