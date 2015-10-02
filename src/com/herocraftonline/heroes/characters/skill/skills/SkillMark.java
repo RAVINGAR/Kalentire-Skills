@@ -2,12 +2,19 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.logging.Level;
 
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.TownyPermission;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+import com.palmergames.bukkit.util.BukkitTools;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -26,6 +33,7 @@ public class SkillMark extends ActiveSkill {
 
     private boolean herotowns = false;
     //private HeroTowns ht;
+    private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     protected String skillSettingsName;
@@ -44,6 +52,10 @@ public class SkillMark extends ActiveSkill {
                 herotowns = true;
                 ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             }*/
+
+            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+                towny = true;
+            }
 
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
@@ -116,6 +128,40 @@ public class SkillMark extends ActiveSkill {
                     Messaging.send(player, "You cannot Mark in a Town you have no access to!");
                     return SkillResult.FAIL;
                 }*/
+            }
+
+            // Validate Towny
+            if(towny) {
+                Messaging.send(player, "CHECKING TOWNY");
+                // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
+                Messaging.send(player, "CHECKING TOWN BLOCK");
+                TownBlock tBlock = TownyUniverse.getTownBlock(loc);
+                if(tBlock != null) {
+                    // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
+                    Messaging.send(player, "IS TOWN BLOCK");
+                    try {
+                        Messaging.send(player, "CHECKING TOWN");
+                        tBlock.getTown();
+
+                        Messaging.send(player, "IS TOWN. CHECKING PERMS");
+                        // There is a town, but we need a block to check build perms. The teleport location will do.
+                        Block block = loc.getBlock();
+                        // Since we know the block is within a town, check if the player can build there. This *should* be actual perms, not circumstances like War.
+                        boolean buildPerms = PlayerCacheUtil.getCachePermission(player, loc, BukkitTools.getTypeId(block), BukkitTools.getData(block), TownyPermission.ActionType.BUILD);
+
+                        // If the player can't build, no mark
+                        if (!buildPerms) {
+                            Messaging.send(player, "You cannot Mark in a Town you have no access to!");
+                            return SkillResult.FAIL;
+                        }
+                        else Messaging.send(player, "PERMS CHECKED. ACCESS GRANTED");
+                    }
+                    catch (NotRegisteredException e) {
+                        // Ignore: No town here
+                        Messaging.send(player, "IS NOT TOWN");
+                    }
+                }
+                else Messaging.send(player, "IS NOT TOWN BLOCK");
             }
 
             // Validate WorldGuard
