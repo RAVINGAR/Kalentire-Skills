@@ -81,7 +81,21 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 					@Override
 					public boolean apply(Entity entity) {
 						if (entity instanceof LivingEntity && !hits.contains(entity.getUniqueId())) {
+							AABB entityAABB = physics.getEntityAABB(entity);
+							Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
+							double lengthSq = shotRay.lengthSquared();
+							double dot = shotRay.dot(entityAABB.getCenter());
 
+							Vector shotPoint;
+							if (dot <= 0) {
+								shotPoint = shot.getPoint1();
+							} else if (dot > lengthSq) {
+								shotPoint = shot.getPoint2();
+							} else {
+								shotPoint = shotRay.multiply(dot / lengthSq);
+							}
+
+							return physics.rayCastBlocks(world, shotPoint, entityAABB.getCenter(), blockFilter, blockCastFlags) == null;
 						}
 
 						return false;
