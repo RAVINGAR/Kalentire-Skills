@@ -6,12 +6,19 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.TownyPermission;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+import com.palmergames.bukkit.util.BukkitTools;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,6 +52,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
     private boolean herotowns = false;
     //private HeroTowns ht;
     //private boolean residence = false;
+    private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
 
@@ -64,6 +72,9 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
             /*if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
             }*/
+            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+                towny = true;
+            }
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -155,6 +166,32 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
                     Messaging.send(player, "You cannot imbue a Runestone within a town you do not have access to!");
                     return SkillResult.FAIL;
                 }*/
+            }
+
+            // Validate Towny
+            if(towny) {
+                // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
+                TownBlock tBlock = TownyUniverse.getTownBlock(location);
+                if(tBlock != null) {
+                    // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
+                    try {
+                        tBlock.getTown();
+
+                        // Need a Block to run towny build checks on. Naturally, the block they're standing on.
+                        Block block = location.getBlock();
+                        // Since we know the block is within a town, check if the player can build there. This *should* be actual perms, not circumstances like War.
+                        boolean buildPerms = PlayerCacheUtil.getCachePermission(player, location, BukkitTools.getTypeId(block), BukkitTools.getData(block), TownyPermission.ActionType.BUILD);
+
+                        // If the player can't build, no runestone
+                        if (!buildPerms) {
+                            Messaging.send(player, "You cannot imbue a Runestone in a Town you have no access to!");
+                            return SkillResult.FAIL;
+                        }
+                    }
+                    catch (NotRegisteredException e) {
+                        // Ignore: No town here
+                    }
+                }
             }
 
             // Validate WorldGuard
