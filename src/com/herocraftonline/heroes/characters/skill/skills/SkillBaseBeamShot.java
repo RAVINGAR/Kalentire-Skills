@@ -18,10 +18,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.bukkit.util.NumberConversions.square;
 
@@ -46,6 +43,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 			private Vector directionNormal;
 			private Vector direction;
 			private Capsule shot;
+			private boolean firstTick = true;
 			private boolean finalTick = false;
 
 			private Set<UUID> hits = new HashSet<>();
@@ -80,7 +78,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 			@Override
 			public void run() {
 
-				for (Entity target : physics.getEntitiesInVolume(world, hero.getPlayer(), shot, new Predicate<Entity>() {
+				List<Entity> targets = physics.getEntitiesInVolume(world, hero.getPlayer(), shot, new Predicate<Entity>() {
 					@Override
 					public boolean apply(Entity entity) {
 						if (entity instanceof LivingEntity && !hits.contains(entity.getUniqueId())) {
@@ -103,7 +101,17 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 
 						return false;
 					}
-				}, flags.contains(RayCastFlag.ENTITY_HIT_SPECTATORS))) {
+				}, flags.contains(RayCastFlag.ENTITY_HIT_SPECTATORS));
+
+				Collections.sort(targets, new Comparator<Entity>() {
+					@Override
+					public int compare(Entity o1, Entity o2) {
+						return Double.compare(physics.getEntityAABB(o1).getCenter().distanceSquared(origin),
+								physics.getEntityAABB(o2).getCenter().distanceSquared(origin));
+					}
+				});
+
+				for (Entity target : targets) {
 
 					// TODO I COULD TOTALLY MAKE IT SO ARROWS COULD STOP ITS PATH WHEN FIRED INTO IT
 
@@ -117,15 +125,13 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 						if (hits.size() > penetration) {
 							hitAction.onFinalHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
 
-							// Make sure shot renders not past hit entity
-							Vector renderShotEnd = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
-							if (origin.distanceSquared(renderShotEnd) > square(range)) {
-								renderShotEnd = origin.clone().add(directionNormal.clone().multiply(range));
-								finalTick = true;
+							if (dot < lengthSq) {
+								Vector renderShotEnd = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
+								if (origin.distanceSquared(renderShotEnd) > square(range)) {
+									renderShotEnd = origin.clone().add(directionNormal.clone().multiply(range));
+								}
+								shot = physics.createCapsule(shot.getPoint1(), renderShotEnd, shot.getRadius());
 							}
-
-							// Final render of shot
-							shot = physics.createCapsule(shot.getPoint1(), renderShotEnd, shot.getRadius());
 
 							finalTick = true;
 							break;
@@ -135,7 +141,8 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 					}
 				}
 
-				hitAction.onRenderShot(origin.toLocation(world), shot);
+				hitAction.onRenderShot(origin.toLocation(world), shot, firstTick, finalTick);
+				firstTick = false;
 
 				if (finalTick) {
 					cancel();
@@ -163,6 +170,6 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 	protected interface BeamShotHit {
 		void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
 		void onFinalHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
-		void onRenderShot(Location origin, Capsule shot);
+		void onRenderShot(Location origin, Capsule shot, boolean first, boolean last);
 	}
 }

@@ -16,6 +16,7 @@ import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -89,20 +90,52 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 			}
 
 			@Override
-			public void onRenderShot(Location origin, Capsule shot) {
-				EffectManager em = new EffectManager(plugin);
-				LineEffect line = new LineEffect(em);
+			public void onRenderShot(Location origin, Capsule shot, boolean first, boolean last) {
 
-				line.setLocation(shot.getPoint1().toLocation(origin.getWorld()));
-				line.setTarget(shot.getPoint2().toLocation(origin.getWorld()));
-				line.asynchronous = true;
-				line.particles = (int) (line.getLocation().distance(line.getTarget()) * 10);
-				line.particle = ParticleEffect.FLAME;
-				line.type = EffectType.INSTANT;
-				line.visibleRange = 32;
+				if (first) {
+					origin.getWorld().playSound(origin, Sound.EXPLODE, 0.05f, 0.2f);
+				}
 
-				em.start(line);
-				em.disposeOnTermination();
+				if (last) {
+					Location loc = shot.getPoint2().toLocation(origin.getWorld());
+					origin.getWorld().playSound(loc, Sound.ORB_PICKUP, 0.05f, 0.2f);
+				}
+
+				Location travelSoundLoc = shot.getBounds().getCenter().toLocation(origin.getWorld());
+				origin.getWorld().playSound(travelSoundLoc, Sound.FIZZ, 0.05f, 0.2f);
+
+				boolean render = false;
+				Vector originV = origin.toVector();
+
+				Location start = null, end = null;
+
+				if (originV.distanceSquared(shot.getPoint1()) >= 1) {
+					start = shot.getPoint1().toLocation(origin.getWorld());
+					end = shot.getPoint2().toLocation(origin.getWorld());
+					render = true;
+				} else if (originV.distanceSquared(shot.getPoint2()) >= 1) {
+					start = shot.getPoint1().add(shot.getPoint2().subtract(shot.getPoint1()).normalize()).toLocation(origin.getWorld());
+					end = shot.getPoint2().toLocation(origin.getWorld());
+					render = true;
+				}
+
+				if (render) {
+					EffectManager em = new EffectManager(plugin);
+					LineEffect line = new LineEffect(em);
+
+					//line.setLocation(shot.getPoint1().toLocation(origin.getWorld()));
+					//line.setTarget(shot.getPoint2().toLocation(origin.getWorld()));
+					line.setLocation(start);
+					line.setTarget(end);
+					line.asynchronous = true;
+					line.particles = (int) (line.getLocation().distance(line.getTarget()) * 10);
+					line.particle = ParticleEffect.FLAME;
+					line.type = EffectType.INSTANT;
+					line.visibleRange = 32;
+
+					em.start(line);
+					em.disposeOnTermination();
+				}
 			}
 		}, new Predicate<Block>() {
 			@Override
