@@ -139,7 +139,7 @@ public class SkillMark extends ActiveSkill {
                     try {
                         tBlock.getTown();
 
-                        // There is a town, but we need a block to check build perms. The teleport location will do.
+                        // Need a Block to run towny build checks on. Naturally, the block they're standing on.
                         Block block = loc.getBlock();
                         // Since we know the block is within a town, check if the player can build there. This *should* be actual perms, not circumstances like War.
                         boolean buildPerms = PlayerCacheUtil.getCachePermission(player, loc, BukkitTools.getTypeId(block), BukkitTools.getData(block), TownyPermission.ActionType.BUILD);
