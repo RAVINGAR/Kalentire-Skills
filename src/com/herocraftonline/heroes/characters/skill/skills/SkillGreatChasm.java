@@ -2,9 +2,17 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.nms.physics.collision.AABB;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
 
 public class SkillGreatChasm extends SkillBaseBlockWave {
 
@@ -41,6 +49,20 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
-		return null;
+
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100d, false);
+		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1d, false);
+		final double totalDamge = damage + hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease;
+
+		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), new WaveTargetAction() {
+			@Override
+			public void onTarget(Hero hero, LivingEntity target, Location center) {
+				if (damageCheck(hero.getPlayer(), target)) {
+					damageEntity(target, hero.getPlayer(), totalDamge, EntityDamageEvent.DamageCause.MAGIC, false);
+				}
+			}
+		});
+		broadcastExecuteText(hero);
+		return SkillResult.NORMAL;
 	}
 }
