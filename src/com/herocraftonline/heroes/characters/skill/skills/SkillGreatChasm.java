@@ -3,16 +3,20 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
+
+import static java.lang.Math.abs;
 
 public class SkillGreatChasm extends SkillBaseBlockWave {
 
@@ -44,6 +48,9 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 		node.set(SkillSetting.DAMAGE.node(), 100d);
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1);
 
+		node.set(SkillSetting.DURATION.node(), 4000);
+		node.set("knockup-force", 0.5);
+
 		return node;
 	}
 
@@ -52,16 +59,29 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100d, false);
 		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1d, false);
-		final double totalDamge = damage + hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease;
+		final double totalDamage = damage + hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease;
+		final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+		final double knockupForce = SkillConfigManager.getUseSetting(hero, this, "knockup-force", 0.5, false);
 
 		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), new WaveTargetAction() {
 			@Override
 			public void onTarget(Hero hero, LivingEntity target, Location center) {
 				if (damageCheck(hero.getPlayer(), target)) {
-					damageEntity(target, hero.getPlayer(), totalDamge, EntityDamageEvent.DamageCause.MAGIC, false);
+					damageEntity(target, hero.getPlayer(), totalDamage, EntityDamageEvent.DamageCause.MAGIC, false);
+
+					CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
+
+					SlowEffect slow = new SlowEffect(SkillGreatChasm.this, hero.getPlayer(), duration, 2);
+					targetCt.addEffect(slow);
+
+					target.setVelocity(new Vector(0, abs(knockupForce), 0));
 				}
 			}
 		});
+
+		World world = hero.getPlayer().getWorld();
+		world.playSound(hero.getPlayer().getLocation(), Sound.EXPLODE, 1f, 0.1f);
+
 		broadcastExecuteText(hero);
 		return SkillResult.NORMAL;
 	}
