@@ -50,7 +50,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
 
 		return getDescription()
-				.replace("$1", duration + "")
+				.replace("$1", Util.decFormat.format((double) duration / 1000))
 				.replace("$2", Util.decFormat.format(damage))
 				.replace("$3", mana > 0 ? "Mana: " + mana : "")
 				.replace("$4", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");

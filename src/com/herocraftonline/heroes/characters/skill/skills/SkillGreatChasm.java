@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -23,7 +24,9 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 
 	public SkillGreatChasm(Heroes plugin) {
 		super(plugin, "GreatChasm");
-		setDescription("");
+		setDescription("A chasm of chaos erupts and throws blocks around hitting all targets in a $1 arc in front of you, with a radius of $2, height of $3, and depth of $4, " +
+				"Expanding at a rate of $5 blocks per second. Targets can be hit hit a maximum of $6 times each hit dealing $7 damage, knocking them up " +
+				"and slowing them for $8 seconds.");
 		setUsage("/skill " + getName().toLowerCase());
 		setIdentifiers("skill " + getName().toLowerCase());
 		setArgumentRange(0, 0);
@@ -31,7 +34,29 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 
 	@Override
 	public String getDescription(Hero hero) {
-		return getDescription();
+		double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
+		double expansionRate = SkillConfigManager.getUseSetting(hero, this, EXPANSION_RATE_NODE, 1d, false);
+		double waveArc = Math.toRadians(SkillConfigManager.getUseSetting(hero, this, WAVE_ARC_NODE, 360d, false));
+		int hitLimit = SkillConfigManager.getUseSetting(hero, this, HIT_LIMIT_NODE, 1, false);
+		int depth =  SkillConfigManager.getUseSetting(hero, this, DEPTH_NODE, 5, false);
+		int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 3, false);
+
+
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100d, false);
+		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1d, false);
+		final double totalDamage = damage + hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease;
+
+		final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+
+		return getDescription()
+				.replace("$1", Util.decFormat.format(waveArc))
+				.replace("$2", Util.decFormat.format(radius))
+				.replace("$3", "" + depth)
+				.replace("$4", "" + height)
+				.replace("$5", Util.largeDecFormat.format(expansionRate))
+				.replace("$6", "" + hitLimit)
+				.replace("$7", Util.decFormat.format(totalDamage))
+				.replace("$8", Util.decFormat.format((double) duration / 1000));
 	}
 
 	@Override
