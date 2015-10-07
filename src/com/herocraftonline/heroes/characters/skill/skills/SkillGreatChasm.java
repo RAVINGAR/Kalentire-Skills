@@ -112,7 +112,7 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 
 			@Override
 			public void run() {
-				world.playSound(hero.getPlayer().getLocation(), Sound.FALL_BIG, volume, 1f);
+				world.playSound(hero.getPlayer().getLocation(), Sound.ENDERMAN_SCREAM, volume, 1 - volume);
 				volume -= 0.1;
 
 				if (volume <= 0) {
