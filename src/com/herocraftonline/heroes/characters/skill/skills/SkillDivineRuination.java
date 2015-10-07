@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillDivineRuination extends SkillBaseBlockWave {
 
@@ -50,7 +51,7 @@ public class SkillDivineRuination extends SkillBaseBlockWave {
 	}
 
 	@Override
-	public SkillResult use(Hero hero, String[] strings) {
+	public SkillResult use(final Hero hero, String[] strings) {
 
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100d, false);
 		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1d, false);
@@ -71,9 +72,21 @@ public class SkillDivineRuination extends SkillBaseBlockWave {
 			}
 		});
 
-		World world = hero.getPlayer().getWorld();
-		world.playSound(hero.getPlayer().getLocation(), Sound.EXPLODE, 1f, 0.1f);
-		world.playSound(hero.getPlayer().getLocation(), Sound.FIREWORK_LARGE_BLAST2, 1f, 1f);
+		final World world = hero.getPlayer().getWorld();
+		new BukkitRunnable() {
+
+			float volume = 1;
+
+			@Override
+			public void run() {
+				world.playSound(hero.getPlayer().getLocation(), Sound.FIREWORK_BLAST, volume, 1f);
+				volume -= 0.1;
+
+				if (volume <= 0) {
+					cancel();
+				}
+			}
+		}.runTaskTimer(plugin, 0, 1);
 
 		broadcastExecuteText(hero);
 		return SkillResult.NORMAL;
