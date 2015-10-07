@@ -24,8 +24,8 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 
 	public SkillGreatChasm(Heroes plugin) {
 		super(plugin, "GreatChasm");
-		setDescription("A chasm of chaos erupts and throws blocks around hitting all targets in a $1 arc in front of you, with a radius of $2, height of $3, and depth of $4, " +
-				"Expanding at a rate of $5 blocks per second. Targets can be hit hit a maximum of $6 times each hit dealing $7 damage, knocking them up " +
+		setDescription("A chasm of chaos erupts and throws blocks around hitting all targets in a $1 degree arc in front of you, with a radius of $2, height of $3, and depth of $4, " +
+				"Expanding at a rate of $5 block(s) per second. Targets can be hit hit a maximum of $6 time(s) each hit dealing $7 damage, knocking them up " +
 				"and slowing them for $8 seconds.");
 		setUsage("/skill " + getName().toLowerCase());
 		setIdentifiers("skill " + getName().toLowerCase());
@@ -36,7 +36,7 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 	public String getDescription(Hero hero) {
 		double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5d, false);
 		double expansionRate = SkillConfigManager.getUseSetting(hero, this, EXPANSION_RATE_NODE, 1d, false);
-		double waveArc = Math.toRadians(SkillConfigManager.getUseSetting(hero, this, WAVE_ARC_NODE, 360d, false));
+		double waveArc = SkillConfigManager.getUseSetting(hero, this, WAVE_ARC_NODE, 360d, false);
 		int hitLimit = SkillConfigManager.getUseSetting(hero, this, HIT_LIMIT_NODE, 1, false);
 		int depth =  SkillConfigManager.getUseSetting(hero, this, DEPTH_NODE, 5, false);
 		int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 3, false);
