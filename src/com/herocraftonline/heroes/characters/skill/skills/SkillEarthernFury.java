@@ -106,18 +106,18 @@ public class SkillEarthernFury extends TargettedSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int dexterityReduction = SkillConfigManager.getUseSetting(hero, this, "dexterity-reduction", 3, false);
         int slownessAmplitude = SkillConfigManager.getUseSetting(hero, this, "slownessAmplitude", 2, false);
-        ChillingStrikeDexterityEffect cEffect = new ChillingStrikeDexterityEffect(this, hero, duration, dexterityReduction, slownessAmplitude, applyText, expireText);
+        EarthernFuryDexterityEffect cEffect = new EarthernFuryDexterityEffect(this, hero, duration, dexterityReduction, slownessAmplitude, applyText, expireText);
         targCT.addEffect(cEffect);
 
         return SkillResult.NORMAL;
     }
 
-    private class ChillingStrikeDexterityEffect extends AttributeDecreaseEffect {
+    private class EarthernFuryDexterityEffect extends AttributeDecreaseEffect {
 
         private BukkitTask effect;
 
-        public ChillingStrikeDexterityEffect(SkillEarthernFury skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude, String applyText, String expireText) {
-            super(skill, "ChillingStrikeDexterityEffect", applier.getPlayer(), duration, AttributeType.DEXTERITY, decreaseValue, applyText, expireText);
+        public EarthernFuryDexterityEffect(SkillEarthernFury skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude, String applyText, String expireText) {
+            super(skill, "EarthernFuryDexterityEffect", applier.getPlayer(), duration, AttributeType.DEXTERITY, decreaseValue, applyText, expireText);
             types.add(EffectType.SLOW);
             int tickDuration = (int) ((duration / 1000) * 20);
             addMobEffect(2, tickDuration, slownessAmplitude, false);
