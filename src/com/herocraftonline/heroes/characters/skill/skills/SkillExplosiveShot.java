@@ -54,7 +54,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 		private static final long serialVersionUID = 1L;
 
 		protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-			return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+			return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
 		}
 	};
 
@@ -79,7 +79,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 	public String getDescription(Hero hero) {
 		int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
 
-		String numShotsString = "";
+		String numShotsString;
 		if (numShots > 1)
 			numShotsString = "next " + numShots + " shots";
 		else
@@ -95,22 +95,36 @@ public class SkillExplosiveShot extends ActiveSkill {
 		String formattedDuration = Util.decFormat.format(duration / 1000.0);
 		String formattedDamage = Util.decFormat.format(damage);
 
-		return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", formattedDuration).replace("$4", radius + "").replace("$5", formattedDamage);
+
+        String directHitEffect = "";
+        double altArrowDamage;
+        if (SkillConfigManager.getUseSetting(hero, this, "cancel-arrow-damage", true)) {
+            altArrowDamage = SkillConfigManager.getUseSetting(hero, this, "alt-arrow-damage", 75, false);
+            if (altArrowDamage > 0) {
+                directHitEffect = " The arrow deals " + altArrowDamage + " damage on hitting a target directly.";
+            }
+        }
+        else {
+            directHitEffect = " The arrow deals standard Bow damage on hitting a target directly.";
+        }
+
+		return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", formattedDuration).replace("$4", radius + "").replace("$5", formattedDamage) + directHitEffect;
 	}
 
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.USE_TEXT.node(), "");
-		node.set("num-shots", Integer.valueOf(1));
-		node.set(SkillSetting.DURATION.node(), Integer.valueOf(4000));
-		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
-		node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(80));
-		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), Double.valueOf(2.0));
-		node.set("horizontal-power", Double.valueOf(1.1));
-		node.set("vertical-power", Double.valueOf(0.5));
+		node.set("num-shots", 1);
+		node.set(SkillSetting.DURATION.node(), 4000);
+		node.set(SkillSetting.RADIUS.node(), 4);
+		node.set(SkillSetting.DAMAGE.node(), 80D);
+		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2.0D);
+		node.set("horizontal-power", 1.1D);
+		node.set("vertical-power", 0.5D);
 		node.set("ncp-exemption-duration", 500);
 		node.set("cancel-arrow-damage", true);
+        node.set("alt-arrow-damage", 75D);
 		node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
 		node.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero%'s arrows are no longer Explosive."));
 
@@ -245,7 +259,26 @@ public class SkillExplosiveShot extends ActiveSkill {
             Player shooter = (Player) projectile.getShooter();
             Hero hero = plugin.getCharacterManager().getHero(shooter);
 
-            event.setCancelled(SkillConfigManager.getUseSetting(hero, skill, "cancel-arrow-damage", true));
+            // If we're not cancelling the default arrow, we don't care
+            if( SkillConfigManager.getUseSetting(hero, skill, "cancel-arrow-damage", true)) {
+                // Cancel first, quick, before we do something crazy
+                event.setCancelled(true);
+
+                // Run our own, controlled damage on arrow hit, if set.
+                double altArrowDamage = SkillConfigManager.getUseSetting(hero, skill, "alt-arrow-damage", 75, false);
+                if (altArrowDamage > 0) {
+                    // Grab entity from event, the rest is copied from explode()
+                    Entity entity = event.getEntity();
+                    if (!(entity instanceof LivingEntity) || !damageCheck(shooter, (LivingEntity) entity))
+                        return;
+
+                    // Damage target
+                    LivingEntity target = (LivingEntity) entity;
+                    addSpellTarget(target, hero);
+                    damageEntity(target, shooter, altArrowDamage, DamageCause.MAGIC, false);
+                }
+            }
+
         }
 	}
 
