@@ -29,8 +29,8 @@ public class SkillDamageSpike extends SkillBaseSpike {
 
 	@Override
 	public String getDescription(Hero hero) {
-		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 200d, false);
-		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200d, false);
+		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
 		return getDescription().replace("$1", damage + "");
 	}
@@ -40,7 +40,7 @@ public class SkillDamageSpike extends SkillBaseSpike {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.DAMAGE.node(), 200d);
-		node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 2d);
+		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2d);
 		node.set(KNOCKUP_STRENGTH, 0.6d);
 
 		return node;
@@ -56,8 +56,8 @@ public class SkillDamageSpike extends SkillBaseSpike {
 
 			renderSpike(livingEntity.getLocation(), 3, 0.5, ParticleEffect.FLAME);
 
-			double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 200d, false);
-			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+			double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200d, false);
+			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
 			double knockUp = SkillConfigManager.getUseSetting(hero, this, KNOCKUP_STRENGTH, 2d, false);
 
