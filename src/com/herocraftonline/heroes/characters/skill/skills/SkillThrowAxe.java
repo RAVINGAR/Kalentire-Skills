@@ -69,14 +69,6 @@ public class SkillThrowAxe extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        if (target instanceof Player) {
-            Player targetPlayer = (Player) target;
-            if (!inLineOfSight(player, targetPlayer)) {
-                hero.getPlayer().sendMessage("Your target is not visible!");
-                return SkillResult.FAIL;
-            }
-        }
-
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
