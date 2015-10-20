@@ -146,7 +146,7 @@ public class SkillHolyWater extends ActiveSkill {
                     else {
                         // If they are undead, damage them.
                         addSpellTarget(entity, hero);
-                        Skill.damageEntity((LivingEntity) entity, (LivingEntity) shooter, undeadDamage, DamageCause.MAGIC);
+                        skill.damageEntity((LivingEntity) entity, (LivingEntity) shooter, undeadDamage, DamageCause.MAGIC);
                     }
                 }
                 else {

@@ -94,11 +94,11 @@ public class SkillDragonDash extends TargettedSkill {
         }*/
 
         // Check if you can damage target
-        if (Skill.damageCheck(hero.getPlayer(), target)) {
+        if (damageCheck(hero.getPlayer(), target)) {
             broadcastExecuteText(hero, target);
             addSpellTarget(target, hero);
 
-            Skill.damageEntity(target, hero.getEntity(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, true);
+            damageEntity(target, hero.getEntity(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, true);
         } else {
             return SkillResult.INVALID_TARGET;
         }

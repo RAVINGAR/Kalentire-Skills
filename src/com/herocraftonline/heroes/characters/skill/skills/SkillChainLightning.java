@@ -104,7 +104,7 @@ public class SkillChainLightning extends TargettedSkill {
         public void apply(CharacterTemplate cT) {
             super.apply(cT);
             addSpellTarget(cT.getEntity(),caster);
-            Skill.damageEntity(cT.getEntity(), caster.getEntity(), damage, DamageCause.MAGIC, false);
+            skill.damageEntity(cT.getEntity(), caster.getEntity(), damage, DamageCause.MAGIC, false);
             if (cT instanceof Hero) {
                 ((Player)(cT.getEntity())).sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Hit by ChainLightning from " + caster.getName() + "!");
             }

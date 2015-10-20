@@ -228,7 +228,7 @@ public class SkillHolyAura extends ActiveSkill {
 
                 // Damage for 50% of heal value
                 addSpellTarget(lETarget, hero);
-                Skill.damageEntity(lETarget, player, undeadDamage, DamageCause.MAGIC);
+                skill.damageEntity(lETarget, player, undeadDamage, DamageCause.MAGIC);
             }
         }
 
