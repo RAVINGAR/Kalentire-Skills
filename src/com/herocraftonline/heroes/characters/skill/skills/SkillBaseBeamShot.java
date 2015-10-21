@@ -10,6 +10,10 @@ import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import com.herocraftonline.heroes.nms.physics.collision.Capsule;
+import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.CylinderEffect;
+import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -40,6 +44,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 
 			private World world;
 			private Vector origin;
+			private Location originLocation;
 			private Vector directionNormal;
 			private Vector direction;
 			private Capsule shot;
@@ -52,6 +57,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 				world = hero.getPlayer().getWorld();
 				origin = hero.getPlayer().getEyeLocation().toVector();
 				directionNormal = hero.getPlayer().getEyeLocation().getDirection();
+				originLocation = origin.toLocation(world).setDirection(directionNormal);
 
 				direction = directionNormal.clone().multiply(velocity);
 
@@ -114,17 +120,17 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
                 for (PossibleHit possibleHit : possibleHits) {
                     hits.add(possibleHit.getTarget().getUniqueId());
                     if (hits.size() > penetration) {
-                        hitAction.onFinalHit(hero, possibleHit.getTarget(), origin.toLocation(world), shot);
+                        hitAction.onFinalHit(hero, possibleHit.getTarget(), originLocation.clone(), shot);
                         shot = physics.createCapsule(shot.getPoint1(), possibleHit.getShotPoint(), shot.getRadius());
 
                         finalTick = true;
                         break;
                     } else {
-                        hitAction.onHit(hero, possibleHit.getTarget(), origin.toLocation(world), shot);
+                        hitAction.onHit(hero, possibleHit.getTarget(), originLocation.clone(), shot);
                     }
                 }
 
-				hitAction.onRenderShot(origin.toLocation(world), shot, firstTick, finalTick);
+				hitAction.onRenderShot(originLocation.clone(), shot, firstTick, finalTick);
 				firstTick = false;
 
 				if (finalTick) {
@@ -156,13 +162,46 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 		void onRenderShot(Location origin, Capsule shot, boolean first, boolean last);
 	}
 
-	protected abstract class SpiralBeamShotHit implements BeamShotHit {
+	protected void renderBeamShotFrame(Location origin, Capsule shot, ParticleEffect particle, Color color,
+                                       int particles, int iterations, float visibleRange, double radiusScale, double startOffset) {
+		boolean render = false;
+		Vector originV = origin.toVector();
 
+		Vector start = null, end = null;
 
+		if (originV.distanceSquared(shot.getPoint1()) >= square(startOffset)) {
+			start = shot.getPoint1();
+			end = shot.getPoint2();
+			render = true;
+		} else if (originV.distanceSquared(shot.getPoint2()) >= square(startOffset)) {
+			start = shot.getPoint1().add(shot.getPoint2().subtract(shot.getPoint1()).normalize());
+			end = shot.getPoint2();
+			render = true;
+		}
 
-		@Override
-		public void onRenderShot(Location origin, Capsule shot, boolean first, boolean last) {
+		if (render) {
+			EffectManager em = new EffectManager(plugin);
 
+			CylinderEffect cyl = new CylinderEffect(em);
+			cyl.setLocation(start.clone().add(end.clone().subtract(start).multiply(0.5)).toLocation(origin.getWorld()));
+			cyl.asynchronous = true;
+
+			cyl.radius = (float) (shot.getRadius() * radiusScale);
+			cyl.height = (float) start.distance(end);
+			cyl.particle = particle;
+			cyl.color = color;
+			cyl.particles = particles;
+			cyl.solid = true;
+			cyl.rotationX = Math.toRadians(origin.getPitch() + 90);
+			cyl.rotationY = -Math.toRadians(origin.getYaw());
+			cyl.angularVelocityX = 0;
+			cyl.angularVelocityY = 0;
+			cyl.angularVelocityZ = 0;
+			cyl.iterations = iterations;
+			cyl.visibleRange = visibleRange;
+
+			cyl.start();
+			em.disposeOnTermination();
 		}
 	}
 

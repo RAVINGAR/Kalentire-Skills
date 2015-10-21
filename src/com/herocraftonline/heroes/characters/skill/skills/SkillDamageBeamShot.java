@@ -14,6 +14,7 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -104,7 +105,9 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 				Location travelSoundLoc = shot.getBounds().getCenter().toLocation(origin.getWorld());
 				origin.getWorld().playSound(travelSoundLoc, Sound.FIZZ, 0.05f, 0.2f);
 
-				boolean render = false;
+				renderBeamShotFrame(origin, shot, ParticleEffect.FLAME, Color.ORANGE, (int) (shot.getPoint1().distanceSquared(shot.getPoint2()) * 10), 3, 32, 0.5, 1);
+
+				/*boolean render = false;
 				Vector originV = origin.toVector();
 
 				Location start = null, end = null;
@@ -135,7 +138,7 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 
 					em.start(line);
 					em.disposeOnTermination();
-				}
+				}*/
 			}
 		}, new Predicate<Block>() {
 			@Override
