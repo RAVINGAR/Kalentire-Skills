@@ -19,6 +19,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -405,7 +407,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.JUMP_BOOST);
 
-            addMobEffect(8, duration / 1000 * 20, 5, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, duration / 1000 * 20, 5), false);
         }
     }
 }
