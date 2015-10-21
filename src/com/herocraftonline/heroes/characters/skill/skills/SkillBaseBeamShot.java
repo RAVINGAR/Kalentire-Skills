@@ -78,68 +78,51 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 			@Override
 			public void run() {
 
-				List<Entity> targets = physics.getEntitiesInVolume(world, hero.getPlayer(), shot, new Predicate<Entity>() {
+				List<Entity> possibleTargets = physics.getEntitiesInVolume(world, hero.getPlayer(), shot, new Predicate<Entity>() {
 					@Override
 					public boolean apply(Entity entity) {
-						if (entity instanceof LivingEntity && !hits.contains(entity.getUniqueId())) {
-							AABB entityAABB = physics.getEntityAABB(entity);
-							Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
-							double lengthSq = shotRay.lengthSquared();
-							double dot = shotRay.dot(entityAABB.getCenter().subtract(shot.getPoint1()));
-
-							Vector shotPoint;
-							if (dot <= 0) {
-								shotPoint = shot.getPoint1();
-							} else if (dot > lengthSq) {
-								shotPoint = shot.getPoint2();
-							} else {
-								shotPoint = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
-							}
-
-							return physics.rayCastBlocks(world, shotPoint, entityAABB.getCenter(), blockFilter, flags) == null;
-						}
-
-						return false;
+                        return entity instanceof LivingEntity && !hits.contains(entity.getUniqueId());
 					}
 				}, flags.contains(RayCastFlag.ENTITY_HIT_SPECTATORS));
 
-				Collections.sort(targets, new Comparator<Entity>() {
-					@Override
-					public int compare(Entity o1, Entity o2) {
-						return Double.compare(physics.getEntityAABB(o1).getCenter().distanceSquared(origin),
-								physics.getEntityAABB(o2).getCenter().distanceSquared(origin));
-					}
-				});
+                SortedSet<PossibleHit> possibleHits = new TreeSet<>();
+                for (Entity possibleTarget : possibleTargets) {
+                    AABB entityAABB = physics.getEntityAABB(possibleTarget);
+                    Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
+                    double lengthSq = shotRay.lengthSquared();
+                    double dot = shotRay.dot(entityAABB.getCenter().subtract(shot.getPoint1()));
 
-				for (Entity target : targets) {
+                    Vector shotPoint;
+                    if (dot < 0) {
+                        continue;
+                    } else if (dot == 0) {
+                        shotPoint = shot.getPoint1();
+                    } else if (dot >= lengthSq) {
+                        shotPoint = shot.getPoint2();
+                    } else {
+                        shotPoint = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
+                    }
 
-					// TODO I COULD TOTALLY MAKE IT SO ARROWS COULD STOP ITS PATH WHEN FIRED INTO IT
+                    double shotLengthSq = shotRay.lengthSquared();
 
-					AABB entityAABB = physics.getEntityAABB(target);
-					Vector shotRay = shot.getPoint2().subtract(shot.getPoint1());
-					double lengthSq = shotRay.lengthSquared();
-					double dot = shotRay.dot(entityAABB.getCenter().subtract(shot.getPoint1()));
+                    if (physics.rayCastBlocks(world, shotPoint, entityAABB.getCenter(), blockFilter, flags) == null) {
+                        double distanceSq = shotRay.clone().multiply(dot / shotLengthSq).lengthSquared();
+                        possibleHits.add(new PossibleHit((LivingEntity) possibleTarget, distanceSq, shotPoint));
+                    }
+                }
 
-					if (dot > 0) {
-						hits.add(target.getUniqueId());
-						if (hits.size() > penetration) {
-							hitAction.onFinalHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
+                for (PossibleHit possibleHit : possibleHits) {
+                    hits.add(possibleHit.getTarget().getUniqueId());
+                    if (hits.size() > penetration) {
+                        hitAction.onFinalHit(hero, possibleHit.getTarget(), origin.toLocation(world), shot);
+                        shot = physics.createCapsule(shot.getPoint1(), possibleHit.getShotPoint(), shot.getRadius());
 
-							if (dot < lengthSq) {
-								Vector renderShotEnd = shot.getPoint1().add(shotRay.multiply(dot / lengthSq));
-								if (origin.distanceSquared(renderShotEnd) > square(range)) {
-									renderShotEnd = origin.clone().add(directionNormal.clone().multiply(range));
-								}
-								shot = physics.createCapsule(shot.getPoint1(), renderShotEnd, shot.getRadius());
-							}
-
-							finalTick = true;
-							break;
-						} else {
-							hitAction.onHit(hero, (LivingEntity) target, origin.toLocation(world), shot);
-						}
-					}
-				}
+                        finalTick = true;
+                        break;
+                    } else {
+                        hitAction.onHit(hero, possibleHit.getTarget(), origin.toLocation(world), shot);
+                    }
+                }
 
 				hitAction.onRenderShot(origin.toLocation(world), shot, firstTick, finalTick);
 				firstTick = false;
@@ -171,5 +154,41 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 		void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
 		void onFinalHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
 		void onRenderShot(Location origin, Capsule shot, boolean first, boolean last);
+	}
+
+	protected abstract class SpiralBeamShotHit implements BeamShotHit {
+
+
+
+		@Override
+		public void onRenderShot(Location origin, Capsule shot, boolean first, boolean last) {
+
+		}
+	}
+
+	private class PossibleHit implements Comparable<PossibleHit> {
+
+		private LivingEntity target;
+		private double distanceSq;
+        private Vector shotPoint;
+
+		public PossibleHit(LivingEntity target, double distanceSq, Vector shotPoint) {
+			this.target = target;
+			this.distanceSq = distanceSq;
+            this.shotPoint = shotPoint;
+		}
+
+		public LivingEntity getTarget() {
+			return target;
+		}
+
+        public Vector getShotPoint() {
+            return shotPoint;
+        }
+
+		@Override
+		public int compareTo(PossibleHit o) {
+			return Double.compare(distanceSq, o.distanceSq);
+		}
 	}
 }
