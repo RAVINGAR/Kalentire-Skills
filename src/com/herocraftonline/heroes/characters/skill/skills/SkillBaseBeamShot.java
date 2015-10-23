@@ -50,6 +50,7 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 			private Capsule shot;
 			private boolean firstTick = true;
 			private boolean finalTick = false;
+			private int frame = 1;
 
 			private Set<UUID> hits = new HashSet<>();
 
@@ -120,17 +121,17 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
                 for (PossibleHit possibleHit : possibleHits) {
                     hits.add(possibleHit.getTarget().getUniqueId());
                     if (hits.size() > penetration) {
-                        hitAction.onFinalHit(hero, possibleHit.getTarget(), originLocation.clone(), shot);
+                        hitAction.onHit(hero, possibleHit.getTarget(), originLocation.clone(), shot, hits.size(), hits.size() == 1, true);
                         shot = physics.createCapsule(shot.getPoint1(), possibleHit.getShotPoint(), shot.getRadius());
 
                         finalTick = true;
                         break;
                     } else {
-                        hitAction.onHit(hero, possibleHit.getTarget(), originLocation.clone(), shot);
+                        hitAction.onHit(hero, possibleHit.getTarget(), originLocation.clone(), shot, hits.size(), hits.size() == 1, false);
                     }
                 }
 
-				hitAction.onRenderShot(originLocation.clone(), shot, firstTick, finalTick);
+				hitAction.onRenderShot(originLocation.clone(), shot, frame++, firstTick, finalTick);
 				firstTick = false;
 
 				if (finalTick) {
@@ -157,9 +158,8 @@ public abstract class SkillBaseBeamShot extends ActiveSkill {
 	}
 
 	protected interface BeamShotHit {
-		void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
-		void onFinalHit(Hero hero, LivingEntity target, Location origin, Capsule shot);
-		void onRenderShot(Location origin, Capsule shot, boolean first, boolean last);
+		void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot, int count, boolean first, boolean last);
+		void onRenderShot(Location origin, Capsule shot, int frame, boolean first, boolean last);
 	}
 
 	protected void renderBeamShotFrame(Location origin, Capsule shot, ParticleEffect particle, Color color,
