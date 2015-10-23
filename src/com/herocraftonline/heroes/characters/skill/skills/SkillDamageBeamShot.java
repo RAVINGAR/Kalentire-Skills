@@ -71,7 +71,7 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 		fireBeamShot(hero, range, radius, velocity, penetration, new BeamShotHit() {
 
 			@Override
-			public void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot) {
+			public void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot, int count, boolean first, boolean last) {
 				if (damageCheck(hero.getPlayer(), target)) {
 					damageEntity(target, hero.getPlayer(), 10d, EntityDamageEvent.DamageCause.MAGIC, false);
 
@@ -86,12 +86,7 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 			}
 
 			@Override
-			public void onFinalHit(Hero hero, LivingEntity target, Location origin, Capsule shot) {
-				onHit(hero, target, origin, shot);
-			}
-
-			@Override
-			public void onRenderShot(Location origin, Capsule shot, boolean first, boolean last) {
+			public void onRenderShot(Location origin, Capsule shot, int frame, boolean first, boolean last) {
 
 				if (first) {
 					origin.getWorld().playSound(origin, Sound.EXPLODE, 0.05f, 0.2f);
