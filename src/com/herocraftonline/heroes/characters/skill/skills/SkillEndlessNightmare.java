@@ -69,7 +69,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		node.set(KNOCK_UP_STRENGTH_NODE, 0.6);
 
 		node.set(SkillSetting.DURATION.node(), 5000);
-		// node.set(SLOW_AMPLIFIER, 1);
+		node.set(SLOW_AMPLIFIER, 1);
 		node.set(HUNGER_AMPLIFIER, 1);
 
 		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cast into an endless nightmare!");
@@ -91,14 +91,13 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 			damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
 			int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-			// int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, SLOW_AMPLIFIER, 1, false);
+			int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, SLOW_AMPLIFIER, 1, false);
 			int hungerAmplifier = SkillConfigManager.getUseSetting(hero, this, HUNGER_AMPLIFIER, 1, false);
 
 			CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 			String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cast into an endless nightmare!").replace("%target%", "$1");
 			String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has awoken from an endless nightmare!").replace("%target%", "$1");
-			// EndlessNightmareEffect effect = new EndlessNightmareEffect(player, duration, slowAmplifier, hungerAmplifier);
-			EndlessNightmareEffect effect = new EndlessNightmareEffect(player, duration, hungerAmplifier);
+			EndlessNightmareEffect effect = new EndlessNightmareEffect(player, duration, slowAmplifier, hungerAmplifier);
 			effect.setApplyText(applyText);
 			effect.setExpireText(expireText);
 			targetCT.addEffect(effect);
@@ -122,8 +121,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 
 	public class EndlessNightmareEffect extends ExpirableEffect {
 
-		// public EndlessNightmareEffect(Player applier, int duration, int slowAmplifier, int hungerAmplifier) {
-        public EndlessNightmareEffect(Player applier, int duration, int hungerAmplifier) {
+		public EndlessNightmareEffect(Player applier, int duration, int slowAmplifier, int hungerAmplifier) {
 			super(SkillEndlessNightmare.this, SkillEndlessNightmare.this.getName(), applier, duration);
 
 			types.add(EffectType.MAGIC);
@@ -132,12 +130,12 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 			types.add(EffectType.STAMINA_REGEN_FREEZING);
 			types.add(EffectType.STAMINA_DECREASING);
 
-			// types.add(EffectType.SLOW);
+			types.add(EffectType.SLOW);
 			types.add(EffectType.BLIND);
 			types.add(EffectType.HUNGER);
 			types.add(EffectType.NAUSEA);
 
-			// addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration / 50 + 20, slowAmplifier, true, false), false);
+			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration / 50 + 20, slowAmplifier, true, false), false);
 			addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration / 50 + 20, 1, true, false), false);
 			addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, duration / 50 + 20, hungerAmplifier, true, false), false);
 			addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, duration / 50 + 20, 1, true, false), false);
