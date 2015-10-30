@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -108,7 +106,7 @@ public class SkillChainLightning extends TargettedSkill {
             if (cT instanceof Hero) {
                 ((Player)(cT.getEntity())).sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Hit by ChainLightning from " + caster.getName() + "!");
             }
-            cT.getEntity().getLocation().getWorld().strikeLightningEffect(cT.getEntity().getLocation());
+            cT.getEntity().getLocation().getWorld().spigot().strikeLightningEffect(cT.getEntity().getLocation(), true);
             cT.getEntity().getWorld().playSound(cT.getEntity().getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(caster), 1.0F);
         }
 
