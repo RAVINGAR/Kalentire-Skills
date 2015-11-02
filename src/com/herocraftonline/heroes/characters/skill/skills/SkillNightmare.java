@@ -61,14 +61,15 @@ public class SkillNightmare extends SkillBaseSpike {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.MAX_DISTANCE.node(), 8d);
-		node.set(SkillSetting.DAMAGE.node(), 250d);
-		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1d);
+		node.set(SkillSetting.DAMAGE_TICK.node(), 250d);
+		node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 1d);
 
 		node.set(SPIKE_HEIGHT_NODE, 3d);
 		node.set(DOES_KNOCK_UP_NODE, true);
 		node.set(KNOCK_UP_STRENGTH_NODE, 0.6);
 
 		node.set(SkillSetting.DURATION.node(), 5000);
+		node.set(SkillSetting.PERIOD.node(), 1000);
 
 		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cast into a nightmare!");
 		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has awoken from a nightmare!");
