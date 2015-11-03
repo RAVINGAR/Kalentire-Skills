@@ -18,6 +18,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -80,10 +82,14 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
             if(character.hasEffect("EngulfingTotemDexterityEffect") ||!damageCheck(heroP, entity)) {
                 continue;
             }
-            String name = entity instanceof Player ? ((Player) entity).getName() : Messaging.getLivingEntityName(character);
-            character.addEffect(new EngulfingTotemDexterityEffect(this, hero, totem.getEffect().getRemainingTime(), getDexterityReduceAmount(hero), getSlownessAmplitude(hero), null, getExpireText()));
+            if(entity instanceof Player) {
+                character.addEffect(new EngulfingTotemDexterityEffect(this, hero, totem.getEffect().getRemainingTime(), getDexterityReduceAmount(hero), getSlownessAmplitude(hero), null, getExpireText()));
+                broadcast(entity.getLocation(), getApplyText(), entity.getName(), heroP.getName());
+            }
+            else {
+                character.addEffect(new EngulfingTotemDexterityEffect(this, hero, totem.getEffect().getRemainingTime(), getDexterityReduceAmount(hero), getSlownessAmplitude(hero)));
+            }
             heroTargets.add(entity);
-            broadcast(entity.getLocation(), getApplyText(), name, heroP.getName());
         }
         afflictedTargets.put(hero, heroTargets);
     }
@@ -139,72 +145,16 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
 
     private class EngulfingTotemDexterityEffect extends AttributeDecreaseEffect {
 
-        private BukkitTask effect;
+        public EngulfingTotemDexterityEffect(SkillEngulfingTotem skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude) {
+            this(skill, applier, duration, decreaseValue, slownessAmplitude, null, null);
+        }
 
         public EngulfingTotemDexterityEffect(SkillEngulfingTotem skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude, String applyText, String expireText) {
             super(skill, "EngulfingTotemDexterityEffect", applier.getPlayer(), duration, AttributeType.DEXTERITY, decreaseValue, applyText, expireText);
             types.add(EffectType.SLOW);
 
             int tickDuration = (int) ((duration / 1000) * 20);
-            addMobEffect(2, tickDuration, slownessAmplitude, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickDuration, slownessAmplitude), false);
         }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            // setEffect(hero.getPlayer());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            // effect.cancel();
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-            // setEffect(monster.getEntity());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            // effect.cancel();
-        }
-
-        private void setEffect(final LivingEntity entity) {
-            
-            final LivingEntity fEntity = entity;
-            effect = new BukkitRunnable() {
-
-                private Location location = fEntity.getLocation();
-
-                private double time = 0;
-
-                @Override
-                public void run() {
-                    if(!fEntity.isValid()) {
-                        cancel();
-                        return;
-                    }
-                    // Reset the timer, just in case. Don't want it going too high. Though 100 is pretty high.
-                    if(time > 100.0) {
-                        time = 0.0;
-                    }
-
-                    //entity.getLocation(location).add(0.7 * Math.sin(time * 16), 0, 0.7 * Math.cos(time * 16));
-                    /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
-                     * offset controls how spread out the particles are
-                     * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
-                     * */
-                    //entity.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
-                    //fEntity.getWorld().playSound(location, Sound.DIG_GRAVEL, 0.1F, 1.0F);
-                    
-                    time += 0.01;
-                }
-            }.runTaskTimer(plugin, 0, 1);
-        }
-
     }
 }
