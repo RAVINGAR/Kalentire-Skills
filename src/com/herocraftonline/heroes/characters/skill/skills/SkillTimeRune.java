@@ -42,7 +42,7 @@ public class SkillTimeRune extends SkillBaseMarkedTeleport {
 	public String getDescription(Hero hero) {
 		double healing = SkillConfigManager.getUseSetting(hero, this, HEALING_PERCENTAGE_NODE, 0.25d, false);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, HEALING_PERCENTAGE_PER_WISDOM_NODE, 0.005d, false);
-		healing += hero.getAttributeValue(AttributeType.INTELLECT) * healingIncrease;
+		healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 
 		double totalDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 
