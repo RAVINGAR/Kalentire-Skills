@@ -35,7 +35,7 @@ public class SkillReckoning extends ActiveSkill {
         setUsage("/skill reckoning");
         setArgumentRange(0, 0);
         setIdentifiers("skill reckoning");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.AGGRESSIVE, SkillType.INTERRUPTING, SkillType.AREA_OF_EFFECT);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     @Override
