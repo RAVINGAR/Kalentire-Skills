@@ -140,7 +140,7 @@ public class SkillCharge extends TargettedSkill {
                         tHero.addEffect(new SilenceEffect(skill, hero.getPlayer(), silenceDuration));
                     if (damage > 0) {
                         addSpellTarget(le, hero);
-                        Skill.damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
+                        damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
                     }
                 } else if (e instanceof LivingEntity) {
                     Monster monster = plugin.getCharacterManager().getMonster((LivingEntity) e);
@@ -152,7 +152,7 @@ public class SkillCharge extends TargettedSkill {
                 }
 
                 if (damage > 0) {
-                    Skill.damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
+                    damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
                 }
             }
         }

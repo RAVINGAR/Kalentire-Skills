@@ -143,7 +143,7 @@ public class SkillFireball extends ActiveSkill {
                                 skill.addSpellTarget(target, hero);
                                 double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 4, false);
                                 damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(skill));
-                                Skill.damageEntity((LivingEntity) target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+                                skill.damageEntity((LivingEntity) target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
                             }
                         }
                     }
@@ -206,7 +206,7 @@ public class SkillFireball extends ActiveSkill {
                                 skill.addSpellTarget(target, hero);
                                 double damage = SkillConfigManager.getUseSetting(hero, skill, "drake-damage", 4, false);
                                 damage += (SkillConfigManager.getUseSetting(hero, skill, "drake-damage-boost", 0.0, false) * hero.getSkillLevel(skill));
-                                Skill.damageEntity((LivingEntity) target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+                                skill.damageEntity((LivingEntity) target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
                             }
                         }
                     }

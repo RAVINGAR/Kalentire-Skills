@@ -72,7 +72,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 							if (!Skill.damageCheck(player, (LivingEntity) entity)) {
 								continue;
 							}
-							Skill.damageEntity((LivingEntity) entity, player, 200D, DamageCause.MAGIC);
+							damageEntity((LivingEntity) entity, player, 200D, DamageCause.MAGIC);
 							player.getWorld().strikeLightningEffect(entity.getLocation());
 						}
 					}
