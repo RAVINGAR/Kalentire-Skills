@@ -29,8 +29,8 @@ public class SkillChronophage extends SkillBaseMarkedTeleport {
         setDescription("Mark your current position in time for the next $1 seconds. At any point during that time you may re activate the skill to teleport" +
                 " your self back to that location healing you for an amount starting at $3 ($2% of max health) and decaying towards 0 as the skills duration reaches end. If you do not" +
                 " re activate the skill within the duration no healing is applied and no teleport occurs. $4 $5");
-        setUsage("/skill timerune");
-        setIdentifiers("skill timerune");
+        setUsage("/skill chronophage");
+        setIdentifiers("skill chronophage");
 
         // TODO type edit
         setTypes(SkillType.HEALING, SkillType.TELEPORTING);
