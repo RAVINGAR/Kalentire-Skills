@@ -114,7 +114,7 @@ public class SkillReflect extends ActiveSkill {
             if (character.hasEffect("Reflect")) {
                 double damage = event.getDamage() * ((ReflectEffect) character.getEffect("Reflect")).reflectAmount;
                 plugin.getDamageManager().addSpellTarget(event.getDamager().getEntity(), character, skill);
-                Skill.damageEntity(event.getDamager().getEntity(), character.getEntity(), damage, DamageCause.MAGIC);
+                damageEntity(event.getDamager().getEntity(), character.getEntity(), damage, DamageCause.MAGIC);
             }
         }
     }

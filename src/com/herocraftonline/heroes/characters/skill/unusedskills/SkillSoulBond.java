@@ -108,7 +108,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                 // Split the damage
                 double splitDamage = (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                Skill.damageEntity(applier, event.getDamager().getEntity(), splitDamage, DamageCause.MAGIC);
+                damageEntity(applier, event.getDamager().getEntity(), splitDamage, DamageCause.MAGIC);
                 event.setDamage(event.getDamage() - splitDamage);
             }
         }
@@ -136,7 +136,7 @@ public class SkillSoulBond extends TargettedSkill {
 
                 // Split the damage
                 double splitDamage = (event.getDamage() * SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", .5, false));
-                Skill.damageEntity(applier, damager, splitDamage, DamageCause.MAGIC);
+                damageEntity(applier, damager, splitDamage, DamageCause.MAGIC);
                 event.setDamage(event.getDamage() - splitDamage);
             }
         }
