@@ -1,13 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -16,16 +8,20 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-public class SkillBolt extends TargettedSkill {
-    
-    public SkillBolt(Heroes plugin) {
-        super(plugin, "Bolt");
-        setDescription("Calls a bolt of lightning down on the target dealing $1 damage.");
-        setUsage("/skill bolt");
+public class SkillFulmination extends TargettedSkill {
+
+    public SkillFulmination(Heroes plugin) {
+        super(plugin, "Fulmination");
+        setDescription("Calls a fulmination down on the target dealing $1 damage.");
+        setUsage("/skill fulmination");
         setArgumentRange(0, 0);
-        setIdentifiers("skill bolt");
+        setIdentifiers("skill fulmination");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
