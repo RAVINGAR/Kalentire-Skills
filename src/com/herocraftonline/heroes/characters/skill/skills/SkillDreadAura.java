@@ -39,7 +39,7 @@ public class SkillDreadAura extends ActiveSkill {
 
     public SkillDreadAura(Heroes plugin) {
         super(plugin, "DreadAura");
-        setDescription("Emit an aura of Dread. While active, every $1 seconds you damage all enemies within $2 blocks for $3 dark damage, and are healed for $4% of damage dealt. Requires $5 mana per tick to maintain this effect, and you cannot heal more than $6 health in a single instance.");
+        setDescription("Emit an aura of Dread. While active, every $1 seconds you damage all enemies within $2 blocks for $3 dark damage, and are healed for $4% of damage dealt. Requires $5 mana to activate, $6 mana per tick to maintain this effect, and you cannot heal more than $7 health in a single instance.");
         setUsage("/skill dreadaura");
         setArgumentRange(0, 0);
         setIdentifiers("skill dreadaura");
@@ -60,13 +60,15 @@ public class SkillDreadAura extends ActiveSkill {
 
         int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", 200, false);
 
+        int manaActivate = SkillConfigManager.getUseSetting(hero, this, "mana-activate", 150, false);
+
         int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 13, false);
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
         String formattedHealMult = Util.decFormat.format(healMult * 100.0);
 
-        return getDescription().replace("$1", formattedPeriod).replace("$2", radius + "").replace("$3", formattedDamage).replace("$4", formattedHealMult).replace("$5", manaTick + "").replace("$6", maxHealing + "");
+        return getDescription().replace("$1", formattedPeriod).replace("$2", radius + "").replace("$3", formattedDamage).replace("$4", formattedHealMult).replace("$5", manaActivate + "").replace("$6", manaTick + "").replace("$7", maxHealing + "");
     }
 
     @Override
@@ -77,6 +79,7 @@ public class SkillDreadAura extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), 28);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.05);
         node.set("maximum-healing-per-tick", (double) 25);
+        node.set("mana-activate", 150);
         node.set("mana-tick", 7);
         node.set("heal-mult", 0.2);
         node.set(SkillSetting.PERIOD.node(), 3000);
@@ -99,6 +102,14 @@ public class SkillDreadAura extends ActiveSkill {
             hero.removeEffect(hero.getEffect("DreadAura"));
             return SkillResult.REMOVED_EFFECT;
         }
+
+        int currentMana = hero.getMana();
+        int manaActivate = SkillConfigManager.getUseSetting(hero, this, "mana-activate", 150, false);
+
+        if(manaActivate > currentMana) {
+            return SkillResult.LOW_MANA; // Sends a "Not enough mana!" message on its own.
+        }
+        hero.setMana(currentMana - manaActivate);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
