@@ -107,8 +107,9 @@ public class SkillMurasame extends TargettedSkill {
         if (healingPercent > 0) {
 
             double healAmount = player.getMaxHealth() * (healingPercent / 100);
-            
-            HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, this, hero);
+
+            // No selfheal nerf since we have a number preset
+            HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, this);
             Bukkit.getPluginManager().callEvent(hrhEvent);
             if(!hrhEvent.isCancelled()) {
                 hero.heal(hrhEvent.getAmount());
