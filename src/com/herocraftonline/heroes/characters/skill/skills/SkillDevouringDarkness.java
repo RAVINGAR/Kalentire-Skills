@@ -9,8 +9,6 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
-import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
-import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -32,8 +30,6 @@ public class SkillDevouringDarkness extends ActiveSkill {
 
     private String applyText;
     private String expireText;
-
-    private Song skillSong;
 
     public SkillDevouringDarkness(Heroes plugin) {
         super(plugin, "DevouringDarkness");
@@ -100,8 +96,6 @@ public class SkillDevouringDarkness extends ActiveSkill {
 
         Player player = hero.getPlayer();
         broadcastExecuteText(hero);
-
-        hero.addEffect(new SoundEffect(this, "DevouringDarkness", 100, skillSong));
 
         int duration = SkillConfigManager.getUseSetting(hero, this, "darkness-buff-duration", 3000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, "darkness-buff-period", 1500, false);
