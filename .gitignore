@@ -2,6 +2,7 @@
 bin/
 target/
 build/
+maven/
 .externalToolBuilders/
 
 #Files to ignore
@@ -10,7 +11,6 @@ build/
 .classpath
 .manifest
 buildLocal.xml
-.gitignore
 # intellij
 *.iml
 *.ipr
