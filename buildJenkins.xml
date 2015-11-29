@@ -18,7 +18,6 @@
     <!--Classpath used by javac compiler-->
     <path id="classpath">
         <fileset dir="${heroes}" includes="**/*.jar" />
-        <fileset dir="libs" includes="**/*.jar" />
         <fileset dir="${dir.maven.dependencies}" includes="**/*.jar" excludes="org/bukkit/**/*.jar"/>
     </path>
 
