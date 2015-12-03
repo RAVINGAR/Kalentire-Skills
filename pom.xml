@@ -152,6 +152,10 @@
                     <groupId>com.herocraftonline.herotitles</groupId>
                     <artifactId>HeroTitles</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>net.milkbowl.vault</groupId>
+                    <artifactId>Vault</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
