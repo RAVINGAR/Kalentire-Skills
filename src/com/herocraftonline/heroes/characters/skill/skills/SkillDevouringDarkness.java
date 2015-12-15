@@ -22,7 +22,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.ArrayList;
 
@@ -33,11 +32,11 @@ public class SkillDevouringDarkness extends ActiveSkill {
 
     public SkillDevouringDarkness(Heroes plugin) {
         super(plugin, "DevouringDarkness");
-        setDescription("You resonate darkness, pulsing for $1 damage and slowing enemies within $2 blocks for $3 seconds. Your devouring darkness pulses every $4 seconds for the next $5 seconds.");
+        setDescription("You resonate darkness, slowing enemies within $1 blocks for $2 seconds. Your devouring darkness pulses every $3 seconds for the next $4 seconds.");
         setUsage("/skill devouringdarkness");
         setArgumentRange(0, 0);
         setIdentifiers("skill devouringdarkness");
-        setTypes(SkillType.MOVEMENT_SLOWING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
+        setTypes(SkillType.MOVEMENT_SLOWING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     public String getDescription(Hero hero) {
@@ -48,16 +47,11 @@ public class SkillDevouringDarkness extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
         int slowDuration = SkillConfigManager.getUseSetting(hero, this, "darkness-slow-duration", 1500, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 17, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.125, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
-
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
-        String formattedDamage = Util.decFormat.format(damage);
 
-        return getDescription().replace("$1", formattedDamage).replace("$2", radius + "").replace("$3", formattedSlowDuration).replace("$4", formattedPeriod).replace("$5", formattedDuration);
+        return getDescription().replace("$1", radius + "").replace("$2", formattedSlowDuration).replace("$3", formattedPeriod).replace("$4", formattedDuration);
     }
 
     @Override
@@ -68,8 +62,6 @@ public class SkillDevouringDarkness extends ActiveSkill {
         node.set("darkness-buff-duration", 3000);
         node.set("darkness-buff-period", 1500);
         node.set(SkillSetting.RADIUS.node(), 6);
-        node.set(SkillSetting.DAMAGE.node(), 17);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.125);
         node.set("darkness-slow-duration", 1500);
         node.set("slow-amplifier", 0);
         node.set("slow-amplifier-increase-per-intellect", 0.075);
@@ -160,12 +152,7 @@ public class SkillDevouringDarkness extends ActiveSkill {
 
             int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "darkness-slow-duration", 1500, false);
 
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 17, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.125, false);
-            damage += damageIncrease * intellect;
-
-            // An example of not limiting if damage is 0. Since this isn't the case on live, it makes for a good example.
-            int maxTargets = damage > 0 ? SkillConfigManager.getUseSetting(hero, skill, "max-targets", 0, false) : 0;
+            int maxTargets =SkillConfigManager.getUseSetting(hero, skill, "max-targets", 0, false);
             int targetsHit = 0;
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 // Check to see if we've exceeded the max targets
@@ -178,11 +165,6 @@ public class SkillDevouringDarkness extends ActiveSkill {
                 }
 
                 CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
-
-                if (damage > 0) {
-                    addSpellTarget(entity, hero);
-                    damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
-                }
 
                 SlowEffect sEffect = new SlowEffect(skill, player, slowDuration, slowAmount, null, null);
                 sEffect.types.add(EffectType.DISPELLABLE);
