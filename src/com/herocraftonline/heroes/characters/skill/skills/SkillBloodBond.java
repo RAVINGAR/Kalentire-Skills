@@ -34,7 +34,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillBloodBond extends ActiveSkill {
     public SkillBloodBond(Heroes plugin) {
         super(plugin, "BloodBond");
-        setDescription("Form a Blood Bond with your party. While bound, you convert $1% of your magic damage into healh for you and all party members within a $2 block radius. Costs $4 health to use, and $3 mana per second to maintain the effect.");
+        setDescription("Form a Blood Bond with your party. While bound, you convert $1% of your magic damage into health for you and all party members within a $2 block radius. Costs $4 health to use, and $3 mana per second to maintain the effect.");
         setUsage("/skill bloodbond");
         setArgumentRange(0, 0);
         setIdentifiers("skill bloodbond");
