@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.Util;
@@ -16,8 +17,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
-import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
-import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTIBLE;
 
 public class SkillBloodbeam extends SkillBaseBeam {
 
@@ -63,6 +62,7 @@ public class SkillBloodbeam extends SkillBaseBeam {
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
 		final Player player = hero.getPlayer();
+	//public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
 		int beamMaxLength = SkillConfigManager.getUseSetting(hero, this, BEAM_MAX_LENGTH_NODE, 15, false);
 		double beamRadius = SkillConfigManager.getUseSetting(hero, this, BEAM_RADIUS_NODE, 2d, false);
@@ -101,6 +101,13 @@ public class SkillBloodbeam extends SkillBaseBeam {
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);
+
+		// Increase Blood Union
+		if (hero.hasEffect("BloodUnionEffect")) {
+			int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
+			BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
+				buEffect.addBloodUnion(bloodUnionIncrease, true);
+		}
 
 		return SkillResult.NORMAL;
 	}
