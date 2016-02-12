@@ -4,7 +4,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.Util;
@@ -102,13 +101,14 @@ public class SkillBloodbeam extends SkillBaseBeam {
 			}
 		}.runTaskTimer(plugin, 0, 1);
 
-		// Increase Blood Union
+		/* Increase Blood Union
 		if (hero.hasEffect("BloodUnionEffect")) {
 			int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
 			BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
-				buEffect.addBloodUnion(bloodUnionIncrease, true);
+			assert buEffect != null;
+			buEffect.addBloodUnion(bloodUnionIncrease, true);
 		}
-
+ 		*/
 		return SkillResult.NORMAL;
 	}
 }
