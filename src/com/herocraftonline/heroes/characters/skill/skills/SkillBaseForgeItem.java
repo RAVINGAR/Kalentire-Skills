@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,9 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class SkillBaseForgeItem extends ActiveSkill {
 
@@ -62,7 +59,7 @@ public class SkillBaseForgeItem extends ActiveSkill {
 
         ItemStack forgedItem = new ItemStack(deafultItem, SkillConfigManager.getUseSetting(hero, this, "amount", 1, false));
         ItemMeta metaData = forgedItem.getItemMeta();
-
+        /*
         // Add the "Forged by" message to the item.
         String imbuedByInformation = ChatColor.DARK_PURPLE + "Forged by " + player.getName();
         List<String> newLore = Arrays.asList(imbuedByInformation);
@@ -70,6 +67,7 @@ public class SkillBaseForgeItem extends ActiveSkill {
 
         // Set the new metaData to the item
         forgedItem.setItemMeta(metaData);
+        */
 
         // Add the item to their inventory, but only if they have space.
         PlayerInventory inventory = player.getInventory();
