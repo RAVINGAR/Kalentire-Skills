@@ -43,8 +43,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillIceVolley extends ActiveSkill {
 
     private Map<Arrow, Long> iceVolleyShots = new LinkedHashMap<Arrow, Long>(100) {
@@ -247,7 +245,7 @@ public class SkillIceVolley extends ActiveSkill {
                         shootIceVolleyArrow(player, centerYaw + a, pitchMultiplier, adjustedVelocityMultiplier);
                     }
                 }
-            }, Lists.newArrayList(CheckType.BLOCKPLACE_SPEED), 0);
+            }, Lists.newArrayList("BLOCKPLACE_SPEED"), 0);
 
             // Remove the arrows from the players inventory
             int removedArrows = 0;

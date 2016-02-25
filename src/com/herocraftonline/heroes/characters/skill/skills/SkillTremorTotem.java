@@ -23,8 +23,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillTremorTotem extends SkillBaseTotem {
 
 	public SkillTremorTotem(Heroes plugin) {
@@ -145,7 +143,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
                 {
                     target.setVelocity(velocity);                    
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
             maxTargets++;
         }
     }

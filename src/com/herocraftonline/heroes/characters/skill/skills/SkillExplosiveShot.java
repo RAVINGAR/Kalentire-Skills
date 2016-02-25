@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +37,9 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.characters.skill.skills.SkillIceVolley.IceVolleyShotEffect;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 
 public class SkillExplosiveShot extends ActiveSkill {
 
@@ -436,7 +431,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 			super.applyToHero(hero);
 			final Player player = hero.getPlayer();
 
-			NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+			NCPUtils.exempt(player, "MOVING");
 		}
 
 		@Override
@@ -444,7 +439,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 			super.removeFromHero(hero);
 			final Player player = hero.getPlayer();
 
-			NCPExemptionManager.unexempt(player, CheckType.MOVING);
+			NCPUtils.unexempt(player, "MOVING", 0);
 		}
 	}
 }

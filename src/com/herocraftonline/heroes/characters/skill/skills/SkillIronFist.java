@@ -32,8 +32,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillIronFist extends ActiveSkill {
 
     public SkillIronFist(Heroes plugin) {
@@ -179,7 +177,7 @@ public class SkillIronFist extends ActiveSkill {
                 {
                     target.setVelocity(new Vector(x, y, z));
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
 
             SlowEffect sEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
             sEffect.types.add(EffectType.DISPELLABLE);

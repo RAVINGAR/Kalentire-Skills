@@ -24,8 +24,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillFrontflip extends ActiveSkill {
 
     public SkillFrontflip(Heroes plugin) {
@@ -134,7 +132,7 @@ public class SkillFrontflip extends ActiveSkill {
                 player.setVelocity(velocity);
                 player.setFallDistance(-8f);
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
         player.getWorld().playSound(player.getLocation(), Sound.SKELETON_IDLE, 10.0F, 1.0F);
 

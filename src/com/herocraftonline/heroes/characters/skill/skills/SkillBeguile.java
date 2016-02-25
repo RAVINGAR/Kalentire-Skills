@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -188,7 +187,7 @@ public class SkillBeguile extends TargettedSkill {
                 {
                     adjustVelocity(hero.getPlayer());
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false));
         }
     }
 }

@@ -2,8 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,8 +23,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillJump extends ActiveSkill {
 
@@ -131,7 +127,7 @@ public class SkillJump extends ActiveSkill {
                 player.setVelocity(velocity);
                 player.setFallDistance(-8f);
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_WINGS, 7.0F, 1.0F);     
 			

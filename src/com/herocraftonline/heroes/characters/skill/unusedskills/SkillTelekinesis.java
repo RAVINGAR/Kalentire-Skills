@@ -15,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.WorldServer;
@@ -150,7 +149,7 @@ public class SkillTelekinesis extends ActiveSkill {
                             PlayerInteractEvent fakeInteractEvent = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getItemInHand(), clickedBlock, BlockFace.UP);
                             plugin.getServer().getPluginManager().callEvent(fakeInteractEvent);
                         }
-                    }, Lists.newArrayList(CheckType.BLOCKINTERACT), 0);
+                    }, Lists.newArrayList("BLOCKINTERACT"), 0);
 
                     // Give their bind back
                     if (hasBind)

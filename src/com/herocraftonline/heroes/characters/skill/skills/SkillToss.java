@@ -19,11 +19,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillToss extends TargettedSkill {
 
@@ -102,7 +99,7 @@ public class SkillToss extends TargettedSkill {
             {
                 target.setVelocity(pushUpVector);                
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double xDir = playerLoc.getX() - targetLoc.getX();
         final double zDir = playerLoc.getZ() - targetLoc.getZ();

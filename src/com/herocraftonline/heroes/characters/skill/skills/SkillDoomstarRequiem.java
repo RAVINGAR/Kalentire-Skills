@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import fr.neatmonster.nocheatplus.checks.CheckType;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -150,7 +149,7 @@ public class SkillDoomstarRequiem extends ActiveSkill{
                     target.setVelocity(velocity);
                     
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
         }
 
         //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
