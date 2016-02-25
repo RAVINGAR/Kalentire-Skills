@@ -19,12 +19,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillFlyingKick extends TargettedSkill {
 
@@ -86,7 +83,7 @@ public class SkillFlyingKick extends TargettedSkill {
             {
                 player.setVelocity(pushUpVector);
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
         final double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);

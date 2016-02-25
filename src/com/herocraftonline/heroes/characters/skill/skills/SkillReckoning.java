@@ -15,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -136,7 +135,7 @@ public class SkillReckoning extends ActiveSkill {
                 {
                     target.setVelocity(v);                    
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
         }
 
 

@@ -23,8 +23,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
@@ -113,7 +111,7 @@ public class SkillForcePush extends TargettedSkill {
             {
                 target.setVelocity(pushUpVector);                
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double xDir = targetLoc.getX() - playerLoc.getX();
         final double zDir = targetLoc.getZ() - playerLoc.getZ();

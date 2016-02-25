@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
-import fr.neatmonster.nocheatplus.checks.CheckType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -137,7 +136,7 @@ public class SkillBackflip extends ActiveSkill {
                 player.setVelocity(velocity);
                 player.setFallDistance(-8f);
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
 
         // If they can use shuriken, let's make them throw a few after they backflip
         boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);

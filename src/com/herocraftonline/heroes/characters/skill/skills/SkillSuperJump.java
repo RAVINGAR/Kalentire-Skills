@@ -25,8 +25,6 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillSuperJump extends ActiveSkill {
 
     public VisualEffect fplayer = new VisualEffect();
@@ -121,7 +119,7 @@ public class SkillSuperJump extends ActiveSkill {
                 player.setVelocity(velocity);
                 player.setFallDistance(-8f);
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         int duration = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
         hero.addEffect(new JumpEffect(this, player, duration));

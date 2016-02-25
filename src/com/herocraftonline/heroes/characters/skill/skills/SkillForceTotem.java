@@ -24,8 +24,6 @@ import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 import com.herocraftonline.heroes.util.Messaging;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillForceTotem extends SkillBaseTotem {
 
     public SkillForceTotem(Heroes plugin) {
@@ -103,7 +101,7 @@ public class SkillForceTotem extends SkillBaseTotem {
                     entity.setVelocity(new Vector(0, getLaunch(hero), 0));
                     entity.setFallDistance(-512);
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
             targetsHit++;
         }
     }

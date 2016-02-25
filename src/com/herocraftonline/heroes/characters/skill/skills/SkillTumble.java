@@ -22,8 +22,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillTumble extends PassiveSkill {
 
     public SkillTumble(Heroes plugin) {
@@ -108,7 +106,7 @@ public class SkillTumble extends PassiveSkill {
                         event.setDamage(fallDamage);
                     }
                 }
-            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 100, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 100, false));
         }
     }
 }
