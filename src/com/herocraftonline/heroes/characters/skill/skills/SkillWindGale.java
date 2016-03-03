@@ -27,12 +27,9 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
 
 public class SkillWindGale extends ActiveSkill {
 
@@ -206,7 +203,7 @@ public class SkillWindGale extends ActiveSkill {
                                 {
                                     target.setVelocity(pushUpVector);                                    
                                 }
-                            }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 1500, false));
+                            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 1500, false));
 
                             final double xDir = targetLoc.getX() - playerLoc.getX();
                             final double zDir = targetLoc.getZ() - playerLoc.getZ();

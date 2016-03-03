@@ -9,10 +9,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -29,7 +28,6 @@ import org.bukkit.util.Vector;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-//import fr.neatmonster.nocheatplus.shots.NCPExemptionManager;
 
 public class SkillGrapplingShot extends ActiveSkill {
 
@@ -428,7 +426,7 @@ public class SkillGrapplingShot extends ActiveSkill {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
 
-            NCPExemptionManager.exemptPermanently(player, CheckType.MOVING);
+            NCPUtils.exempt(player, "MOVING");
         }
 
         @Override
@@ -436,7 +434,7 @@ public class SkillGrapplingShot extends ActiveSkill {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
 
-            NCPExemptionManager.unexempt(player, CheckType.MOVING);
+            NCPUtils.unexempt(player, "MOVING", 0);
 
         }
     }

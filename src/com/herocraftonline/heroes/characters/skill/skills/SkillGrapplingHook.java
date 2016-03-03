@@ -41,8 +41,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-
 public class SkillGrapplingHook extends ActiveSkill {
 
     private Map<Arrow, Long> grapplingHooks = new LinkedHashMap<Arrow, Long>(100) {
@@ -299,7 +297,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             {
                 player.setVelocity(vec);                
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
     }
 
     private void grappleTargetToPlayer(Hero hero, final LivingEntity target) {
@@ -340,7 +338,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             {
                 target.setVelocity(vec);
             }
-        }, Lists.newArrayList(CheckType.MOVING), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
     }
 
     // Buff effect used to keep track of grappling hook uses

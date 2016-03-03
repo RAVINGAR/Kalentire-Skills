@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import fr.neatmonster.nocheatplus.checks.CheckType;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -116,7 +115,7 @@ public class SkillFireSwell extends ActiveSkill {
                     fireballs.put(fireBall, time);
                 }
             }
-        }, Lists.newArrayList(CheckType.BLOCKPLACE_SPEED), 0);
+        }, Lists.newArrayList("BLOCKPLACE_SPEED"), 0);
 
         return SkillResult.NORMAL;
     }
