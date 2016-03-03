@@ -88,7 +88,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         // Play Sound
-        player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.6F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.6F, 2.0F);
 
         // Prep variables
         double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.2D, false);

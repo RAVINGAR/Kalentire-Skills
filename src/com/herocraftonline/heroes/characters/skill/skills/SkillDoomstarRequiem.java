@@ -155,9 +155,9 @@ public class SkillDoomstarRequiem extends ActiveSkill{
 
         //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
         player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
         
         for (double r = 1; r < 5 * 2; r++)
 		{

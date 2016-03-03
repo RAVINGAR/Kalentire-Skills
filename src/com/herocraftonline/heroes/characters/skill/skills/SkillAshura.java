@@ -94,7 +94,7 @@ public class SkillAshura extends TargettedSkill {
                 player.getItemInHand().setDurability((short) (dura + duraCost));
             } else if (maxDura - dura == duraCost) {
                 player.setItemInHand(null);
-                player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.5F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 1.0F);
             } else {
                 Messaging.send(player, "Your Katana doesn't have enough durability to use Ashura!");
                 return SkillResult.INVALID_TARGET_NO_MSG;

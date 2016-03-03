@@ -85,9 +85,9 @@ public class SkillDisarray extends SkillBaseBeam {
 
 		renderEyeBeam(player, beam, BEAM_PARTICLE, Color.RED, 60, 10, 40, 0.125, 1);
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
-		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
-		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENDERMAN_SCREAM, 0.2f, 0.0001f);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_ENDERMEN_SCREAM, 0.2f, 0.0001f);
+		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_ENDERMEN_SCREAM, 0.2f, 0.0001f);
+		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_ENDERMEN_SCREAM, 0.2f, 0.0001f);
 
 		return SkillResult.NORMAL;
 	}

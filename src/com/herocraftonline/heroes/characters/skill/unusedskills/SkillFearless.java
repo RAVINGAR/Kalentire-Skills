@@ -83,7 +83,7 @@ public class SkillFearless extends ActiveSkill {
             double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
             hero.addEffect(new FearlessEffect(this, incomingDamageIncrease, outgoingDamageIncrease));
 
-            player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 0.5F, 0.1F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.5F, 0.1F);
         }
 
         return SkillResult.NORMAL;

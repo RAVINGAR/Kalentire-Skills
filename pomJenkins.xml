@@ -73,17 +73,17 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.8.0-SNAPSHOT</version>
+            <version>1.8.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>NMSHandler-v1_8_R1</artifactId>
-            <version>v1_8_R3-SNAPSHOT</version>
+            <artifactId>NMSHandler-v1_9_R1</artifactId>
+            <version>v1_9_R1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.9-R0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.spigotmc</groupId>
@@ -109,6 +109,12 @@
             <version>5.8.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>fr.neatmonster</groupId>
+            <artifactId>ncpcore</artifactId>
+            <version>static</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.3.1</version>
@@ -118,37 +124,52 @@
         <dependency>
             <groupId>mc.alk.tracker</groupId>
             <artifactId>BattleTracker</artifactId>
-            <version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/BattleTracker.jar</systemPath>
+            <version>2.5.5.1</version>
         </dependency>
         <dependency>
             <groupId>pgDev.bukkit.DisguiseCraft</groupId>
             <artifactId>DisguiseCraft</artifactId>
-            <version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/DisguiseCraft.jar</systemPath>
+            <version>4.9</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.townships</groupId>
             <artifactId>HeroTowns</artifactId>
-            <version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/HeroTowns.jar</systemPath>
+            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.libigot</groupId>
+                    <artifactId>libigot</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.herocraftonline.herotitles</groupId>
+                    <artifactId>HeroTitles</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.milkbowl.vault</groupId>
+                    <artifactId>Vault</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.griefcraft.lwc</groupId>
             <artifactId>LWC</artifactId>
-            <version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/LWC.jar</systemPath>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.bekvon.bukkit.residence</groupId>
             <artifactId>Residence</artifactId>
-            <version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/Residence.jar</systemPath>
+            <version>2.6.6.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.palmergames.bukkit.towny</groupId>
+            <artifactId>Towny</artifactId>
+            <version>0.89.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.slikey</groupId>
+            <artifactId>EffectLib</artifactId>
+            <version>3.4</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

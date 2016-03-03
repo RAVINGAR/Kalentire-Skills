@@ -168,7 +168,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			Marker marker = new Marker(plugin.getCharacterManager().getHero(getApplier()), target, preserveVelocity, preserveLookDirection);
 			activeMarkers.put(getApplier().getUniqueId(), marker);
 
-			target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENDERMAN_TELEPORT, 0.4f, 100000);
+			target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.4f, 100000);
 
 			onMarkerCreate(marker);
 		}
@@ -181,7 +181,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 				marker.effect.cancel();
 
 				if (!marker.activated) {
-					marker.getTarget().getEntity().getWorld().playSound(marker.location, Sound.FIZZ, 0.4f, 0.0001f);
+					marker.getTarget().getEntity().getWorld().playSound(marker.location, Sound.ENTITY_GENERIC_BURN, 0.4f, 0.0001f);
 				}
 
 				onMarkerRemove(marker);
@@ -254,8 +254,8 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 				if (System.currentTimeMillis() - createTime > reCastDelay) {
 					onMarkerActivate(this, System.currentTimeMillis());
 
-					target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
-					target.getEntity().getWorld().playSound(location, Sound.ENDERMAN_TELEPORT, 0.4f, 0.1f);
+					target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.4f, 0.1f);
+					target.getEntity().getWorld().playSound(location, Sound.ENTITY_ENDERMEN_TELEPORT, 0.4f, 0.1f);
 
 					Vector currentVelocity = target.getEntity().getVelocity();
 

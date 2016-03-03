@@ -2,8 +2,8 @@
 package com.herocraftonline.heroes.characters.skill.skills.Utils;
 
 
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityTypes;
+import net.minecraft.server.v1_9_R1.Entity;
+import net.minecraft.server.v1_9_R1.EntityTypes;
 import org.bukkit.entity.EntityType;
 import java.lang.reflect.Field;
 import java.util.Map;

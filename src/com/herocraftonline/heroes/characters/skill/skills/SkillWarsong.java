@@ -42,10 +42,10 @@ public class SkillWarsong extends ActiveSkill {
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.NOTE_BASS_DRUM, 0.8F, 2.0F, 0),
-                new Note(Sound.NOTE_PLING, 0.8F, 2.0F, 1),
-                new Note(Sound.NOTE_SNARE_DRUM, 0.8F, 1.0F, 2),
-                new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 3)
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.8F, 2.0F, 0),
+                new Note(Sound.BLOCK_NOTE_PLING, 0.8F, 2.0F, 1),
+                new Note(Sound.BLOCK_NOTE_SNARE, 0.8F, 1.0F, 2),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 3)
         );
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);

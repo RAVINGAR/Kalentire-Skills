@@ -100,7 +100,7 @@ public class SkillBlackjack extends TargettedSkill {
         else
             damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
 
-        player.getWorld().playSound(player.getLocation(), Sound.DOOR_CLOSE, 0.4F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_WOODEN_DOOR_CLOSE, 0.4F, 0.4F);
 
 
         // Stun, but only if they are a player.

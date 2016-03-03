@@ -83,7 +83,7 @@ public class SkillMagicWard extends ActiveSkill {
 
                 hero.addEffect(new MagicWardEffect(this, player, duration, damageReduction));
 
-                player.getWorld().playSound(player.getLocation(), Sound.BLAZE_BREATH, 0.8F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.8F, 1.0F);
 
                 return SkillResult.NORMAL;
             default:

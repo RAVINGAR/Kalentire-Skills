@@ -56,7 +56,7 @@ public class SkillSummonPickaxe extends ActiveSkill {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
             Messaging.send(player, "Items have been dropped at your feet!", new Object[0]);
         }
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

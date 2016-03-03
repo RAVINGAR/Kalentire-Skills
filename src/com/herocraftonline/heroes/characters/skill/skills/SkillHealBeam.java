@@ -55,7 +55,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.HAPPY_VILLAGER, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
 		}*/
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 6, 2);
 
 		castBeam(hero, beam, new TargetHandler() {
 			@Override

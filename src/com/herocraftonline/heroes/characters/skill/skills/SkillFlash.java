@@ -127,7 +127,7 @@ public class SkillFlash extends ActiveSkill {
             player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1.5F, 35, 16);
             player.teleport(teleport);
             player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1.5F, 35, 16);
-            player.getWorld().playSound(loc, Sound.ENDERMAN_TELEPORT, 0.8F, 1.0F);
+            player.getWorld().playSound(loc, Sound.ENTITY_ENDERMEN_TELEPORT, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
         }

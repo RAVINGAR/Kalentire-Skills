@@ -59,7 +59,7 @@ public class SkillMindandBody extends ActiveSkill {
             if (duration > 0 && multiplier > 0) {
                 hero.addEffect(new SpeedEffect(this, getName(), player, duration, multiplier, "$1 gained a burst of speed!", "$1 returned to normal speed!"));
                 broadcastExecuteText(hero);
-                player.getWorld().playSound(player.getLocation(), Sound.BAT_DEATH, 0.8F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_DEATH, 0.8F, 1.0F);
             }
         }
         else {

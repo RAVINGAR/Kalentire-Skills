@@ -137,7 +137,7 @@ public class SkillWindGale extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         for (Location location : locations) {
-                            location.getWorld().playSound(location, Sound.FIZZ, 0.25F, 1.0F);
+                            location.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.25F, 1.0F);
                             location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 0.1F, 25, 16);
                         }
 

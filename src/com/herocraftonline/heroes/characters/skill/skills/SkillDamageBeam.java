@@ -49,7 +49,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.FLAME, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
 		}*/
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 10, 5);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 10, 5);
 
 		castBeam(hero, beam, new TargetHandler() {
 			@Override

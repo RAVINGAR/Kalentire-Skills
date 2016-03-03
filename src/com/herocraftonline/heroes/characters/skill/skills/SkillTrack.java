@@ -72,7 +72,7 @@ public class SkillTrack extends ActiveSkill {
 
         hero.addEffect(new TrackingEffect(this, player, period, duration, target));
 
-        player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.8F, 5.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 5.0F);
 
         return SkillResult.NORMAL;
     }

@@ -46,7 +46,7 @@ public class SkillGhostWalk extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
         //hero.addEffect(new NightvisionEffect(this, hero.getPlayer(), duration, applyText, expireText));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN , 0.5F, 1.0F); 
         return SkillResult.NORMAL;
     }
 

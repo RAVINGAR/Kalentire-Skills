@@ -89,16 +89,16 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 			public void onRenderShot(Location origin, Capsule shot, int frame, boolean first, boolean last) {
 
 				if (first) {
-					origin.getWorld().playSound(origin, Sound.EXPLODE, 0.05f, 0.2f);
+					origin.getWorld().playSound(origin, Sound.ENTITY_GENERIC_EXPLODE, 0.05f, 0.2f);
 				}
 
 				if (last) {
 					Location loc = shot.getPoint2().toLocation(origin.getWorld());
-					origin.getWorld().playSound(loc, Sound.ORB_PICKUP, 0.05f, 0.2f);
+					origin.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.05f, 0.2f);
 				}
 
 				Location travelSoundLoc = shot.getBounds().getCenter().toLocation(origin.getWorld());
-				origin.getWorld().playSound(travelSoundLoc, Sound.FIZZ, 0.05f, 0.2f);
+				origin.getWorld().playSound(travelSoundLoc, Sound.ENTITY_GENERIC_BURN, 0.05f, 0.2f);
 
 				renderBeamShotFrame(origin, shot, ParticleEffect.FLAME, Color.ORANGE, (int) (shot.getPoint1().distanceSquared(shot.getPoint2()) * 10), 3, 32, 0.5, 1);
 

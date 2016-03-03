@@ -79,7 +79,7 @@ public class SkillBaseForgeItem extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE, 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 0.6F, 1.0F);
 
         return SkillResult.NORMAL;
     }

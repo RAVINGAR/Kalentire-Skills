@@ -70,7 +70,7 @@ public class SkillSoulFire extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         hero.addEffect(new SoulFireEffect(this, hero.getPlayer(), duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_REMEDY , 0.5F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE , 0.5F, 1.0F); 
         // this is our fireworks shit
         Player player = hero.getPlayer();
         try {

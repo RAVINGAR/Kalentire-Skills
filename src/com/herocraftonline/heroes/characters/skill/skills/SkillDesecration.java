@@ -150,7 +150,7 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 					e.start();
 					em.disposeOnTermination();
 
-					player.getWorld().playSound(effect.getLocation(), Sound.CAT_HISS, 0.25f, 0.1f);
+					player.getWorld().playSound(effect.getLocation(), Sound.ENTITY_CAT_HISS, 0.25f, 0.1f);
 				}
 
 				@Override

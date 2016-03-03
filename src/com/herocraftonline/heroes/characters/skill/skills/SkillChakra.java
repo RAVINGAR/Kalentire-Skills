@@ -134,7 +134,7 @@ public class SkillChakra extends ActiveSkill {
 			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
 		}
 		
-		player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 
 		return SkillResult.NORMAL;
 	}

@@ -90,7 +90,7 @@ public class SkillShieldReflect extends ActiveSkill {
                 hero.addEffect(new ShieldReflectEffect(this, player, duration));
 
                 player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-                player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.8F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.8F, 1.0F);
 
                 return SkillResult.NORMAL;
             default:

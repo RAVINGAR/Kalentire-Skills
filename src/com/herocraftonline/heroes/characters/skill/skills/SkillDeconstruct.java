@@ -231,7 +231,7 @@ public class SkillDeconstruct extends ActiveSkill {
         int xp = SkillConfigManager.getUseSetting(hero, this, matName + "." + SkillSetting.EXP, 0, false);
         hero.gainExp(xp, ExperienceType.CRAFTING, expLoc);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ANVIL_USE , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE , 0.6F, 1.0F);
         broadcast(player.getLocation(), getUseText(), player.getName(), matName.toLowerCase().replace("_", " "));
         return SkillResult.NORMAL;
     }

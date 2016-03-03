@@ -98,9 +98,9 @@ public class SkillSacredGlimmer extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.FIZZ, volume, 1);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.FIZZ, volume, 1);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.FIZZ, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_GENERIC_BURN, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_GENERIC_BURN, volume, 1);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_GENERIC_BURN, volume, 1);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);

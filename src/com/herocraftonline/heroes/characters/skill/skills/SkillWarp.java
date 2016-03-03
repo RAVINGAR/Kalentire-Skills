@@ -68,11 +68,11 @@ public class SkillWarp extends ActiveSkill {
         try {
             broadcastExecuteText(hero);
 
-            player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
 
             player.teleport(destination);
 
-            destination.getWorld().playSound(destination, Sound.WITHER_DEATH, 0.5F, 1.0F);
+            destination.getWorld().playSound(destination, Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
 
         }
         catch (Exception e) {

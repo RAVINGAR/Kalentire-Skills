@@ -72,8 +72,8 @@ public class SkillEviscerate extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_HIT, 0.4F, 2.0F);
-        //player.getWorld().playSound(player.getLocation(), Sound.HURT_FLESH, 0.4F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_IRONGOLEM_HURT, 0.4F, 2.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.4F, 2.0F);
         
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.TILE_BREAK, 115, 3, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
 

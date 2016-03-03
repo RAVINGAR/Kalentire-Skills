@@ -96,7 +96,7 @@ public class SkillProvoke extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 0.5F, 0.1F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.5F, 0.1F);
 
         return SkillResult.NORMAL;
     }

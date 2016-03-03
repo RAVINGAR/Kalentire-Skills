@@ -81,7 +81,7 @@ public class SkillSerenity extends SkillBaseSphere {
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
 					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.SPELL_MOB, Color.GREEN);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIREWORK_LARGE_BLAST, 0.5f, 0.00001f);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_LARGE_BLAST, 0.5f, 0.00001f);
 				}
 
 				@Override

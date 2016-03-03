@@ -78,8 +78,8 @@ public class SkillChaoticStrength extends ActiveSkill {
         player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
 
-        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.COW_HURT, 1.3F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_COW_HURT, 1.3F, 0.5F);
 
         return SkillResult.NORMAL;
     }

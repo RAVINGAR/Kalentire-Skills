@@ -80,7 +80,7 @@ public class SkillPiggify extends TargettedSkill {
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, creature));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_PIG_HURT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_PIG_HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

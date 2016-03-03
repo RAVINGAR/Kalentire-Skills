@@ -170,7 +170,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
 
         // Play sound
-        player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1.0F);
         player.getWorld().spigot().playEffect(player.getLocation(), Effect.FLYING_GLYPH, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
         // Save the altered list to the hashmap
         heroRunes.put(hero, runeList);

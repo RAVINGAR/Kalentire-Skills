@@ -129,7 +129,7 @@ public class SkillBarrier extends ActiveSkill {
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
-		player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.7F, 2.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.7F, 2.0F);
 
 		return SkillResult.NORMAL;
 	}
@@ -190,7 +190,7 @@ public class SkillBarrier extends ActiveSkill {
 					addSpellTarget(damagerPlayer, defenderHero);
 					damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 
-					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
 
 					// Disarm checks
 					Material heldItem = damagerPlayer.getItemInHand().getType();

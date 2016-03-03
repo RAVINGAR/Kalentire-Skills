@@ -54,7 +54,7 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.ORB_PICKUP, 0.5f, 0.7f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.7f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
@@ -75,7 +75,7 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
                 if (effect.isType(EffectType.FIRE)) {
                     hero.removeEffect(effect);
                     hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.EXTINGUISH, 0, 0, 0, 0.4F, 0, 0.7F, 35, 16);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
                 }
             }
         }

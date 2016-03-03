@@ -112,7 +112,7 @@ public class SkillConflux extends ActiveSkill {
         float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 2.1, false);
 
 
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_UNFECT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
         //double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
         //double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         //damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));

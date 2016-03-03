@@ -126,7 +126,7 @@ public class SkillSuperJump extends ActiveSkill {
         int duration = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
         hero.addEffect(new JumpEffect(this, player, duration));
 
-        player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
 
         // this is our fireworks shit
         try {

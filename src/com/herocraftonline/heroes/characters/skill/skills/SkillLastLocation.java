@@ -70,8 +70,8 @@ public class SkillLastLocation extends ActiveSkill {
 					System.currentTimeMillis() + SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 10000, false));
 
 			marker.activate();
-			player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
-			player.getWorld().playSound(marker.location, Sound.ENDERMAN_TELEPORT, 0.5f, 0.1f);
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.5f, 0.1f);
+			player.getWorld().playSound(marker.location, Sound.ENTITY_ENDERMEN_TELEPORT, 0.5f, 0.1f);
 			player.getWorld().spigot().playEffect(player.getLocation(), Effect.SMOKE, 0, 0, 0.4f, 0.4f, 0.4f, 1, 16, 32);
 
 			return SkillResult.NORMAL;
@@ -89,7 +89,7 @@ public class SkillLastLocation extends ActiveSkill {
 				double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4d, false);
 				marker = new Marker(hero, duration);
 				activeMarkers.put(player.getUniqueId(), marker);
-				player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 100000);
+				player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1, 100000);
 
 				return SkillResult.INVALID_TARGET_NO_MSG;
 			} else {
@@ -161,7 +161,7 @@ public class SkillLastLocation extends ActiveSkill {
 				healAmount *= healScale;
 			}
 			else {
-				hero.getPlayer().getWorld().playSound(location, Sound.FIZZ, 1, 0.0001f);
+				hero.getPlayer().getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 1, 0.0001f);
 			}
 
 			hero.heal(healAmount);

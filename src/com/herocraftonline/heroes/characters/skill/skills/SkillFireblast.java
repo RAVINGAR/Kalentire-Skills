@@ -105,8 +105,8 @@ public class SkillFireblast extends ActiveSkill {
             
             player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
             player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);
-            player.getWorld().playSound(blastLocation, Sound.EXPLODE, 6.0F, 1);
-            player.getWorld().playSound(blastLocation, Sound.FIRE, 8.0F, 1);
+            player.getWorld().playSound(blastLocation, Sound.ENTITY_GENERIC_EXPLODE, 6.0F, 1);
+            player.getWorld().playSound(blastLocation, Sound.BLOCK_FIRE_AMBIENT, 8.0F, 1);
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);

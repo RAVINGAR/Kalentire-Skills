@@ -81,7 +81,7 @@ public class SkillDeathMark extends ActiveSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-increase-percent", 0.1, false);
         hero.addEffect(new DeathMarkingEffect(this, player, period, duration, target, damageIncrease));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.LEVEL_UP, 0.8F, 5.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 5.0F);
 
         return SkillResult.NORMAL;
     }

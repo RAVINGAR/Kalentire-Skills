@@ -98,7 +98,7 @@ public class SkillFlameshield extends ActiveSkill {
 			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
 		}
 
-        player.getWorld().playSound(player.getLocation(), Sound.FIRE, 0.4F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.4F, 1.0F);
 
         return SkillResult.NORMAL;
     }

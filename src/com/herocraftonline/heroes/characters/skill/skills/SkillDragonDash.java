@@ -122,7 +122,7 @@ public class SkillDragonDash extends TargettedSkill {
         playEffect(hero, target);
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
-        player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1.0F, 1.2F);
         return SkillResult.NORMAL;
     }
 

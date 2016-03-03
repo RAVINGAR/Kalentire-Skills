@@ -62,7 +62,7 @@ public class SkillSummonFood extends ActiveSkill {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
             Messaging.send(player, "Items have been dropped at your feet!");
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BURP, 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_BURP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -186,7 +186,7 @@ public class SkillRampartVine extends ActiveSkill {
             boolean breakLoop = false;
             Block workingBlock = targetBlock;
             Location location = workingBlock.getLocation();
-            location.getWorld().playSound(location, Sound.DIG_GRASS, 0.8F, 1.0F);
+            location.getWorld().playSound(location, Sound.BLOCK_GRASS_HIT, 0.8F, 1.0F);
 
             for (int i = 0; i < maxGrowth; i++) {
                 switch (workingBlock.getType()) {

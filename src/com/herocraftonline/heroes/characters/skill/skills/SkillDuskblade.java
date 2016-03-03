@@ -78,7 +78,7 @@ public class SkillDuskblade extends TargettedSkill {
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());
         
-        player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_HIT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 0.8F, 1.0F);
         
         player.getWorld().spigot().playEffect(player.getLocation(), Effect.INSTANT_SPELL, 0, 0, 0, 0.1F, 0, 0.1F, 20, 5);
 

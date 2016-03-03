@@ -95,8 +95,8 @@ public class SkillChaoticIntellect extends ActiveSkill {
             e.printStackTrace();
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.BLAZE_BREATH, 1.3F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.3F, 1.2F);
 
         return SkillResult.NORMAL;
     }

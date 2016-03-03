@@ -37,7 +37,7 @@ public class SkillAbsolution extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.ORB_PICKUP, 0.5f, 0.7f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.7f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
