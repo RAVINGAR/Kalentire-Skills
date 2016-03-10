@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -170,10 +171,10 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                                 && b.getType() != Material.STATIONARY_WATER
                                 && b.getType() != Material.LAVA
                                 && b.getType() != Material.STATIONARY_LAVA
-                                && net.minecraft.server.v1_8_R3.Block.getById(b.getTypeId()).getMaterial().isSolid()
+                                && net.minecraft.server.v1_8_R3.Block.getById(b.getTypeId()).getMaterial().isSolid() //TODO make this (and its entire section, I suppose) a Util.transparentBlocks
                                 && b.getType().getId() != 43
                                 && b.getType().getId() != 44
-                                && b.getRelative(BlockFace.UP).getType() == Material.AIR) {
+                                && Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType())) {
                             FallingBlock fb = loc.getWorld().spawnFallingBlock(b.getLocation().clone().add(0, 1.1f, 0), b.getType(), b.getData());
                             fb.setVelocity(new Vector(0, 0.3f, 0));
                             fb.setDropItem(false);
