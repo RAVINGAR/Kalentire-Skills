@@ -1,8 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
@@ -19,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -31,7 +28,6 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class SkillThrowAxe extends ActiveSkill implements Listener {
     List<ThrownAxe> axes;
@@ -198,12 +194,6 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
                             effect.expire();
                         }
                     }
-                    /*if(hero.hasEffect("ThrowAxeDisarmEffect")) {
-                        Effect effect = hero.getEffect("ThrowAxeDisarmEffect");
-                        if(effect instanceof ThrowAxeDisarmEffect) {
-                            ((ThrowAxeDisarmEffect) effect).expire();
-                        }
-                    }*/
 
                     item.remove();
                 }
@@ -217,60 +207,6 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
             types.remove(EffectType.HARMFUL);
         }
     }
-
-
-    /*
-    // Pseudo-Disarm effect because we can't use the actual Disarm effect
-    public class ThrowAxeDisarmEffect extends ExpirableEffect {
-
-        private ItemStack axeItem;
-        private int axeSlot;
-
-        public ThrowAxeDisarmEffect(Skill skill, Player applier, long duration, ItemStack item, int slot) {
-            super(skill, "ThrowAxeDisarmEffect", applier, duration);
-            // types.add(EffectType.DISARM); // So that they can't be disarmed while this goes on
-
-            axeItem = item;
-            axeSlot = slot;
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Inventory inv = hero.getPlayer().getInventory();
-
-            if(inv.getItem(axeSlot).equals(axeItem)) { // Normal
-                inv.setItem(axeSlot, new ItemStack(Material.AIR));
-            }
-            else if(inv.contains(axeItem)) { // Panic slightly and adjust
-                axeSlot = inv.first(axeItem);
-                inv.setItem(axeSlot, new ItemStack(Material.AIR));
-            }
-            else { // Panic a lot and stop this madness
-                axeItem = null;
-                axeSlot = -1;
-                Heroes.log(Level.WARNING, "SkillThrowAxe failed to find an axe for player " + hero.getPlayer().getName() + "! This is a problem!");
-                expire();
-            }
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            if(axeItem == null || axeSlot == -1)
-                return;
-
-            Player player = hero.getPlayer();
-            Inventory inv = player.getInventory();
-
-            if(inv.getItem(axeSlot).getType() == Material.AIR) {
-                inv.setItem(axeSlot, axeItem);
-            }
-            else if(!inv.addItem(axeItem).isEmpty()) { // Only one item, so if the returning map is non-empty it failed to return
-                player.getWorld().dropItem(player.getLocation(), axeItem);
-            }
-        }
-    }*/
 
     // Safety measure, likely unnecessary
     @EventHandler(priority = EventPriority.MONITOR)

@@ -31,7 +31,7 @@ public class SkillEruption extends ActiveSkill {
 
     public SkillEruption(Heroes plugin) {
         super(plugin, "Eruption");
-        setDescription("You launch a lava wave forward for $1 seconds, dealing $2 damage to $3enemies it hits..");
+        setDescription("You launch a lava wave forward for $1 seconds, dealing $2 damage to $3enemies it hits.");
         setUsage("/skill eruption");
         setArgumentRange(0, 0);
         setIdentifiers("skill eruption");
@@ -99,24 +99,24 @@ public class SkillEruption extends ActiveSkill {
         EffectManager em = new EffectManager(plugin);
 
         // Initialize and configure the Effect
-        EruptionEffect te = new EruptionEffect(em);
-        te.setLocation(loc);
-        te.asynchronous = true;
+        EruptionEffect ee = new EruptionEffect(em);
+        ee.setLocation(loc);
+        ee.asynchronous = true;
 
-        te.redDustColor = Color.RED;
-        te.addVector = v;
-        te.iterations = duration;
+        ee.redDustColor = Color.RED;
+        ee.addVector = v;
+        ee.iterations = duration;
 
-        te.caster = hero;
-        te.casterPlayer = player;
+        ee.caster = hero;
+        ee.casterPlayer = player;
 
-        te.damage = damage;
-        te.knockup = knockup;
-        te.knockupVelocity = knockupVelocity;
-        te.knockupMultiplier = knockupMultiplier;
+        ee.damage = damage;
+        ee.knockup = knockup;
+        ee.knockupVelocity = knockupVelocity;
+        ee.knockupMultiplier = knockupMultiplier;
 
         // Start the Effect
-        te.start();
+        ee.start();
         em.disposeOnTermination();
         
         return SkillResult.NORMAL;

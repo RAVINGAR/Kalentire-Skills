@@ -27,7 +27,7 @@ public class SkillTsunami extends ActiveSkill {
 
     public SkillTsunami(Heroes plugin) {
         super(plugin, "Tsunami");
-        setDescription("You launch a Tsunami forward for $1 seconds, dealing $2 damage to $3enemies it hits..");
+        setDescription("You launch a Tsunami forward for $1 seconds, dealing $2 damage to $3enemies it hits.");
         setUsage("/skill tsunami");
         setArgumentRange(0, 0);
         setIdentifiers("skill tsunami");
