@@ -42,7 +42,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 
 		LineEffect line = new LineEffect(em);
 		line.setLocation(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2)));
-		line.setTarget(player.getEyeLocation().add(beam.getTrajectory()));
+		line.setTargetLocation(player.getEyeLocation().add(beam.getTrajectory()));
 		line.asynchronous = true;
 		line.particles = (int) beam.length() * 2;
 		line.particle = ParticleEffect.VILLAGER_HAPPY;
