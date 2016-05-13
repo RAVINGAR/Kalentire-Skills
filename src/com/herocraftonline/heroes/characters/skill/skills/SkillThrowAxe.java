@@ -30,7 +30,7 @@ import com.herocraftonline.heroes.util.Util;
 import java.util.*;
 
 public class SkillThrowAxe extends ActiveSkill implements Listener {
-    List<ThrownAxe> axes;
+    private List<ThrownAxe> axes;
 
     public SkillThrowAxe(Heroes plugin) {
         super(plugin, "ThrowAxe");
@@ -78,7 +78,6 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
 
         ItemStack item = player.getItemInHand();
         Material itemType = item.getType();
-        int itemSlot = player.getInventory().getHeldItemSlot();
 
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.getType().name())) {
             Messaging.send(hero.getPlayer(), "You cannot use this skill with that weapon!");
