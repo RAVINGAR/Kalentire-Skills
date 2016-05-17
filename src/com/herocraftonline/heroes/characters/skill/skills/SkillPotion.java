@@ -31,6 +31,8 @@ public class SkillPotion extends PassiveSkill {
     private static final List<String> tierIIPotions;
     private static final Map<String, Integer> potionDurations; // Tick values
 
+    private static Method customPotionMethod = null; // reflection caching
+
     public SkillPotion(Heroes plugin) {
         super(plugin, "Potion");
         setDescription("You are able to use potions!");
@@ -393,14 +395,13 @@ public class SkillPotion extends PassiveSkill {
             // Reflection used so that if SkillCustomPotion doesn't exist, SkillPotion will still work (albeit with Vanilla effects)
             try {
                 Skill skill = plugin.getSkillManager().getSkill("CustomPotion");
-                if (skill == null) {
+                if (skill == null || customPotionMethod == null) {
                     return false;
                 }
-                Class<?> skillClass = skill.getClass();
-                Method skillMethod = skillClass.getDeclaredMethod("applyPotionEffect", LivingEntity.class, PotionEffect.class, double.class, boolean.class);
-                return (Boolean) skillMethod.invoke(skill, entity, effect, intensity, lingering);
+
+                return (Boolean) customPotionMethod.invoke(skill, entity, effect, intensity, lingering);
             }
-            catch(IllegalAccessException | NoSuchMethodException ex) {
+            catch(IllegalAccessException ex) {
                 return false;
             }
             catch(InvocationTargetException ex) {
@@ -565,5 +566,17 @@ public class SkillPotion extends PassiveSkill {
         potionDurations.put("CONFUSION", 900);
         potionDurations.put("GLOWING", 900);
         potionDurations.put("WATER_BREATHING", 3600);
+
+        // Cache the reflection for later efficiency since it'll get called a large amount. Blame soren if this is bad.
+        Skill skill = Heroes.getInstance().getSkillManager().getSkill("CustomPotion");
+        if (skill != null) {
+            Class<?> skillClass = skill.getClass();
+            try {
+                customPotionMethod = skillClass.getDeclaredMethod("applyPotionEffect", LivingEntity.class, PotionEffect.class, double.class, boolean.class);
+            }
+            catch (NoSuchMethodException ex) {
+                // This space intentionally left blank.
+            }
+        }
     }
 }
