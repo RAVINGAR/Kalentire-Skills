@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
@@ -50,6 +51,11 @@ public class SkillPotion extends PassiveSkill {
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set(SkillSetting.LEVEL.node(), 1);
         node.set(SkillSetting.NO_COMBAT_USE.node(), false);
+
+        // Configurability of the multipliers used when Lingering potions are appled
+        node.set("lingering-multiplier.instant", 0.5);
+        node.set("lingering-multiplier.duration", 0.25);
+
 
         for (PotionEffectType type : PotionEffectType.values()) {
             if(type == null)
@@ -242,6 +248,7 @@ public class SkillPotion extends PassiveSkill {
         }
 
         // CloudApply listener to apply the effects from a Lingering potion, since the entities it hit aren't known until it does.
+        // Since the multiplier of duration/effect for lingering is customizable, we manually apply vanilla effects always.
         @EventHandler(priority = EventPriority.LOWEST)
         public void AreaEffectCloudApplyEvent(AreaEffectCloudApplyEvent event) {
             AreaEffectCloud cloud = event.getEntity();
@@ -268,9 +275,6 @@ public class SkillPotion extends PassiveSkill {
                         normalEffects.remove(effect); // On first run, remove all handled effects from this list for comparison.
                     }
                 }
-
-                if(firstLoop && effects.equals(normalEffects)) // On first run, check if we did anything and if not, stop.
-                    return;
 
                 for (PotionEffect effect : normalEffects) {
                     applyVanillaEffect(entity, effect, true);
@@ -430,6 +434,22 @@ public class SkillPotion extends PassiveSkill {
         public void applyVanillaEffect(LivingEntity entity, PotionEffect effect, double intensity, boolean lingering) { // splash var because dmg pots operate slightly different depending on it and PotionEffect doesn't include this
             PotionEffectType type = effect.getType();
 
+            double instantLingerMult = 0.5;
+            double durationLingerMult = 0.25;
+
+            if(lingering) {
+                CharacterTemplate ct = plugin.getCharacterManager().getCharacter(entity);
+                if (ct instanceof Hero) {
+                    Hero hero = (Hero) ct;
+                    instantLingerMult = SkillConfigManager.getUseSetting(hero, skill, "lingering-multiplier.instant", 0.5, true);
+                    durationLingerMult = SkillConfigManager.getUseSetting(hero, skill, "lingering-multiplier.duration", 0.25, true);
+                } else {
+                    // Converting numbers from String because getRaw only supports String and Boolean
+                    instantLingerMult = Double.parseDouble(SkillConfigManager.getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", "0.5"));
+                    durationLingerMult = Double.parseDouble(SkillConfigManager.getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.duration", "0.25"));
+                }
+            }
+
             if(type.isInstant()) { // Code for instant pot detection from Spigot, though it assumes only HARM/HEAL it accounts for undead
                 boolean undead = Util.isUndead(plugin, entity);
 
@@ -437,7 +457,7 @@ public class SkillPotion extends PassiveSkill {
                     if(type.getName().equals("HARM") && !undead || type.getName().equals("HEAL") && undead) { // Damage potion effect
                         double damage = Math.floor(intensity * (double) (6 << effect.getAmplifier()) + 0.5D);
                         if(lingering)
-                            damage *= .5;
+                            damage *= instantLingerMult;
 
                         entity.damage(damage); // This fires an EntityDamageEvent on its own, not necessary to fire an event like it is with Healing
                     }
@@ -446,7 +466,7 @@ public class SkillPotion extends PassiveSkill {
                     if(entity.getHealth() <= 0.0) return; // Not good to run a RegainHealthEvent on a dead thing
                     double healing = Math.floor(intensity * (double) (4 << effect.getAmplifier()) + 0.5D);
                     if(lingering)
-                        healing *= .5;
+                        healing *= instantLingerMult;
 
                     EntityRegainHealthEvent event = new EntityRegainHealthEvent(entity, healing, EntityRegainHealthEvent.RegainReason.MAGIC); // Logic for health calculation taken from Spigot
                     Bukkit.getPluginManager().callEvent(event);
@@ -461,7 +481,7 @@ public class SkillPotion extends PassiveSkill {
             else { // Not instant, just apply the effect with a properly trimmed duration
                 int duration = getPotionDuration(effect, intensity);
                 if (lingering)
-                    duration *= .25;
+                    duration *= durationLingerMult;
 
                 entity.addPotionEffect(new PotionEffect(type, duration, effect.getAmplifier(), effect.isAmbient(), effect.hasParticles()), calculateForce(entity, effect, duration));
             }
@@ -495,7 +515,7 @@ public class SkillPotion extends PassiveSkill {
             int duration = potionDurations.containsKey(effectType.getName()) ? potionDurations.get(effectType.getName()) : 90000; // 4500 seconds
 
             if(upgraded)
-                duration *= .5; // 1/2 duration
+                duration *= 0.5; // 1/2 duration
             if(extended)
                 duration *= (8.0/3.0); // 8/3 duration
 
