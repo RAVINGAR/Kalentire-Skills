@@ -145,7 +145,7 @@ public class SkillBackstab extends ActiveSkill {
             Player player = hero.getPlayer();
 
             if (hero.canUseSkill(skill)) {
-                ItemStack item = player.getItemInHand();
+                ItemStack item = player.getInventory().getItemInMainHand(); // 1.9: Main hand does left click attacks, so main hand only
 
                 if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                     return;
