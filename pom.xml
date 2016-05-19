@@ -81,13 +81,13 @@
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>NMSHandler-v1_9_R1</artifactId>
-            <version>v1_9_R1-SNAPSHOT</version>
+            <artifactId>NMSHandler-v1_9_R2</artifactId>
+            <version>v1_9_R2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.9-R0.1-SNAPSHOT</version>
+            <version>1.9.4-R0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.spigotmc</groupId>
