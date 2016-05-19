@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
@@ -39,7 +39,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.nms.versions.EntityUtil_v1_9_R1;
+import com.herocraftonline.heroes.nms.versions.EntityUtil_v1_9_R2;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillPyromancy extends ActiveSkill implements Listener {
@@ -82,8 +82,8 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
 
             @Override
             public void run() {
-                EntityUtil_v1_9_R1.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
-                EntityUtil_v1_9_R1.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
+                EntityUtil_v1_9_R2.registerCustomEntity(PyromancyBlaze.class, "SkillPyromancyBlaze", 61, false);
+                EntityUtil_v1_9_R2.registerCustomEntity(PyromancyBlazeFireball.class, "SkillPyromancyFireball", 12, false);
             }
 
         });
