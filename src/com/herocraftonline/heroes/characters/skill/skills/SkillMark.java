@@ -2,12 +2,12 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.logging.Level;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
-import com.palmergames.bukkit.util.BukkitTools;
+//import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+//import com.palmergames.bukkit.towny.object.TownBlock;
+//import com.palmergames.bukkit.towny.object.TownyPermission;
+//import com.palmergames.bukkit.towny.object.TownyUniverse;
+//import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+//import com.palmergames.bukkit.util.BukkitTools;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -26,7 +26,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import com.herocraftonline.townships.HeroTowns;
+//import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillMark extends ActiveSkill {
@@ -53,9 +53,9 @@ public class SkillMark extends ActiveSkill {
                 ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             }*/
 
-            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
                 towny = true;
-            }
+            }*/
 
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
@@ -133,7 +133,7 @@ public class SkillMark extends ActiveSkill {
             // Validate Towny
             if(towny) {
                 // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
-                TownBlock tBlock = TownyUniverse.getTownBlock(loc);
+                /*TownBlock tBlock = TownyUniverse.getTownBlock(loc);
                 if(tBlock != null) {
                     // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
                     try {
@@ -153,7 +153,7 @@ public class SkillMark extends ActiveSkill {
                     catch (NotRegisteredException e) {
                         // Ignore: No town here
                     }
-                }
+                }*/
             }
 
             // Validate WorldGuard

@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
-import com.palmergames.bukkit.util.BukkitTools;
+//import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+//import com.palmergames.bukkit.towny.object.TownBlock;
+//import com.palmergames.bukkit.towny.object.TownyPermission;
+//import com.palmergames.bukkit.towny.object.TownyUniverse;
+//import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+//import com.palmergames.bukkit.util.BukkitTools;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,7 +40,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.townships.HeroTowns;
+//import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillRecall extends ActiveSkill implements Listener {
@@ -62,9 +62,9 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             }*/
 
-            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
                 towny = true;
-            }
+            }*/
 
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
@@ -337,7 +337,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
         // Validate Towny
         if(towny) {
-            // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
+           /* // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
             TownBlock tBlock = TownyUniverse.getTownBlock(teleportLocation);
             if(tBlock != null) {
                 // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
@@ -358,7 +358,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 catch (NotRegisteredException e) {
                     // Ignore: No town here
                 }
-            }
+            }*/
         }
 
         // Validate WorldGuard

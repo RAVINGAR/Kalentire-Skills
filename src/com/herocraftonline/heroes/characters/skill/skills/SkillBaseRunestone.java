@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
-import com.palmergames.bukkit.util.BukkitTools;
+//import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+//import com.palmergames.bukkit.towny.object.TownBlock;
+//import com.palmergames.bukkit.towny.object.TownyPermission;
+//import com.palmergames.bukkit.towny.object.TownyUniverse;
+//import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+//import com.palmergames.bukkit.util.BukkitTools;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -72,9 +72,9 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
             /*if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
             }*/
-            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
                 towny = true;
-            }
+            }*/
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -170,7 +170,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
 
             // Validate Towny
             if(towny) {
-                // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
+                /*// Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
                 TownBlock tBlock = TownyUniverse.getTownBlock(location);
                 if(tBlock != null) {
                     // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
@@ -191,7 +191,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
                     catch (NotRegisteredException e) {
                         // Ignore: No town here
                     }
-                }
+                }*/
             }
 
             // Validate WorldGuard

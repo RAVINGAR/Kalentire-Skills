@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -129,3 +129,4 @@ public class SkillTownSpawn extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 }
+*/
