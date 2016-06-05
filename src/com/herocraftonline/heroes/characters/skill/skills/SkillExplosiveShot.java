@@ -206,7 +206,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 			// Add the projectile to the hashlist
 			Arrow explosiveShot = (Arrow) event.getProjectile();
 			addParticleEffect(explosiveShot);
-			explosiveShot.setFireTicks(20);
+			//explosiveShot.setFireTicks(20); // Users are saying this Skill lights allies on fire, this is the only fire here.
 			explosiveShots.put(explosiveShot, Long.valueOf(System.currentTimeMillis()));
 		}
 
