@@ -73,7 +73,7 @@ public class SkillInfernoOrb extends ActiveSkill {
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5, false);
         Snowball fireball = player.launchProjectile(Snowball.class);
-        fireball.setVelocity(fireball.getVelocity().multiply(mult));
+        fireball.setVelocity(fireball.getVelocity().normalize().multiply(mult));
         fireball.setFireTicks(100);
         fireballs.put(fireball, System.currentTimeMillis());
         fireball.setShooter(player);

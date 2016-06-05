@@ -108,7 +108,7 @@ public class SkillDoomwave extends ActiveSkill {
                     double randomZ = ranGen.nextGaussian();
 
                     Vector vel = new Vector(randomX, randomY, randomZ);
-                    doomPearl.setVelocity(vel.multiply(velocityMultiplier));
+                    doomPearl.setVelocity(vel.normalize().multiply(velocityMultiplier));
 
                     doomPearls.put(doomPearl, time);
                 }

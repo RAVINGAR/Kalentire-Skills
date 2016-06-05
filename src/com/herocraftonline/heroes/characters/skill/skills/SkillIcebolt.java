@@ -93,7 +93,7 @@ public class SkillIcebolt extends ActiveSkill {
         
         Snowball snowball = player.launchProjectile(Snowball.class);
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.1, false);
-        snowball.setVelocity(snowball.getVelocity().multiply(mult));
+        snowball.setVelocity(snowball.getVelocity().normalize().multiply(mult));
         snowballs.put(snowball, System.currentTimeMillis());
 
         broadcastExecuteText(hero);

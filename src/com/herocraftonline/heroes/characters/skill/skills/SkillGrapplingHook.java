@@ -159,7 +159,7 @@ public class SkillGrapplingHook extends ActiveSkill {
                 // Modify the projectile
                 double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.5D, false);
                 Arrow grapplingHook = (Arrow) event.getProjectile();
-                grapplingHook.setVelocity(grapplingHook.getVelocity().multiply(velocityMultiplier));
+                grapplingHook.setVelocity(grapplingHook.getVelocity().normalize().multiply(velocityMultiplier));
 
                 // Put it on the hashmap so we can check it in another event.
                 grapplingHooks.put(grapplingHook, System.currentTimeMillis());

@@ -82,7 +82,7 @@ public class SkillChaosOrb extends ActiveSkill {
         pearls.put(pearl, System.currentTimeMillis());
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.4, false);
-        Vector vel = pearl.getVelocity().multiply(mult);
+        Vector vel = pearl.getVelocity().normalize().multiply(mult);
 
         pearl.setVelocity(vel);
         pearl.setShooter(player);

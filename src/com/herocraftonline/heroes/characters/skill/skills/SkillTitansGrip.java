@@ -56,7 +56,7 @@ public class SkillTitansGrip extends PassiveSkill {
             if (hero.hasEffect(getName())) {
                 double mult = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 1.15, false);
                 Projectile proj = (Projectile) event.getProjectile();
-                proj.setVelocity(proj.getVelocity().multiply(mult));
+                proj.setVelocity(proj.getVelocity().normalize().multiply(mult));
             }
         }
     }

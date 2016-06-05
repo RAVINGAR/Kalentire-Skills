@@ -113,7 +113,7 @@ public class SkillDarkBolt extends ActiveSkill {
         darkBolt.setShooter(player);
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
-        darkBolt.setVelocity(darkBolt.getVelocity().multiply(mult));
+        darkBolt.setVelocity(darkBolt.getVelocity().normalize().multiply(mult));
 
        // remove for now while we set this to a Snowball
        // darkBolt.setIsIncendiary(false);
