@@ -10,6 +10,8 @@ import java.util.logging.Level;
 //import com.palmergames.bukkit.towny.object.TownyUniverse;
 //import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 //import com.palmergames.bukkit.util.BukkitTools;
+import com.herocraftonline.townships.users.TownshipsUser;
+import com.herocraftonline.townships.users.UserManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -50,6 +52,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    private boolean townships = false;
 
     protected String subChannel;
 
@@ -70,9 +73,12 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
             }
+            if (Bukkit.getServer().getPluginManager().getPlugin("Townships") != null) {
+                townships = true;
+            }
         }
         catch (Exception e) {
-            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+            Heroes.log(Level.SEVERE, "SkillRecall: Could not get WorldGuard or Townships plugins! Region checking may not work!");
         }
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -359,6 +365,15 @@ public class SkillRecall extends ActiveSkill implements Listener {
                     // Ignore: No town here
                 }
             }*/
+        }
+
+        // Validate Townships
+        if (townships) {
+            TownshipsUser user = UserManager.fromOfflinePlayer(player);
+            if (!user.canBuild(teleportLocation)) {
+                Messaging.send(player, "You cannot Recall to a Region you have no access to!");
+                return SkillResult.FAIL;
+            }
         }
 
         // Validate WorldGuard

@@ -12,6 +12,8 @@ import java.util.logging.Level;
 //import com.palmergames.bukkit.towny.object.TownyUniverse;
 //import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 //import com.palmergames.bukkit.util.BukkitTools;
+import com.herocraftonline.townships.users.TownshipsUser;
+import com.herocraftonline.townships.users.UserManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +46,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import com.herocraftonline.townships.HeroTowns;
+//import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public abstract class SkillBaseRunestone extends ActiveSkill {
@@ -55,6 +57,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    private boolean townships = false;
 
     protected int defaultMaxUses;
     protected long defaultDelay;
@@ -79,9 +82,12 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
             }
+            if (Bukkit.getServer().getPluginManager().getPlugin("Townships") != null) {
+                townships = true;
+            }
         }
         catch (Exception e) {
-            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
+            Heroes.log(Level.SEVERE, "Could not get WorldGuard or Townships! Region checking may not work!");
         }
     }
 
@@ -169,7 +175,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
             }
 
             // Validate Towny
-            if(towny) {
+            if (towny) {
                 /*// Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
                 TownBlock tBlock = TownyUniverse.getTownBlock(location);
                 if(tBlock != null) {
@@ -192,6 +198,15 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
                         // Ignore: No town here
                     }
                 }*/
+            }
+
+            // Validate Townships
+            if (townships) {
+                TownshipsUser user = UserManager.fromOfflinePlayer(player);
+                if (!user.canBuild(location)) {
+                    Messaging.send(player, "You cannot imbue a Runestone in a Region you have no access to!");
+                    return SkillResult.FAIL;
+                }
             }
 
             // Validate WorldGuard

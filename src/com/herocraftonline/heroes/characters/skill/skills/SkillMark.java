@@ -8,6 +8,8 @@ import java.util.logging.Level;
 //import com.palmergames.bukkit.towny.object.TownyUniverse;
 //import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 //import com.palmergames.bukkit.util.BukkitTools;
+import com.herocraftonline.townships.users.TownshipsUser;
+import com.herocraftonline.townships.users.UserManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -36,6 +38,7 @@ public class SkillMark extends ActiveSkill {
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    private boolean townships = false;
     protected String skillSettingsName;
 
     protected SkillMark(Heroes plugin, String name) {
@@ -61,9 +64,12 @@ public class SkillMark extends ActiveSkill {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
             }
+            if (Bukkit.getServer().getPluginManager().getPlugin("Townships") != null) {
+                townships = true;
+            }
         }
         catch (Exception e) {
-            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+            Heroes.log(Level.SEVERE, "SkillRecall: Could not get WorldGuard or Townships plugins! Region checking may not work!");
         }
     }
 
@@ -154,6 +160,15 @@ public class SkillMark extends ActiveSkill {
                         // Ignore: No town here
                     }
                 }*/
+            }
+
+            // Validate Townships
+            if (townships) {
+                TownshipsUser user = UserManager.fromOfflinePlayer(player);
+                if (!user.canBuild(loc)) {
+                    Messaging.send(player, "You cannot Mark in a Region you have no access to!");
+                    return SkillResult.FAIL;
+                }
             }
 
             // Validate WorldGuard
