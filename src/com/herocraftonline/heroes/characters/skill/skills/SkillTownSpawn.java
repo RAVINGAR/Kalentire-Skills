@@ -1,15 +1,13 @@
-/*package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.palmergames.bukkit.towny.Towny;
-import com.palmergames.bukkit.towny.exceptions.EconomyException;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.exceptions.TownyException;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.herocraftonline.townships.Townships;
+import com.herocraftonline.townships.towns.Town;
+import com.herocraftonline.townships.users.TownshipsUser;
+import com.herocraftonline.townships.users.UserManager;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -30,9 +28,9 @@ public class SkillTownSpawn extends ActiveSkill {
         setArgumentRange(0, 1);
         setTypes(SkillType.SILENCEABLE, SkillType.TELEPORTING);
 
-        Plugin townyPlugin = plugin.getServer().getPluginManager().getPlugin("Towny");
-        if(!(townyPlugin instanceof Towny)) {
-            Heroes.log(Level.SEVERE, "SkillTownSpawn: Could not get Towny plugin! TownSpawn will not work!");
+        Plugin townyPlugin = plugin.getServer().getPluginManager().getPlugin("Townships");
+        if(!(townyPlugin instanceof Townships)) {
+            Heroes.log(Level.SEVERE, "SkillTownSpawn: Could not get Townships plugin! TownSpawn will not work!");
             plugin.getSkillManager().removeSkill(this);
             return;
         }
@@ -65,6 +63,13 @@ public class SkillTownSpawn extends ActiveSkill {
     @Override
     public void onWarmup(Hero hero) {
         Player player = hero.getPlayer();
+
+        TownshipsUser user = UserManager.fromOfflinePlayer(player);
+        if(!user.hasTown())
+            player.sendMessage(ChatColor.RED + "Warning:" + ChatColor.GRAY + " You are not a member of a town. Teleport will fail!");
+        else if(!user.getTown().hasSpawnLocation())
+            player.sendMessage(ChatColor.RED + "Warning:" + ChatColor.GRAY + " Your town does not have a spawn location. Teleport will fail!");
+
         double cost = SkillConfigManager.getUseSetting(hero, this, "money-cost", 25.00D, false);
         if(cost > 0) {
             double balance = Heroes.econ.getBalance(player);
@@ -78,23 +83,24 @@ public class SkillTownSpawn extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        Town town;
-        Location spawnLoc;
         // Check if player is in a town, and grab location of town spawn if they are.
         // Assumes the player is only allowed to teleport to their town, and that they are allowed to teleport to their own town.
-        // Bypasses Towny logic to choose a town and determine ability to teleport.
-        try {
-            town = TownyUniverse.getDataSource().getResident(player.getName()).getTown();
-            spawnLoc = town.getSpawn();
-        }
-        catch (NotRegisteredException e) {
-            player.sendMessage(ChatColor.GRAY + "You don't belong to a Town!");
+        TownshipsUser user = UserManager.fromOfflinePlayer(player);
+
+        if(!user.hasTown()) {
+            player.sendMessage(ChatColor.GRAY + "No town found, teleport cancelled.");
+            player.sendMessage(ChatColor.GRAY + "You must be a member of a town in order to teleport to your town's spawn.");
             return SkillResult.FAIL;
         }
-        catch (TownyException e) {
-            player.sendMessage(ChatColor.RED + e.getMessage());
+
+        Town town = user.getTown();
+        if(!town.hasSpawnLocation()) {
+            player.sendMessage(ChatColor.GRAY + "No spawn location found, teleport cancelled.");
+            player.sendMessage(ChatColor.GRAY + "Your town must have a spawn to teleport to! Ask a ranked member to set one.");
             return SkillResult.FAIL;
         }
+
+        Location spawnLoc = town.getSpawnLocation();
 
         double cost = SkillConfigManager.getUseSetting(hero, this, "money-cost", 25.00D, false);
         double costToTown = SkillConfigManager.getUseSetting(hero, this, "money-to-town", 5.00D, false);
@@ -119,14 +125,8 @@ public class SkillTownSpawn extends ActiveSkill {
 
         // Give money to town if we can. If we can't, the teleport was already paid for so oh well.
         if(costToTown > 0) {
-            try {
-                town.collect(costToTown);
-            } catch (EconomyException e) {
-                player.sendMessage(ChatColor.RED + "Error depositing money in town bank!");
-                player.sendMessage(e.getError());
-            }
+            town.getBank().addBalance(costToTown);
         }
         return SkillResult.NORMAL;
     }
 }
-*/
