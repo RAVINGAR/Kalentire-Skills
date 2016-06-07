@@ -54,6 +54,7 @@ public class SkillDeathMark extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), 60000);
         node.set(SkillSetting.PERIOD.node(), 5000);
         node.set("damage-increase-percent", 0.1);
+        node.set("target-min-combat-level", 10);
 
         return node;
     }
@@ -69,6 +70,12 @@ public class SkillDeathMark extends ActiveSkill {
         Player target = plugin.getServer().getPlayer(args[0]);
         if (target == null)
             return SkillResult.INVALID_TARGET;
+        Hero targetHero = plugin.getCharacterManager().getHero(target);
+        int minTargetLevel = SkillConfigManager.getUseSetting(hero, this, "target-min-combat-level", 10, false);
+        if (targetHero.getTieredLevel(targetHero.getHeroClass()) < minTargetLevel) {
+            Messaging.send(player, "$1 isn't powerful enough to be found...", target.getName());
+            return SkillResult.NORMAL;
+        }
         if (!target.getWorld().equals(player.getWorld())) {
             Messaging.send(player, "$1 is not in this world...", target.getName());
             return SkillResult.NORMAL;
