@@ -140,7 +140,7 @@ public class SkillPotion extends PassiveSkill {
                 PotionMeta pMeta = (PotionMeta) item.getItemMeta();
 
                 // Add custom effects, then add the effect as defined by the Base PotionData
-                List<PotionEffect> effects = pMeta.getCustomEffects();
+                List<PotionEffect> effects = new ArrayList<>(pMeta.getCustomEffects());
 
                 PotionEffect vanillaEffect = getPotionEffect(pMeta.getBasePotionData()); // Get vanilla effect
                 if(vanillaEffect != null)
