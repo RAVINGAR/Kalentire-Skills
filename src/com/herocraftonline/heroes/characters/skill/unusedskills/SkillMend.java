@@ -80,7 +80,7 @@ public class SkillMend extends TargettedSkill {
                 }
             }
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHEEP_SHEAR , 0.5F, 0.01F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_SHEEP_SHEAR , 0.5F, 0.01F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

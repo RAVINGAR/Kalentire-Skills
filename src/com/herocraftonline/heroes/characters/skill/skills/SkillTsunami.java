@@ -9,10 +9,14 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.*;
 import de.slikey.effectlib.Effect;
+import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -159,7 +163,7 @@ public class SkillTsunami extends ActiveSkill {
             Location loc = getLocation();
 
             if (loc.getBlock().getType() != Material.AIR
-                    && net.minecraft.server.v1_8_R3.Block.getById(loc.getBlock().getTypeId()).getMaterial().isSolid()) //TODO make not an NMS call
+                    && loc.getBlock().getType().isSolid()) // Was an NMS call for 1.8 Spigot, this may not be as accurate
                 loc.add(0, 1, 0);
             if (Util.transparentBlocks.contains(loc.clone().subtract(0, 1, 0).getBlock().getType()))
                 loc.add(0, -1, 0);

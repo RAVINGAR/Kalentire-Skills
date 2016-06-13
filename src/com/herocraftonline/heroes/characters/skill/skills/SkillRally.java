@@ -59,7 +59,7 @@ public class SkillRally extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), Sound.HORSE_GALLOP, 0.8F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_HORSE_GALLOP, 0.8F, 0.4F);
         
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-strength", 0.0075, false);

@@ -1,6 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import net.minecraft.server.v1_8_R3.Material;
+import net.minecraft.server.v1_9_R2.Material;
 
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -103,7 +103,7 @@ public class SkillDarkBlade extends TargettedSkill {
         }
 
         player.getWorld().spigot().playEffect(target.getEyeLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 35, 16);
-        player.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_CAVE, 5.0F, 0.2F);
+        player.getWorld().playSound(target.getLocation(), Sound.AMBIENT_CAVE, 5.0F, 0.2F);
         return SkillResult.NORMAL;
     }
 }

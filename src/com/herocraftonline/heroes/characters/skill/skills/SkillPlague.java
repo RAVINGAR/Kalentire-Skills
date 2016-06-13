@@ -95,7 +95,7 @@ public class SkillPlague extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, player, duration, period, tickDamage));
 
-        player.getWorld().playSound(player.getLocation(), Sound.BAT_HURT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

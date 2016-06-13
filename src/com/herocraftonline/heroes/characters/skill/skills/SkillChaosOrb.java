@@ -82,7 +82,7 @@ public class SkillChaosOrb extends ActiveSkill {
         pearls.put(pearl, System.currentTimeMillis());
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.4, false);
-        Vector vel = pearl.getVelocity().multiply(mult);
+        Vector vel = pearl.getVelocity().normalize().multiply(mult);
 
         pearl.setVelocity(vel);
         pearl.setShooter(player);
@@ -99,7 +99,7 @@ public class SkillChaosOrb extends ActiveSkill {
         }, ticksBeforeDrop);
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.SHOOT_ARROW, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

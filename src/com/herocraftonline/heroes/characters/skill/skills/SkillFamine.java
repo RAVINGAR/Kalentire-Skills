@@ -108,7 +108,7 @@ public class SkillFamine extends TargettedSkill {
             }
         }
 
-        target.getWorld().playSound(target.getLocation(), Sound.BLAZE_BREATH, 0.7F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.7F, 2.0F);
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.3F, 0.2F, 0.3F, 0.0F, 25, 16);
 
         return SkillResult.NORMAL;

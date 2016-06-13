@@ -67,7 +67,7 @@ public class SkillDoomRitual extends ActiveSkill {
             Messaging.send(hero.getPlayer(), Messaging.createFullManaBar(hero.getMana(), hero.getMaxMana()));
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.WITHER_DEATH, 0.4F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.4F, 1.0F);
 
         return SkillResult.NORMAL;
     }

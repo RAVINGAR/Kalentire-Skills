@@ -38,7 +38,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsmash");
         setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.VELOCITY_INCREASING, SkillType.SILENCEABLE);
-        
+
         Bukkit.getPluginManager().registerEvents(this, plugin);
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new DragonSmashUpdateTask(), 0, 1);
     }
@@ -87,7 +87,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         broadcastExecuteText(hero);
 
-        player.playSound(player.getLocation(), Sound.FIREWORK_LAUNCH, 2, 1);
+        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_LAUNCH, 2, 1);
         player.setVelocity(new Vector(0, upVelocity, 0));
         final int taskId = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override
@@ -135,7 +135,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
         final double damage = tempDamage + (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        loc.getWorld().playSound(loc, Sound.EXPLODE, 2, 1);
+        loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
         new BukkitRunnable() {
             int i = 1;
 
@@ -146,6 +146,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                 }
                 for (Block b : getBlocksInRadius(loc.clone().add(0, -1, 0), i, true)) {
                     if (b.getLocation().getBlockY() == loc.getBlockY() - 1) {
+                        //TODO potentially make this section a Util.transparentBlocks
                         if (b.getType() != Material.AIR
                                 && b.getType() != Material.SIGN_POST
                                 && b.getType() != Material.CHEST
@@ -171,7 +172,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                                 && b.getType() != Material.STATIONARY_WATER
                                 && b.getType() != Material.LAVA
                                 && b.getType() != Material.STATIONARY_LAVA
-                                && net.minecraft.server.v1_8_R3.Block.getById(b.getTypeId()).getMaterial().isSolid() //TODO make this (and its entire section, I suppose) a Util.transparentBlocks
+                                && b.getType().isSolid() // Was an NMS call for 1.8 Spigot, this may not be as accurate
                                 && b.getType().getId() != 43
                                 && b.getType().getId() != 44
                                 && Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType())) {
@@ -207,7 +208,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             fallingBlocks.remove(event.getEntity());
             FallingBlock fb = (FallingBlock) event.getEntity();
             fb.getWorld().spigot().playEffect(fb.getLocation(), Effect.TILE_BREAK, fb.getBlockId(), fb.getBlockData(), 0, 0, 0, 0.4f, 50, 128);
-            fb.getWorld().playSound(fb.getLocation(), Sound.STEP_STONE, 1, 1);
+            fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 1, 1);
             event.getEntity().remove();
         }
     }

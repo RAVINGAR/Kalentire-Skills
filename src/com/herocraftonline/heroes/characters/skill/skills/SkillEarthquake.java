@@ -13,15 +13,16 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
-import de.slikey.effectlib.util.ParticleEffect.*;
-import net.minecraft.server.v1_8_R3.*;
+import de.slikey.effectlib.util.ParticleEffect.BlockData;
+import de.slikey.effectlib.util.ParticleEffect.ParticleData;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -171,7 +172,7 @@ public class SkillEarthquake extends ActiveSkill {
 
             // The effect from UltraCosmetics, all NMS all day long
             if (loc.getBlock().getType() != Material.AIR
-                    && Block.getById(loc.getBlock().getTypeId()).getMaterial().isSolid()) {
+                    && loc.getBlock().getType().isSolid()) { // Was an NMS call for 1.8 Spigot, this may not be as accurate
                 loc.add(0, 1, 0);
             }
             if (Util.transparentBlocks.contains(loc.clone().subtract(0, 1, 0).getBlock().getType()))
@@ -189,7 +190,7 @@ public class SkillEarthquake extends ActiveSkill {
                 fakeArmorStands.add(as);
                 for (Player player : casterPlayer.getWorld().getPlayers()) {
                     sendPacket(player, new PacketPlayOutSpawnEntityLiving(as));
-                    sendPacket(player, new PacketPlayOutEntityEquipment(as.getId(), 4, CraftItemStack.asNMSCopy(new ItemStack(rand.nextInt(4) < 3 ? Material.GRASS : Material.DIRT))));
+                    sendPacket(player, new PacketPlayOutEntityEquipment(as.getId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(new ItemStack(rand.nextInt(4) < 3 ? Material.GRASS : Material.DIRT))));
                 }
                 dirtParticle.display(dirtData, 0f, 0f, 0f, 0.4f, 2, loc.clone().add(randomDouble(-1.5, 1.5), randomDouble(0, .5) - 0.75, randomDouble(-1.5, 1.5)), 128);
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {

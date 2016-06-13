@@ -91,8 +91,8 @@ public class SkillBloodDrinker extends ActiveSkill {
 
         hero.addEffect(effect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.BURP, 0.9F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), Sound.SPLASH, 0.5F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, 0.9F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 0.5F, 2.0F);
 
         return SkillResult.NORMAL;
     }
@@ -157,7 +157,7 @@ public class SkillBloodDrinker extends ActiveSkill {
                     hero.heal(finalHealing);
 
                     Player player = hero.getPlayer();
-                    player.getWorld().playSound(player.getLocation(), Sound.DRINK, 0.3F, 0.6F);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 0.3F, 0.6F);
 
                     bdEffect.setTotalHealthHealed(currentTotalHeal + finalHealing);
 

@@ -94,7 +94,7 @@ public class SkillDecay extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new DecayEffect(this, player, duration, period, tickDamage));
 
-        target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_HURT, 0.8F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_HURT, 0.8F, 2.0F);
 
         return SkillResult.NORMAL;
     }

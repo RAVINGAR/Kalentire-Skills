@@ -73,7 +73,7 @@ public class SkillInfernoOrb extends ActiveSkill {
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5, false);
         Snowball fireball = player.launchProjectile(Snowball.class);
-        fireball.setVelocity(fireball.getVelocity().multiply(mult));
+        fireball.setVelocity(fireball.getVelocity().normalize().multiply(mult));
         fireball.setFireTicks(100);
         fireballs.put(fireball, System.currentTimeMillis());
         fireball.setShooter(player);
@@ -136,7 +136,7 @@ public class SkillInfernoOrb extends ActiveSkill {
 
                 targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
                 targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.MAGIC_CRIT, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
-                targetLE.getWorld().playSound(targetLE.getLocation(), Sound.FIRE, 7.0F, 1.0F);
+                targetLE.getWorld().playSound(targetLE.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 7.0F, 1.0F);
             }
         }
     }

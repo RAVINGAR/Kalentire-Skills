@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -27,12 +28,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getRaw;
 import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
 
 public class SkillShieldReflect extends ActiveSkill {
     private String applyText;
     private String expireText;
+
+    private static Field shieldItemsField = null;
 
     public SkillShieldReflect(Heroes plugin) {
         super(plugin, "ShieldReflect");
@@ -80,22 +86,20 @@ public class SkillShieldReflect extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        switch (player.getItemInHand().getType()) {
-            case IRON_DOOR:
-            case WOOD_DOOR:
-            case TRAP_DOOR:
-                broadcastExecuteText(hero);
+        if (isWieldingShield(hero)) {
+            broadcastExecuteText(hero);
 
-                int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-                hero.addEffect(new ShieldReflectEffect(this, player, duration));
+            int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+            hero.addEffect(new ShieldReflectEffect(this, player, duration));
 
-                player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-                player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 0.8F, 1.0F);
+            player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.8F, 1.0F);
 
-                return SkillResult.NORMAL;
-            default:
-                Messaging.send(player, "You must have a shield equipped to use this skill");
-                return SkillResult.FAIL;
+            return SkillResult.NORMAL;
+        }
+        else {
+            Messaging.send(player, "You must have a shield equipped to use this skill");
+            return SkillResult.FAIL;
         }
     }
 
@@ -127,23 +131,18 @@ public class SkillShieldReflect extends ActiveSkill {
                 }
 
                 Player defenderPlayer = defenderHero.getPlayer();
-                switch (defenderPlayer.getItemInHand().getType()) {
-                    case IRON_DOOR:
-                    case WOOD_DOOR:
-                    case TRAP_DOOR:
-                        double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
-                        double damage = event.getDamage() * damageModifier;
-                        LivingEntity target = event.getDamager().getEntity();
+                if (isWieldingShield(defenderHero)) {
+                    double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
+                    double damage = event.getDamage() * damageModifier;
+                    LivingEntity target = event.getDamager().getEntity();
 
-                        Skill eSkill = event.getSkill();
+                    Skill eSkill = event.getSkill();
 
-                        addSpellTarget(target, defenderHero);
-                        if (eSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !eSkill.isType(SkillType.ARMOR_PIERCING))
-                            damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
-                        else
-                            damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC, false);
-
-                    default:
+                    addSpellTarget(target, defenderHero);
+                    if (eSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !eSkill.isType(SkillType.ARMOR_PIERCING))
+                        damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
+                    else
+                        damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC, false);
                 }
             }
         }
@@ -169,17 +168,13 @@ public class SkillShieldReflect extends ActiveSkill {
                         }
                     }
 
-                    switch (defenderPlayer.getItemInHand().getType()) {
-                        case IRON_DOOR:
-                        case WOOD_DOOR:
-                        case TRAP_DOOR:
-                            double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
-                            double damage = event.getDamage() * damageModifier;
+                    if (isWieldingShield(defenderHero)) {
+                        double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
+                        double damage = event.getDamage() * damageModifier;
 
-                            LivingEntity target = (LivingEntity) attacker;
-                            addSpellTarget(target, defenderHero);
-                            damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
-                        default:
+                        LivingEntity target = (LivingEntity) attacker;
+                        addSpellTarget(target, defenderHero);
+                        damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
                     }
                 }
             }
@@ -187,11 +182,48 @@ public class SkillShieldReflect extends ActiveSkill {
 
     }
 
+    @SuppressWarnings("unchecked") // Probably not the best way, but it's a pain to do it any other.
+    private boolean isWieldingShield(Hero hero) {
+        Material type = hero.getPlayer().getInventory().getItemInOffHand().getType();
+        if (type == Material.SHIELD) {
+            return true;
+        }
+        else if (shieldItemsField != null) {
+            Skill skill = Heroes.getInstance().getSkillManager().getSkill("Shield");
+            if (skill != null && hero.hasAccessToSkill(skill)) {
+                try {
+                    List<Material> shieldItems = (List<Material>) shieldItemsField.get(skill);
+                    if (shieldItems.contains(type)) {
+                        return true;
+                    }
+                }
+                catch (IllegalAccessException ex) {
+                    // This space intentionally left blank.
+                }
+            }
+        }
+        return false;
+    }
+
     public class ShieldReflectEffect extends ExpirableEffect {
         public ShieldReflectEffect(Skill skill, Player applier, long duration) {
             super(skill, "ShieldReflect", applier, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
+        }
+    }
+
+    static {
+        Skill skill = Heroes.getInstance().getSkillManager().getSkill("Shield");
+        if (skill != null) {
+            Class<?> skillClass = skill.getClass();
+
+            try {
+                shieldItemsField = skillClass.getDeclaredField("shieldItems");
+                shieldItemsField.setAccessible(true);
+            } catch (NoSuchFieldException ex) {
+                // This space intentionally left blank.
+            }
         }
     }
 }

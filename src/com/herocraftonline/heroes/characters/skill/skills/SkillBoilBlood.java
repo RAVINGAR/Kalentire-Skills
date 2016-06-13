@@ -145,7 +145,7 @@ public class SkillBoilBlood extends ActiveSkill {
             
             player.getWorld().spigot().playEffect(target.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0, 0, 0, 0.2F, 50, 16);
             player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
-            player.getWorld().playSound(target.getLocation(), Sound.LAVA, 10.0F, 16);
+            player.getWorld().playSound(target.getLocation(), Sound.BLOCK_LAVA_AMBIENT, 10.0F, 16);
 
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);

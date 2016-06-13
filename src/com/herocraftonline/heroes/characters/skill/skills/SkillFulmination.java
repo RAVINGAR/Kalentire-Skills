@@ -62,7 +62,7 @@ public class SkillFulmination extends TargettedSkill {
         // Lightning like this is too annoying.
         // target.getWorld().strikeLightningEffect(target.getLocation());
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
-        target.getWorld().playSound(target.getLocation(), Sound.AMBIENCE_THUNDER, lightningVolume, 1.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, lightningVolume, 1.0F);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 

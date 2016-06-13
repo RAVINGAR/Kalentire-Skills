@@ -81,7 +81,7 @@ public class SkillEnsnare extends TargettedSkill {
             }
         }
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
 
         broadcastExecuteText(hero, target);
 

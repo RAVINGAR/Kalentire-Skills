@@ -81,7 +81,7 @@ public class SkillIronFist extends ActiveSkill {
     @Override
     public void onWarmup(Hero hero) {
         Player player = hero.getPlayer();
-        player.getWorld().playSound(player.getLocation(), Sound.CHEST_OPEN, 0.7F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.7F, 0.4F);
     }
     
     public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -195,7 +195,7 @@ public class SkillIronFist extends ActiveSkill {
 		}
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

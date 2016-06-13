@@ -10,7 +10,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-import net.minecraft.server.v1_8_R3.Material;
+import net.minecraft.server.v1_9_R2.Material;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -93,7 +93,7 @@ public class SkillIcebolt extends ActiveSkill {
         
         Snowball snowball = player.launchProjectile(Snowball.class);
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.1, false);
-        snowball.setVelocity(snowball.getVelocity().multiply(mult));
+        snowball.setVelocity(snowball.getVelocity().normalize().multiply(mult));
         snowballs.put(snowball, System.currentTimeMillis());
 
         broadcastExecuteText(hero);
@@ -152,7 +152,7 @@ public class SkillIcebolt extends ActiveSkill {
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 
                 target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
-                target.getWorld().playSound(target.getLocation(), Sound.GLASS, 7.0F, 0.7F);
+                target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);
 
                 event.setCancelled(true);
             }

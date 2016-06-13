@@ -2,12 +2,14 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.logging.Level;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
-import com.palmergames.bukkit.util.BukkitTools;
+//import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+//import com.palmergames.bukkit.towny.object.TownBlock;
+//import com.palmergames.bukkit.towny.object.TownyPermission;
+//import com.palmergames.bukkit.towny.object.TownyUniverse;
+//import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+//import com.palmergames.bukkit.util.BukkitTools;
+import com.herocraftonline.townships.users.TownshipsUser;
+import com.herocraftonline.townships.users.UserManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -26,7 +28,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import com.herocraftonline.townships.HeroTowns;
+//import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillMark extends ActiveSkill {
@@ -36,6 +38,7 @@ public class SkillMark extends ActiveSkill {
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    private boolean townships = false;
     protected String skillSettingsName;
 
     protected SkillMark(Heroes plugin, String name) {
@@ -53,17 +56,20 @@ public class SkillMark extends ActiveSkill {
                 ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
             }*/
 
-            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
                 towny = true;
-            }
+            }*/
 
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
             }
+            if (Bukkit.getServer().getPluginManager().getPlugin("Townships") != null) {
+                townships = true;
+            }
         }
         catch (Exception e) {
-            Heroes.log(Level.SEVERE, "SkillRecall: Could not get Residence or HeroTowns plugins! Region checking may not work!");
+            Heroes.log(Level.SEVERE, "SkillRecall: Could not get WorldGuard or Townships plugins! Region checking may not work!");
         }
     }
 
@@ -133,7 +139,7 @@ public class SkillMark extends ActiveSkill {
             // Validate Towny
             if(towny) {
                 // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
-                TownBlock tBlock = TownyUniverse.getTownBlock(loc);
+                /*TownBlock tBlock = TownyUniverse.getTownBlock(loc);
                 if(tBlock != null) {
                     // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
                     try {
@@ -153,6 +159,15 @@ public class SkillMark extends ActiveSkill {
                     catch (NotRegisteredException e) {
                         // Ignore: No town here
                     }
+                }*/
+            }
+
+            // Validate Townships
+            if (townships) {
+                TownshipsUser user = UserManager.fromOfflinePlayer(player);
+                if (!user.canBuild(loc)) {
+                    Messaging.send(player, "You cannot Mark in a Region you have no access to!");
+                    return SkillResult.FAIL;
                 }
             }
 
@@ -177,7 +192,7 @@ public class SkillMark extends ActiveSkill {
             Messaging.send(player, "You have marked a new location on $1 at: $2, $3, $4", obj);
 
             //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WITHER_SPAWN , 0.5F, 1.0F);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN , 0.5F, 1.0F);
             hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
             return SkillResult.NORMAL;
         }

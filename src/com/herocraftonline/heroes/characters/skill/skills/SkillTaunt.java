@@ -109,8 +109,8 @@ public class SkillTaunt extends ActiveSkill {
             targetCT.addEffect(tEffect);
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_WALK, 0.8F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_HURT, 0.8F, 1.25F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_STEP, 0.8F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_HURT, 0.8F, 1.25F);
         
         return SkillResult.NORMAL;
     }

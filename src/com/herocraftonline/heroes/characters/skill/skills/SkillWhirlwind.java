@@ -155,7 +155,7 @@ public class SkillWhirlwind extends ActiveSkill {
 				}
 			}
 
-			player.getWorld().playSound(player.getLocation(), Sound.BAT_LOOP, 0.6F, 0.6F);
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP, 0.6F, 0.6F);
 
 			// TORNADOOOO
 			for (int h = 0; h < 2; h++)
@@ -189,7 +189,7 @@ public class SkillWhirlwind extends ActiveSkill {
 			}
 
 			if (hitTarget)
-				player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.3F, 1.6F);
+				player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3F, 1.6F);
 		}
 
 		@Override

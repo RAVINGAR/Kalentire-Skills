@@ -40,7 +40,7 @@ public class SkillShockTotem extends SkillBaseTotem {
 
         Player heroP = hero.getPlayer();
         // Sound used to be up here to go along with the effect that replaced lightning. We use lightning now
-        // heroP.getWorld().playSound(heroP.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
+        // heroP.getWorld().playSound(heroP.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 1.0F, 1.0F);
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
         int targetsHit = 0;
         for(LivingEntity entity : totem.getTargets(hero)) {
@@ -55,7 +55,7 @@ public class SkillShockTotem extends SkillBaseTotem {
             damageEntity(entity, heroP, getDamage(hero));
             // Strike some lightning
             entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
-            entity.getWorld().playSound(entity.getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(hero), 1.0F);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, getLightningVolume(hero), 1.0F);
             targetsHit++;
             // We have real lightning now, so this is pointless
             /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)

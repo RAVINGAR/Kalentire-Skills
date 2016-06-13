@@ -126,7 +126,7 @@ public class SkillBlizzard extends ActiveSkill {
             return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero);
-        player.getWorld().playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 0.2F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 0.2F, 1.0F);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
         List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
@@ -156,7 +156,7 @@ public class SkillBlizzard extends ActiveSkill {
                     //temp remove until we can figure out why the task is never-ending.
                     /*if (j % 8 == 0) {
                         Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
-                        world.playSound(fLoc, Sound.AMBIENCE_THUNDER, 1.1F, 1.0F);
+                        world.playSound(fLoc, Sound.ENTITY_LIGHTNING_THUNDER, 1.1F, 1.0F);
                     }*/
 
                     double randomX = ranGen.nextGaussian() * velocityDeviation;
@@ -172,7 +172,7 @@ public class SkillBlizzard extends ActiveSkill {
                 }
             }, (long) ((delayBetween * i) * 20));
         }
-        player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 

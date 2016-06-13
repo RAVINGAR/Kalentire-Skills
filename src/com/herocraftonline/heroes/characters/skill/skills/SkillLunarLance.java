@@ -104,8 +104,8 @@ public class SkillLunarLance extends TargettedSkill {
 
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0.0F, 0.0F, 0.0F, 0.4F, 35, 16);
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.0F, 0.2F, 0.1F, 25, 16);
-        target.getWorld().playSound(target.getLocation(), Sound.ZOMBIE_UNFECT, 1.0F, 0.6F);
-        player.getWorld().playSound(player.getLocation(), Sound.FIZZ, 1.0F, 0.6F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.6F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 1.0F, 0.6F);
 
         return SkillResult.NORMAL;
     }

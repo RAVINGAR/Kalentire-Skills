@@ -106,8 +106,8 @@ public class SkillMassPiggify extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.PIG_DEATH, 0.8F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.PIG_IDLE, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PIG_DEATH, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PIG_AMBIENT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -103,7 +103,7 @@ public class SkillQuake extends SkillBaseBlockWave {
 
 			@Override
 			public void run() {
-				world.playSound(hero.getPlayer().getLocation(), Sound.FIREWORK_TWINKLE, volume, 1f);
+				world.playSound(hero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_TWINKLE, volume, 1f);
 				volume -= 0.1;
 
 				if (volume <= 0) {

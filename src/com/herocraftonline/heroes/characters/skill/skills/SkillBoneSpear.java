@@ -85,7 +85,7 @@ public class SkillBoneSpear extends ActiveSkill {
         
         // This looks out of place, but it's up here because it turns into ear-explosion-death-sound if it's in the loop.
         // Also I just wanted to use the phrase "ear-explosion-death-sound."
-        player.getWorld().playSound(player.getLocation(), Sound.SKELETON_HURT, 6.0F, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SKELETON_HURT, 6.0F, 1);
 
         int numBlocks = 0;
         while (iter.hasNext()) {

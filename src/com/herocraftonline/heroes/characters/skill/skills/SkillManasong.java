@@ -42,8 +42,8 @@ public class SkillManasong extends ActiveSkill {
         setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.NOTE_PIANO, 0.8F, 1.0F, 0),
-                new Note(Sound.NOTE_BASS, 0.8F, 1.0F, 1)
+                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 1.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 1)
         );
     }
 

@@ -92,7 +92,7 @@ public class SkillSacrifice extends ActiveSkill {
         }
         else {
             broadcastExecuteText(hero);
-            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
             double maxHealth = player.getMaxHealth();
             if(maxHealth * 0.01 < player.getHealth()) {
                 player.setHealth(maxHealth * 0.01);

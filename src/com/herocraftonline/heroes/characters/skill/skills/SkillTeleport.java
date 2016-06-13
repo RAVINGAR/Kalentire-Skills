@@ -69,7 +69,7 @@ public class SkillTeleport extends ActiveSkill {
 
         player.teleport(loc1);
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.PORTAL_TRAVEL, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

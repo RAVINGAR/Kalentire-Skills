@@ -40,7 +40,7 @@ public class SkillHolyStrike extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ZOMBIE_METAL , 0.4F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR , 0.4F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

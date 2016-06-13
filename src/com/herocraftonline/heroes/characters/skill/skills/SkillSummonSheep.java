@@ -68,7 +68,7 @@ public class SkillSummonSheep extends ActiveSkill {
             sheep = (Sheep) player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.SHEEP);
             sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.SHEEP_IDLE , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_SHEEP_AMBIENT , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

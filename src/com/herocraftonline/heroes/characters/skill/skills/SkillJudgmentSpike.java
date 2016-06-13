@@ -90,7 +90,7 @@ public class SkillJudgmentSpike extends SkillBaseSpike {
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), Sound.GHAST_FIREBALL, 0.2f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.2f, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {

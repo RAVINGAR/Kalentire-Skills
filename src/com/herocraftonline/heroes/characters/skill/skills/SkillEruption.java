@@ -163,7 +163,7 @@ public class SkillEruption extends ActiveSkill {
             Location loc = getLocation();
 
             if (loc.getBlock().getType() != Material.AIR
-                    && net.minecraft.server.v1_8_R3.Block.getById(loc.getBlock().getTypeId()).getMaterial().isSolid()) //TODO make not an NMS call
+                    && loc.getBlock().getType().isSolid()) // Was an NMS call for 1.8 Spigot, this may not be as accurate
                 loc.add(0, 1, 0);
             if (Util.transparentBlocks.contains(loc.clone().subtract(0, 1, 0).getBlock().getType()))
                 loc.add(0, -1, 0);

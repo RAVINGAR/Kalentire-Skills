@@ -87,7 +87,7 @@ public class SkillBecomeDeath extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 120000, false);
         hero.addEffect(new BecomeDeathEffect(this, player, duration));
 
-        player.getWorld().playSound(player.getLocation(), Sound.CAT_MEOW, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 1.0F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -104,7 +104,7 @@ public class SkillSeismicAssault extends SkillBaseBlockWave {
 
 			@Override
 			public void run() {
-				world.playSound(hero.getPlayer().getLocation(), Sound.DIG_GRASS, volume, 1f);
+				world.playSound(hero.getPlayer().getLocation(), Sound.BLOCK_GRASS_HIT, volume, 1f);
 				volume -= 0.1;
 
 				if (volume <= 0) {

@@ -62,7 +62,7 @@ public class SkillInvigorate extends TargettedSkill{
         targetHero.setStamina(targetHero.getStamina() + staminaGain);
 
         broadcastExecuteText(hero, target);
-        player.getWorld().playSound(player.getLocation(), Sound.ENDERDRAGON_WINGS, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

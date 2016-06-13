@@ -145,7 +145,7 @@ public class SkillBackstab extends ActiveSkill {
             Player player = hero.getPlayer();
 
             if (hero.canUseSkill(skill)) {
-                ItemStack item = player.getItemInHand();
+                ItemStack item = player.getInventory().getItemInMainHand(); // 1.9: Main hand does left click attacks, so main hand only
 
                 if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                     return;
@@ -188,7 +188,7 @@ public class SkillBackstab extends ActiveSkill {
                 if (backstabbed) {
                     Entity target = event.getEntity();
                     target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
-                    target.getWorld().playSound(target.getLocation(), Sound.ENDERDRAGON_HIT, 1.0F, 0.6F);
+                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 1.0F, 0.6F);
                     if (target instanceof Monster)
                         broadcast(player.getLocation(), backstabText, player.getName(), Messaging.getLivingEntityName((Monster) target));
                     else if (target instanceof Player)

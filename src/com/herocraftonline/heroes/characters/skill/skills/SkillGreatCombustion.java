@@ -79,7 +79,7 @@ public class SkillGreatCombustion extends TargettedSkill {
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 135, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 3, 16);
-        player.getWorld().playSound(target.getLocation(), Sound.EXPLODE, 6.0F, 1);
+        player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 6.0F, 1);
 
         return SkillResult.NORMAL;
     }

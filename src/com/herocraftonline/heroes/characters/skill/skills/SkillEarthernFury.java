@@ -100,7 +100,7 @@ public class SkillEarthernFury extends TargettedSkill {
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().playSound(player.getLocation(), Sound.DIG_GRASS, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_HIT, 1.0F, 1.0F);
         
         // Create the effect and slow the target
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
@@ -174,7 +174,7 @@ public class SkillEarthernFury extends TargettedSkill {
                      * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                      * */
                     fEntity.getWorld().spigot().playEffect(location, org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
-                    fEntity.getWorld().playSound(location, Sound.DIG_GRAVEL, 0.1F, 1.0F);
+                    fEntity.getWorld().playSound(location, Sound.BLOCK_GRAVEL_HIT, 0.1F, 1.0F);
                     
                     time += 0.01;
                 }

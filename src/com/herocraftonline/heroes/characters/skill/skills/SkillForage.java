@@ -82,7 +82,7 @@ public class SkillForage extends ActiveSkill {
         case TAIGA_HILLS:
         case FROZEN_OCEAN:
         case FROZEN_RIVER:
-        case ICE_PLAINS:
+        case ICE_FLATS:
         case ICE_MOUNTAINS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
             chance = SkillConfigManager.getUseSetting(hero, this, "ice.chance", .01, false) * hero.getSkillLevel(this);
@@ -91,7 +91,7 @@ public class SkillForage extends ActiveSkill {
         case FOREST:
         case FOREST_HILLS:
         case EXTREME_HILLS:
-        case SMALL_MOUNTAINS:
+        case SMALLER_EXTREME_HILLS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "forest.items", Arrays.asList(new String[] { "APPLE", "MELON" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "forest.chance", .01, false) * hero.getSkillLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "forest.max-found", 3, false);
@@ -114,12 +114,12 @@ public class SkillForage extends ActiveSkill {
             break;
         case OCEAN:
         case RIVER:
-        case BEACH:
+        case BEACHES:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "water.items", Arrays.asList(new String[] { "RAW_FISH" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "water.chance", .01, false) * hero.getSkillLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "water.max-found", 3, false);
             break;
-        case MUSHROOM_SHORE:
+        case MUSHROOM_ISLAND_SHORE:
         case MUSHROOM_ISLAND:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "mushroom.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "mushroom.chance", .01, false) * hero.getSkillLevel(this);
@@ -166,7 +166,7 @@ public class SkillForage extends ActiveSkill {
         }
         Util.syncInventory(player, plugin);
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WOLF_HOWL, 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WOLF_HOWL, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

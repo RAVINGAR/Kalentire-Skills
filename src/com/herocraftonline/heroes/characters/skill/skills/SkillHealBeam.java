@@ -42,7 +42,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 
 		LineEffect line = new LineEffect(em);
 		line.setLocation(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2)));
-		line.setTarget(player.getEyeLocation().add(beam.getTrajectory()));
+		line.setTargetLocation(player.getEyeLocation().add(beam.getTrajectory()));
 		line.asynchronous = true;
 		line.particles = (int) beam.length() * 2;
 		line.particle = ParticleEffect.VILLAGER_HAPPY;
@@ -55,7 +55,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.HAPPY_VILLAGER, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
 		}*/
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.AMBIENCE_THUNDER, 6, 2);
+		player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 6, 2);
 
 		castBeam(hero, beam, new TargetHandler() {
 			@Override

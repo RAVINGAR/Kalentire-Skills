@@ -61,7 +61,7 @@ public class SkillSummonMooshroom extends ActiveSkill {
         } else if (chance <= chance2x) {
             player.getWorld().spawnEntity(wTargetBlock.getLocation(), EntityType.MUSHROOM_COW);
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.COW_HURT , 0.8F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_COW_HURT , 0.8F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

@@ -71,7 +71,7 @@ public class SkillBattery extends TargettedSkill {
             tHero.setMana(tHero.getMana() + finalTransferAmount);
 
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-            player.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1.0F);
             target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0F, 1F, 0F, 10F, 55, 10);
             return SkillResult.NORMAL;
         }

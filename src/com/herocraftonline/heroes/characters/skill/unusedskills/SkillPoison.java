@@ -107,7 +107,7 @@ public class SkillPoison extends TargettedSkill {
             e.printStackTrace();
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_INFECT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

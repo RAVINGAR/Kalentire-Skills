@@ -63,7 +63,7 @@ public class SkillQuantumLeap extends TargettedSkill {
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
 
         // Play sound
-        player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.5F, 1.0F);
 
         broadcastExecuteText(hero, target);
 

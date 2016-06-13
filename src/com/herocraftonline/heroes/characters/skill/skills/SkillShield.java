@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,13 +26,22 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillShield extends PassiveSkill {
 
+	/** I'm terrible at my job so this is my temporary fix for placing custom shields. - lordofroosters */
+	//private ArrayList<String> shieldNames = new ArrayList<String>();
+	private ArrayList<Material> shieldItems = new ArrayList<Material>();
+
 	public SkillShield(Heroes plugin) {
 		super(plugin, "Shield");
-		setDescription("You are able to use doors as shields to absorbs damage!");
+		setDescription("You are able to use doors as shields to absorb damage!");
 		setArgumentRange(0, 0);
 		setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
 		setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
 		Bukkit.getServer().getPluginManager().registerEvents(new CustomListener(this), plugin);
+
+		//shieldNames.add("Worn Shield of Ironpass"); // I always put ArrayList components in the class constructor itself :P
+		shieldItems.add(Material.IRON_DOOR);
+		shieldItems.add(Material.WOOD_DOOR);
+		shieldItems.add(Material.TRAP_DOOR);
 	}
 
 	@Override
@@ -52,20 +62,16 @@ public class SkillShield extends PassiveSkill {
 		return node;
 	}
 
+	public List<Material> getShieldItems() {
+		return new ArrayList<>(shieldItems);
+	}
+
 	public class CustomListener implements Listener {
 
 		private final Skill skill;
-		
-		/** I'm terrible at my job so this is my temporary fix for placing custom shields. - lordofroosters */
-		private ArrayList<String> shieldNames = new ArrayList<String>();
-		private ArrayList<Material> shieldItems = new ArrayList<Material>();
 
 		public CustomListener(Skill skill) {
 			this.skill = skill;
-			shieldNames.add("Worn Shield of Ironpass"); // I always put ArrayList components in the class constructor itself :P
-			shieldItems.add(Material.IRON_DOOR);
-			shieldItems.add(Material.WOOD_DOOR);
-			shieldItems.add(Material.TRAP_DOOR);
 		}
 
 		@EventHandler(priority = EventPriority.HIGHEST)
@@ -77,24 +83,23 @@ public class SkillShield extends PassiveSkill {
 			Player player = (Player) event.getEntity();
 			Hero hero = plugin.getCharacterManager().getHero(player);
 			if (hero.hasEffect(getName())) {
+				Material type = player.getInventory().getItemInOffHand().getType();
 				double multiplier = 1;
-				if (player.getItemInHand().getType() == Material.IRON_DOOR) {
+				if (type == Material.IRON_DOOR) {
 					multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-door", 0.75, true);
-				} else if (player.getItemInHand().getType() == Material.WOOD_DOOR) {
+				} else if (type == Material.WOOD_DOOR) {
 					multiplier = SkillConfigManager.getUseSetting(hero, skill, "wooden-door", 0.85, true);
-				} else if (player.getItemInHand().getType() == Material.TRAP_DOOR) {
+				} else if (type == Material.TRAP_DOOR) {
 					multiplier = SkillConfigManager.getUseSetting(hero, skill, "trapdoor", 0.60, true);
 				}
 				event.setDamage((event.getDamage() * multiplier));
 			}
 		}
-		
+
 		@EventHandler(priority = EventPriority.NORMAL)
-		public void onBlockPlaced(BlockPlaceEvent event)
-		{
-			Player player = (Player) event.getPlayer();
-			if (event.getBlock().getType() == Material.IRON_DOOR)
-			{
+		public void onBlockPlaced(BlockPlaceEvent event) {
+			Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+			if (hero.hasEffect(getName()) && getShieldItems().contains(event.getBlock().getType()) && hero.isInCombat()) {
 				event.setCancelled(true);
 			}
 		}

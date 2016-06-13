@@ -206,7 +206,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 			// Add the projectile to the hashlist
 			Arrow explosiveShot = (Arrow) event.getProjectile();
 			addParticleEffect(explosiveShot);
-			explosiveShot.setFireTicks(20);
+			//explosiveShot.setFireTicks(20); // Users are saying this Skill lights allies on fire, this is the only fire here.
 			explosiveShots.put(explosiveShot, Long.valueOf(System.currentTimeMillis()));
 		}
 
@@ -286,7 +286,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         // BOOM - for some reason the code in the try/catch block down there isn't happy about the whole "working" thing
         projectile.getWorld().spigot().playEffect(projectile.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 10, 16);
-        projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+        projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
@@ -299,7 +299,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         try {
             projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
 
-            //projectile.getWorld().playSound(projectile.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+            //projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
 
         } catch (Exception e) {
             e.printStackTrace();

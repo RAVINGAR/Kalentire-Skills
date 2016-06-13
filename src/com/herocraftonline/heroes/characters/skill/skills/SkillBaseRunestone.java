@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
-import com.palmergames.bukkit.util.BukkitTools;
+//import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+//import com.palmergames.bukkit.towny.object.TownBlock;
+//import com.palmergames.bukkit.towny.object.TownyPermission;
+//import com.palmergames.bukkit.towny.object.TownyUniverse;
+//import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+//import com.palmergames.bukkit.util.BukkitTools;
+import com.herocraftonline.townships.users.TownshipsUser;
+import com.herocraftonline.townships.users.UserManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +46,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import com.herocraftonline.townships.HeroTowns;
+//import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public abstract class SkillBaseRunestone extends ActiveSkill {
@@ -55,6 +57,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
+    private boolean townships = false;
 
     protected int defaultMaxUses;
     protected long defaultDelay;
@@ -72,16 +75,19 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
             /*if (Bukkit.getServer().getPluginManager().getPlugin("Residence") != null) {
                 residence = true;
             }*/
-            if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
+            /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
                 towny = true;
-            }
+            }*/
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null) {
                 worldguard = true;
                 wgp = (WorldGuardPlugin) this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
             }
+            if (Bukkit.getServer().getPluginManager().getPlugin("Townships") != null) {
+                townships = true;
+            }
         }
         catch (Exception e) {
-            Heroes.log(Level.SEVERE, "Could not get Residence or HeroTowns! Region checking may not work!");
+            Heroes.log(Level.SEVERE, "Could not get WorldGuard or Townships! Region checking may not work!");
         }
     }
 
@@ -169,8 +175,8 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
             }
 
             // Validate Towny
-            if(towny) {
-                // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
+            if (towny) {
+                /*// Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
                 TownBlock tBlock = TownyUniverse.getTownBlock(location);
                 if(tBlock != null) {
                     // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
@@ -191,6 +197,15 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
                     catch (NotRegisteredException e) {
                         // Ignore: No town here
                     }
+                }*/
+            }
+
+            // Validate Townships
+            if (townships) {
+                TownshipsUser user = UserManager.fromOfflinePlayer(player);
+                if (!user.canBuild(location)) {
+                    Messaging.send(player, "You cannot imbue a Runestone in a Region you have no access to!");
+                    return SkillResult.FAIL;
                 }
             }
 
@@ -237,7 +252,7 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
 
             // Play Effects
             Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-            player.getWorld().playSound(player.getLocation(), Sound.WITHER_IDLE, 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
             broadcastExecuteText(hero);
 

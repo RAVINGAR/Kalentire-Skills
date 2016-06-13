@@ -96,7 +96,7 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
 
         final Item dropItem = player.getWorld().dropItem(player.getEyeLocation(), new ItemStack(itemType, 1, (short) (itemType.getMaxDurability() - 1)));
         dropItem.setPickupDelay(0);
-        dropItem.setVelocity(player.getEyeLocation().getDirection().multiply(axeThrowMultiplier));
+        dropItem.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(axeThrowMultiplier));
 
         Vector hitVector;
         boolean launchTarget = SkillConfigManager.getUseSetting(hero, this, "launch-target", true);
@@ -128,7 +128,7 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
             }
         }, 20); // 1 sec after thrown, pull it back
 
-        player.getWorld().playSound(player.getLocation(), Sound.SHOOT_ARROW, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

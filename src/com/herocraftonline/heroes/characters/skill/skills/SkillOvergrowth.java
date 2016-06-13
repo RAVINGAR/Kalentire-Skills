@@ -14,7 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Tree;
+import org.bukkit.material.Sapling;
 
 import java.util.HashSet;
 
@@ -52,12 +52,12 @@ public class SkillOvergrowth extends ActiveSkill {
         TreeType tType = null;
         if (mat == Material.SAPLING) {
             MaterialData matDat = targetBlock.getState().getData();
-            if(!(matDat instanceof Tree)) {
+            if(!(matDat instanceof Sapling)) {
                 player.sendMessage(ChatColor.GRAY + "This doesn't look like a tree... (ERROR)");
                 return SkillResult.FAIL;
             }
-            Tree tDat = (Tree) matDat;
-            switch (tDat.getSpecies()) {
+            Sapling sDat = (Sapling) matDat;
+            switch (sDat.getSpecies()) {
                 case GENERIC:
                     if (Util.nextInt(2) == 0) {
                         tType = TreeType.TREE;
@@ -107,9 +107,9 @@ public class SkillOvergrowth extends ActiveSkill {
             return SkillResult.FAIL;
         }
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.AMBIENCE_RAIN , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WEATHER_RAIN , 0.8F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
-        
+
     }
 }

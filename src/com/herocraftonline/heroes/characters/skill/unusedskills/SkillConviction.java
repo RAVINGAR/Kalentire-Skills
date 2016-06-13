@@ -109,7 +109,7 @@ public class SkillConviction extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.6F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;

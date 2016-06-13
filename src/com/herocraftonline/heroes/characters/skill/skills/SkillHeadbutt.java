@@ -78,7 +78,7 @@ public class SkillHeadbutt extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
 
-        target.getWorld().playSound(target.getLocation(), Sound.ENDERDRAGON_GROWL, 0.7F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.7F, 2.0F);
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;

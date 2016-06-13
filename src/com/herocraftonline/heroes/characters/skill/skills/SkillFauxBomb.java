@@ -7,12 +7,13 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.MobEffect;
+import net.minecraft.server.v1_9_R2.EntityLiving;
+import net.minecraft.server.v1_9_R2.MobEffect;
+import net.minecraft.server.v1_9_R2.MobEffectList;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -67,7 +68,7 @@ public class SkillFauxBomb extends ActiveSkill {
         sheepMap.put(sheep.getEntityId(), player);
 
         EntityLiving cbSheep = ((CraftLivingEntity) sheep).getHandle();
-        cbSheep.addEffect(new MobEffect(19, 10000, 0));
+        cbSheep.addEffect(new MobEffect(MobEffectList.fromId(19), 10000, 0));
         cbSheep.setHealth(10000);
 
         double velocity = SkillConfigManager.getUseSetting(hero, this, "velocity", 1.0D, false);

@@ -334,7 +334,7 @@ public class SkillIceVolley extends ActiveSkill {
             plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
             
             target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.4F, 0.2F, 0.4F, 0.3F, 50, 16);
-            target.getWorld().playSound(target.getLocation(), Sound.GLASS, 7.0F, 0.7F);
+            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);
 
             iceVolleyShots.remove(iceArrow);
         }

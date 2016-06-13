@@ -107,7 +107,7 @@ public class SkillChainLightning extends TargettedSkill {
                 ((Player)(cT.getEntity())).sendMessage(ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] Hit by ChainLightning from " + caster.getName() + "!");
             }
             cT.getEntity().getLocation().getWorld().spigot().strikeLightningEffect(cT.getEntity().getLocation(), true);
-            cT.getEntity().getWorld().playSound(cT.getEntity().getLocation(), Sound.AMBIENCE_THUNDER, getLightningVolume(caster), 1.0F);
+            cT.getEntity().getWorld().playSound(cT.getEntity().getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, getLightningVolume(caster), 1.0F);
         }
 
         @Override

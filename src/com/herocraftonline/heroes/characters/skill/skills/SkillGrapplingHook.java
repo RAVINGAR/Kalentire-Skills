@@ -159,7 +159,7 @@ public class SkillGrapplingHook extends ActiveSkill {
                 // Modify the projectile
                 double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.5D, false);
                 Arrow grapplingHook = (Arrow) event.getProjectile();
-                grapplingHook.setVelocity(grapplingHook.getVelocity().multiply(velocityMultiplier));
+                grapplingHook.setVelocity(grapplingHook.getVelocity().normalize().multiply(velocityMultiplier));
 
                 // Put it on the hashmap so we can check it in another event.
                 grapplingHooks.put(grapplingHook, System.currentTimeMillis());
@@ -288,7 +288,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
             
@@ -329,7 +329,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         final Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.MAGMACUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
             

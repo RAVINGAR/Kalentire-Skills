@@ -45,6 +45,7 @@ public class SkillTrack extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("randomness", 50);
+        node.set("target-min-combat-level", 10);
 
         return node;
     }
@@ -60,6 +61,12 @@ public class SkillTrack extends ActiveSkill {
         Player target = plugin.getServer().getPlayer(args[0]);
         if (target == null)
         	return SkillResult.INVALID_TARGET;
+        Hero targetHero = plugin.getCharacterManager().getHero(target);
+        int minTargetLevel = SkillConfigManager.getUseSetting(hero, this, "target-min-combat-level", 10, false);
+        if (targetHero.getTieredLevel(targetHero.getHeroClass()) < minTargetLevel) {
+            Messaging.send(player, "$1 isn't powerful enough to be found...", target.getName());
+            return SkillResult.NORMAL;
+        }
         if(!target.getWorld().equals(player.getWorld())) {
         	Messaging.send(player, "$1 is in world: $2", target.getName(), target.getWorld().getName());
         	return SkillResult.NORMAL;
@@ -72,7 +79,7 @@ public class SkillTrack extends ActiveSkill {
 
         hero.addEffect(new TrackingEffect(this, player, period, duration, target));
 
-        player.getWorld().playSound(player.getLocation(), Sound.LEVEL_UP, 0.8F, 5.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 5.0F);
 
         return SkillResult.NORMAL;
     }

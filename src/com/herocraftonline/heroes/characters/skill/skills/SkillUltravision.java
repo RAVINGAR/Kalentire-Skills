@@ -64,7 +64,7 @@ public class SkillUltravision extends ActiveSkill {
         nveEffect.types.add(EffectType.DISPELLABLE);
         hero.addEffect(nveEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SPAWN, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

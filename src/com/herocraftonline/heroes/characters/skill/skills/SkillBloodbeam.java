@@ -94,9 +94,9 @@ public class SkillBloodbeam extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.LAVA_POP, volume, 0.5f);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.LAVA_POP, volume, 0.5f);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.BLOCK_LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);
