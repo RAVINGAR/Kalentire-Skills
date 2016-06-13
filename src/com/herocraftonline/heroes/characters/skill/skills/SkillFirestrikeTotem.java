@@ -18,9 +18,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
@@ -31,8 +30,8 @@ import java.util.Map.Entry;
 
 public class SkillFirestrikeTotem extends SkillBaseTotem {
     
-    private final Map<SmallFireball, LivingEntity> homingFireballs = new LinkedHashMap<SmallFireball, LivingEntity>();
-    private final Map<SmallFireball, Double> fireballVelocities = new LinkedHashMap<SmallFireball, Double>();
+    private final Map<Egg, LivingEntity> homingFireballs = new LinkedHashMap<>();
+    private final Map<Egg, Double> fireballVelocities = new LinkedHashMap<>();
     // Order of the faces matters, don't reorder them :(
     private final BlockFace[] firingFaces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST,};
 
@@ -72,7 +71,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 continue;
             }
             for(int i = 0; i < 4; i++) {
-                SmallFireball fireball = entity.getWorld().spawn(locForRel.getRelative(firingFaces[i], 2).getLocation(), SmallFireball.class);
+                Egg fireball = entity.getWorld().spawn(locForRel.getRelative(firingFaces[i], 2).getLocation(), Egg.class);
                 homingFireballs.put(fireball, entity);
                 fireballVelocities.put(fireball, getVelocity(hero));
                 setVelocity(fireball, entity);
@@ -82,7 +81,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
         }
     }
 
-    private void setVelocity(SmallFireball fireball, LivingEntity target) {
+    private void setVelocity(Egg fireball, LivingEntity target) {
         Vector tLoc = target.getEyeLocation().toVector();
         Vector aLoc = fireball.getLocation().toVector();
         fireball.setVelocity(tLoc.subtract(aLoc).normalize().multiply(fireballVelocities.get(fireball)));
@@ -114,10 +113,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
     private class FirestrikeFireballTask implements Runnable {
 
         public void run() {
-            Iterator<Entry<SmallFireball, LivingEntity>> fireballs = homingFireballs.entrySet().iterator();
+            Iterator<Entry<Egg, LivingEntity>> fireballs = homingFireballs.entrySet().iterator();
             while(fireballs.hasNext()) {
-                Entry<SmallFireball, LivingEntity> pair = fireballs.next();
-                SmallFireball fireball = pair.getKey();
+                Entry<Egg, LivingEntity> pair = fireballs.next();
+                Egg fireball = pair.getKey();
                 LivingEntity target = pair.getValue();
                 if(!fireball.isValid() || !target.isValid()) {
                     fireball.remove();
@@ -141,12 +140,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
         public void onEntityDamage(EntityDamageByEntityEvent event) {
 
             Entity projectile = event.getDamager();
-            if (!(event.getEntity() instanceof LivingEntity) || (!(projectile instanceof SmallFireball)) || (!skill.homingFireballs.containsKey(projectile))) {
+            if (!(event.getEntity() instanceof LivingEntity) || (!(projectile instanceof Egg)) || (!skill.homingFireballs.containsKey(projectile))) {
                 return;
             }
 
-            skill.homingFireballs.remove(projectile);
-            skill.fireballVelocities.remove(projectile);
             event.setCancelled(true);
 
             LivingEntity targetLE = (LivingEntity)event.getEntity();
@@ -177,17 +174,18 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
             }
         }
 
-        @EventHandler(ignoreCancelled=true)
-        public void onBlockIgnite(BlockIgniteEvent event) {
-            if(event.getCause() != IgniteCause.FIREBALL || event.getIgnitingEntity().getType() != EntityType.SMALL_FIREBALL) {
+        @EventHandler
+        public void onPlayerEggThrow(PlayerEggThrowEvent event) {
+            Egg projectile = event.getEgg();
+
+            if (!skill.homingFireballs.containsKey(projectile)) {
                 return;
             }
-            SmallFireball fireball = (SmallFireball) event.getIgnitingEntity();
-            if(skill.homingFireballs.containsKey(fireball)) {
-                skill.homingFireballs.remove(fireball);
-                skill.fireballVelocities.remove(fireball);
-                event.setCancelled(true); 
-            }
+
+            skill.homingFireballs.remove(projectile);
+            skill.fireballVelocities.remove(projectile);
+
+            event.setHatching(false);
         }
     }
 
