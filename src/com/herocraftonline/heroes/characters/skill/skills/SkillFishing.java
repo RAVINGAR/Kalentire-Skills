@@ -3,7 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftItem;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -62,10 +62,10 @@ public class SkillFishing extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onPlayerFish(PlayerFishEvent event){
-            if (event.isCancelled() || event.getState() != State.CAUGHT_FISH || !(event.getCaught() instanceof CraftItem)) {
+            if (event.isCancelled() || event.getState() != State.CAUGHT_FISH || !(event.getCaught() instanceof Item)) {
                 return;
             }
-            CraftItem getCaught = (CraftItem) event.getCaught();
+            Item getCaught = (Item) event.getCaught();
             double chance = Util.nextRand();
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             Player player = hero.getPlayer();

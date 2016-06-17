@@ -9,11 +9,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
-import net.minecraft.server.v1_9_R2.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,6 +19,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -80,9 +80,8 @@ public class SkillPlagueBomb extends ActiveSkill {
         final LivingEntity sheep = (LivingEntity) world.spawnEntity(pLoc.toLocation(world), EntityType.SHEEP);
         sheepMap.put(sheep.getEntityId(), player);
 
-        EntityLiving cbSheep = ((CraftLivingEntity) sheep).getHandle();
-        //cbSheep.addEffect(new MobEffect(19, 10000, 0));
-        cbSheep.setHealth(10000);
+        //sheep.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10000, 0));
+        sheep.setHealth(10000);
 
         double velocity = SkillConfigManager.getUseSetting(hero, this, "velocity", 1.0D, false);
         sheep.setVelocity(direction.multiply(velocity).add(new Vector(0.0D, 0.15D, 0.0D)));

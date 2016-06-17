@@ -12,7 +12,6 @@ import java.util.TimerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -198,11 +197,11 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 					y = (target.getLocation().getY() + (1 * Math.cos(angle)));
 					
 					// This can be use to swarm around target. Adjust x,z radius accordingly. I use 1.5 for tha radius
-					//((CraftEntity) bat).getHandle().setPosition(x, target.getLocation().getY() + (Math.random()*3), z);
+					//bat.teleport(new Location(target.getWorld(), x, target.getLocation().getY() + (Math.random()*3), z));
 					//
 					
 					// This places bats in front of target's face all the time.
-					((CraftEntity) bat).getHandle().setPosition((target.getLocation().getDirection().getX()*1) + x, (target.getLocation().getY()*1)+(Math.random()*3),(target.getLocation().getDirection().getZ()*1)+z);
+					bat.teleport(new Location(target.getWorld(), (target.getLocation().getDirection().getX()*1) + x, (target.getLocation().getY()*1)+(Math.random()*3),(target.getLocation().getDirection().getZ()*1)+z));
 				}
 			}	
 		}

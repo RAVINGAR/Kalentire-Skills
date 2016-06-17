@@ -2,8 +2,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.ArrayList;
 
-import net.minecraft.server.v1_9_R2.Material;
-
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.World;
