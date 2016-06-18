@@ -81,6 +81,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         sheepMap.put(sheep.getEntityId(), player);
 
         //sheep.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10000, 0));
+        sheep.setMaxHealth(10000);
         sheep.setHealth(10000);
 
         double velocity = SkillConfigManager.getUseSetting(hero, this, "velocity", 1.0D, false);
