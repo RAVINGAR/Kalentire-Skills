@@ -152,9 +152,10 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 return;
             Entity dmger = (LivingEntity) source;
             if ((dmger instanceof Player)) {
-                Hero hero = skill.plugin.getCharacterManager().getHero((Player)dmger);
-                Player player = (Player) dmger;
 
+                Player player = (Player) dmger;
+                Hero hero = skill.plugin.getCharacterManager().getHero((Player)dmger);
+                
                 if (!Skill.damageCheck(player, targetLE)) {
                     return;
                 }
@@ -171,6 +172,16 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                  * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                  * */
                 targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 150, 16);
+
+                LivingEntity expectedTarget = homingFireballs.get(projectile);
+                Iterator<Entry<Egg, LivingEntity>> fireballIter = homingFireballs.entrySet().iterator();
+                while (fireballIter.hasNext()) {
+                    Entry<Egg, LivingEntity> entry = fireballIter.next();
+                    if (entry.getValue().equals(expectedTarget) && !entry.getKey().equals(projectile)) {
+                        fireballIter.remove();
+                        entry.getKey().remove();
+                    }
+                }
             }
         }
 
