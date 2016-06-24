@@ -177,7 +177,7 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                 Iterator<Entry<Egg, LivingEntity>> fireballIter = homingFireballs.entrySet().iterator();
                 while (fireballIter.hasNext()) {
                     Entry<Egg, LivingEntity> entry = fireballIter.next();
-                    if (entry.getValue().equals(expectedTarget) && !entry.getKey().equals(projectile)) {
+                    if (entry.getValue().equals(expectedTarget) && !entry.getKey().equals(projectile) && entry.getKey().getShooter().equals(player)) {
                         fireballIter.remove();
                         entry.getKey().remove();
                     }
