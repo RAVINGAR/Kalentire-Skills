@@ -63,7 +63,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
 
         String potionType = effect.getType().getName();
 
-        if(isHero && hero.isInCombat() && SkillConfigManager.getUseSetting(hero, this, potionType + "." + SkillSetting.NO_COMBAT_USE.node(), false)) {
+        if(isHero && hero.isInCombat() && SkillConfigManager.getRaw(this, potionType + "." + SkillSetting.NO_COMBAT_USE.node(), false)) {
             Messaging.send(hero.getPlayer(), "You may not use " + potionType  + " Potions in combat!");
             return true; // Self explanatory
         }
@@ -88,7 +88,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
             return false; // Monsters aren't our concern with speed, so the normal effect is sufficient with them.
 
         Hero hero = plugin.getCharacterManager().getHero((Player) entity);
-        if(!SkillConfigManager.getUseSetting(hero, this, "SPEED." + SkillSetting.NO_COMBAT_USE.node(), false))
+        if(!SkillConfigManager.getRaw(this, "SPEED." + SkillSetting.NO_COMBAT_USE.node(), false))
             return false; // As SpeedEffect just ends up with a potion effect anyway, if we aren't checking combat we don't care.
 
         int amplifier = effect.getAmplifier();
@@ -129,8 +129,8 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
         if (isHero) {
             Hero hero = plugin.getCharacterManager().getHero((Player) entity);
 
-            percentHeal = SkillConfigManager.getUseSetting(hero, this, "HEAL.percent-heal", true);
-            healAmount = SkillConfigManager.getUseSetting(hero, this, "HEAL.heal-amount", .175, false);
+            percentHeal = SkillConfigManager.getRaw( this, "HEAL.percent-heal", true);
+            healAmount = getRaw(this, "HEAL.heal-amount", .175);
             if(lingering)
                 healAmount *= SkillConfigManager.getUseSetting(hero, plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5, true);
 
@@ -145,9 +145,9 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
         // This doesn't harm undead, but that'd create lore issues with BecomeDeath and we can just say these are chemical rather than magical... right?
         else {
             percentHeal = SkillConfigManager.getRaw(this, "HEAL.percent-heal", true);
-            healAmount = Double.parseDouble(SkillConfigManager.getRaw(this, "HEAL.heal-amount", ".175")); // Converting the number from String because getRaw only supports String and Boolean
+            healAmount = getRaw(this, "HEAL.heal-amount", .175);
             if(lingering)
-                healAmount *= Double.parseDouble(SkillConfigManager.getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", "0.5")); // Converting the number from String because getRaw only supports String and Boolean
+                healAmount *= getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5);
 
             // Heroes doesn't seem to use this event for Monsters, but it feels wrong to not include it.
             EntityRegainHealthEvent erhEvent = new EntityRegainHealthEvent(entity, calculateHealing(entity, percentHeal, healAmount, effect.getAmplifier(), intensity), EntityRegainHealthEvent.RegainReason.MAGIC);
@@ -177,22 +177,22 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
         // If it's a Hero, check for combat, get settings normally
         if (isHero) {
             Hero hero = (Hero) ct;
-            noCombat = SkillConfigManager.getUseSetting(hero, this, "REGENERATION." + SkillSetting.NO_COMBAT_USE.node(), false);
+            noCombat = SkillConfigManager.getRaw(this, "REGENERATION." + SkillSetting.NO_COMBAT_USE.node(), false);
 
-            percentHeal = SkillConfigManager.getUseSetting(hero, this, "REGENERATION.percent-heal", false);
-            healAmount = SkillConfigManager.getUseSetting(hero, this, "REGENERATION.heal-amount", 4.0, false);
+            percentHeal = SkillConfigManager.getRaw(this, "REGENERATION.percent-heal", false);
+            healAmount = getRaw(this, "REGENERATION.heal-amount", 4.0);
 
             if(lingering)
                 healAmount *= SkillConfigManager.getUseSetting(hero, plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5, true);
         }
-        // If it's not a Hero, it's a Monster, but for the sake of consistency we'll heal it too (albeit with raw config values since they're not Heroes)
+        // If it's not a Hero, it's a Monster, but for the sake of consistency we'll heal it too.
         else {
             noCombat = false; // Monsters gotta stay strong
             percentHeal = SkillConfigManager.getRaw(this, "REGENERATION.percent-heal", false);
-            healAmount = Double.parseDouble(SkillConfigManager.getRaw(this, "REGENERATION.heal-amount", "4.0")); // Converting the number from String because getRaw only supports String and Boolean
+            healAmount = getRaw(this, "REGENERATION.heal-amount", 4.0);
 
             if(lingering)
-                healAmount *= Double.parseDouble(SkillConfigManager.getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", "0.5")); // Converting the number from String because getRaw only supports String and Boolean
+                healAmount *= getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5);
 
         }
 
@@ -287,6 +287,26 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
     // Get heal amount, either a % of health or straight amount, multiply by amplifier and multiply again by intensity
     private double calculateHealing(LivingEntity entity, boolean percentHeal, double healAmount, int amplifier, double intensity) {
         return (percentHeal ? healAmount * entity.getMaxHealth() : healAmount) * (amplifier + 1) * intensity + 0.5 ;
+    }
+
+    // Convenience method to get raw doubles, as getRaw only allows String and Boolean
+    private double getRaw(Skill skill, String node, double def) {
+        if (skill == null) {
+            return def;
+        }
+
+        String num = SkillConfigManager.getRaw(skill, node, null);
+
+        if (num == null) {
+            return def;
+        }
+
+        try {
+            return Double.parseDouble(num);
+        }
+        catch (NumberFormatException ex) {
+            return def;
+        }
     }
 
 }
