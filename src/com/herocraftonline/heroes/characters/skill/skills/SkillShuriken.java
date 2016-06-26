@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -26,6 +27,7 @@ import org.bukkit.util.Vector;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class SkillShuriken extends PassiveSkill {
 
@@ -128,21 +130,31 @@ public class SkillShuriken extends PassiveSkill {
                     return;
                 }
 
-                // Shuriken toss!
-                shurikenToss(player);
-
                 // Remove a flint from their inventory
                 PlayerInventory inventory = player.getInventory();
                 // activatedItem.setAmount(activatedItem.getAmount() - numShuriken);
                 activatedItem.setAmount(activatedItem.getAmount() - 1);
 
                 if (activatedItem.getAmount() == 0) {
-                    inventory.clear(inventory.getHeldItemSlot());
+                    if (inventory.getItemInMainHand().getType() == Material.FLINT) {
+                        inventory.clear(inventory.getHeldItemSlot());
+                    }
+                    else if (inventory.getItemInOffHand().getType() == Material.FLINT) {
+                        inventory.clear(40); // In-game testing with Inventory.clear() says slot 40 is offhand.
+                    }
+                    else {
+                        Heroes.log(Level.WARNING, "SkillShuriken: " + player.getName() + " did not have Flint in Main or Off hand!");
+                        player.sendMessage(ChatColor.RED + "Shuriken throw failed! Please inform a staff member of this.");
+                        return;
+                    }
                 }
                 player.updateInventory();
 
                 // Reduce their stamina by the stamina cost value
                 hero.setStamina(hero.getStamina() - staminaCost);
+
+                // Shuriken toss!
+                shurikenToss(player);
             }
         }
 
