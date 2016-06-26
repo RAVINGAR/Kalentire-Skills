@@ -37,7 +37,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -45,7 +45,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || (eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -86,20 +86,20 @@ public class SkillGrapplingShot extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("num-shots", Integer.valueOf(1));
-        //node.set("velocity-multiplier", Double.valueOf(0.5D));
-        node.set("max-distance", Integer.valueOf(-1));
-        node.set("safe-fall-duration", Integer.valueOf(4500));
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
-        node.set("horizontal-divider", Integer.valueOf(6));
-        node.set("vertical-divider", Integer.valueOf(8));
-        node.set("multiplier", Double.valueOf(1.0));
-        node.set("grapple-delay", Double.valueOf(0.5));
+        node.set("num-shots", 1);
+        //node.set("velocity-multiplier", 0.5D);
+        node.set("max-distance", -1);
+        node.set("safe-fall-duration", 4500);
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set("horizontal-divider", 6);
+        node.set("vertical-divider", 8);
+        node.set("multiplier", 1.0);
+        node.set("grapple-delay", 0.5);
         node.set("ncp-exemption-duration", 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% readies his grappling shot!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% drops his grappling shot.");
-        node.set(SkillSetting.REAGENT.node(), Integer.valueOf(287));
-        node.set(SkillSetting.REAGENT_COST.node(), Integer.valueOf(2));
+        node.set(SkillSetting.REAGENT.node(), 287);
+        node.set(SkillSetting.REAGENT_COST.node(), 2);
 
         return node;
     }
@@ -157,7 +157,7 @@ public class SkillGrapplingShot extends ActiveSkill {
                 //grapplingShot.setVelocity(grapplingShot.getVelocity().multiply(velocityMultiplier));
 
                 // Put it on the hashmap so we can check it in another event.
-                grapplingShots.put(grapplingShot, Long.valueOf(System.currentTimeMillis()));
+                grapplingShots.put(grapplingShot, System.currentTimeMillis());
             }
         }
 
@@ -189,7 +189,6 @@ public class SkillGrapplingShot extends ActiveSkill {
                 }
             }, (long) (grappleDelay * 20));
 
-            return;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -201,7 +200,7 @@ public class SkillGrapplingShot extends ActiveSkill {
             if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
                 return;
 
-            if (!(grapplingShots.containsKey((Arrow) projectile)))
+            if (!(grapplingShots.containsKey(projectile)))
                 return;
 
             final Arrow grapplingShot = (Arrow) projectile;
@@ -210,7 +209,7 @@ public class SkillGrapplingShot extends ActiveSkill {
             final LivingEntity targetLE = (LivingEntity) event.getEntity();
 
             // Switch from the normal Shot to the player Shot.
-            grapplingShotsAttachedToPlayers.put(grapplingShot, Long.valueOf(System.currentTimeMillis()));
+            grapplingShotsAttachedToPlayers.put(grapplingShot, System.currentTimeMillis());
 
             double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
 
@@ -242,7 +241,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "You shot your hook to far and lost your grip!", new Object[0]);
+                Messaging.send(player, "You shot your hook to far and lost your grip!");
                 return;
             }
         }
