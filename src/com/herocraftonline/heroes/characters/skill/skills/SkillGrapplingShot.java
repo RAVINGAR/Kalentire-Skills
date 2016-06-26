@@ -54,7 +54,8 @@ public class SkillGrapplingShot extends ActiveSkill {
 
     public SkillGrapplingShot(Heroes plugin) {
         super(plugin, "GrapplingShot");
-        setDescription("Attach a hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however. The grappling hook weighs down your arrows however and reduces their velocity by $4%.");
+        //setDescription("Attach a hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however. The grappling hook weighs down your arrows however and reduces their velocity by $4%.");
+        setDescription("Attach a hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however.");
         setUsage("/skill grapplingshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill grapplingshot");
@@ -75,18 +76,18 @@ public class SkillGrapplingShot extends ActiveSkill {
         else
             numShotsString = "next shot";
 
-        double velocityMultiplier = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5D, false));
-        velocityMultiplier = Util.formatDouble((1.0 - velocityMultiplier) * 100.0);
+        //double velocityMultiplier = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5D, false));
+        //velocityMultiplier = Util.formatDouble((1.0 - velocityMultiplier) * 100.0);
         double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false) / 1000.0);
 
-        return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", duration + "").replace("$4", velocityMultiplier + "");
+        return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", duration + "")/*.replace("$4", velocityMultiplier + "")*/;
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("num-shots", Integer.valueOf(1));
-        node.set("velocity-multiplier", Double.valueOf(0.5D));
+        //node.set("velocity-multiplier", Double.valueOf(0.5D));
         node.set("max-distance", Integer.valueOf(-1));
         node.set("safe-fall-duration", Integer.valueOf(4500));
         node.set(SkillSetting.DURATION.node(), Integer.valueOf(5000));
@@ -151,9 +152,9 @@ public class SkillGrapplingShot extends ActiveSkill {
                 }
 
                 // Modify the projectile
-                double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.5D, false);
+                //double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.5D, false);
                 Arrow grapplingShot = (Arrow) event.getProjectile();
-                grapplingShot.setVelocity(grapplingShot.getVelocity().multiply(velocityMultiplier));
+                //grapplingShot.setVelocity(grapplingShot.getVelocity().multiply(velocityMultiplier));
 
                 // Put it on the hashmap so we can check it in another event.
                 grapplingShots.put(grapplingShot, Long.valueOf(System.currentTimeMillis()));
