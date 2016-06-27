@@ -34,7 +34,7 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 		setUsage("/skill desecration");
 		setIdentifiers("skill desecration");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.MOVEMENT_SLOWING);
+		setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.MOVEMENT_SLOWING);
 	}
 
 	@Override

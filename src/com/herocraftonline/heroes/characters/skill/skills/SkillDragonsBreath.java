@@ -32,7 +32,7 @@ public class SkillDragonsBreath extends ActiveSkill {
         setUsage("/skill dragonsbreath");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsbreath");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {

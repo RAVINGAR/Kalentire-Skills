@@ -37,7 +37,7 @@ public class SkillDecay extends TargettedSkill {
         setUsage("/skill decay");
         setArgumentRange(0, 0);
         setIdentifiers("skill decay");
-        setTypes(SkillType.ABILITY_PROPERTY_DISEASE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DISEASE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override

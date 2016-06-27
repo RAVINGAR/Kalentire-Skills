@@ -37,7 +37,7 @@ public class SkillBoilBlood extends ActiveSkill {
         setUsage("/skill boilblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill boilblood");
-        setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {

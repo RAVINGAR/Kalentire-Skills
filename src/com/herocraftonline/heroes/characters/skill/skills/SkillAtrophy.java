@@ -37,7 +37,7 @@ public class SkillAtrophy extends TargettedSkill {
         setUsage("/skill atrophy");
         setArgumentRange(0, 0);
         setIdentifiers("skill atrophy");
-        setTypes(SkillType.ABILITY_PROPERTY_DISEASE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DISEASE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override

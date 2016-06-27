@@ -36,7 +36,7 @@ public class SkillEarthernFury extends TargettedSkill {
         setUsage("/skill earthernfury");
         setArgumentRange(0, 0);
         setIdentifiers("skill earthernfury");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_EARTH, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MOVEMENT_SLOWING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_EARTH, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MOVEMENT_SLOWING);
     }
 
     public String getDescription(Hero hero) {

@@ -21,7 +21,7 @@ public class SkillArcaneblast extends TargettedSkill {
         setUsage("/skill arcaneblast");
         setArgumentRange(0, 0);
         setIdentifiers("skill arcaneblast");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {

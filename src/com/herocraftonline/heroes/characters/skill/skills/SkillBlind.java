@@ -27,7 +27,7 @@ public class SkillBlind extends TargettedSkill {
         setUsage("/skill blind");
         setArgumentRange(0, 0);
         setIdentifiers("skill blind");
-        setTypes(SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
     }
 
     public String getDescription(Hero hero) {

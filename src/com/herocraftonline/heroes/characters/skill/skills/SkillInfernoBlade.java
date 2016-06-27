@@ -28,7 +28,7 @@ public class SkillInfernoBlade extends SkillBaseSpike {
 		setUsage("/skill infernoblade");
 		setIdentifiers("skill infernoblade");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCING, SkillType.ABILITY_PROPERTY_FIRE);
+		setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCING, SkillType.ABILITY_PROPERTY_FIRE);
 	}
 
 	@Override

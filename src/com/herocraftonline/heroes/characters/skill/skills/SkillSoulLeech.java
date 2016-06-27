@@ -35,7 +35,7 @@ public class SkillSoulLeech extends TargettedSkill {
         setUsage("/skill soulleech");
         setArgumentRange(0, 0);
         setIdentifiers("skill soulleech");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override

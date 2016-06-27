@@ -29,7 +29,7 @@ public class SkillShockingStrike extends TargettedSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill shockingstrike");
         // Lightning used because no "electric" or "shocking" property, but it doesn't bolt.
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.INTERRUPTING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.INTERRUPTING);
     }
 
     @Override

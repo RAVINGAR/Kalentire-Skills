@@ -34,7 +34,7 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 		setUsage("/skill consecration");
 		setIdentifiers("skill consecration");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.MOVEMENT_INCREASING);
+		setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.MOVEMENT_INCREASING);
 	}
 
 	@Override

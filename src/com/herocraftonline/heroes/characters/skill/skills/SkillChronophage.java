@@ -29,7 +29,7 @@ public class SkillChronophage extends SkillBaseMarkedTeleport {
         setUsage("/skill chronophage");
         setIdentifiers("skill chronophage");
 
-        setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.NO_SELF_TARGETTING, SkillType.TELEPORTING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.NO_SELF_TARGETTING, SkillType.TELEPORTING);
     }
 
     @Override

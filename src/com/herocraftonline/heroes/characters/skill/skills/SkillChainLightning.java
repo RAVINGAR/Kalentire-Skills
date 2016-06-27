@@ -30,7 +30,7 @@ public class SkillChainLightning extends TargettedSkill {
                 + "dealing $4% damage on bounce. "
                 + "Every successive hit will decrease the caster's cooldown of this skill by $5 seconds.");
         setIdentifiers("skill chainlightning");
-        this.setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
+        this.setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
     }
 
     @Override

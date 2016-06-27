@@ -36,7 +36,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 		setUsage("/skill endlessnightmare");
 		setIdentifiers("skill endlessnightmare");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_SLOWING, SkillType.BLINDING);
+		setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_SLOWING, SkillType.BLINDING);
 	}
 
 	@Override

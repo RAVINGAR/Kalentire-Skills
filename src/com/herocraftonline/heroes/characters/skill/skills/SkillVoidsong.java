@@ -29,7 +29,7 @@ public class SkillVoidsong extends ActiveSkill {
         setUsage("/skill voidsong");
         setArgumentRange(0, 0);
         setIdentifiers("skill voidsong");
-        setTypes(SkillType.DISABLING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.SILENCING, SkillType.INTERRUPTING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DISABLING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.SILENCING, SkillType.INTERRUPTING, SkillType.AGGRESSIVE);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 		setUsage("/skill explosiveshot");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill explosiveshot");
-		setTypes(SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
+		setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
 
 		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 

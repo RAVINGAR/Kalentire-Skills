@@ -27,7 +27,7 @@ public class SkillDrainsoul extends TargettedSkill {
         setUsage("/skill drainsoul");
         setArgumentRange(0, 0);
         setIdentifiers("skill drainsoul");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override

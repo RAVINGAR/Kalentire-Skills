@@ -27,7 +27,7 @@ public class SkillIre extends TargettedSkill {
         setUsage("/skill ire");
         setArgumentRange(0, 0);
         setIdentifiers("skill ire");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {

@@ -32,7 +32,7 @@ public class SkillDoomstarRequiem extends ActiveSkill{
         setUsage("/skill doomstarrequiem");
         setArgumentRange(0, 0);
         setIdentifiers("skill doomstarrequiem");
-        setTypes(SkillType.ABILITY_PROPERTY_SONG, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_SONG, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     @Override

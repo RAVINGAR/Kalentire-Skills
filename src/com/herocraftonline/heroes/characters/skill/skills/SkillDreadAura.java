@@ -43,7 +43,7 @@ public class SkillDreadAura extends ActiveSkill {
         setUsage("/skill dreadaura");
         setArgumentRange(0, 0);
         setIdentifiers("skill dreadaura");
-        setTypes(SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_DARK, SkillType.HEALING, SkillType.BUFFING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_DARK, SkillType.HEALING, SkillType.BUFFING);
     }
 
     @Override

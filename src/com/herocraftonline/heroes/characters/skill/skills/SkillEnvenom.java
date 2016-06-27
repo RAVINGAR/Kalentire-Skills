@@ -41,7 +41,7 @@ public class SkillEnvenom extends ActiveSkill {
         setUsage("/skill envenom");
         setArgumentRange(0, 0);
         setIdentifiers("skill envenom");
-        setTypes(SkillType.ABILITY_PROPERTY_POISON, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.BUFFING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_POISON, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.BUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }

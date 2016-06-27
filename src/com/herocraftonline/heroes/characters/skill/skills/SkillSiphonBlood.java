@@ -31,7 +31,7 @@ public class SkillSiphonBlood extends TargettedSkill {
         setUsage("/skill siphonblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill siphonblood");
-        setTypes(SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     @Override

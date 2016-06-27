@@ -27,7 +27,7 @@ public class SkillMegabolt extends TargettedSkill {
         setUsage("/skill megabolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill megabolt");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
