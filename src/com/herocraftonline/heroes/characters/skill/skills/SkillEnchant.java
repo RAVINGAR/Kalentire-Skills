@@ -57,6 +57,8 @@ public class SkillEnchant extends PassiveSkill {
         section.set("ARROW_KNOCKBACK", 1);
         section.set("ARROW_FIRE", 1);
         section.set("ARROW_INFINITE", 1);
+        section.set("FROST_WALKER", 200);
+        section.set("MENDING", 200);
         section.set(SkillSetting.APPLY_TEXT.node(), "");
         section.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         return section;
