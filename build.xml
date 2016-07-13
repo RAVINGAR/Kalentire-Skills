@@ -9,6 +9,7 @@
     <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="dir.dist.skills" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
+    <property name="heroes" value="../../Heroes-dev/workspace/modules/plugin/target/" />
     <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
 
@@ -16,6 +17,7 @@
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
+        <fileset dir="${heroes}" includes="**/*.jar" />
         <fileset dir="${dir.maven.dependencies}" includes="**/*.jar" excludes="org/bukkit/**/*.jar"/>
     </path>
 
@@ -88,6 +90,7 @@
     </target>
 
     <target name="zip">
+        <copy todir="${dir.dist}" file="${heroes}/Heroes.jar"/>
         <zip destfile="${dir.dist}/Heroes.zip">
             <fileset dir="${dir.dist}" includes="*.jar"/>
             <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
