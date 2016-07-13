@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;

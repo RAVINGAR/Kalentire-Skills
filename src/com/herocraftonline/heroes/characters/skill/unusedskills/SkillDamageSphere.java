@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSphere;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.ParticleEffect;
