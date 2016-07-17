@@ -98,7 +98,7 @@
         <basename file="SkillTotemRecall" suffix=".class" property="classname" />
         <echo message="${classname}" />
         <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${classname}" />
-        <jar jarfile="${dir.dist}/${dir.dist.path}/${package}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/skills/${classname}*.class skill.info ${dir.bin.path}/skills/${totem.lib}/*.class ${dir.bin.path}/skills/${totem.lib}/tasks/*.class">
+        <jar jarfile="${dir.dist}/${dir.dist.path}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/skills/${classname}*.class skill.info ${dir.bin.path}/skills/${totem.lib}/*.class ${dir.bin.path}/skills/${totem.lib}/tasks/*.class">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>
