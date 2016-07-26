@@ -1,0 +1,42 @@
+SkillBaseWave
+SkillBaseBeamShot
+SkillHealBeam
+SkillSoulEnlightened
+SkillLastLocation <- reference SkillDreadAura toggle skill.
+SkillBaseGroundEffect
+
+SkillBaseMassBlockEffector
+
+--- BEAM ---
+SkillDamageBeam
+
+SkillBaseBeam
+SkillDisarray
+SkillOrdain
+
+--- SPHERE ---
+SkillDamageSphere
+
+SkillBaseSphere
+SkillCallOfChaos
+SkillCallOfOrder
+
+--- Spike ---
+SkillDamageSpike
+
+SkillBaseSpike
+SkillEndlessNightmare
+SkillJudgmentSpike
+
+
+--- Block Pulse ---
+SkillBlockLaunch
+
+SkillBaseBlockPulse
+
+
+
+--- Marked Teleport ---
+SkillBaseMarkedTeleport
+SkillTimeWarp
+SkillTimeReverse
