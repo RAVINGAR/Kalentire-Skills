@@ -28,7 +28,7 @@ public class SkillIcebolt extends ActiveSkill {
     private Map<Snowball, Long> snowballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4632858378318784263L;
         @Override
-        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+        public boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
