@@ -1,15 +1,5 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.pack1;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
-import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,17 +13,31 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-public class SkillBloodWell extends ActiveSkill {
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.util.Util;
+
+public class SkillBloodDrinker extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillBloodWell(Heroes plugin) {
-        super(plugin, "BloodWell");
-        setDescription("Drink the blood of your enemies and restore your health! The BloodWell effect lasts for $1 seconds" +
-                " and causes you to gain health for $2% of your physical damage dealt. You cannot gain more than $3 health from this effect.");
-        setUsage("/skill bloodwell");
+    public SkillBloodDrinker(Heroes plugin) {
+        super(plugin, "BloodDrinker");
+        setDescription("Drink the blood of your enemies and restore your health! The BloodDrinker effect lasts for $1 seconds and causes you to gain health for $2% of your physical damage dealt. You cannot gain more than $3 health from this effect.");
+        setUsage("/skill blooddrinker");
         setArgumentRange(0, 0);
-        setIdentifiers("skill bloodwell");
+        setIdentifiers("skill blooddrinker");
         setTypes(SkillType.BUFFING, SkillType.AGGRESSIVE, SkillType.HEALING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         Bukkit.getPluginManager().registerEvents(new SkillHeroListener(), plugin);
@@ -105,7 +109,7 @@ public class SkillBloodWell extends ActiveSkill {
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
                 Hero hero = (Hero) event.getDamager();
-                if (hero.hasEffect("BloodWelling")) {
+                if (hero.hasEffect("BloodDrinking")) {
                     if (!damageCheck(hero.getPlayer(), (LivingEntity) event.getEntity()))
                         return;
 
@@ -127,14 +131,14 @@ public class SkillBloodWell extends ActiveSkill {
             if (attacker instanceof Player) {
                 Player player = (Player) attacker;
                 Hero hero = plugin.getCharacterManager().getHero(player);
-                if (hero.hasEffect("BloodWelling"))
+                if (hero.hasEffect("BloodDrinking"))
                     bloodDrinkHeal(hero, event.getDamage());
             }
         }
     }
 
     private void bloodDrinkHeal(Hero hero, double damage) {
-        BloodDrinkEffect bdEffect = (BloodDrinkEffect) hero.getEffect("BloodWelling");
+        BloodDrinkEffect bdEffect = (BloodDrinkEffect) hero.getEffect("BloodDrinking");
 
         if (bdEffect != null) {
             int maxHealing = bdEffect.getMaximumHealing();
@@ -170,7 +174,7 @@ public class SkillBloodWell extends ActiveSkill {
         private int maximumHealing;
 
         public BloodDrinkEffect(Skill skill, Player applier, long duration, double damageHealingPercent, int maximumHealing) {
-            super(skill, "BloodWelling", applier, duration, applyText, expireText);
+            super(skill, "BloodDrinking", applier, duration, applyText, expireText);
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
