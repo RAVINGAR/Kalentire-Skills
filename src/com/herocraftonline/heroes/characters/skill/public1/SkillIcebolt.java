@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.public1;
+/*package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -155,3 +155,4 @@ public class SkillIcebolt extends ActiveSkill {
         }
     }
 }
+*/
