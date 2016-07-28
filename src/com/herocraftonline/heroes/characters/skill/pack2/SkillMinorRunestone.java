@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack2;
 import org.bukkit.ChatColor;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.skill.skills.*;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 
 public class SkillMinorRunestone extends SkillBaseRunestone {
