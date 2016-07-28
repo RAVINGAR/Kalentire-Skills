@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.pack3;
 
 // src http://pastie.org/private/syyyftinqa5r1uv4ixka
 import com.herocraftonline.heroes.Heroes;

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.pack3;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;

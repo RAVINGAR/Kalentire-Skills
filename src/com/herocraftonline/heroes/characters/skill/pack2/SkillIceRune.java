@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.pack2;
 
 /*
  * Coded by: Delfofthebla - Last updated on 5 / 5 / 2013

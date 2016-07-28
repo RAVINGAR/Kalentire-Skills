@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.pack7;
 
 import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
