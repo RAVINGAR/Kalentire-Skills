@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.events.EffectAddEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -16,6 +17,9 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -177,5 +181,16 @@ public abstract class SkillBaseSphere extends ActiveSkill {
 			super.removeFromHero(hero);
 			hero.getPlayer().sendMessage(ChatColor.GREEN + "Ticks: " + ChatColor.WHITE + ticks);
 		}*/
+	}
+
+	private final class SphereControlListeners implements Listener {
+
+		@EventHandler(priority = EventPriority.MONITOR)
+		private void OnEffectAdd(EffectAddEvent e) {
+
+			if (e.getCharacter().hasEffect(SkillBaseSphere.this.getName()) && e.getEffect().isType(EffectType.SILENCE)) {
+				e.getCharacter().removeEffect(e.getCharacter().getEffect(SkillBaseSphere.this.getName()));
+			}
+		}
 	}
 }
