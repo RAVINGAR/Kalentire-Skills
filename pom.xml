@@ -57,7 +57,7 @@
     <repositories>
         <repository>
             <id>heroes-repo</id>
-            <url>http://nexus.theyeticave.net/content/groups/herocraft/</url>
+            <url>http://nexus.hc.to/content/groups/herocraft/</url>
         </repository>
         <repository>
             <id>sk89q-repo-snapshot</id>
@@ -175,12 +175,12 @@
         <repository>
             <id>heroes-repo</id>
             <name>Public Releases</name>
-            <url>http://nexus.theyeticave.net/content/repositories/releases/</url>
+            <url>http://nexus.hc.to/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>heroes-repo</id>
             <name>Public Releases</name>
-            <url>http://nexus.theyeticave.net/content/repositories/snapshots/</url>
+            <url>http://nexus.hc.to/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
