@@ -60,7 +60,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 		castBeam(hero, beam, new TargetHandler() {
 			@Override
 			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
-				if (target instanceof Player){
+				if (target instanceof Player) {
 					Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 					targetHero.heal(TEMP_HEAL);
 				}
