@@ -46,6 +46,7 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
 
             private Capsule missileCollider = null;
 
+            private boolean hitSomething = false;
             private long life = duration;
 
             @Override
@@ -79,6 +80,7 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
                         }
 
                         position.copy(hitPosition);
+                        hitSomething = true;
                         life = 0;
 
                     } else {
@@ -179,6 +181,7 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
                     }
 
                     position.copy(hitOrigin);
+                    hitSomething = true;
                     life = 0;
                 }
 
@@ -189,6 +192,7 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
                 }
 
                 if (--life <= 0) {
+                    onExpire(hero, position.clone(), velocity.clone(), hitSomething);
                     cancel();
                 }
             }
@@ -204,6 +208,8 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
     protected abstract void onBlockPassed(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace);
 
     protected abstract void renderMissilePath(World world, Vector start, Vector end, double radius);
+
+    protected abstract void onExpire(Hero hero, Vector position, Vector velocity, boolean hitSomething);
 
     private class PassedEntity {
 

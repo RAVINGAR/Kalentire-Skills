@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
@@ -55,15 +56,32 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
         Vector start = player.getEyeLocation().toVector();
         Vector end = player.getEyeLocation().getDirection().multiply(100).add(start);
 
-        RayCastHit targetHit = physics.rayCast(world, player,start, end,
+        final RayCastHit targetHit = physics.rayCast(world, player,start, end,
                 EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID));
 
         Supplier<Vector> target;
 
         if (targetHit != null) {
             if (targetHit.isEntity()) {
-                Entity entity = targetHit.getEntity();
-                target = () -> physics.getEntityAABB(entity).getCenter();
+                target = new Supplier<Vector>() {
+
+                    Entity entity;
+                    Vector point;
+
+                    {
+                        entity = targetHit.getEntity();
+                        point = physics.getEntityAABB(entity).getCenter();
+                    }
+
+                    @Override
+                    public Vector get() {
+                        if (entity.isValid() && !entity.isDead()) {
+                            point = physics.getEntityAABB(entity).getCenter();
+                        }
+
+                        return point;
+                    }
+                };
             } else {
                 Vector point = targetHit.getPoint();
                 target = () -> point;
@@ -73,13 +91,13 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
             target = () -> point;
         }
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
 
             Vector launchVelocity = Vector.getRandom().subtract(new Vector(0.5, 0.5, 0.5)).multiply(5);
 
             super.fireHomingMissile(hero, true, 5,
                     target,
-                    player.getEyeLocation().toVector(), launchVelocity, 0.5, 2, 1, 100,
+                    player.getEyeLocation().toVector(), launchVelocity, 0.5, 2, 0.5, 100,
                     null, null,
                     EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID));
         }
@@ -104,7 +122,7 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
     @Override
     protected void onEntityHit(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) {
-        entity.getWorld().createExplosion(hitOrigin.getX(), hitOrigin.getY(), hitOrigin.getZ(), 1, false, false);
+        entity.getWorld().createExplosion(hitOrigin.getX(), hitOrigin.getY(), hitOrigin.getZ(), (int) hitForce.length() + 1, false, false);
     }
 
     @Override
@@ -127,7 +145,7 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
     @Override
     protected void onBlockHit(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace) {
-        block.getWorld().createExplosion(hitPosition.getX(), hitPosition.getY(), hitPosition.getZ(), 1, false, false);
+        block.getWorld().createExplosion(hitPosition.getX(), hitPosition.getY(), hitPosition.getZ(), (int) hitForce.length() + 1, false, false);
     }
 
     @Override
@@ -151,7 +169,7 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
         cyl.radius = (float) (radius * 0.5);
         cyl.height = (float) (start.distance(end));
-        cyl.particle = ParticleEffect.CLOUD;
+        cyl.particle = ParticleEffect.REDSTONE;
         cyl.particles = 40;
         cyl.solid = true;
         cyl.rotationX = Math.toRadians(loc.getPitch() + 90);
@@ -164,5 +182,12 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
         cyl.start();
         em.disposeOnTermination();
+    }
+
+    @Override
+    protected void onExpire(Hero hero, Vector position, Vector velocity, boolean hitSomething) {
+        if (!hitSomething) {
+            hero.getPlayer().getWorld().createExplosion(position.getX(), position.getY(), position.getZ(), (int) velocity.length() + 1, false, false);
+        }
     }
 }
