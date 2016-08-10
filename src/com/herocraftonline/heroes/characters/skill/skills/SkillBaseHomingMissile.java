@@ -3,7 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 import java.util.*;
 import java.util.function.Supplier;
 
-public abstract class SkillBaseHomingMissile extends TargettedSkill {
+public abstract class SkillBaseHomingMissile extends ActiveSkill {
 
     private static NMSPhysics physics = NMSHandler.getInterface().getNMSPhysics();
 
@@ -29,16 +29,16 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
         super(plugin, name);
     }
 
-    protected void fireHomingMissile(final Hero hero, final boolean ignoreHero,
-                                     final Supplier<Vector> targetSupplier, final Vector startPosition, final long duration,
-                                     final Vector startVelocity, final double homingStrength, final double maxSpeed, final double missileRadius,
+    protected void fireHomingMissile(final Hero hero, final boolean ignoreHero, final long entityIgnoreTicks,
+                                     final Supplier<Vector> targetSupplier, final Vector startPosition, final Vector startVelocity,
+                                     final double homingStrength, final double maxSpeed, final double missileRadius, final long duration,
                                      final Predicate<Entity> entityFilter, final Predicate<Block> blockFilter,
                                      final EnumSet<RayCastFlag> flags) {
 
         new BukkitRunnable() {
 
             private final World world = hero.getPlayer().getWorld();
-            private final Set<UUID> handledEntities = new HashSet<>();
+            private final Map<UUID, Long> ignoreEntities = new HashMap<>();
 
             private Vector lastPosition = null;
             private Vector position = startPosition;
@@ -93,7 +93,7 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
                 // TODO: Implement a way to set the capsule orientation... why didn't I add that...
                 missileCollider = physics.createCapsule(lastPosition, position, missileRadius);
 
-                List<Entity> possibleTargets = physics.getEntitiesInVolume(world, hero.getPlayer(),
+                List<Entity> possibleTargets = physics.getEntitiesInVolume(world, ignoreHero ? hero.getPlayer() : null,
                         missileCollider, flags.contains(RayCastFlag.ENTITY_HIT_SPECTATORS));
 
                 Entity hitEntity = null;
@@ -108,7 +108,17 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
 
                 for (Entity possibleTarget : possibleTargets) {
 
-                    if (handledEntities.contains(possibleTarget.getUniqueId())) continue;
+                    Long ignoreTicks = ignoreEntities.get(possibleTarget.getUniqueId());
+
+                    if (ignoreTicks != null) {
+                        if (--ignoreTicks <= 0) {
+                            ignoreEntities.remove(possibleTarget.getUniqueId());
+                        }
+                        else {
+                            ignoreEntities.put(possibleTarget.getUniqueId(), ignoreTicks);
+                            continue;
+                        }
+                    }
 
                     AABB entityAABB = physics.getEntityAABB(possibleTarget);
                     Vector entityCenter = entityAABB.getCenter();
@@ -142,7 +152,7 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
                             passedEntities.add(new PassedEntity(possibleTarget, entityCenter, distanceSq, missileHit));
                         }
 
-                        handledEntities.add(possibleTarget.getUniqueId());
+                        ignoreEntities.put(possibleTarget.getUniqueId(), entityIgnoreTicks);
                     }
                 }
 
@@ -173,7 +183,7 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
                 }
 
                 try {
-                    renderMissilePath(world, lastPosition.clone(), position.clone());
+                    renderMissilePath(world, lastPosition.clone(), position.clone(), missileRadius);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -187,13 +197,13 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
 
     protected abstract void onEntityHit(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce);
 
-    protected void onEntityPassed(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) { }
+    protected abstract void onEntityPassed(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce);
 
-    protected void onBlockHit(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace) { }
+    protected abstract void onBlockHit(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace);
 
-    protected void onBlockPassed(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace) { }
+    protected abstract void onBlockPassed(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace);
 
-    protected abstract void renderMissilePath(World world, Vector start, Vector end);
+    protected abstract void renderMissilePath(World world, Vector start, Vector end, double radius);
 
     private class PassedEntity {
 
