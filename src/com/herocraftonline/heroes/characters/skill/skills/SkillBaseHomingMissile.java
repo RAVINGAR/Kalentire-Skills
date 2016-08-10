@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import com.herocraftonline.heroes.nms.physics.collision.Capsule;
-import jline.internal.Log;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -102,7 +101,7 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
                 Vector hitOrigin = null;
                 double currentTargetDistanceSq = Long.MAX_VALUE;
 
-                List<InvolvedHit> involvedEntities = new LinkedList<>();
+                List<PassedEntity> passedEntities = new LinkedList<>();
 
                 Vector missileRay = missileCollider.getPoint2().subtract(missileCollider.getPoint1());
                 double lengthSq = missileRay.lengthSquared();
@@ -140,19 +139,19 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
                                 currentTargetDistanceSq = distanceSq;
                             }
                         } else {
-                            involvedEntities.add(new InvolvedHit(possibleTarget, entityCenter, distanceSq, missileHit));
+                            passedEntities.add(new PassedEntity(possibleTarget, entityCenter, distanceSq, missileHit));
                         }
 
                         handledEntities.add(possibleTarget.getUniqueId());
                     }
                 }
 
-                for (InvolvedHit involvedEntity : involvedEntities) {
-                    if (involvedEntity.distanceSq <= currentTargetDistanceSq) {
-                        Vector hitForce = involvedEntity.entityCenter.clone().subtract(involvedEntity.hitOrigin).add(missileRay);
+                for (PassedEntity passedEntity : passedEntities) {
+                    if (passedEntity.distanceSq <= currentTargetDistanceSq) {
+                        Vector hitForce = passedEntity.entityCenter.clone().subtract(passedEntity.hitOrigin).add(missileRay);
 
                         try {
-                            onEntityInvolved(hero, involvedEntity.entity, involvedEntity.hitOrigin.clone(), hitForce);
+                            onEntityPassed(hero, passedEntity.entity, passedEntity.hitOrigin.clone(), hitForce);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -188,7 +187,7 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
 
     protected abstract void onEntityHit(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce);
 
-    protected void onEntityInvolved(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) { }
+    protected void onEntityPassed(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) { }
 
     protected void onBlockHit(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace) { }
 
@@ -196,14 +195,14 @@ public abstract class SkillBaseHomingMissile extends TargettedSkill {
 
     protected abstract void renderMissilePath(World world, Vector start, Vector end);
 
-    private class InvolvedHit {
+    private class PassedEntity {
 
         public final Entity entity;
         public final Vector entityCenter;
         public final double distanceSq;
         public final Vector hitOrigin;
 
-        public InvolvedHit(Entity entity, Vector entityCenter, double distanceSq, Vector hitOrigin) {
+        public PassedEntity(Entity entity, Vector entityCenter, double distanceSq, Vector hitOrigin) {
             this.entity = entity;
             this.entityCenter = entityCenter;
             this.distanceSq = distanceSq;

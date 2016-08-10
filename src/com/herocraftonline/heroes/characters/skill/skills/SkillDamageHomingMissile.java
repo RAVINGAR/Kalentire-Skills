@@ -51,11 +51,11 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
     @Override
     protected void onEntityHit(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) {
-        
+
     }
 
     @Override
-    protected void onEntityInvolved(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) {
+    protected void onEntityPassed(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) {
 
     }
 
