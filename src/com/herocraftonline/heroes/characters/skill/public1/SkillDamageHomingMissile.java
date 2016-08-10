@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -7,23 +7,19 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
-import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
@@ -83,7 +79,7 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
             super.fireHomingMissile(hero, true, 5,
                     target,
-                    player.getEyeLocation().toVector(), launchVelocity, 0.5, 2, 1, 600,
+                    player.getEyeLocation().toVector(), launchVelocity, 0.5, 2, 1, 100,
                     null, null,
                     EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID));
         }
@@ -108,7 +104,7 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
     @Override
     protected void onEntityHit(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) {
-
+        entity.getWorld().createExplosion(hitOrigin.getX(), hitOrigin.getY(), hitOrigin.getZ(), 1, false, false);
     }
 
     @Override
@@ -131,7 +127,7 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
     @Override
     protected void onBlockHit(Hero hero, Block block, Vector hitPosition, Vector hitForce, BlockFace hitFace) {
-
+        block.getWorld().createExplosion(hitPosition.getX(), hitPosition.getY(), hitPosition.getZ(), 1, false, false);
     }
 
     @Override
@@ -146,6 +142,8 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
 
         Location loc = start.clone().add(end.clone().subtract(start).multiply(0.5)).toLocation(world);
         loc.setDirection(end.clone().subtract(start));
+
+        world.playSound(loc, Sound.ENTITY_FIREWORK_BLAST_FAR, 1, 1);
 
         CylinderEffect cyl = new CylinderEffect(em);
         cyl.setLocation(loc);

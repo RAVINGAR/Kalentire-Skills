@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
@@ -70,7 +70,7 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
                     Vector hitPosition = blockHit.getPoint();
                     BlockFace hitFace = blockHit.getFace();
 
-                    if (blockFilter.apply(block)) {
+                    if (blockFilter == null || blockFilter.apply(block)) {
 
                         try {
                             onBlockHit(hero, block, hitPosition.clone(), velocity.clone(), hitFace);
@@ -141,7 +141,7 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
 
                         double distanceSq = missileRay.clone().multiply(dot / shotLengthSq).lengthSquared();
 
-                        if (entityFilter.apply(possibleTarget)) {
+                        if (entityFilter == null || entityFilter.apply(possibleTarget)) {
                             if (distanceSq < currentTargetDistanceSq) {
                                 hitEntity = possibleTarget;
                                 currentEntityCenter = entityCenter;
@@ -191,6 +191,8 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
                 if (--life <= 0) {
                     cancel();
                 }
+
+                hero.getPlayer().sendMessage("Life: " + life);
             }
         }.runTaskTimer(plugin, 1, 1);
     }
