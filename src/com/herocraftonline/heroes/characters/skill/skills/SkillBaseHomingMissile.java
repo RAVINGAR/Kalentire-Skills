@@ -191,8 +191,6 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
                 if (--life <= 0) {
                     cancel();
                 }
-
-                hero.getPlayer().sendMessage("Life: " + life);
             }
         }.runTaskTimer(plugin, 1, 1);
     }
