@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
+import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
@@ -54,12 +55,45 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
         World world = player.getWorld();
 
         Vector start = player.getEyeLocation().toVector();
-        Vector end = player.getEyeLocation().getDirection().multiply(50).add(start);
+        Vector end = player.getEyeLocation().getDirection().multiply(100).add(start);
 
-        super.fireHomingMissile(hero, true, 5,
-                () -> physics.rayCast(world, player, start, end, RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID).getPoint(),
-                start, player.getEyeLocation().getDirection().multiply(0.2), 0.2, 4, 1, 600, entity -> false, block -> false,
-                EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_HIT_FLUID_SOURCE, RayCastFlag.ENTITY_HIT_SPECTATORS));
+        RayCastHit targetHit = physics.rayCast(world, player,start, end,
+                EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID));
+
+        Vector target;
+
+        if (targetHit != null) {
+            target = targetHit.getPoint();
+        } else {
+            target = end.clone();
+        }
+
+        for (int i = 0; i < 5; i++) {
+
+            Vector launchVelocity = Vector.getRandom().subtract(new Vector(0.5, 0.5, 0.5)).multiply(5);
+
+
+            super.fireHomingMissile(hero, true, 5,
+                    () -> target,
+                    player.getEyeLocation().toVector(), launchVelocity, 0.5, 2, 1, 600,
+                    null, null,
+                    EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID));
+        }
+
+
+        // ----- Homing on what your looking at ----- //
+
+//        super.fireHomingMissile(hero, true, 5,
+//                () -> {
+//                    Vector start = player.getEyeLocation().toVector();
+//                    Vector end = player.getEyeLocation().getDirection().multiply(50).add(start);
+//
+//                    RayCastHit hit = physics.rayCast(world, player, start, end, RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID);
+//                    return hit != null ? hit.getPoint() : end;
+//                },
+//                player.getEyeLocation().toVector(), player.getEyeLocation().getDirection().multiply(0.1), 0.5, 2, 1, 600,
+//                entity -> false, block -> false,
+//                EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_HIT_FLUID_SOURCE, RayCastFlag.ENTITY_HIT_SPECTATORS));
 
         return SkillResult.NORMAL;
     }
@@ -72,16 +106,19 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
     @Override
     protected void onEntityPassed(Hero hero, Entity entity, Vector hitOrigin, Vector hitForce) {
 
-        hero.getPlayer().sendMessage("Passing Entity: " + entity);
+        // ----- Homing on what your looking at ----- //
 
-        if (entity instanceof  LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity) entity;
-
-            if (damageCheck(livingEntity, hero.getPlayer())) {
-                damageEntity(livingEntity, hero.getPlayer(), 10.0, EntityDamageEvent.DamageCause.MAGIC, false);
-                livingEntity.setVelocity(livingEntity.getVelocity().add(hitForce));
-            }
-        }
+//        if (entity instanceof  LivingEntity) {
+//            LivingEntity livingEntity = (LivingEntity) entity;
+//
+//            boolean canDamage = damageCheck(livingEntity, hero.getPlayer());
+//            hero.getPlayer().sendMessage("Passing Entity: " + entity + " : " + canDamage + " : " + hitOrigin + " : " + hitForce);
+//
+//            if (canDamage) {
+//                damageEntity(livingEntity, hero.getPlayer(), 10.0, EntityDamageEvent.DamageCause.MAGIC, false);
+//                livingEntity.setVelocity(livingEntity.getVelocity().add(hitForce));
+//            }
+//        }
     }
 
     @Override
@@ -116,7 +153,7 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
         cyl.angularVelocityX = 0;
         cyl.angularVelocityY = 0;
         cyl.angularVelocityZ = 0;
-        cyl.iterations = 10;
+        cyl.iterations = 1;
         cyl.visibleRange = 100;
 
         cyl.start();
