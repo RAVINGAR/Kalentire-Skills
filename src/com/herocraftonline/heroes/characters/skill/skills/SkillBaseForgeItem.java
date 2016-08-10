@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 
-public class SkillBaseForgeItem extends ActiveSkill {
+public abstract class SkillBaseForgeItem extends ActiveSkill {
 
     protected int defaultAmount;
     protected Material deafultItem;

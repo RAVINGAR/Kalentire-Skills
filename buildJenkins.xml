@@ -6,12 +6,13 @@
 
     <property name="dir.bin" value="bin" />
     <property name="dir.dist" value="build" />
-    <property name="dir.bin.skills" value="com/herocraftonline/heroes/characters/skill/skills" />
-    <property name="dir.dist.skills" value="${ant.project.name}/skills" />
+    <property name="dir.bin.path" value="com/herocraftonline/heroes/characters/skill" />
+    <property name="dir.dist.path" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="heroes" value="../../Heroes-dev/workspace/modules/plugin/target/" />
     <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
+    <property name="packages" value="pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,public1" />
 
     <property name="totem.lib" value="totem" />
 
@@ -47,42 +48,59 @@
         </copy>
         <!--Make directories required for the build-->
         <mkdir dir="${dir.dist}" />
-        <mkdir dir="${dir.dist}/${dir.dist.skills}" />
         <mkdir dir="${dir.bin}" />
-        <mkdir dir="${dir.bin}/${dir.dist.skills}" />
-        <javac srcdir="src/${used}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" excludes="src/${unused}"/>
-        <antcall target="jar-skills" />
-        <antcall target="jar-totem-lib" />
-        <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
-        <antcall target="zip" />
-        <!--Make sure to remove the Library Jar file-->
-        <delete dir="${dir.dist.skills}" includes="TotemRecall.jar" />
+
+    	<for list="${packages}" param="package">
+    		<sequential>
+            	<mkdir dir="${dir.dist}/${dir.dist.path}" />
+                <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}" />
+                <javac srcdir="src/com/herocraftonline/heroes/characters/skill" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
+                <antcall target="jar-skills">
+                	<param name="package" value="@{package}"/>
+    			</antcall>
+                <antcall target="jar-totem-lib">
+                    <param name="package" value="@{package}"/>
+    			</antcall>
+                <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
+                <antcall target="zip">
+                    <param name="package" value="@{package}"/>
+                </antcall>
+                <!--Make sure to remove the Library Jar file-->
+                <delete dir="${dir.dist.path}/@{package}" includes="TotemRecall.jar" />
+			</sequential>
+		</for>
         <delete dir="${dir.bin}"/>
+    	<delete dir="${dir.dist}/${ant.project.name}" />
+    	<delete dir="${dir.maven.dependencies}" />
     </target>
 
     <target name="jar-skills">
-        <foreach target="jar-skill" param="files" parallel="false">
-            <fileset dir="${dir.bin}/${dir.bin.skills}" includes="Skill*.class" excludes="Skill*$*.class" />
+        <foreach target="jar-skill" param="file" parallel="false">
+            <fileset dir="${dir.bin}/${dir.bin.path}/${package}" includes="Skill*.class" excludes="Skill*$*.class" />
         </foreach>
         <delete file="${dir.bin}/skill.info" />
     </target>
 
     <target name="jar-skill">
-        <basename file="${files}" suffix=".class" property="basename" />
-        <echo message="${basename}" />
-        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${basename}" />
-        <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info">
+        <basename file="${file}" suffix=".class" property="classname" />
+        <echo message="${classname}" />
+    	<dirname file="${file}" property="dirname" />
+    	<echo message="${dirname}" />
+    	<basename file="${dirname}" property="package" />
+        <echo message="${package}" />
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${classname}" />
+        <jar jarfile="${dir.dist}/${dir.dist.path}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/${package}/${classname}*.class skill.info">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>
         </jar>
     </target>
 
-    <target name="jar-totem-lib">
-        <basename file="SkillTotemRecall" suffix=".class" property="basename" />
-        <echo message="${basename}" />
-        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${basename}" />
-        <jar jarfile="${dir.dist}/${dir.dist.skills}/${basename}.jar" basedir="${dir.bin}" includes="${dir.bin.skills}/${basename}*.class skill.info ${dir.bin.skills}/${totem.lib}/*.class ${dir.bin.skills}/${totem.lib}/tasks/*.class">
+	<target name="jar-totem-lib">
+        <basename file="SkillTotemRecall" suffix=".class" property="classname" />
+        <echo message="${classname}" />
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${classname}" />
+        <jar jarfile="${dir.dist}/${dir.dist.path}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/skills/${classname}*.class skill.info ${dir.bin.path}/skills/${totem.lib}/*.class ${dir.bin.path}/skills/${totem.lib}/tasks/*.class">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>
@@ -90,12 +108,10 @@
     </target>
 
     <target name="zip">
-        <copy todir="${dir.dist}" file="${heroes}/Heroes.jar"/>
-        <zip destfile="${dir.dist}/Heroes.zip">
+        <zip destfile="${dir.dist}/Heroes-${package}.zip">
             <fileset dir="${dir.dist}" includes="*.jar"/>
-            <fileset dir="${dir.dist}" includes="${dir.dist.skills}/**/*.jar"/>
+            <fileset dir="${dir.dist}" includes="${dir.dist.path}/**/*.jar"/>
         </zip>
-        <delete dir="${dir.dist}/${ant.project.name}"/>
-        <delete dir="${dir.maven.dependencies}"/>
+        <delete dir="${dir.dist}/${dir.dist.path}"/>
     </target>
 </project>

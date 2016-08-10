@@ -164,4 +164,5 @@ public class Totem {
         this.effect = effect;
     }
 
+
 }
