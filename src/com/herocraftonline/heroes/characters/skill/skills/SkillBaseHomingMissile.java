@@ -40,7 +40,7 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
             private final World world = hero.getPlayer().getWorld();
             private final Map<UUID, Long> ignoreEntities = new HashMap<>();
 
-            private Vector lastPosition = null;
+            private Vector lastPosition = new Vector();
             private Vector position = startPosition;
             private Vector velocity = startVelocity;
 
