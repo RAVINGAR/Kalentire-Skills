@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
+import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
@@ -23,6 +24,7 @@ import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
@@ -60,21 +62,27 @@ public class SkillDamageHomingMissile extends SkillBaseHomingMissile {
         RayCastHit targetHit = physics.rayCast(world, player,start, end,
                 EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID));
 
-        Vector target;
+        Supplier<Vector> target;
 
         if (targetHit != null) {
-            target = targetHit.getPoint();
+            if (targetHit.isEntity()) {
+                Entity entity = targetHit.getEntity();
+                target = () -> physics.getEntityAABB(entity).getCenter();
+            } else {
+                Vector point = targetHit.getPoint();
+                target = () -> point;
+            }
         } else {
-            target = end.clone();
+            Vector point = end.clone();
+            target = () -> point;
         }
 
         for (int i = 0; i < 5; i++) {
 
             Vector launchVelocity = Vector.getRandom().subtract(new Vector(0.5, 0.5, 0.5)).multiply(5);
 
-
             super.fireHomingMissile(hero, true, 5,
-                    () -> target,
+                    target,
                     player.getEyeLocation().toVector(), launchVelocity, 0.5, 2, 1, 600,
                     null, null,
                     EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID));
