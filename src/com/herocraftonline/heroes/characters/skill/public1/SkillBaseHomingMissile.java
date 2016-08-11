@@ -95,8 +95,8 @@ public abstract class SkillBaseHomingMissile extends ActiveSkill {
                 // TODO: Implement a way to set the capsule orientation... why didn't I add that...
                 missileCollider = physics.createCapsule(lastPosition, position, missileRadius);
 
-                List<Entity> possibleTargets = physics.getEntitiesInVolume(world, ignoreHero ? hero.getPlayer() : null,
-                        missileCollider, flags.contains(RayCastFlag.ENTITY_HIT_SPECTATORS));
+                List<Entity> possibleTargets = physics.getEntitiesInVolume(world,
+                        ignoreHero ? hero.getPlayer() : null, missileCollider);
 
                 Entity hitEntity = null;
                 Vector currentEntityCenter = null;
