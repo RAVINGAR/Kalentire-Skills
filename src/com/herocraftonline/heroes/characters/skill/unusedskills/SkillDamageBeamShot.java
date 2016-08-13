@@ -123,9 +123,9 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 					LineEffect line = new LineEffect(em);
 
 					//line.setLocation(shot.getPoint1().toLocation(origin.getWorld()));
-					//line.setTarget(shot.getPoint2().toLocation(origin.getWorld()));
+					//line.setTargetSupplier(shot.getPoint2().toLocation(origin.getWorld()));
 					line.setLocation(start);
-					line.setTarget(end);
+					line.setTargetSupplier(end);
 					line.asynchronous = true;
 					line.particles = (int) (line.getLocation().distance(line.getTarget()) * 10);
 					line.particle = ParticleEffect.FLAME;
