@@ -86,13 +86,6 @@ public abstract class SkillBaseMissile extends ActiveSkill {
             }
 
             missileRunnable = new MissileRunnable();
-            missileRunnable.runTaskTimer(plugin, 1, 1);
-
-            try {
-                awake();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
 
         public final Hero getShooter() {
@@ -220,12 +213,22 @@ public abstract class SkillBaseMissile extends ActiveSkill {
             setDeathTick(ticksLived + ticks);
         }
 
-        public boolean isFinalTick() {
+        public final boolean isFinalTick() {
             return isFinalTick;
         }
 
-        public final boolean isAlive() {
+        public final void fireMissile() {
+            if (isActive()) {
+                missileRunnable.startMissile();
+            }
+        }
+
+        public final boolean isActive() {
             return missileRunnable != null;
+        }
+
+        public final boolean isAlive() {
+            return isActive() && missileRunnable.isStarted();
         }
 
         public final void kill() {
@@ -260,6 +263,26 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         protected void onBlockPassed(Block block, Vector passPoint, BlockFace passFace, Vector passForce) { }
 
         private final class MissileRunnable extends BukkitRunnable {
+
+            private boolean isStarted = false;
+
+            public boolean isStarted() {
+                return isStarted;
+            }
+
+            public void startMissile() {
+                if (!isStarted) {
+
+                    runTaskTimer(plugin, 1, 1);
+                    isStarted = true;
+
+                    try {
+                        awake();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
 
             @Override
             public void run() {

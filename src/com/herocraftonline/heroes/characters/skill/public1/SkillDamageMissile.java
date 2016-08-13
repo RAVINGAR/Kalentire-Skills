@@ -18,6 +18,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
@@ -34,6 +35,7 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTI
 public class SkillDamageMissile extends SkillBaseMissile {
 
     private static final double EXPLOSION_SCALER = 0.2;
+    private static final double BASE_HOMING_FORCE = 0.2;
 
     private static NMSPhysics physics = NMSHandler.getInterface().getNMSPhysics();
 
@@ -59,44 +61,51 @@ public class SkillDamageMissile extends SkillBaseMissile {
         Player player = hero.getPlayer();
         World world = player.getWorld();
 
-        Vector start = player.getEyeLocation().toVector();
-        Vector end = player.getEyeLocation().getDirection().multiply(100).add(start);
+        Vector baseLaunchVelocity = new Vector(0, 2, 0);
+        Vector originOffset = new Vector(0, 0.2, 0);
 
-        final RayCastHit hitBlock = physics.rayCastBlocks(world, start, end, false, true, true);
+        new BukkitRunnable() {
 
-        if (hitBlock != null) {
-            end = hitBlock.getPoint();
-        }
+            private long tickLife = 0;
+            private long missilesFired = 0;
 
-        final List<LivingEntity> targets = physics.getEntitiesInVolume(world, player,
-                physics.createCapsule(start, end, 2.5), entity -> entity instanceof LivingEntity, false)
-                .stream()
-                .map(entity -> (LivingEntity) entity)
-                .collect(Collectors.toList());
+            @Override
+            public void run() {
 
-        Random random = new Random();
+                if (tickLife % 4 == 0) {
+                    Vector start = player.getEyeLocation().toVector();
+                    Vector end = player.getEyeLocation().getDirection().multiply(100).add(start);
 
-        for (int i = 0; i < 10; i++) {
+                    final RayCastHit hitBlock = physics.rayCastBlocks(world, start, end, false, true, true);
 
-            final Supplier<Vector> targetSupplier;
+                    if (hitBlock != null) {
+                        end = hitBlock.getPoint();
+                    }
 
-            if (targets.isEmpty()) {
-                final Vector target = end.clone();
-                targetSupplier = () -> target;
-            } else {
-                final LivingEntity target = targets.get(random.nextInt(targets.size()));
-                targetSupplier = () -> physics.getEntityAABB(target).getCenter();
+                    final List<LivingEntity> targets = physics.getEntitiesInVolume(world, player,
+                            physics.createCapsule(start, end, 2.5), entity -> entity instanceof LivingEntity, false)
+                            .stream()
+                            .map(entity -> (LivingEntity) entity)
+                            .collect(Collectors.toList());
+
+                    Vector launchVelocity = baseLaunchVelocity.clone().add(Vector.getRandom().setY(0).subtract(new Vector(0.5, 0, 0.5)).multiply(4));
+
+                    new ScatterMissile(hero, 0, "Scatter Missile " + (missilesFired + 1),
+                            0.5, 1.5, 100,
+                            start.clone().add(originOffset), launchVelocity,
+                            EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID),
+                            end, 0,
+                            targets.isEmpty() ? null : targets.get(new Random().nextInt(targets.size())))
+                            .fireMissile();
+
+                    if (++missilesFired >= 10) {
+                        cancel();
+                    }
+                }
+
+                tickLife++;
             }
-
-            Vector launchVelocity = Vector.getRandom().subtract(new Vector(0.5, 0, 0.5)).multiply(5);
-
-            new ScatterMissile(hero, 5, "Scatter-" + i,
-                    0.5, 2, 100,
-                    start, launchVelocity,
-                    EnumSet.of(RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID),
-                    new Vector(), 0.5,
-                    targets.get(random.nextInt(targets.size())));
-        }
+        }.runTaskTimer(plugin, 0, 1);
 
         return SkillResult.NORMAL;
     }
@@ -131,23 +140,44 @@ public class SkillDamageMissile extends SkillBaseMissile {
 
             if (targetEntity != null) {
                 if (targetEntity.isValid() && targetEntity.getWorld() == getWorld()) {
-                    setTarget(targetEntity.getLocation().toVector());
-                    scaleTheHomingForce();
-                } else {
-                    disableHomingForce();
+                    setTarget(physics.getEntityAABB(targetEntity).getCenter());
                 }
-            } else {
+            }
+            else {
                 Player player = getShooter().getPlayer();
+                World world = getWorld();
 
                 Vector start = player.getEyeLocation().toVector();
                 Vector end = player.getEyeLocation().getDirection().multiply(100).add(start);
 
-                RayCastHit hit = physics.rayCast(getWorld(), player, start, end, RayCastFlag.BLOCK_HIGH_DETAIL, RayCastFlag.BLOCK_IGNORE_NON_SOLID);
-                setTarget(hit != null ? hit.getPoint() : end);
-                scaleTheHomingForce();
+                final RayCastHit hitBlock = physics.rayCastBlocks(world, start, end, false, true, true);
+
+                if (hitBlock != null) {
+                    end = hitBlock.getPoint();
+                }
+
+                final List<LivingEntity> targets = physics.getEntitiesInVolume(world, player,
+                        physics.createCapsule(start, end, 2.5), entity -> entity instanceof LivingEntity, false)
+                        .stream()
+                        .map(entity -> (LivingEntity) entity)
+                        .collect(Collectors.toList());
+
+                targetEntity = targets.isEmpty() ? null : targets.get(new Random().nextInt(targets.size()));
+
+                if (targetEntity != null) {
+                    setTarget(physics.getEntityAABB(targetEntity).getCenter());
+                } else {
+                    setTarget(end);
+                }
             }
 
+            scaleTheHomingForce();
             super.preTick();
+        }
+
+        @Override
+        protected void start() {
+            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1f);
         }
 
         @Override
@@ -188,6 +218,11 @@ public class SkillDamageMissile extends SkillBaseMissile {
         }
 
         @Override
+        protected boolean collideWithEntity(Entity entity) {
+            return entity instanceof LivingEntity && entity != getShooter().getPlayer();
+        }
+
+        @Override
         protected void onFinalTick() {
             if (!hitSomething) {
                 Vector position = getPosition();
@@ -212,14 +247,16 @@ public class SkillDamageMissile extends SkillBaseMissile {
 
         private void scaleTheHomingForce() {
 
-            double distanceSq = getDistanceToTargetSquared();
+            double distance = getDistanceToTarget();
+            double baseHomingForce = getMaxSpeed() / 4;
+            double maxHomingForce = getMaxSpeed() * 0.8;
 
-            if (distanceSq > 25*25) {
-                setHomingForce(0.5);
-            } else if (distanceSq < 1E-6) {
-                maximizeHomingForce();
+            if (distance > 10) {
+                setHomingForce(getMaxSpeed() / 4);
+            } else if (distance < 1E-6) {
+                setHomingForce(maxHomingForce);
             } else {
-                setHomingForce(((1 / distanceSq) * (getMaxSpeed() * 2) - 0.5) + 0.5);
+                setHomingForce(((1 / distance) * (maxHomingForce - baseHomingForce)) + baseHomingForce);
             }
         }
     }
