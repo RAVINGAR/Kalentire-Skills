@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BlindEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.base.SkillBaseBlockWave;
 import com.herocraftonline.heroes.characters.skill.skills.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.public1;
+package com.herocraftonline.heroes.characters.skill.base;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

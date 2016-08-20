@@ -7,7 +7,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
+import com.herocraftonline.heroes.characters.skill.base.SkillBaseSpike;
+
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;

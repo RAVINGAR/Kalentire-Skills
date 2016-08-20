@@ -1,10 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSteed;
 import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Variant;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.skill.base.SkillBaseSteed;
 
 public class SkillHolySteed extends SkillBaseSteed {
 

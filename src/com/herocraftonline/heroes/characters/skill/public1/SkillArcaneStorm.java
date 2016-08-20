@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.base.SkillBaseSphere;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
@@ -18,7 +19,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class SkillArcaneStorm extends com.herocraftonline.heroes.characters.skill.skills.SkillBaseSphere {
+public class SkillArcaneStorm extends SkillBaseSphere {
 
 	public SkillArcaneStorm(Heroes plugin) {
 		super(plugin, "ArcaneStorm");

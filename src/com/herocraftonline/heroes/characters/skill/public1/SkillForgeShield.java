@@ -2,7 +2,8 @@ package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillBaseForgeItem;
+import com.herocraftonline.heroes.characters.skill.base.SkillBaseForgeItem;
+
 import org.bukkit.Material;
 
 public class SkillForgeShield extends SkillBaseForgeItem {

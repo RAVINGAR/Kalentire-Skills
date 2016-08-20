@@ -4,8 +4,9 @@ import org.bukkit.Material;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.base.SkillBaseForgeItem;
 
-public class SkillForgeChainChest extends com.herocraftonline.heroes.characters.skill.skills.SkillBaseForgeItem {
+public class SkillForgeChainChest extends SkillBaseForgeItem {
 
     public SkillForgeChainChest(Heroes plugin) {
         super(plugin, "ForgeChainChest");

@@ -56,6 +56,9 @@
                 <antcall target="jar-skills">
                 	<param name="package" value="@{package}"/>
     			</antcall>
+    			<antcall target="jar-skills">
+    				<param name="package" value="base"/>
+				</antcall>
                 <antcall target="jar-totem-lib">
                     <param name="package" value="@{package}"/>
     			</antcall>
