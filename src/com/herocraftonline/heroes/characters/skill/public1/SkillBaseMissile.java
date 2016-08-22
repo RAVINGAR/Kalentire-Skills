@@ -1,22 +1,23 @@
 package com.herocraftonline.heroes.characters.skill.public1;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ExecutionError;
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
-import gnu.trove.map.TObjectLongMap;
-import gnu.trove.map.hash.TObjectLongHashMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_9_R2.Overridden;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -31,68 +32,111 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         super(plugin, name);
     }
 
-    public class Missile {
+    public static class Missile {
 
-        public static final double MIN_RADIUS = 0.1;
-        public static final double MIN_MAX_SPEED = 0.05;
+        public static final double MIN_RADIUS = 0.05;
+        public static final double MAX_RADIUS = 2;
+        public static final double DEFAULT_RADIUS = 0.2;
 
-        public static final boolean DEFAULT_COLLIDE_WITH_BLOCK = true;
-        public static final boolean DEFAULT_BLOCK_PROTECTS_ENTITY = true;
-        public static final boolean DEFAULT_COLLIDE_WITH_ENTITY = true;
+        public static final double MIN_SPEED = 0.05;
+        public static final double MAX_SPEED = 5;
+        private static final double DEFAULT_SPEED = 1.5;
 
-        public static final long DEFAULT_ENTITY_IGNORE_TICKS = 5;
+        public static final long DEFAULT_DEATH_TICK = Long.MAX_VALUE;
 
-        private final Hero shooter;
+        private static final boolean DEFAULT_COLLIDE_WITH_BLOCK_RESULT = true;
+        private static final boolean DEFAULT_BLOCK_PROTECTS_ENTITY_RESULT = true;
+        private static final boolean DEFAULT_COLLIDE_WITH_ENTITY_RESULT = true;
+
+        public static final ImmutableSet<RayCastFlag> DEFAULT_RAY_CAST_FLAGS =
+                Sets.immutableEnumSet(RayCastFlag.BLOCK_HIGH_DETAIL);
+
+        private final ProjectileSource shooter;
         private final Optional<String> tag;
 
-        private double radius;
-        private double maxSpeed;
+        private double radius = DEFAULT_RADIUS;
 
         private World world;
         private Vector lastPosition = new Vector();
         private Vector position = new Vector();
         private Vector velocity = new Vector();
 
-        private EnumSet<RayCastFlag> rayCastFlags;
-        private final TObjectLongMap<UUID> ignoredEntities;
-
         private long ticksLived = 0;
-        private long deathTick;
+        private long deathTick = DEFAULT_DEATH_TICK;
         private boolean isFinalTick = false;
 
-        private MissileRunnable missileRunnable;
+        private EnumSet<RayCastFlag> rayCastFlags = EnumSet.copyOf(DEFAULT_RAY_CAST_FLAGS);
+        private Map<UUID, Long> ignoredEntities = new HashMap<>();
 
-        public Missile(Hero shooter, long shooterIgnoreTicks, String tag,
-                       double radius, double maxSpeed, long deathTick,
-                       Vector origin, Vector launchVelocity,
-                       Set<RayCastFlag> rayCastFlags) {
+        private MissileRunnable missileRunnable = new MissileRunnable();
 
-            this.shooter = checkNotNull(shooter);
-            this.world = shooter.getPlayer().getWorld();
+        private Missile(ProjectileSource shooter, String tag) {
+
+            this.shooter = checkNotNull(shooter, "shooter is null");
             this.tag = Optional.of(tag);
-
-            setRadius(radius);
-            setMaxSpeed(maxSpeed);
-            setDeathTick(deathTick);
-
-            setPosition(origin);
-            setVelocity(launchVelocity);
-
-            this.rayCastFlags = EnumSet.copyOf(rayCastFlags);
-            ignoredEntities = new TObjectLongHashMap<>();
-
-            if (shooterIgnoreTicks > 0) {
-                ignoredEntities.put(shooter.getPlayer().getUniqueId(), shooterIgnoreTicks);
-            }
-
-            missileRunnable = new MissileRunnable();
         }
 
-        public final Hero getShooter() {
+        public Missile(ProjectileSource shooter, World world, Vector origin, Vector velocity, String tag) {
+
+            this(shooter, tag);
+
+            setWorld(world);
+            setPosition(origin);
+            setVelocity(velocity);
+        }
+
+        public Missile(ProjectileSource shooter, Location location, double speed, String tag) {
+
+            this(shooter, tag);
+
+            setLocationAndDirection(location, speed);
+        }
+
+        public Missile(ProjectileSource shooter, Location location, String tag) {
+            this(shooter, location, DEFAULT_SPEED, tag);
+        }
+
+        public Missile(ProjectileSource shooter, World world, Vector origin, Vector velocity) {
+            this(shooter, world, origin, velocity, null);
+        }
+
+        public Missile(ProjectileSource shooter, Location location, double speed) {
+            this(shooter, location, speed, null);
+        }
+
+        public Missile(ProjectileSource shooter, Location location) {
+            this(shooter, location, DEFAULT_SPEED);
+        }
+
+        public Missile(LivingEntity shooter, double speed, String tag) {
+            this(shooter, shooter != null ? shooter.getEyeLocation() : null, speed, tag);
+        }
+
+        public Missile(LivingEntity shooter, String tag) {
+            this(shooter, DEFAULT_SPEED, tag);
+        }
+
+        public Missile(LivingEntity shooter, double speed) {
+            this(shooter, shooter != null ? shooter.getEyeLocation() : null, speed);
+        }
+
+        public Missile(LivingEntity shooter) {
+            this(shooter, DEFAULT_SPEED);
+        }
+
+        public Missile(LivingEntity shooter, Vector origin, Vector velocity, String tag) {
+            this(shooter, shooter != null ? shooter.getWorld() : null, origin, velocity, tag);
+        }
+
+        public Missile(LivingEntity shooter, Vector origin, Vector velocity) {
+            this(shooter, shooter != null ? shooter.getWorld() : null, origin, velocity, null);
+        }
+
+        public ProjectileSource getShooter() {
             return shooter;
         }
 
-        public final Optional<String> getTag() {
+        public Optional<String> getTag() {
             return tag;
         }
 
@@ -101,7 +145,15 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final void setWorld(World world) {
-            this.world = checkNotNull(world);
+            this.world = checkNotNull(world, "world is null");
+        }
+
+        public final double getRadius() {
+            return radius;
+        }
+
+        public final void setRadius(double radius) {
+            this.radius = radius > MAX_RADIUS ? MAX_RADIUS : radius < MIN_RADIUS ? MIN_RADIUS : radius;
         }
 
         public final Vector getPosition() {
@@ -113,7 +165,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final void setPosition(Vector position) {
-            this.position.copy(position);
+            this.position.copy(checkNotNull(position, "position is null"));
         }
 
         protected final Vector getLastPosition() {
@@ -121,7 +173,20 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         protected final void getLastPosition(Vector lastPosition) {
-            lastPosition.copy(this.lastPosition);
+            checkNotNull(lastPosition, "lastPosition is null").copy(this.lastPosition);
+        }
+
+        public final Vector getVelocity() {
+            return velocity.clone();
+        }
+
+        public final void getVelocity(Vector velocity) {
+            checkNotNull(velocity, "velocity is null").copy(this.velocity);
+        }
+
+        public final void setVelocity(Vector velocity) {
+            this.velocity.copy(checkNotNull(velocity, "velocity is null"));
+            clampSpeed();
         }
 
         public final Location getLocation() {
@@ -129,6 +194,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final void setLocation(Location location) {
+            checkNotNull(location, "location is null");
             setWorld(location.getWorld());
             setPosition(location.toVector());
         }
@@ -142,30 +208,6 @@ public abstract class SkillBaseMissile extends ActiveSkill {
             setLocationAndDirection(location, getSpeed());
         }
 
-        public final Vector getVelocity() {
-            return velocity;
-        }
-
-        public final void getVelocity(Vector velocity) {
-            velocity.copy(this.velocity);
-        }
-
-        public final void setVelocity(Vector velocity) {
-            this.velocity.copy(velocity);
-            clampSpeed();
-        }
-
-        public final void addForce(Vector force) {
-            velocity.add(force);
-            clampSpeed();
-        }
-
-        private void clampSpeed() {
-            if (getSpeedSquared() > NumberConversions.square(maxSpeed)) {
-                velocity.normalize().multiply(maxSpeed);
-            }
-        }
-
         public final double getSpeedSquared() {
             return velocity.lengthSquared();
         }
@@ -174,21 +216,18 @@ public abstract class SkillBaseMissile extends ActiveSkill {
             return velocity.length();
         }
 
-        public final double getRadius() {
-            return radius;
+        public final void setSpeed(double speed) {
+            speed = speed > MAX_SPEED ? MAX_SPEED : speed < MIN_SPEED ? MIN_SPEED : speed;
+            velocity.normalize().multiply(speed);
         }
 
-        public final void setRadius(double radius) {
-            radius = Math.abs(radius);
-            this.radius = radius >= MIN_RADIUS ? radius : MIN_RADIUS;
-        }
-
-        public final double getMaxSpeed() {
-            return maxSpeed;
-        }
-
-        public final void setMaxSpeed(double maxSpeed) {
-            this.maxSpeed = maxSpeed >= MIN_MAX_SPEED ? maxSpeed : MIN_MAX_SPEED;
+        private final void clampSpeed() {
+            double speedSq = getSpeedSquared();
+            if (speedSq < MIN_SPEED * MIN_SPEED) {
+                velocity.normalize().multiply(MIN_SPEED);
+            } else if (speedSq > MAX_SPEED * MAX_SPEED) {
+                velocity.normalize().multiply(MAX_SPEED);
+            }
         }
 
         public final long getTicksLived() {
@@ -219,7 +258,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
         public final void fireMissile() {
             if (isActive()) {
-                missileRunnable.startMissile();
+                missileRunnable.fireMissile();
             }
         }
 
@@ -228,7 +267,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final boolean isAlive() {
-            return isActive() && missileRunnable.isStarted();
+            return isActive() && missileRunnable.isFired();
         }
 
         public final void kill() {
@@ -236,45 +275,72 @@ public abstract class SkillBaseMissile extends ActiveSkill {
             isFinalTick = true;
         }
 
-        protected void awake() { }
+        public EnumSet<RayCastFlag> getRayCastFlags() {
+            return rayCastFlags;
+        }
 
-        protected void start() { }
+        public long getEntityIgnoreTicks(Entity entity) {
+            return ignoredEntities.getOrDefault(checkNotNull(entity, "entity is null").getUniqueId(), 0L);
+        }
 
-        protected void preTick() { }
+        public void setEntityIgnoreTicks(Entity entity, long ignoreTicks) {
+            checkNotNull(entity, "entity is null");
+            if (ignoreTicks > 0) {
+                ignoredEntities.put(entity.getUniqueId(), ignoreTicks);
+            } else {
+                ignoredEntities.remove(entity.getUniqueId());
+            }
+        }
 
-        protected void tick() { }
+        protected void awake() {
+        }
 
-        protected void postTick() { }
+        protected void start() {
+        }
 
-        protected void onFinalTick() { }
+        protected void tick() {
+        }
 
-        protected boolean collideWithBlock(Block block, Vector point, BlockFace face) { return DEFAULT_COLLIDE_WITH_BLOCK; }
+        protected void finalTick() {
+        }
 
-        protected boolean blockProtectsEntity(Block block, Entity entity, Vector point, BlockFace face) { return DEFAULT_BLOCK_PROTECTS_ENTITY; }
+        protected boolean collideWithBlock(Block block, Vector point, BlockFace face) {
+            return DEFAULT_COLLIDE_WITH_BLOCK_RESULT;
+        }
 
-        protected boolean collideWithEntity(Entity entity) { return DEFAULT_COLLIDE_WITH_ENTITY; }
+        protected boolean blockProtectsEntity(Block block, Entity entity, Vector point, BlockFace face) {
+            return DEFAULT_BLOCK_PROTECTS_ENTITY_RESULT;
+        }
 
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) { }
+        protected boolean collideWithEntity(Entity entity) {
+            return DEFAULT_COLLIDE_WITH_ENTITY_RESULT;
+        }
 
-        protected long onEntityPassed(Entity entity, Vector passOrigin, Vector passForce) { return DEFAULT_ENTITY_IGNORE_TICKS; }
+        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
+        }
 
-        protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) { }
+        protected void onEntityPassed(Entity entity, Vector passOrigin, Vector passForce) {
+        }
 
-        protected void onBlockPassed(Block block, Vector passPoint, BlockFace passFace, Vector passForce) { }
+        protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
+        }
+
+        protected void onBlockPassed(Block block, Vector passPoint, BlockFace passFace, Vector passForce) {
+        }
 
         private final class MissileRunnable extends BukkitRunnable {
 
-            private boolean isStarted = false;
+            private boolean isFired = false;
 
-            public boolean isStarted() {
-                return isStarted;
+            public boolean isFired() {
+                return isFired;
             }
 
-            public void startMissile() {
-                if (!isStarted) {
+            public void fireMissile() {
+                if (!isFired) {
 
-                    runTaskTimer(plugin, 1, 1);
-                    isStarted = true;
+                    runTaskTimer(Heroes.getInstance(), 1, 1);
+                    isFired = true;
 
                     try {
                         awake();
@@ -297,12 +363,6 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
                 ticksLived++;
 
-                try {
-                    preTick();
-                } catch (ExecutionError ex) {
-                    ex.printStackTrace();
-                }
-
                 lastPosition.copy(position);
                 position.add(velocity);
 
@@ -323,7 +383,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
                         Vector hitPoint = rayCastHitBlock.getPoint();
                         BlockFace hitFace = rayCastHitBlock.getFace();
 
-                        boolean collideWithBlock = DEFAULT_COLLIDE_WITH_BLOCK;
+                        boolean collideWithBlock = DEFAULT_COLLIDE_WITH_BLOCK_RESULT;
 
                         try {
                             collideWithBlock = collideWithBlock(block, hitPoint, hitFace);
@@ -353,7 +413,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
                     for (Entity entity : entitiesInPath) {
 
-                        long ignoredUntil = ignoredEntities.get(entity.getUniqueId());
+                        long ignoredUntil = ignoredEntities.getOrDefault(entity.getUniqueId(), 0L);
                         if (ignoredUntil <= 0) {
 
                             if (ignoredUntil <= ticksLived) {
@@ -388,7 +448,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
                             Vector hitPoint = rayCastHitBlock.getPoint();
                             BlockFace hitFace = rayCastHitBlock.getFace();
 
-                            boolean blockProtectsEntity = DEFAULT_BLOCK_PROTECTS_ENTITY;
+                            boolean blockProtectsEntity = DEFAULT_BLOCK_PROTECTS_ENTITY_RESULT;
 
                             try {
                                 blockProtectsEntity = blockProtectsEntity(block, entity, hitPoint, hitFace);
@@ -405,7 +465,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
                             double hitDistanceSq = missileRay.clone().multiply(dot / missileRayLengthSq).lengthSquared();
 
-                            boolean collideWithEntity = DEFAULT_COLLIDE_WITH_ENTITY;
+                            boolean collideWithEntity = DEFAULT_COLLIDE_WITH_ENTITY_RESULT;
 
                             try {
                                 collideWithEntity = collideWithEntity(entity);
@@ -439,8 +499,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
                     }
 
                     kill();
-                }
-                else if (hitBlock != null) {
+                } else if (hitBlock != null) {
                     appliedHitDistanceSq = Math.min(appliedHitDistanceSq, hitBlock.hitDistanceSq);
 
                     try {
@@ -466,16 +525,11 @@ public abstract class SkillBaseMissile extends ActiveSkill {
                     if (hitEntity == null || entityCollision.hitDistanceSq < appliedHitDistanceSq) {
 
                         Vector hitForce = entityCollision.entityCenter.clone().subtract(entityCollision.hitOrigin).add(velocity);
-                        long ignoreTicks = 0;
 
                         try {
-                            ignoreTicks = onEntityPassed(entityCollision.entity, entityCollision.hitOrigin, hitForce);
+                            onEntityPassed(entityCollision.entity, entityCollision.hitOrigin, hitForce);
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                        }
-
-                        if (ignoreTicks > 0) {
-                            ignoredEntities.put(entityCollision.entity.getUniqueId(), ticksLived + ignoreTicks);
                         }
                     }
                 }
@@ -486,18 +540,12 @@ public abstract class SkillBaseMissile extends ActiveSkill {
                     ex.printStackTrace();
                 }
 
-                try {
-                    postTick();
-                } catch (ExecutionError ex) {
-                    ex.printStackTrace();
-                }
-
                 if (isFinalTick || ticksLived >= deathTick) {
                     cancel();
                     missileRunnable = null;
 
                     try {
-                        onFinalTick();
+                        finalTick();
                     } catch (ExecutionError ex) {
                         ex.printStackTrace();
                     }
@@ -506,78 +554,85 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
     }
 
-    public class HomingMissile extends Missile {
+    public static class PhysicsMissile extends Missile {
 
-        public static final double HOMING_FORCE_EPSILON = 1E-6;
+        public static final double MIN_DRAG = 0;
+        public static final double MAX_DRAG = 1;
 
-        private Vector target = new Vector();
-        private double homingForce;
+        public static final double MIN_GRAVITY_FORCE = 0;
+        public static final double MAX_GRAVITY_FORCE = 2.5;
+        public static final double DEFAULT_GRAVITY_FORCE = 0.49; // 9.8 / 20 ticks
 
-        public HomingMissile(Hero shooter, long shooterIgnoreTicks, String tag,
-                             double radius, double maxSpeed, long deathTick,
-                             Vector origin, Vector launchVelocity,
-                             Set<RayCastFlag> rayCastFlags,
-                             Vector target, double homingForce) {
-
-            super(shooter, shooterIgnoreTicks, tag, radius, maxSpeed, deathTick, origin, launchVelocity, rayCastFlags);
-
-            setTarget(target);
-            setHomingForce(homingForce);
+        private static Vector gravityNormal() {
+            return new Vector(0, -1, 0);
         }
 
-        public final Vector getTarget() {
-            return target.clone();
+        private final Vector addedForce = new Vector();
+
+        private double mass;
+        private double drag;
+
+        private double gravityForce = DEFAULT_GRAVITY_FORCE;
+
+        public PhysicsMissile(ProjectileSource shooter, World world, Vector origin, Vector velocity, String tag) {
+            super(shooter, world, origin, velocity, tag);
         }
 
-        public final void getTarget(Vector target) {
-            target.copy(this.target);
+        public PhysicsMissile(ProjectileSource shooter, Location location, double speed, String tag) {
+            super(shooter, location, speed, tag);
         }
 
-        public final void setTarget(Vector target) {
-            this.target.copy(target);
+        public PhysicsMissile(ProjectileSource shooter, Location location, String tag) {
+            super(shooter, location, tag);
         }
 
-        public final double getHomingForce() {
-            return homingForce;
+        public PhysicsMissile(ProjectileSource shooter, World world, Vector origin, Vector velocity) {
+            super(shooter, world, origin, velocity);
         }
 
-        public final void setHomingForce(double homingForce) {
-            this.homingForce = homingForce;
+        public PhysicsMissile(ProjectileSource shooter, Location location, double speed) {
+            super(shooter, location, speed);
         }
 
-        public final boolean isHoming() {
-            return Math.abs(homingForce) >= HOMING_FORCE_EPSILON;
+        public PhysicsMissile(ProjectileSource shooter, Location location) {
+            super(shooter, location);
         }
 
-        public final void maximizeHomingForce() {
-            homingForce = getMaxSpeed() * 2;
+        public PhysicsMissile(LivingEntity shooter, double speed, String tag) {
+            super(shooter, speed, tag);
         }
 
-        public final void minimizeHomingForce() {
-            homingForce = getMaxSpeed() * -2;
+        public PhysicsMissile(LivingEntity shooter, String tag) {
+            super(shooter, tag);
         }
 
-        public final void disableHomingForce() {
-            homingForce = 0;
+        public PhysicsMissile(LivingEntity shooter, double speed) {
+            super(shooter, speed);
         }
 
-        public final double getDistanceToTarget() {
-            return getPosition().distance(target);
+        public PhysicsMissile(LivingEntity shooter) {
+            super(shooter);
         }
 
-        public final double getDistanceToTargetSquared() {
-            return getPosition().distanceSquared(target);
+        public PhysicsMissile(LivingEntity shooter, Vector origin, Vector velocity, String tag) {
+            super(shooter, origin, velocity, tag);
         }
 
-        @Override
-        protected void preTick() {
-            if (isHoming()) {
-                addForce(target.clone().subtract(getPosition()).normalize().multiply(homingForce));
-            }
+        public PhysicsMissile(LivingEntity shooter, Vector origin, Vector velocity) {
+            super(shooter, origin, velocity);
+        }
+
+        public void addForce(Vector force) {
+            addedForce.add(force);
+        }
+
+        @Overridden
+        protected void tick() {
+
         }
     }
 
-    private class BlockCollision {
+    private static class BlockCollision {
 
         public final Block block;
         public final Vector hitPoint;
@@ -592,7 +647,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
     }
 
-    private class EntityCollision {
+    private static class EntityCollision {
 
         public final Entity entity;
         public final Vector entityCenter;
