@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.public1;
+package com.herocraftonline.heroes.characters.skill.pack1;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -18,11 +19,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public abstract class SkillBaseMissile extends ActiveSkill {
 
@@ -38,8 +40,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         public static final double MAX_RADIUS = 2;
         public static final double DEFAULT_RADIUS = 0.2;
 
-        public static final double MIN_SPEED = 0.05;
-        public static final double MAX_SPEED = 5;
+        private static final double MIN_SPEED = 0;
         private static final double DEFAULT_SPEED = 1.5;
 
         public static final long DEFAULT_DEATH_TICK = Long.MAX_VALUE;
@@ -72,8 +73,8 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
         private Missile(ProjectileSource shooter, String tag) {
 
-            this.shooter = checkNotNull(shooter, "shooter is null");
-            this.tag = Optional.of(tag);
+            this.shooter = requireNonNull(shooter, "shooter is null");
+            this.tag = Optional.ofNullable(tag);
         }
 
         public Missile(ProjectileSource shooter, World world, Vector origin, Vector velocity, String tag) {
@@ -145,7 +146,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final void setWorld(World world) {
-            this.world = checkNotNull(world, "world is null");
+            this.world = requireNonNull(world, "world is null");
         }
 
         public final double getRadius() {
@@ -165,7 +166,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final void setPosition(Vector position) {
-            this.position.copy(checkNotNull(position, "position is null"));
+            this.position.copy(requireNonNull(position, "position is null"));
         }
 
         protected final Vector getLastPosition() {
@@ -173,20 +174,15 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         protected final void getLastPosition(Vector lastPosition) {
-            checkNotNull(lastPosition, "lastPosition is null").copy(this.lastPosition);
+            requireNonNull(lastPosition, "lastPosition is null").copy(this.lastPosition);
         }
 
         public final Vector getVelocity() {
-            return velocity.clone();
-        }
-
-        public final void getVelocity(Vector velocity) {
-            checkNotNull(velocity, "velocity is null").copy(this.velocity);
+            return velocity;
         }
 
         public final void setVelocity(Vector velocity) {
-            this.velocity.copy(checkNotNull(velocity, "velocity is null"));
-            clampSpeed();
+            velocity.copy(requireNonNull(velocity));
         }
 
         public final Location getLocation() {
@@ -194,14 +190,14 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final void setLocation(Location location) {
-            checkNotNull(location, "location is null");
+            requireNonNull(location, "location is null");
             setWorld(location.getWorld());
             setPosition(location.toVector());
         }
 
         public final void setLocationAndDirection(Location location, double speed) {
             setLocation(location);
-            setVelocity(location.getDirection().multiply(speed));
+            velocity.copy(location.getDirection().multiply(speed));
         }
 
         public final void setLocationAndDirection(Location location) {
@@ -217,17 +213,8 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public final void setSpeed(double speed) {
-            speed = speed > MAX_SPEED ? MAX_SPEED : speed < MIN_SPEED ? MIN_SPEED : speed;
+            speed = speed < MIN_SPEED ? MIN_SPEED : speed;
             velocity.normalize().multiply(speed);
-        }
-
-        private final void clampSpeed() {
-            double speedSq = getSpeedSquared();
-            if (speedSq < MIN_SPEED * MIN_SPEED) {
-                velocity.normalize().multiply(MIN_SPEED);
-            } else if (speedSq > MAX_SPEED * MAX_SPEED) {
-                velocity.normalize().multiply(MAX_SPEED);
-            }
         }
 
         public final long getTicksLived() {
@@ -280,11 +267,11 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public long getEntityIgnoreTicks(Entity entity) {
-            return ignoredEntities.getOrDefault(checkNotNull(entity, "entity is null").getUniqueId(), 0L);
+            return ignoredEntities.getOrDefault(requireNonNull(entity, "entity is null").getUniqueId(), 0L);
         }
 
         public void setEntityIgnoreTicks(Entity entity, long ignoreTicks) {
-            checkNotNull(entity, "entity is null");
+            requireNonNull(entity, "entity is null");
             if (ignoreTicks > 0) {
                 ignoredEntities.put(entity.getUniqueId(), ignoreTicks);
             } else {
@@ -556,23 +543,23 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
     public static class PhysicsMissile extends Missile {
 
+        public static final double MIN_GRAVITY = 0;
+        public static final double MAX_GRAVITY = 2.5;
+        public static final double DEFAULT_GRAVITY = 0.49; // 9.8 / 20 ticks
+
+        public static final double MIN_MASS = 1E-6;
+        public static final double DEFAULT_MASS = 1;
+
         public static final double MIN_DRAG = 0;
-        public static final double MAX_DRAG = 1;
-
-        public static final double MIN_GRAVITY_FORCE = 0;
-        public static final double MAX_GRAVITY_FORCE = 2.5;
-        public static final double DEFAULT_GRAVITY_FORCE = 0.49; // 9.8 / 20 ticks
-
-        private static Vector gravityNormal() {
-            return new Vector(0, -1, 0);
-        }
+        public static final double DEFAULT_DRAG = 1;
 
         private final Vector addedForce = new Vector();
+        private final Vector gravityForce = new Vector();
+        private final Vector dragForce = new Vector();
 
-        private double mass;
-        private double drag;
-
-        private double gravityForce = DEFAULT_GRAVITY_FORCE;
+        private double gravity = DEFAULT_GRAVITY;
+        private double mass = DEFAULT_MASS;
+        private double drag = DEFAULT_DRAG;
 
         public PhysicsMissile(ProjectileSource shooter, World world, Vector origin, Vector velocity, String tag) {
             super(shooter, world, origin, velocity, tag);
@@ -622,6 +609,30 @@ public abstract class SkillBaseMissile extends ActiveSkill {
             super(shooter, origin, velocity);
         }
 
+        public double getGravity() {
+            return gravity;
+        }
+
+        public void setGravity(double gravity) {
+            this.gravity = gravity > MAX_GRAVITY ? MAX_GRAVITY : gravity < MIN_GRAVITY ? MIN_GRAVITY : gravity;
+        }
+
+        public double getMass() {
+            return mass;
+        }
+
+        public void setMass(double mass) {
+            this.mass = mass < MIN_MASS ? MIN_MASS : mass;
+        }
+
+        public double getDrag() {
+            return drag;
+        }
+
+        public void setDrag(double drag) {
+            this.drag = drag < MIN_DRAG ? MIN_DRAG : drag;
+        }
+
         public void addForce(Vector force) {
             addedForce.add(force);
         }
@@ -629,6 +640,29 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         @Overridden
         protected void tick() {
 
+            gravityForce.setY(-gravity * mass);
+            addedForce.add(gravityForce);
+
+            dragForce.copy(addedForce)
+                    .multiply(dragForce)                    // Square the velocity
+                    .multiply(drag)                         // Apply drag
+                    .multiply(calcCrossSectionalArea())     // Apply area
+                    .multiply(0.5);                         // Divide by 2
+
+            getVelocity().add(divide(addedForce.subtract(dragForce), mass));
+
+            addedForce.zero(); // Zero out the added force vector to prepare it for the next match
+        }
+
+        private Vector divide(Vector vector, double value) {
+            vector.setX(vector.getX() / value);
+            vector.setY(vector.getY() / value);
+            vector.setZ(vector.getZ() / value);
+            return vector;
+        }
+
+        private double calcCrossSectionalArea() {
+            return NumberConversions.square(getRadius()) * Math.PI;
         }
     }
 
