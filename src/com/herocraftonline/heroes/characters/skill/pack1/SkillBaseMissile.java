@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -67,7 +66,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         private boolean isFinalTick = false;
 
         private EnumSet<RayCastFlag> rayCastFlags = EnumSet.copyOf(DEFAULT_RAY_CAST_FLAGS);
-        private Map<UUID, Long> ignoredEntities = new HashMap<>();
+        private Map<UUID, Long> entityIgnoreTicks = new HashMap<>();
 
         private MissileRunnable missileRunnable = new MissileRunnable();
 
@@ -267,15 +266,15 @@ public abstract class SkillBaseMissile extends ActiveSkill {
         }
 
         public long getEntityIgnoreTicks(Entity entity) {
-            return ignoredEntities.getOrDefault(requireNonNull(entity, "entity is null").getUniqueId(), 0L);
+            return entityIgnoreTicks.getOrDefault(requireNonNull(entity, "entity is null").getUniqueId(), 0L);
         }
 
         public void setEntityIgnoreTicks(Entity entity, long ignoreTicks) {
             requireNonNull(entity, "entity is null");
             if (ignoreTicks > 0) {
-                ignoredEntities.put(entity.getUniqueId(), ignoreTicks);
+                entityIgnoreTicks.put(entity.getUniqueId(), ignoreTicks);
             } else {
-                ignoredEntities.remove(entity.getUniqueId());
+                entityIgnoreTicks.remove(entity.getUniqueId());
             }
         }
 
@@ -400,14 +399,16 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
                     for (Entity entity : entitiesInPath) {
 
-                        long ignoredUntil = ignoredEntities.getOrDefault(entity.getUniqueId(), 0L);
-                        if (ignoredUntil <= 0) {
+                        long ignoreTicks = entityIgnoreTicks.getOrDefault(entity.getUniqueId(), 0L);
 
-                            if (ignoredUntil <= ticksLived) {
-                                ignoredEntities.remove(entity.getUniqueId());
-                            }
+                        if (ignoreTicks > 0) {
+
+                            ignoreTicks--;
+                            entityIgnoreTicks.put(entity.getUniqueId(), ignoreTicks);
 
                             continue;
+                        } else {
+                            entityIgnoreTicks.remove(entity.getUniqueId());
                         }
 
                         Vector entityCenter = physics.getEntityAABB(entity).getCenter();
@@ -545,7 +546,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
 
         public static final double MIN_GRAVITY = 0;
         public static final double MAX_GRAVITY = 2.5;
-        public static final double DEFAULT_GRAVITY = 0.49; // 9.8 / 20 ticks
+        public static final double DEFAULT_GRAVITY = 0.098;
 
         public static final double MIN_MASS = 1E-6;
         public static final double DEFAULT_MASS = 1;

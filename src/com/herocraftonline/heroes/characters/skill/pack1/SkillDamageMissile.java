@@ -28,6 +28,7 @@ import org.bukkit.util.Vector;
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
 import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTIBLE;
+import static org.bukkit.Bukkit.broadcastMessage;
 
 public class SkillDamageMissile extends SkillBaseMissile {
 
@@ -230,11 +231,14 @@ public class SkillDamageMissile extends SkillBaseMissile {
         @Override
         protected void start() {
             getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1f);
+            if (getShooter() instanceof Entity) {
+                setEntityIgnoreTicks((Entity) getShooter(), 5);
+            }
         }
 
         @Override
         protected boolean collideWithEntity(Entity entity) {
-            return entity instanceof LivingEntity && entity != getShooter();
+            return entity instanceof LivingEntity;
         }
 
         @Override
