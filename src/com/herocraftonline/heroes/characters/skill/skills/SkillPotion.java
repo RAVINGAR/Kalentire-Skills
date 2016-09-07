@@ -107,12 +107,11 @@ public class SkillPotion extends PassiveSkill {
         return getPotionDuration(duration, intensity, false);
     }
     // Calculates the duration of a Splash potion based on its intensity
-    // returns ticks if millis is false, milliseconds if true
-    public static int getPotionDuration(int duration, double intensity, boolean millis) {
+    // returns input if convertMillis is false, attempt to convert ticks to millis if true.
+    public static int getPotionDuration(int duration, double intensity, boolean convertMillis) {
         int calcDuration = (int)(intensity * duration + 0.5D); // Code for this from Spigot
-        return millis ? calcDuration * 50 : calcDuration; // Divide by 20 for seconds then multiply by 1000 for millis. This comes out to *50
+        return convertMillis ? calcDuration * 50 : calcDuration; // Divide by 20 for seconds then multiply by 1000 for millis. This comes out to *50
     }
-
 
     // Actual potion logic
     public class PotionListener implements Listener {
