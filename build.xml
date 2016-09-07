@@ -11,7 +11,7 @@
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
-    <property name="packages" value="pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,public1" />
+    <property name="packages" value="skills,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,public1" />
 
     <property name="totem.lib" value="totem" />
 
