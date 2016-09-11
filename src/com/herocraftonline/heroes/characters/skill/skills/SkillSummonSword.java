@@ -7,9 +7,9 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -49,8 +49,6 @@ public class SkillSummonSword extends ActiveSkill {
 
         int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
 
-        broadcastExecuteText(hero);
-
         PlayerInventory inventory = player.getInventory();
         HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.IRON_SWORD, amount));
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
@@ -58,7 +56,9 @@ public class SkillSummonSword extends ActiveSkill {
             Messaging.send(player, "Item(s) have been dropped at your feet!");
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
+        broadcastExecuteText(hero);
+
         return SkillResult.NORMAL;
     }
 }

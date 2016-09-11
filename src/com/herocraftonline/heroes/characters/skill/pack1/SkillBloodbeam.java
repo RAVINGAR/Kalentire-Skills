@@ -7,9 +7,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseBeam;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -95,9 +95,9 @@ public class SkillBloodbeam extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.BLOCK_LAVA_POP, volume, 0.5f);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(player.getEyeLocation(), CompatSound.BLOCK_LAVA_POP.value(), volume, 0.5f);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), CompatSound.BLOCK_LAVA_POP.value(), volume, 0.5f);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), CompatSound.BLOCK_LAVA_POP.value(), volume, 0.5f);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);

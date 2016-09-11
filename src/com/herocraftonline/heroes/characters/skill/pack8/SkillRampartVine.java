@@ -7,13 +7,13 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -186,7 +186,7 @@ public class SkillRampartVine extends ActiveSkill {
             boolean breakLoop = false;
             Block workingBlock = targetBlock;
             Location location = workingBlock.getLocation();
-            location.getWorld().playSound(location, Sound.BLOCK_GRASS_HIT, 0.8F, 1.0F);
+            location.getWorld().playSound(location, CompatSound.BLOCK_GRASS_HIT.value(), 0.8F, 1.0F);
 
             for (int i = 0; i < maxGrowth; i++) {
                 switch (workingBlock.getType()) {

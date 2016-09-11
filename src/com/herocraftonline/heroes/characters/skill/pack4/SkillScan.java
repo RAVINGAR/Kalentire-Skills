@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack4;
 
 import org.bukkit.Effect;
-import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -11,6 +10,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillScan extends TargettedSkill {
@@ -66,7 +66,7 @@ public class SkillScan extends TargettedSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

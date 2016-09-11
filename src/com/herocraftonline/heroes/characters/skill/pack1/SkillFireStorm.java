@@ -10,9 +10,9 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseSphere;
 import com.herocraftonline.heroes.characters.skill.skills.*;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -83,7 +83,7 @@ public class SkillFireStorm extends SkillBaseSphere {
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
 					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.FLAME);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.25f, 0.000001f);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GHAST_SHOOT.value(), 0.25f, 0.000001f);
 				}
 
 				@Override

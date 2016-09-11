@@ -6,10 +6,10 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -99,7 +99,7 @@ public class SkillChaosOrb extends ActiveSkill {
         }, ticksBeforeDrop);
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ARROW_SHOOT.value(), 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

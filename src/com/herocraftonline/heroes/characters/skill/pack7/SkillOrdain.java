@@ -7,9 +7,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseBeam;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -97,9 +97,9 @@ public class SkillOrdain extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, volume, 1);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, volume, 1);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), volume, 1);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), volume, 1);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), volume, 1);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);

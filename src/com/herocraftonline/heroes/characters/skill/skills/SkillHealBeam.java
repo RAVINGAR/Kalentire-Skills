@@ -5,12 +5,12 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseBeam;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
-import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -56,7 +56,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 			player.getWorld().spigot().playEffect(fxLine.get(i), Effect.HAPPY_VILLAGER, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
 		}*/
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 6, 2);
+		player.getWorld().playSound(player.getEyeLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), 6, 2);
 
 		castBeam(hero, beam, new TargetHandler() {
 			@Override

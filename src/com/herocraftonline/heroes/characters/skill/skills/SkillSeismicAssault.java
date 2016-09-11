@@ -9,9 +9,9 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseBlockWave;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -105,7 +105,7 @@ public class SkillSeismicAssault extends SkillBaseBlockWave {
 
 			@Override
 			public void run() {
-				world.playSound(hero.getPlayer().getLocation(), Sound.BLOCK_GRASS_HIT, volume, 1f);
+				world.playSound(hero.getPlayer().getLocation(), CompatSound.BLOCK_GRASS_HIT.value(), volume, 1f);
 				volume -= 0.1;
 
 				if (volume <= 0) {

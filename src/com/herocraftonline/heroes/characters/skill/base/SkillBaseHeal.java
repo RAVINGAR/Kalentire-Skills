@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.base;
 
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,6 +17,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -109,7 +109,7 @@ public abstract class SkillBaseHeal extends TargettedSkill {
     protected abstract void removeEffects(Hero hero);
 
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.ENTITY_PLAYER_BURP, 0.5f, 1.0f);
+        world.playSound(target.getLocation(), CompatSound.ENTITY_PLAYER_BURP.value(), 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {

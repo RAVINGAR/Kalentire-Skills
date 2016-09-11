@@ -7,7 +7,6 @@ import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -29,6 +28,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -114,7 +114,7 @@ public class SkillHolyAura extends ActiveSkill {
 
         hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
         
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 7.0F, 16);
+        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_NOTE_HARP.value(), 7.0F, 16);
 
         return SkillResult.NORMAL;
     }

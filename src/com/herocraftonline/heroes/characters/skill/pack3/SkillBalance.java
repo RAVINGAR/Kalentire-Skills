@@ -9,11 +9,11 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -129,7 +129,7 @@ public class SkillBalance extends ActiveSkill {
         		}
             }
         }
-        player.getWorld().playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);
+        player.getWorld().playSound(playerLocation, CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
         return SkillResult.NORMAL;
     }
 }

@@ -7,12 +7,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseBeam;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -86,9 +86,9 @@ public class SkillDisarray extends SkillBaseBeam {
 
 		renderEyeBeam(player, beam, BEAM_PARTICLE, Color.RED, 60, 10, 40, 0.125, 1);
 
-		player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_ENDERMEN_SCREAM, 0.2f, 0.0001f);
-		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_ENDERMEN_SCREAM, 0.2f, 0.0001f);
-		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_ENDERMEN_SCREAM, 0.2f, 0.0001f);
+		player.getWorld().playSound(player.getEyeLocation(), CompatSound.ENTITY_ENDERMEN_SCREAM.value(), 0.2f, 0.0001f);
+		player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), CompatSound.ENTITY_ENDERMEN_SCREAM.value(), 0.2f, 0.0001f);
+		player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), CompatSound.ENTITY_ENDERMEN_SCREAM.value(), 0.2f, 0.0001f);
 
 		return SkillResult.NORMAL;
 	}

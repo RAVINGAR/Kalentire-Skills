@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -40,6 +39,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -334,7 +334,7 @@ public class SkillIceVolley extends ActiveSkill {
             plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
             
             target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.4F, 0.2F, 0.4F, 0.3F, 50, 16);
-            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);
+            target.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_GLASS_BREAK.value(), 7.0F, 0.7F);
 
             iceVolleyShots.remove(iceArrow);
         }

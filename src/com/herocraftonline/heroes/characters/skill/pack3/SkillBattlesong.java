@@ -12,11 +12,11 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -37,10 +37,10 @@ public class SkillBattlesong extends ActiveSkill {
         setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BASS, 1.0F, 0.7F, 1),
-                new Note(Sound.BLOCK_NOTE_BASS, 1.2F, 0.4F, 2),
-                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 0.2F, 3)
+                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.8F, 1.0F, 0),
+                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 1.0F, 0.7F, 1),
+                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 1.2F, 0.4F, 2),
+                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.8F, 0.2F, 3)
         );
     }
 

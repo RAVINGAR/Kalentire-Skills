@@ -12,10 +12,10 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseSpike;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -111,7 +111,7 @@ public class SkillSoulSpike extends SkillBaseSpike {
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_PIG_HURT, 0.2f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_ZOMBIE_PIG_HURT.value(), 0.2f, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {

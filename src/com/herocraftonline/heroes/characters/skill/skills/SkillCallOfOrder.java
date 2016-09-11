@@ -9,10 +9,10 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseSphere;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -81,7 +81,7 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
 					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.REDSTONE, Color.YELLOW);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_LARGE_BLAST, 0.5f, 0.00001f);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_FIREWORK_LARGE_BLAST.value(), 0.5f, 0.00001f);
 				}
 
 				@Override

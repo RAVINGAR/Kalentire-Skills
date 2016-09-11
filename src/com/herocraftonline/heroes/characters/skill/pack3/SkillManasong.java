@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.pack3;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -23,6 +22,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -42,8 +42,8 @@ public class SkillManasong extends ActiveSkill {
         setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 1.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 1)
+                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 1.0F, 0),
+                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.8F, 1.0F, 1)
         );
     }
 

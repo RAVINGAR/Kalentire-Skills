@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -20,7 +21,6 @@ import de.slikey.effectlib.util.RandomUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -168,7 +168,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 			Marker marker = new Marker(plugin.getCharacterManager().getHero(getApplier()), target, preserveVelocity, preserveLookDirection);
 			activeMarkers.put(getApplier().getUniqueId(), marker);
 
-			target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.4f, 100000);
+			target.getEntity().getWorld().playSound(target.getEntity().getLocation(), CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.4f, 100000);
 
 			onMarkerCreate(marker);
 		}
@@ -181,7 +181,7 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 				marker.effect.cancel();
 
 				if (!marker.activated) {
-					marker.getTarget().getEntity().getWorld().playSound(marker.location, Sound.ENTITY_GENERIC_BURN, 0.4f, 0.0001f);
+					marker.getTarget().getEntity().getWorld().playSound(marker.location, CompatSound.ENTITY_GENERIC_BURN.value(), 0.4f, 0.0001f);
 				}
 
 				onMarkerRemove(marker);
@@ -254,8 +254,8 @@ public abstract class SkillBaseMarkedTeleport extends TargettedSkill {
 				if (System.currentTimeMillis() - createTime > reCastDelay) {
 					onMarkerActivate(this, System.currentTimeMillis());
 
-					target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.4f, 0.1f);
-					target.getEntity().getWorld().playSound(location, Sound.ENTITY_ENDERMEN_TELEPORT, 0.4f, 0.1f);
+					target.getEntity().getWorld().playSound(target.getEntity().getLocation(), CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.4f, 0.1f);
+					target.getEntity().getWorld().playSound(location, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.4f, 0.1f);
 
 					Vector currentVelocity = target.getEntity().getVelocity();
 

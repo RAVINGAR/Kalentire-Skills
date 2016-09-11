@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -25,6 +24,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFireblast extends ActiveSkill {
@@ -100,8 +100,8 @@ public class SkillFireblast extends ActiveSkill {
             
             player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
             player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);
-            player.getWorld().playSound(blastLocation, Sound.ENTITY_GENERIC_EXPLODE, 6.0F, 1);
-            player.getWorld().playSound(blastLocation, Sound.BLOCK_FIRE_AMBIENT, 8.0F, 1);
+            player.getWorld().playSound(blastLocation, CompatSound.ENTITY_GENERIC_EXPLODE.value(), 6.0F, 1);
+            player.getWorld().playSound(blastLocation, CompatSound.BLOCK_FIRE_AMBIENT.value(), 8.0F, 1);
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);

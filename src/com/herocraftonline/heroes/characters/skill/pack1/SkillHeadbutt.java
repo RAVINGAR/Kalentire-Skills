@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.pack1;
 
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHeadbutt extends TargettedSkill {
@@ -78,7 +78,7 @@ public class SkillHeadbutt extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
 
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.7F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_ENDERDRAGON_GROWL.value(), 0.7F, 2.0F);
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         return SkillResult.NORMAL;

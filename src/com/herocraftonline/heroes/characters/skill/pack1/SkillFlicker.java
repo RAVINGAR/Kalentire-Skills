@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.pack1;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -18,6 +17,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -95,7 +95,7 @@ public class SkillFlicker extends ActiveSkill {
             Player player = hero.getPlayer();
             Location playerLoc = player.getLocation();
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMEN_TELEPORT, 0.8F, 1.0F);
+            player.getWorld().playSound(playerLoc, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
 
             InvisibleEffect customInvisEffect = new InvisibleEffect(skill, player, invisDuration, null, null);
             customInvisEffect.types.add(EffectType.UNBREAKABLE);

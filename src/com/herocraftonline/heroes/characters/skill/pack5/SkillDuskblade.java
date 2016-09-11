@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.pack5;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,6 +18,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDuskblade extends TargettedSkill {
@@ -78,7 +78,7 @@ public class SkillDuskblade extends TargettedSkill {
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getAmount());
         
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_HURT.value(), 0.8F, 1.0F);
         
         player.getWorld().spigot().playEffect(player.getLocation(), Effect.INSTANT_SPELL, 0, 0, 0, 0.1F, 0, 0.1F, 20, 5);
 

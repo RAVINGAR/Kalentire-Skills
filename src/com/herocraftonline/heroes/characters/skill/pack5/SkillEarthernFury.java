@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.pack5;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,6 +21,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -100,7 +100,7 @@ public class SkillEarthernFury extends TargettedSkill {
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_HIT, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_GRASS_HIT.value(), 1.0F, 1.0F);
         
         // Create the effect and slow the target
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
@@ -174,7 +174,7 @@ public class SkillEarthernFury extends TargettedSkill {
                      * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                      * */
                     fEntity.getWorld().spigot().playEffect(location, org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
-                    fEntity.getWorld().playSound(location, Sound.BLOCK_GRAVEL_HIT, 0.1F, 1.0F);
+                    fEntity.getWorld().playSound(location, CompatSound.BLOCK_GRAVEL_HIT.value(), 0.1F, 1.0F);
                     
                     time += 0.01;
                 }

@@ -4,8 +4,9 @@ import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.CompatSound;
+
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -89,7 +90,7 @@ public class SkillHarmtouch extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new HarmTouch(this, player, duration, amplifier, healMultiplier, applyText, expireText));
 
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value() , 0.8F, 1.0F);
         hero.getPlayer().getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 0.3F, 1.2F, 0.3F, 0.0F, 15, 16);
         hero.getPlayer().getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.3F, 1.2F, 0.3F, 0.0F, 25, 16);
         hero.getPlayer().getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0.3F, 1.2F, 0.3F, 0.0F, 25, 16);

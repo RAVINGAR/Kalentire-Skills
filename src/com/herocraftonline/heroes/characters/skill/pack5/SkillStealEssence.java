@@ -10,9 +10,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -88,7 +88,7 @@ public class SkillStealEssence extends TargettedSkill {
 
         broadcast(player.getLocation(), getUseText(), player.getName(), getName(), stolenNames, tHero.getPlayer().getName());
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP, 0.8F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BAT_LOOP.value(), 0.8F, 2.0F);
 
         return SkillResult.NORMAL;
     }

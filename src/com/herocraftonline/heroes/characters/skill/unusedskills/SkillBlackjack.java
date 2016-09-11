@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlackjack extends TargettedSkill {
@@ -100,7 +100,7 @@ public class SkillBlackjack extends TargettedSkill {
         else
             damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
 
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_WOODEN_DOOR_CLOSE, 0.4F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_WOODEN_DOOR_CLOSE.value(), 0.4F, 0.4F);
 
 
         // Stun, but only if they are a player.

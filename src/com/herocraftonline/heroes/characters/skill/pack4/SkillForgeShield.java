@@ -1,10 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.pack4;
 
+import java.util.logging.Level;
+
+import org.bukkit.Material;
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseForgeItem;
-import com.herocraftonline.heroes.characters.skill.skills.*;
-import org.bukkit.Material;
 
 public class SkillForgeShield extends SkillBaseForgeItem {
 
@@ -16,6 +18,10 @@ public class SkillForgeShield extends SkillBaseForgeItem {
         setIdentifiers("skill forgeshield");
         setTypes(SkillType.ITEM_CREATION);
         defaultAmount = 1;
-        deafultItem = Material.SHIELD;
+        try {
+            deafultItem = Material.valueOf("SHIELD");
+        } catch (IllegalArgumentException e) {
+            Heroes.log(Level.SEVERE, "The server is not compatible with this skill");
+        }
     }
 }

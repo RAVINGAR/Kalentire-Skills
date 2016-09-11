@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.pack2;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -25,6 +24,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -110,7 +110,7 @@ public class SkillRupture extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new RuptureBleedEffect(this, player, period, duration, damagePerDistance, distancePerDamage));
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.2F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_CHEST_OPEN.value(), 1.2F, 0.4F);
 
         return SkillResult.NORMAL;
     }

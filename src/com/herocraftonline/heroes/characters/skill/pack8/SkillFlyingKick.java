@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.pack8;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -21,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlyingKick extends TargettedSkill {
@@ -69,7 +69,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 18.0F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_HURT.value(), 18.0F, 0.4F);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0075, false);

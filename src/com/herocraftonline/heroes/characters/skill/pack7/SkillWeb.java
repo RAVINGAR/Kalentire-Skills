@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -90,7 +91,7 @@ public class SkillWeb extends TargettedSkill {
         targCT.addEffect(wEffect);
 
         player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SPIDER_AMBIENT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_SPIDER_AMBIENT.value(), 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

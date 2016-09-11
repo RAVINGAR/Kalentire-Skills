@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -88,7 +88,7 @@ public class SkillWithering extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new WitheringEffect(this, player, period, duration, tickDamage));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SHOOT.value(), 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

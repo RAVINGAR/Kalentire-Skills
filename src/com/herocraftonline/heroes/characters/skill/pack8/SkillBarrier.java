@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -30,6 +29,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -129,7 +129,7 @@ public class SkillBarrier extends ActiveSkill {
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.7F, 2.0F);
+		player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.7F, 2.0F);
 
 		return SkillResult.NORMAL;
 	}
@@ -190,7 +190,7 @@ public class SkillBarrier extends ActiveSkill {
 					addSpellTarget(damagerPlayer, defenderHero);
 					damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 
-					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
+					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
 
 					// Disarm checks
 					Material heldItem = damagerPlayer.getItemInHand().getType();

@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.pack5;
 
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -85,8 +85,8 @@ public class SkillTerror extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(dEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 1.2F, 2.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.4F, 1.8F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GHAST_SCREAM.value(), 1.2F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WOLF_HOWL.value(), 0.4F, 1.8F);
         target.getWorld().spigot().playEffect(target.getEyeLocation(), org.bukkit.Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.0F, 0.2F, 0.1F, 25, 16);
         target.getWorld().spigot().playEffect(target.getEyeLocation(), org.bukkit.Effect.EXPLOSION, 0, 0, 0.2F, 0.0F, 0.2F, 0.5F, 25, 16);
 

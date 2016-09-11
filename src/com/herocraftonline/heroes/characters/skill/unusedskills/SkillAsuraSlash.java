@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -12,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillAsuraSlash extends TargettedSkill {
 
@@ -47,7 +47,7 @@ public class SkillAsuraSlash extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_FLINTANDSTEEL_USE , 0.4F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ITEM_FLINTANDSTEEL_USE.value() , 0.4F, 1.0F); 
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

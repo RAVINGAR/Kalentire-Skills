@@ -4,7 +4,6 @@ import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -21,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSiphonBlood extends TargettedSkill {
@@ -121,7 +121,7 @@ public class SkillSiphonBlood extends TargettedSkill {
         
         player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LAVADRIP, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.NETHER_STALK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
-        player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_DRINK, 4.0F, 1);
+        player.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_GENERIC_DRINK.value(), 4.0F, 1);
 
         return SkillResult.NORMAL;
     }

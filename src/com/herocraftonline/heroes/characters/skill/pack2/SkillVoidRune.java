@@ -27,7 +27,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -53,6 +52,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runeskills.Rune;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runeskills.RuneApplicationEvent;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -131,7 +131,7 @@ public class SkillVoidRune extends ActiveSkill {
 
         // Play Effects
         Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_AMBIENT.value(), 0.5F, 1.0F);
         
         for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
 		{
@@ -199,7 +199,7 @@ public class SkillVoidRune extends ActiveSkill {
 
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
+                    player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
                 }
             }, (long) (0.1 * 20));
 

@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -87,7 +88,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         broadcastExecuteText(hero);
 
-        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_LAUNCH, 2, 1);
+        player.playSound(player.getLocation(), CompatSound.ENTITY_FIREWORK_LAUNCH.value(), 2, 1);
         player.setVelocity(new Vector(0, upVelocity, 0));
         final int taskId = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override
@@ -135,7 +136,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
         final double damage = tempDamage + (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
+        loc.getWorld().playSound(loc, CompatSound.ENTITY_GENERIC_EXPLODE.value(), 2, 1);
         new BukkitRunnable() {
             int i = 1;
 
@@ -208,7 +209,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             fallingBlocks.remove(event.getEntity());
             FallingBlock fb = (FallingBlock) event.getEntity();
             fb.getWorld().spigot().playEffect(fb.getLocation(), Effect.TILE_BREAK, fb.getBlockId(), fb.getBlockData(), 0, 0, 0, 0.4f, 50, 128);
-            fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 1, 1);
+            fb.getWorld().playSound(fb.getLocation(), CompatSound.BLOCK_STONE_STEP.value(), 1, 1);
             event.getEntity().remove();
         }
     }

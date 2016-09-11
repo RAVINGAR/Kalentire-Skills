@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,6 +15,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillHellgate extends ActiveSkill {
@@ -138,7 +138,7 @@ public class SkillHellgate extends ActiveSkill {
 
         player.teleport(teleportLocation);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL , 0.5F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.BLOCK_PORTAL_TRAVEL.value() , 0.5F, 1.0F); 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

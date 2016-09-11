@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.*;
 import org.bukkit.FireworkEffect.Type;
@@ -97,7 +98,7 @@ public class SkillTempest extends ActiveSkill {
                     // Lightning like this is too annoying.
                     // entity.getWorld().strikeLightningEffect(entity.getLocation());
                     entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
-                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, lightningVolume, 1.0F);
+                    entity.getWorld().playSound(entity.getLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), lightningVolume, 1.0F);
                     
                     // Increase counter
                     targetsHit++;

@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -22,6 +21,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillFrontflip extends ActiveSkill {
@@ -134,7 +134,7 @@ public class SkillFrontflip extends ActiveSkill {
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SKELETON_AMBIENT, 10.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_SKELETON_AMBIENT.value(), 10.0F, 1.0F);
 
         if (hero.canUseSkill("Backflip")) {
             long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);

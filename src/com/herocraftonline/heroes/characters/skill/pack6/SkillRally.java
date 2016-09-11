@@ -11,6 +11,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.CompatSound;
+
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -59,7 +61,7 @@ public class SkillRally extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_HORSE_GALLOP, 0.8F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_HORSE_GALLOP.value(), 0.8F, 0.4F);
         
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-strength", 0.0075, false);

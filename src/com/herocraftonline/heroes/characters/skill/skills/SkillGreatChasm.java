@@ -9,9 +9,9 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseBlockWave;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -113,9 +113,9 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 
 			@Override
 			public void run() {
-				world.playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, volume, 1 - volume);
-				world.playSound(hero.getPlayer().getLocation(), Sound.ENTITY_CAT_HISS, volume / 2, volume);
-				world.playSound(hero.getPlayer().getLocation(), Sound.ENTITY_COW_STEP, 1 / volume, volume);
+				world.playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ENDERDRAGON_FLAP.value(), volume, 1 - volume);
+				world.playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_CAT_HISS.value(), volume / 2, volume);
+				world.playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_COW_STEP.value(), 1 / volume, volume);
 				volume -= 0.1;
 
 				if (volume <= 0) {

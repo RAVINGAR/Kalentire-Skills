@@ -25,6 +25,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -91,8 +92,8 @@ public class SkillBloodDrinker extends ActiveSkill {
 
         hero.addEffect(effect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, 0.9F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 0.5F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_BURP.value(), 0.9F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_SPLASH.value(), 0.5F, 2.0F);
 
         return SkillResult.NORMAL;
     }
@@ -157,7 +158,7 @@ public class SkillBloodDrinker extends ActiveSkill {
                     hero.heal(finalHealing);
 
                     Player player = hero.getPlayer();
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 0.3F, 0.6F);
+                    player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_DRINK.value(), 0.3F, 0.6F);
 
                     bdEffect.setTotalHealthHealed(currentTotalHeal + finalHealing);
 

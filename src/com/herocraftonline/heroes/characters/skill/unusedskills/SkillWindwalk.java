@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -15,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillWindwalk extends ActiveSkill {
     // This is for Firework Effects
@@ -58,7 +58,7 @@ public class SkillWindwalk extends ActiveSkill {
             multiplier = 20;
         }
         hero.addEffect(new QuickenEffect(this, getName(), hero.getPlayer(), duration, multiplier, applyText, expireText));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ENDERMEN_TELEPORT.value() , 0.8F, 1.0F);
         // this is our fireworks shit
         Player player = hero.getPlayer();
         try {

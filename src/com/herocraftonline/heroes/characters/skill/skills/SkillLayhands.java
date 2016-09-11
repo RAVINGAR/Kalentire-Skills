@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +11,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillLayhands extends TargettedSkill {
@@ -67,7 +67,7 @@ public class SkillLayhands extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -5,7 +5,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Sound;
+import com.herocraftonline.heroes.util.CompatSound;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -59,8 +60,8 @@ public class SkillBlitz extends TargettedSkill {
         // Lightning like this is too annoying.
         // target.getWorld().strikeLightningEffect(target.getLocation());
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, lightningVolume, 1.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.5F, 1.0F);
+        target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), lightningVolume, 1.0F);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 

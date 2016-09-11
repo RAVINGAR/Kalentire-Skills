@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -26,6 +25,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -141,7 +141,7 @@ public class SkillDespair extends ActiveSkill {
 			}
 		}
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 1.2F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GHAST_SCREAM.value(), 1.2F, 2.0F);
 
         return SkillResult.NORMAL;
     }

@@ -12,11 +12,11 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.base.SkillBaseSphere;
+import com.herocraftonline.heroes.util.CompatSound;
 
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -82,7 +82,7 @@ public class SkillDamageSphere extends SkillBaseSphere {
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
 					renderSphere(hero.getPlayer().getEyeLocation(), radius, 150, ParticleEffect.FLAME);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GHAST_SHOOT, 1, 0.00001f);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GHAST_SHOOT.value(), 1, 0.00001f);
 				}
 
 				@Override

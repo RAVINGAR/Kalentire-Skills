@@ -16,11 +16,11 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -46,10 +46,10 @@ public class SkillMelodicBinding extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MOVEMENT_SLOWING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 6.0F, 0),
-                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 2.0F, 1),
-                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 8.0F, 2),
-                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 3.0F, 3)
+                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 6.0F, 0),
+                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 2.0F, 1),
+                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 8.0F, 2),
+                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 3.0F, 3)
         );
     }
 

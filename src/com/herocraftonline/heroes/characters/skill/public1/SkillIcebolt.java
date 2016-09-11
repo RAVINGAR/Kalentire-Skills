@@ -148,7 +148,7 @@ public class SkillIcebolt extends ActiveSkill {
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 
                 target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
-                target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);
+                target.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_GLASS_BREAK.value(), 7.0F, 0.7F);
 
                 event.setCancelled(true);
             }

@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.pack8;
 
 import org.bukkit.Effect;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,6 +15,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -72,8 +72,8 @@ public class SkillEviscerate extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_IRONGOLEM_HURT, 0.4F, 2.0F);
-        //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.4F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_IRONGOLEM_HURT.value(), 0.4F, 2.0F);
+        //player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_HURT.value(), 0.4F, 2.0F);
         
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.TILE_BREAK, 115, 3, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
 

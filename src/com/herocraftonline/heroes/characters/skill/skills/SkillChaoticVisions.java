@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.*;
@@ -84,7 +85,7 @@ public class SkillChaoticVisions extends ActiveSkill {
         final List<Entity> hitEnemies = new ArrayList<>();
 
         int numBlocks = 0;
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.7F, 1);
+        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_PORTAL_TRAVEL.value(), 0.7F, 1);
         while (iter.hasNext()) {
             tempBlock = iter.next();
             Material tempBlockType = tempBlock.getType();

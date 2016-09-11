@@ -9,7 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -38,6 +37,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -286,7 +286,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         // BOOM - for some reason the code in the try/catch block down there isn't happy about the whole "working" thing
         projectile.getWorld().spigot().playEffect(projectile.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 10, 16);
-        projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
+        projectile.getWorld().playSound(projectile.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 1.0F, 1.0F);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
@@ -299,7 +299,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         try {
             projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
 
-            //projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
+            //projectile.getWorld().playSound(projectile.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 1.0F, 1.0F);
 
         } catch (Exception e) {
             e.printStackTrace();
