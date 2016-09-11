@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
