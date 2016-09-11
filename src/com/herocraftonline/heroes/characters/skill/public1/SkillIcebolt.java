@@ -1,4 +1,4 @@
-/*package com.herocraftonline.heroes.characters.skill.public1;
+package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -7,11 +7,11 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -28,7 +28,7 @@ public class SkillIcebolt extends ActiveSkill {
     private Map<Snowball, Long> snowballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4632858378318784263L;
         @Override
-        public boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+        public boolean removeEldestEntry(Map.Entry<Snowball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -155,4 +155,3 @@ public class SkillIcebolt extends ActiveSkill {
         }
     }
 }
-*/
