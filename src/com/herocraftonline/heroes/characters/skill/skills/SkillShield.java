@@ -23,6 +23,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 
 public class SkillShield extends PassiveSkill {
 
@@ -83,7 +84,7 @@ public class SkillShield extends PassiveSkill {
 			Player player = (Player) event.getEntity();
 			Hero hero = plugin.getCharacterManager().getHero(player);
 			if (hero.hasEffect(getName())) {
-				Material type = player.getInventory().getItemInOffHand().getType();
+				Material type = NMSHandler.getInterface().getItemInOffHand(player.getInventory()).getType();
 				double multiplier = 1;
 				if (type == Material.IRON_DOOR) {
 					multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-door", 0.75, true);

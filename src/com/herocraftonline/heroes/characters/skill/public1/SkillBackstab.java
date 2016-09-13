@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -145,7 +146,7 @@ public class SkillBackstab extends ActiveSkill {
             Player player = hero.getPlayer();
 
             if (hero.canUseSkill(skill)) {
-                ItemStack item = player.getInventory().getItemInMainHand(); // 1.9: Main hand does left click attacks, so main hand only
+                ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()); // 1.9: Main hand does left click attacks, so main hand only
 
                 if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                     return;

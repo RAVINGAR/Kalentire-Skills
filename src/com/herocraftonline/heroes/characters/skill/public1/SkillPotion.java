@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -174,10 +175,10 @@ public class SkillPotion extends PassiveSkill {
 
                     // We need to check the hands for the potion we just drank in order to change it; the event just gives us the item.
                     // Potion drinking goes primary hand, then secondary. Check them in that order, too.
-                    if (item.equals(pInventory.getItemInMainHand()))
-                        pInventory.setItemInMainHand(new ItemStack(Material.GLASS_BOTTLE));
-                    else if (item.equals(pInventory.getItemInOffHand()))
-                        pInventory.setItemInOffHand(new ItemStack(Material.GLASS_BOTTLE));
+                    if (item.equals(NMSHandler.getInterface().getItemInMainHand(pInventory)))
+                        NMSHandler.getInterface().setItemInMainHand(pInventory, new ItemStack(Material.GLASS_BOTTLE));
+                    else if (item.equals(NMSHandler.getInterface().getItemInOffHand(pInventory)))
+                        NMSHandler.getInterface().setItemInOffHand(pInventory, new ItemStack(Material.GLASS_BOTTLE));
                     else if (player.getInventory().contains(item)) { // Triggers in case of magic or code that makes the current potion invalid, but another one exists.
                         PlayerInventory inventory = player.getInventory();
                         inventory.setItem(inventory.first(item), new ItemStack(Material.GLASS_BOTTLE));

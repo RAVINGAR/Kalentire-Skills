@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -184,7 +185,7 @@ public class SkillShieldReflect extends ActiveSkill {
 
     @SuppressWarnings("unchecked") // Probably not the best way, but it's a pain to do it any other.
     private boolean isWieldingShield(Hero hero) {
-        Material type = hero.getPlayer().getInventory().getItemInOffHand().getType();
+        Material type = NMSHandler.getInterface().getItemInOffHand(hero.getPlayer().getInventory()).getType();
         if (type == Material.SHIELD) {
             return true;
         }
