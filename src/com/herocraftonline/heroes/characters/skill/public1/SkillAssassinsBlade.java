@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -169,7 +170,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
             }
 
             final Player player = (Player) subEvent.getDamager();
-            final ItemStack item = player.getItemInHand();
+            final ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             final Hero hero = SkillAssassinsBlade.this.plugin.getCharacterManager().getHero(player);
             if (!SkillConfigManager.getUseSetting(hero, this.skill, "weapons", Util.swords).contains(item.getType().name())) {
                 return;

@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.MaterialUtil;
 import com.herocraftonline.heroes.util.Messaging;
@@ -76,7 +77,7 @@ public class SkillRepair extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        ItemStack is = player.getItemInHand();
+        ItemStack is = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         Material isType = is.getType();
         int level = getRequiredLevel(hero, isType);
         Material reagent = getRequiredReagent(isType);

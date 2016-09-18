@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -134,7 +135,7 @@ public class SkillDeconstruct extends ActiveSkill {
             }
         } else {
             // if no args attempt to deconstruct item in hand
-            item = player.getItemInHand();
+            item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             if (item == null || item.getType() == Material.AIR) {
                 Messaging.send(player, "Invalid item to deconstruct, or bad command!");
                 return SkillResult.INVALID_TARGET_NO_MSG;

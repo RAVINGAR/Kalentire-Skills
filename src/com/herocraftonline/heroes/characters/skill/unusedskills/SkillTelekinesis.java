@@ -13,6 +13,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import net.minecraft.server.v1_9_R2.BlockPosition;
@@ -128,7 +129,7 @@ public class SkillTelekinesis extends ActiveSkill {
                 if (blockType.equals(Material.IRON_DOOR_BLOCK) && isLWCd) {
 
                     // Simpler way that doesn't make me want to die. (as much...)
-                    Material heldItem = player.getItemInHand().getType();
+                    Material heldItem = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
                     boolean hasBind = false;
                     String[] boundAbility = null;
 
@@ -147,7 +148,7 @@ public class SkillTelekinesis extends ActiveSkill {
                         public void execute()
                         {
                             // Interact with the block
-                            PlayerInteractEvent fakeInteractEvent = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getItemInHand(), clickedBlock, BlockFace.UP);
+                            PlayerInteractEvent fakeInteractEvent = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, NMSHandler.getInterface().getItemInMainHand(player.getInventory()), clickedBlock, BlockFace.UP);
                             plugin.getServer().getPluginManager().callEvent(fakeInteractEvent);
                         }
                     }, Lists.newArrayList("BLOCKINTERACT"), 0);
@@ -163,7 +164,7 @@ public class SkillTelekinesis extends ActiveSkill {
                         jukeBox.eject();
                     }
                     else {
-                        Material heldItem = player.getItemInHand().getType();
+                        Material heldItem = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
                         if (isRecord(heldItem)) {
 
                             // Remove the record

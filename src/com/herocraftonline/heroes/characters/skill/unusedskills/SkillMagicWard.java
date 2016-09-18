@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -72,7 +73,7 @@ public class SkillMagicWard extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        switch (player.getItemInHand().getType()) {
+        switch (NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType()) {
             case IRON_DOOR:
             case WOOD_DOOR:
             case TRAP_DOOR:
@@ -109,7 +110,7 @@ public class SkillMagicWard extends ActiveSkill {
             if (!defenderHero.hasEffect("MagicWard"))
                 return;
 
-            switch (defenderPlayer.getItemInHand().getType()) {
+            switch (NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType()) {
                 case IRON_DOOR:
                 case WOOD_DOOR:
                 case TRAP_DOOR:

@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -63,7 +64,7 @@ public class SkillMasamune extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        Material item = player.getItemInHand().getType();
+        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't use Masamune with that weapon!");
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -71,16 +72,16 @@ public class SkillMasamune extends ActiveSkill {
 
         int duraPercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 20, false);
         if (duraPercent > 0) {
-            short dura = player.getItemInHand().getDurability();
-            short maxDura = player.getItemInHand().getType().getMaxDurability();
+            short dura = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getDurability();
+            short maxDura = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType().getMaxDurability();
             short duraCost = (short) (maxDura * (duraPercent * 0.01));
 
             if (dura == (short) 0) {
-                player.getItemInHand().setDurability((short) (duraCost));
+                NMSHandler.getInterface().getItemInMainHand(player.getInventory()).setDurability((short) (duraCost));
             } else if (maxDura - dura > duraCost) {
-                player.getItemInHand().setDurability((short) (dura + duraCost));
+                NMSHandler.getInterface().getItemInMainHand(player.getInventory()).setDurability((short) (dura + duraCost));
             } else if (maxDura - dura == duraCost) {
-                player.setItemInHand(null);
+                NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
                 player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
             } else {
                 Messaging.send(player, "Your Katana doesn't have enough durability to use Masamune!");

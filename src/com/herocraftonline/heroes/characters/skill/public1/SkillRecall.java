@@ -39,6 +39,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 //import com.herocraftonline.townships.HeroTowns;
@@ -114,7 +115,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         Player player = hero.getPlayer();
 
         // RUNESTONE RECALL FUNCTIONALITY
-        ItemStack heldItem = player.getItemInHand();
+        ItemStack heldItem = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         if (heldItem.getType() == Material.REDSTONE_BLOCK) {
 
             // We have a possible Runestone object.

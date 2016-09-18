@@ -16,6 +16,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillWolf extends PassiveSkill {
@@ -48,7 +49,7 @@ public class SkillWolf extends PassiveSkill {
         public void onPlayerEntityInteract(PlayerInteractEntityEvent event) {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            Material material = player.getItemInHand().getType();
+            Material material = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
 
             Entity targetEntity = event.getRightClicked();
 

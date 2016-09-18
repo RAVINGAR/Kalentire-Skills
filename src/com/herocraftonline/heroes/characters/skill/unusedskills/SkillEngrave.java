@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -81,12 +82,12 @@ public class SkillEngrave extends ActiveSkill {
             return SkillResult.CANCELLED;
         }
 
-        if (player.getItemInHand() == null) {
+        if (NMSHandler.getInterface().getItemInMainHand(player.getInventory()) == null) {
             Messaging.send(player, "You must be holding an item in order to use this skill.");
             return SkillResult.CANCELLED;
         }
 
-        ItemStack item = player.getItemInHand();
+        ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         Material type = item.getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "possible-items", Util.weapons).contains(type.name())) {
             Messaging.send(player, "You cannot engrave that item!");

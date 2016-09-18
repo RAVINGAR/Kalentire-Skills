@@ -29,6 +29,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -185,7 +186,7 @@ public class SkillBarrier extends ActiveSkill {
 					double damageMultiplierIncrease = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier-increase-per-intellect", 0.00875, false);
 					damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
-					Material item = defenderPlayer.getItemInHand().getType();
+					Material item = NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType();
 					double damage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item) * damageMultiplier;
 					addSpellTarget(damagerPlayer, defenderHero);
 					damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
@@ -193,7 +194,7 @@ public class SkillBarrier extends ActiveSkill {
 					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
 
 					// Disarm checks
-					Material heldItem = damagerPlayer.getItemInHand().getType();
+					Material heldItem = NMSHandler.getInterface().getItemInMainHand(damagerPlayer.getInventory()).getType();
 					if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
 						return;
 					}

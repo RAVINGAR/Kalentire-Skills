@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -68,7 +69,7 @@ public class SkillMaim extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        Material item = player.getItemInHand().getType();
+        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.weapons).contains(item.name())) {
             Messaging.send(player, "You can't use Maim with that weapon!");
             return SkillResult.FAIL;

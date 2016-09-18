@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -132,7 +133,7 @@ public class SkillRuneshard extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) event.getEntity();
 
-            ItemStack item = player.getItemInHand();
+            ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                 if (arrow)
                     dealRuneshardDamage(hero, target);

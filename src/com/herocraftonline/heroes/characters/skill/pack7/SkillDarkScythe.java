@@ -27,6 +27,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -140,7 +141,7 @@ public class SkillDarkScythe extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) event.getEntity();
 
-            ItemStack item = player.getItemInHand();
+            ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.axes).contains(item.getType().name())) {
                 if (arrow)
                     dealDarkscytheDamage(hero, target);

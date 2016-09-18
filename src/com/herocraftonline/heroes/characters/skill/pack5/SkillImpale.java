@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -75,7 +76,7 @@ public class SkillImpale extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        Material item = player.getItemInHand().getType();
+        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             Messaging.send(player, "You can't use " + getName() + " with that weapon!");
             return SkillResult.FAIL;

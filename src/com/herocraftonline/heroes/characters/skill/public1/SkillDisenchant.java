@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -27,7 +28,7 @@ public class SkillDisenchant extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         final Player player = hero.getPlayer();
-        final ItemStack item = player.getItemInHand();
+        final ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         if ((item == null) || (item.getType() == Material.AIR)) {
             player.sendMessage(ChatColor.GRAY + "You must have an item to disenchant!");
             return SkillResult.INVALID_TARGET_NO_MSG;

@@ -18,6 +18,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -61,7 +62,7 @@ public class SkillLunarLance extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
         Player player = hero.getPlayer();
-        ItemStack item = player.getItemInHand();
+        ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
         // Ensure they have a weapon in hand
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.shovels).contains(item.getType().name())) {

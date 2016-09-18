@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,7 +51,7 @@ public class SkillGift extends TargettedSkill {
 
         Player player = hero.getPlayer();
         Player reciever = (Player) target;
-        ItemStack item = player.getItemInHand();
+        ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         if (item == null || item.getType() == Material.AIR) {
             Messaging.send(player, "You need to have an item in your hotbar to send!");
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -85,7 +86,7 @@ public class SkillGift extends TargettedSkill {
         }
 
 
-        if(player.getItemInHand().getAmount() < item.getAmount()) {
+        if(NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getAmount() < item.getAmount()) {
             Messaging.send(player, "You aren't holding enough to send that amount!");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }

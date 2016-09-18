@@ -23,6 +23,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -76,7 +77,7 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
     public SkillResult use(Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
-        ItemStack item = player.getItemInHand();
+        ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         Material itemType = item.getType();
 
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.getType().name())) {

@@ -25,6 +25,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -160,7 +161,7 @@ public class SkillToxicblade extends ActiveSkill {
             }
 
             Player player = (Player) subEvent.getDamager();
-            ItemStack item = player.getItemInHand();
+            ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                 return;

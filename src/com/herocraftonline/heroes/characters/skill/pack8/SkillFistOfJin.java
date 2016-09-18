@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -108,7 +109,7 @@ public class SkillFistOfJin extends PassiveSkill {
             }
 
             if (!(event.getAttackerEntity() instanceof Arrow)) {
-                Material item = player.getItemInHand().getType();
+                Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
                 if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
                     return;
             }

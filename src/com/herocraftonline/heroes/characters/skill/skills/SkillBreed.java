@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -64,7 +65,7 @@ public class SkillBreed extends PassiveSkill {
         public void onPlayerEntityInteract(PlayerInteractEntityEvent event) {
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            Material material = player.getItemInHand().getType();
+            Material material = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
 
             Entity targetEntity = event.getRightClicked();
 

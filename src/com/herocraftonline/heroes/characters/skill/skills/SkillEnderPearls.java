@@ -30,6 +30,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -93,7 +94,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            ItemStack itemInHand = player.getItemInHand();
+            ItemStack itemInHand = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
             if (itemInHand.getType() == Material.ENDER_PEARL) {
                 if (!hero.canUseSkill(skill)) {

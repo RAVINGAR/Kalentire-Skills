@@ -43,6 +43,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -135,10 +136,10 @@ public abstract class SkillBaseRunestone extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        ItemStack heldItem = player.getInventory().getItemInHand();
+        ItemStack heldItem = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
         // Check to make sure it is a redstone block
-        ItemStack item = player.getItemInHand();
+        ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         if (!item.getType().name().equals("REDSTONE_BLOCK")) {
             Messaging.send(player, "You must be holding a Redstone Block in order to imbue Runestones.");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
