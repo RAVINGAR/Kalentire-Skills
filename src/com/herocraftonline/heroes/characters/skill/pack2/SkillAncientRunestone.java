@@ -4,7 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseRunestone;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseRunestone;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

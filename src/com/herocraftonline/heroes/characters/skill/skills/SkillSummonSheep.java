@@ -11,7 +11,7 @@ import org.bukkit.entity.Sheep;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseSummonEntity;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 

@@ -8,7 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseSummonEntity;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
 
 public class SkillSummonMooshroomCow extends SkillBaseSummonEntity {
 

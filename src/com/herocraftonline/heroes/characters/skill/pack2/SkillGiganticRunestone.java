@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.skills.*;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseRunestone;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseRunestone;
 
 public class SkillGiganticRunestone extends SkillBaseRunestone {
 

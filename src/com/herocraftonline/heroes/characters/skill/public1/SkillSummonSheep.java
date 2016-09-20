@@ -9,7 +9,7 @@ import org.bukkit.entity.Sheep;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseSummonEntity;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSummonSheep extends SkillBaseSummonEntity {

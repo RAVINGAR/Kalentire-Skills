@@ -5,7 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseBlockWave;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBlockWave;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import org.bukkit.Location;

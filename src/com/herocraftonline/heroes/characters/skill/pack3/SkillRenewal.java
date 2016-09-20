@@ -4,7 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseHeal;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
 import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.World;

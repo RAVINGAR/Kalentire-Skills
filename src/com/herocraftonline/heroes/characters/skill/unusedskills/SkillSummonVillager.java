@@ -15,7 +15,7 @@ import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseSummonEntity;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSummonVillager extends SkillBaseSummonEntity {

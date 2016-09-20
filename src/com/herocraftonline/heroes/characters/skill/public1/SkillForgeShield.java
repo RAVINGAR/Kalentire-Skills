@@ -2,7 +2,7 @@ package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.base.SkillBaseForgeItem;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseForgeItem;
 
 import java.util.logging.Level;
 
