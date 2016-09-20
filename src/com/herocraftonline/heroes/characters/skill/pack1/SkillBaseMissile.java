@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R2.Overridden;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.projectiles.ProjectileSource;
@@ -638,7 +637,7 @@ public abstract class SkillBaseMissile extends ActiveSkill {
             addedForce.add(force);
         }
 
-        @Overridden
+        @Override
         protected void tick() {
 
             gravityForce.setY(-gravity * mass);
