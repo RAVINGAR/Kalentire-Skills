@@ -179,7 +179,7 @@ public class SkillConflux extends ActiveSkill {
         public void adjustVelocity(LivingEntity lEntity) {
             Vector velocity = lEntity.getVelocity();
 
-            float angle = random.nextFloat() * 2 * 3.14159f;
+            double angle = random.nextDouble() * 2 * Math.PI;
             float xAdjustment = (float) (maxDrift * Math.cos(angle));
             float zAdjustment = (float) (maxDrift * Math.sin(angle));
 

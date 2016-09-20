@@ -81,7 +81,7 @@ public class SkillConfuse extends TargettedSkill {
         public void adjustVelocity(LivingEntity lEntity) {
             Vector velocity = lEntity.getVelocity();
 
-            float angle = random.nextFloat() * 2 * 3.14159f;
+            double angle = random.nextDouble() * 2 * Math.PI;
             float xAdjustment = maxDrift * (float) Math.cos(angle);
             float zAdjustment = maxDrift * (float) Math.sin(angle);
 

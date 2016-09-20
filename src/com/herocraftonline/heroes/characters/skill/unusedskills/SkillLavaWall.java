@@ -145,7 +145,7 @@ public class SkillLavaWall extends ActiveSkill {
 			double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
 			double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
 			double angle = Math.acos(u.dot(v) / (magU * magV));
-			angle = angle * 180.0D / 3.141592653589793D;
+			angle = angle * 180.0D / Math.PI;
 			angle = Math.abs(angle - 180.0D);
 
 			return (angle <= 45.0D) || (angle > 135.0D);

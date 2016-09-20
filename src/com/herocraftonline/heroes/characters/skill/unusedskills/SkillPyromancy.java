@@ -340,7 +340,7 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
                     }
                 }
 
-                this.yaw = (float) (Math.atan2(d2, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
+                this.yaw = (float) (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0F;
                 this.bn = true;
             }
             */
