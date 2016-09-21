@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack6;
+package com.herocraftonline.heroes.characters.skill.pack5;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;

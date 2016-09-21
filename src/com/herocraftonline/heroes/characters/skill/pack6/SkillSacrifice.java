@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.pack6;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -20,11 +20,11 @@ public class SkillSacrifice extends ActiveSkill {
     private String expireText;
 
     public SkillSacrifice(Heroes plugin) {
-        super(plugin, "Honor");
-        setDescription("Sacrifice youself in combat to increase allies' Constitution and Strength by $1 and $2 for $3 seconds.");
+        super(plugin, "Sacrifice");
+        setDescription("Sacrifice yourself in combat to increase allies' Constitution and Strength by $1 and $2 for $3 seconds.");
         setArgumentRange(0, 0);
-        setUsage("/skill honor");
-        setIdentifiers("skill honor");
+        setUsage("/skill sacrifice");
+        setIdentifiers("skill sacrifice");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
