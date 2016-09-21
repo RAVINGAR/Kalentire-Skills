@@ -24,7 +24,7 @@ public class SkillFullHeal extends TargettedSkill {
 
     public SkillFullHeal(Heroes plugin) {
         super(plugin, "FullHeal");
-        setDescription("You restore your target to full health. However, this ability will only heal you for $1% of your max health however. Targetting distance for this ability is increased by your Wisdom level.");
+        setDescription("You restore your target to full health. However, this ability will only heal you for $1% of your max health however. Targeting distance for this ability is increased by your Wisdom level.");
         setUsage("/skill fullheal <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill fullheal");

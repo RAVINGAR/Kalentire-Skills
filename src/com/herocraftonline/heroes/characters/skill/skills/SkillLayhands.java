@@ -18,7 +18,7 @@ public class SkillLayhands extends TargettedSkill {
 	
     public SkillLayhands(Heroes plugin) {
         super(plugin, "Layhands");
-        setDescription("You restore your target to full health. The maximum targetting range of this ability is increased by your Wisdom.");
+        setDescription("You restore your target to full health. The maximum Targeting range of this ability is increased by your Wisdom.");
         setUsage("/skill layhands <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill layhands");

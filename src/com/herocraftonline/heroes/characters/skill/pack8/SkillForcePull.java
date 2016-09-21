@@ -26,7 +26,7 @@ public class SkillForcePull extends TargettedSkill {
 
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
-        setDescription("Deal $1 physical damage and force your target towards you. The targetting distance of this ability is affected by your Intellect.");
+        setDescription("Deal $1 physical damage and force your target towards you. The Targeting distance of this ability is affected by your Intellect.");
         setUsage("/skill forcepull");
         setArgumentRange(0, 0);
         setIdentifiers("skill forcepull");
