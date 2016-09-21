@@ -13,8 +13,6 @@
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
     <property name="packages" value="skills,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,public1" />
 
-    <property name="totem.lib" value="totem" />
-
     <!--Classpath used by javac compiler-->
     <path id="classpath">
         <fileset dir="${dir.maven.dependencies}" includes="**/*.jar" excludes="org/bukkit/**/*.jar"/>
@@ -56,15 +54,10 @@
                 <antcall target="jar-skills">
                 	<param name="package" value="@{package}"/>
     			</antcall>
-                <antcall target="jar-totem-lib">
-                    <param name="package" value="@{package}"/>
-    			</antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
                 <antcall target="zip">
                     <param name="package" value="@{package}"/>
                 </antcall>
-                <!--Make sure to remove the Library Jar file-->
-                <delete dir="${dir.dist.path}/@{package}" includes="TotemRecall.jar" />
 			</sequential>
 		</for>
         <delete dir="${dir.bin}"/>
@@ -88,17 +81,6 @@
         <echo message="${package}" />
         <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.${package}.${classname}" />
         <jar jarfile="${dir.dist}/${dir.dist.path}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/${package}/${classname}*.class skill.info">
-            <manifest>
-                <attribute name="Class-Path" value="../../Heroes.jar" />
-            </manifest>
-        </jar>
-    </target>
-
-	<target name="jar-totem-lib">
-        <basename file="SkillTotemRecall" suffix=".class" property="classname" />
-        <echo message="${classname}" />
-        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.skills.${classname}" />
-        <jar jarfile="${dir.dist}/${dir.dist.path}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/skills/${classname}*.class skill.info ${dir.bin.path}/skills/${totem.lib}/*.class ${dir.bin.path}/skills/${totem.lib}/tasks/*.class">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>
