@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack7;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
-import com.herocraftonline.heroes.characters.skill.skills.*;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
