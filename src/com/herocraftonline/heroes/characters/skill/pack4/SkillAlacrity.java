@@ -24,10 +24,10 @@ public class SkillAlacrity extends TargettedSkill {
     
     public SkillAlacrity(Heroes plugin) {
         super(plugin, "Alacrity");
+        setDescription("Prepare the target, granting them Alacrity that increases their Dexterity by $1 for $2 minutes");
         setArgumentRange(0,1);
         setUsage("/skill Alacrity <target>");
         setIdentifiers("skill alacrity");
-        setDescription("Prepare the target, granting them Alacrity that increases their Dexterity by $1 for $2 minutes");
         setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.SILENCEABLE);
     }
     

@@ -32,7 +32,7 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
 
     public SkillAncientRunestone(Heroes plugin) {
         super(plugin, "AncientRunestone");
-        setDescription("You imbue a redstone block with an Ancient Runestone. Ancient Runestones $1 and do not drop upon death.");
+        setDescription("You imbue a redstone block with an Ancient Runestone.");
         setUsage("/skill ancientrunestone");
         setArgumentRange(0, 0);
         setIdentifiers("skill ancientrunestone");
