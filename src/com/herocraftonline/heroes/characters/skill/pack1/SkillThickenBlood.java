@@ -29,7 +29,7 @@ public class SkillThickenBlood extends TargettedSkill {
 
     public SkillThickenBlood(Heroes plugin) {
         super(plugin, "ThickenBlood");
-        setDescription("Thicken the blood of your target, causing them to be inable to use stamina for $1 seconds.");
+        setDescription("Thicken the blood of your target, causing them to be unable to use stamina for $1 seconds.");
         setUsage("/skill thickenblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill thickenblood");

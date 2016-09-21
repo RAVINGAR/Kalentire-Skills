@@ -31,7 +31,7 @@ public class SkillFlameshield extends ActiveSkill {
 
     public SkillFlameshield(Heroes plugin) {
         super(plugin, "Flameshield");
-        setDescription("You become resistent to fire for $1 seconds.");
+        setDescription("You become resistant to fire for $1 seconds.");
         setUsage("/skill flameshield");
         setArgumentRange(0, 0);
         setIdentifiers("skill flameshield", "skill fshield");
