@@ -123,5 +123,3 @@ public class SkillDamageBeam extends SkillBaseBeam {
 
         return transpose;
     }*/
-}
-*/
