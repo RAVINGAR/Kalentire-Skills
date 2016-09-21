@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack7;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.effects.common.BlindEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBlockWave;
-import com.herocraftonline.heroes.characters.skill.skills.*;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
