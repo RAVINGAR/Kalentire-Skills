@@ -38,7 +38,8 @@ public class SkillHolyAura extends ActiveSkill {
     private String expireText;
 
     public SkillHolyAura(Heroes plugin) {
- setUsage("/skill holyaura");
+        super(plugin, "HolyAura");
+        setUsage("/skill holyaura");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.HEALING, SkillType.BUFFING);
         setIdentifiers("skill holyaura");
