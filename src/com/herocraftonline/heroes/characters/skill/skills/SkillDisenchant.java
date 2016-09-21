@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 //src=http://pastie.org/private/qi5088ssrpskghzs3tujg#31
 import java.util.Iterator;
