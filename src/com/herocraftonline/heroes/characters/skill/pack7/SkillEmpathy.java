@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.pack7;
 
 import org.bukkit.Color;
 import org.bukkit.Effect;

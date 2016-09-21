@@ -22,7 +22,7 @@ public class SkillBerserkerRage extends PassiveSkill {
 
     public SkillBerserkerRage(Heroes plugin) {
         super(plugin, "BerserkerRage");
-        setDescription("Passive: Your attacks are filled with unyielding rage. Your physical damage is increased by $1% for every 1% of health missing. The damage increase has a maximum threshhold of $2%. Your current damage increase is $3%.");
+        setDescription("Passive: Your attacks are filled with unyielding rage. Your physical damage is increased by $1% for every 1% of health missing. The damage increase has a maximum threshold of $2%. Your current damage increase is $3%.");
         setArgumentRange(0, 0);
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING);

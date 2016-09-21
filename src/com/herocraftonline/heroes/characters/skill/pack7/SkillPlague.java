@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack6;
+package com.herocraftonline.heroes.characters.skill.pack7;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -30,9 +30,7 @@ public class SkillPlague extends TargettedSkill {
     private String expireText;
 
     public SkillPlague(Heroes plugin) {
-        super(plugin, "Plague");
-        setDescription("You infect your target with the plague, dealing $1 damage over $2 seconds. Enemies within $3 blocks of a plagued target will also be infected.");
-        setUsage("/skill plague");
+ setUsage("/skill plague");
         setArgumentRange(0, 0);
         setIdentifiers("skill plague");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DISEASE, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);

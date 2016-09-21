@@ -16,17 +16,17 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillSmoke extends ActiveSkill {
+public class SkillSmokeBomb extends ActiveSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillSmoke(Heroes plugin) {
-        super(plugin, "Smoke");
-        setDescription("Vanish in a cloud of smoke! You will not be visible to other players for the next $1 seconds. Taking damage or using abilities will cause you to reappear.");
+    public SkillSmokeBomb(Heroes plugin) {
+        super(plugin, "SmokeBomb");
+        setDescription("Vanish in a smokebomb! You will not be visible to other players for the next $1 seconds. Taking damage or using abilities will cause you to reappear.");
         setUsage("/skill smoke");
         setArgumentRange(0, 0);
-        setIdentifiers("skill smoke");
+        setIdentifiers("skill smokebomb");
         setNotes("Note: Interacting with anything removes the effect.");
         setNotes("Note: Taking damage removes the effect.");
         setNotes("Note: Using skills removes the effect.");

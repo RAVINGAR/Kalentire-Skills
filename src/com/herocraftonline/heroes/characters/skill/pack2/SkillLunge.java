@@ -24,7 +24,7 @@ public class SkillLunge extends TargettedSkill {
 
     public SkillLunge(Heroes plugin) {
         super(plugin, "Lunge");
-        setDescription("Lunge towards your target! Targetting distance for this ability is increased by your Strength.");
+        setDescription("Lunge towards your target! Targeting distance for this ability is increased by your Strength.");
         setUsage("/skill lunge");
         setArgumentRange(0, 0);
         setIdentifiers("skill lunge");

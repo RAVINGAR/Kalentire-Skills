@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack6;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;

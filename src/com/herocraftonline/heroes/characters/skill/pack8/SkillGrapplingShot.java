@@ -54,7 +54,6 @@ public class SkillGrapplingShot extends ActiveSkill {
 
     public SkillGrapplingShot(Heroes plugin) {
         super(plugin, "GrapplingShot");
-        //setDescription("Attach a hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however. The grappling hook weighs down your arrows however and reduces their velocity by $4%.");
         setDescription("Attach a hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however.");
         setUsage("/skill grapplingshot");
         setArgumentRange(0, 0);

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack6;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;

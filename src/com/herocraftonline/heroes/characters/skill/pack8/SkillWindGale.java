@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack7;
+package com.herocraftonline.heroes.characters.skill.pack8;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -29,7 +29,7 @@ public class SkillDivineFury extends SkillBaseBeamShot {
 
     public SkillDivineFury(Heroes plugin) {
         super(plugin, "DivineFury");
-        setDescription("");
+        setDescription("Unleash Divine Fury at your target dealing $1 damage in a line.");
         setIdentifiers("skill divinefury");
         setUsage("/skill divinefury");
         setArgumentRange(0, 0);

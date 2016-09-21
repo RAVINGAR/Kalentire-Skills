@@ -14,14 +14,14 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
 
-public class SkillGuardianAngel extends ActiveSkill {
+public class SkillAngelsGrace extends ActiveSkill {
 
-    public SkillGuardianAngel(Heroes plugin) {
-        super(plugin, "GuardianAngel");
-        setDescription("Gives you and your party within $1 blocks invulnerability for $2s");
-        setUsage("/skill guardianangel");
+    public SkillAngelsGrace(Heroes plugin) {
+        super(plugin, "AngelsGrace");
+        setDescription("Grants you and your party within $1 blocks invulnerability for $2s");
+        setUsage("/skill AngelsGrace");
         setArgumentRange(0, 0);
-        setIdentifiers("skill guardianangel", "skill gangel");
+        setIdentifiers("skill AngelsGrace", "skill Angels");
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
