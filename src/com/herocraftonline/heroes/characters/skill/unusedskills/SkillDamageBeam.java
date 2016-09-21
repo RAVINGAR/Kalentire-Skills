@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+/*package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.MAGIC;
 
@@ -48,7 +48,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
         for (int i = 4; i < fxLine.size(); i++) {
             player.getWorld().spigot().playEffect(fxLine.get(i), Effect.FLAME, 0, 0, 0.05f, 0.05f, 0.05f, 0.005f, 8, 16);
         }*/
-
+/*
         player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 10, 5);
 
         castBeam(hero, beam, new TargetHandler() {
@@ -63,7 +63,7 @@ public class SkillDamageBeam extends SkillBaseBeam {
         });
 
         return SkillResult.NORMAL;
-    }
+    }*/
 
     /*
         Have not tested this properly, was originally going to be used
@@ -124,3 +124,4 @@ public class SkillDamageBeam extends SkillBaseBeam {
         return transpose;
     }*/
 }
+*/
