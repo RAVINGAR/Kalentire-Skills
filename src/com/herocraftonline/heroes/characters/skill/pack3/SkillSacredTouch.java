@@ -17,7 +17,7 @@ public class SkillSacredTouch extends SkillBaseHeal {
 
     public SkillSacredTouch(Heroes plugin) {
         super(plugin, "SacredTouch");
-        setDescription("Apply a Sacred Touch to the target, restoring $1 of their health and extinquishing any fire effects present. You are only healed for $2 health from this ability.");
+        setDescription("Apply a Sacred Touch to the target, restoring $1 of their health and extinguishing any fire effects present. You are only healed for $2 health from this ability.");
         setUsage("/skill sacredtouch <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredtouch");

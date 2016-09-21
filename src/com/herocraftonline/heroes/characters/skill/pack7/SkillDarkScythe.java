@@ -38,7 +38,7 @@ public class SkillDarkScythe extends ActiveSkill {
 
     public SkillDarkScythe(Heroes plugin) {
         super(plugin, "Darkscythe");
-        setDescription("Exhudes suffering from your blade for $1 seconds. While active, your attacks cause great pain to your enemies, dealing an extra $2 damage.");
+        setDescription("Exhumes suffering from your blade for $1 seconds. While active, your attacks cause great pain to your enemies, dealing an extra $2 damage.");
         setUsage("/skill darkscythe");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkscythe");
