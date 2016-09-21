@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack5;
+package com.herocraftonline.heroes.characters.skill.pack8;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;

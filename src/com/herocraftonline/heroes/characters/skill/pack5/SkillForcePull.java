@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.pack5;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,17 +21,16 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.util.CompatSound;
 
-public class SkillForcePush extends TargettedSkill {
+public class SkillForcePull extends TargettedSkill {
 
-    public SkillForcePush(Heroes plugin) {
-        super(plugin, "Forcepush");
-        setDescription("Deal $1 physical damage and force your target away from you. The push power is affected by your Intellect.");
-        setUsage("/skill forcepush");
+    public SkillForcePull(Heroes plugin) {
+        super(plugin, "Forcepull");
+        setDescription("Deal $1 physical damage and force your target towards you. The Targeting distance of this ability is affected by your Intellect.");
+        setUsage("/skill forcepull");
         setArgumentRange(0, 0);
-        setIdentifiers("skill forcepush");
-        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setIdentifiers("skill forcepull");
+        setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -47,15 +46,14 @@ public class SkillForcePush extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
         node.set(SkillSetting.DAMAGE.node(), 50);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.6);
-        node.set("horizontal-power", 1.5);
-        node.set("horizontal-power-increase-per-intellect", 0.0375);
-        node.set("vertical-power", 0.25);
-        node.set("vertical-power-increase-per-intellect", 0.0075);
-        node.set("ncp-exemption-duration", 1500);
-        node.set("push-delay", 0.2);
+        node.set("horizontal-power", 0.3);
+        node.set("horizontal-power-increase-per-intellect", 0.0125);
+        node.set("vertical-power", 0.4);
+        node.set("ncp-exemption-duration", 1000);
+        node.set("pull-delay", 0.2);
 
         return node;
     }
@@ -93,9 +91,7 @@ public class SkillForcePush extends TargettedSkill {
                 break;
         }
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", 0.0075, false);
-        tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
 
         if (weakenVelocity)
             tempVPower *= 0.75;
@@ -105,28 +101,28 @@ public class SkillForcePush extends TargettedSkill {
         final Vector pushUpVector = new Vector(0, vPower, 0);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(target, new NCPFunction() {
-            
+
             @Override
             public void execute()
             {
-                target.setVelocity(pushUpVector);                
+                target.setVelocity(pushUpVector);
             }
-        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
 
-        final double xDir = targetLoc.getX() - playerLoc.getX();
-        final double zDir = targetLoc.getZ() - playerLoc.getZ();
+        final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
+        final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
 
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.0375, false);
-        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.0125, false);
+        tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         if (weakenVelocity)
             tempHPower *= 0.75;
 
         final double hPower = tempHPower;
 
-        // Push them "up" first. THEN we can push them away.
-        double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.2, false);
+        // push them "up" first. THEN we can pull them to us.
+        double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
                 // Push them away
@@ -136,15 +132,7 @@ public class SkillForcePush extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5f, 2.0f);
-
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), 
-                org.bukkit.Effect.WITCH_MAGIC, 
-                0, 0, 
-                0, 0, 0, 
-                1, 
-                150, 
-                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5, false) + 1);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 150, 16);
 
         return SkillResult.NORMAL;
     }
