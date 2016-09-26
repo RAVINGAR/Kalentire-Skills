@@ -52,7 +52,7 @@
     		<sequential>
             	<mkdir dir="${dir.dist}/${dir.dist.path}" />
                 <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}" />
-                <javac srcdir="src/com/herocraftonline/heroes/characters/skill" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
+                <javac srcdir="src/com/herocraftonline/heroes/characters/skill" excludes="**/unusedskills/**" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
                 <antcall target="jar-skills">
                 	<param name="package" value="@{package}"/>
     			</antcall>
