@@ -12,6 +12,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -89,8 +91,8 @@ public class SkillInferno extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.FIRE);
             
-            addMobEffect(2, (int) (duration / 1000) * 20, 127, false);      // Max slowness is 127
-            addMobEffect(8, (int) (duration / 1000) * 20, 128, false);      // Max negative jump boost
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000) * 20, 127), false);      // Max slowness is 127
+            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000) * 20, 128), false);      // Max negative jump boost
         }
 
         @Override

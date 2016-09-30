@@ -8,8 +8,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,6 +23,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.ArrayList;
@@ -88,8 +90,8 @@ public class SkillDarkBolt extends ActiveSkill {
         node.set("healing-reduction-percent", 0.15);
         node.set("velocity-multiplier", 2.0);
         node.set("ticks-lived", 3);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s begins to wither away!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target%'s is no longer withering.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s begins to wither away!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s is no longer withering.");
 
         return node;
     }
@@ -98,8 +100,8 @@ public class SkillDarkBolt extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target%'s begins to wither away!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target%'s is no longer withering.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s begins to wither away!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s is no longer withering.").replace("%target%", "$1");
     }
 
     @Override
@@ -249,7 +251,7 @@ public class SkillDarkBolt extends ActiveSkill {
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.WITHER);
 
-            addMobEffect(20, (int) (duration / 1000) * 20, witherLevel, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration / 1000) * 20, witherLevel), false);
         }
     }
 }

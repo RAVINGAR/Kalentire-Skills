@@ -34,12 +34,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -52,8 +55,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runes.Rune;
 import com.herocraftonline.heroes.characters.skill.runes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runes.RuneApplicationEvent;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillToxicRune extends ActiveSkill {
@@ -93,9 +96,9 @@ public class SkillToxicRune extends ActiveSkill {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.375);
         node.set(SkillSetting.PERIOD.node(), 3000);
         node.set(SkillSetting.DURATION.node(), 12000);
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.DARK_GREEN + "Toxicity.");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been poisoned by a Rune of Toxicity!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the poison!");
+        node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% imbues his blade with a Rune of " + ChatColor.DARK_GREEN + "Toxicity.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been poisoned by a Rune of Toxicity!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has recovered from the poison!");
         node.set("rune-chat-color", ChatColor.DARK_GREEN.toString());
 
         return node;
@@ -189,8 +192,8 @@ public class SkillToxicRune extends ActiveSkill {
                     double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been poisoned by a Rune of Toxicity!").replace("%target%", "$1");
-                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has recovered from the poison!").replace("%target%", "$1");
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been poisoned by a Rune of Toxicity!").replace("%target%", "$1");
+                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has recovered from the poison!").replace("%target%", "$1");
 
                     // Create the effect
                     ToxicRunePoison pEffect = new ToxicRunePoison(skill, hero.getPlayer(), period, duration, damage, applyText, expireText);
@@ -225,13 +228,13 @@ public class SkillToxicRune extends ActiveSkill {
             types.add(EffectType.POISON);
             types.add(EffectType.DISPELLABLE);
 
-            addMobEffect(19, (int) ((duration / 1000.0) * 20), 0, true);
+            addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) ((duration / 1000.0) * 20), 0), true);
         }
 
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + applyText, Messaging.getLivingEntityName(monster), applier.getName());
+            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster), applier.getName());
         }
 
         @Override
@@ -244,7 +247,7 @@ public class SkillToxicRune extends ActiveSkill {
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster), applier.getName());
+            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster), applier.getName());
         }
 
         @Override

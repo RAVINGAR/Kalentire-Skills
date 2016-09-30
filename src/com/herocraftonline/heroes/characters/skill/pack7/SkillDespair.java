@@ -2,9 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack7;
 
 import java.util.ArrayList;
 
-import org.bukkit.Color;
 import org.bukkit.Effect;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -12,6 +10,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -25,9 +25,8 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDespair extends ActiveSkill {
@@ -69,8 +68,8 @@ public class SkillDespair extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), 8);
         node.set(SkillSetting.DURATION.node(), 4000);
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has blinded %target% with %skill%!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has recovered their sight!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has blinded %target% with %skill%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has recovered their sight!");
         node.set(SkillSetting.REAGENT.node(), 367);
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
@@ -81,8 +80,8 @@ public class SkillDespair extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has blinded %target% with %skill%!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% has recovered their sight!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has blinded %target% with %skill%!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has recovered their sight!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
     }
     
     public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -157,7 +156,7 @@ public class SkillDespair extends ActiveSkill {
             types.add(EffectType.BLIND);
             types.add(EffectType.DISPELLABLE);
 
-            addMobEffect(15, (int) ((duration / 1000) * 20), 3, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) ((duration / 1000) * 20), 3), false);
         }
 
         @Override

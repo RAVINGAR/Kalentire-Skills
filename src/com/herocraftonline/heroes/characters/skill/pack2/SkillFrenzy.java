@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -22,7 +24,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFrenzy extends ActiveSkill {
@@ -62,8 +64,8 @@ public class SkillFrenzy extends ActiveSkill {
         node.set("outgoing-damage-increase", 0.15);
         node.set("incoming-damage-increase", 0.25);
         node.set(SkillSetting.DURATION.node(), 8000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has entered a frenzy!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer in a frenzy!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has entered a frenzy!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer in a frenzy!");
 
         return node;
     }
@@ -71,8 +73,8 @@ public class SkillFrenzy extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has entered a frenzy!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer in a frenzy!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has entered a frenzy!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer in a frenzy!").replace("%hero%", "$1");
     }
 
     @Override
@@ -161,7 +163,7 @@ public class SkillFrenzy extends ActiveSkill {
             this.incomingDamageIncrease = incomingDamageIncrease;
             this.outgoingDamageIncrease = outgoingDamageIncrease;
 
-            addMobEffect(9, (int) (((duration + 4000) / 1000) * 20), nauseaAmplifier, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) (((duration + 4000) / 1000) * 20), nauseaAmplifier), false);
         }
 
         @Override

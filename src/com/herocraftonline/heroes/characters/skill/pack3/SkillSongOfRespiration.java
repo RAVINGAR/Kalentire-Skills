@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -50,8 +51,8 @@ public class SkillSongOfRespiration extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), 6000);
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 225);
         node.set(SkillSetting.DELAY.node(), 1000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are filled with increased respiration!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "Your increased respiration has faded.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are filled with increased respiration!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "Your increased respiration has faded.");
 
         return node;
     }
@@ -60,8 +61,8 @@ public class SkillSongOfRespiration extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You are filled with increased respiration!").replace("%hero%", "$2").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "Your increased respiration has faded.").replace("%hero%", "$2").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "You are filled with increased respiration!").replace("%hero%", "$2").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "Your increased respiration has faded.").replace("%hero%", "$2").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {

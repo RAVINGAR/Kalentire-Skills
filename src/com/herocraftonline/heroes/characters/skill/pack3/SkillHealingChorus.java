@@ -16,6 +16,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -58,8 +59,8 @@ public class SkillHealingChorus extends ActiveSkill {
         node.set(SkillSetting.PERIOD.node(), 1500);
         node.set(SkillSetting.HEALING_TICK.node(), 17);
         node.set(SkillSetting.HEALING_INCREASE_PER_CHARISMA.node(), 0.175);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with %hero%'s chorus of healing.");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s chorus of healing has ended.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are gifted with %hero%'s chorus of healing.");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s chorus of healing has ended.");
         node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
@@ -134,7 +135,6 @@ public class SkillHealingChorus extends ActiveSkill {
 
                     private double time = 0;
 
-                    @SuppressWarnings("deprecation")
                     @Override
                     public void run()
                     {

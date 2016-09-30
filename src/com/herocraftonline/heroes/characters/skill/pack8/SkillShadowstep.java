@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -50,7 +51,7 @@ public class SkillShadowstep extends TargettedSkill {
         defaultConfig.set(SkillSetting.MAX_DISTANCE.node(), 4);
         defaultConfig.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
         defaultConfig.set("teleport-blocks-behind-target", 1);
-        defaultConfig.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% ShadowStepped behind %target%!");
+        defaultConfig.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% ShadowStepped behind %target%!");
 
         return defaultConfig;
     }

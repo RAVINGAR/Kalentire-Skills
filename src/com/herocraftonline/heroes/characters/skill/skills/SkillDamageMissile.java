@@ -20,8 +20,6 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
@@ -30,7 +28,6 @@ import org.bukkit.util.Vector;
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
 import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTIBLE;
-import static org.bukkit.Bukkit.broadcastMessage;
 
 public class SkillDamageMissile extends SkillBaseMissile {
 

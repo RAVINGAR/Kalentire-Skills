@@ -2,6 +2,8 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -61,7 +63,7 @@ public class SkillFarSight extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.SLOW);
 
-            addMobEffect(2, (int) (duration / 1000) * 20, 10, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000) * 20, 10), false);
         }
     }
 }

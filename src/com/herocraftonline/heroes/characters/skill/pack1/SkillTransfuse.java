@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 
@@ -64,7 +65,7 @@ public class SkillTransfuse extends ActiveSkill {
 
         hero.setMana(hrmEvent.getAmount() + hero.getMana());
         if (hero.isVerboseMana()) {
-            Messaging.send(hero.getPlayer(), Messaging.createFullManaBar(hero.getMana(), hero.getMaxMana()));
+            Messaging.send(hero.getPlayer(), ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
         }
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);

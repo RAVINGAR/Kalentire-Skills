@@ -4,10 +4,10 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.AttributeIncreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -55,8 +55,8 @@ public class SkillSacrifice extends ActiveSkill {
         node.set("str-increase", 5);
         node.set("str-increase-per-strength", 0.0);
         node.set(SkillSetting.DURATION.node(), 180000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "A sacrifice was made for your sake!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "The sacrifice's effect wore off...");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "A sacrifice was made for your sake!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "The sacrifice's effect wore off...");
 
         return node;
     }
@@ -65,8 +65,8 @@ public class SkillSacrifice extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "A sacrifice was made for your sake!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "The sacrifice's effect wore off...");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "A sacrifice was made for your sake!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "The sacrifice's effect wore off...");
     }
 
     @Override

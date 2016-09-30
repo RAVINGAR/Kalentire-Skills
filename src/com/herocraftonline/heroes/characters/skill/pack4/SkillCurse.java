@@ -1,9 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack4;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Effect;
-import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,6 +13,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -24,9 +23,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillCurse extends TargettedSkill {
@@ -63,9 +61,9 @@ public class SkillCurse extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.DURATION.node(), 7000);
         node.set("miss-chance", 0.50);
-        node.set("miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!");
+        node.set("miss-text", ChatComponents.GENERIC_SKILL + "%target% misses an attack!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cursed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has recovered from the curse!");
         node.set(SkillSetting.REAGENT.node(), 318);
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
@@ -76,9 +74,9 @@ public class SkillCurse extends TargettedSkill {
     public void init() {
         super.init();
 
-        missText = SkillConfigManager.getRaw(this, "miss-text", Messaging.getSkillDenoter() + "%target% misses an attack!").replace("%target%", "$1");
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been cursed!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has recovered from the curse!").replace("%target%", "$1");
+        missText = SkillConfigManager.getRaw(this, "miss-text", ChatComponents.GENERIC_SKILL + "%target% misses an attack!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cursed!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has recovered from the curse!").replace("%target%", "$1");
     }
 
     @Override
@@ -113,7 +111,7 @@ public class SkillCurse extends TargettedSkill {
                 if (Util.nextRand() < cEffect.missChance) {
                     event.setCancelled(true);
                     character.getEntity().getWorld().spigot().playEffect(character.getEntity().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
-                    broadcast(character.getEntity().getLocation(), missText, Messaging.getLivingEntityName(character));
+                    broadcast(character.getEntity().getLocation(), missText, CustomNameManager.getName(character));
                 }
             }
         }
@@ -136,7 +134,7 @@ public class SkillCurse extends TargettedSkill {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + applyText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster));
         }
 
         @Override
@@ -153,7 +151,7 @@ public class SkillCurse extends TargettedSkill {
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
         }
 
         @Override

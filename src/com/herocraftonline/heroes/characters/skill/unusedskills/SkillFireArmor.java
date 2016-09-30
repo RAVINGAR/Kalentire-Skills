@@ -16,13 +16,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFireArmor extends PassiveSkill {
@@ -95,7 +95,7 @@ public class SkillFireArmor extends PassiveSkill {
             if (subEvent.getDamager() instanceof Player) {
                 name = ((Player) subEvent.getDamager()).getName();
             } else {
-                name = Messaging.getLivingEntityName((LivingEntity) subEvent.getDamager());
+                name = CustomNameManager.getName((LivingEntity) subEvent.getDamager());
             }
             
             broadcast(player.getLocation(), igniteText, player.getName(), name);

@@ -9,8 +9,8 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.*;
@@ -22,6 +22,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,7 +66,7 @@ public class SkillWeb extends TargettedSkill {
         node.set(SkillSetting.DURATION.node(), 2000);
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 75);
         node.set("root-duration", 500);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% conjured a web at %target%'s feet!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% conjured a web at %target%'s feet!");
 
         return node;
     }
@@ -73,7 +75,7 @@ public class SkillWeb extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$2").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$2").replace("%target%", "$1");
     }
 
     @Override
@@ -121,8 +123,8 @@ public class SkillWeb extends TargettedSkill {
             types.add(EffectType.HARMFUL);
 
             if (rootDuration > 0) {
-                addMobEffect(2, (int) ((rootDuration / 1000.0) * 20), 127, false);      // Max slowness is 127
-                addMobEffect(8, (int) ((rootDuration / 1000.0) * 20), 128, false);      // Max negative jump boost
+                addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) ((rootDuration / 1000.0) * 20), 127), false);      // Max slowness is 127
+                addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) ((rootDuration / 1000.0) * 20), 128), false);      // Max negative jump boost
             }
         }
 

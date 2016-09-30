@@ -17,6 +17,7 @@ import org.bukkit.util.Vector;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -26,8 +27,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAimedShot extends TargettedSkill {
@@ -69,10 +70,10 @@ public class SkillAimedShot extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 40);
         node.set(SkillSetting.DELAY.node(), 3000);
         node.set("grace-period", 4000);
-        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% is locked on!"));
-        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(Messaging.getSkillDenoter() + "%hero% begins to hone in his aim on %target%"));
-        node.set("expire-text-fail", String.valueOf(Messaging.getSkillDenoter() + "%hero% has lost sight of his target."));
-        node.set("expire-text-success", String.valueOf(Messaging.getSkillDenoter() + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!"));
+        node.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(ChatComponents.GENERIC_SKILL + "%hero% is locked on!"));
+        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(ChatComponents.GENERIC_SKILL + "%hero% begins to hone in his aim on %target%"));
+        node.set("expire-text-fail", String.valueOf(ChatComponents.GENERIC_SKILL + "%hero% has lost sight of his target."));
+        node.set("expire-text-success", String.valueOf(ChatComponents.GENERIC_SKILL + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!"));
 
         return node;
     }
@@ -80,9 +81,9 @@ public class SkillAimedShot extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is locked on!").replace("%hero%", "$1");
-        expireTextFail = SkillConfigManager.getRaw(this, "expire-text-fail", Messaging.getSkillDenoter() + "%hero% has lost sight of his target.").replace("%hero%", "$1");
-        expireTextSuccess = SkillConfigManager.getRaw(this, "expire-text-success", Messaging.getSkillDenoter() + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!").replace("%hero%", "$1").replace("%target%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is locked on!").replace("%hero%", "$1");
+        expireTextFail = SkillConfigManager.getRaw(this, "expire-text-fail", ChatComponents.GENERIC_SKILL + "%hero% has lost sight of his target.").replace("%hero%", "$1");
+        expireTextSuccess = SkillConfigManager.getRaw(this, "expire-text-success", ChatComponents.GENERIC_SKILL + "%hero% has unleashed a powerful " + ChatColor.BOLD + "Aimed Shot" + ChatColor.RESET + ChatColor.GRAY + " on %target%!").replace("%hero%", "$1").replace("%target%", "$2");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -199,8 +200,8 @@ public class SkillAimedShot extends TargettedSkill {
             }
 
             if (target instanceof Monster)
-                //broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), Messaging.getLivingEntityName((Monster) target));
-                broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), Messaging.getLivingEntityName(target));
+                //broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), CustomNameManager.getName((Monster) target));
+                broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), CustomNameManager.getName(target));
             else if (target instanceof Player)
                 broadcast(player.getLocation(), "    " + expireTextSuccess, player.getName(), ((Player) target).getName());
         }

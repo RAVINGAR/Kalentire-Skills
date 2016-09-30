@@ -1,16 +1,17 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -20,9 +21,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillPlague extends TargettedSkill {
@@ -65,8 +65,8 @@ public class SkillPlague extends TargettedSkill {
         node.set(SkillSetting.DAMAGE_TICK.node(), (double) 10);
         node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.125);
         node.set(SkillSetting.RADIUS.node(), 4);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% is infected with the plague!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer infected with the plague!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is infected with the plague!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer infected with the plague!");
 
         return node;
     }
@@ -75,8 +75,8 @@ public class SkillPlague extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% is infected with the plague!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer infected with the plague!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is infected with the plague!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer infected with the plague!").replace("%target%", "$1");
     }
 
     @Override
@@ -108,7 +108,7 @@ public class SkillPlague extends TargettedSkill {
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DISEASE);
 
-            addMobEffect(19, (int) (duration / 1000) * 20, 0, true);
+            addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (duration / 1000) * 20, 0), true);
         }
 
         // Clone Constructor
@@ -120,7 +120,7 @@ public class SkillPlague extends TargettedSkill {
             types.add(EffectType.HARMFUL);
 
             this.jumped = true;
-            addMobEffect(19, (int) (pEffect.getRemainingTime() / 1000) * 20, 0, true);
+            addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (pEffect.getRemainingTime() / 1000) * 20, 0), true);
         }
 
         @Override
@@ -138,7 +138,7 @@ public class SkillPlague extends TargettedSkill {
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
         }
 
         @Override

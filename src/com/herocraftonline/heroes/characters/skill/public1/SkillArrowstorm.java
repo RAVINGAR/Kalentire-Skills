@@ -94,7 +94,6 @@ public class SkillArrowstorm extends ActiveSkill {
         return node;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(final Hero hero, String[] args) {
         if (this.shootingPlayers.containsKey(hero)) {

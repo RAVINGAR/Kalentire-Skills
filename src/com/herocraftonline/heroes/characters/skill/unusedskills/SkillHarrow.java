@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -55,7 +56,7 @@ public class SkillHarrow extends TargettedSkill {
         node.set(SkillSetting.DAMAGE.node(), 90);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.8);
         node.set("heal-mult", 0.9);
-        node.set("not-behind-player-text", Messaging.getSkillDenoter() + "You are not behind the target!");
+        node.set("not-behind-player-text", ChatComponents.GENERIC_SKILL + "You are not behind the target!");
 
         return node;
     }
@@ -64,7 +65,7 @@ public class SkillHarrow extends TargettedSkill {
     public void init() {
         super.init();
 
-        notBehindPlayerText = SkillConfigManager.getRaw(this, "not-behind-player-text", Messaging.getSkillDenoter() + "You are not behind the target!");
+        notBehindPlayerText = SkillConfigManager.getRaw(this, "not-behind-player-text", ChatComponents.GENERIC_SKILL + "You are not behind the target!");
     }
 
     @Override

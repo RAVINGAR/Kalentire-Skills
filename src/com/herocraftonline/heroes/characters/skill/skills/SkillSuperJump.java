@@ -6,6 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -154,7 +156,7 @@ public class SkillSuperJump extends ActiveSkill {
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.JUMP_BOOST);
 
-            addMobEffect(8, (int) (duration / 1000 * 20), 5, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000 * 20), 5), false);
         }
     }
 }

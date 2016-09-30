@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.NauseaEffect;
@@ -22,7 +23,7 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
-import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.chat.ChatComponents;
 
 public class SkillForceTotem extends SkillBaseTotem {
 
@@ -71,7 +72,7 @@ public class SkillForceTotem extends SkillBaseTotem {
                 if(player != null) {
                     name = player.getName();
                 }
-                else name = Messaging.getLivingEntityName(character);
+                else name = CustomNameManager.getName(character);
                 broadcast(entity.getLocation(), getApplyText(), name, heroP.getName());
             }
             else {
@@ -108,8 +109,8 @@ public class SkillForceTotem extends SkillBaseTotem {
 
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "$1 is disoriented by a totem's power!");
-        node.set(SkillSetting.UNAPPLY_TEXT.node(), Messaging.getSkillDenoter() + "$1 is no longer disoriented by a totem's power.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is disoriented by a totem's power!");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is no longer disoriented by a totem's power.");
         node.set(SkillSetting.DAMAGE.node(), 50.0);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5.0);
         node.set("base-launch", 1.0);
@@ -139,10 +140,10 @@ public class SkillForceTotem extends SkillBaseTotem {
     }
 
     public String getApplyText() {
-        return SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "$1 is disoriented by a totem's power!");
+        return SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "$1 is disoriented by a totem's power!");
     }
 
     public String getUnapplyText() {
-        return SkillConfigManager.getRaw(this, SkillSetting.UNAPPLY_TEXT, Messaging.getSkillDenoter() + "$1 is no longer disoriented by a totem's power.");
+        return SkillConfigManager.getRaw(this, SkillSetting.UNAPPLY_TEXT, ChatComponents.GENERIC_SKILL + "$1 is no longer disoriented by a totem's power.");
     }
 }

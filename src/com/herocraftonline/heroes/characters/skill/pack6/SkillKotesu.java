@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
@@ -52,8 +53,8 @@ public class SkillKotesu extends TargettedSkill {
         node.set(SkillSetting.MAX_DISTANCE.node(), 5);
         node.set(SkillSetting.DAMAGE.node(), 50);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.6);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "$1 is slowed by Kotesu's power!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "Kotesu's power fades from $1.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is slowed by Kotesu's power!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "Kotesu's power fades from $1.");
         node.set("sword-sacrifice-percent", 5);
         node.set("slowness-duration", 2000);
         node.set("slowness-amplitude", 2);
@@ -64,8 +65,8 @@ public class SkillKotesu extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "$1 is slowed by Kotesu's power!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "Kotesu's power fades from $1.");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "$1 is slowed by Kotesu's power!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "Kotesu's power fades from $1.");
     }
 
     @Override

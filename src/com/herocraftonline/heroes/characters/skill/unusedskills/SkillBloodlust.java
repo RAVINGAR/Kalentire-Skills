@@ -2,6 +2,8 @@ package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -65,8 +67,8 @@ public class SkillBloodlust extends ActiveSkill {
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.PHYSICAL);
-            addMobEffect(5, (int)(duration / 1000L * 20L), 1, false);
-            addMobEffect(11, (int)(duration / 1000L * 20L), 1, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, (int)(duration / 1000L * 20L), 1), false);
+            addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, (int)(duration / 1000L * 20L), 1), false);
         }
 
         public void apply(Hero hero) {

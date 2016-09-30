@@ -10,11 +10,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -24,7 +27,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDeepFreeze extends TargettedSkill {
 
@@ -92,8 +94,8 @@ public class SkillDeepFreeze extends TargettedSkill {
             this.types.add(EffectType.MAGIC);
             this.types.add(EffectType.UNBREAKABLE);
             int effectDuration = (int) duration / 1000 * 20;
-            this.addMobEffect(2, effectDuration, 5, false);
-            this.addMobEffect(8, effectDuration, -5, false);
+            this.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, effectDuration, 5), false);
+            this.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, effectDuration, -5), false);
         }
 
         @Override
@@ -105,7 +107,7 @@ public class SkillDeepFreeze extends TargettedSkill {
             y = location.getY();
             z = location.getZ();
 
-            broadcast(location, applyText, Messaging.getLivingEntityName(monster));
+            broadcast(location, applyText, CustomNameManager.getName(monster));
         }
 
         @Override
@@ -136,13 +138,13 @@ public class SkillDeepFreeze extends TargettedSkill {
             double damage = SkillConfigManager.getUseSetting(applier, skill, "shatter-damage", 7, false);
             addSpellTarget(lEntity, applier);
             damageEntity(lEntity, applier.getPlayer(), damage, DamageCause.MAGIC);
-            broadcast(lEntity.getLocation(), shatterText, Messaging.getLivingEntityName(lEntity));
+            broadcast(lEntity.getLocation(), shatterText, CustomNameManager.getName(lEntity));
         }
         
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster));
+            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
         }
 
         @Override

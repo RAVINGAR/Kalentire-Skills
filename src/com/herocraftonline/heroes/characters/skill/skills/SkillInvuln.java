@@ -20,8 +20,8 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillInvuln extends ActiveSkill {
@@ -51,8 +51,8 @@ public class SkillInvuln extends ActiveSkill {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.DURATION.node(), 6000);
-		node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has become invulnerable!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is once again vulnerable!");
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has become invulnerable!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!");
 		node.set(SkillSetting.REAGENT.node(), 81);
 		node.set(SkillSetting.REAGENT_COST.node(), 1);
 
@@ -63,8 +63,8 @@ public class SkillInvuln extends ActiveSkill {
 	public void init() {
 		super.init();
 
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has become invulnerable!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is once again vulnerable!").replace("%hero%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has become invulnerable!").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!").replace("%hero%", "$1");
 	}
 
 	public ArrayList<Location> rectangle(Location center, double width, double effectSpacing)

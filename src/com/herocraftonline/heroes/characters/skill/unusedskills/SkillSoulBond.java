@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -24,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillSoulBond extends TargettedSkill {
 
@@ -179,7 +179,7 @@ public class SkillSoulBond extends TargettedSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
             plugin.getCharacterManager().getCharacter(target).removeEffect(bondEffect);
-            broadcast(player.getLocation(), "    " + expireText, Messaging.getLivingEntityName(target), player.getName());
+            broadcast(player.getLocation(), "    " + expireText, CustomNameManager.getName(target), player.getName());
         }
     }
 

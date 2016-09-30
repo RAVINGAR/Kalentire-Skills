@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
@@ -30,7 +31,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillCharge extends TargettedSkill {
 
@@ -145,8 +145,8 @@ public class SkillCharge extends TargettedSkill {
                 } else if (e instanceof LivingEntity) {
                     Monster monster = plugin.getCharacterManager().getMonster((LivingEntity) e);
                     if (slowDuration > 0)
-                        monster.addEffect(new SlowEffect(skill, hero.getPlayer(), slowDuration, 2, Messaging.getLivingEntityName(le) + " has been slowed by " + player.getName(),
-                                Messaging.getLivingEntityName(le) + " is no longer slowed by " + player.getName()));
+                        monster.addEffect(new SlowEffect(skill, hero.getPlayer(), slowDuration, 2, CustomNameManager.getName(le) + " has been slowed by " + player.getName(),
+                                CustomNameManager.getName(le) + " is no longer slowed by " + player.getName()));
                     if (rootDuration > 0)
                        monster.addEffect(new RootEffect(skill, hero.getPlayer(), rootPeriod, rootDuration));
                 }

@@ -39,6 +39,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -91,10 +92,10 @@ public class SkillIceVolley extends ActiveSkill {
         node.set("velocity-multiplier", 2.0);
         node.set("slow-multiplier", 1);
         node.set("slow-duration", 2500);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has loaded an array of Ice Arrows!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer firing a volley of arrows.");
-        node.set("slow-apply-text", Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!");
-        node.set("slow-expire-text", Messaging.getSkillDenoter() + "%target% is no longer slowed!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has loaded an array of Ice Arrows!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer firing a volley of arrows.");
+        node.set("slow-apply-text", ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s Ice Volley!");
+        node.set("slow-expire-text", ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!");
 
         return node;
     }
@@ -103,12 +104,12 @@ public class SkillIceVolley extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has loaded an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer firing a volley of arrows.").replace("%hero%", "$1");
-        shotText = SkillConfigManager.getRaw(this, "shot-text", Messaging.getSkillDenoter() + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has loaded an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer firing a volley of arrows.").replace("%hero%", "$1");
+        shotText = SkillConfigManager.getRaw(this, "shot-text", ChatComponents.GENERIC_SKILL + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
 
-        slowApplyText = SkillConfigManager.getRaw(this, "slow-apply-text", Messaging.getSkillDenoter() + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
-        slowExpireText = SkillConfigManager.getRaw(this, "slow-expire-text", Messaging.getSkillDenoter() + "%target% is no longer slowed!").replace("%target%", "$1");
+        slowApplyText = SkillConfigManager.getRaw(this, "slow-apply-text", ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
+        slowExpireText = SkillConfigManager.getRaw(this, "slow-expire-text", ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {

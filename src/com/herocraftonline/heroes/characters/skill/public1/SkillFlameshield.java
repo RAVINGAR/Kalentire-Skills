@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -17,8 +19,8 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlameshield extends ActiveSkill {
@@ -48,9 +50,9 @@ public class SkillFlameshield extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), 8000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% conjured a shield of flames!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% lost his shield of flames!");
-        node.set("skill-block-text", Messaging.getSkillDenoter() + "%name%'s flameshield has blocked %hero%'s %skill%.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% conjured a shield of flames!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% lost his shield of flames!");
+        node.set("skill-block-text", ChatComponents.GENERIC_SKILL + "%name%'s flameshield has blocked %hero%'s %skill%.");
 
         return node;
     }
@@ -59,8 +61,8 @@ public class SkillFlameshield extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% conjured a shield of flames!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% lost his shield of flames!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% conjured a shield of flames!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% lost his shield of flames!").replace("%hero%", "$1");
     }
     
     public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -110,7 +112,7 @@ public class SkillFlameshield extends ActiveSkill {
             types.add(EffectType.RESIST_FIRE);
             types.add(EffectType.MAGIC);
 
-            addMobEffect(12, (int) ((duration * 20) / 1000), 1, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, (int) ((duration * 20) / 1000), 1), false);
         }
 
         @Override

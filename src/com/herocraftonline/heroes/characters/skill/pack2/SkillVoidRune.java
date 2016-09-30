@@ -52,8 +52,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runes.Rune;
 import com.herocraftonline.heroes.characters.skill.runes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runes.RuneApplicationEvent;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillVoidRune extends ActiveSkill {
@@ -88,9 +88,9 @@ public class SkillVoidRune extends ActiveSkill {
         node.set(SkillSetting.DAMAGE.node(), 25);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.625);
         node.set(SkillSetting.DURATION.node(), 1500);
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.DARK_PURPLE + "Void.");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been silenced by a Rune of Void!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer silenced!");
+        node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% imbues his blade with a Rune of " + ChatColor.DARK_PURPLE + "Void.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been silenced by a Rune of Void!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer silenced!");
         node.set("rune-chat-color", ChatColor.DARK_PURPLE.toString());
 
         return node;
@@ -184,8 +184,8 @@ public class SkillVoidRune extends ActiveSkill {
                     double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.625, false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been silenced by a Rune of Void!").replace("%target%", "$1");
-                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% is no longer silenced!").replace("%target%", "$1");
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been silenced by a Rune of Void!").replace("%target%", "$1");
+                    String expireText = SkillConfigManager.getRaw(skill, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer silenced!").replace("%target%", "$1");
 
                     // Damage and silence the target
                     addSpellTarget(targEnt, hero);

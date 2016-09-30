@@ -14,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -29,9 +31,9 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBarrier extends ActiveSkill {
@@ -77,8 +79,8 @@ public class SkillBarrier extends ActiveSkill {
 		node.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), 75);
 		node.set("slow-amplifier", 35);
 		node.set("disarm-duration", 3000);
-		node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% has created a Barrier!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s Barrier has faded.");
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has created a Barrier!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s Barrier has faded.");
 
 		return node;
 	}
@@ -87,8 +89,8 @@ public class SkillBarrier extends ActiveSkill {
 	public void init() {
 		super.init();
 
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% has created a Barrier!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s Barrier has faded.").replace("%hero%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has created a Barrier!").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s Barrier has faded.").replace("%hero%", "$1");
 	}
 
 	public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -225,7 +227,7 @@ public class SkillBarrier extends ActiveSkill {
 			this.disarmDuration = disarmDuration;
 
 			int tickDuration = (int) ((duration / 1000) * 20);
-			addMobEffect(2, tickDuration, slowAmplifier, false);
+			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickDuration, slowAmplifier), false);
 			//addMobEffect(8, tickDuration, 254, false);
 		}
 

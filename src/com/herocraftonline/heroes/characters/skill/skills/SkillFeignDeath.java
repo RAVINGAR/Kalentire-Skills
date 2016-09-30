@@ -18,10 +18,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.party.HeroParty;
@@ -30,7 +32,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFeignDeath extends ActiveSkill {
@@ -78,8 +80,8 @@ public class SkillFeignDeath extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You feign death!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "You appear to be living!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "You feign death!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "You appear to be living!");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -165,7 +167,7 @@ public class SkillFeignDeath extends ActiveSkill {
         public FeignDeathEffect(Skill skill, Player applier, long duration) {
             super(skill, applier, duration, applyText, expireText);
 
-            addMobEffect(15, (int) ((duration / 1000) * 20), 0, false);             // Blind
+            addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) ((duration / 1000) * 20), 0), false);             // Blind
         }
 
         @Override
@@ -209,7 +211,7 @@ public class SkillFeignDeath extends ActiveSkill {
                 broadcast(player.getLocation(), deathMessage);
             }
             else {
-                String targetName = Messaging.getLivingEntityName(lastCombatTarget);
+                String targetName = CustomNameManager.getName(lastCombatTarget);
 
                 String deathMessage = "";
 

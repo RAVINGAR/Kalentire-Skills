@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -133,7 +134,7 @@ public class SkillBladegrasp extends ActiveSkill {
             if (hero.hasEffect(getName())) {
                 hero.getEffect(getName()).removeFromHero(hero);
                 event.setCancelled(true);
-                String message = Messaging.parameterizeMessage(parrySkillText, player.getName(), Messaging.getLivingEntityName(event.getDamager()), event.getSkill().getName());
+                String message = Messaging.parameterizeMessage(parrySkillText, player.getName(), CustomNameManager.getName(event.getDamager()), event.getSkill().getName());
                 Messaging.send(player, message);
                 if (event.getDamager() instanceof Hero) {
                     Messaging.send(((Hero) event.getDamager()).getPlayer(), message);

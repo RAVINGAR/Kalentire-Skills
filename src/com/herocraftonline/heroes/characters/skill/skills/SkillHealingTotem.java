@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.events.HeroLeavePartyEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
-import com.herocraftonline.heroes.characters.effects.common.AttributeIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;

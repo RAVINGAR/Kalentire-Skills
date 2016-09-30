@@ -51,8 +51,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.runes.Rune;
 import com.herocraftonline.heroes.characters.skill.runes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runes.RuneApplicationEvent;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFireRune extends ActiveSkill {
@@ -83,8 +83,8 @@ public class SkillFireRune extends ActiveSkill {
 
         node.set(SkillSetting.DAMAGE.node(), 55);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.375);
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been burned by a Rune of Fire!");
+        node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% imbues his blade with a Rune of " + ChatColor.RED + "Fire.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been burned by a Rune of Fire!");
         node.set("rune-chat-color", ChatColor.RED.toString());
 
         return node;

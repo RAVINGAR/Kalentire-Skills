@@ -21,6 +21,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
@@ -69,8 +70,8 @@ public class SkillRegrowth extends TargettedSkill {
         node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.875);
         node.set(SkillSetting.HEALING_TICK.node(), 29);
         node.set(SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM.node(), 0.7);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been given the gift of regrowth!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has lost the gift of regrowth!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been given the gift of regrowth!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has lost the gift of regrowth!");
 
         return node;
     }
@@ -79,8 +80,8 @@ public class SkillRegrowth extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been given the gift of regrowth!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has lost the gift of regrowth!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been given the gift of regrowth!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has lost the gift of regrowth!").replace("%target%", "$1");
     }
     
     public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)

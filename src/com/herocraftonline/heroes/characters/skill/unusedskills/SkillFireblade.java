@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -23,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFireblade extends ActiveSkill {
@@ -106,7 +106,7 @@ public class SkillFireblade extends ActiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
             target.setFireTicks(fireTicks);
             plugin.getCharacterManager().getCharacter(target).addEffect(new CombustEffect(skill, player));
-            broadcast(player.getLocation(), igniteText, player.getName(), Messaging.getLivingEntityName(target));
+            broadcast(player.getLocation(), igniteText, player.getName(), CustomNameManager.getName(target));
         }
     }
 

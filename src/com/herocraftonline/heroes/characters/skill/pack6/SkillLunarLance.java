@@ -1,9 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
-import java.util.ArrayList;
-
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
@@ -100,7 +97,7 @@ public class SkillLunarLance extends TargettedSkill {
             }
 
             if (tHero.isVerboseMana())
-                Messaging.send(player, Messaging.createManaBar(tHero.getMana(), tHero.getMaxMana()));
+                Messaging.send(player, ChatComponents.Bars.mana(tHero.getMana(), tHero.getMaxMana(), false));
         }
 
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0.0F, 0.0F, 0.0F, 0.4F, 35, 16);

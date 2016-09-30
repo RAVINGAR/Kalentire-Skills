@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -41,8 +42,8 @@ public class SkillGroupTeleport extends ActiveSkill {
                     continue;
                 }
                 if (partyHero.isInCombat()) {
-                    Messaging.send(player, Messaging.getSkillDenoter() + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
-                    Messaging.send(partyPlayer, Messaging.getSkillDenoter() + player.getName() + " attempted to teleport you, but you are in combat!");
+                    Messaging.send(player, ChatComponents.GENERIC_SKILL + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
+                    Messaging.send(partyPlayer, ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but you are in combat!");
                     continue;
                 }
                 

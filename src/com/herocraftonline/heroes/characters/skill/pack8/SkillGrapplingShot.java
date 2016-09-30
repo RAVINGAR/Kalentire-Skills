@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -24,6 +25,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.LinkedHashMap;
@@ -95,8 +98,8 @@ public class SkillGrapplingShot extends ActiveSkill {
         node.set("multiplier", 1.0);
         node.set("grapple-delay", 0.5);
         node.set("ncp-exemption-duration", 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% readies his grappling shot!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% drops his grappling shot.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% readies his grappling shot!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% drops his grappling shot.");
         node.set(SkillSetting.REAGENT.node(), 287);
         node.set(SkillSetting.REAGENT_COST.node(), 2);
 
@@ -106,8 +109,8 @@ public class SkillGrapplingShot extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% readies his grappling shot!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% drops his grappling shot.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% readies his grappling shot!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% drops his grappling shot.").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -410,7 +413,7 @@ public class SkillGrapplingShot extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.JUMP_BOOST);
 
-            addMobEffect(8, duration / 1000 * 20, 5, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, duration / 1000 * 20, 5), false);
         }
     }
 

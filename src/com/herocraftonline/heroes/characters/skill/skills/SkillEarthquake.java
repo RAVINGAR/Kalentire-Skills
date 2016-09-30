@@ -238,7 +238,7 @@ public class SkillEarthquake extends ActiveSkill {
         }
     }
 
-    public static void sendPacket(Player player, Packet packet) {
+    public static void sendPacket(Player player, Packet<?> packet) {
         if (player == null || packet == null)
             return;
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);

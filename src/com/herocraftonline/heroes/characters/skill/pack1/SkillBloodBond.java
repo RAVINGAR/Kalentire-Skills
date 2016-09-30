@@ -26,8 +26,8 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBloodBond extends ActiveSkill {
@@ -62,8 +62,8 @@ public class SkillBloodBond extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), 12);
         node.set("mana-tick", 13);
         node.set("mana-tick-period", 1000);
-        node.set("toggle-on-text", Messaging.getSkillDenoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
-        node.set("toggle-off-text", Messaging.getSkillDenoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
+        node.set("toggle-on-text", ChatComponents.GENERIC_SKILL + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
+        node.set("toggle-off-text", ChatComponents.GENERIC_SKILL + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!");
 
         return node;
     }
@@ -98,8 +98,8 @@ public class SkillBloodBond extends ActiveSkill {
         int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 1000, false);
 
         // Get config values for text values
-        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", Messaging.getSkillDenoter() + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
-        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", Messaging.getSkillDenoter() + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        String applyText = SkillConfigManager.getRaw(this, "toggle-on-text", ChatComponents.GENERIC_SKILL + "%hero% has formed a " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        String expireText = SkillConfigManager.getRaw(this, "toggle-off-text", ChatComponents.GENERIC_SKILL + "%hero% has broken his " + ChatColor.BOLD + "BloodBond" + ChatColor.RESET + "!").replace("%hero%", "$1");
 
         hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 

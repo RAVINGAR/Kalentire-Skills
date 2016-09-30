@@ -19,6 +19,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -208,8 +210,8 @@ public class SkillMassPiggify extends ActiveSkill {
 
             this.creature = creature;
 
-            addMobEffect(2, duration / 1000 * 20, 127, false);      // Max slowness
-            addMobEffect(8, duration / 1000 * 20, 128, false);      // Max negative jump boost
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration / 1000 * 20, 127), false);      // Max slowness
+            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, duration / 1000 * 20, 128), false);      // Max negative jump boost
         }
 
         @Override

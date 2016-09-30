@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -127,7 +128,7 @@ public class SkillShuriken extends PassiveSkill {
 
                 int staminaCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 100, false);
                 if (hero.getStamina() < staminaCost) {
-                    Messaging.send(player, Messaging.getSkillDenoter() + "You are too fatigued!");
+                    Messaging.send(player, ChatComponents.GENERIC_SKILL + "You are too fatigued!");
                     return;
                 }
 

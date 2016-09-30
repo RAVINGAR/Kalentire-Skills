@@ -16,8 +16,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillStrike extends TargettedSkill {
@@ -38,7 +38,7 @@ public class SkillStrike extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is struct greivously by %hero%!");
+        node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is struct greivously by %hero%!");
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.DAMAGE.node(), 40);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);

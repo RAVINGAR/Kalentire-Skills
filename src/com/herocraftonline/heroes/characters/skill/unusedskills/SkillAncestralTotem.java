@@ -10,8 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
-import com.herocraftonline.heroes.util.Messaging;
-
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -128,8 +127,8 @@ public class SkillAncestralTotem extends SkillBaseTotem implements Listener {
     
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "$1 feels the Ancestral knowledge within them!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "$1's intelligence returns to normal.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 feels the Ancestral knowledge within them!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1's intelligence returns to normal.");
         node.set("intellect-increase", 5);
         node.set("intellect-increase-per-wisdom", 0.1);
         return node;
@@ -141,11 +140,11 @@ public class SkillAncestralTotem extends SkillBaseTotem implements Listener {
     }
 
     public String getApplyText() {
-        return SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "$1 feels the Ancestral knowledge within them!");
+        return SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "$1 feels the Ancestral knowledge within them!");
     }
 
     public String getExpireText() {
-        return SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "$1's intelligence returns to normal.");
+        return SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "$1's intelligence returns to normal.");
     }
 
 }

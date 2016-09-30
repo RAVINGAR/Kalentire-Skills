@@ -21,8 +21,8 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillUndyingWill extends ActiveSkill {
@@ -54,8 +54,8 @@ public class SkillUndyingWill extends ActiveSkill {
 
         node.set(SkillSetting.DURATION.node(), 4500);
         node.set(SkillSetting.PERIOD.node(), 500);
-        node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is overcome with an undying will!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero%'s will returns to normal.");
+        node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is overcome with an undying will!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s will returns to normal.");
 
         return node;
     }
@@ -63,7 +63,7 @@ public class SkillUndyingWill extends ActiveSkill {
     public void init() {
         super.init();
 
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero%'s will returns to normal.").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s will returns to normal.").replace("%hero%", "$1");
     }
 
     public SkillResult use(Hero hero, String[] args) {

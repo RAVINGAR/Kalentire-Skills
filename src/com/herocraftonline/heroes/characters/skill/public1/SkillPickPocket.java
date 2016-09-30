@@ -57,7 +57,6 @@ public class SkillPickPocket extends TargettedSkill {
         this.noisySuccessMessage = SkillConfigManager.getRaw(this, "noisy-success-message", "%hero% stole %target%s %item%!").replace("%hero", "$1").replace("%target%", "$2").replace("%item%", "$3");
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         final Player player = hero.getPlayer();

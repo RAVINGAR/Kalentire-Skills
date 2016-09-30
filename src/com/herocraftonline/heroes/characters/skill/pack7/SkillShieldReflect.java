@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
@@ -69,8 +70,8 @@ public class SkillShieldReflect extends ActiveSkill {
 
         node.set(SkillSetting.DURATION.node(), 3000);
         node.set("reflected-damage-modifier", 0.8);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% holds up their shield and is now reflecting incoming attacks!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is no longer reflecting attacks!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% holds up their shield and is now reflecting incoming attacks!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer reflecting attacks!");
 
         return node;
     }
@@ -79,8 +80,8 @@ public class SkillShieldReflect extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% holds up their shield and is now reflecting incoming attacks!").replace("%hero%", "$1");
-        expireText = getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer reflecting attacks!").replace("%hero%", "$1");
+        applyText = getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% holds up their shield and is now reflecting incoming attacks!").replace("%hero%", "$1");
+        expireText = getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer reflecting attacks!").replace("%hero%", "$1");
     }
 
     @Override

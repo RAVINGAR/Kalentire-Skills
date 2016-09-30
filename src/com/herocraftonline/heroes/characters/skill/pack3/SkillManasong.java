@@ -22,6 +22,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -72,8 +73,8 @@ public class SkillManasong extends ActiveSkill {
         node.set("mana-restore-tick-increase-per-charisma", 0.25);
         node.set(SkillSetting.PERIOD.node(), 1500);
         node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "You are gifted with a song of mana!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "The manasong has ended.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are gifted with a song of mana!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "The manasong has ended.");
         node.set(SkillSetting.DELAY.node(), 1000);
 
         return node;
@@ -83,8 +84,8 @@ public class SkillManasong extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "You are gifted with a song of mana!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "The manasong has ended.");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "You are gifted with a song of mana!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "The manasong has ended.");
     }
 
     @Override
@@ -142,7 +143,6 @@ public class SkillManasong extends ActiveSkill {
 
                     private double time = 0;
 
-                    @SuppressWarnings("deprecation")
                     @Override
                     public void run()
                     {
@@ -195,7 +195,7 @@ public class SkillManasong extends ActiveSkill {
                                     member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                                     if (member.isVerboseMana())
-                                        Messaging.send(player, Messaging.createManaBar(member.getMana(), member.getMaxMana()));
+                                        Messaging.send(player, ChatComponents.Bars.mana(member.getMana(), member.getMaxMana(), false));
                                 }
                             }
                         }
@@ -211,7 +211,7 @@ public class SkillManasong extends ActiveSkill {
                         player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                         if (hero.isVerboseMana())
-                            Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+                            Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
                     }
                 }
             }

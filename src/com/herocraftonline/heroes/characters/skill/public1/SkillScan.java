@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
@@ -56,7 +57,7 @@ public class SkillScan extends TargettedSkill {
         else {
             // Create the message variables
             Object[] messageVariables = new Object[] {
-                    Messaging.getLivingEntityName(target),
+                    CustomNameManager.getName(target),
                     (int) target.getHealth(),
                     (int) target.getMaxHealth()
             };

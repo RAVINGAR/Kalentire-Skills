@@ -25,8 +25,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillEntangle extends TargettedSkill {
@@ -62,9 +62,9 @@ public class SkillEntangle extends TargettedSkill {
 		node.set(SkillSetting.MAX_DISTANCE.node(), 10);
 		node.set(SkillSetting.PERIOD.node(), 100);
 		node.set(SkillSetting.DURATION.node(), 3000);
-		node.set(SkillSetting.USE_TEXT.node(), Messaging.getSkillDenoter() + "%hero% used %skill% on %target%!");
-		node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%target% has been rooted!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% has broken free from the root!");
+		node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% used %skill% on %target%!");
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been rooted!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has broken free from the root!");
 
 		return node;
 	}
@@ -72,8 +72,8 @@ public class SkillEntangle extends TargettedSkill {
 	public void init() {
 		super.init();
 
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%target% has been rooted!").replace("%target%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%target% has broken free from the root!").replace("%target%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been rooted!").replace("%target%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has broken free from the root!").replace("%target%", "$1");
 	}
 
 	public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -242,7 +242,7 @@ public class SkillEntangle extends TargettedSkill {
 	//        @Override
 	//        public void applyToMonster(Monster monster) {
 	//            super.applyToMonster(monster);
-	//            broadcast(monster.getEntity().getLocation(), "    " + applyText, Messaging.getLivingEntityName(monster));
+	//            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster));
 	//        }
 	//
 	//        @Override
@@ -278,7 +278,7 @@ public class SkillEntangle extends TargettedSkill {
 	//        @Override
 	//        public void removeFromMonster(Monster monster) {
 	//            super.removeFromMonster(monster);
-	//            broadcast(monster.getEntity().getLocation(), "    " + expireText, Messaging.getLivingEntityName(monster));
+	//            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
 	//        }
 	//
 	//        public Player getApplier() {

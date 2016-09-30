@@ -4,7 +4,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.AttributeDecreaseEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -12,16 +11,13 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
-import com.herocraftonline.heroes.util.Messaging;
-import org.bukkit.Location;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -119,8 +115,8 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "    " + "$1 is engulfed by a totem's power!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "$1 is no longer engulfed by a totem's power.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "    " + "$1 is engulfed by a totem's power!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is no longer engulfed by a totem's power.");
         node.set("dexterity-reduce-amount", 3);
         node.set("slowness-amplitude", 2);
         return node;
@@ -136,11 +132,11 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     }
 
     public String getApplyText() {
-        return SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "$1 is engulfed by a totem's power!");
+        return SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "$1 is engulfed by a totem's power!");
     }
 
     public String getExpireText() {
-        return SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "$1 is no longer engulfed by a totem's power.");
+        return SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "$1 is no longer engulfed by a totem's power.");
     }
 
     private class EngulfingTotemDexterityEffect extends AttributeDecreaseEffect {

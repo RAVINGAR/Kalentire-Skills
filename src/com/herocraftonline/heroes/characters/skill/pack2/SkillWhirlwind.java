@@ -10,6 +10,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -24,8 +26,8 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWhirlwind extends ActiveSkill {
@@ -70,8 +72,8 @@ public class SkillWhirlwind extends ActiveSkill {
 		node.set(SkillSetting.PERIOD.node(), 500);
 		node.set(SkillSetting.DURATION.node(), 5000);
 		node.set("slow-amplifier", 1);
-		node.set(SkillSetting.APPLY_TEXT.node(), Messaging.getSkillDenoter() + "%hero% is unleashing a powerful whirlwind!");
-		node.set(SkillSetting.EXPIRE_TEXT.node(), Messaging.getSkillDenoter() + "%target% is no longer whirlwinding!");
+		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is unleashing a powerful whirlwind!");
+		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer whirlwinding!");
 
 		return node;
 	}
@@ -79,8 +81,8 @@ public class SkillWhirlwind extends ActiveSkill {
 	public void init() {
 		super.init();
 
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, Messaging.getSkillDenoter() + "%hero% is unleashing a powerful whirlwind!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, Messaging.getSkillDenoter() + "%hero% is no longer whirlwinding!").replace("%hero%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is unleashing a powerful whirlwind!").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer whirlwinding!").replace("%hero%", "$1");
 	}
 
 	public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -132,7 +134,7 @@ public class SkillWhirlwind extends ActiveSkill {
 			this.setRadius(radius);
 
 			int tickDuration = (int) ((duration / 1000) * 20);
-			addMobEffect(2, tickDuration, slowAmplifier, false);
+			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickDuration, slowAmplifier), false);
 			//addMobEffect(8, tickDuration, 254, false);
 		}
 

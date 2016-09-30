@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -19,8 +21,8 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillExcavate extends ActiveSkill {
@@ -54,8 +56,8 @@ public class SkillExcavate extends ActiveSkill {
         node.set("speed-multiplier", 3);
         node.set(SkillSetting.DURATION.node(), 0);
         node.set(SkillSetting.DURATION_INCREASE_PER_LEVEL.node(), 200);
-        node.set("apply-text", Messaging.getSkillDenoter() + "%hero% begins excavating!");
-        node.set("expire-text", Messaging.getSkillDenoter() + "%hero% is no longer excavating!");
+        node.set("apply-text", ChatComponents.GENERIC_SKILL + "%hero% begins excavating!");
+        node.set("expire-text", ChatComponents.GENERIC_SKILL + "%hero% is no longer excavating!");
         return node;
     }
 
@@ -63,8 +65,8 @@ public class SkillExcavate extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, "apply-text", Messaging.getSkillDenoter() + "%hero% begins excavating!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, "expire-text", Messaging.getSkillDenoter() + "%hero% is no longer excavating!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, "apply-text", ChatComponents.GENERIC_SKILL + "%hero% begins excavating!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, "expire-text", ChatComponents.GENERIC_SKILL + "%hero% is no longer excavating!").replace("%hero%", "$1");
     }
 
     @Override
@@ -92,7 +94,7 @@ public class SkillExcavate extends ActiveSkill {
             super(skill, "Excavate", applier, duration);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
-            addMobEffect(3, (int) (duration / 1000) * 20, amplifier, false);
+            addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, (int) (duration / 1000) * 20, amplifier), false);
         }
 
         @Override

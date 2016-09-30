@@ -16,6 +16,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillConsume extends ActiveSkill {
@@ -83,7 +84,7 @@ public class SkillConsume extends ActiveSkill {
                 player.updateInventory();
                 hero.setMana(hrmEvent.getAmount() + hero.getMana());
                 if (hero.isVerboseMana()) {
-                    Messaging.send(player, Messaging.createManaBar(hero.getMana(), hero.getMaxMana()));
+                    Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
                 } else {
                     Messaging.send(player, "You regain " + mana + " mana");
                 }

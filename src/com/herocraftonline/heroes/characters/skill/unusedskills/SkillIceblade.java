@@ -7,6 +7,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -107,7 +109,7 @@ public class SkillIceblade extends TargettedSkill {
 			this.types.add(EffectType.ICE);
 			this.types.add(EffectType.DISABLE);
 			this.types.add(EffectType.SLOW);
-			addMobEffect(2, (int) (duration / 1000) * 20, 20, false);
+			addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000) * 20, 20), false);
 		}
 		
 		@Override

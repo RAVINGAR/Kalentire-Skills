@@ -20,6 +20,7 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillAbsorb extends ActiveSkill {
@@ -119,7 +120,7 @@ public class SkillAbsorb extends ActiveSkill {
                 } else {
                     hero.setMana(mana + absorbAmount);
                     if (hero.isVerboseMana()) {
-                        Messaging.send(player, ChatColor.BLUE + "MANA " + Messaging.createManaBar(mana + absorbAmount, hero.getMaxMana()));
+                        Messaging.send(player, ChatColor.BLUE + "MANA " + ChatComponents.Bars.mana(mana + absorbAmount, hero.getMaxMana(), false));
                     }
                 }
             }
