@@ -174,7 +174,7 @@ public class SkillBloodBond extends ActiveSkill {
                             HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(member, healAmount, skill, hero);
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled())
-                                member.heal(healEvent.getAmount());
+                                member.heal(healEvent.getDelta());
                         }
                     }
                 }
@@ -183,7 +183,7 @@ public class SkillBloodBond extends ActiveSkill {
                 HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healAmount, skill, hero);
                 Bukkit.getPluginManager().callEvent(healEvent);
                 if (!healEvent.isCancelled())
-                    hero.heal(healEvent.getAmount());
+                    hero.heal(healEvent.getDelta());
             }
         }
     }

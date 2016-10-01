@@ -58,7 +58,7 @@ public class SkillInnervate extends ActiveSkill {
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
-            hero.setMana(hrmEvent.getAmount() + hero.getMana());
+            hero.setMana(hrmEvent.getDelta() + hero.getMana());
 
             if (hero.isVerboseMana())
                 Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));

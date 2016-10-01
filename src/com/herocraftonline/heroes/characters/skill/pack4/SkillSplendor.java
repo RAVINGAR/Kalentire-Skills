@@ -76,7 +76,7 @@ public class SkillSplendor extends TargettedSkill {
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "SplendorChaIncreaseEffect", player, duration, AttributeType.CHARISMA, chaIncrease, applyText, expireText);
         if(hero.hasEffect("SplendorChaIncreaseEffect")) {
-            if(((AttributeIncreaseEffect) hero.getEffect("SplendorChaIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
+            if(((AttributeIncreaseEffect) hero.getEffect("SplendorChaIncreaseEffect")).getDelta() > aEffect.getDelta()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

@@ -65,7 +65,7 @@ public class SkillPray extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getDelta());
         for (Effect effect : targetHero.getEffects()) {
             if (effect.isType(EffectType.POISON)) {
                 targetHero.removeEffect(effect);

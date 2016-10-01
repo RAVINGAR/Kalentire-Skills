@@ -159,7 +159,7 @@ public class SkillHolyWater extends ActiveSkill {
                             HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(targetHero, healing, skill, hero);
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled())
-                                hero.heal(healEvent.getAmount());
+                                hero.heal(healEvent.getDelta());
                         }
                     }
                     else {
@@ -170,7 +170,7 @@ public class SkillHolyWater extends ActiveSkill {
                             HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(targetHero, healing, skill, hero);
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled())
-                                targetHero.heal(healEvent.getAmount());
+                                targetHero.heal(healEvent.getDelta());
                         }
                     }
                 }

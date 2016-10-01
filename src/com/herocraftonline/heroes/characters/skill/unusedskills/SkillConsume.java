@@ -82,7 +82,7 @@ public class SkillConsume extends ActiveSkill {
 
                 player.getInventory().removeItem(reagent);
                 player.updateInventory();
-                hero.setMana(hrmEvent.getAmount() + hero.getMana());
+                hero.setMana(hrmEvent.getDelta() + hero.getMana());
                 if (hero.isVerboseMana()) {
                     Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
                 } else {

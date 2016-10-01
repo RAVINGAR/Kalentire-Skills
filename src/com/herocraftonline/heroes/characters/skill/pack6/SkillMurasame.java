@@ -113,7 +113,7 @@ public class SkillMurasame extends TargettedSkill {
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, this);
             Bukkit.getPluginManager().callEvent(hrhEvent);
             if(!hrhEvent.isCancelled()) {
-                hero.heal(hrhEvent.getAmount());
+                hero.heal(hrhEvent.getDelta());
             }
         }
 

@@ -139,7 +139,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
             Bukkit.getPluginManager().callEvent(hrhEvent);
 
             if (!hrhEvent.isCancelled())
-                hero.heal(hrhEvent.getAmount());
+                hero.heal(hrhEvent.getDelta());
         }
         // If it's not a Hero, it's a Monster, but for the sake of consistency we'll heal it too (albeit with a different event and calculations)
         // This doesn't harm undead, but that'd create lore issues with BecomeDeath and we can just say these are chemical rather than magical... right?
@@ -236,7 +236,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
             HeroRegainHealthEvent event = new HeroRegainHealthEvent(hero, super.getTickHealth(), skill);
             plugin.getServer().getPluginManager().callEvent(event);
             if(!event.isCancelled())
-                hero.heal(event.getAmount());
+                hero.heal(event.getDelta());
 
             Player player = hero.getPlayer();
             player.getWorld().spigot().playEffect(player.getLocation(), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);

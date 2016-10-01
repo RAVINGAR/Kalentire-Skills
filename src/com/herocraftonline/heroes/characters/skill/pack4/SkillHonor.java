@@ -79,7 +79,7 @@ public class SkillHonor extends ActiveSkill {
 
         if (!hero.hasParty()) {
             if (hero.hasEffect("Honor")) {
-                if (((HonorEffect) hero.getEffect("Honor")).getIncreaseValue() > mEffect.getIncreaseValue()) {
+                if (((HonorEffect) hero.getEffect("Honor")).getDelta() > mEffect.getDelta()) {
                     Messaging.send(player, "You have a more powerful effect already!");
                     return SkillResult.CANCELLED;
                 }
@@ -100,7 +100,7 @@ public class SkillHonor extends ActiveSkill {
                 }
 
                 if (pHero.hasEffect("Honor")) {
-                    if (((HonorEffect) pHero.getEffect("Honor")).getIncreaseValue() > mEffect.getIncreaseValue())
+                    if (((HonorEffect) pHero.getEffect("Honor")).getDelta() > mEffect.getDelta())
                         continue;
                 }
 

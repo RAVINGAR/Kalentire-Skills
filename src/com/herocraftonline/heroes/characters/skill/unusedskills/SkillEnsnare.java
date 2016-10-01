@@ -76,7 +76,7 @@ public class SkillEnsnare extends TargettedSkill {
 
         AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "AgiDecreaseEffect", player, duration, AttributeType.DEXTERITY, strDecrease, applyText, expireText);
         if(hero.hasEffect("AgiDecreaseEffect")) {
-            if(((AttributeDecreaseEffect) hero.getEffect("AgiDecreaseEffect")).getDecreaseValue() > aEffect.getDecreaseValue()) {
+            if(((AttributeDecreaseEffect) hero.getEffect("AgiDecreaseEffect")).getDelta() > aEffect.getDelta()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

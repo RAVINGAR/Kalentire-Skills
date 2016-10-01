@@ -147,7 +147,7 @@ public class SkillFistOfJin extends PassiveSkill {
                             HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill);     // Bypass self-heal nerf.
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled()) {
-                                hero.heal(healEvent.getAmount());
+                                hero.heal(healEvent.getDelta());
                                 CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                                 hero.addEffect(cdEffect);
                             }
@@ -158,7 +158,7 @@ public class SkillFistOfJin extends PassiveSkill {
                             HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(member, partyHeal, skill, hero);
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled()) {
-                                member.heal(healEvent.getAmount());
+                                member.heal(healEvent.getDelta());
                                 CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                                 hero.addEffect(cdEffect);
                             }
@@ -170,7 +170,7 @@ public class SkillFistOfJin extends PassiveSkill {
                 HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill);     // Bypass self-heal nerf
                 Bukkit.getPluginManager().callEvent(healEvent);
                 if (!healEvent.isCancelled()) {
-                    hero.heal(healEvent.getAmount());
+                    hero.heal(healEvent.getDelta());
                     CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
                     hero.addEffect(cdEffect);
                 }

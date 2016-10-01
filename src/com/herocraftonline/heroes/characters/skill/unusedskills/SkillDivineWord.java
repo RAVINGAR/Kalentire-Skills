@@ -66,7 +66,7 @@ public class SkillDivineWord extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getDelta());
         //targetHero.heal(targetHealth + hrhEvent.getAmount());
         broadcastExecuteText(hero, target);
         // this is our fireworks shit

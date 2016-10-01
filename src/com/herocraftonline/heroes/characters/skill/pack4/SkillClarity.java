@@ -78,7 +78,7 @@ public class SkillClarity extends ActiveSkill {
 
         if (!hero.hasParty()) {
             if (hero.hasEffect("Clarity")) {
-                if (((ClarityEffect) hero.getEffect("Clarity")).getIncreaseValue() > mEffect.getIncreaseValue()) {
+                if (((ClarityEffect) hero.getEffect("Clarity")).getDelta() > mEffect.getDelta()) {
                     Messaging.send(player, "You have a more powerful effect already!");
                     return SkillResult.CANCELLED;
                 }
@@ -99,7 +99,7 @@ public class SkillClarity extends ActiveSkill {
                 }
 
                 if (pHero.hasEffect("Clarity")) {
-                    if (((ClarityEffect) pHero.getEffect("Clarity")).getIncreaseValue() > mEffect.getIncreaseValue())
+                    if (((ClarityEffect) pHero.getEffect("Clarity")).getDelta() > mEffect.getDelta())
                         continue;
                 }
 

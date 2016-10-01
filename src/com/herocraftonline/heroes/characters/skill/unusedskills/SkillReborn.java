@@ -116,12 +116,12 @@ public class SkillReborn extends ActiveSkill {
                             + (SkillConfigManager.getUseSetting(hero, skill, "health-increase", 0.0, false) * hero.getSkillLevel(skill));
                     double healthRegain = (player.getMaxHealth() * regainPercent);
                     HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, skill, hero);
-                    if (hrh.isCancelled() || hrh.getAmount() == 0.0) {
+                    if (hrh.isCancelled() || hrh.getDelta() == 0.0) {
                         return;
                     }
                     event.setDamage(0.0);
                     event.setCancelled(true);
-                    hero.heal(hrh.getAmount());
+                    hero.heal(hrh.getDelta());
                     long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false)
                             + (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel()));
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());

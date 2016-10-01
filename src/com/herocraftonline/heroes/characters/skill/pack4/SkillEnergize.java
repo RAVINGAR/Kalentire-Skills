@@ -62,7 +62,7 @@ public class SkillEnergize extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
+        hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
         if (hero.isVerboseStamina())
             Messaging.send(player, ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), true));
 

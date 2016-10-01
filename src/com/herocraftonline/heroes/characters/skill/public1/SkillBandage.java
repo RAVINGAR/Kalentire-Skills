@@ -65,7 +65,7 @@ public class SkillBandage extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
 
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getDelta());
 
         // Bandage cures Bleeding!
         for (final Effect effect : targetHero.getEffects()) {

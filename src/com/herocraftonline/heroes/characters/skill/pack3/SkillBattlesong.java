@@ -188,7 +188,7 @@ public class SkillBattlesong extends ActiveSkill {
                             plugin.getServer().getPluginManager().callEvent(hrsEvent);
                             if (!hrsEvent.isCancelled()) {
                                 member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
-                                member.setStamina(hrsEvent.getAmount() + member.getStamina());
+                                member.setStamina(hrsEvent.getDelta() + member.getStamina());
                             }
                         }
                     }
@@ -200,7 +200,7 @@ public class SkillBattlesong extends ActiveSkill {
                 if (!hrsEvent.isCancelled()) {
                     hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
 
-                    hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
+                    hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
                 }
             }
         }

@@ -191,7 +191,7 @@ public class SkillManasong extends ActiveSkill {
                                 HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, manaRestore, skill);
                                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                                 if (!hrmEvent.isCancelled()) {
-                                    member.setMana(hrmEvent.getAmount() + member.getMana());
+                                    member.setMana(hrmEvent.getDelta() + member.getMana());
                                     member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                                     if (member.isVerboseMana())
@@ -207,7 +207,7 @@ public class SkillManasong extends ActiveSkill {
                     HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
                     plugin.getServer().getPluginManager().callEvent(hrmEvent);
                     if (!hrmEvent.isCancelled()) {
-                        hero.setMana(hrmEvent.getAmount() + hero.getMana());
+                        hero.setMana(hrmEvent.getDelta() + hero.getMana());
                         player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                         if (hero.isVerboseMana())

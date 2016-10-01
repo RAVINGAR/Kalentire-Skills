@@ -90,7 +90,7 @@ public class SkillFullHeal extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getDelta());
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
         broadcastExecuteText(hero, target);

@@ -107,7 +107,7 @@ public class SkillInfusion extends TargettedSkill {
         }
 
         // Heal target
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getDelta());
 
         // Remove bleeds
         for (Effect effect : targetHero.getEffects()) {

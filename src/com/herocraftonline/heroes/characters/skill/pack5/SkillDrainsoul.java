@@ -72,7 +72,7 @@ public class SkillDrainsoul extends TargettedSkill {
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this);         // Bypass self heal as this can only be used on themself.
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled())
-            hero.heal(hrEvent.getAmount());
+            hero.heal(hrEvent.getDelta());
 
         return SkillResult.NORMAL;
     }

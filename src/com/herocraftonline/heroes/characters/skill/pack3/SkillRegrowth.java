@@ -128,7 +128,7 @@ public class SkillRegrowth extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
         else
-            targetHero.heal(hrhEvent.getAmount());
+            targetHero.heal(hrhEvent.getDelta());
 
         RegrowthEffect rEffect = new RegrowthEffect(this, player, period, duration, hot);
         targetHero.addEffect(rEffect);

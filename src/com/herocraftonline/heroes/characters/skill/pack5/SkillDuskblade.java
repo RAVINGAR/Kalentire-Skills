@@ -73,7 +73,7 @@ public class SkillDuskblade extends TargettedSkill {
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this);     // Bypass self heal as this can only be used on themself.
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled())
-            hero.heal(hrEvent.getAmount());
+            hero.heal(hrEvent.getDelta());
         
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_HURT.value(), 0.8F, 1.0F);
         

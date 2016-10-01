@@ -45,7 +45,7 @@ public class SkillGroupHeal extends ActiveSkill {
                 player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
                 return SkillResult.CANCELLED;
             }
-            hero.heal(hrhEvent.getAmount());
+            hero.heal(hrhEvent.getDelta());
         } else {
             final int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false), 2);
             final Location heroLoc = player.getLocation();
@@ -61,7 +61,7 @@ public class SkillGroupHeal extends ActiveSkill {
                         player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
                         return SkillResult.CANCELLED;
                     }
-                    partyHero.heal(hrhEvent.getAmount());
+                    partyHero.heal(hrhEvent.getDelta());
                 }
             }
         }

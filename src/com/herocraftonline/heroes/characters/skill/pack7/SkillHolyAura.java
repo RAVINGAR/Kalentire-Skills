@@ -205,7 +205,7 @@ public class SkillHolyAura extends ActiveSkill {
                             HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(member, tickHeal, skill, hero);
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled()) {
-                                member.heal(healEvent.getAmount());
+                                member.heal(healEvent.getDelta());
                             }
                         }
                     }

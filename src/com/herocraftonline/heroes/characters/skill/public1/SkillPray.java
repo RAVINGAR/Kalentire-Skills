@@ -59,7 +59,7 @@ public class SkillPray extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
 
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getDelta());
         this.broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

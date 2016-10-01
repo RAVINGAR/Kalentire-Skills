@@ -65,7 +65,7 @@ public class SkillBattery extends TargettedSkill {
                 return SkillResult.CANCELLED;
             }
 
-            int finalTransferAmount = hrmEvent.getAmount();
+            int finalTransferAmount = hrmEvent.getDelta();
 
             hero.setMana(hero.getMana() - finalTransferAmount);
             tHero.setMana(tHero.getMana() + finalTransferAmount);

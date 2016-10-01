@@ -130,7 +130,7 @@ public class SkillHarmtouch extends TargettedSkill {
         public void onHeroRegainHealth(HeroRegainHealthEvent event) {
             if (event.getHero().hasEffect("HarmTouch")) {
                 HarmTouch mEffect = (HarmTouch) event.getHero().getEffect("HarmTouch");
-                event.setAmount((event.getAmount() * mEffect.healMultiplier));
+                event.setDelta((event.getDelta() * mEffect.healMultiplier));
             }
         }
     }

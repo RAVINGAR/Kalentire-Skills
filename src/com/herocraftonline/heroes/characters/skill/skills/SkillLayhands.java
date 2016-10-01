@@ -58,7 +58,7 @@ public class SkillLayhands extends TargettedSkill {
             return SkillResult.CANCELLED;
         }
 
-        targetHero.heal(event.getAmount());
+        targetHero.heal(event.getDelta());
         if (SkillConfigManager.getUseSetting(hero, this, "drain-all-mana", false)) {
             hero.setMana(0);
         }

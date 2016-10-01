@@ -63,7 +63,7 @@ public class SkillTransfuse extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        hero.setMana(hrmEvent.getAmount() + hero.getMana());
+        hero.setMana(hrmEvent.getDelta() + hero.getMana());
         if (hero.isVerboseMana()) {
             Messaging.send(hero.getPlayer(), ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
         }

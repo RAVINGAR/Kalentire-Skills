@@ -251,7 +251,7 @@ public class SkillDreadAura extends ActiveSkill {
                     HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, skill);       // Bypass self heal nerf because this cannot be used on others.
                     Bukkit.getPluginManager().callEvent(healEvent);
                     if (!healEvent.isCancelled()) {
-                        double finalHealing = healEvent.getAmount();
+                        double finalHealing = healEvent.getDelta();
                         hero.heal(finalHealing);
                     }
                 }

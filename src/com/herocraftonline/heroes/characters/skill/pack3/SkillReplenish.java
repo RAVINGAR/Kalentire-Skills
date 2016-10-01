@@ -66,7 +66,7 @@ public class SkillReplenish extends ActiveSkill {
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaIncreaseAmount, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
-            hero.setMana(hrmEvent.getAmount() + hero.getMana());
+            hero.setMana(hrmEvent.getDelta() + hero.getMana());
 
             if (hero.isVerboseMana())
                 Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));

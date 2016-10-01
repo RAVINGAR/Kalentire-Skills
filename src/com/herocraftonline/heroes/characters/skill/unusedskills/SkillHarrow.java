@@ -89,7 +89,7 @@ public class SkillHarrow extends TargettedSkill {
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * healMult), this, hero);
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled())
-            hero.heal(hrEvent.getAmount());
+            hero.heal(hrEvent.getDelta());
 
         broadcastExecuteText(hero, target);
 

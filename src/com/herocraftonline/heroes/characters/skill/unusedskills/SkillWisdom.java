@@ -83,7 +83,7 @@ public class SkillWisdom extends ActiveSkill {
 
         if (!hero.hasParty()) {
             if (hero.hasEffect("Wisdom")) {
-                if (((WisdomEffect) hero.getEffect("Wisdom")).getIncreaseValue() > mEffect.getIncreaseValue()) {
+                if (((WisdomEffect) hero.getEffect("Wisdom")).getDelta() > mEffect.getDelta()) {
                     Messaging.send(player, "You have a more powerful effect already!");
                     return SkillResult.CANCELLED;
                 }
@@ -104,7 +104,7 @@ public class SkillWisdom extends ActiveSkill {
                 }
 
                 if (pHero.hasEffect("Wisdom")) {
-                    if (((WisdomEffect) pHero.getEffect("Wisdom")).getIncreaseValue() > mEffect.getIncreaseValue())
+                    if (((WisdomEffect) pHero.getEffect("Wisdom")).getDelta() > mEffect.getDelta())
                         continue;
                 }
 

@@ -162,7 +162,7 @@ public class SkillMortalWound extends TargettedSkill {
         public void onHeroRegainHealth(HeroRegainHealthEvent event) {
             if (event.getHero().hasEffect("MortalWound")) {
                 MortalWound mEffect = (MortalWound) event.getHero().getEffect("MortalWound");
-                event.setAmount((event.getAmount() * mEffect.healMultiplier));
+                event.setDelta((event.getDelta() * mEffect.healMultiplier));
             }
         }
     }

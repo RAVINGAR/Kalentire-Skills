@@ -77,7 +77,7 @@ public class SkillCourage extends TargettedSkill {
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "CourageConIncreaseEffect", player, duration, AttributeType.CONSTITUTION, conIncrease, applyText, expireText);
         if(hero.hasEffect("CourageConIncreaseEffect")) {
-            if(((AttributeIncreaseEffect) hero.getEffect("CourageConIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
+            if(((AttributeIncreaseEffect) hero.getEffect("CourageConIncreaseEffect")).getDelta() > aEffect.getDelta()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

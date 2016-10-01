@@ -67,7 +67,7 @@ public class SkillMend extends TargettedSkill {
             Messaging.send(player, "Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
-        targetHero.heal(hrhEvent.getAmount()); 
+        targetHero.heal(hrhEvent.getDelta()); 
 
         // Mend cures Bleeding and fire effects
         if (targetHero.getPlayer().getFireTicks() > 0)

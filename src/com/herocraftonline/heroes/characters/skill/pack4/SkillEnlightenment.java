@@ -78,7 +78,7 @@ public class SkillEnlightenment extends TargettedSkill {
         // Only using the one effect for checks. Checking both of them would get crazy
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "EnlightenmentWisIncreaseEffect", player, duration, AttributeType.WISDOM, attributeIncrease, applyText, expireText);
         if(hero.hasEffect("EnlightenmentWisIncreaseEffect")) {
-            if(((AttributeIncreaseEffect) hero.getEffect("EnlightenmentWisIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
+            if(((AttributeIncreaseEffect) hero.getEffect("EnlightenmentWisIncreaseEffect")).getDelta() > aEffect.getDelta()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

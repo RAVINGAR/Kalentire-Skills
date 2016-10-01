@@ -148,7 +148,7 @@ public class SkillSoulLeech extends TargettedSkill {
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, totalDamage * healMult, skill);
             plugin.getServer().getPluginManager().callEvent(hrhEvent);
             if (!hrhEvent.isCancelled()) {
-                hero.heal(hrhEvent.getAmount());
+                hero.heal(hrhEvent.getDelta());
             }
         }
     }

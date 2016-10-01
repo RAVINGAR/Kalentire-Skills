@@ -76,7 +76,7 @@ public class SkillBruteForce extends TargettedSkill {
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "BruteForceStrIncreaseEffect", player, duration, AttributeType.STRENGTH, strIncrease, applyText, expireText);
         if(hero.hasEffect("BruteForceStrIncreaseEffect")) {
-            if(((AttributeIncreaseEffect) hero.getEffect("BruteForceStrIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
+            if(((AttributeIncreaseEffect) hero.getEffect("BruteForceStrIncreaseEffect")).getDelta() > aEffect.getDelta()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

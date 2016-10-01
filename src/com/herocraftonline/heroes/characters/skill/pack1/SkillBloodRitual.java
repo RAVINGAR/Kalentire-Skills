@@ -96,7 +96,7 @@ public class SkillBloodRitual extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // Heal target
-        targetHero.heal(hrhEvent.getAmount());
+        targetHero.heal(hrhEvent.getDelta());
 
         // Set Blood Union to 0
         buEffect.setBloodUnionLevel(0);

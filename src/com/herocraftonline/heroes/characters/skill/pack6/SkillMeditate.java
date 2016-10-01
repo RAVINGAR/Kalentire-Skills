@@ -63,7 +63,7 @@ public class SkillMeditate extends ActiveSkill {
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (!hrmEvent.isCancelled()) {
-            hero.setMana(hrmEvent.getAmount() + hero.getMana());
+            hero.setMana(hrmEvent.getDelta() + hero.getMana());
             
             if (hero.isVerboseMana())
                 Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
@@ -75,7 +75,7 @@ public class SkillMeditate extends ActiveSkill {
         HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaBonus, this);
         plugin.getServer().getPluginManager().callEvent(hrsEvent);
         if (!hrsEvent.isCancelled()) {
-            hero.setStamina(hrsEvent.getAmount() + hero.getStamina());
+            hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
             
             if (hero.isVerboseStamina())
                 Messaging.send(player, ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), true));

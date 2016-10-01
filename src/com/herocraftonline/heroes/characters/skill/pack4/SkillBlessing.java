@@ -77,7 +77,7 @@ public class SkillBlessing extends TargettedSkill {
         // Only using the one effect for checks. Checking all of them would get crazy fast
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "BlessingConIncreaseEffect", player, duration, AttributeType.CONSTITUTION, conIncrease, applyText, expireText);
         if(hero.hasEffect("BlessingConIncreaseEffect")) {
-            if(((AttributeIncreaseEffect) hero.getEffect("BlessingConIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
+            if(((AttributeIncreaseEffect) hero.getEffect("BlessingConIncreaseEffect")).getDelta() > aEffect.getDelta()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

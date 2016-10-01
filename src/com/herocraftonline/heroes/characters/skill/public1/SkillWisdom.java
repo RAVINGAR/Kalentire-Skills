@@ -96,7 +96,7 @@ public class SkillWisdom extends ActiveSkill {
             }
 
             if (event.getHero().hasEffect("Wisdom")) {
-                event.setAmount((int) (event.getAmount() * ((WisdomEffect) event.getHero().getEffect("Wisdom")).getManaMultiplier()));
+                event.setDelta((int) (event.getDelta() * ((WisdomEffect) event.getHero().getEffect("Wisdom")).getManaMultiplier()));
             }
         }
     }

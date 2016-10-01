@@ -117,13 +117,13 @@ public class SkillSacrifice extends ActiveSkill {
 
                 // The effects can have different values, so two checks
                 if (pHero.hasEffect("SacrificeConstitutionIncreaseEffect")) {
-                    if (((AttributeIncreaseEffect) pHero.getEffect("SacrificeConstitutionIncreaseEffect")).getIncreaseValue() > cEffect.getIncreaseValue())
+                    if (((AttributeIncreaseEffect) pHero.getEffect("SacrificeConstitutionIncreaseEffect")).getDelta() > cEffect.getDelta())
                         continue;
                 }
                 pHero.addEffect(cEffect);
 
                 if (pHero.hasEffect("SacrificeStrengthIncreaseEffect")) {
-                    if (((AttributeIncreaseEffect) pHero.getEffect("SacrificeConstitutionIncreaseEffect")).getIncreaseValue() > cEffect.getIncreaseValue())
+                    if (((AttributeIncreaseEffect) pHero.getEffect("SacrificeConstitutionIncreaseEffect")).getDelta() > cEffect.getDelta())
                         continue;
                 }
                 pHero.addEffect(sEffect);

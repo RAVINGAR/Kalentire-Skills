@@ -76,7 +76,7 @@ public class SkillAlacrity extends TargettedSkill {
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "AlacrityAgiIncreaseEffect", player, duration, AttributeType.DEXTERITY, agiIncrease, applyText, expireText);
         if(hero.hasEffect("AlacrityAgiIncreaseEffect")) {
-            if(((AttributeIncreaseEffect) hero.getEffect("AlacrityAgiIncreaseEffect")).getIncreaseValue() > aEffect.getIncreaseValue()) {
+            if(((AttributeIncreaseEffect) hero.getEffect("AlacrityAgiIncreaseEffect")).getDelta() > aEffect.getDelta()) {
                 Messaging.send(player, "Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

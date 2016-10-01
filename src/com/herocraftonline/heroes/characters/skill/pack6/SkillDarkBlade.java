@@ -95,7 +95,7 @@ public class SkillDarkBlade extends TargettedSkill {
         HeroRegainManaEvent hrEvent = new HeroRegainManaEvent(hero, manaDrain, this);
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled()) {
-            hero.setMana(hrEvent.getAmount() + hero.getMana());
+            hero.setMana(hrEvent.getDelta() + hero.getMana());
 
             if (hero.isVerboseMana())
                 Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));

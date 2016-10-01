@@ -102,7 +102,7 @@ public class SkillSiphonBlood extends TargettedSkill {
 
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled()) {
-            hero.heal(hrEvent.getAmount());
+            hero.heal(hrEvent.getDelta());
         }
 
         // Increase Blood Union

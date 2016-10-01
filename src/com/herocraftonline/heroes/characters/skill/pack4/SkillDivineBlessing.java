@@ -119,7 +119,7 @@ public class SkillDivineBlessing extends ActiveSkill {
 				return SkillResult.CANCELLED;
 			}
 
-			hero.heal(hrhEvent.getAmount());
+			hero.heal(hrhEvent.getDelta());
 			//changed to hero.heal for bukkit events
 		}
 		else {
@@ -139,7 +139,7 @@ public class SkillDivineBlessing extends ActiveSkill {
 					}
 
 					//old - partyHero.getPlayer().setHealth(partyHero.getPlayer().getHealth() + hrhEvent.getAmount());
-					partyHero.heal(hrhEvent.getAmount());
+					partyHero.heal(hrhEvent.getDelta());
 
 				}
 			}
