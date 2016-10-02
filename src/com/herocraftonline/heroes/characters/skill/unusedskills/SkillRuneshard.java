@@ -29,8 +29,7 @@ public class SkillRuneshard extends ActiveSkill {
 
     public SkillRuneshard(Heroes plugin) {
         super(plugin, "Runeshard");
-        setDescription("Bestow magical shards to your melee weapon for $1 seconds. While active, " +
-                "your attacks deal an extra $2 damage to the target.");
+        setDescription("Bestow magical shards to your melee weapon for $1 seconds. While active, your attacks deal an extra $2 damage to the target.");
         setUsage("/skill runeshard");
         setArgumentRange(0, 0);
         setIdentifiers("skill runeshard");
