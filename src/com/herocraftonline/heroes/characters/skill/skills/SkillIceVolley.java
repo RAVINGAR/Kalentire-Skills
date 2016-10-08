@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
