@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack4;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.util.logging.Level;
 
