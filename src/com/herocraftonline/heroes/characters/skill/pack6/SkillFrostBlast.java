@@ -13,14 +13,14 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
-import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_10_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -180,7 +180,7 @@ public class SkillFrostBlast extends ActiveSkill {
                 final EntityArmorStand as = new EntityArmorStand(((CraftWorld) casterPlayer.getWorld()).getHandle());
                 as.setInvisible(true);
                 as.setSmall(true);
-                as.setGravity(false);
+                as.setNoGravity(true);
                 as.setArms(true);
                 as.setHeadPose(new Vector3f((float) (rand.nextInt(360)),
                         (float) (rand.nextInt(360)),
