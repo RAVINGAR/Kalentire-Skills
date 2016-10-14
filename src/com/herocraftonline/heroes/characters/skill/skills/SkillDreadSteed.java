@@ -1,10 +1,8 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
-
-import org.bukkit.entity.Horse.Color;
-import org.bukkit.entity.Horse.Variant;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSteed;
+import org.bukkit.entity.Horse.Color;
+import org.bukkit.entity.Horse.Variant;
 
 public class SkillDreadSteed extends SkillBaseSteed {
     
