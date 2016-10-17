@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -91,12 +91,10 @@ public class SkillSpiritPhase
         }
     }
 
-    private class SpiritPhaseEffect
-            extends PeriodicExpirableEffect
-    {
-        public SpiritPhaseEffect(Skill skill, long duration)
-        {
-            super("SpiritPhaseBuffEffect", 5L, duration);
+    public class SpiritPhaseEffect extends PeriodicExpirableEffect {
+        private SpiritPhaseEffect(Skill skill, long duration) {
+            super(skill, SpiritPhase"")
+            super(skill, "SpiritPhaseBuffEffect", 5L, duration);
             this.types.add(EffectType.MAGIC);
             this.types.add(EffectType.BENEFICIAL);
         }
@@ -128,7 +126,6 @@ public class SkillSpiritPhase
             Player player = hero.getPlayer();
 
             player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 10);
-
-        }
     }
-}
+  }
+}*/
