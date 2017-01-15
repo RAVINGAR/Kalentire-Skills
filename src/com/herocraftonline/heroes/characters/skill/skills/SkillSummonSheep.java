@@ -39,7 +39,7 @@ public class SkillSummonSheep extends SkillBaseSummonEntity {
     @Override
     protected Entity summonEntity(Hero hero, String[] args, Block targetBlock) {
         Sheep sheep = (Sheep) hero.getPlayer().getWorld().spawnEntity(targetBlock.getLocation(), getEntityType(targetBlock));
-        sheep.setColor(DyeColor.getByData((byte) Util.nextInt(DyeColor.values().length)));
+        sheep.setColor(DyeColor.getByWoolData((byte) Util.nextInt(DyeColor.values().length)));
         return sheep;
     }
     
