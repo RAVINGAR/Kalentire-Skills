@@ -86,7 +86,7 @@ public class SkillMortalWound extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        double damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item); #getScaled(hero)
+        double damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item); //getScaled(hero)
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
