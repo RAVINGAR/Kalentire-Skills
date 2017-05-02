@@ -16,18 +16,18 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-import net.minecraft.server.v1_10_R1.BlockPosition;
-import net.minecraft.server.v1_10_R1.EntityHuman;
-import net.minecraft.server.v1_10_R1.EnumHand;
-import net.minecraft.server.v1_10_R1.WorldServer;
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.EntityHuman;
+import net.minecraft.server.v1_11_R1.EnumHand;
+import net.minecraft.server.v1_11_R1.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Jukebox;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -183,10 +183,10 @@ public class SkillTelekinesis extends ActiveSkill {
                     int blockID = blockMaterial.getId();
                     WorldServer worldServer = ((CraftWorld) targetBlock.getWorld()).getHandle();
                     EntityHuman entityHuman = ((CraftPlayer) player).getHandle();
-                    net.minecraft.server.v1_10_R1.Block block = net.minecraft.server.v1_10_R1.Block.getById(blockID);
+                    net.minecraft.server.v1_11_R1.Block block = net.minecraft.server.v1_11_R1.Block.getById(blockID);
 
                     // FIXME: 3/2/16
-                    block.interact(worldServer, new BlockPosition(targetBlock.getX(), targetBlock.getY(), targetBlock.getZ()), block.getBlockData(), entityHuman, EnumHand.MAIN_HAND, null, entityHuman.getDirection(), 0, 0, 0);
+                    block.interact(worldServer.b(), new BlockPosition(targetBlock.getX(), targetBlock.getY(), targetBlock.getZ()), block.getBlockData(), entityHuman, EnumHand.MAIN_HAND, entityHuman.getDirection(), 0, 0, 0);
 
                     // DEAR GOD WHYYYY. I DONT WANNA HAVE TO DO IT THIS WAY.
                     //                    if ((targetBlock.getData() & 0x8) == 0x8)
