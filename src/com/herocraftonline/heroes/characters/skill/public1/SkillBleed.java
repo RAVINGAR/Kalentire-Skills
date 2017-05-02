@@ -37,6 +37,7 @@ public class SkillBleed extends TargettedSkill {
         node.set(SkillSetting.PERIOD.node(), 2000);
         node.set(SkillSetting.DAMAGE_TICK.node(), 1);
         node.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
+        node.set(SkillSetting.DAMAGE_INCREASE_POWER.node(), 1.0);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% is bleeding!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has stopped bleeding!");
         return node;
@@ -59,7 +60,9 @@ public class SkillBleed extends TargettedSkill {
         final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 1, false);
-        tickDamage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false);
+        double damageIncreasePower = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_POWER, 1.0, false);
+        tickDamage += Math.pow(damageIncrease * hero.getSkillLevel(this), damageIncreasePower);
         final BleedSkillEffect bEffect = new BleedSkillEffect(this, duration, period, tickDamage, player);
         this.plugin.getCharacterManager().getCharacter(target).addEffect(bEffect);
         this.broadcastExecuteText(hero, target);
@@ -104,7 +107,9 @@ public class SkillBleed extends TargettedSkill {
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this));
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false);
+        double damageIncreasePower = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_POWER, 1.0, false);
+        damage += Math.pow(damageIncrease * hero.getSkillLevel(this), damageIncreasePower);
         damage = (damage * duration) / period;
         return this.getDescription().replace("$1", damage + "").replace("$2", (duration / 1000) + "");
     }
