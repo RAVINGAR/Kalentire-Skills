@@ -92,7 +92,7 @@ public class SkillPlagueBomb
           SkillPlagueBomb.this.sheepBomb(sheep);
         }
       }
-    }, sheepDuration / 1000L * 20L);
+    }, (long) sheepDuration / 1000L * 20L);
     
     return SkillResult.NORMAL;
   }
