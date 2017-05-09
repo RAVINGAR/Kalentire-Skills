@@ -65,17 +65,17 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.8.10-SNAPSHOT</version>
+            <version>1.8.11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>NMSHandler</artifactId>
-            <version>0.0.2</version>
+            <artifactId>heroes-bukkit-compat-base</artifactId>
+            <version>1.8.11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>NMSHandler-v1_11_R1</artifactId>
-            <version>v1_11_R1-SNAPSHOT</version>
+            <artifactId>heroes-bukkit-compat-v1_11_R1</artifactId>
+            <version>1.8.11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
