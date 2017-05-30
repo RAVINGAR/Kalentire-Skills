@@ -97,7 +97,7 @@ public class SkillBalance extends ActiveSkill {
         while (partyMembers.hasNext()) {
             Hero member = partyMembers.next();
             Location memberLocation = member.getPlayer().getLocation();
-            if (skipRangeCheck || memberLocation.distanceSquared(playerLocation) < radiusSquared) {
+            if (skipRangeCheck || (memberLocation.getWorld().equals(playerLocation.getWorld()) && memberLocation.distanceSquared(playerLocation) < radiusSquared)) {
                 maxHealthTotal += member.getPlayer().getMaxHealth();
                 currentHealthTotal += member.getPlayer().getHealth();
             }
@@ -115,7 +115,7 @@ public class SkillBalance extends ActiveSkill {
             Hero applyHero = applyHealthIterator.next();
             Location applyHeroLocation = applyHero.getPlayer().getLocation();
 
-            if (skipRangeCheck || applyHeroLocation.distanceSquared(playerLocation) < radiusSquared) {
+            if (skipRangeCheck || (applyHeroLocation.getWorld().equals(playerLocation.getWorld()) && applyHeroLocation.distanceSquared(playerLocation) < radiusSquared)) {
                 applyHero.getPlayer().setHealth((applyHero.getPlayer().getMaxHealth() * healthMultiplier));
                 if (applyHero.getName().equals(hero.getName())) {
                     player.sendMessage(ChatColor.GRAY + "You used Balance!");
