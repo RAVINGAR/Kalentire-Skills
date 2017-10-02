@@ -3,7 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import net.minecraft.server.v1_11_R1.ContainerAnvil;
+import net.minecraft.server.v1_12_R1.ContainerAnvil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
