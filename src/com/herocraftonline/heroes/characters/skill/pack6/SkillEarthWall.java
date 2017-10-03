@@ -93,7 +93,7 @@ public class SkillEarthWall extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "DIRT"));
 
-        Block tBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
+        Block tBlock = player.getTargetBlock((HashSet<Material>)null, maxDist);
 
         ShieldWallEffect swEffect = new ShieldWallEffect(this, player, duration, tBlock, width, height, setter);
         hero.addEffect(swEffect);

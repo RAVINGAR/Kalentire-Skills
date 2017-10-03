@@ -61,7 +61,7 @@ public class SkillTransmuteOre extends ActiveSkill {
         Player player = hero.getPlayer();
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
-        if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock((HashSet<Byte>) null, 3).getType() != Material.FURNACE) {
+        if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock((HashSet<Material>) null, 3).getType() != Material.FURNACE) {
             Messaging.send(player, "You must have a furnace targetted to transmute ores!");
             return SkillResult.FAIL;
         }

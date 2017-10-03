@@ -43,14 +43,14 @@ public class SkillTelekinesis extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         final Player player = hero.getPlayer();
-        final HashSet<Byte> transparent = new HashSet<Byte>();
-        transparent.add((byte) Material.AIR.getId());
-        transparent.add((byte) Material.WATER.getId());
-        transparent.add((byte) Material.REDSTONE_TORCH_ON.getId());
-        transparent.add((byte) Material.REDSTONE_TORCH_OFF.getId());
-        transparent.add((byte) Material.REDSTONE_WIRE.getId());
-        transparent.add((byte) Material.TORCH.getId());
-        transparent.add((byte) Material.SNOW.getId());
+        final HashSet<Material> transparent = new HashSet<Material>();
+        transparent.add(Material.AIR);
+        transparent.add(Material.WATER);
+        transparent.add(Material.REDSTONE_TORCH_ON);
+        transparent.add(Material.REDSTONE_TORCH_OFF);
+        transparent.add(Material.REDSTONE_WIRE);
+        transparent.add(Material.TORCH);
+        transparent.add(Material.SNOW);
         final Block block = player.getTargetBlock(transparent, SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false));
 
         switch (block.getType()) {

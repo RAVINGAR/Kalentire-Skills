@@ -144,7 +144,7 @@ public class SkillDeconstruct extends ActiveSkill {
             item.setAmount(1);
             slot = player.getInventory().getHeldItemSlot();
         }
-        Block block = player.getTargetBlock((HashSet<Byte>) null, 3);
+        Block block = player.getTargetBlock((HashSet<Material>) null, 3);
         Location expLoc = block.getLocation();
         if (SkillConfigManager.getUseSetting(hero, this, "require-workbench", true) && block.getType() != Material.WORKBENCH) {
             Messaging.send(player, "You must have a workbench targetted to deconstruct an item!");

@@ -74,7 +74,7 @@ public class SkillTelekinesis extends ActiveSkill {
         final Player player = hero.getPlayer();
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false);
-        Block targetBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
+        Block targetBlock = player.getTargetBlock((HashSet<Material>)null, maxDist);
         if (targetBlock.getType() == Material.AIR) {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
