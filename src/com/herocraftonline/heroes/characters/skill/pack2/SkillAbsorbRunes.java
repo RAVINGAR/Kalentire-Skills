@@ -426,7 +426,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 }
                 else {
                     // The class does have the skill. Check to see if the hero is allowed to have it yet.
-                    int toLevel = hero.getLevel(to);
+                    int toLevel = hero.getHeroLevel(to);
                     int levelReq = SkillConfigManager.getSetting(to, skill, SkillSetting.LEVEL.node(), 1);
                     if (toLevel < levelReq) {
                         // They aren't high enough level

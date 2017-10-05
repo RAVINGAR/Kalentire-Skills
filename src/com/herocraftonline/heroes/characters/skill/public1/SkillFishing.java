@@ -63,7 +63,7 @@ public class SkillFishing extends PassiveSkill {
             if (chance < (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.CHANCE_LEVEL, .001, false) * hero.getHeroLevel(this.skill))) { //if the chance
 
                 final int leatherlvl = SkillConfigManager.getUseSetting(hero, this.skill, "leather-level", 5, true);
-                if ((hero.getLevel() >= leatherlvl) && SkillConfigManager.getUseSetting(hero, this.skill, "enable-leather", false)) { //if fishing leather is enabled and have the level
+                if ((hero.getHeroLevel() >= leatherlvl) && SkillConfigManager.getUseSetting(hero, this.skill, "enable-leather", false)) { //if fishing leather is enabled and have the level
 
                     if (getCaught != null) { //If not null
                         switch (Util.nextInt(6)) {

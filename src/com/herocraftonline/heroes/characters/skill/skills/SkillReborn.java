@@ -123,7 +123,7 @@ public class SkillReborn extends ActiveSkill {
                     event.setCancelled(true);
                     hero.heal(hrh.getDelta());
                     long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false)
-                            + (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel()));
+                            + (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel()));
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());
                     broadcast(player.getLocation(),rebornText,player.getName());
                     player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);

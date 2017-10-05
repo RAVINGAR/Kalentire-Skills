@@ -91,6 +91,6 @@ public class SkillSmeltGold extends ActiveSkill {
 	}
 
 	private double calculateChance(Hero hero) {
-		return SkillConfigManager.getUseSetting(hero, this, "base-nugget-chance", 5, false) + SkillConfigManager.getUseSetting(hero, this, "chance-gain-per-level", 0.2D, false) * hero.getLevel(hero.getSecondClass());
+		return SkillConfigManager.getUseSetting(hero, this, "base-nugget-chance", 5, false) + SkillConfigManager.getUseSetting(hero, this, "chance-gain-per-level", 0.2D, false) * hero.getHeroLevel(hero.getSecondClass());
 	}
 }

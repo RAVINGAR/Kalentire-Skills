@@ -83,7 +83,7 @@ public class SkillReborn extends PassiveSkill {
                     event.setDamage(0);
                     event.setCancelled(true);
                     hero.heal(hrh.getDelta());
-                    final long cooldown = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel());
+                    final long cooldown = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel());
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());
                     SkillReborn.this.broadcast(player.getLocation(), SkillReborn.this.rebornText, player.getDisplayName());
                     player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);

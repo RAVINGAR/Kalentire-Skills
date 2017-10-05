@@ -29,7 +29,7 @@ public class SkillDisenchant extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription().replace("$1", Math.pow(hero.getLevel(hero.getSecondClass()), -1) * 100 + "");
+        return getDescription().replace("$1", Math.pow(hero.getHeroLevel(hero.getSecondClass()), -1) * 100 + "");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SkillDisenchant extends ActiveSkill {
             }
             hand.removeEnchantment(ench);
             //Handle breaking
-            if (randgen.nextInt(100) < Math.pow(hero.getLevel(hero.getSecondClass()), -1) * 100) {
+            if (randgen.nextInt(100) < Math.pow(hero.getHeroLevel(hero.getSecondClass()), -1) * 100) {
                 hero.getPlayer().sendMessage(ChatColor.GRAY + "Oh no your item broke!");
                 hand.setAmount(0);
                 hero.getPlayer().updateInventory();

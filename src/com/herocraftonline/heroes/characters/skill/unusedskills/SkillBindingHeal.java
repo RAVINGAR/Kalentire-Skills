@@ -43,14 +43,14 @@ public class SkillBindingHeal extends  TargettedSkill {
 
         // Mana
         int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE_PER_LEVEL.node(), 0, false) * hero.getLevel());
+                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE_PER_LEVEL.node(), 0, false) * hero.getHeroLevel());
         if (mana > 0) {
             description += "§6Cost: §9" + mana + "MP" + ending;
         }
 
         // Health cost
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) -
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, mana, true) * hero.getLevel());
+                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, mana, true) * hero.getHeroLevel());
         if (healthCost > 0 && mana > 0) {
             description += "§6" + healthCost + ending;
         } else if (healthCost > 0) {
@@ -59,14 +59,14 @@ public class SkillBindingHeal extends  TargettedSkill {
 
         // Cooldown
         int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false)
-                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false) * hero.getLevel()) / 1000;
+                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false) * hero.getHeroLevel()) / 1000;
         if (cooldown > 0) {
             description += "§6CD: §9" + cooldown + "s" + ending;
         }
 
         // Damage
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 4, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getLevel();
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getHeroLevel();
 
         description += getDescription().replace("$1", "§9" + damage + "§6").replace("$2", "§9" + damage * 0.5 + "§6");
 
@@ -77,7 +77,7 @@ public class SkillBindingHeal extends  TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 4, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getLevel();
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getHeroLevel();
         float particlePower = (float) SkillConfigManager.getUseSetting(hero, this, "particle-power", 0.5, false);
         int particleAmount = SkillConfigManager.getUseSetting(hero, this, "particle-amount", 10, false);
 
