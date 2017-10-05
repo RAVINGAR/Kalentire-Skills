@@ -412,7 +412,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             // Prep heroes variables
             Hero hero = event.getHero();
             HeroClass to = event.getTo();
-
+            /*
             // This appears to be getting a null result at times. Check it first to avoid exceptions
             if (to != null) {
                 // Check if the class actually has the skill available
@@ -426,7 +426,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 }
                 else {
                     // The class does have the skill. Check to see if the hero is allowed to have it yet.
-                    /*int toLevel = hero.getHeroLevel(to);
+                    int toLevel = hero.getHeroLevel(to);
                     int levelReq = SkillConfigManager.getSetting(to, skill, SkillSetting.LEVEL.node(), 1);
                     if (toLevel < levelReq) {
                         // They aren't high enough level
@@ -435,7 +435,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                         if (heroRunes.containsKey(hero)) {
                             // Remove them until they are high enough
                             heroRunes.remove(hero);
-                        }*/
+                        }
 
                        //return;
                     }
@@ -451,7 +451,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                         //return;
                     }
                 }
-            }
+            }*/
         }
     }
 
