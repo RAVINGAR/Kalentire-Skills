@@ -33,7 +33,7 @@ package com.herocraftonline.heroes.characters.skill.pack2;
  * RuneExpireEvent.java			// The Rune expiration event class. Needed for detecting when a Rune has been applied and needs to be expired.
  * RuneQueue.java				// The actual Rune Queue List. A unique object of this kind is attached to every player that has this skill.
  */
-/*
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.ClassChangeEvent;
@@ -508,4 +508,3 @@ public class SkillAbsorbRunes extends ActiveSkill {
         }
     }
 }
-*/
