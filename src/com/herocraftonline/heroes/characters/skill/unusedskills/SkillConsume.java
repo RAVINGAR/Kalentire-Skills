@@ -63,7 +63,7 @@ public class SkillConsume extends ActiveSkill {
                     throw new IllegalArgumentException("Invalid Configuration for Skill Consume: " + key + " has invalid amount defined");
 
                 int level = SkillConfigManager.getUseSetting(hero, this, key + "." + SkillSetting.LEVEL, 1, true);
-                if (hero.getSkillLevel(this) < level) {
+                if (hero.getHeroLevel(this) < level) {
                     return new SkillResult(ResultType.LOW_LEVEL, true, level);
                 }
 

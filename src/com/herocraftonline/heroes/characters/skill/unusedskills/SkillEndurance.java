@@ -92,7 +92,7 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
+                    double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getHeroLevel(skill);
                     int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", .9, true) - levelMult));
                     //Never go less than 1
                     if (newDamage == 0)
@@ -123,7 +123,7 @@ public class SkillEndurance extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
                 if (hero.hasEffect(getName())) {
-                    double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getSkillLevel(skill);
+                    double levelMult = SkillConfigManager.getUseSetting(hero, skill, "multiplier-per-level", .005, false) * hero.getHeroLevel(skill);
                     int newDamage = (int) (event.getDamage() * (SkillConfigManager.getUseSetting(hero, skill, "incoming-multiplier", .9, true) - levelMult));
                     //Always deal at least 1 damage
                     if (newDamage == 0) {
@@ -151,7 +151,7 @@ public class SkillEndurance extends ActiveSkill {
         double out = 1 - SkillConfigManager.getUseSetting(hero, this, "outgoing-multiplier", .9, false);
         double inc = 1 - SkillConfigManager.getUseSetting(hero, this, "incoming-multiplier", .9, false);
         double perlev = SkillConfigManager.getUseSetting(hero, this, "multiplier-per-level", .005, false);
-        int level = hero.getSkillLevel(this);
+        int level = hero.getHeroLevel(this);
         if (level < 0)
             level = 0;
         inc -= (perlev * level);

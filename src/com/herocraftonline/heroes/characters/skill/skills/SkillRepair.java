@@ -37,7 +37,7 @@ public class SkillRepair extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
-        unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getSkillLevel(this);
+        unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getHeroLevel(this);
         return getDescription().replace("$1", Util.stringDouble(unchant * 100.0));
     }
 
@@ -87,7 +87,7 @@ public class SkillRepair extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        if (hero.getSkillLevel(this) < level) {
+        if (hero.getHeroLevel(this) < level) {
             Messaging.send(player, "You must be level $1 to repair $2", level, MaterialUtil.getFriendlyName(isType));
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
@@ -104,7 +104,7 @@ public class SkillRepair extends ActiveSkill {
         boolean enchanted = !is.getEnchantments().isEmpty();
         if (enchanted) {
             double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
-            unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getSkillLevel(this);
+            unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getHeroLevel(this);
             if (Util.nextRand() <= unchant) {
                 for (Enchantment enchant : new ArrayList<>(is.getEnchantments().keySet())) {
                     is.removeEnchantment(enchant);

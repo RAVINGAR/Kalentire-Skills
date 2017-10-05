@@ -31,7 +31,7 @@ public class SkillMining extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .001, false);
-        int level = hero.getSkillLevel(this);
+        int level = hero.getHeroLevel(this);
         if (level < 1)
             level = 1;
         return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
@@ -94,14 +94,14 @@ public class SkillMining extends PassiveSkill {
 
             double chance = Util.nextRand();
 
-            if (isStone && chance <= SkillConfigManager.getUseSetting(hero, skill, "chance-from-stone", .0005, false) * hero.getSkillLevel(skill)) {
+            if (isStone && chance <= SkillConfigManager.getUseSetting(hero, skill, "chance-from-stone", .0005, false) * hero.getHeroLevel(skill)) {
                 block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(getMatFromHeight(block), 1));
                 return;
             } else if (isStone) {
                 return;
             }
 
-            if (chance > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getSkillLevel(skill)) {
+            if (chance > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill)) {
                 return;
             }
             if (dropMaterial == Material.INK_SACK) {

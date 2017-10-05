@@ -114,7 +114,7 @@ public class SkillBladegrasp extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .02, false) * hero.getSkillLevel(skill);
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .02, false) * hero.getHeroLevel(skill);
                 if (Util.nextRand() > parryChance) {
                     return;
                 }
@@ -137,7 +137,7 @@ public class SkillBladegrasp extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .02, false) * hero.getSkillLevel(event.getSkill());
+                double parryChance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .02, false) * hero.getHeroLevel(event.getSkill());
                 if (Util.nextRand() > parryChance) {
                     return;
                 }
@@ -157,7 +157,7 @@ public class SkillBladegrasp extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .02, false);
-        int level = hero.getSkillLevel(this);
+        int level = hero.getHeroLevel(this);
         if (level < 1)
             level = 1;
         return getDescription().replace("$1", Util.stringDouble(chance * level * 100)).replace("$2", duration / 1000 + "");

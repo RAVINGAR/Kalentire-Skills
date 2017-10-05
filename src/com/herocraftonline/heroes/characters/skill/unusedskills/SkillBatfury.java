@@ -66,7 +66,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         }
 
         double distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE.node(), 10, false) +
-                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE.node(), 0.1, false) * hero.getSkillLevel(this);
+                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE.node(), 0.1, false) * hero.getHeroLevel(this);
         if (distance > 0) {
             descr.append(" Dist:");
             descr.append(Util.formatDouble(distance));
@@ -88,7 +88,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 
     public double getChanceFor(Hero hero, String key) {
         return SkillConfigManager.getUseSetting(hero, this, "base-chance-" + key, 0.1, false) +
-                SkillConfigManager.getUseSetting(hero, this, "chance-per-level-" + key, 0.002, false) * hero.getSkillLevel(this);
+                SkillConfigManager.getUseSetting(hero, this, "chance-per-level-" + key, 0.002, false) * hero.getHeroLevel(this);
     }
 
     public int getAmountFor(Hero hero) {
@@ -97,7 +97,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 
     public int getDespawnDelayFor(Hero hero) {
         return SkillConfigManager.getUseSetting(hero, this, "base-despawn-delay", 5000, false) +
-                SkillConfigManager.getUseSetting(hero, this, "per-level-despawn-delay", 100, false) * hero.getSkillLevel(this);
+                SkillConfigManager.getUseSetting(hero, this, "per-level-despawn-delay", 100, false) * hero.getHeroLevel(this);
     }
 
     @Override

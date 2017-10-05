@@ -43,7 +43,7 @@ public class SkillExcavate extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
-        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 100, false) * hero.getSkillLevel(this));
+        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 100, false) * hero.getHeroLevel(this));
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -75,7 +75,7 @@ public class SkillExcavate extends ActiveSkill {
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
-        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 100, false) * hero.getSkillLevel(this));
+        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 100, false) * hero.getHeroLevel(this));
 
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 3, false);
         if (multiplier > 20) {

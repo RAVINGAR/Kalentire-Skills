@@ -35,14 +35,14 @@ public class SkillAsuraSlash extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-        damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getHeroLevel(this);
         return getDescription().replace("$1", damage + "");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 110, false);
-        damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getSkillLevel(this);
+        damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getHeroLevel(this);
 
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);

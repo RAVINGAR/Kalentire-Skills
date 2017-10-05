@@ -29,7 +29,7 @@ public class SkillVillagerTrade extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .001, false);
-        int level = hero.getSkillLevel(this);
+        int level = hero.getHeroLevel(this);
         if (level < 1)
             level = 1;
         return getDescription().replace("$1", Util.stringDouble(chance * level * 100));

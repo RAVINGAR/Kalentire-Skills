@@ -57,7 +57,7 @@ public class SkillGate extends ActiveSkill {
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
-            if (hero.getSkillLevel(this) < levelRequirement) {
+            if (hero.getHeroLevel(this) < levelRequirement) {
                 return new SkillResult(ResultType.LOW_LEVEL, true, levelRequirement);
             }
             Location location = new Location(world, Double.parseDouble(splitArg[1]), Double.parseDouble(splitArg[2]), Double.parseDouble(splitArg[3]));

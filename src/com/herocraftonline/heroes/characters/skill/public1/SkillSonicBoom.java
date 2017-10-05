@@ -42,31 +42,31 @@ public class SkillSonicBoom extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 30, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0, false) * hero.getSkillLevel(this));
-        final int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 0, false) * hero.getSkillLevel(this))) / 1000;
-        final double damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getSkillLevel(this)));
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 30, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0, false) * hero.getHeroLevel(this));
+        final int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 0, false) * hero.getHeroLevel(this))) / 1000;
+        final double damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this)));
         String description = this.getDescription().replace("$1", radius + "").replace("$2", duration + "").replace("$3", damage + "");
 
         //COOLDOWN
-        final int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getSkillLevel(this))) / 1000;
+        final int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel(this))) / 1000;
         if (cooldown > 0) {
             description += " CD:" + cooldown + "s";
         }
 
         //MANA
-        final int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 10, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
+        final int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 10, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE.node(), 0, false) * hero.getHeroLevel(this));
         if (mana > 0) {
             description += " M:" + mana;
         }
 
         //HEALTH_COST
-        final int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getSkillLevel(this));
+        final int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getHeroLevel(this));
         if (healthCost > 0) {
             description += " HP:" + healthCost;
         }
 
         //STAMINA
-        final int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA.node(), 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE.node(), 0, false) * hero.getSkillLevel(this));
+        final int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA.node(), 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE.node(), 0, false) * hero.getHeroLevel(this));
         if (staminaCost > 0) {
             description += " FP:" + staminaCost;
         }
@@ -88,11 +88,11 @@ public class SkillSonicBoom extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 30, false);
-        radius += SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0, false) * hero.getSkillLevel(this);
+        radius += SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE, 0, false) * hero.getHeroLevel(this);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 0, false);
-        damage += SkillConfigManager.getUseSetting(hero, this, "damage-increase", 0, false) * hero.getSkillLevel(this);
+        damage += SkillConfigManager.getUseSetting(hero, this, "damage-increase", 0, false) * hero.getHeroLevel(this);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0, false) * hero.getSkillLevel(this);
+        duration += SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0, false) * hero.getHeroLevel(this);
         final Player player = hero.getPlayer();
         boolean hit = false;
         for (final Entity e : player.getNearbyEntities(radius, radius, radius)) {
