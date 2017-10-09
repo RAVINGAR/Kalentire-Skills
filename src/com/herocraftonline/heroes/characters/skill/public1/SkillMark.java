@@ -27,13 +27,10 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
-//import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillMark extends ActiveSkill {
 
-    private boolean herotowns = false;
-    //private HeroTowns ht;
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
@@ -50,11 +47,6 @@ public class SkillMark extends ActiveSkill {
         skillSettingsName = "Recall";
 
         try {
-            /*if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-                herotowns = true;
-                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            }*/
-
             /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
                 towny = true;
             }*/
@@ -126,14 +118,6 @@ public class SkillMark extends ActiveSkill {
         } else {
             // Save a new mark
             Location loc = player.getLocation();
-
-            // Validate Herotowns
-            if (herotowns) {
-                /*if (!ht.getGlobalRegionManager().canBuild(player, loc)) {
-                    Messaging.send(player, "You cannot Mark in a Town you have no access to!");
-                    return SkillResult.FAIL;
-                }*/
-            }
 
             // Validate Towny
             if(towny) {

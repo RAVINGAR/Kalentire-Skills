@@ -43,13 +43,10 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
-//import com.herocraftonline.townships.HeroTowns;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillRecall extends ActiveSkill implements Listener {
 
-    private boolean herotowns = false;
-    //private HeroTowns ht;
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
@@ -61,11 +58,6 @@ public class SkillRecall extends ActiveSkill implements Listener {
         super(plugin, name);
 
         try {
-            /*if (Bukkit.getServer().getPluginManager().getPlugin("HeroTowns") != null) {
-                herotowns = true;
-                ht = (HeroTowns) this.plugin.getServer().getPluginManager().getPlugin("HeroTowns");
-            }*/
-
             /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
                 towny = true;
             }*/
@@ -333,14 +325,6 @@ public class SkillRecall extends ActiveSkill implements Listener {
         }
 
         Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
-
-        // Validate Herotowns
-        if (herotowns) {
-            /*if (!ht.getGlobalRegionManager().canBuild(player, teleportLocation)) {
-                Messaging.send(player, "You cannot Recall to a Town you have no access to!");
-                return SkillResult.FAIL;
-            }*/
-        }
 
         // Validate Towny
         if(towny) {
