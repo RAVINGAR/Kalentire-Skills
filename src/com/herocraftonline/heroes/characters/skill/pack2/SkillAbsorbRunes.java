@@ -337,7 +337,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             // Prep variables
             Hero hero = skill.plugin.getCharacterManager().getHero(event.getPlayer());
             HeroClass heroClass = hero.getHeroClass();
-            int level = hero.getHeroLevel(HeroClass);
+            int level = hero.getHeroLevel(heroClass);
 
             // Check if the player's class actually has the skill available
             if (heroClass.hasSkill(skill.getName())) {

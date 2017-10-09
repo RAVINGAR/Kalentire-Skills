@@ -88,7 +88,7 @@ public class SkillMagicMissile extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             double damage = SkillConfigManager.getUseSetting(hero, SkillMagicMissile.this, SkillSetting.DAMAGE.node(), 3, false)
-                    + SkillConfigManager.getUseSetting(hero, SkillMagicMissile.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * player.getHeroLevel();
+                    + SkillConfigManager.getUseSetting(hero, SkillMagicMissile.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * player.getLevel();
             event.setDamage(damage);
         }
 

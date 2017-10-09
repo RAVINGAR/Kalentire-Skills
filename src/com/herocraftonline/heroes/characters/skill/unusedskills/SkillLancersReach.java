@@ -147,7 +147,7 @@ public class SkillLancersReach extends ActiveSkill {
 
             List<Block> lineOfSight;
             try {
-                lineOfSight = player.getLineOfSight(Util.transparentIds, reachDistance);
+                lineOfSight = player.getLineOfSight(Util.transparentBlocks, reachDistance);
             }
             catch (final IllegalStateException e) {
                 return;
