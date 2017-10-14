@@ -337,7 +337,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
             // Prep variables
             Hero hero = skill.plugin.getCharacterManager().getHero(event.getPlayer());
             HeroClass heroClass = hero.getHeroClass();
-            int level = hero.getHeroLevel(heroClass);
+            int level = hero.getLevel(heroClass);
 
             // Check if the player's class actually has the skill available
             if (heroClass.hasSkill(skill.getName())) {
@@ -426,7 +426,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
                 }
                 else {
                     // The class does have the skill. Check to see if the hero is allowed to have it yet.
-                    int toLevel = hero.getHeroLevel(to);
+                    int toLevel = hero.getLevel(to);
                     int levelReq = SkillConfigManager.getSetting(to, skill, SkillSetting.LEVEL.node(), 1);
                     if (toLevel < levelReq) {
                         // They aren't high enough level
