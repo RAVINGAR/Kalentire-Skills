@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
@@ -38,6 +38,7 @@ public class SkillAnvil extends PassiveSkill {
      * Checks for right clicks on anvil and cancels if this skill is not possessed
      * Handled as highest priority due to us not wanting people to override us canceling the event
      */
+/*
     public class AnvilListener implements Listener {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onPlayerInteract(PlayerInteractEvent event) {
@@ -58,4 +59,4 @@ public class SkillAnvil extends PassiveSkill {
         }
     }
 
-}
+}*/
