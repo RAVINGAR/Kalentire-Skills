@@ -3,10 +3,10 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import net.minecraft.server.v1_12_R1.ContainerAnvil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftInventoryAnvil;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,7 +23,7 @@ public class SkillAnvil extends PassiveSkill {
         setDescription("You can use Anvils!");
         Bukkit.getPluginManager().registerEvents(new AnvilListener(), this.plugin);
         try {
-            Method method = ContainerAnvil.class.getDeclaredMethod("d", new Class[] {});
+            Method method = CraftInventoryAnvil.class.getDeclaredMethod("d", new Class[] {});
             method.setAccessible(true);
         } catch(Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "SkillAnvil: Error overriding vanilla anvil behaviour! Behaviour may be erratic");
