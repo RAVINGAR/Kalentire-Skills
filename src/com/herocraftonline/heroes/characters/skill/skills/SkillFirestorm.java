@@ -1,3 +1,4 @@
+/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
@@ -50,7 +51,7 @@ public class SkillFirestorm extends ActiveSkill {
 
 		return getDescription().replace("$1", damage + "").replace("$1", radius + "");
 	}
-
+/*
 	@Override
 	public SkillResult use(final Hero hero, String[] args) {
 
@@ -86,8 +87,8 @@ public class SkillFirestorm extends ActiveSkill {
 				}
 
 			}, ticksPerFirework * i);
-		}
-
+		}*/
+/*
 		// Save player location for the center of the blast
 		final Location centerLocation = player.getLocation();
 
@@ -156,4 +157,4 @@ public class SkillFirestorm extends ActiveSkill {
 
 		return circleblocks;
 	}
-}
+}*/
