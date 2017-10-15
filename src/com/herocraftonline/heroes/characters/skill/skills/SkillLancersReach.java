@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 
 // I'm pretty sure this skill doesn't work right, and it probably isn't very good to run it on the server due to the interact listener.

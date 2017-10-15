@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import java.text.DecimalFormat;
 import java.util.Deque;

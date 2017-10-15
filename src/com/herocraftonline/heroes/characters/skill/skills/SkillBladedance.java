@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
