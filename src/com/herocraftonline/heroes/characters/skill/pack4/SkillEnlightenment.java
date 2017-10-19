@@ -36,7 +36,7 @@ public class SkillEnlightenment extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
+        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getSkillLevel(this);
         int attributeIncrease = SkillConfigManager.getUseSetting(h, this, "attribute-increase", 15, false);
         
         return getDescription()
