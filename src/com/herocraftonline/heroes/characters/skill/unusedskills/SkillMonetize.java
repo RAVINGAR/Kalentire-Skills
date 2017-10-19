@@ -74,7 +74,7 @@ public class SkillMonetize extends ActiveSkill{
 	// This may cause issues if the player doesn't have a second class
 	private Double calculateCoins(Hero hero){
 		return getUseSetting(hero, this, base, def_base, false)
-					+getUseSetting(hero,this,gain,def_gain,false)*hero.getHeroLevel(hero.getSecondClass());
+					+getUseSetting(hero,this,gain,def_gain,false)*hero.getLevel(hero.getSecondClass());
 	}
 	
 	@Override

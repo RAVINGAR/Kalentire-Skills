@@ -71,8 +71,8 @@ public class SkillDeathMark extends ActiveSkill {
         if (target == null)
             return SkillResult.INVALID_TARGET;
         Hero targetHero = plugin.getCharacterManager().getHero(target);
-        int minTargetHeroLevel = SkillConfigManager.getUseSetting(hero, this, "target-min-combat-level", 10, false);
-        if (targetHero.getTieredLevel(targetHero.getHeroClass()) < minTargetHeroLevel) {
+        int minTargetLevel = SkillConfigManager.getUseSetting(hero, this, "target-min-combat-level", 10, false);
+        if (targetHero.getTieredLevel(targetHero.getHeroClass()) < minTargetLevel) {
             Messaging.send(player, "$1 isn't powerful enough to be found...", target.getName());
             return SkillResult.NORMAL;
         }

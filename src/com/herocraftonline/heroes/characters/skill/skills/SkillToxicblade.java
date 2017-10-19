@@ -174,7 +174,7 @@ public class SkillToxicblade extends ActiveSkill {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
                 long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, false);
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 20, false);
-                tickDamage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(skill));
+                tickDamage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getLevel(skill));
                 ToxicbladePoison apEffect = new ToxicbladePoison(skill, period, duration, tickDamage, player);
                 Entity target = event.getEntity();
                 if (event.getEntity() instanceof LivingEntity) {
@@ -197,7 +197,7 @@ public class SkillToxicblade extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this));
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getLevel(this));
         double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
         String s = getDescription().replace("$1", damage + "").replace("$2", seconds + "");
         return s;

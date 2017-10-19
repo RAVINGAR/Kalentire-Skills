@@ -58,7 +58,7 @@ public class SkillImbue extends ActiveSkill
 //    }
 //
 //    int level = SkillConfigManager.getUseSetting(hero, this, SkillSetting.LEVEL, 20, false);
-//    if (hero.getHeroLevel(hero.getHeroClass()) < level) {
+//    if (hero.getLevel(hero.getHeroClass()) < level) {
 //      player.sendMessage(ChatColor.GRAY + "You must be level " + ChatColor.YELLOW + level + " to imbue " + type.getName() + "s" + ChatColor.GRAY + "!");
 //      return SkillResult.FAIL;
 //    }

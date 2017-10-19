@@ -27,33 +27,33 @@ public class SkillInversion extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damageMod = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false);
-        damageMod += (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getHeroLevel(this));
+        damageMod += (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getLevel(this));
         String description = getDescription().replace("$1", (int) (damageMod * 100) + "");
         
         //COOLDOWN
         int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false)
-                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE, 0, false) * hero.getHeroLevel(this)) / 1000;
+                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE, 0, false) * hero.getLevel(this)) / 1000;
         if (cooldown > 0) {
             description += " CD:" + cooldown + "s";
         }
         
         //MANA
         int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 10, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE, 0, false) * hero.getHeroLevel(this));
+                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE, 0, false) * hero.getLevel(this));
         if (mana > 0) {
             description += " M:" + mana;
         }
         
         //HEALTH_COST
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) - 
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getHeroLevel(this));
+                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getLevel(this));
         if (healthCost > 0) {
             description += " HP:" + healthCost;
         }
         
         //STAMINA
         int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE, 0, false) * hero.getHeroLevel(this));
+                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE, 0, false) * hero.getLevel(this));
         if (staminaCost > 0) {
             description += " FP:" + staminaCost;
         }
@@ -91,7 +91,7 @@ public class SkillInversion extends TargettedSkill {
 
         int maxDamage = SkillConfigManager.getUseSetting(hero, this, "max-damage", 0, false);
         double damageMod = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) +
-                (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getHeroLevel(this));
+                (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getLevel(this));
         double damage = ((enemy.getMaxMana() - enemy.getMana()) * damageMod);
         if (maxDamage != 0 && damage > maxDamage) {
             damage = maxDamage;

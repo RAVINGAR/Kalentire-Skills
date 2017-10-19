@@ -35,7 +35,7 @@ public class SkillBruteForce extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
+        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getLevel(this);
         int strIncrease = SkillConfigManager.getUseSetting(h, this, "str-increase", 15, false);
         
         return getDescription()
@@ -71,7 +71,7 @@ public class SkillBruteForce extends TargettedSkill {
         Player player = hero.getPlayer();
         
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
+        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getLevel(this);
         int strIncrease = SkillConfigManager.getUseSetting(hero, this, "str-increase", 15, false);
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "BruteForceStrIncreaseEffect", player, duration, AttributeType.STRENGTH, strIncrease, applyText, expireText);

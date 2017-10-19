@@ -98,7 +98,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 		    List<String> portArgs = getPortArgs(portInfo);
 
 			int levelRequirement = Integer.parseInt(portArgs.get(5));
-            if (hero.getHeroLevel(this) < levelRequirement) {
+            if (hero.getLevel(this) < levelRequirement) {
                 return new SkillResult(ResultType.LOW_LEVEL, true, levelRequirement);
             }
 

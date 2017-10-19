@@ -41,8 +41,8 @@ public class SkillReborn extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        final double health = ((SkillConfigManager.getUseSetting(hero, this, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, this, "health-increase", 0.0, false) * hero.getHeroLevel(this))) * 100);
-        final int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel(this));
+        final double health = ((SkillConfigManager.getUseSetting(hero, this, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, this, "health-increase", 0.0, false) * hero.getLevel(this))) * 100);
+        final int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel(this));
         final String description = this.getDescription().replace("$1", health + "").replace("$2", cooldown + "");
         return description;
     }
@@ -74,7 +74,7 @@ public class SkillReborn extends PassiveSkill {
             }
             if (hero.hasEffect("Reborn")) {
                 if ((hero.getCooldown("Reborn") == null) || (hero.getCooldown("Reborn") <= System.currentTimeMillis())) {
-                    final double regainPercent = SkillConfigManager.getUseSetting(hero, this.skill, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, this.skill, "health-increase", 0.0, false) * hero.getHeroLevel(this.skill));
+                    final double regainPercent = SkillConfigManager.getUseSetting(hero, this.skill, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, this.skill, "health-increase", 0.0, false) * hero.getLevel(this.skill));
                     final double healthRegain = (player.getMaxHealth() * regainPercent);
                     final HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, this.skill, hero);
                     if (hrh.isCancelled() || (hrh.getDelta() == 0)) {
@@ -83,7 +83,7 @@ public class SkillReborn extends PassiveSkill {
                     event.setDamage(0);
                     event.setCancelled(true);
                     hero.heal(hrh.getDelta());
-                    final long cooldown = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel());
+                    final long cooldown = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getLevel());
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());
                     SkillReborn.this.broadcast(player.getLocation(), SkillReborn.this.rebornText, player.getDisplayName());
                     player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);

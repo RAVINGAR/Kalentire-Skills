@@ -109,7 +109,7 @@ public class SkillCharge extends TargettedSkill {
             final int rootPeriod = SkillConfigManager.getUseSetting(hero, this.skill, "root-period", 100, false);
             final long silenceDuration = SkillConfigManager.getUseSetting(hero, this.skill, "silence-duration", 0, false);
             double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE.node(), 0D, false);
-            damage += (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this.skill));
+            damage += (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getLevel(this.skill));
             for (final Entity e : player.getNearbyEntities(radius, radius, radius)) {
                 if (!(e instanceof LivingEntity)) {
                     continue;

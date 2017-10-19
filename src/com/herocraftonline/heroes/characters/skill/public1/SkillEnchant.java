@@ -101,7 +101,7 @@ public class SkillEnchant extends PassiveSkill {
 
             HeroClass enchanter = hero.getEnchantingClass();
             hero.setSyncPrimary(enchanter.equals(hero.getHeroClass()));
-            int level = hero.getHeroLevel(enchanter);
+            int level = hero.getLevel(enchanter);
 
             Map<Enchantment, Integer> enchants = event.getEnchantsToAdd();
             Iterator<Entry<Enchantment, Integer>> iter = enchants.entrySet().iterator();

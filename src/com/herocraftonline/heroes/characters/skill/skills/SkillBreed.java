@@ -31,7 +31,7 @@ public class SkillBreed extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .001, false);
-        int level = hero.getHeroLevel(this);
+        int level = hero.getLevel(this);
         if (level < 1)
             level = 1;
 

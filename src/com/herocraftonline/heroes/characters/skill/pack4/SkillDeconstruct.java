@@ -163,7 +163,7 @@ public class SkillDeconstruct extends ActiveSkill {
         }
 
         int level = SkillConfigManager.getUseSetting(hero, this, matName + "." + SkillSetting.LEVEL, 1, true);
-        if (level > hero.getHeroLevel(this)) {
+        if (level > hero.getLevel(this)) {
             Messaging.send(player, "You must be level " + level + " to deconstruct that item!");
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }

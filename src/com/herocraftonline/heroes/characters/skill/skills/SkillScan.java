@@ -45,7 +45,7 @@ public class SkillScan extends TargettedSkill {
             // Create the message variables
             Object[] messageVariables = new Object[] {
                     tHero.getPlayer().getName(),
-                    tHero.getHeroLevel(tHero.getHeroClass()),
+                    tHero.getLevel(tHero.getHeroClass()),
                     tHero.getHeroClass().getName(),
                     (int) target.getHealth(),
                     (int) target.getMaxHealth()

@@ -116,7 +116,7 @@ public class SkillHeartshot extends ActiveSkill {
 			if(hero.hasEffect("HeartShotBuff")) {
 				if(!damageCheck(player, target)) return;
 				double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
-				damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(skill));
+				damage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getLevel(skill));
 				damageEntity(target, player, damage, DamageCause.MAGIC, false);
 			}
 			

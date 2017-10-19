@@ -48,14 +48,14 @@ public class SkillDragonDash extends TargettedSkill {
 
         // Mana
         int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE_PER_LEVEL.node(), 0, false) * hero.getHeroLevel());
+                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE_PER_LEVEL.node(), 0, false) * hero.getLevel());
         if (mana > 0) {
             description += "§6Cost: §9" + mana + "MP" + ending;
         }
 
         // Health cost
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) -
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, mana, true) * hero.getHeroLevel());
+                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, mana, true) * hero.getLevel());
         if (healthCost > 0 && mana > 0) {
             description += "§6" + healthCost + ending;
         } else if (healthCost > 0) {
@@ -64,14 +64,14 @@ public class SkillDragonDash extends TargettedSkill {
 
         // Cooldown
         int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false)
-                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false) * hero.getHeroLevel()) / 1000;
+                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false) * hero.getLevel()) / 1000;
         if (cooldown > 0) {
             description += "§6CD: §9" + cooldown + "s" + ending;
         }
 
         // Damage
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 1, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.1, false) * hero.getHeroLevel();
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.1, false) * hero.getLevel();
 
         description += getDescription()
                 .replace("$1", "§9" + damage + "§6");
@@ -82,7 +82,7 @@ public class SkillDragonDash extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 1, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.1, false) * hero.getHeroLevel();
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.1, false) * hero.getLevel();
 
         Player player = hero.getPlayer(); // this may be needed for the player call - if not remove this.
 

@@ -60,7 +60,7 @@ public class SkillDecimation extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         int numFireballs = SkillConfigManager.getUseSetting(hero, this, "fireballs", 8, false);
-        numFireballs += (SkillConfigManager.getUseSetting(hero, this, "fireballs-per-level", .2, false) * hero.getHeroLevel(this));
+        numFireballs += (SkillConfigManager.getUseSetting(hero, this, "fireballs-per-level", .2, false) * hero.getLevel(this));
 
         double diff = 2 * Math.PI / numFireballs;
         long time = System.currentTimeMillis(); //<- red = variable type

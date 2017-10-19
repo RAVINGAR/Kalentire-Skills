@@ -33,7 +33,7 @@ public class SkillSmeltIron extends ActiveSkill{
 	
 	private double calculateChance(Hero hero){
 		return getUseSetting(hero, this, base, 10, false)
-					+getUseSetting(hero,this,gain,0.2,false)*hero.getHeroLevel(hero.getSecondClass());
+					+getUseSetting(hero,this,gain,0.2,false)*hero.getLevel(hero.getSecondClass());
 	}
 	
 	@Override

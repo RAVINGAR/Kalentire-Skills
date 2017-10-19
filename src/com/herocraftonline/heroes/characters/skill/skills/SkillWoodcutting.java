@@ -33,7 +33,7 @@ public class SkillWoodcutting extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, .001, false);
-        int level = hero.getHeroLevel(this);
+        int level = hero.getLevel(this);
         if (level < 1)
             level = 1;
         return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
@@ -126,7 +126,7 @@ public class SkillWoodcutting extends PassiveSkill {
             }
 
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (!hero.hasEffect("Woodcutting") || Util.nextRand() > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill)) {
+            if (!hero.hasEffect("Woodcutting") || Util.nextRand() > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getLevel(skill)) {
                 return;
             }
 

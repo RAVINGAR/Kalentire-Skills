@@ -66,7 +66,7 @@ public class SkillPickPocket extends TargettedSkill {
 
         Player tPlayer = (Player) target;        
 
-        double chance = SkillConfigManager.getUseSetting(hero, this, "base-chance", 0.1, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, 0.02, false) * hero.getHeroLevel(this));
+        double chance = SkillConfigManager.getUseSetting(hero, this, "base-chance", 0.1, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_LEVEL, 0.02, false) * hero.getLevel(this));
 
         if (Util.nextRand() >= chance) {
             if (Util.nextRand() >= chance) {

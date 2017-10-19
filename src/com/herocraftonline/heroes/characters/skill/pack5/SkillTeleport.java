@@ -62,7 +62,7 @@ public class SkillTeleport extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int level = hero.getHeroLevel(this);
+        int level = hero.getLevel(this);
         Location loc1 = targetPlayer.getLocation().add(Util.nextRand() * (-50 + level - (50 - level)), 0, Util.nextRand() * (-50 + level - (50 - level)));
         Double highestBlock = (double) targetPlayer.getWorld().getHighestBlockYAt(loc1);
         loc1.setY(highestBlock);

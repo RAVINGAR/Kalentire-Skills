@@ -244,7 +244,7 @@ public class SkillCauldron extends PassiveSkill {
 					if (event.getViewers().get(v) == player.get(i)){
 
 						Hero hero = plugin.getCharacterManager().getHero(player.get(i));
-						int sLevel = hero.getHeroLevel(hero.getSecondClass());
+						int sLevel = hero.getLevel(hero.getSecondClass());
 						Recipe recipe = event.getRecipe();
 						if(!usingCauldronbench.get(i)) {
                             for (ShapedRecipe shapedRecipe : ShapedCauldronRecipes) {

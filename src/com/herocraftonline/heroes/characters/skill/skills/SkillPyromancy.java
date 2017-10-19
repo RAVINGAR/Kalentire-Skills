@@ -119,10 +119,10 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
     @Override
     public String getDescription(Hero hero) {
         int max = (int) Math.floor(SkillConfigManager.getUseSetting(hero,this,"max-summons",3,false)
-                + hero.getHeroLevel(this)
+                + hero.getLevel(this)
                 * SkillConfigManager.getUseSetting(hero,this,"max-summons-per-level", .1, false));
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.1, false) * hero.getHeroLevel(this));
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.1, false) * hero.getLevel(this));
 
         return getDescription().replace("$1",max + "").replace("$2", new DecimalFormat("##.##").format(damage));
     }
@@ -158,7 +158,7 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
         public boolean canSummon() {
             this.clean();
             int max = (int) Math.floor(SkillConfigManager.getUseSetting(this.player,this.skill,"max-summons",3,false)
-                    + this.player.getHeroLevel(this.skill)
+                    + this.player.getLevel(this.skill)
                     * SkillConfigManager.getUseSetting(this.player,this.skill,"max-summons-per-level", .1, false));
             return this.summons.size() < max;
         }
