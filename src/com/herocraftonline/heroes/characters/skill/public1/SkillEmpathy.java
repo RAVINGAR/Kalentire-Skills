@@ -27,32 +27,32 @@ public class SkillEmpathy extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getLevel(this))) * 100;
+        double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getHeroLevel(this))) * 100;
         damageMod = damageMod > 0 ? damageMod : 0;
-        int slowDuration = (int) (SkillConfigManager.getUseSetting(hero, this, "slow-duration", 0, false) + (SkillConfigManager.getUseSetting(hero, this, "slow-duration-increase", 0.0, false) * hero.getLevel(this))) / 1000;
+        int slowDuration = (int) (SkillConfigManager.getUseSetting(hero, this, "slow-duration", 0, false) + (SkillConfigManager.getUseSetting(hero, this, "slow-duration-increase", 0.0, false) * hero.getHeroLevel(this))) / 1000;
         slowDuration = slowDuration > 0 ? slowDuration : 0;
         String description = this.getDescription().replace("$1", damageMod + "").replace("$2", slowDuration + "");
 
         //COOLDOWN
-        final int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE, 0, false) * hero.getLevel(this))) / 1000;
+        final int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE, 0, false) * hero.getHeroLevel(this))) / 1000;
         if (cooldown > 0) {
             description += " CD:" + cooldown + "s";
         }
 
         //MANA
-        final int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 10, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE, 0, false) * hero.getLevel(this));
+        final int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 10, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE, 0, false) * hero.getHeroLevel(this));
         if (mana > 0) {
             description += " M:" + mana;
         }
 
         //HEALTH_COST
-        final int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getLevel(this));
+        final int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getHeroLevel(this));
         if (healthCost > 0) {
             description += " HP:" + healthCost;
         }
 
         //STAMINA
-        final int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE, 0, false) * hero.getLevel(this));
+        final int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false) - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE, 0, false) * hero.getHeroLevel(this));
         if (staminaCost > 0) {
             description += " FP:" + staminaCost;
         }
@@ -89,8 +89,8 @@ public class SkillEmpathy extends TargettedSkill {
         if (target.equals(player)) {
             return SkillResult.INVALID_TARGET;
         }
-        final double maxDamage = (SkillConfigManager.getUseSetting(hero, this, "max-damage", 0, false) + (SkillConfigManager.getUseSetting(hero, this, "max-damage-increase", 0.0, false) * hero.getLevel(this)));
-        double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getLevel(this)));
+        final double maxDamage = (SkillConfigManager.getUseSetting(hero, this, "max-damage", 0, false) + (SkillConfigManager.getUseSetting(hero, this, "max-damage-increase", 0.0, false) * hero.getHeroLevel(this)));
+        double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase", 0.0, false) * hero.getHeroLevel(this)));
         damageMod = damageMod > 0 ? damageMod : 0;
         double damage = (target.getMaxHealth() - target.getHealth()) * damageMod;
         if ((maxDamage != 0) && (damage > maxDamage)) {
@@ -99,7 +99,7 @@ public class SkillEmpathy extends TargettedSkill {
         if ((target instanceof Player) && !damageCheck(player, target)) {
             return SkillResult.CANCELLED;
         }
-        long slowDuration = (long) (SkillConfigManager.getUseSetting(hero, this, "slow-duration", 0, false) + (SkillConfigManager.getUseSetting(hero, this, "slow-duration-increase", 0.0, false) * hero.getLevel(this)));
+        long slowDuration = (long) (SkillConfigManager.getUseSetting(hero, this, "slow-duration", 0, false) + (SkillConfigManager.getUseSetting(hero, this, "slow-duration-increase", 0.0, false) * hero.getHeroLevel(this)));
         slowDuration = slowDuration > 0 ? slowDuration : 0;
         if (slowDuration > 0) {
             if (target instanceof Player) {

@@ -58,7 +58,7 @@ public class SkillExcavate extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         this.broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
-        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 100, false) * hero.getLevel(this));
+        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 100, false) * hero.getHeroLevel(this));
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
@@ -131,7 +131,7 @@ public class SkillExcavate extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
-        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 100, false) * hero.getLevel(this));
+        duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 100, false) * hero.getHeroLevel(this));
         return this.getDescription().replace("$1", (duration / 1000) + "");
     }
 }

@@ -50,7 +50,7 @@ public class SkillMagicMissile extends ActiveSkill {
 
         // Mana
         int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE_PER_LEVEL.node(), 0, false) * hero.getLevel());
+                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE_PER_LEVEL.node(), 0, false) * hero.getHeroLevel());
         if (mana > 0) {
             description += "§6Cost: §9" + mana + "MP" + ending;
         }
@@ -59,7 +59,7 @@ public class SkillMagicMissile extends ActiveSkill {
 
         // Damage
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 2, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getLevel();
+                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getHeroLevel();
 
         description += getDescription().replace("$1", "§9" + damage + "§6");
 

@@ -35,7 +35,7 @@ public class SkillBlessing extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 300000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getLevel(this);
+        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
         int conIncrease = SkillConfigManager.getUseSetting(h, this, "attribute-increase", 5, false);
         
         return getDescription()
@@ -71,7 +71,7 @@ public class SkillBlessing extends TargettedSkill {
         Player player = hero.getPlayer();
         
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 300000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getLevel(this);
+        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
         int conIncrease = SkillConfigManager.getUseSetting(hero, this, "attribute-increase", 5, false);
         
         // Only using the one effect for checks. Checking all of them would get crazy fast

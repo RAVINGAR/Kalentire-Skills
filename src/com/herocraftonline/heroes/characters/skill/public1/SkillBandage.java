@@ -46,7 +46,7 @@ public class SkillBandage extends TargettedSkill {
 
         final Hero targetHero = this.plugin.getCharacterManager().getHero((Player) target);
         double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
-        hpPlus += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getLevel(this));
+        hpPlus += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getHeroLevel(this));
         final double targetHealth = targetHero.getPlayer().getHealth();
 
         if (targetHealth >= targetHero.getPlayer().getMaxHealth()) {
@@ -81,7 +81,7 @@ public class SkillBandage extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 5, false);
-        amount += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getLevel(this));
+        amount += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_INCREASE, 0, false) * hero.getHeroLevel(this));
         return this.getDescription().replace("$1", amount + "");
     }
 }

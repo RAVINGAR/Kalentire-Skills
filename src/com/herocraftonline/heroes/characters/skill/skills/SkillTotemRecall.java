@@ -43,7 +43,7 @@ public class SkillTotemRecall extends ActiveSkill {
         SkillBaseTotem totemSkill = tE.getTotemSkill();
         double manaPenaltyPercent = SkillConfigManager.getUseSetting(hero, this, "mana-penalty-percent", 10, false) / 100D;
         double mana = SkillConfigManager.getUseSetting(hero, totemSkill, SkillSetting.MANA, 0, true);
-        mana -= SkillConfigManager.getUseSetting(hero, totemSkill, SkillSetting.MANA_REDUCE_PER_LEVEL, 0.0D, false) * hero.getLevel(totemSkill);
+        mana -= SkillConfigManager.getUseSetting(hero, totemSkill, SkillSetting.MANA_REDUCE_PER_LEVEL, 0.0D, false) * hero.getHeroLevel(totemSkill);
         double manaPenalized = mana - (mana * manaPenaltyPercent);
         long totemLife = System.currentTimeMillis() - tE.getApplyTime();
         double manaGrant = (manaPenalized * totemLife) / tE.getDuration();

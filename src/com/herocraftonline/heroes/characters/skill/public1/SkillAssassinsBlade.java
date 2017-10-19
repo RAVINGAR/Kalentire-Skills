@@ -180,7 +180,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
                 final long duration = SkillConfigManager.getUseSetting(hero, this.skill, "poison-duration", 10000, false);
                 final long period = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.PERIOD, 2000, false);
                 double tickDamage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_TICK, 2, false);
-                tickDamage += (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getLevel(this.skill));
+                tickDamage += (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this.skill));
                 final AssassinsPoison apEffect = new AssassinsPoison(this.skill, period, duration, tickDamage, player);
                 final Entity target = event.getEntity();
                 if (event.getEntity() instanceof LivingEntity) {
@@ -203,7 +203,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 2, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getLevel(this));
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this));
         final double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
         final String s = this.getDescription().replace("$1", damage + "").replace("$2", seconds + "");
         return s;

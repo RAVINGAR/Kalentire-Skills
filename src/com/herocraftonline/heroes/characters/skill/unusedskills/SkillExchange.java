@@ -40,7 +40,7 @@ public class SkillExchange extends ActiveSkill{
 	
 	private double calculateCoins(Hero hero){
 		return getUseSetting(hero, this, base, 16, false)
-					-getUseSetting(hero,this,loss,0.05f,false)*hero.getLevel(hero.getSecondClass());
+					-getUseSetting(hero,this,loss,0.05f,false)*hero.getHeroLevel(hero.getSecondClass());
 	}
 	
 	@Override

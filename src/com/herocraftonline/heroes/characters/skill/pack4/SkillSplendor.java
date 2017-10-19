@@ -35,7 +35,7 @@ public class SkillSplendor extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getLevel(this);
+        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
         int chaIncrease = SkillConfigManager.getUseSetting(h, this, "cha-increase", 15, false);
         
         return getDescription()
@@ -71,7 +71,7 @@ public class SkillSplendor extends TargettedSkill {
         Player player = hero.getPlayer();
         
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getLevel(this);
+        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
         int chaIncrease = SkillConfigManager.getUseSetting(hero, this, "cha-increase", 15, false);
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "SplendorChaIncreaseEffect", player, duration, AttributeType.CHARISMA, chaIncrease, applyText, expireText);

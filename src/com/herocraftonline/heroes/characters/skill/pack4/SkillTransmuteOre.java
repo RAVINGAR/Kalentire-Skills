@@ -80,7 +80,7 @@ public class SkillTransmuteOre extends ActiveSkill {
         String itemName = item.getType().name();
 
         int level = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.LEVEL, 1, true);
-        if (hero.getLevel(this) < level) {
+        if (hero.getHeroLevel(this) < level) {
             return new SkillResult(ResultType.LOW_LEVEL, true, level);
         }
 

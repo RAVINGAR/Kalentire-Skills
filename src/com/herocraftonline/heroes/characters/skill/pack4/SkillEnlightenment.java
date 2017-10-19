@@ -36,7 +36,7 @@ public class SkillEnlightenment extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getLevel(this);
+        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
         int attributeIncrease = SkillConfigManager.getUseSetting(h, this, "attribute-increase", 15, false);
         
         return getDescription()
@@ -72,7 +72,7 @@ public class SkillEnlightenment extends TargettedSkill {
         Player player = hero.getPlayer();
         
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getLevel(this);
+        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
         int attributeIncrease = SkillConfigManager.getUseSetting(hero, this, "attribute-increase", 15, false);
         
         // Only using the one effect for checks. Checking both of them would get crazy

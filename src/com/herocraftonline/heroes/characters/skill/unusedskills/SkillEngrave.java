@@ -34,7 +34,7 @@ public class SkillEngrave extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getLevel(this))) * 100;
+        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getHeroLevel(this))) * 100;
         chance = chance > 0 ? chance : 0;
 
         return getDescription().replace("$1", chance + "%");
@@ -94,7 +94,7 @@ public class SkillEngrave extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getLevel(this)));
+        double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getHeroLevel(this)));
         chance = chance > 0 ? chance : 0;
         if (Math.random() <= chance) {
 
