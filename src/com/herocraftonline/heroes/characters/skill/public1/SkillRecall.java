@@ -309,14 +309,14 @@ public class SkillRecall extends ActiveSkill implements Listener {
             return SkillResult.FAIL;
         }
 
-        World world = com.herocraftonline.heroes.characters.skill.skills.SkillMark.getValidWorld(skillSettings, player.getName());
+        World world = SkillMark.getValidWorld(skillSettings, player.getName());
         if (world == null) {
             return SkillResult.FAIL;
         }
 
         double[] xyzyp;
         try {
-            xyzyp = com.herocraftonline.heroes.characters.skill.skills.SkillMark.createLocationData(skillSettings);
+            xyzyp = SkillMark.createLocationData(skillSettings);
         }
         catch (IllegalArgumentException e) {
             Messaging.send(player, "Your recall location is improperly set!");
