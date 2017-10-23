@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -119,7 +118,7 @@ public class SkillMeteorFall extends ActiveSkill {
         double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-        Block tBlock = player.getTargetBlock((HashSet<Material>)null, maxDist);
+        Block tBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
      // Block tBlock = player.getTargetBlock(null, maxDist);
         if (tBlock == null)
             return SkillResult.INVALID_TARGET;

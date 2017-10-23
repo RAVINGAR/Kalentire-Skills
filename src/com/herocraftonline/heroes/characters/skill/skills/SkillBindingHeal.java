@@ -2,140 +2,93 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class SkillBindingHeal extends  TargettedSkill {
+public class SkillBindingHeal extends TargettedSkill
+{
+	public SkillBindingHeal(Heroes plugin) 
+	{
+		super(plugin, "BindingHeal");
+		setDescription("Your touch heals your target (within 10 blocks) for $1 health. This skill must be used on another player.");
+		setUsage("/skill bindingheal");
+		setArgumentRange(0, 1);
+		setTypes(SkillType.SILENCEABLE, SkillType.NO_SELF_TARGETTING, SkillType.HEALING);
+		setIdentifiers("skill bindingheal", "skill bheal");
+	}
 
-    public SkillBindingHeal(Heroes plugin) {
-        super(plugin, "BindingHeal");
-        setDescription("Heal target for $1 and then self for $2; if you have no target, then heal self for $1.");
-        setUsage("/skill bindingheal");
-        setArgumentRange(0, 0);
-        setIdentifiers("skill bindingheal");
-        setTypes(SkillType.HEALING, SkillType.SILENCEABLE);
-    }
+	@Override
+	public ConfigurationSection getDefaultConfig() 
+	{
+		ConfigurationSection node = super.getDefaultConfig();
+		node.set("healing", 50);
+		node.set("healing-increase-per-wisdom", 2);
+		node.set(SkillSetting.MAX_DISTANCE.node(), 10);
+		return node;
+	}
 
-    @Override
-    public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 4);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.2);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 15);
-        node.set(SkillSetting.MANA.node(), 10);
-        node.set(SkillSetting.COOLDOWN.node(), 4000);
-        node.set("particle-power", 0.5);
-        node.set("particle-amount", 10);
-        return node;
-    }
+	public String getDescription(Hero hero)
+	{
+		double healAmount = SkillConfigManager.getUseSetting(hero, this, "healing", 50, false);
+		healAmount += SkillConfigManager.getUseSetting(hero, this, "healing-increase-per-wisdom", 2, false) * hero.getAttributeValue(AttributeType.WISDOM);
 
-    @Override
-    public String getDescription(Hero hero) {
-        String description = "";
-        String ending = "§6; ";
+		return getDescription().replace("$1", healAmount + "");
+	}
 
-        // Mana
-        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE_PER_LEVEL.node(), 0, false) * hero.getHeroLevel());
-        if (mana > 0) {
-            description += "§6Cost: §9" + mana + "MP" + ending;
-        }
+	@Override
+	public SkillResult use(Hero hero, LivingEntity target, String[] args) 
+	{
+		Player player = hero.getPlayer();
+		
+		if (!(target instanceof Player)) return SkillResult.INVALID_TARGET;
+		if ((Player)target == player) 
+		{
+			Messaging.send(player, " You must target another player!");
+			return SkillResult.INVALID_TARGET_NO_MSG;
+		}
 
-        // Health cost
-        int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) -
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, mana, true) * hero.getHeroLevel());
-        if (healthCost > 0 && mana > 0) {
-            description += "§6" + healthCost + ending;
-        } else if (healthCost > 0) {
-            description += "§6Cost: §c" + healthCost + "HP" + ending;
-        }
+		Hero tHero = plugin.getCharacterManager().getHero((Player)target);
 
-        // Cooldown
-        int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false)
-                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false) * hero.getHeroLevel()) / 1000;
-        if (cooldown > 0) {
-            description += "§6CD: §9" + cooldown + "s" + ending;
-        }
+		double healAmount = SkillConfigManager.getUseSetting(hero, this, "healing", 50, false);
+		healAmount += SkillConfigManager.getUseSetting(hero, this, "healing-increase-per-wisdom", 2, false) * hero.getAttributeValue(AttributeType.WISDOM);
 
-        // Damage
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 4, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getHeroLevel();
+		double targetHealth = target.getHealth();
+		if (targetHealth >= target.getMaxHealth() && hero.getPlayer().getHealth() >= hero.getPlayer().getMaxHealth()) 
+		{
+			Messaging.send(player, " You are both at full health!");
+			return SkillResult.INVALID_TARGET_NO_MSG;
+		}
 
-        description += getDescription().replace("$1", "§9" + damage + "§6").replace("$2", "§9" + damage * 0.5 + "§6");
+		HeroRegainHealthEvent hrhUser = new HeroRegainHealthEvent(tHero, healAmount, this, hero);
+		HeroRegainHealthEvent hrhTarget = new HeroRegainHealthEvent(hero, healAmount, this, hero);
 
-        return description;
-    }
+		plugin.getServer().getPluginManager().callEvent(hrhUser);
+		plugin.getServer().getPluginManager().callEvent(hrhTarget);
+		if (hrhUser.isCancelled() || hrhTarget.isCancelled()) 
+		{
+			Messaging.send(player, " Unable to heal target.");
+			return SkillResult.CANCELLED;
+		}
 
-    @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 4, false)
-                + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.2, false) * hero.getHeroLevel();
-        float particlePower = (float) SkillConfigManager.getUseSetting(hero, this, "particle-power", 0.5, false);
-        int particleAmount = SkillConfigManager.getUseSetting(hero, this, "particle-amount", 10, false);
+		hero.heal(healAmount);
+		tHero.heal(healAmount);
 
-        if (!(target instanceof Player)) { return SkillResult.INVALID_TARGET_NO_MSG; }
-
-        if (!target.equals(player)) {
-            // Heal target and self for half
-            double curHealth = target.getHealth();
-            double total;
-            if (damage + curHealth < target.getMaxHealth()) {
-                total = damage + curHealth;
-                broadcast(target.getLocation(), ((Player) target).getName() + " healed for " + (float)(damage));
-            } else {
-                total = target.getMaxHealth();
-                broadcast(target.getLocation(), ((Player) target).getName() + " healed for " + (float)(target.getMaxHealth() - curHealth));
-            }
-            target.setHealth(total);
-
-            curHealth = player.getHealth();
-            if ((damage * 0.5) + curHealth < player.getMaxHealth()) {
-                total = (damage * 0.5) + curHealth;
-                broadcast(player.getLocation(), player.getName() + " healed for " + (float)(damage));
-            } else {
-                total = player.getMaxHealth();
-                broadcast(player.getLocation(), player.getName() + " healed for " + (float)(player.getMaxHealth() - curHealth));
-            }
-            player.setHealth(total);
-
-            // Play effects
-            target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.HEART, 0, 0, 0, 0, 0, particlePower, particleAmount, 64);
-            player.getWorld().spigot().playEffect(player.getEyeLocation(), Effect.HEART, 0, 0, 0, 0, 0, particlePower, particleAmount, 64);
-
-            // Broadcast
-            broadcastExecuteText(hero);
-
-            return SkillResult.NORMAL;
-        } else if (target.equals(player)) {
-            // Heal self only
-            double curHealth = player.getHealth();
-            double total;
-            if (damage + curHealth < player.getMaxHealth()) {
-                total = damage + curHealth;
-                broadcast(player.getLocation(), player.getName() + " healed for " + (float)(damage));
-            } else {
-                total = player.getMaxHealth();
-                broadcast(player.getLocation(), player.getName() + " healed for " + (float)(player.getMaxHealth() - curHealth));
-            }
-            player.setHealth(total);
-
-            // Play effect
-            player.getWorld().spigot().playEffect(player.getEyeLocation(), Effect.HEART, 0, 0, 0, 0, 0, particlePower, particleAmount, 24);
-
-            // Broadcast
-            broadcastExecuteText(hero);
-
-            return SkillResult.NORMAL;
-        } else {
-            return SkillResult.INVALID_TARGET;
-        }
-    }
+		hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.2F, 0.75F);
+		hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 1.5F, 6.5F, 1.5F, 0.5F, 150, 16);
+		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.2F, 0.75F);
+		tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 1.5F, 6.5F, 1.5F, 0.5F, 150, 16);
+		broadcastExecuteText(hero, target);
+		return SkillResult.NORMAL;
+	}
 }

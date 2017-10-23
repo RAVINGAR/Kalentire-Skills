@@ -1,160 +1,216 @@
-/*
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
-import org.bukkit.FireworkEffect.Type;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.entity.Snowball;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
-public class SkillFirestorm extends ActiveSkill {
-
-	public VisualEffect fplayer = new VisualEffect();		// Firework effect
-
-	public SkillFirestorm(Heroes plugin) {
+public class SkillFirestorm extends ActiveSkill
+{
+	private ArrayList<Player> firestorms = new ArrayList<Player>();
+	
+	public SkillFirestorm(Heroes plugin)
+	{
 		super(plugin, "Firestorm");
-		setIdentifiers("skill firestorm");
+		setDescription("You summon a powerful firestorm for 6 seconds that rains $1 bolts of flame down over a radius of $2 blocks. Each bolt deals $4 damage to any target within $5 blocks and ignites them for $6 seconds.");
 		setUsage("/skill firestorm");
 		setArgumentRange(0, 0);
-		setDescription("Summons a fire storm in the area around your feet, dealing $1 damage to all targets within a $2 block radius.");
+		setIdentifiers("skill firestorm");
+		setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE);
 	}
 
-	public ConfigurationSection getDefaultConfig() {
+	public String getDescription(Hero hero)
+	{
+		int firebolts = SkillConfigManager.getUseSetting(hero, this, "firebolts", 30, false);
+		firebolts += SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 2, false) * hero.getSkillLevel(this);
+		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
+		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
+		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.3, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+		double blastRadius = SkillConfigManager.getUseSetting(hero, this, "blast-radius", 2, false);
+		int ignitionSeconds = SkillConfigManager.getUseSetting(hero, this, "ignition-time", 4, false);
+		return getDescription().replace("$1", firebolts + "").replace("$2", radius + "").replace("$4", damage + "").replace("$5", blastRadius + "").replace("$6", ignitionSeconds + "");
+	}
+	public ConfigurationSection getDefaultConfig() 
+	{
 		ConfigurationSection node = super.getDefaultConfig();
+		node.set(SkillSetting.RADIUS.node(), 12);
 
-		node.set(SkillSetting.DAMAGE.node(), 300);
-		node.set(SkillSetting.RADIUS.node(), 10);
-		node.set(SkillSetting.DELAY.node(), 5000);
-		node.set(SkillSetting.USE_TEXT.node(), ChatColor.GRAY + "["+ChatColor.DARK_GREEN+"Skill"+ ChatColor.GRAY+ "] %hero% has unleashed a powerful "+ChatColor.BOLD+"Tempest!");
-		node.set("effect-height", 4);
+		node.set(SkillSetting.DAMAGE.node(), 20);
+
+		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.3);
+
+		node.set("firebolts", 30);
+
+		node.set("firebolts-per-level", 2);
+
+		node.set("blast-radius", 2);
+
+		node.set("ignition-time", 4);
 
 		return node;
 	}
 
-	@Override
-	public String getDescription(Hero hero) {
+	public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+	{
+		World world = centerPoint.getWorld();
 
-		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 300, false);
-		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
+		double increment = (2 * Math.PI) / particleAmount;
 
-		return getDescription().replace("$1", damage + "").replace("$1", radius + "");
+		ArrayList<Location> locations = new ArrayList<Location>();
+
+		for (int i = 0; i < particleAmount; i++)
+		{
+			double angle = i * increment;
+			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+			locations.add(new Location(world, x, centerPoint.getY(), z));
+		}
+		return locations;
 	}
-/*
-	@Override
-	public SkillResult use(final Hero hero, String[] args) {
 
-		final Player player = hero.getPlayer();
+	@SuppressWarnings("deprecation")
+	public SkillResult use(Hero hero, String[] args)
+	{
+		final int firebolts = SkillConfigManager.getUseSetting(hero, this, "firebolts", 30, false) + ((SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 2, false) * hero.getSkillLevel(this)));
+		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
+		int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
+		final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false) + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.3, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+		final double blastRadius = SkillConfigManager.getUseSetting(hero, this, "blast-radius", 2, false);
+		final int ignitionSeconds = SkillConfigManager.getUseSetting(hero, this, "ignition-time", 4, false);
+		
+		int boltsPerSec = firebolts / 6;
+		int boltInterval = 20 / boltsPerSec;
 
-		// Get config settings
-		final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 300, false);
-		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
-		final int height = SkillConfigManager.getUseSetting(hero, this, "effect-height", 5, false);
+		ArrayList<Location> boltLocs = new ArrayList<Location>();
 
-		broadcastExecuteText(hero);
+		Player player = hero.getPlayer();
 
-		// Create a cicle of firework locations, based on skill radius.
-		List<Location> fireworkLocations = circle(player, player.getLocation(), radius, 1, true, false, height);
-		int fireworksSize = fireworkLocations.size();
-		long ticksPerFirework = (int) (100.00 / ((double) fireworksSize));
+		Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, distance);
+		Location center = targetBlock.getLocation().clone().add(0, 10, 0);
 
-		// Play the firework effects in a sequence
-		for (int i = 0; i < fireworksSize; i++) {
-			final Location fLoc = fireworkLocations.get(i);
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-				@Override
-				public void run() {
-					try {
-						fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect.builder().flicker(false).trail(false).withColor(Color.RED).with(Type.BALL).build());
-					}
-					catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
+		for (int i = 1; i <= radius; i++)
+		{
+			ArrayList<Location> concentric = circle(center, 12, (double) i);
+			boltLocs.addAll(concentric);
+		}
 
-			}, ticksPerFirework * i);
-		}*/
-/*
-		// Save player location for the center of the blast
-		final Location centerLocation = player.getLocation();
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 2.0F, 0.5F);
 
-		// Damage all entities near the center after the fireworks finish playing
-		Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-			@Override
-			public void run() {
-				for (Entity entity : getNearbyEntities(centerLocation, radius, radius, radius)) {
-					// Check to see if the entity can be damaged
-					if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
-						continue;
+		final ArrayList<Location> finalLocs = boltLocs;
+		final Player p = player;
+		final Hero h = hero;
+		
+		firestorms.add(p);
 
-					// Damage the target
-					addSpellTarget((LivingEntity) entity, hero);
-					damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC);
-					//player.getWorld().strikeLightningEffect(entity.getLocation());
+		new BukkitRunnable() // visual
+		{
+			public void run()
+			{
+				if (!firestorms.contains(p)) cancel();
+				for (Location l : finalLocs)
+				{
+					l.getWorld().spigot().playEffect(l, Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 1, 250);
 				}
 			}
+		}.runTaskTimer(plugin, 0, 5);
 
-		}, ticksPerFirework * fireworksSize);
+		new BukkitRunnable() // This is the actual storm.
+		{
+			private Random rand = new Random();
+			private int boltsStruck = 0;
 
-		// Finish
+			public void run()
+			{
+				if (boltsStruck < firebolts)
+				{
+					int index = rand.nextInt(finalLocs.size());
+					Location boltLocation = finalLocs.get(index).clone().setDirection(new Vector(0, -1, 0));
+					BlockIterator iterator;
+					Block temp;
+
+					// everything here is visual
+					try 
+					{
+						iterator = new BlockIterator(boltLocation, 10);
+					}
+					catch (IllegalStateException ise)
+					{
+						return;
+					}
+					while (iterator.hasNext()) 
+					{
+						temp = iterator.next();
+						Material tempBlockType = temp.getType();
+						if (Util.transparentBlocks.contains(tempBlockType)) 
+						{
+							final Location targetLocation = temp.getLocation().clone().add(new Vector(.5, 0, .5));
+							temp.getWorld().spigot().playEffect(targetLocation, Effect.FLAME, 0, 0, 0.2F, 0.5F, 0.2F, 0.05F, 3, 250);
+						}
+						else
+						{
+							temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 10, 16);
+							temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 3, 50);
+							temp.getWorld().playSound(temp.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
+
+							Snowball test = temp.getWorld().spawn(temp.getLocation().add(0.5, 1.0, 0.5), Snowball.class);							
+							List<Entity> affected = test.getNearbyEntities(blastRadius, blastRadius, blastRadius);
+							test.remove();
+							for (Entity entity : affected)
+							{
+								if (!(entity instanceof LivingEntity)) return;
+								LivingEntity target2 = (LivingEntity) entity;
+
+								if (entity.getLocation().distanceSquared(temp.getLocation()) <= blastRadius*2)
+								{
+									if (!damageCheck(p, target2)) 
+									{
+										continue;
+									}
+									addSpellTarget(target2, h);
+									damageEntity(target2, p, damage, EntityDamageEvent.DamageCause.MAGIC);
+									target2.setFireTicks(ignitionSeconds * 20);
+								}
+							}
+							boltsStruck++;
+							break;
+						}
+					}
+				}
+				else
+				{
+					firestorms.remove(p);
+					cancel();
+				}
+			}
+		}.runTaskTimer(plugin, 1, boltInterval);
+
+		broadcast(player.getLocation(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN
+				+ "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + hero.getName() + ChatColor.GRAY +
+				" unleashes a Firestorm!");
+
 		return SkillResult.NORMAL;
 	}
+}
 
-	protected List<Entity> getNearbyEntities(Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-		List<Entity> entities = new ArrayList<Entity>();
-
-		for (Entity entity : targetLocation.getWorld().getEntities()) {
-			if (isInBorder(targetLocation, entity.getLocation(), radiusX, radiusY, radiusZ)) {
-				entities.add(entity);
-			}
-		}
-		return entities;
-	}
-
-	public boolean isInBorder(Location center, Location targetLocation, int radiusX, int radiusY, int radiusZ) {
-		int x1 = center.getBlockX();
-		int y1 = center.getBlockY();
-		int z1 = center.getBlockZ();
-
-		int x2 = targetLocation.getBlockX();
-		int y2 = targetLocation.getBlockY();
-		int z2 = targetLocation.getBlockZ();
-
-		if (x2 >= (x1 + radiusX) || x2 <= (x1 - radiusX) || y2 >= (y1 + radiusY) || y2 <= (y1 - radiusY) || z2 >= (z1 + radiusZ) || z2 <= (z1 - radiusZ))
-			return false;
-
-		return true;
-	}
-
-	protected List<Location> circle(Player player, Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
-		List<Location> circleblocks = new ArrayList<Location>();
-		int cx = loc.getBlockX();
-		int cy = loc.getBlockY();
-		int cz = loc.getBlockZ();
-		for (int x = cx - r; x <= cx + r; x++)
-			for (int z = cz - r; z <= cz + r; z++)
-				for (int y = (sphere ? cy - r : cy); y < (sphere ? cy + r : cy + h); y++) {
-					double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? (cy - y) * (cy - y) : 0);
-					if (dist < r * r && !(hollow && dist < (r - 1) * (r - 1))) {
-						Location l = new Location(loc.getWorld(), x, y + plus_y, z);
-						circleblocks.add(l);
-					}
-				}
-
-		return circleblocks;
-	}
-}*/

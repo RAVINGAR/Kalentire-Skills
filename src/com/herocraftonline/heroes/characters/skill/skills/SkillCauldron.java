@@ -22,17 +22,14 @@ package com.herocraftonline.heroes.characters.skill.skills;
  * -Fixed material data to actually be used, instead of sending an invalid byte to the server that at the very best does nothing
  * -Fixed some inefficient use of variable assignments where configuration instances were triggered inside a for loop repeatedly
  */
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Server;
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -54,13 +51,11 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Cauldron;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class SkillCauldron extends PassiveSkill {
 
@@ -73,7 +68,7 @@ public class SkillCauldron extends PassiveSkill {
 		super(plugin, "Cauldron");
 		setDescription("You are able to use cauldrons to make cauldron recipes! Visit hc.to/cauldron for more info");
 		setArgumentRange(0, 0);
-        setTypes(SkillType.ITEM_CREATION, SkillType.ITEM_MODIFYING);
+		setTypes(SkillType.ITEM_CREATION, SkillType.ITEM_MODIFYING);
 		setEffectTypes(EffectType.BENEFICIAL);
 		loadCauldronRecipes();
 		Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this, plugin), plugin);
@@ -81,13 +76,13 @@ public class SkillCauldron extends PassiveSkill {
 
 	@Override
 	public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+		ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set(SkillSetting.LEVEL.node(), 1);
+		node.set(SkillSetting.APPLY_TEXT.node(), "");
+		node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+		node.set(SkillSetting.LEVEL.node(), 1);
 
-        return node;
+		return node;
 	}
 
 	public void loadCauldronConfig() {
@@ -115,7 +110,7 @@ public class SkillCauldron extends PassiveSkill {
 
 		for(int i =0; i<getCauldronConfig().getInt("CauldronRecipes.size"); i++){
 			ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(config.getInt("CauldronRecipes."+i+".results.TypeId")
-                    ,config.getInt("CauldronRecipes."+i+".results.result-amount"),(short)config.getInt("CauldronRecipes."+i+".results.materialData")));
+					,config.getInt("CauldronRecipes."+i+".results.result-amount"),(short)config.getInt("CauldronRecipes."+i+".results.materialData")));
 			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
 			String top = "ABC";			//3 Spaces->3 slots
 			String mid = "DEF";
@@ -164,16 +159,16 @@ public class SkillCauldron extends PassiveSkill {
 	}
 	public char convertInttoChar(int i) {
 		switch(i) {
-		case 0: return 'A';
-		case 1: return 'B';
-		case 2: return 'C';
-		case 3: return 'D';
-		case 4: return 'E';
-		case 5: return 'F';
-		case 6: return 'G';
-		case 7: return 'H';
-		case 8: return 'I';
-		default: return 'J';
+			case 0: return 'A';
+			case 1: return 'B';
+			case 2: return 'C';
+			case 3: return 'D';
+			case 4: return 'E';
+			case 5: return 'F';
+			case 6: return 'G';
+			case 7: return 'H';
+			case 8: return 'I';
+			default: return 'J';
 		}
 	}
 	public static void openCauldron(Player player) {
@@ -218,17 +213,18 @@ public class SkillCauldron extends PassiveSkill {
 					Location loc = new Location(event.getPlayer().getWorld(),event.getClickedBlock().getLocation().getBlockX(),event.getClickedBlock().getLocation().getBlockY() - 1,event.getClickedBlock().getLocation().getBlockZ());
 					Block fireblock = event.getClickedBlock().getLocation().getBlock().getRelative(BlockFace.DOWN);
 					Block plankblock = loc.getBlock().getRelative(BlockFace.DOWN);
-					Cauldron cauldron = (org.bukkit.material.Cauldron) event.getClickedBlock().getState().getData();
+					Cauldron cauldron = (Cauldron) event.getClickedBlock().getState().getData();
 					//I DO question the usage of a plankblock: obviously it is up to you but....planks burn out REALLY fast (in fact sometimes I didn't even have enough time to right click the cauldron heh)
 					//Removed the permission check: it was adding .05-.1 sec delay (believe it or not this is huge ok?)
-					//every time someone crafted something and served an redundant purpose considering we already checked for 
-					if(cauldron.isFull() && fireblock.getType() == Material.FIRE && plankblock.getType() == Material.LOG){
+					//every time someone crafted something and served an redundant purpose considering we already checked for
+					// Texteo: removed cauldron.isFull() because it checks if the cauldron IS FULL.... of course only FULL recipes will work goes into if statement if error(cauldron.isFull() &&)
+					if( fireblock.getType() == Material.FIRE && plankblock.getType() == Material.LOG){
 						player.add(event.getPlayer());
 						usingCauldronbench.add(player.size()-1, true);
 						bCanMake.add(player.size()-1, false);
 						openCauldron(event.getPlayer());
 					}
-				}	
+				}
 			}
 		}
 
@@ -244,20 +240,20 @@ public class SkillCauldron extends PassiveSkill {
 					if (event.getViewers().get(v) == player.get(i)){
 
 						Hero hero = plugin.getCharacterManager().getHero(player.get(i));
-						int sLevel = hero.getHeroLevel(hero.getSecondClass());
+						int sLevel = hero.getLevel(hero.getSecondClass());
 						Recipe recipe = event.getRecipe();
 						if(!usingCauldronbench.get(i)) {
-                            for (ShapedRecipe shapedRecipe : ShapedCauldronRecipes) {
-                                //Moved recipe comparison to a seperate function using alkarin's method
-                                //Considering how complex it is
-                                if (!compareRecipes(shapedRecipe, recipe)) {
-                                    bCanMake.set(i, true);
+							for (ShapedRecipe shapedRecipe : ShapedCauldronRecipes) {
+								//Moved recipe comparison to a seperate function using alkarin's method
+								//Considering how complex it is
+								if (!compareRecipes(shapedRecipe, recipe)) {
+									bCanMake.set(i, true);
 
-                                } else {
-                                    bCanMake.set(i, false);
-                                    break;
-                                }
-                            }
+								} else {
+									bCanMake.set(i, false);
+									break;
+								}
+							}
 						}
 
 						if(usingCauldronbench.get(i)) {
@@ -266,13 +262,13 @@ public class SkillCauldron extends PassiveSkill {
 
 								if (compareRecipes(shapedRecipe, recipe) && CauldronRecipesLevel.get(j) <= sLevel){
 									bCanMake.set(i, true);
-									break;										
+									break;
 								}else{
 									bCanMake.set(i, false);
 								}
 							}
 						}
-					}	
+					}
 					if (!bCanMake.get(i) && event.getViewers().get(v) == player.get(i)){
 						event.getInventory().setResult(new ItemStack(Material.AIR));
 						break;
@@ -289,7 +285,7 @@ public class SkillCauldron extends PassiveSkill {
 				return;
 			}
 
-			for(int i=0; i<player.size(); i++){	
+			for(int i=0; i<player.size(); i++){
 				if (player.get(i) == event.getWhoClicked()){
 					if (usingCauldronbench.get(i)) {
 
@@ -333,9 +329,9 @@ public class SkillCauldron extends PassiveSkill {
 
 	/**
 	 * Determines if a recipe is equivalent to a given shaped recipe
-	 * 
-	 * @param ShapedRecipe shapedRecipe
-	 * @param Recipe recipe
+	 *
+	 * @param shapedRecipe
+	 * @param recipe
 	 * @return boolean
 	 **/
 	public boolean compareRecipes(ShapedRecipe shapedRecipe, Recipe recipe) {
