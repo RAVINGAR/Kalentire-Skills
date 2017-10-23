@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+/*package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.GeometryUtil;
 import com.herocraftonline.heroes.util.Messaging;
@@ -19,8 +19,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.util.Vector;
-
+import org.bukkit.util.Vector; */
+/*
 public class SkillShieldingStrike extends ActiveSkill {
 
     public SkillShieldingStrike(Heroes plugin) {
@@ -123,3 +123,4 @@ public class SkillShieldingStrike extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 }
+*/
