@@ -94,7 +94,7 @@ public class SkillHarrow extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation(), FireworkEffect.builder().flicker(false).trail(false).with(FireworkEffect.Type.BURST).withColor(Color.GREEN).withFade(Color.PURPLE).build());
         }
         catch (IllegalArgumentException e) {
@@ -102,7 +102,7 @@ public class SkillHarrow extends TargettedSkill {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         return SkillResult.NORMAL;
     }

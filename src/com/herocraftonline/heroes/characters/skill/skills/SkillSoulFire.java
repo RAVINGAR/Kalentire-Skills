@@ -74,7 +74,7 @@ public class SkillSoulFire extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ZOMBIE_VILLAGER_CURE.value() , 0.5F, 1.0F); 
         // this is our fireworks shit
         Player player = hero.getPlayer();
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0,1.5,0), 
             		FireworkEffect.builder().flicker(false).trail(false)
             		.with(FireworkEffect.Type.STAR)
@@ -85,7 +85,7 @@ public class SkillSoulFire extends ActiveSkill {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return SkillResult.NORMAL;
     }
 

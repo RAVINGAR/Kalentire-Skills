@@ -61,7 +61,7 @@ public class SkillWindwalk extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ENDERMEN_TELEPORT.value() , 0.8F, 1.0F);
         // this is our fireworks shit
         Player player = hero.getPlayer();
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2.0,0), 
             		FireworkEffect.builder().flicker(false).trail(false)
             		.with(FireworkEffect.Type.STAR)
@@ -72,8 +72,8 @@ public class SkillWindwalk extends ActiveSkill {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        // end fireworks stuff
+        }*/
+
         return SkillResult.NORMAL;
     }
 

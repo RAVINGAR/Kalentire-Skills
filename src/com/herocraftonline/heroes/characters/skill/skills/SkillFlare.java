@@ -27,17 +27,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
-public class SkillFirestorm extends ActiveSkill
+public class SkillFlare extends ActiveSkill
 {
-	private ArrayList<Player> firestorms = new ArrayList<Player>();
+	private ArrayList<Player> Flares = new ArrayList<Player>();
 	
-	public SkillFirestorm(Heroes plugin)
+	public SkillFlare(Heroes plugin)
 	{
-		super(plugin, "Firestorm");
-		setDescription("You summon a powerful firestorm for 6 seconds that rains $1 bolts of flame down over a radius of $2 blocks. Each bolt deals $4 damage to any target within $5 blocks and ignites them for $6 seconds.");
-		setUsage("/skill firestorm");
+		super(plugin, "Flare");
+		setDescription("You summon a powerful Flare for 6 seconds that rains $1 bolts of flame down over a radius of $2 blocks. Each bolt deals $4 damage to any target within $5 blocks and ignites them for $6 seconds.");
+		setUsage("/skill Flare");
 		setArgumentRange(0, 0);
-		setIdentifiers("skill firestorm");
+		setIdentifiers("skill Flare");
 		setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE);
 	}
 
@@ -122,13 +122,13 @@ public class SkillFirestorm extends ActiveSkill
 		final Player p = player;
 		final Hero h = hero;
 		
-		firestorms.add(p);
+		Flares.add(p);
 
 		new BukkitRunnable() // visual
 		{
 			public void run()
 			{
-				if (!firestorms.contains(p)) cancel();
+				if (!Flares.contains(p)) cancel();
 				for (Location l : finalLocs)
 				{
 					l.getWorld().spigot().playEffect(l, Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 1, 250);
@@ -200,7 +200,7 @@ public class SkillFirestorm extends ActiveSkill
 				}
 				else
 				{
-					firestorms.remove(p);
+					Flares.remove(p);
 					cancel();
 				}
 			}
@@ -208,7 +208,7 @@ public class SkillFirestorm extends ActiveSkill
 
 		broadcast(player.getLocation(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN
 				+ "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + hero.getName() + ChatColor.GRAY +
-				" unleashes a Firestorm!");
+				" unleashes a Flare!");
 
 		return SkillResult.NORMAL;
 	}

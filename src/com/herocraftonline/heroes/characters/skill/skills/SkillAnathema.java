@@ -44,7 +44,7 @@ public class SkillAnathema extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);
         // this is our fireworks
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation()
             		.add(0,1.5,0), FireworkEffect.builder()
             		.flicker(false).trail(false)
@@ -56,7 +56,7 @@ public class SkillAnathema extends TargettedSkill {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return SkillResult.NORMAL;
     }
 

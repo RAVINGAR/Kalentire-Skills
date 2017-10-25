@@ -100,7 +100,7 @@ public class SkillBlight extends TargettedSkill {
         targetCT.addEffect(new BlightEffect(this, player, duration, period, tickDamage));
 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(),
                                  target.getLocation().add(0, 1.5, 0),
                                  FireworkEffect.builder()
@@ -116,7 +116,7 @@ public class SkillBlight extends TargettedSkill {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         return SkillResult.NORMAL;
     }

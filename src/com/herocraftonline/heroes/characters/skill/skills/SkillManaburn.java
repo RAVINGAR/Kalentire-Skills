@@ -52,13 +52,13 @@ public class SkillManaburn extends TargettedSkill {
             tHero.setMana(tHero.getMana() - transferamount);
             broadcastExecuteText(hero, target);
             // this is our fireworks shit
-            try {
+            /*try {
                 fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.BLUE).withFade(Color.AQUA).build());
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_CAT_HISS.value() , 0.8F, 1.0F); 
             return SkillResult.NORMAL;

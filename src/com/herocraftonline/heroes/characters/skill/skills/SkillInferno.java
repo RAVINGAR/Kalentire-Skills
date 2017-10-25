@@ -116,7 +116,7 @@ public class SkillInferno extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         final Location explosionLocation = location.clone().add(new Vector(.5, .5, .5));
-                        try {
+                        /*try {
                             fplayer.playFirework(explosionLocation.getWorld(), explosionLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.MAROON).build());
                             fplayer.playFirework(explosionLocation.getWorld(), explosionLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.MAROON).withFade(Color.ORANGE).build());
                         }
@@ -125,7 +125,7 @@ public class SkillInferno extends ActiveSkill {
                         }
                         catch (Exception e) {
                             e.printStackTrace();
-                        }
+                        }*/
 
                         final List<Entity> nearbyEntities = player.getNearbyEntities(radius * 2, radius * 2, radius * 2);
                         for (Entity entity : nearbyEntities) {

@@ -72,7 +72,7 @@ public class SkillReborn extends ActiveSkill {
         plugin.getCharacterManager().getCharacter(player).addEffect(new PeriodicHealEffect(this, "Reborn", player, duration, period, tickDamage));
 
         // this is our fireworks shit
-        VisualEffect fplayer = new VisualEffect();
+        /*VisualEffect fplayer = new VisualEffect();
         try {
             fplayer.playFirework(player.getWorld(),
                                  player.getLocation().add(0, 1.5, 0),
@@ -88,7 +88,7 @@ public class SkillReborn extends ActiveSkill {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         return SkillResult.NORMAL;
     }

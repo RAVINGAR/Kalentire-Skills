@@ -129,7 +129,7 @@ public class SkillSuperJump extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.5F, 1.0F);
 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0, 10, 0),
                                  FireworkEffect.builder().flicker(false).trail(false).
                                                with(FireworkEffect.Type.STAR)
@@ -142,7 +142,7 @@ public class SkillSuperJump extends ActiveSkill {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         return SkillResult.NORMAL;
     }

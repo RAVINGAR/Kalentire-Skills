@@ -75,7 +75,7 @@ public class SkillRemedy extends TargettedSkill {
         }
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
             		FireworkEffect.builder().flicker(false).trail(false)
             		.with(FireworkEffect.Type.BURST)
@@ -86,7 +86,7 @@ public class SkillRemedy extends TargettedSkill {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return SkillResult.NORMAL;
     }
 

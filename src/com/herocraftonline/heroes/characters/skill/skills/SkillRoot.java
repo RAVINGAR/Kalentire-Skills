@@ -53,7 +53,7 @@ public class SkillRoot extends TargettedSkill {
         //This is the Sound stuff.
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD.value() , 0.8F, 1.0F); 
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
             		FireworkEffect.builder().flicker(true).trail(false)
             		.with(FireworkEffect.Type.BURST)
@@ -63,7 +63,7 @@ public class SkillRoot extends TargettedSkill {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return SkillResult.NORMAL;
     }
 

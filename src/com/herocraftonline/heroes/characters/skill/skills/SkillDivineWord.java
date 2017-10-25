@@ -70,7 +70,7 @@ public class SkillDivineWord extends TargettedSkill {
         //targetHero.heal(targetHealth + hrhEvent.getAmount());
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), 
             		target.getLocation().add(0,1.5,0), 
             		FireworkEffect.builder()
@@ -83,7 +83,7 @@ public class SkillDivineWord extends TargettedSkill {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return SkillResult.NORMAL;
     }
 

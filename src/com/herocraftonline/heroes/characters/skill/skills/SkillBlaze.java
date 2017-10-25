@@ -62,13 +62,13 @@ public class SkillBlaze extends ActiveSkill {
             damaged = true;
             lEntity.setFireTicks(fireTicks);
             // this is our fireworks shit
-            try {
+            /*try {
                 fplayer.playFirework(player.getWorld(), lEntity.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
             plugin.getCharacterManager().getCharacter(lEntity).addEffect(new CombustEffect(this, player));
         }
 

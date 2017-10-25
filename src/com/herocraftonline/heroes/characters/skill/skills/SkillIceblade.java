@@ -83,7 +83,7 @@ public class SkillIceblade extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(new IcebladeEffect(this, hero.getPlayer(), 300, sEffect));
         broadcastExecuteText(hero, target);
         // this is our fireworks shit
-        try {
+        /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
             		FireworkEffect.builder().flicker(false).trail(false)
             		.with(FireworkEffect.Type.BALL)
@@ -94,7 +94,7 @@ public class SkillIceblade extends TargettedSkill {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_PLAYER_HURT.value() , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
