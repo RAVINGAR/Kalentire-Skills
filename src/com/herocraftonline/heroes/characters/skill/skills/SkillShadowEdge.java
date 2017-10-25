@@ -40,15 +40,15 @@ import java.util.List;
 /**
  * Created by Donal on 06/01/2017.
  */
-public class SkillShadowblade extends ActiveSkill implements Listener{
+public class SkillShadowEdge extends ActiveSkill implements Listener{
     private List<ThrownAxe> axes;
 
-    public SkillShadowblade(Heroes plugin) {
+    public SkillShadowEdge(Heroes plugin) {
         super(plugin, "Shadowblade");
         setDescription("Throw out a dagger, when it hits a target you teleport to it.");
-        setUsage("/skill Shadowblade");
+        setUsage("/skill ShadowEdge");
         setArgumentRange(0, 0);
-        setIdentifiers("skill Shadowblade");
+        setIdentifiers("skill ShadowEdge");
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ARMOR_PIERCING, SkillType.AGGRESSIVE);
 
         axes = new ArrayList<>();
