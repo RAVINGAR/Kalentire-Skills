@@ -102,7 +102,7 @@ public class SkillSoulreaper extends ActiveSkill {
                 ArrayList<Location> circle = GeometryUtil.circle(sickle, 16, radius);
                 Location l = circle.get(fxIndex++);
                     l.getWorld().spigot().playEffect(l, Effect.WITCH_MAGIC, 0, 0, 0.05f, 0.05f, 0.05f, 0.0f, 3, 128);
-                if (fxIndex > circle.size()) fxIndex = 0;
+                if (fxIndex >= circle.size()) fxIndex = 0;
                 if (maxRange == false) { // old fashioned boolean check
                     sickle.add(directionVector);
                     distTraveled = spawnLoc.distance(sickle);
