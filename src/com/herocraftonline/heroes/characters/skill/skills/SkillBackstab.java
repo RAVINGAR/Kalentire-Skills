@@ -35,7 +35,7 @@ public class SkillBackstab extends ActiveSkill {
 
     public SkillBackstab(Heroes plugin) {
         super(plugin, "Backstab");
-        setDescription("When attacking a target from behind, you $1 an additional $2% damage. While sneaking, your attacks are more precise, and $3 an additional $4% damage.");
+        setDescription("When attacking a target from behind, you $1 an additional $2% damage.");
         setUsage("/skill backstab");
         setArgumentRange(0, 0);
         setIdentifiers("skill backstab");
