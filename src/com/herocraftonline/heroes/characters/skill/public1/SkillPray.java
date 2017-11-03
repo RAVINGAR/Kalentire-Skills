@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class SkillPray extends TargettedSkill {
+public class SkillPray extends SkillBaseHeal {
 
     public SkillPray(Heroes plugin) {
         super(plugin, "Pray");
