@@ -74,6 +74,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.375);
         node.set("weapons", Util.shovels);
         node.set("ncp-exemption-duration", 1000);
+        node.set("duration", 2000);
         return node;
     }
 
