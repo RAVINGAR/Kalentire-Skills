@@ -1,24 +1,22 @@
 package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import org.bukkit.ChatColor;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
+import com.herocraftonline.heroes.util.CompatSound;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 public class SkillPray extends SkillBaseHeal {
 
     public SkillPray(Heroes plugin) {
         super(plugin, "Pray");
-        this.setDescription("You restore $1 health to your target.");
-        this.setUsage("/skill pray <target>");
+        this.setDescription("You restore $1 health to your target. If healing yourself, only $2 health is restored..");
+        this.setUsage("/skill pray");
         this.setArgumentRange(0, 1);
         this.setIdentifiers("skill pray");
         this.setTypes(SkillType.HEALING, SkillType.SILENCEABLE);
@@ -27,46 +25,28 @@ public class SkillPray extends SkillBaseHeal {
     @Override
     public ConfigurationSection getDefaultConfig() {
         final ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALTH.node(), 10);
+        node.set(SkillSetting.HEALING.node(), 10);
         node.set(SkillSetting.MAX_DISTANCE.node(), 25);
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        final Player player = hero.getPlayer();
-        if (!(target instanceof Player)) {
-            return SkillResult.INVALID_TARGET;
-        }
-
-        final Hero targetHero = this.plugin.getCharacterManager().getHero((Player) target);
-        final double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
-        final double targetHealth = target.getHealth();
-
-        if (targetHealth >= target.getMaxHealth()) {
-            if (player.equals(targetHero.getPlayer())) {
-                player.sendMessage(ChatColor.GRAY + "You are already at full health.");
-            } else {
-                player.sendMessage(ChatColor.GRAY + "Target is already fully healed.");
-            }
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-
-        final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, hpPlus, this, hero);
-        this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
-        if (hrhEvent.isCancelled()) {
-            player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
-            return SkillResult.CANCELLED;
-        }
-
-        targetHero.heal(hrhEvent.getDelta());
-        this.broadcastExecuteText(hero, target);
-        return SkillResult.NORMAL;
+    protected void removeEffects(Hero hero) {
+        // No effects are removed by this Skill.
     }
 
-    @Override
-    public String getDescription(Hero hero) {
-        final double health = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH.node(), 10, false);
-        return this.getDescription().replace("$1", health + "");
+    protected void applySoundEffects(World world, LivingEntity target) {
+        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
+    }
+
+    protected void applyParticleEffects(World world, LivingEntity target) {
+        world.spawnParticle(Particle.VILLAGER_HAPPY, // particle
+                target.getLocation().add(0, 0.5, 0), // location
+                25, // particle count
+                1, 1, 1, // offset
+                1, // extra (typically speed)
+                null // data
+                 );
+        // SpawnParticle does not use an 'id' value like PlayEffect.
     }
 }
