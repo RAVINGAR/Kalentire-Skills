@@ -8,6 +8,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -18,8 +20,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.List;
@@ -72,7 +77,14 @@ public class SkillHolyWater extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
+        ItemStack potItem = new ItemStack(Material.SPLASH_POTION);
+        PotionMeta potMeta = (PotionMeta) potItem.getItemMeta();
+        potMeta.setColor(Color.WHITE);
+        //potMeta.addCustomEffect(PotionEffectType.)
+        potItem.setItemMeta(potMeta);
+
         ThrownPotion pot = player.launchProjectile(ThrownPotion.class);
+        pot.setItem(potItem);
         pot.setMetadata("SkillAmpul", new FixedMetadataValue(plugin, true));
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         pot.setVelocity(pot.getVelocity().multiply(mult));
