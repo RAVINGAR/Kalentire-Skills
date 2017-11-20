@@ -99,7 +99,7 @@ public class SkillHolyWater extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onPotionSplash(PotionSplashEvent event) {
 
             if (!event.getPotion().hasMetadata("SkillAmpul"))
