@@ -144,7 +144,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
                     target.setVelocity(velocity);                    
                 }
             }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
-            maxTargets++;
+            targetsHit++;
         }
     }
 }
