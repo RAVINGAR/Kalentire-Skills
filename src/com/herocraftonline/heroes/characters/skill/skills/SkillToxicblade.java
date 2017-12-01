@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -147,42 +148,28 @@ public class SkillToxicblade extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || event.getDamage() == 0) {
-                return;
-            }
-            
-            // If our target isn't a creature or player lets exit
-            if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof Player)) {
-                return;
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Hero) || event.getDamage() == 0 || event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                return;  // With this, we know a Hero damaged some other sort of LivingEntity with damage that counts as ENTITY_ATTACK (i.e. not a Bow or a Skill)
             }
 
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (!(subEvent.getDamager() instanceof Player)) {
-                return;
+            Hero hero = (Hero) event.getDamager();
+            Player player = hero.getPlayer();
+            if (!hero.hasEffect("Toxicblade") || !SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType().name())) {
+                return; // With this, we know this Hero has the ToxicBlade Effect and is holding a suitable weapon.
             }
 
-            Player player = (Player) subEvent.getDamager();
-            ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
-                return;
-            }
+            long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
+            long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, false);
+            int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 20, false);
+            tickDamage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(skill));
 
-            if (hero.hasEffect("Toxicblade")) {
-                long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
-                long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, false);
-                int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 20, false);
-                tickDamage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(skill));
-                ToxicbladePoison apEffect = new ToxicbladePoison(skill, period, duration, tickDamage, player);
-                Entity target = event.getEntity();
-                if (event.getEntity() instanceof LivingEntity) {
-                    CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) target);
-                    character.addEffect(apEffect);
-                    checkBuff(hero);
-                }
-            }
+            ToxicbladePoison apEffect = new ToxicbladePoison(skill, period, duration, tickDamage, player);
+            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            character.addEffect(apEffect);
+
+            checkBuff(hero);
         }
 
         private void checkBuff(Hero hero) {

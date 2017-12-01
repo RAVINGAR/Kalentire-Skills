@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -80,32 +81,29 @@ public class SkillFireblade extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent) || event.getDamage() == 0) {
-                return;
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Hero) || event.getDamage() == 0 || event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                return; // With this, we know a Hero damaged some other sort of LivingEntity with damage that counts as ENTITY_ATTACK (i.e. not a Bow or a Skill)
             }
 
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (!(subEvent.getDamager() instanceof Player)) {
-                return;
-            }
-
-            Player player = (Player) subEvent.getDamager();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType().name()) || !hero.hasEffect("Fireblade")) {
-                return;
+            Hero hero = (Hero) event.getDamager();
+            Player player = hero.getPlayer();
+            if (!hero.hasEffect("Fireblade") || !SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType().name())) {
+                return; // With this, we know this Hero has the FireBlade Effect and is holding a suitable weapon.
             }
 
             double chance = SkillConfigManager.getUseSetting(hero, skill, "ignite-chance", .2, false);
             if (Util.nextRand() >= chance) {
-                return;
+                return; // With this, we know the RNG roll for the Fire effect has passed.
             }
 
             int fireTicks = SkillConfigManager.getUseSetting(hero, skill, "ignite-duration", 5000, false) / 50;
+
             LivingEntity target = (LivingEntity) event.getEntity();
             target.setFireTicks(fireTicks);
             plugin.getCharacterManager().getCharacter(target).addEffect(new CombustEffect(skill, player));
+
             broadcast(player.getLocation(), igniteText, player.getName(), CustomNameManager.getName(target));
         }
     }
