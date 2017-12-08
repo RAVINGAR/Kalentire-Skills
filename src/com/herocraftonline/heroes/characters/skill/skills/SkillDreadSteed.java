@@ -14,7 +14,6 @@ public class SkillDreadSteed extends SkillBaseSteed {
         setArgumentRange(0,0);
 
         steedName = "DreadSteed";
-        steedVariant = Variant.HORSE;
         steedColor = Color.BLACK;
 
         new SteedListener();
