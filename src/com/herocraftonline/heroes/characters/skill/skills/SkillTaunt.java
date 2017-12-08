@@ -156,6 +156,7 @@ public class SkillTaunt extends ActiveSkill {
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.PHYSICAL);
+            types.add(EffectType.TAUNT);
 
             this.damageModifier = damageModifier;
         }
