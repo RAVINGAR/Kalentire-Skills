@@ -136,12 +136,13 @@ public class SkillWraithForm extends ActiveSkill {
             }
         }
 
-        @EventHandler
+
+        /*@EventHandler
         public void cancelCCEffects(EffectAddEvent e) {
             if (!e.getCharacter().hasEffect(EFFECT_NAME)) return;
             com.herocraftonline.heroes.characters.effects.Effect effect = e.getEffect();
             if (effect.types.contains(EffectType.ROOT) || effect.types.contains(EffectType.SLOW)
                     || effect.types.contains(EffectType.STUN)) e.setCancelled(true);
-        }
+        }*/
     }
 }
