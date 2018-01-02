@@ -129,7 +129,13 @@ public class SkillPlagueBomb
     @EventHandler(priority=EventPriority.MONITOR)
     public void onShear(PlayerShearEntityEvent event)
     {
-      event.setCancelled(true);
+      if ((event.getEntity() instanceof Sheep))
+      {
+        Sheep sheep = (Sheep)event.getEntity();
+        if (SkillPlagueBomb.this.plagueBombs.containsKey(Integer.valueOf(sheep.getEntityId()))) {
+                event.setCancelled(true);
+        }
+      }
     }
     
     @EventHandler(priority=EventPriority.MONITOR)
