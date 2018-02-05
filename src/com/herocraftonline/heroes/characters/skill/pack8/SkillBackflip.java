@@ -143,10 +143,10 @@ public class SkillBackflip extends ActiveSkill {
         boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
         if (throwShuriken) {
             if (hero.canUseSkill("Shuriken")) {
-                SkillShuriken shurikenSkill = (SkillShuriken) plugin.getSkillManager().getSkill("Shuriken");
+                //SkillShuriken shurikenSkill = (SkillShuriken) plugin.getSkillManager().getSkill("Shuriken");
 
-                if (shurikenSkill != null)
-                    shurikenSkill.shurikenToss(player);
+                //if (shurikenSkill != null)
+                //    shurikenSkill.shurikenToss(player);
             }
         }
 
