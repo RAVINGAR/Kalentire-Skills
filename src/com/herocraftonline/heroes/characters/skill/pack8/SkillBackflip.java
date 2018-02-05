@@ -11,7 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.characters.skill.unusedskills.SkillShuriken;
+//import com.herocraftonline.heroes.characters.skill.unusedskills.SkillShuriken;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Location;
