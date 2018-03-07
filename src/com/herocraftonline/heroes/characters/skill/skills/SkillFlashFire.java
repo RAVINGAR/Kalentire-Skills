@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -75,7 +74,7 @@ public class SkillFlashFire extends ActiveSkill
 		Player player = hero.getPlayer();
 		Location loc = player.getLocation();
 		if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < 1) {
-			Messaging.send(player, "You can't teleport into the void!");
+			player.sendMessage("You can't teleport into the void!");
 			return SkillResult.FAIL;
 		}
 		int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 8, true);
@@ -95,7 +94,7 @@ public class SkillFlashFire extends ActiveSkill
 		try {
 			iter = new BlockIterator(player, distance);
 		} catch (IllegalStateException e) {
-			Messaging.send(player, "You can't flash there!");
+			player.sendMessage("You can't flash there!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 		while (iter.hasNext()) {
@@ -145,7 +144,7 @@ public class SkillFlashFire extends ActiveSkill
 			}
 			return SkillResult.NORMAL;
 		} else {
-			Messaging.send(player, "No location to flash to.");
+			player.sendMessage("No location to flash to.");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 	}

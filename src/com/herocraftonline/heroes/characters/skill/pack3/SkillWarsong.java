@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Bukkit;
@@ -106,7 +105,7 @@ public class SkillWarsong extends ActiveSkill {
         if (!hero.hasParty()) {
             if (hero.hasEffect("Warsong")) {
                 if (((WarsongEffect) hero.getEffect("Warsong")).getDamageBonus() > mEffect.getDamageBonus()) {
-                    Messaging.send(player, "You have a more powerful effect already!");
+                    player.sendMessage("You have a more powerful effect already!");
                     return SkillResult.CANCELLED;
                 }
             }
@@ -213,7 +212,7 @@ public class SkillWarsong extends ActiveSkill {
             }
 
 
-            Messaging.send(player, applyText);
+            player.sendMessage(applyText);
         }
 
         @Override
@@ -222,7 +221,7 @@ public class SkillWarsong extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, expireText);
+            player.sendMessage(expireText);
         }
     }
 }

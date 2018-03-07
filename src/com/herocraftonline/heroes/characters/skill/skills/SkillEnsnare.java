@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -77,7 +76,7 @@ public class SkillEnsnare extends TargettedSkill {
         AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "AgiDecreaseEffect", player, duration, AttributeType.DEXTERITY, strDecrease, applyText, expireText);
         if(hero.hasEffect("AgiDecreaseEffect")) {
             if(((AttributeDecreaseEffect) hero.getEffect("AgiDecreaseEffect")).getDelta() > aEffect.getDelta()) {
-                Messaging.send(player, "Target has a more powerful effect already!");
+                player.sendMessage("Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }
         }

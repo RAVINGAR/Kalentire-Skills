@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.effects.common.ManaRegenIncreaseEff
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -79,7 +78,7 @@ public class SkillClarity extends ActiveSkill {
         if (!hero.hasParty()) {
             if (hero.hasEffect("Clarity")) {
                 if (((ClarityEffect) hero.getEffect("Clarity")).getDelta() > mEffect.getDelta()) {
-                    Messaging.send(player, "You have a more powerful effect already!");
+                    player.sendMessage("You have a more powerful effect already!");
                     return SkillResult.CANCELLED;
                 }
             }
@@ -122,13 +121,13 @@ public class SkillClarity extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Messaging.send(hero.getPlayer(), applyText);
+            hero.getPlayer().sendMessage(applyText);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Messaging.send(hero.getPlayer(), expireText);
+            hero.getPlayer().sendMessage(expireText);
         }
     }
 }

@@ -20,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 /**
@@ -66,7 +65,7 @@ public class SkillThrowAxe extends TargettedSkill {
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.getType().name())) {
-            Messaging.send(hero.getPlayer(), "You cannot use this skill with that weapon!");
+            hero.getPlayer().sendMessage("You cannot use this skill with that weapon!");
             return SkillResult.FAIL;
         }
 

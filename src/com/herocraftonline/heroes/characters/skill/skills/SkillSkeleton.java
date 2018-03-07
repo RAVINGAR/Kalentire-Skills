@@ -35,7 +35,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillSkeleton extends ActiveSkill {
     private String expireText;
@@ -86,10 +85,10 @@ public class SkillSkeleton extends ActiveSkill {
             long l = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.DURATION, 60000, false);
             localCreature.addEffect(new SummonEffect(this, l, paramHero, this.expireText));
             broadcastExecuteText(paramHero);
-            Messaging.send(localPlayer, "You have succesfully summoned a skeleton to fight for you.", new Object[0]);
+            localPlayer.sendMessage("You have succesfully summoned a skeleton to fight for you.");
             return SkillResult.NORMAL;
         }
-        Messaging.send(localPlayer, "You can't control anymore skeletons!", new Object[0]);
+        localPlayer.sendMessage("You can't control any more skeletons!");
         return SkillResult.FAIL;
     }
 

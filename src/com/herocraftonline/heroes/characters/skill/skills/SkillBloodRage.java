@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -77,7 +76,7 @@ public class SkillBloodRage extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, " %hero% is empowered by blood rage!").replace("%hero%", hero.getName());
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, " %hero% has calmed down.").replace("%hero%", hero.getName());
         if (hero.hasEffect("Bloodstorm")) {
-            Messaging.send(hero.getPlayer(), "This skill may not be used when Bloodstorm is applied!");
+            hero.getPlayer().sendMessage("This skill may not be used when Bloodstorm is applied!");
             return SkillResult.FAIL;
         }
         SilenceEffect silence = new SilenceEffect(this, player, duration);

@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlink extends ActiveSkill {
@@ -59,7 +58,7 @@ public class SkillBlink extends ActiveSkill {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
         if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < 1) {
-            Messaging.send(player, "The void prevents you from blinking!");
+            player.sendMessage("The void prevents you from blinking!");
             return SkillResult.FAIL;
         }
 
@@ -88,7 +87,7 @@ public class SkillBlink extends ActiveSkill {
             iter = new BlockIterator(player, distance);
         }
         catch (IllegalStateException e) {
-            Messaging.send(player, "There was an error getting your blink location!");
+            player.sendMessage("There was an error getting your blink location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         while (iter.hasNext()) {
@@ -133,7 +132,7 @@ public class SkillBlink extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "No location to blink to.");
+            player.sendMessage("No location to blink to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
-import com.herocraftonline.heroes.util.Messaging;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
@@ -70,7 +69,7 @@ public class SkillBlackHole extends ActiveSkill {
         hit = NMSHandler.getInterface().getNMSPhysics().rayCastBlocks(world, start, end, RayCastFlag.BLOCK_IGNORE_NON_SOLID);
 
         if(hit == null) {
-            Messaging.send(player, "Invalid location for Black Hole!");
+            player.sendMessage("Invalid location for Black Hole!");
             return SkillResult.CANCELLED;
         }
 

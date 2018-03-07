@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillEnergize extends ActiveSkill {
 
@@ -56,7 +55,7 @@ public class SkillEnergize extends ActiveSkill {
         plugin.getServer().getPluginManager().callEvent(hrsEvent);
 
         if (hrsEvent.isCancelled()) {
-            Messaging.send(player, "You cannot regenerate stamina right now!");
+            player.sendMessage("You cannot regenerate stamina right now!");
             return SkillResult.FAIL;
         }
 
@@ -64,7 +63,7 @@ public class SkillEnergize extends ActiveSkill {
 
         hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
         if (hero.isVerboseStamina())
-            Messaging.send(player, ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), true));
+            player.sendMessage(ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), true));
 
         player.getWorld().spigot().playEffect(player.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0, 45, 16);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 1.0F);

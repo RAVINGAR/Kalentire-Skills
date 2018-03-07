@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -62,7 +61,7 @@ public class SkillDeepFreeze extends TargettedSkill {
     public void init() {
         super.init();
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% was frozen in place!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has thawed from their icy prison!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has thawed from their icy prison!");
         shatterText = SkillConfigManager.getRaw(this, "shatter-text", "%target%'s icy prison shattered from the intense heat!").replace("%target%", "$1");
     }
 
@@ -86,7 +85,7 @@ public class SkillDeepFreeze extends TargettedSkill {
         private final Hero applierHero;
 
         public FreezeEffect(Skill skill, long duration, Hero applierHero) {
-            super(skill, "Freeze", applierHero.getPlayer(), period, duration, applyText, null);
+            super(skill, "Freeze", applierHero.getPlayer(), period, duration, applyText, null); //TODO Implicit broadcast() call - may need changes?
             this.types.add(EffectType.ICE);
             this.types.add(EffectType.UNBREAKABLE);
             this.applierHero = applierHero;
@@ -118,10 +117,12 @@ public class SkillDeepFreeze extends TargettedSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            if (hero.hasEffectType(EffectType.SILENT_ACTIONS)) {
-                Messaging.send(player, "    " + expireText, player.getName());
-            } else {
-                this.broadcast(player.getLocation(), "    " + expireText, player.getName());
+            if (expireText != null && expireText.length() > 0) {
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS)) {
+                    player.sendMessage("    " + expireText.replace("%target%", player.getName()));
+                } else {
+                    this.broadcast(player.getLocation(), "    " + expireText, player.getName());
+                }
             }
         }
 

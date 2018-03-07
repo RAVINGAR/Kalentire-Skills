@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillTransfuse extends ActiveSkill {
 
@@ -49,7 +48,7 @@ public class SkillTransfuse extends ActiveSkill {
         int manaGain = SkillConfigManager.getUseSetting(hero, this, "mana-gain", 150, false);
 
         if (hero.getMana() >= hero.getMaxMana()) {
-            Messaging.send(hero.getPlayer(), "You are already at full mana.");
+            hero.getPlayer().sendMessage("You are already at full mana.");
             return SkillResult.FAIL;
         }
 
@@ -65,7 +64,7 @@ public class SkillTransfuse extends ActiveSkill {
 
         hero.setMana(hrmEvent.getDelta() + hero.getMana());
         if (hero.isVerboseMana()) {
-            Messaging.send(hero.getPlayer(), ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+            hero.getPlayer().sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
         }
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);

@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillPurge extends TargettedSkill {
 
@@ -68,7 +67,7 @@ public class SkillPurge extends TargettedSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "Your target has nothing to purge!");
+            player.sendMessage("Your target has nothing to purge!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -73,7 +72,7 @@ public class SkillFade extends ActiveSkill {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
         if (loc.getBlock().getLightLevel() > SkillConfigManager.getUseSetting(hero, this, "max-light-level", 8, false)) {
-            Messaging.send(player, failText);
+            player.sendMessage(failText);
             return SkillResult.FAIL;
         }
 

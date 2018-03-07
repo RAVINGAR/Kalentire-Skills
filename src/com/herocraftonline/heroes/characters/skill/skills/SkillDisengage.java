@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.*;
@@ -67,7 +66,7 @@ public class SkillDisengage extends ActiveSkill
 
         if ((SkillConfigManager.getUseSetting(hero, this, "no-air-jump", true) && nodisengageMaterials.contains(belowMat)) || player.isInsideVehicle()) 
         {
-            Messaging.send(player, "You can't Disengage while mid-air or from inside a vehicle!");
+            player.sendMessage("You can't Disengage while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
 

@@ -41,7 +41,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIceVolley extends ActiveSkill {
@@ -106,7 +105,7 @@ public class SkillIceVolley extends ActiveSkill {
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has loaded an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer firing a volley of arrows.").replace("%hero%", "$1");
-        shotText = SkillConfigManager.getRaw(this, "shot-text", ChatComponents.GENERIC_SKILL + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!").replace("%hero%", "$1");
+        shotText = SkillConfigManager.getRaw(this, "shot-text", ChatComponents.GENERIC_SKILL + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Ice Volley" + ChatColor.RESET + "!");
 
         slowApplyText = SkillConfigManager.getRaw(this, "slow-apply-text", ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s Ice Volley!").replace("%target%", "$1").replace("%hero%", "$2");
         slowExpireText = SkillConfigManager.getRaw(this, "slow-expire-text", ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!").replace("%target%", "$1");
@@ -220,7 +219,7 @@ public class SkillIceVolley extends ActiveSkill {
 
             if (shotText != null && shotText.length() > 0) {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, shotText, player.getName());
+                    player.sendMessage(shotText.replace("%hero%", player.getName()));
                 else
                     broadcast(player.getLocation(), shotText, player.getName());
             }
@@ -327,7 +326,7 @@ public class SkillIceVolley extends ActiveSkill {
             long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 2000, false);
             int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
 
-            SlowEffect iceSlowEffect = new SlowEffect(skill, player, duration, amplifier, slowApplyText, slowExpireText);
+            SlowEffect iceSlowEffect = new SlowEffect(skill, player, duration, amplifier, slowApplyText, slowExpireText); //TODO Implicit broadcast() call - may need changes?
             iceSlowEffect.types.add(EffectType.DISPELLABLE);
             iceSlowEffect.types.add(EffectType.ICE);
 
@@ -347,7 +346,7 @@ public class SkillIceVolley extends ActiveSkill {
         private int maxArrowsPerShot;
 
         public IceVolleyShotEffect(Skill skill, Player applier, long duration, int maxArrowsPerShot) {
-            super(skill, "IceVolleyShot", applier, duration, applyText, expireText);
+            super(skill, "IceVolleyShot", applier, duration, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);

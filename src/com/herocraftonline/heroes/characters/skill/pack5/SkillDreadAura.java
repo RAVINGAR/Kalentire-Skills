@@ -28,7 +28,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 //import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 //import de.slikey.effectlib.EffectManager;
@@ -93,8 +92,8 @@ public class SkillDreadAura extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is emitting an aura of dread!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer emitting an aura of dread.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is emitting an aura of dread!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer emitting an aura of dread.");
     }
 
     @Override
@@ -155,7 +154,7 @@ public class SkillDreadAura extends ActiveSkill {
             if (applyText != null && applyText.length() > 0) {
                 Player player = hero.getPlayer();
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, "    " + applyText, player.getName());
+                    player.sendMessage("    " + applyText.replace("%hero%", player.getName()));
                 else
                     broadcast(player.getLocation(), "    " + applyText, player.getName());
             }
@@ -168,7 +167,7 @@ public class SkillDreadAura extends ActiveSkill {
             if (expireText != null && expireText.length() > 0) {
                 final Player player = hero.getPlayer();
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    Messaging.send(player, "    " + expireText, player.getName());
+                    player.sendMessage("    " + expireText.replace("%hero%", player.getName()));
                 else
                     broadcast(player.getLocation(), "    " + expireText, player.getName());
             }

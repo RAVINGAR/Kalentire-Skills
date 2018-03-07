@@ -20,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillPickPocket extends TargettedSkill {
@@ -72,7 +71,7 @@ public class SkillPickPocket extends TargettedSkill {
             if (Util.nextRand() >= chance) {
                 broadcast(player.getLocation(), failMessage, player.getName(), tPlayer.getName());
             }
-            Messaging.send(player, "You failed to steal anything from $1", tPlayer.getName());
+            player.sendMessage("You failed to steal anything from " + tPlayer.getName());
             return SkillResult.NORMAL;
         }
 
@@ -82,7 +81,7 @@ public class SkillPickPocket extends TargettedSkill {
         int slot = Util.nextInt(27) + 9;
         Set<String> disallowed = new HashSet<String>(SkillConfigManager.getUseSetting(hero, this, "disallowed-items", new ArrayList<String>()));
         if (items[slot] == null || items[slot].getType() == Material.AIR || disallowed.contains(items[slot].getType().name())) {
-            Messaging.send(player, "You failed to steal anything from $1", tPlayer.getName());
+            player.sendMessage("You failed to steal anything from " + tPlayer.getName());
             return SkillResult.NORMAL;
         }
         // Lets make sure we don't have any setting limits.

@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -132,13 +131,13 @@ public class SkillJungleToxins extends ActiveSkill
 		public void applyToHero(Hero hero)
 		{
 			super.applyToHero(hero);
-			Messaging.send(hero.getPlayer(), aText);
+			hero.getPlayer().sendMessage(aText);
 		}
 
 		public void removeFromHero(Hero hero)
 		{
 			super.removeFromHero(hero);
-			Messaging.send(hero.getPlayer(), eText);
+			hero.getPlayer().sendMessage(eText);
 		}
 
 		public void tickHero(Hero hero)

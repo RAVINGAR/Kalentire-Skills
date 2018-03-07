@@ -26,7 +26,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillEarthernFury extends TargettedSkill {
@@ -82,7 +81,7 @@ public class SkillEarthernFury extends TargettedSkill {
 
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
-            Messaging.send(player, "You can't use Earthern Fury with that weapon!");
+            player.sendMessage("You can't use Earthern Fury with that weapon!");
             return SkillResult.FAIL;
         }
 

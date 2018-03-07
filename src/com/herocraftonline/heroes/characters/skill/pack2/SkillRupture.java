@@ -26,7 +26,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRupture extends TargettedSkill {
@@ -180,7 +179,7 @@ public class SkillRupture extends TargettedSkill {
 
                 lastLoc = location;
 
-                Messaging.send(player, ChatColor.DARK_RED + "Your reckless movements are causing your wounds to rupture!");
+                player.sendMessage(ChatColor.DARK_RED + "Your reckless movements are causing your wounds to rupture!");
             }
         }
 

@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
@@ -146,7 +145,7 @@ public class SkillThickenWinds extends ActiveSkill
 			super.applyToHero(hero);
 			final Hero h = hero;
 			final Player player = hero.getPlayer();
-			Messaging.send(player, applyText);
+			player.sendMessage(applyText);
 			final String name = this.getName();
 			new BukkitRunnable() {
 				public void run() {
@@ -163,7 +162,7 @@ public class SkillThickenWinds extends ActiveSkill
 		{
 			super.removeFromHero(hero);
 			final Player player = hero.getPlayer();
-			Messaging.send(player, expireText);
+			player.sendMessage(expireText);
 			if (ncpEnabled) NCPExemptionManager.unexempt(player, CheckType.MOVING_NOFALL);
 		}
 	}

@@ -15,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -73,7 +72,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
 
         if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
-            Messaging.send(player, "You must specify a location when using this skill! (use /skill port list)");
+            player.sendMessage("You must specify a location when using this skill! (use /skill port list)");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -87,7 +86,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             for (String n : keys) {
                 String retrievedNode = SkillConfigManager.getUseSetting(hero, this, n, (String) null);
                 if (retrievedNode != null) {
-                    Messaging.send(player, "$1 - $2", n, retrievedNode);
+                    player.sendMessage(n + " - " + retrievedNode);
                 }
             }
             return SkillResult.SKIP_POST_USAGE;
@@ -123,7 +122,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
                             msgout.writeUTF(Joiner.on(",").join(playerNames));
                         }
                         catch (IOException e) {
-                            Messaging.send(player, "Port location is improperly set!");
+                            player.sendMessage("Port location is improperly set!");
                             return SkillResult.SKIP_POST_USAGE;
                         }
 
@@ -143,7 +142,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
                                 if (pendingPort.remove(playerName)) {
                                     Player player = Bukkit.getPlayer(playerName);
                                     if (player != null) {
-                                        Messaging.send(player, "Teleport fizzled.");
+                                        player.sendMessage("Teleport fizzled.");
                                     }
                                 }
                             }
@@ -152,12 +151,12 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
                         return SkillResult.NORMAL;
                     }
                     else {
-                        Messaging.send(player, "You can't port to a location in another world!");
+                        player.sendMessage("You can't port to a location in another world!");
                         return SkillResult.INVALID_TARGET_NO_MSG;
                     }
                 }
                 else {
-                    Messaging.send(player, "That teleport location no longer exists!");
+                    player.sendMessage("That teleport location no longer exists!");
                     return SkillResult.INVALID_TARGET_NO_MSG;
                 }
             }
@@ -165,7 +164,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             return doPort(hero, portInfo, true);
         }
         else {
-            Messaging.send(player, "No port location named $1", args[0]);
+            player.sendMessage("No port location named " + args[0]);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }
@@ -190,11 +189,11 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         World world = plugin.getServer().getWorld(portArgs.get(1));
         if (world == null) {
-            Messaging.send(player, "That teleport location no longer exists!");
+            player.sendMessage("That teleport location no longer exists!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         else if (!world.equals(player.getWorld()) && !crossWorldEnabled) {
-            Messaging.send(player, "You can't port to a location in another world!");
+            player.sendMessage("You can't port to a location in another world!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -309,7 +308,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             SkillResult result = doPort(hero, portInfo.getInfo(), false);
             if (!SkillResult.NORMAL.equals(result)) {
                 player.teleport(player.getWorld().getSpawnLocation());
-                Messaging.send(player, "Teleport fizzled.");
+                player.sendMessage("Teleport fizzled.");
             }
         }
     }

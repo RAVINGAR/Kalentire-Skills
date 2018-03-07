@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillRemedy extends TargettedSkill {
     // This is for Firework Effects
@@ -52,9 +51,9 @@ public class SkillRemedy extends TargettedSkill {
 
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer())) {
-                Messaging.send(player, "You are already at full health.");
+                player.sendMessage("You are already at full health.");
             } else {
-                Messaging.send(player, "Target is already fully healed.");
+                player.sendMessage("Target is already fully healed.");
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -62,7 +61,7 @@ public class SkillRemedy extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, hpPlus, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!");
+            player.sendMessage("Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
         targetHero.heal(hrhEvent.getDelta());

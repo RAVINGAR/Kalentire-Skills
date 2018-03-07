@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -87,7 +86,7 @@ public class SkillSacrifice extends ActiveSkill {
         AttributeIncreaseEffect sEffect = new AttributeIncreaseEffect(this, "SacrificeStrengthIncreaseEffect",  player, duration, AttributeType.STRENGTH, strIncrease, null, null);
 
         if (!hero.hasParty()) {
-            Messaging.send(player, "You must have a party to sacrifice for!");
+            player.sendMessage("You must have a party to sacrifice for!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         else {
@@ -144,14 +143,14 @@ public class SkillSacrifice extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             
-            Messaging.send(hero.getPlayer(), applyText);
+            hero.getPlayer().sendMessage(applyText);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             
-            Messaging.send(hero.getPlayer(), expireText);
+            hero.getPlayer().sendMessage(expireText);
         }
     }
 }

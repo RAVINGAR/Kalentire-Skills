@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -93,8 +92,8 @@ public class SkillAccelerando extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% gained a burst of speed!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% returned to normal speed!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% gained a burst of speed!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% returned to normal speed!");
     }
 
     public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -203,7 +202,7 @@ public class SkillAccelerando extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (applyText != null && applyText.length() > 0) {
-                Messaging.send(player, "    " + applyText, player.getName(), applier.getName());
+                player.sendMessage("    " + applyText.replace("%hero%",  player.getName()));
             }
         }
 
@@ -226,7 +225,7 @@ public class SkillAccelerando extends ActiveSkill {
             }
 
             if (expireText != null && expireText.length() > 0) {
-                Messaging.send(player, "    " + expireText, player.getName(), applier.getName());
+                player.sendMessage("    " + expireText.replace("%hero%", player.getName()));
             }
         }
     }

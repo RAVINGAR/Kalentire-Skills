@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMasamune extends ActiveSkill {
@@ -66,7 +65,7 @@ public class SkillMasamune extends ActiveSkill {
 
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
-            Messaging.send(player, "You can't use Masamune with that weapon!");
+            player.sendMessage("You can't use Masamune with that weapon!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -84,7 +83,7 @@ public class SkillMasamune extends ActiveSkill {
                 NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
                 player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
             } else {
-                Messaging.send(player, "Your Katana doesn't have enough durability to use Masamune!");
+                player.sendMessage("Your Katana doesn't have enough durability to use Masamune!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }

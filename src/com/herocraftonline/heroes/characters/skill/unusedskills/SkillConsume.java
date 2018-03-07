@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillConsume extends ActiveSkill {
 
@@ -44,7 +43,7 @@ public class SkillConsume extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         if (hero.getMana() >= hero.getMaxMana()) {
-            Messaging.send(player, "Your mana is already full!");
+            player.sendMessage("Your mana is already full!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -84,9 +83,9 @@ public class SkillConsume extends ActiveSkill {
                 player.updateInventory();
                 hero.setMana(hrmEvent.getDelta() + hero.getMana());
                 if (hero.isVerboseMana()) {
-                    Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
+                    player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
                 } else {
-                    Messaging.send(player, "You regain " + mana + " mana");
+                    player.sendMessage("You regain " + mana + " mana");
                 }
 
                 broadcastExecuteText(hero);
@@ -94,7 +93,7 @@ public class SkillConsume extends ActiveSkill {
             }
         }
 
-        Messaging.send(player, "You can't consume that item!");
+        player.sendMessage("You can't consume that item!");
         return SkillResult.FAIL;
     }
 

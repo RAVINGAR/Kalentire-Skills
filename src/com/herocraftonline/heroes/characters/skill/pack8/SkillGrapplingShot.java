@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -243,7 +242,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "You shot your hook to far and lost your grip!");
+                player.sendMessage("You shot your hook to far and lost your grip!");
                 return;
             }
         }
@@ -317,7 +316,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         int maxDistance = SkillConfigManager.getUseSetting(hero, this, "max-distance", 35, false);
         if (maxDistance > 0) {
             if (distance > maxDistance) {
-                Messaging.send(player, "You shot your hook to far and lost your grip!");
+                player.sendMessage("You shot your hook to far and lost your grip!");
                 return;
             }
         }

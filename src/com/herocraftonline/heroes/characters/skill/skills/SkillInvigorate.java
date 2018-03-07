@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillInvigorate extends TargettedSkill{
     
@@ -54,7 +53,7 @@ public class SkillInvigorate extends TargettedSkill{
         Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
 
         if (targetHero.getStamina() >= targetHero.getMaxStamina()) {
-            Messaging.send(player, "Your target already has full stamina!");
+            player.sendMessage("Your target already has full stamina!");
             return SkillResult.CANCELLED;
         }
 

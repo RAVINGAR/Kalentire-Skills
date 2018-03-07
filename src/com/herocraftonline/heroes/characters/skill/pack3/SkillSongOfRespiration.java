@@ -15,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSongOfRespiration extends ActiveSkill {
@@ -61,8 +60,8 @@ public class SkillSongOfRespiration extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "You are filled with increased respiration!").replace("%hero%", "$2").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "Your increased respiration has faded.").replace("%hero%", "$2").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "You are filled with increased respiration!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "Your increased respiration has faded.");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -118,7 +117,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (applyText != null && applyText.length() > 0) {
-                Messaging.send(player, "    " + applyText, player.getName(), applier.getName());
+                player.sendMessage("    " + applyText.replace("%hero%", applier.getName()).replace("%target%", player.getName()));
             }
         }
 
@@ -128,7 +127,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (expireText != null && expireText.length() > 0) {
-                Messaging.send(player, "    " + expireText, player.getName(), applier.getName());
+                player.sendMessage("    " + expireText.replace("%hero%", applier.getName()).replace("%target%", player.getName()));
             }
         }
     }

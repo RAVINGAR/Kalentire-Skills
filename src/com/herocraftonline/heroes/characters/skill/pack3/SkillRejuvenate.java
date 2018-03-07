@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRejuvenate extends TargettedSkill {
@@ -77,7 +76,7 @@ public class SkillRejuvenate extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         if (target.getHealth() >= target.getMaxHealth()) {
-            Messaging.send(player, "Target is already fully healed.");
+            player.sendMessage("Target is already fully healed.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

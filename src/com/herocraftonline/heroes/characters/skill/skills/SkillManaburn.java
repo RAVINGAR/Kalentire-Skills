@@ -15,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillManaburn extends TargettedSkill {
     // This is for Firework Effects
@@ -63,7 +62,7 @@ public class SkillManaburn extends TargettedSkill {
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_CAT_HISS.value() , 0.8F, 1.0F); 
             return SkillResult.NORMAL;
         } else {
-            Messaging.send(player, "Target does not have enough mana!");
+            player.sendMessage("Target does not have enough mana!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

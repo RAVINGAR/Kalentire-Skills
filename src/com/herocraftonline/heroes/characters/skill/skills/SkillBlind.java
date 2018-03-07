@@ -15,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlind extends TargettedSkill {
@@ -64,7 +63,7 @@ public class SkillBlind extends TargettedSkill {
         Player player = hero.getPlayer();
 
         if (!(target instanceof Player)) {
-            Messaging.send(player, "You must target a player!");
+            player.sendMessage("You must target a player!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

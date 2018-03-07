@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -65,7 +64,7 @@ public class SkillBloodGift extends TargettedSkill {
 
         // Check to see if they are at full health
         if (targetHealth >= target.getMaxHealth()) {
-            Messaging.send(player, "Target is already at full health.");
+            player.sendMessage("Target is already at full health.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -92,7 +91,7 @@ public class SkillBloodGift extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!");
+            player.sendMessage("Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
 

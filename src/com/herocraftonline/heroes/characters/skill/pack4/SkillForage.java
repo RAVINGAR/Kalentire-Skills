@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -147,7 +146,7 @@ public class SkillForage extends ActiveSkill {
         }
 
         if (materials.isEmpty() || Util.nextRand() >= chance || maxFinds <= 0) {
-            Messaging.send(player, "You found nothing while foraging.");
+            player.sendMessage("You found nothing while foraging.");
             return SkillResult.NORMAL;
         }
 
@@ -161,7 +160,7 @@ public class SkillForage extends ActiveSkill {
                 for (ItemStack leftOver : leftOvers.values()) {
                     player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
                 }
-                Messaging.send(player, "Items have been dropped at your feet!");
+                player.sendMessage("Items have been dropped at your feet!");
             }
         }
         Util.syncInventory(player, plugin);

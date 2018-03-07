@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -55,7 +54,7 @@ public class SkillAssemblePickaxe extends ActiveSkill {
         HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.IRON_PICKAXE, amount));
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            Messaging.send(player, "Item(s) have been dropped at your feet!");
+            player.sendMessage("Item(s) have been dropped at your feet!");
         }
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);

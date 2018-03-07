@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -54,7 +53,7 @@ public class SkillBindingHeal extends TargettedSkill
 		if (!(target instanceof Player)) return SkillResult.INVALID_TARGET;
 		if ((Player)target == player) 
 		{
-			Messaging.send(player, " You must target another player!");
+			player.sendMessage(" You must target another player!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 
@@ -66,7 +65,7 @@ public class SkillBindingHeal extends TargettedSkill
 		double targetHealth = target.getHealth();
 		if (targetHealth >= target.getMaxHealth() && hero.getPlayer().getHealth() >= hero.getPlayer().getMaxHealth()) 
 		{
-			Messaging.send(player, " You are both at full health!");
+			player.sendMessage(" You are both at full health!");
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 
@@ -77,7 +76,7 @@ public class SkillBindingHeal extends TargettedSkill
 		plugin.getServer().getPluginManager().callEvent(hrhTarget);
 		if (hrhUser.isCancelled() || hrhTarget.isCancelled()) 
 		{
-			Messaging.send(player, " Unable to heal target.");
+			player.sendMessage(" Unable to heal target.");
 			return SkillResult.CANCELLED;
 		}
 

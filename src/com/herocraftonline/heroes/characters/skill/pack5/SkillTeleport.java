@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillTeleport extends ActiveSkill {
@@ -46,7 +45,7 @@ public class SkillTeleport extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         if (!(hero.getParty() != null && hero.getParty().getMembers().size() > 0)) {
-            Messaging.send(player, "Sorry, you need to be in a party with players!");
+            player.sendMessage("Sorry, you need to be in a party with players!");
             return SkillResult.FAIL;
         }
 
@@ -56,7 +55,7 @@ public class SkillTeleport extends ActiveSkill {
         
 
         if (!hero.getParty().isPartyMember(plugin.getCharacterManager().getHero(targetPlayer))) {
-            Messaging.send(player, "Sorry, that player isn't in your party!");
+            player.sendMessage("Sorry, that player isn't in your party!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

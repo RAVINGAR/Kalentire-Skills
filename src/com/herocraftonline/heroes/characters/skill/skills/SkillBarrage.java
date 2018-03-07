@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillBarrage extends ActiveSkill {
 
@@ -57,7 +56,7 @@ public class SkillBarrage extends ActiveSkill {
 		}
 
 		if (numArrows == 0) {
-			Messaging.send(player, "You have no arrows.");
+			player.sendMessage("You have no arrows.");
 			return new SkillResult(ResultType.MISSING_REAGENT, false);
 		}
 

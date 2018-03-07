@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillInfusion extends TargettedSkill {
 
@@ -70,9 +69,9 @@ public class SkillInfusion extends TargettedSkill {
         // Check to see if they are at full health
         if (targetHealth >= target.getMaxHealth()) {
             if (player.equals(targetHero.getPlayer()))
-                Messaging.send(player, "You are already at full health.");
+                player.sendMessage("You are already at full health.");
             else {
-                Messaging.send(player, "Target is already at full health.");
+                player.sendMessage("Target is already at full health.");
             }
 
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -102,7 +101,7 @@ public class SkillInfusion extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal your target at this time!");
+            player.sendMessage("Unable to heal your target at this time!");
             return SkillResult.CANCELLED;
         }
 

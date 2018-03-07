@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillGate extends ActiveSkill {
 
@@ -41,7 +40,7 @@ public class SkillGate extends ActiveSkill {
             for (String n : SkillConfigManager.getUseSettingKeys(hero, this, null)) {
                 String retrievedNode = SkillConfigManager.getUseSetting(hero, this, n, (String) null);
                 if (retrievedNode != null) {
-                    Messaging.send(player, "$1 - $2", n, retrievedNode);
+                    player.sendMessage(n + " - " + retrievedNode);
                 }
             }
             return SkillResult.SKIP_POST_USAGE;
@@ -53,7 +52,7 @@ public class SkillGate extends ActiveSkill {
             int levelRequirement = Integer.parseInt(splitArg[4]);
             World world = plugin.getServer().getWorld(splitArg[0]);
             if (world == null) {
-                Messaging.send(player, "That teleport location no longer exists!");
+                player.sendMessage("That teleport location no longer exists!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
@@ -65,7 +64,7 @@ public class SkillGate extends ActiveSkill {
             broadcastExecuteText(hero);
             return SkillResult.NORMAL;
         } else {
-            Messaging.send(player, "No gate location named $1", args[0]);
+            player.sendMessage("No gate location named " + args[0]);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

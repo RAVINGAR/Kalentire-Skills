@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -64,7 +63,7 @@ public class SkillArcaneTransfer extends TargettedSkill {
         }
 
         if (possibleEffects.isEmpty() && player.getFireTicks() < 1) {
-            Messaging.send(player, "You have no effects to transfer!");
+            player.sendMessage("You have no effects to transfer!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

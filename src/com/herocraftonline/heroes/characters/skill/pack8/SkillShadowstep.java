@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -80,7 +79,7 @@ public class SkillShadowstep extends TargettedSkill {
             iter = new BlockIterator(target.getWorld(), targetLoc.toVector(), direction, 0, blocksBehindTarget);
         }
         catch (IllegalStateException e) {
-            Messaging.send(player, "There was an error getting the Shadowstep location!");
+            player.sendMessage("There was an error getting the Shadowstep location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -88,7 +87,7 @@ public class SkillShadowstep extends TargettedSkill {
         Block b;
         while (iter.hasNext()) {
             b = iter.next();
-            // Messaging.send(player, "Looping through blocks. Current Block: " + b.getType().toString());      // DEBUG
+            // player.sendMessage("Looping through blocks. Current Block: " + b.getType().toString());      // DEBUG
 
             // Validate blocks near destination
             if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
@@ -116,7 +115,7 @@ public class SkillShadowstep extends TargettedSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "No location to shadowstep to.");
+            player.sendMessage("No location to shadowstep to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -150,12 +149,12 @@ public class SkillShadowstep extends TargettedSkill {
         //				return SkillResult.NORMAL;
         //			}
         //			else {
-        //                Messaging.send(player, teleFailText);
+        //                player.sendMessage(teleFailText);
         //				return SkillResult.FAIL;
         //			}
         //		}
         //		else {
-        //            Messaging.send(player, teleFailText);
+        //            player.sendMessage(teleFailText);
         //			return SkillResult.FAIL;
         //		}
     }

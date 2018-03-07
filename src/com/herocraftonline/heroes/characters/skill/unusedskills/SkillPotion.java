@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.unusedskills;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -115,7 +114,7 @@ public class SkillPotion extends PassiveSkill {
 
             // see if the player can use potions at all
             if (!hero.canUseSkill(skill) || (hero.isInCombat() && SkillConfigManager.getUseSetting(hero, skill, SkillSetting.NO_COMBAT_USE, false))) {
-                Messaging.send(player, "You can't use this potion!");
+                player.sendMessage("You can't use this potion!");
                 return false;
             }
 
@@ -134,7 +133,7 @@ public class SkillPotion extends PassiveSkill {
 
             // see if the player can use this type of potion
             if (!SkillConfigManager.getUseSetting(hero, skill, "allow." + potionName, false)) {
-                Messaging.send(player, "You can't use this potion!");
+                player.sendMessage("You can't use this potion!");
                 return false;
             }
 
@@ -152,7 +151,7 @@ public class SkillPotion extends PassiveSkill {
             Long readyTime = hero.getCooldown(potionType);
             if (readyTime != null && time < readyTime) {
                 int secRemaining = (int) Math.ceil((readyTime - time) / 1000.0);
-                Messaging.send(player, "You can't use this potion for $1s!", secRemaining);
+                player.sendMessage("You can't use this potion for " + secRemaining + "s!");
                 return false;
             }
 

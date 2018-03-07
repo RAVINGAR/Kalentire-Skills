@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -62,19 +61,19 @@ public class SkillLabelChest extends ActiveSkill {
         Player player = hero.getPlayer();
 
         if (text.length == 0) {
-            Messaging.send(player, "/skill labelchest <Text>");
+            player.sendMessage("/skill labelchest <Text>");
             return SkillResult.CANCELLED;
         }
 
         if (NMSHandler.getInterface().getItemInMainHand(player.getInventory()) == null) {
-            Messaging.send(player, "You must be holding a chest in order to use this skill.");
+            player.sendMessage("You must be holding a chest in order to use this skill.");
             return SkillResult.CANCELLED;
         }
 
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         Material type = item.getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "possible-items", Util.tools).contains(type.name())) {
-            Messaging.send(player, "You cannot label that item!");
+            player.sendMessage("You cannot label that item!");
             return SkillResult.FAIL;
         }
 
@@ -95,7 +94,7 @@ public class SkillLabelChest extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "You failed to label that item!");
+            player.sendMessage("You failed to label that item!");
             return SkillResult.FAIL;
         }
     }

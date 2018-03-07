@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillLunarLance extends TargettedSkill {
@@ -64,7 +63,7 @@ public class SkillLunarLance extends TargettedSkill {
         // Ensure they have a weapon in hand
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.shovels).contains(item.getType().name())) {
             // Notify them that they don't have a shovel equipped
-            Messaging.send(hero.getPlayer(), "You cannot use this skill with that weapon!");
+            hero.getPlayer().sendMessage("You cannot use this skill with that weapon!");
 
             return SkillResult.FAIL;
         }
@@ -97,7 +96,7 @@ public class SkillLunarLance extends TargettedSkill {
             }
 
             if (tHero.isVerboseMana())
-                Messaging.send(player, ChatComponents.Bars.mana(tHero.getMana(), tHero.getMaxMana(), false));
+                player.sendMessage(ChatComponents.Bars.mana(tHero.getMana(), tHero.getMaxMana(), false));
         }
 
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0.0F, 0.0F, 0.0F, 0.4F, 35, 16);

@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -53,7 +52,7 @@ public class SkillImbueRunestone extends ActiveSkill {
         Player player = hero.getPlayer();
 
         if (text.length == 0) {
-            Messaging.send(player, "/skill imbuerunestone <Text>");
+            player.sendMessage("/skill imbuerunestone <Text>");
             return SkillResult.FAIL;
         }
 
@@ -64,12 +63,12 @@ public class SkillImbueRunestone extends ActiveSkill {
         int maxTextLength = SkillConfigManager.getUseSetting(hero, this, "max-message-length", 40, false);
         if (textString.length() > (maxTextLength + 2))		// Add 2 more characters to the check for color encoding
         {
-            Messaging.send(player, "You cannot imbue a message or note that is longer than " + maxTextLength + " characters.");
+            player.sendMessage("You cannot imbue a message or note that is longer than " + maxTextLength + " characters.");
             return SkillResult.FAIL;
         }
 
         if (NMSHandler.getInterface().getItemInMainHand(player.getInventory()) == null) {
-            Messaging.send(player, "You must be holding an item in order to use this skill.");
+            player.sendMessage("You must be holding an item in order to use this skill.");
             return SkillResult.FAIL;
         }
 
@@ -79,7 +78,7 @@ public class SkillImbueRunestone extends ActiveSkill {
         // Check to make sure it is a redstone block
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         if (!item.getType().name().equals("REDSTONE_BLOCK")) {
-            Messaging.send(player, "You must be holding a Runestone Block to use this skill.");
+            player.sendMessage("You must be holding a Runestone Block to use this skill.");
             return SkillResult.INVALID_TARGET;
         }
 
@@ -134,19 +133,19 @@ public class SkillImbueRunestone extends ActiveSkill {
                         for (ItemStack leftOver : leftOvers.values()) {
                             player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
                         }
-                        Messaging.send(player, "Items have been dropped at your feet!");
+                        player.sendMessage("Items have been dropped at your feet!");
                     }
                 }
 
                 return SkillResult.NORMAL;
             }
             else {
-                Messaging.send(player, "You must be holding a Runestone Block to use this skill.");
+                player.sendMessage("You must be holding a Runestone Block to use this skill.");
                 return SkillResult.FAIL;
             }
         }
         else {
-            Messaging.send(player, "You must be holding a Runestone Block to use this skill.");
+            player.sendMessage("You must be holding a Runestone Block to use this skill.");
             return SkillResult.FAIL;
         }
     }

@@ -39,7 +39,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillExplosiveShot extends ActiveSkill {
@@ -132,7 +131,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 		super.init();
 
 		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s arrows are no longer Explosive.").replace("%hero%", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s arrows are no longer Explosive.");
 		shotText = SkillConfigManager.getRaw(this, "shot-text", ChatComponents.GENERIC_SKILL + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!").replace("%hero%", "$1");
 	}
 
@@ -359,7 +358,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 		private boolean showExpireText = true;
 
 		public ExplosiveShotBuffEffect(Skill skill, Player applier, long duration, int shotsLeft) {
-			super(skill, "ExplosiveShotBuffEffect", applier, duration, null, null);
+			super(skill, "ExplosiveShotBuffEffect", applier, duration, applyText, null); //TODO Implicit broadcast() call - may need changes?
 
 			types.add(EffectType.IMBUE);
 			types.add(EffectType.PHYSICAL);
@@ -381,15 +380,6 @@ public class SkillExplosiveShot extends ActiveSkill {
 					hero.removeEffect(effect);
 				}
 			}
-
-			Player player = hero.getPlayer();
-
-			if (applyText != null && applyText.length() > 0) {
-				if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-					Messaging.send(player, applyText, player.getDisplayName());
-				else
-					broadcast(player.getLocation(), applyText, player.getDisplayName());
-			}
 		}
 
 		@Override
@@ -398,10 +388,10 @@ public class SkillExplosiveShot extends ActiveSkill {
 
 			Player player = hero.getPlayer();
 
-			if (showExpireText) {
+			if (showExpireText) { // This stays only because someone may theoretically touch this value. //TODO Remove when we do breaking changes?
 				if (expireText != null && expireText.length() > 0) {
 					if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-						Messaging.send(player, expireText, player.getDisplayName());
+						player.sendMessage(expireText.replace("%hero%", player.getDisplayName()));
 					else
 						broadcast(player.getLocation(), expireText, player.getDisplayName());
 				}

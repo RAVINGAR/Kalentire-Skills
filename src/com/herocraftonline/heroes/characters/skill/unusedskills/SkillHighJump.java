@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillHighJump extends ActiveSkill {
 
@@ -51,7 +50,7 @@ public class SkillHighJump extends ActiveSkill {
         Player player = hero.getPlayer();
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         if ((SkillConfigManager.getUseSetting(hero, this, "no-air-jump", true) && noJumpMaterials.contains(mat)) || player.isInsideVehicle()) {
-            Messaging.send(player, "You can't jump while mid-air or from inside a vehicle!");
+            player.sendMessage("You can't jump while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
         float pitch = player.getEyeLocation().getPitch();

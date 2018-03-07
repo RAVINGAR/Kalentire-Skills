@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDispel extends TargettedSkill {
 
@@ -70,7 +69,7 @@ public class SkillDispel extends TargettedSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "Your target has nothing to dispel!");
+            player.sendMessage("Your target has nothing to dispel!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

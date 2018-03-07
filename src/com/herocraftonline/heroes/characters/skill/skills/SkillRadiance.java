@@ -1,7 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -111,13 +111,13 @@ public class SkillRadiance extends ActiveSkill
         public void applyToHero(Hero ap)
         {
             super.applyToHero(ap);
-            Messaging.broadcastSkillMessage(ap.getPlayer(), ap.getName() + " radiates restorative energy!");
+            broadcast(ap.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL + ap.getName() + " radiates restorative energy!");
         }
 
         public void removeFromHero(Hero ap)
         {
             super.removeFromHero(ap);
-            Messaging.broadcastSkillMessage(ap.getPlayer(), ap.getName() + " no longer radiates energy.");
+            broadcast(ap.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL + ap.getName() + " no longer radiates energy.");
         }
     }
 }

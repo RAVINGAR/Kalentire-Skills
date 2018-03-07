@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -133,7 +132,7 @@ public class SkillPotion extends PassiveSkill {
 
                 if(!(item.getItemMeta() instanceof PotionMeta)) {
                     event.setCancelled(true);
-                    Messaging.send(player, "This Potion has no PotionMeta - please report this for investigation!");
+                    player.sendMessage("This Potion has no PotionMeta - please report this for investigation!");
                     return; // I don't trust this not to happen
                 }
 
@@ -193,7 +192,7 @@ public class SkillPotion extends PassiveSkill {
 
             // see if the player can use potions at all
             if (!hero.canUseSkill(skill) || (hero.isInCombat() && SkillConfigManager.getUseSetting(hero, skill, SkillSetting.NO_COMBAT_USE, false))) {
-                Messaging.send(player, "You can't use this potion!");
+                player.sendMessage("You can't use this potion!");
                 return false;
             }
 
@@ -217,7 +216,7 @@ public class SkillPotion extends PassiveSkill {
 
                 // see if the player can use this type of potion
                 if (!SkillConfigManager.getUseSetting(hero, skill, "allow." + potionName, false)) {
-                    Messaging.send(player, "You can't use this potion!");
+                    player.sendMessage("You can't use this potion!");
                     return false;
                 }
 
@@ -226,7 +225,7 @@ public class SkillPotion extends PassiveSkill {
                 Long readyTime = hero.getCooldown(potionType);
                 if (readyTime != null && time < readyTime) {
                     int secRemaining = (int) Math.ceil((readyTime - time) / 1000.0);
-                    Messaging.send(player, "You can't use this potion for $1s!", secRemaining);
+                    player.sendMessage("You can't use this potion for " + secRemaining + "s!");
                     return false;
                 }
 
@@ -355,7 +354,7 @@ public class SkillPotion extends PassiveSkill {
 
             if(!(potionItem.getItemMeta() instanceof PotionMeta)) {
                 event.setCancelled(true);
-                Messaging.send(player, "This Potion has no PotionMeta - please report this for investigation!");
+                player.sendMessage("This Potion has no PotionMeta - please report this for investigation!");
                 return; // I don't trust this not to happen
             }
 

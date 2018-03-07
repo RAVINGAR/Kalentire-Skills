@@ -21,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDeathMark extends ActiveSkill {
@@ -73,11 +72,11 @@ public class SkillDeathMark extends ActiveSkill {
         Hero targetHero = plugin.getCharacterManager().getHero(target);
         int minTargetHeroLevel = SkillConfigManager.getUseSetting(hero, this, "target-min-combat-level", 10, false);
         if (targetHero.getTieredLevel(targetHero.getHeroClass()) < minTargetHeroLevel) {
-            Messaging.send(player, "$1 isn't powerful enough to be found...", target.getName());
+            player.sendMessage(target.getName() + " isn't powerful enough to be found...");
             return SkillResult.NORMAL;
         }
         if (!target.getWorld().equals(player.getWorld())) {
-            Messaging.send(player, "$1 is not in this world...", target.getName());
+            player.sendMessage(target.getName() + " is not in this world...");
             return SkillResult.NORMAL;
         }
 
@@ -158,22 +157,22 @@ public class SkillDeathMark extends ActiveSkill {
 
             player.setCompassTarget(target.getLocation());
 
-            Messaging.send(player, ChatColor.WHITE + target.getName() + ChatColor.GRAY + " has been marked for death!");
+            player.sendMessage(ChatColor.WHITE + target.getName() + ChatColor.GRAY + " has been marked for death!");
             double distance = player.getLocation().distance(target.getLocation());
 
             if (distance > 1000)
-                Messaging.send(player, "You sense your target is a good distance away...");
+                player.sendMessage("You sense your target is a good distance away...");
             else
-                Messaging.send(player, "You sense your target is close by...");
+                player.sendMessage("You sense your target is close by...");
 
             //            if (distance > 1500)
-            //                Messaging.send(player, "You sense your target is a great distance away...");
+            //                player.sendMessage("You sense your target is a great distance away...");
             //            else if (distance > 1000)
-            //                Messaging.send(player, "You sense your target is a good distance away...");
+            //                player.sendMessage("You sense your target is a good distance away...");
             //            else if (distance > 500)
-            //                Messaging.send(player, "You sense your target is close by...");
+            //                player.sendMessage("You sense your target is close by...");
             //            else
-            //                Messaging.send(player, "Your target is very close!");
+            //                player.sendMessage("Your target is very close!");
         }
 
         @Override
@@ -181,7 +180,7 @@ public class SkillDeathMark extends ActiveSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
 
-            Messaging.send(player, target.getName() + " is no longer marked for death.");
+            player.sendMessage(target.getName() + " is no longer marked for death.");
         }
 
         @Override

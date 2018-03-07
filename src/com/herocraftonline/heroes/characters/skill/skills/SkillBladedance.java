@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBladedance extends TargettedSkill {
@@ -46,7 +45,7 @@ public class SkillBladedance extends TargettedSkill {
         
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
-            Messaging.send(player, "You can't bladedance with that weapon!");
+            player.sendMessage("You can't bladedance with that weapon!");
             return SkillResult.FAIL;
         }
 

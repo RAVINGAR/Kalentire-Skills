@@ -18,7 +18,6 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 
@@ -78,50 +77,50 @@ public class SkillFishing extends PassiveSkill {
                     switch(Util.nextInt(8)){
                     case 0:
                         getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
-                        Messaging.send(player, "You found leather boots!");
+                        player.sendMessage("You found leather boots!");
                         getCaught.getItemStack().setDurability((short) (Math.random() * 40));
                         break;
                     case 1:
                         getCaught.setItemStack(new ItemStack(Material.LEATHER_LEGGINGS, 1));
-                        Messaging.send(player, "You found leather leggings!");
+                        player.sendMessage("You found leather leggings!");
                         getCaught.getItemStack().setDurability((short) (Math.random() * 46));
                         break;
                     case 2:
                         getCaught.setItemStack(new ItemStack(Material.LEATHER_HELMET, 1));
-                        Messaging.send(player, "You found a leather helmet!");
+                        player.sendMessage("You found a leather helmet!");
                         getCaught.getItemStack().setDurability((short) (Math.random() * 34));
                         break;
                     case 3:
                         getCaught.setItemStack(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-                        Messaging.send(player, "You found a leather chestplate!");
+                        player.sendMessage("You found a leather chestplate!");
                         getCaught.getItemStack().setDurability((short) (Math.random() * 49));
                         break;
                     case 4:
                         getCaught.setItemStack(new ItemStack(Material.GOLDEN_APPLE, 1));
-                        Messaging.send(player, "You found a golden apple, woo!");
+                        player.sendMessage("You found a golden apple, woo!");
                         break;
                     case 5:
                         getCaught.setItemStack(new ItemStack(Material.APPLE, 1));
-                        Messaging.send(player, "You found an apple!");
+                        player.sendMessage("You found an apple!");
                         break;
                     case 6:
                         getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                        Messaging.send(player, "You found 2 Fish!");
+                        player.sendMessage("You found 2 Fish!");
                         break;
                     case 7:
                         getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
-                        Messaging.send(player, "You found 1 Fish!");
+                        player.sendMessage("You found 1 Fish!");
                         break;
                     }
                 } else {
                     switch(Util.nextInt(2)){
                     case 0: 
                         getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                        Messaging.send(player, "You found 2 Fishes!");
+                        player.sendMessage("You found 2 Fishes!");
                         break;
                     case 1: 
                         getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
-                        Messaging.send(player, "You found 1 Fish!");
+                        player.sendMessage("You found 1 Fish!");
                         break;
                     }
                 }   

@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Bukkit;
@@ -78,7 +77,7 @@ public class SkillTaunt extends ActiveSkill {
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was taunted by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer taunted!").replace("%target%", "$1").replace("%hero%", "$2");
-        tauntText = SkillConfigManager.getRaw(this, "taunt-text", "%hero% is taunting you!").replace("%hero%", "$1");
+        tauntText = SkillConfigManager.getRaw(this, "taunt-text", "%hero% is taunting you!");
     }
 
     @Override
@@ -165,7 +164,7 @@ public class SkillTaunt extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            Messaging.send(player, tauntText, ChatColor.BOLD + applier.getName() + ChatColor.RESET);
+            player.sendMessage(tauntText.replace("%hero%",ChatColor.BOLD + applier.getName() + ChatColor.RESET));
         }
 
         @Override

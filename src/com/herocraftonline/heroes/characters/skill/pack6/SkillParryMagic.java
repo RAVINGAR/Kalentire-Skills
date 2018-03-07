@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 
 public class SkillParryMagic extends ActiveSkill {
@@ -45,16 +44,16 @@ public class SkillParryMagic extends ActiveSkill {
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% raised their guard!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lowered their guard!");
         node.set("parry-text", "%hero% parried an attack!");
-        //node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
+        node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% raised their guard!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lowered their guard!").replace("%hero%", "$1");
-        //parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.").replace("$1","%hero$").replace("$2","%target%").replace("$3","%skill");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% raised their guard!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lowered their guard!");
+        parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.");
     }
 
     @Override
@@ -111,10 +110,10 @@ public class SkillParryMagic extends ActiveSkill {
             if (hero.hasEffect(getName())) {
                 hero.getEffect(getName()).removeFromHero(hero);
                 event.setCancelled(true);
-                String message = Messaging.parameterizeMessage(parrySkillText, player.getName(), CustomNameManager.getName(event.getDamager()), event.getSkill().getName());
-                Messaging.send(player, message);
+                String message = (parrySkillText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(event.getDamager())).replace("%skill%", event.getSkill().getName()));
+                player.sendMessage(message);
                 if (event.getDamager() instanceof Hero) {
-                    Messaging.send(((Hero) event.getDamager()).getPlayer(), message);
+                    ((Hero) event.getDamager()).getPlayer().sendMessage(message);
                 }
 
             }

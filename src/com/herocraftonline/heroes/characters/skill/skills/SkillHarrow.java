@@ -18,7 +18,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHarrow extends TargettedSkill {
@@ -73,7 +72,7 @@ public class SkillHarrow extends TargettedSkill {
         Player player = hero.getPlayer();
 
         if (target.getLocation().getDirection().dot(hero.getPlayer().getLocation().getDirection()) <= 0) {
-            Messaging.send(hero.getPlayer(), notBehindPlayerText);
+            hero.getPlayer().sendMessage(notBehindPlayerText);
             return SkillResult.FAIL;
         }
 

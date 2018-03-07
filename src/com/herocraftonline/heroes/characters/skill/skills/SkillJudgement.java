@@ -1,7 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.MovingParticle;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -114,8 +114,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
             LivingEntity target = (LivingEntity) e;
             CharacterTemplate targAle = plugin.getCharacterManager().getCharacter(target);
             HashSet<JudgementEvent> relevantEvents = new HashSet<JudgementEvent>();
-            boolean isAlly = (target instanceof Player ? (ap.hasParty() && ap.getParty().getMembers().contains(
-                    plugin.getCharacterManager().getHero((Player) target))) : false);
+            boolean isAlly = (target instanceof Player && (ap.hasParty() && ap.getParty().getMembers().contains(plugin.getCharacterManager().getHero((Player) target))));
             HashMap<JudgementEvent, Long> newJudgedEvents = new HashMap<JudgementEvent, Long>(); // incidental cleanup
             for (Map.Entry<JudgementEvent, Long> entry : judgedEvents.entrySet()) {
                 if (entry.getValue() >= System.currentTimeMillis() - judgementPeriod) {
@@ -125,7 +124,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
             }
             judgedEvents = newJudgedEvents;
             if (relevantEvents.isEmpty()) {
-                if (target instanceof Player) Messaging.sendSkillMessage((Player) target, "You are not judged, for you have taken no action.");
+                if (target instanceof Player) target.sendMessage(ChatComponents.GENERIC_SKILL + "You are not judged, for you have taken no action.");
                 continue;
             }
             double damagedByTarget = 0.0D;
@@ -150,7 +149,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 1.0F, 2.0F);
             if (isAlly)
             {
-                Messaging.sendSkillMessage((Player) target, "The divines heal a portion of your injuries.");
+                target.sendMessage(ChatComponents.GENERIC_SKILL + "The divines heal a portion of your injuries.");
                 new BukkitRunnable() {
                     int ticks = 0;
                     int maxTicks = 5;
@@ -163,7 +162,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
             }
             else {
                 target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0F, 0.5F);
-                if (target instanceof Player) Messaging.sendSkillMessage((Player) target, "Divine judgement has been passed upon you!");
+                if (target instanceof Player) target.sendMessage(ChatComponents.GENERIC_SKILL + "Divine judgement has been passed upon you!");
             }
         }
 

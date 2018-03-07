@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -94,31 +93,31 @@ public class SkillDeconstruct extends ActiveSkill {
                 if (end > itemList.size()) {
                     end = itemList.size();
                 }
-                Messaging.send(player, ChatColor.DARK_AQUA + "You can deconstruct these items at the level listed: ");
+                player.sendMessage(ChatColor.DARK_AQUA + "You can deconstruct these items at the level listed: ");
                 for (; start < end; start++) {
                     String name = itemList.get(start);
-                    Messaging.send(player, ChatColor.GOLD + name + ChatColor.GRAY + " - " + ChatColor.AQUA + SkillConfigManager.getUseSetting(hero, this, name + "." + SkillSetting.LEVEL.node(), 1, true));
+                    player.sendMessage(ChatColor.GOLD + name + ChatColor.GRAY + " - " + ChatColor.AQUA + SkillConfigManager.getUseSetting(hero, this, name + "." + SkillSetting.LEVEL.node(), 1, true));
                 }
 
                 return SkillResult.SKIP_POST_USAGE;
             } else if (args[0].toLowerCase().equals("info")) {
                 // Usage Checks if the player passed in arguments
                 if (args.length < 2) {
-                    Messaging.send(player, "Proper usage is /skill deconstruct info item");
+                    player.sendMessage("Proper usage is /skill deconstruct info item");
                     return SkillResult.FAIL;
                 } else if (!items.contains(args[1].toUpperCase())) {
-                    Messaging.send(player, "You can't deconstruct that item!");
+                    player.sendMessage("You can't deconstruct that item!");
                     return SkillResult.INVALID_TARGET_NO_MSG;
                 } else {
                     // Iterate over the deconstruct recipe and get all the items/amounts it turns into
-                    Messaging.send(player, args[1] + " deconstructs into the following items: ");
+                    player.sendMessage(args[1] + " deconstructs into the following items: ");
                     for (String s : SkillConfigManager.getUseSettingKeys(hero, this, args[1])) {
                         if (s.equals("min-durability") || s.equals(SkillSetting.LEVEL.node()) || s.equals(SkillSetting.EXP.node())) {
                             continue;
                         }
 
                         int amount = SkillConfigManager.getUseSetting(hero, this, args[1] + "." + s, 1, false);
-                        Messaging.send(player, s.toLowerCase().replace("_", " ") + ": " + amount);
+                        player.sendMessage(s.toLowerCase().replace("_", " ") + ": " + amount);
                     }
 
                     return SkillResult.SKIP_POST_USAGE;
@@ -130,14 +129,14 @@ public class SkillDeconstruct extends ActiveSkill {
                 }
             }
             if (item == null) {
-                Messaging.send(player, "Invalid item to deconstruct, or bad command!");
+                player.sendMessage("Invalid item to deconstruct, or bad command!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         } else {
             // if no args attempt to deconstruct item in hand
             item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             if (item == null || item.getType() == Material.AIR) {
-                Messaging.send(player, "Invalid item to deconstruct, or bad command!");
+                player.sendMessage("Invalid item to deconstruct, or bad command!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
             item = item.clone();
@@ -147,24 +146,24 @@ public class SkillDeconstruct extends ActiveSkill {
         Block block = player.getTargetBlock((HashSet<Material>) null, 3);
         Location expLoc = block.getLocation();
         if (SkillConfigManager.getUseSetting(hero, this, "require-workbench", true) && block.getType() != Material.WORKBENCH) {
-            Messaging.send(player, "You must have a workbench targetted to deconstruct an item!");
+            player.sendMessage("You must have a workbench targetted to deconstruct an item!");
             return SkillResult.FAIL;
         }
 
         if (item.getType() == Material.AIR) {
-            Messaging.send(player, "You must be holding the item you wish to deconstruct!");
+            player.sendMessage("You must be holding the item you wish to deconstruct!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         String matName = item.getType().name();
         if (!items.contains(matName)) {
-            Messaging.send(player, "You don't know how to deconstruct " + matName);
+            player.sendMessage("You don't know how to deconstruct " + matName);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int level = SkillConfigManager.getUseSetting(hero, this, matName + "." + SkillSetting.LEVEL, 1, true);
         if (level > hero.getHeroLevel(this)) {
-            Messaging.send(player, "You must be level " + level + " to deconstruct that item!");
+            player.sendMessage("You must be level " + level + " to deconstruct that item!");
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
         double minDurability = 0;
@@ -186,13 +185,13 @@ public class SkillDeconstruct extends ActiveSkill {
             }
         }
         if (slot == -1) {
-            Messaging.send(player, "That item does not have enough durability remaining!");
+            player.sendMessage("That item does not have enough durability remaining!");
             return SkillResult.FAIL;
         }
 
         Set<String> returned = SkillConfigManager.getUseSettingKeys(hero, this, matName);
         if (returned == null || returned.isEmpty()) {
-            Messaging.send(player, "There was an error attempting to deconstruct that item!");
+            player.sendMessage("There was an error attempting to deconstruct that item!");
             return SkillResult.FAIL;
         }
 
@@ -217,7 +216,7 @@ public class SkillDeconstruct extends ActiveSkill {
                 for (ItemStack leftOver : leftOvers.values()) {
                     player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
                 }
-                Messaging.send(player, "Items have been dropped at your feet!");
+                player.sendMessage("Items have been dropped at your feet!");
             }
         }
         int amount = player.getInventory().getContents()[slot].getAmount() - 1;

@@ -18,7 +18,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMurasame extends TargettedSkill {
@@ -63,13 +62,13 @@ public class SkillMurasame extends TargettedSkill {
         Player player = hero.getPlayer();
 
         if (!damageCheck(player, target)) {
-            Messaging.send(player, "You can't damage that target!");
+            player.sendMessage("You can't damage that target!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
-            Messaging.send(player, "You can't use Murasame with that weapon!");
+            player.sendMessage("You can't use Murasame with that weapon!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -87,7 +86,7 @@ public class SkillMurasame extends TargettedSkill {
                 NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
                 player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
             } else {
-                Messaging.send(player, "Your Katana doesn't have enough durability to use Murasame!");
+                player.sendMessage("Your Katana doesn't have enough durability to use Murasame!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }

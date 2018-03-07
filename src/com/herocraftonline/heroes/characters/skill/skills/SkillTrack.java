@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillTrack extends ActiveSkill {
@@ -64,11 +63,11 @@ public class SkillTrack extends ActiveSkill {
         Hero targetHero = plugin.getCharacterManager().getHero(target);
         int minTargetHeroLevel = SkillConfigManager.getUseSetting(hero, this, "target-min-combat-level", 10, false);
         if (targetHero.getTieredLevel(targetHero.getHeroClass()) < minTargetHeroLevel) {
-            Messaging.send(player, "$1 isn't powerful enough to be found...", target.getName());
+            player.sendMessage(target.getName() + " isn't powerful enough to be found...");
             return SkillResult.NORMAL;
         }
         if(!target.getWorld().equals(player.getWorld())) {
-        	Messaging.send(player, "$1 is in world: $2", target.getName(), target.getWorld().getName());
+        	player.sendMessage(target.getName() + " is in world: " + target.getWorld().getName());
         	return SkillResult.NORMAL;
         }
 
@@ -117,7 +116,7 @@ public class SkillTrack extends ActiveSkill {
             int y = location.getBlockY() + randomY;
             int z = location.getBlockZ() + randomZ;
 
-            Messaging.send(player, "Tracked $1: $2, $3, $4", target.getName(), x, y, z);
+            player.sendMessage("Tracked " + target.getName() + ": " + x + ", " + y + ", " + z);
         }
 
         @Override

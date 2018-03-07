@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -58,7 +57,7 @@ public class SkillPhase extends ActiveSkill {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
         if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < 1) {
-            Messaging.send(player, "The void prevents you from phasing!");
+            player.sendMessage("The void prevents you from phasing!");
             return SkillResult.FAIL;
         }
 
@@ -87,7 +86,7 @@ public class SkillPhase extends ActiveSkill {
             iter = new BlockIterator(player, distance);
         }
         catch (IllegalStateException e) {
-            Messaging.send(player, "There was an error getting your phase location!");
+            player.sendMessage("There was an error getting your phase location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         while (iter.hasNext()) {
@@ -132,7 +131,7 @@ public class SkillPhase extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "No location to phase to.");
+            player.sendMessage("No location to phase to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

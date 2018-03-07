@@ -41,7 +41,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SkillRecall extends ActiveSkill implements Listener {
@@ -118,7 +117,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
             // Ensure that we actually have meta data and at least three rows of available on the block
             if (loreData == null || loreData.isEmpty()) {
-                Messaging.send(player, "Not a Valid Runestone Object. Uses Value is not Valid.", player.getName());
+                player.sendMessage("Not a Valid Runestone Object. Uses Value is not Valid.");
                 return SkillResult.FAIL;
             }
 
@@ -140,7 +139,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             }
     
             if (!isValidUses(currentUsesString, player)) {
-                Messaging.send(player, "Runestone Contains Invalid Location Data.", player.getName());
+                player.sendMessage("Runestone Contains Invalid Location Data.");
                 return SkillResult.FAIL;
             }
 
@@ -152,7 +151,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
             // If it's empty, tell them to recharge it.
             if (uses == 0) {
-                Messaging.send(player, "Runestone is out of uses and needs to be recharged.");
+                player.sendMessage("Runestone is out of uses and needs to be recharged.");
                 return SkillResult.FAIL;
             }
 
@@ -243,7 +242,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         // DEFAULT RECALL FUNCTIONALITY
 
         if (hero.hasEffectType(EffectType.ROOT) || hero.hasEffectType(EffectType.STUN)) {
-            Messaging.send(player, "Teleport fizzled.");
+            player.sendMessage("Teleport fizzled.");
             return SkillResult.FAIL;
         }
 
@@ -290,7 +289,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
                     if (skillSettings != null && ("runestone".equals(skillSettings.getString("pending-teleport")) ||
                             "recall".equals(skillSettings.getString("pending-teleport")))) {
                         hero.setSkillSetting(thisSkill, "pending-teleport", "none");
-                        Messaging.send(player, "Teleport fizzled.");
+                        player.sendMessage("Teleport fizzled.");
                     }
                 }
             }
@@ -305,7 +304,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
         // Validate world checks
         if (isDisabledWorld(player.getWorld().getName(), SkillConfigManager.getUseSettingKeys(hero, this, "disabled-worlds"))) {
-            Messaging.send(player, "Magic has blocked your recall in this world");
+            player.sendMessage("Magic has blocked your recall in this world");
             return SkillResult.FAIL;
         }
 
@@ -319,7 +318,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             xyzyp = SkillMark.createLocationData(skillSettings);
         }
         catch (IllegalArgumentException e) {
-            Messaging.send(player, "Your recall location is improperly set!");
+            player.sendMessage("Your recall location is improperly set!");
             return SkillResult.SKIP_POST_USAGE;
         }
 
@@ -341,7 +340,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
                     // If the player can't build, no recall
                     if (!buildPerms) {
-                        Messaging.send(player, "You cannot Recall to a Town you have no access to!");
+                        player.sendMessage("You cannot Recall to a Town you have no access to!");
                         return SkillResult.FAIL;
                     }
                 }
@@ -355,7 +354,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         if (townships) {
             TownshipsUser user = UserManager.fromOfflinePlayer(player);
             if (!user.canBuild(teleportLocation)) {
-                Messaging.send(player, "You cannot Recall to a Region you have no access to!");
+                player.sendMessage("You cannot Recall to a Region you have no access to!");
                 return SkillResult.FAIL;
             }
         }
@@ -363,7 +362,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         // Validate WorldGuard
         if (worldguard) {
             if (!wgp.canBuild(player, teleportLocation)) {
-                Messaging.send(player, "You cannot Recall to a Region you have no access to!");
+                player.sendMessage("You cannot Recall to a Region you have no access to!");
                 return SkillResult.FAIL;
             }
         }
@@ -419,7 +418,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 SkillResult result = doTeleport(hero, teleportSettings, false);
                 if (!SkillResult.NORMAL.equals(result)) {
                     player.teleport(player.getWorld().getSpawnLocation());
-                    Messaging.send(player, "Teleport fizzled.");
+                    player.sendMessage("Teleport fizzled.");
                 }
             }
         }

@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFullHeal extends TargettedSkill {
@@ -87,7 +86,7 @@ public class SkillFullHeal extends TargettedSkill {
 
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!");
+            player.sendMessage("Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
         targetHero.heal(hrhEvent.getDelta());

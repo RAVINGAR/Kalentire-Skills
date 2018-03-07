@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -97,14 +96,14 @@ public class SkillOvergrowth extends ActiveSkill {
         } else if (mat == Material.BROWN_MUSHROOM) {
             tType = TreeType.BROWN_MUSHROOM;
         } else {
-            Messaging.send(player, "Target is not a sapling!");
+            player.sendMessage("Target is not a sapling!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         byte data = targetBlock.getData();
         targetBlock.setType(Material.AIR);
         if (!player.getWorld().generateTree(targetBlock.getLocation(), tType)) {
             targetBlock.setTypeIdAndData(mat.getId(), data, false);
-            Messaging.send(player, "The spell fizzled!");
+            player.sendMessage("The spell fizzled!");
             return SkillResult.FAIL;
         }
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);

@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillLayhands extends TargettedSkill {
 	
@@ -54,7 +53,7 @@ public class SkillLayhands extends TargettedSkill {
         HeroRegainHealthEvent event = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            Messaging.send(hero.getPlayer(), "Unable to heal the target at this time!");
+            hero.getPlayer().sendMessage("Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
 

@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -81,8 +80,8 @@ public class SkillBattlesong extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "You feel strength leave your body!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
     }
 
     @Override
@@ -158,7 +157,7 @@ public class SkillBattlesong extends ActiveSkill {
                 }.runTaskTimer(plugin, 1, 4);
             }
 
-            Messaging.send(player, "    " + applyText, player.getName());
+            player.sendMessage("    " + applyText.replace("%hero%", player.getName()));
         }
 
         @Override
@@ -167,7 +166,7 @@ public class SkillBattlesong extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, "    " + expireText, player.getName());
+            player.sendMessage("    " + expireText.replace("%hero%", player.getName()));
         }
 
         @Override

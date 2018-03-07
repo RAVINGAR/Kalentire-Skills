@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -64,7 +63,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
         String potionType = effect.getType().getName();
 
         if(isHero && hero.isInCombat() && SkillConfigManager.getRaw(this, potionType + "." + SkillSetting.NO_COMBAT_USE.node(), false)) {
-            Messaging.send(hero.getPlayer(), "You may not use " + potionType  + " Potions in combat!");
+            hero.getPlayer().sendMessage("You may not use " + potionType  + " Potions in combat!");
             return true; // Self explanatory
         }
 

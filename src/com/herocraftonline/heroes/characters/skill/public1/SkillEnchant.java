@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -80,7 +79,7 @@ public class SkillEnchant extends PassiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(event.getEnchanter());
             if (!hero.hasEffect(getName())) {
                 // Don't offer enchants to players that don't meet the requirements
-                Messaging.send(hero.getPlayer(), "You aren't an enchanter!");
+                hero.getPlayer().sendMessage("You aren't an enchanter!");
                 event.setCancelled(true);
                 return;
             }
@@ -89,7 +88,7 @@ public class SkillEnchant extends PassiveSkill {
                 hero.syncExperience(hc);
             } else {
                 // if for some reason we don't have an enchanting class also cancel the event
-                Messaging.send(hero.getPlayer(), "You aren't an enchanter!");
+                hero.getPlayer().sendMessage("You aren't an enchanter!");
                 event.setCancelled(true);
             }
         }
@@ -131,17 +130,17 @@ public class SkillEnchant extends PassiveSkill {
             event.setExpLevelCost(0);
             ItemStack reagent = getReagentCost(hero);
             if (!hasReagentCost(player, reagent)) {
-                Messaging.send(player, "You need $1 $2 to enchant an item!", reagent.getAmount(), reagent.getType().name().toLowerCase().replace("_", " "));
+                player.sendMessage("You need " + reagent.getAmount() + " " + reagent.getType().name().toLowerCase().replace("_", " ") + " to enchant an item!");
                 event.setCancelled(true);
             }
 
             if (xpCost == 0) {
-                Messaging.send(player, "Enchanting failed!");
+                player.sendMessage("Enchanting failed!");
                 event.setCancelled(true);
             } else {
                 xpCost *= Heroes.properties.enchantXPMultiplier;
                 if (hero.getExperience(enchanter) < xpCost) {
-                    Messaging.send(player, "You don't have enough experience to enchant that item!");
+                    player.sendMessage("You don't have enough experience to enchant that item!");
                     event.setCancelled(true);
                     return;
                 }

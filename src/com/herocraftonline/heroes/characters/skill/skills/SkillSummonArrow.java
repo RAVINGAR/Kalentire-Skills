@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -53,7 +52,7 @@ public class SkillSummonArrow extends ActiveSkill {
         HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.ARROW, amount));
         for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
             player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            Messaging.send(player, "Items have been dropped at your feet!");
+            player.sendMessage("Items have been dropped at your feet!");
         }
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.BLOCK_WOOD_HIT.value(), 0.8F, 0.2F);

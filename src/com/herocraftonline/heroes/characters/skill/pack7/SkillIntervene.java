@@ -27,7 +27,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIntervene extends TargettedSkill {
@@ -90,7 +89,7 @@ public class SkillIntervene extends TargettedSkill {
 
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
         if (targetHero.hasEffect("InterveneTarget")) {
-            Messaging.send(player, "You cannot intervene that target right now!");
+            player.sendMessage("You cannot intervene that target right now!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -63,7 +62,7 @@ public class SkillMindandBody extends ActiveSkill {
             }
         }
         else {
-            Messaging.send(player, "There is no effect impeding your movement!");
+            player.sendMessage("There is no effect impeding your movement!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         return SkillResult.NORMAL;

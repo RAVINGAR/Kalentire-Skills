@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDisarm extends TargettedSkill {
@@ -91,12 +90,12 @@ public class SkillDisarm extends TargettedSkill {
         Material heldItem = targetHero.getPlayer().getItemInHand().getType();
 
         if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
-            Messaging.send(player, "You cannot disarm that target!");
+            player.sendMessage("You cannot disarm that target!");
             return SkillResult.FAIL;
         }
 
         if (targetHero.hasEffectType(EffectType.DISARM)) {
-            Messaging.send(player, "%target% is already disarmed.");
+            player.sendMessage("Target is already disarmed.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         targetHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));

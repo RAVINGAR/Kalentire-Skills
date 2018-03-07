@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillProvoke extends TargettedSkill {
@@ -79,7 +78,7 @@ public class SkillProvoke extends TargettedSkill {
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was provoked by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer provoked!").replace("%target%", "$1").replace("%hero%", "$2");
-        provokeText = SkillConfigManager.getRaw(this, "provoke-text", "%hero% is provoking you!").replace("%hero%", "$1");
+        provokeText = SkillConfigManager.getRaw(this, "provoke-text", "%hero% is provoking you!");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -177,7 +176,7 @@ public class SkillProvoke extends TargettedSkill {
         private double outgoingDamageIncrease;
 
         public ProvokeEffect(Skill skill, Player applier, long period, long duration, double incomingDamageIncrease, double outgoingDamageIncrease) {
-            super(skill, "Provoked", applier, period, duration, applyText, expireText);
+            super(skill, "Provoked", applier, period, duration, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
 
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.HARMFUL);
@@ -190,7 +189,7 @@ public class SkillProvoke extends TargettedSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
 
-            Messaging.send(player, provokeText, ChatColor.BOLD + applier.getName() + ChatColor.RESET);
+            player.sendMessage(provokeText.replace("%hero%", ChatColor.BOLD + applier.getName() + ChatColor.RESET));
         }
 
         @Override

@@ -20,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMagicWard extends ActiveSkill {
@@ -89,7 +88,7 @@ public class SkillMagicWard extends ActiveSkill {
 
                 return SkillResult.NORMAL;
             default:
-                Messaging.send(player, "You must have a shield equipped to use this skill");
+                player.sendMessage("You must have a shield equipped to use this skill");
                 return SkillResult.FAIL;
         }
     }

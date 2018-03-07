@@ -39,7 +39,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.nms.versions.EntityUtil_v1_12_R1;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillPyromancy extends ActiveSkill implements Listener {
 
@@ -96,12 +95,12 @@ public class SkillPyromancy extends ActiveSkill implements Listener {
             effect = new PyromancySummonsEffect(this.plugin, this, hero);
         }
         if(!effect.canSummon()) {
-            Messaging.send(hero.getPlayer(), "You do not have the ability to control any more summons!", new Object[] {});
+            hero.getPlayer().sendMessage("You do not have the ability to control any more summons!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         } else {
             Blaze blaze = summonMinion(hero.getPlayer().getEyeLocation(), effect, hero.getPlayer());
             effect.registerSummons(blaze);
-            Messaging.send(hero.getPlayer(), "Summoned 1 blaze!", new Object[] {});
+            hero.getPlayer().sendMessage("Summoned 1 blaze!");
             return SkillResult.NORMAL;
         }
     }

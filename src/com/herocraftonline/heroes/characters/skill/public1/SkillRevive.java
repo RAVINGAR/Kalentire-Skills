@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRevive extends ActiveSkill {
@@ -51,25 +50,25 @@ public class SkillRevive extends ActiveSkill {
 
         String targetName = target.getName();
         if (!Util.deaths.containsKey(targetName)) {
-            Messaging.send(player, "$1 has not died recently.", targetName);
+            player.sendMessage(targetName + " has not died recently.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         Location deathLoc = Util.deaths.get(targetName);
         Location playerLoc = player.getLocation();
         if (!playerLoc.getWorld().equals(deathLoc.getWorld()) || playerLoc.distance(deathLoc) > 50.0) {
-            Messaging.send(player, "You are out of range.");
+            player.sendMessage("You are out of range.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         if (target.isDead()) {
-            Messaging.send(player, "$1 is still dead.", targetName);
+            player.sendMessage(targetName + " is still dead.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         Hero targetHero = plugin.getCharacterManager().getHero(target);
         if (!hero.hasParty() || !hero.getParty().isPartyMember(targetHero)) {
-            Messaging.send(player, "The person needs to be in your party to do that!");
+            player.sendMessage("The person needs to be in your party to do that!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

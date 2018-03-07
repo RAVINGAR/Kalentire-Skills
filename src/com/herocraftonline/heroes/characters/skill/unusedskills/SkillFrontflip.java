@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillFrontflip extends ActiveSkill {
 
@@ -67,7 +66,7 @@ public class SkillFrontflip extends ActiveSkill {
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
 
         if ((SkillConfigManager.getUseSetting(hero, this, "no-air-frontflip", true) && requiredMaterials.contains(belowMat)) || player.isInsideVehicle()) {
-            Messaging.send(player, "You can't frontflip while mid-air or from inside a vehicle!");
+            player.sendMessage("You can't frontflip while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
 

@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBoilBlood extends ActiveSkill {
@@ -105,7 +104,7 @@ public class SkillBoilBlood extends ActiveSkill {
         if (bloodUnionLevel < bloodUnionReq) {
 
             //Messaging.send(player, "You must have at least " + bloodUnionReq + " Blood Union to use this ability!", new Object[0]);
-            Messaging.send(player, "You must have at least " + bloodUnionReq + " Blood Union to use this ability!", new Object[0]);
+            player.sendMessage("You must have at least " + bloodUnionReq + " Blood Union to use this ability!");
             return SkillResult.FAIL;
         }
 

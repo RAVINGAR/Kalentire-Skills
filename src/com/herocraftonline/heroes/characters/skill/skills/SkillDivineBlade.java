@@ -1,6 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.util.Messaging;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
@@ -154,7 +154,7 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
             super.applyToHero(ap);
             final Player player = ap.getPlayer();
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, 1.0F, 0.5F);
-            Messaging.broadcastSkillMessage(ap.getPlayer(), ap.getName() + "'s blade is infused with holy power!");
+            broadcast(ap.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL + ap.getName() + "'s blade is infused with holy power!");
         }
 
         public void removeFromHero(Hero ap)
@@ -162,7 +162,7 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
             super.removeFromHero(ap);
             final Player player = ap.getPlayer();
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, 1.0F, 0.5F);
-            Messaging.broadcastSkillMessage(ap.getPlayer(), "Holy power fades from " + ap.getName() + "'s sword.");
+            broadcast(ap.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL +  "Holy power fades from " + ap.getName() + "'s sword.");
         }
     }
 
@@ -178,14 +178,14 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
             super.applyToHero(ap);
             final Player player = ap.getPlayer();
             player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) getDuration() / 50, 4, true, false));
-            Messaging.broadcastSkillMessage(ap.getPlayer(), ap.getName() + " is blinded!");
+            broadcast(ap.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL + ap.getName() + " is blinded!");
         }
 
         public void removeFromHero(Hero ap)
         {
             super.removeFromHero(ap);
             final Player player = ap.getPlayer();
-            Messaging.broadcastSkillMessage(ap.getPlayer(), ap.getName() + " is no longer blinded.");
+            broadcast(ap.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL + ap.getName() + " is no longer blinded.");
         }
     }
 }

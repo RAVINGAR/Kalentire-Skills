@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.MaterialUtil;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -83,16 +82,16 @@ public class SkillRepair extends ActiveSkill {
         Material reagent = getRequiredReagent(isType);
 
         if (level == -1 || reagent == null) {
-            Messaging.send(player, "You are not holding a repairable tool.");
+            player.sendMessage("You are not holding a repairable tool.");
             return SkillResult.FAIL;
         }
 
         if (hero.getHeroLevel(this) < level) {
-            Messaging.send(player, "You must be level $1 to repair $2", level, MaterialUtil.getFriendlyName(isType));
+            player.sendMessage("You must be level " + level + " to repair " + MaterialUtil.getFriendlyName(isType));
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
         if (is.getDurability() == 0) {
-            Messaging.send(player, "That item is already at full durability!");
+            player.sendMessage("That item is already at full durability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         ItemStack reagentStack = new ItemStack(reagent, getRepairCost(is));

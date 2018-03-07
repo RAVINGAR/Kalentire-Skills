@@ -1,7 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -88,7 +88,7 @@ public class SkillSoulreaper extends ActiveSkill {
         final Location sickle = player.getEyeLocation().clone();
 
         final Vector directionVector = sickle.getDirection().normalize().divide(new Vector(20, 20, 20));
-        Messaging.sendSkillMessage(player, directionVector.getX() + " / " + directionVector.getY() + " / " + directionVector.getZ());
+        player.sendMessage(ChatComponents.GENERIC_SKILL + directionVector.getX() + " / " + directionVector.getY() + " / " + directionVector.getZ());
 
         new BukkitRunnable() {
             double distTraveled = 0.0D;
@@ -111,7 +111,7 @@ public class SkillSoulreaper extends ActiveSkill {
                                     .isSolid()) maxRange = true;
                 } else {
                     ticks++;
-                    Messaging.sendSkillMessage(player, ticks + "");
+                    player.sendMessage(ChatComponents.GENERIC_SKILL + ticks);
                     if (ticks >= tickDuration) cancel();
                 }
 

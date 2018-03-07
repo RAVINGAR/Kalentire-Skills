@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillHellgate extends ActiveSkill {
 
@@ -85,7 +84,7 @@ public class SkillHellgate extends ActiveSkill {
             }
             // If world is still null then there is no world to teleport to
             if (world == null) {
-                Messaging.send(player, "No world to open a Hellgate into!");
+                player.sendMessage("No world to open a Hellgate into!");
                 return SkillResult.FAIL;
             }
 
@@ -114,8 +113,8 @@ public class SkillHellgate extends ActiveSkill {
                     continue;
                 }
                 if (castLocation.getWorld() != target.getWorld()) {
-                    Messaging.send(target, "You're in a different world than the caster!");
-                    Messaging.send(player,"The party member, "+target.getName()+", is in a different world than you are!");
+                    target.sendMessage("You're in a different world than the caster!");
+                    player.sendMessage("The party member, " + target.getName() + ", is in a different world than you are!");
                 } else {
                     if (castLocation.distanceSquared(target.getLocation()) > rangeSquared) {
                         continue;

@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -77,7 +76,7 @@ public class SkillAlacrity extends TargettedSkill {
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "AlacrityAgiIncreaseEffect", player, duration, AttributeType.DEXTERITY, agiIncrease, applyText, expireText);
         if(hero.hasEffect("AlacrityAgiIncreaseEffect")) {
             if(((AttributeIncreaseEffect) hero.getEffect("AlacrityAgiIncreaseEffect")).getDelta() > aEffect.getDelta()) {
-                Messaging.send(player, "Target has a more powerful effect already!");
+                player.sendMessage("Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }
         }

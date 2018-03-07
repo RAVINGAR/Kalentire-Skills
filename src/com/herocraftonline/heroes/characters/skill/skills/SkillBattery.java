@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -76,7 +75,7 @@ public class SkillBattery extends TargettedSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(hero.getPlayer(), "You need at least $1 mana to transfer.", transferAmount);
+            hero.getPlayer().sendMessage("You need at least " + transferAmount + " mana to transfer.");
 
             return new SkillResult(ResultType.LOW_MANA, false);
         }

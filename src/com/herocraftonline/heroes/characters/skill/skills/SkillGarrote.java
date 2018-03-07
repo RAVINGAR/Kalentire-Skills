@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillGarrote extends TargettedSkill {
@@ -59,7 +58,7 @@ public class SkillGarrote extends TargettedSkill {
         Player player = hero.getPlayer();
 
         if (NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType() != Material.STRING) {
-            Messaging.send(player, "You must be holding string to use this ability!");
+            player.sendMessage("You must be holding string to use this ability!");
             return SkillResult.FAIL;
         }
 

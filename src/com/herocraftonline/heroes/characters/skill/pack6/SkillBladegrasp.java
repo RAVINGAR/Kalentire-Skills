@@ -20,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 
 public class SkillBladegrasp extends ActiveSkill {
@@ -47,17 +46,17 @@ public class SkillBladegrasp extends ActiveSkill {
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% tightened their grip!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% loosened their grip!");
         node.set("parry-text", "%hero% parried an attack!");
-        //node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
+        node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% tightened his grip!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% loosened his grip!").replace("%hero%", "$1");
-        parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!").replace("%hero%", "$1");
-        //parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.").replace("$1","%hero$").replace("$2","%target%").replace("$3","%skill");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% tightened his grip!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% loosened his grip!");
+        parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!");
+        parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.");
     }
 
     @Override
@@ -115,10 +114,10 @@ public class SkillBladegrasp extends ActiveSkill {
             if (hero.hasEffect(getName())) {
                 hero.getEffect(getName()).removeFromHero(hero);
                 event.setCancelled(true);
-                String message = Messaging.parameterizeMessage(parryText, player.getName());
-                Messaging.send(player, message);
+                String message = parryText.replace("%hero%", player.getName());
+                player.sendMessage(message);
                 if (event.getDamager() instanceof Hero) {
-                    Messaging.send(((Hero) event.getDamager()).getPlayer(), message);
+                    ((Hero) event.getDamager()).getPlayer().sendMessage(message);
                 }
             }
         }
@@ -134,10 +133,10 @@ public class SkillBladegrasp extends ActiveSkill {
             if (hero.hasEffect(getName())) {
                 hero.getEffect(getName()).removeFromHero(hero);
                 event.setCancelled(true);
-                String message = Messaging.parameterizeMessage(parrySkillText, player.getName(), CustomNameManager.getName(event.getDamager()), event.getSkill().getName());
-                Messaging.send(player, message);
+                String message = (parrySkillText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(event.getDamager())).replace("%skill%", event.getSkill().getName()));
+                player.sendMessage(message);
                 if (event.getDamager() instanceof Hero) {
-                    Messaging.send(((Hero) event.getDamager()).getPlayer(), message);
+                    ((Hero) event.getDamager()).getPlayer().sendMessage(message);
                 }
 
             }

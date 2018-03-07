@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -77,7 +76,7 @@ public class SkillSplendor extends TargettedSkill {
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "SplendorChaIncreaseEffect", player, duration, AttributeType.CHARISMA, chaIncrease, applyText, expireText);
         if(hero.hasEffect("SplendorChaIncreaseEffect")) {
             if(((AttributeIncreaseEffect) hero.getEffect("SplendorChaIncreaseEffect")).getDelta() > aEffect.getDelta()) {
-                Messaging.send(player, "Target has a more powerful effect already!");
+                player.sendMessage("Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }
         }

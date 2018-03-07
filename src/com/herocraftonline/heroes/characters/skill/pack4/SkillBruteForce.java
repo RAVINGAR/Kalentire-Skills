@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -77,7 +76,7 @@ public class SkillBruteForce extends TargettedSkill {
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "BruteForceStrIncreaseEffect", player, duration, AttributeType.STRENGTH, strIncrease, applyText, expireText);
         if(hero.hasEffect("BruteForceStrIncreaseEffect")) {
             if(((AttributeIncreaseEffect) hero.getEffect("BruteForceStrIncreaseEffect")).getDelta() > aEffect.getDelta()) {
-                Messaging.send(player, "Target has a more powerful effect already!");
+                player.sendMessage("Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }
         }

@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -72,7 +71,7 @@ public class SkillMaim extends TargettedSkill {
 
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.weapons).contains(item.name())) {
-            Messaging.send(player, "You can't use Maim with that weapon!");
+            player.sendMessage("You can't use Maim with that weapon!");
             return SkillResult.FAIL;
         }
 

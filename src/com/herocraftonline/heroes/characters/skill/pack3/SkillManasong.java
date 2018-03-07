@@ -24,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillManasong extends ActiveSkill {
@@ -161,7 +160,7 @@ public class SkillManasong extends ActiveSkill {
             }
 
 
-            Messaging.send(player, applyText);
+            player.sendMessage(applyText);
         }
 
         @Override
@@ -170,7 +169,7 @@ public class SkillManasong extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, expireText);
+            player.sendMessage(expireText);
         }
 
         @Override
@@ -195,7 +194,7 @@ public class SkillManasong extends ActiveSkill {
                                     member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                                     if (member.isVerboseMana())
-                                        Messaging.send(player, ChatComponents.Bars.mana(member.getMana(), member.getMaxMana(), false));
+                                        player.sendMessage(ChatComponents.Bars.mana(member.getMana(), member.getMaxMana(), false));
                                 }
                             }
                         }
@@ -211,7 +210,7 @@ public class SkillManasong extends ActiveSkill {
                         player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
 
                         if (hero.isVerboseMana())
-                            Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
+                            player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
                     }
                 }
             }

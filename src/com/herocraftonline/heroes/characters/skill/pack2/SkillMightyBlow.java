@@ -15,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMightyBlow extends TargettedSkill {
@@ -57,7 +56,7 @@ public class SkillMightyBlow extends TargettedSkill {
 
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
-            Messaging.send(player, "You can't use Mighty Blow with that weapon!");
+            player.sendMessage("You can't use Mighty Blow with that weapon!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

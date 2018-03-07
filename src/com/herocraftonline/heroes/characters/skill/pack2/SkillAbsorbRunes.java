@@ -44,7 +44,6 @@ import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.runes.*;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.*;
@@ -144,7 +143,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         RuneQueue runeList = heroRunes.get(hero);
         if (runeList.isEmpty()) {
             String failText = SkillConfigManager.getUseSetting(hero, this, "fail-text-no-runes", ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + "You have no Runes to absorb!");
-            Messaging.send(player, failText);
+            player.sendMessage(failText);
             return SkillResult.FAIL;
         }
 
@@ -498,7 +497,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         // Show the player his the message
 
         //Messaging.send(hero.getPlayer(), currentRuneQueueStr, new Object[0]);
-        Messaging.send(hero.getPlayer(), currentRuneQueueStr);
+        hero.getPlayer().sendMessage(currentRuneQueueStr);
     }
 
     // Effect required for implementing an internal cooldown on rune application

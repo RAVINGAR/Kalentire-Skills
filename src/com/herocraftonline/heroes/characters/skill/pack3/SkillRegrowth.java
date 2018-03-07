@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillRegrowth extends TargettedSkill {
@@ -106,7 +105,7 @@ public class SkillRegrowth extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         if (target.getHealth() >= target.getMaxHealth()) {
-            Messaging.send(player, "Target is already at full health.");
+            player.sendMessage("Target is already at full health.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -124,7 +123,7 @@ public class SkillRegrowth extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!");
+            player.sendMessage("Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
         else

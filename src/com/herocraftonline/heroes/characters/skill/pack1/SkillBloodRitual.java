@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -59,7 +58,7 @@ public class SkillBloodRitual extends TargettedSkill {
 
         // Check to see if they are at full health
         if (targetHealth >= target.getMaxHealth()) {
-            Messaging.send(player, "Target is already at full health.");
+            player.sendMessage("Target is already at full health.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -73,7 +72,7 @@ public class SkillBloodRitual extends TargettedSkill {
 
         if (bloodUnionLevel < 1) {
             // Display No Blood Union Error Text
-            Messaging.send(player, "You must have at least 1 Blood Union to use this ability!");
+            player.sendMessage("You must have at least 1 Blood Union to use this ability!");
             return SkillResult.FAIL;
         }
 
@@ -89,7 +88,7 @@ public class SkillBloodRitual extends TargettedSkill {
         HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healAmount, this, hero);
         plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
-            Messaging.send(player, "Unable to heal the target at this time!");
+            player.sendMessage("Unable to heal the target at this time!");
             return SkillResult.CANCELLED;
         }
 

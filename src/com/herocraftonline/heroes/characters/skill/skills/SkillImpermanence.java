@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillImpermanence extends ActiveSkill {
 
@@ -54,7 +53,7 @@ public class SkillImpermanence extends ActiveSkill {
             broadcastExecuteText(hero);
             return SkillResult.NORMAL;
         } else  {
-            Messaging.send(hero.getPlayer(), "There is no effect impeding your movement!");
+            hero.getPlayer().sendMessage("There is no effect impeding your movement!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

@@ -30,7 +30,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillToxicblade extends ActiveSkill {
@@ -97,7 +96,7 @@ public class SkillToxicblade extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Messaging.send(hero.getPlayer(), "Your blade is no longer toxified!");
+            hero.getPlayer().sendMessage("Your blade is no longer toxified!");
         }
 
         public void setApplicationsLeft(int applicationsLeft) {

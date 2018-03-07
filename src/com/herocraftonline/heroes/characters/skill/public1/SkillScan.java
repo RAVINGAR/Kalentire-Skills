@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillScan extends TargettedSkill {
     private final Heroes plugin;
@@ -42,28 +41,12 @@ public class SkillScan extends TargettedSkill {
                 return SkillResult.FAIL;
             }
 
-            // Create the message variables
-            Object[] messageVariables = new Object[] {
-                    tHero.getPlayer().getName(),
-                    tHero.getHeroLevel(tHero.getHeroClass()),
-                    tHero.getHeroClass().getName(),
-                    (int) target.getHealth(),
-                    (int) target.getMaxHealth()
-            };
-
             // Send the message
-            Messaging.send(player, "$1 is a level $2 $3 and has $4 / $5 HP", messageVariables);
+            player.sendMessage(tHero.getPlayer().getName() + " is a level " + tHero.getHeroLevel(tHero.getHeroClass()) + " " + tHero.getHeroClass().getName() + " and has " + (int) target.getHealth() + " / " + (int) target.getMaxHealth() + " HP");
         }
         else {
-            // Create the message variables
-            Object[] messageVariables = new Object[] {
-                    CustomNameManager.getName(target),
-                    (int) target.getHealth(),
-                    (int) target.getMaxHealth()
-            };
-
             // Send the message
-            Messaging.send(player, "$1 has $2 / $3 HP", messageVariables);
+            player.sendMessage(CustomNameManager.getName(target) + " has " + (int) target.getHealth() + " / " + (int) target.getMaxHealth() + " HP");
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);

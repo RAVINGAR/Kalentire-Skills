@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlash extends ActiveSkill {
@@ -59,7 +58,7 @@ public class SkillFlash extends ActiveSkill {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
         if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < 1) {
-            Messaging.send(player, "The void prevents you from flashing!");
+            player.sendMessage("The void prevents you from flashing!");
             return SkillResult.FAIL;
         }
 
@@ -88,7 +87,7 @@ public class SkillFlash extends ActiveSkill {
             iter = new BlockIterator(player, distance);
         }
         catch (IllegalStateException e) {
-            Messaging.send(player, "There was an error getting your flash location!");
+            player.sendMessage("There was an error getting your flash location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         while (iter.hasNext()) {
@@ -132,7 +131,7 @@ public class SkillFlash extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "No location to flash to.");
+            player.sendMessage("No location to flash to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

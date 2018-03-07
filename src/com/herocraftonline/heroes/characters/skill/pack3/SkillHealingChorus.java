@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHealingChorus extends ActiveSkill {
@@ -70,8 +69,8 @@ public class SkillHealingChorus extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -152,7 +151,7 @@ public class SkillHealingChorus extends ActiveSkill {
                 }.runTaskTimer(plugin, 1, 4);
             }
 
-            Messaging.send(player, "    " + applyText, applier.getName());
+            player.sendMessage("    " + applyText.replace("%hero%", applier.getName()));
         }
 
         @Override
@@ -161,7 +160,7 @@ public class SkillHealingChorus extends ActiveSkill {
 
             Player player = hero.getPlayer();
 
-            Messaging.send(player, "    " + expireText, applier.getName());
+            player.sendMessage("    " + expireText.replace("%hero%", applier.getName()));
         }
 
         public void tickHero(Hero hero)

@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillManaShield extends ActiveSkill {
 
@@ -130,7 +129,7 @@ public class SkillManaShield extends ActiveSkill {
                     mana -= absorbamount;
                     hero.setMana(mana);
                     if (mana != 100 && hero.isVerboseMana()) {
-                        Messaging.send(player, ChatColor.BLUE + "MANA " + ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
+                        player.sendMessage(ChatColor.BLUE + "MANA " + ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
                     }
                 }
             }

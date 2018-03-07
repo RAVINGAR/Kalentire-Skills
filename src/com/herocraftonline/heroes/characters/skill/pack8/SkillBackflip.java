@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 //import com.herocraftonline.heroes.characters.skill.unusedskills.SkillShuriken;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -72,7 +71,7 @@ public class SkillBackflip extends ActiveSkill {
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
 
         if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && requiredMaterials.contains(belowMat)) || player.isInsideVehicle()) {
-            Messaging.send(player, "You can't backflip while mid-air or from inside a vehicle!");
+            player.sendMessage("You can't backflip while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
 

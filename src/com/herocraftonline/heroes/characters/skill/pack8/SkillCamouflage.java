@@ -26,7 +26,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillCamouflage extends ActiveSkill {
 
@@ -132,7 +131,7 @@ public class SkillCamouflage extends ActiveSkill {
         }
 
         if (!inSnow && !inNature) {
-            Messaging.send(player, failText);
+            player.sendMessage(failText);
             return SkillResult.FAIL;
         }
 

@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -163,7 +162,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
                         iter = new BlockIterator(target.getWorld(), targetLoc.toVector(), direction, 0, blocksBehindTarget);
                     }
                     catch (IllegalStateException e) {
-                        Messaging.send(player, "There was an error getting the Shadowblade location!");
+                        player.sendMessage("There was an error getting the ShadowEdge location!");
                         return;
                     }
 
@@ -171,7 +170,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
                     Block b;
                     while (iter.hasNext()) {
                         b = iter.next();
-                        //Messaging.send(player, "Looping through blocks. Current Block: " + b.getType().toString());      // DEBUG
+                        //player.sendMessage("Looping through blocks. Current Block: " + b.getType().toString());      // DEBUG
 
                         // Validate blocks near destination
                         if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {

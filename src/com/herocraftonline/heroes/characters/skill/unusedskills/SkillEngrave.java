@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -78,19 +77,19 @@ public class SkillEngrave extends ActiveSkill {
         Player player = hero.getPlayer();
 
         if (text.length == 0) {
-            Messaging.send(player, "/skill engrave <Text>");
+            player.sendMessage("/skill engrave <Text>");
             return SkillResult.CANCELLED;
         }
 
         if (NMSHandler.getInterface().getItemInMainHand(player.getInventory()) == null) {
-            Messaging.send(player, "You must be holding an item in order to use this skill.");
+            player.sendMessage("You must be holding an item in order to use this skill.");
             return SkillResult.CANCELLED;
         }
 
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         Material type = item.getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "possible-items", Util.weapons).contains(type.name())) {
-            Messaging.send(player, "You cannot engrave that item!");
+            player.sendMessage("You cannot engrave that item!");
             return SkillResult.FAIL;
         }
 
@@ -111,7 +110,7 @@ public class SkillEngrave extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "You failed to engrave that item!");
+            player.sendMessage("You failed to engrave that item!");
             return SkillResult.FAIL;
         }
     }

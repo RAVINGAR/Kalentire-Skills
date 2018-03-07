@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 import java.util.*;
@@ -81,7 +80,7 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
         Material itemType = item.getType();
 
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.getType().name())) {
-            Messaging.send(hero.getPlayer(), "You cannot use this skill with that weapon!");
+            hero.getPlayer().sendMessage("You cannot use this skill with that weapon!");
             return SkillResult.FAIL;
         }
 

@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.EntityHuman;
@@ -176,7 +175,7 @@ public class SkillTelekinesis extends ActiveSkill {
                             jukeBox.setPlaying(heldItem);
                         }
                         else
-                            Messaging.send(player, "Hmm...nothing seemed to have happend.");
+                            player.sendMessage("Hmm... nothing seemed to have happened.");
                     }
                 }
                 else {
@@ -211,7 +210,7 @@ public class SkillTelekinesis extends ActiveSkill {
             }
         }
 
-        Messaging.send(player, "You cannot telekinetically interact with that object!");
+        player.sendMessage("You cannot telekinetically interact with that object!");
         return SkillResult.INVALID_TARGET_NO_MSG;
 
     }

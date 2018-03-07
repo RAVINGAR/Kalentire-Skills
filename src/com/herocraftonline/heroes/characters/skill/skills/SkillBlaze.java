@@ -18,7 +18,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillBlaze extends ActiveSkill {
     // This is for Firework Effects
@@ -73,7 +72,7 @@ public class SkillBlaze extends ActiveSkill {
         }
 
         if (!damaged) {
-            Messaging.send(player, "No targets in range!");
+            player.sendMessage("No targets in range!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

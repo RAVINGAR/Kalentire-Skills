@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -104,7 +103,7 @@ public class SkillBalance extends ActiveSkill {
         }
 
         if (Double.compare(maxHealthTotal, player.getMaxHealth()) == 0) {
-            Messaging.send(player, "There is nobody in range to balance with!");
+            player.sendMessage("There is nobody in range to balance with!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

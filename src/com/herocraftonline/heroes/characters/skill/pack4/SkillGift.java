@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -39,8 +38,7 @@ public class SkillGift extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        sendText = SkillConfigManager.getRaw(this, "send-text", "%hero% has sent you %amount% %item%").replace("%hero%", "$1")
-                .replace("%amount%", "$2").replace("%item%", "$3");
+        sendText = SkillConfigManager.getRaw(this, "send-text", "%hero% has sent you %amount% %item%");
     }
 
     @Override
@@ -53,7 +51,7 @@ public class SkillGift extends TargettedSkill {
         Player reciever = (Player) target;
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         if (item == null || item.getType() == Material.AIR) {
-            Messaging.send(player, "You need to have an item in your hotbar to send!");
+            player.sendMessage("You need to have an item in your hotbar to send!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         } else {
             item = item.clone();
@@ -72,12 +70,12 @@ public class SkillGift extends TargettedSkill {
             try {
                 amount = Integer.parseInt(args[2]);
             } catch (NumberFormatException e) {
-                Messaging.send(player, "That's not an amount!");
-                Messaging.send(player, getUsage());
+                player.sendMessage("That's not an amount!");
+                player.sendMessage(getUsage());
                 return SkillResult.FAIL;
             }
             if (amount > maxAmount) {
-                Messaging.send(player, "You can only send up to $1 at a time", maxAmount);
+                player.sendMessage("You can only send up to " + maxAmount + " at a time");
                 return SkillResult.FAIL;
             }
             item.setAmount(amount);
@@ -87,18 +85,18 @@ public class SkillGift extends TargettedSkill {
 
 
         if(NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getAmount() < item.getAmount()) {
-            Messaging.send(player, "You aren't holding enough to send that amount!");
+            player.sendMessage("You aren't holding enough to send that amount!");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
 
         player.getInventory().removeItem(item);
         Map<Integer, ItemStack> leftOvers = reciever.getInventory().addItem(item);
-        Messaging.send(reciever, sendText, player.getName(), amount, item.getType().name().toLowerCase().replace("_", " "));
+        reciever.sendMessage(sendText.replace("%hero%", player.getName()).replace("%amount%", "" + amount).replace("%item%", item.getType().name().toLowerCase().replace("_", " ")));
         if (!leftOvers.isEmpty()) {
             for (ItemStack leftOver : leftOvers.values()) {
                 reciever.getWorld().dropItem(reciever.getLocation(), leftOver);
             }
-            Messaging.send(reciever, "Some items fall at your feet!");
+            reciever.sendMessage("Some items fall at your feet!");
         }
 
         broadcastExecuteText(hero, target);

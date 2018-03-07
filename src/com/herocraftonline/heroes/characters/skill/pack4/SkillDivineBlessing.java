@@ -18,7 +18,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillDivineBlessing extends ActiveSkill {
 
@@ -115,7 +114,7 @@ public class SkillDivineBlessing extends ActiveSkill {
 			HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healing, this, hero);
 			plugin.getServer().getPluginManager().callEvent(hrhEvent);
 			if (hrhEvent.isCancelled()) {
-				Messaging.send(player, "Unable to heal the target at this time!");
+				player.sendMessage("Unable to heal the target at this time!");
 				return SkillResult.CANCELLED;
 			}
 
@@ -134,7 +133,7 @@ public class SkillDivineBlessing extends ActiveSkill {
 					HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, this, hero);
 					plugin.getServer().getPluginManager().callEvent(hrhEvent);
 					if (hrhEvent.isCancelled()) {
-						Messaging.send(player, "Unable to heal the target at this time!");
+						player.sendMessage("Unable to heal the target at this time!");
 						return SkillResult.CANCELLED;
 					}
 

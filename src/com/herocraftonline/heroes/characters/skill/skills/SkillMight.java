@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMight extends ActiveSkill {
@@ -82,7 +81,7 @@ public class SkillMight extends ActiveSkill {
         if (!hero.hasParty()) {
             if (hero.hasEffect("Might")) {
                 if (((MightEffect) hero.getEffect("Might")).getDamageBonus() > mEffect.getDamageBonus()) {
-                    Messaging.send(player, "You have a more powerful effect already!");
+                    player.sendMessage("You have a more powerful effect already!");
                 }
             }
             hero.addEffect(mEffect);
@@ -147,7 +146,7 @@ public class SkillMight extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            Messaging.send(player, applyText);
+            player.sendMessage(applyText);
         }
 
         public double getDamageBonus() {
@@ -158,7 +157,7 @@ public class SkillMight extends ActiveSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            Messaging.send(player, expireText);
+            player.sendMessage(expireText);
         }
     }
 

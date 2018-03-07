@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillCauterize extends TargettedSkill {
 
@@ -48,7 +47,7 @@ public class SkillCauterize extends TargettedSkill {
         }
 
         if (possibleEffects.isEmpty() && targetPlayer.getFireTicks() < 1) {
-            Messaging.send(player, "Your target has nothing to Cauterize!");
+            player.sendMessage("Your target has nothing to Cauterize!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

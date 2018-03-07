@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -156,7 +155,6 @@ public class SkillLullaby extends ActiveSkill
 	{
 		private final String applyText;
 		private final String expireText;
-		private final Player applier;
 		private final long duration;
 
 		private Location loc;
@@ -188,7 +186,7 @@ public class SkillLullaby extends ActiveSkill
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) duration / 50, 3)); // This actually makes the effects last roughly 5 minutes but they're removed after the effect wears off.
 			player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) duration / 50, 3));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, (int) duration / 50, 3));
-			Messaging.send(player, applyText);
+			player.sendMessage(applyText);
 		}
 
 		@Override
@@ -199,7 +197,7 @@ public class SkillLullaby extends ActiveSkill
 			if (player.hasPotionEffect(PotionEffectType.BLINDNESS)) player.removePotionEffect(PotionEffectType.BLINDNESS);
 			if (player.hasPotionEffect(PotionEffectType.CONFUSION)) player.removePotionEffect(PotionEffectType.CONFUSION);
 			if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-			Messaging.send(player, expireText);
+			player.sendMessage(expireText);
 		}
 
 		public void tickHero(Hero hero)

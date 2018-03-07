@@ -6,7 +6,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -81,13 +81,13 @@ public class SkillSear extends TargettedSkill
 		public void applyToHero(Hero hero)
 		{
 			super.applyToHero(hero);
-			Messaging.send(hero.getPlayer(), "§7[§2Skill§7] You have been §fSeared§7 by §f" + applyH.getName() + "§7!");
+			hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY +"] You have been §fSeared" + ChatColor.GRAY + " by " + ChatColor.WHITE + applyH.getName() + ChatColor.GRAY + "!");
 		}
-		
+
 		public void removeFromHero(Hero hero)
 		{
 			super.removeFromHero(hero);
-			Messaging.send(hero.getPlayer(), "§7[§2Skill§7] You are no longer seared.");
+			hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are no longer seared.");
 		}
 		
 		public void tickHero(Hero hero)

@@ -8,7 +8,7 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Messaging;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -156,14 +156,14 @@ public class SkillHealingSpring extends ActiveSkill
 				}.runTaskTimer(plugin, 0, 20);
 			}
 
-			Messaging.send(player, " §f" + plugin.getCharacterManager().getHero(applier).getName() + "§7's §fHealing Spring§7 soothes your injuries.");
+			player.sendMessage(" " + ChatColor.WHITE + plugin.getCharacterManager().getHero(applier).getName() + ChatColor.GRAY + "'s " + ChatColor.WHITE + "Healing Spring" + ChatColor.GRAY + " soothes your injuries.");
 		}
 		
 		public void removeFromHero(Hero hero) 
 		{
 			super.removeFromHero(hero);
 			Player player = hero.getPlayer();
-			Messaging.send(player, " The Healing Spring has dried up.");
+			player.sendMessage(" The Healing Spring has dried up.");
 		}
 		
 		public void tickHero(Hero hero) 

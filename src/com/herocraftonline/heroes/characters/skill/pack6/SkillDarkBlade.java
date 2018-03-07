@@ -18,7 +18,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDarkBlade extends TargettedSkill {
@@ -89,7 +88,7 @@ public class SkillDarkBlade extends TargettedSkill {
             }
 
             if (tHero.isVerboseMana())
-                Messaging.send(player, ChatComponents.Bars.mana(tHero.getMana(), tHero.getMaxMana(), false));
+                player.sendMessage(ChatComponents.Bars.mana(tHero.getMana(), tHero.getMaxMana(), false));
         }
 
         HeroRegainManaEvent hrEvent = new HeroRegainManaEvent(hero, manaDrain, this);
@@ -98,7 +97,7 @@ public class SkillDarkBlade extends TargettedSkill {
             hero.setMana(hrEvent.getDelta() + hero.getMana());
 
             if (hero.isVerboseMana())
-                Messaging.send(player, ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
+                player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
         }
 
         player.getWorld().spigot().playEffect(target.getEyeLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 35, 16);

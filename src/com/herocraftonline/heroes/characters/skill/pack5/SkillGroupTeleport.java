@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillGroupTeleport extends ActiveSkill {
@@ -42,8 +41,8 @@ public class SkillGroupTeleport extends ActiveSkill {
                     continue;
                 }
                 if (partyHero.isInCombat()) {
-                    Messaging.send(player, ChatComponents.GENERIC_SKILL + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
-                    Messaging.send(partyPlayer, ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but you are in combat!");
+                    player.sendMessage(ChatComponents.GENERIC_SKILL + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
+                    partyPlayer.sendMessage(ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but you are in combat!");
                     continue;
                 }
                 
@@ -59,7 +58,7 @@ public class SkillGroupTeleport extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         
-        Messaging.send(player, "You must actually have party members to teleport them to you!");
+        player.sendMessage("You must actually have party members to teleport them to you!");
         
         return SkillResult.FAIL;
     }

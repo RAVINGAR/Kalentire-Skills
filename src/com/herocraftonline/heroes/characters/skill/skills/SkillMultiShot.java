@@ -28,7 +28,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMultiShot extends ActiveSkill {
@@ -100,7 +99,7 @@ public class SkillMultiShot extends ActiveSkill {
         }
 
         if (numHeldArrows == 0) {
-            Messaging.send(player, "You don't have any arrows!");
+            player.sendMessage("You don't have any arrows!");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
 
@@ -115,7 +114,7 @@ public class SkillMultiShot extends ActiveSkill {
             currentlyLoadedArrows = msEffect.getCurrentlyLoadedArrows();
 
             if (msEffect.getCurrentlyLoadedArrows() == msEffect.getMaxTotalArrows()) {
-                Messaging.send(player, "You've already loaded your maximum number of arrows!");
+                player.sendMessage("You've already loaded your maximum number of arrows!");
                 return SkillResult.FAIL;
             }
             else if (arrowIncrement + msEffect.getCurrentlyLoadedArrows() > msEffect.getMaxTotalArrows()) {
@@ -128,7 +127,7 @@ public class SkillMultiShot extends ActiveSkill {
 
         // If they don't have enough arrows, cancel.
         if (numHeldArrows < currentlyLoadedArrows + arrowIncrement) {
-            Messaging.send(player, "You don't have enough arrows to load!");
+            player.sendMessage("You don't have enough arrows to load!");
             return new SkillResult(ResultType.MISSING_REAGENT, false);
         }
 
@@ -379,7 +378,7 @@ public class SkillMultiShot extends ActiveSkill {
             Player player = hero.getPlayer();
 
             if (showExpireText)
-                Messaging.send(player, expireText);
+                player.sendMessage(expireText);
         }
 
         public int getCurrentlyLoadedArrows() {
@@ -392,7 +391,7 @@ public class SkillMultiShot extends ActiveSkill {
             else
                 this.currentlyLoadedArrows = maxTotalArrows;
 
-            Messaging.send(player, "MultiShot Arrows: " + this.currentlyLoadedArrows);
+            player.sendMessage("MultiShot Arrows: " + this.currentlyLoadedArrows);
         }
 
         public void removeArrows(int numArrows, Player player) {
@@ -401,7 +400,7 @@ public class SkillMultiShot extends ActiveSkill {
             else
                 this.currentlyLoadedArrows = 0;
 
-            Messaging.send(player, "MultiShot Arrows: " + this.currentlyLoadedArrows);
+            player.sendMessage("MultiShot Arrows: " + this.currentlyLoadedArrows);
         }
 
         public int getMaxTotalArrows() {

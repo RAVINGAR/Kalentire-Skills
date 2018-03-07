@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -100,7 +99,7 @@ public class SkillShieldReflect extends ActiveSkill {
             return SkillResult.NORMAL;
         }
         else {
-            Messaging.send(player, "You must have a shield equipped to use this skill");
+            player.sendMessage("You must have a shield equipped to use this skill");
             return SkillResult.FAIL;
         }
     }

@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -50,14 +49,14 @@ public class SkillDoomRitual extends ActiveSkill {
         int manaGain = SkillConfigManager.getUseSetting(hero, this, "mana-gain", 300, false);
 
         if (hero.getMana() >= hero.getMaxMana()) {
-            Messaging.send(player, "You are already at full mana.");
+            player.sendMessage("You are already at full mana.");
             return SkillResult.FAIL;
         }
 
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaGain, this);
         plugin.getServer().getPluginManager().callEvent(hrmEvent);
         if (hrmEvent.isCancelled()) {
-            Messaging.send(player, "You cannot regenerate mana right now!");
+            player.sendMessage("You cannot regenerate mana right now!");
             return SkillResult.CANCELLED;
         }
 
@@ -65,7 +64,7 @@ public class SkillDoomRitual extends ActiveSkill {
 
         hero.setMana(hrmEvent.getDelta() + hero.getMana());
         if (hero.isVerboseMana()) {
-            Messaging.send(hero.getPlayer(), ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+            hero.getPlayer().sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
         }
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_DEATH.value(), 0.4F, 1.0F);

@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 
 public class SkillAntidote extends TargettedSkill {
 
@@ -44,7 +43,7 @@ public class SkillAntidote extends TargettedSkill {
                 cured = true;
             }
             if (!cured) {
-                Messaging.send(player, "Your target is not poisoned!");
+                player.sendMessage("Your target is not poisoned!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             } else {
                 broadcastExecuteText(hero, target);

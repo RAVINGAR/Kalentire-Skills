@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillConviction extends ActiveSkill {
@@ -83,7 +82,7 @@ public class SkillConviction extends ActiveSkill {
         if (!hero.hasParty()) {
         	if (hero.hasEffect("Conviction")) {
                 if (((ConvictionEffect) hero.getEffect("Conviction")).getDamageModifier() < effect.getDamageModifier()) {
-                    Messaging.send(hero.getPlayer(), "You have a more powerful effect already!");
+                    hero.getPlayer().sendMessage("You have a more powerful effect already!");
                 } else {
                 	hero.addEffect(effect);
                 }
@@ -138,7 +137,7 @@ public class SkillConviction extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            Messaging.send(player, applyText);
+            player.sendMessage(applyText);
         }
 
         public double getDamageModifier() {
@@ -149,7 +148,7 @@ public class SkillConviction extends ActiveSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            Messaging.send(player, expireText);
+            player.sendMessage(expireText);
         }
     }
 

@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWisdom extends ActiveSkill {
@@ -84,7 +83,7 @@ public class SkillWisdom extends ActiveSkill {
         if (!hero.hasParty()) {
             if (hero.hasEffect("Wisdom")) {
                 if (((WisdomEffect) hero.getEffect("Wisdom")).getDelta() > mEffect.getDelta()) {
-                    Messaging.send(player, "You have a more powerful effect already!");
+                    player.sendMessage("You have a more powerful effect already!");
                     return SkillResult.CANCELLED;
                 }
             }
@@ -127,13 +126,13 @@ public class SkillWisdom extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Messaging.send(hero.getPlayer(), applyText);
+            hero.getPlayer().sendMessage(applyText);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            Messaging.send(hero.getPlayer(), expireText);
+            hero.getPlayer().sendMessage(expireText);
         }
     }
 }
