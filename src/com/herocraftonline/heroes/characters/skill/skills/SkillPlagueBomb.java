@@ -36,7 +36,7 @@ public class SkillPlagueBomb
   public SkillPlagueBomb(Heroes plugin)
   {
     super(plugin, "PlagueBomb");
-    setDescription("Throw out a fucking sheep that explodes!");
+    setDescription("Throw out a sheep that explodes!");
     setUsage("/skill plaguebomb");
     setArgumentRange(0, 0);
     setIdentifiers(new String[] { "skill plaguebomb" });
