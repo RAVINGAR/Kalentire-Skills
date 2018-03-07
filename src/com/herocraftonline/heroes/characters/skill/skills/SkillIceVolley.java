@@ -221,7 +221,7 @@ public class SkillIceVolley extends ActiveSkill {
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
                     player.sendMessage(shotText.replace("%hero%", player.getName()));
                 else
-                    broadcast(player.getLocation(), shotText, player.getName());
+                    broadcast(player.getLocation(), shotText.replace("%hero%", player.getName()));
             }
 
             // Create a multiplier that lowers velocity based on how high or low the player is looking

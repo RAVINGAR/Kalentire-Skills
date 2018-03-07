@@ -52,7 +52,7 @@ public class SkillFireArmor extends PassiveSkill {
     @Override
     public void init() {
         super.init();
-        igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% ignited %target% with firearmor!").replace("%hero%", "$1").replace("%target%", "$2");
+        igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% ignited %target% with firearmor!");
     }
 
     public class SkillDamageListener implements Listener {
@@ -98,7 +98,7 @@ public class SkillFireArmor extends PassiveSkill {
                 name = CustomNameManager.getName((LivingEntity) subEvent.getDamager());
             }
             
-            broadcast(player.getLocation(), igniteText, player.getName(), name);
+            broadcast(player.getLocation(), igniteText.replace("%hero%", player.getName()).replace("%target%", name));
         }
     }
 

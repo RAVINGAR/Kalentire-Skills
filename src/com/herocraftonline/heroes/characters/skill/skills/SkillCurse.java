@@ -28,6 +28,7 @@ import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillCurse extends TargettedSkill {
+
     private String applyText;
     private String expireText;
     private String missText;
@@ -41,17 +42,6 @@ public class SkillCurse extends TargettedSkill {
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", 0.5, false);
-
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedChance = Util.decFormat.format(chance * 100.0);
-
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedChance);
     }
 
     @Override
@@ -71,10 +61,21 @@ public class SkillCurse extends TargettedSkill {
     }
 
     @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", 0.5, false);
+
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        String formattedChance = Util.decFormat.format(chance * 100.0);
+
+        return getDescription().replace("$1", formattedDuration).replace("$2", formattedChance);
+    }
+
+    @Override
     public void init() {
         super.init();
 
-        missText = SkillConfigManager.getRaw(this, "miss-text", ChatComponents.GENERIC_SKILL + "%target% misses an attack!").replace("%target%", "$1");
+        missText = SkillConfigManager.getRaw(this, "miss-text", ChatComponents.GENERIC_SKILL + "%target% misses an attack!");
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cursed!").replace("%target%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has recovered from the curse!").replace("%target%", "$1");
     }
@@ -97,6 +98,25 @@ public class SkillCurse extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
+    public class CurseEffect extends ExpirableEffect {
+
+        private final double missChance;
+
+        public CurseEffect(Skill skill, Player applier, long duration, double missChance) {
+            super(skill, "Curse", applier, duration, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
+
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.MAGIC);
+
+            this.missChance = missChance;
+        }
+
+        public double getMissChance() {
+            return missChance;
+        }
+    }
+
     public class SkillEventListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST)
@@ -108,57 +128,12 @@ public class SkillCurse extends TargettedSkill {
             CharacterTemplate character = event.getDamager();
             if (character.hasEffect("Curse")) {
                 CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
-                if (Util.nextRand() < cEffect.missChance) {
+                if (cEffect != null && Util.nextRand() < cEffect.getMissChance()) {
                     event.setCancelled(true);
                     character.getEntity().getWorld().spigot().playEffect(character.getEntity().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
-                    broadcast(character.getEntity().getLocation(), missText, CustomNameManager.getName(character));
+                    broadcast(character.getEntity().getLocation(), missText.replace("%target%", CustomNameManager.getName(character)));
                 }
             }
-        }
-    }
-
-    public class CurseEffect extends ExpirableEffect {
-
-        private final double missChance;
-
-        public CurseEffect(Skill skill, Player applier, long duration, double missChance) {
-            super(skill, "Curse", applier, duration);
-
-            types.add(EffectType.HARMFUL);
-            types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.MAGIC);
-
-            this.missChance = missChance;
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster));
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
-        }
-
-        public double getMissChance() {
-            return missChance;
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
 }

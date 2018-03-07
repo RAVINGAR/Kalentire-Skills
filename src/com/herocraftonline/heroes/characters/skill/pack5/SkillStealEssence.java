@@ -48,7 +48,7 @@ public class SkillStealEssence extends TargettedSkill {
     public void init() {
         super.init();
 
-        this.setUseText(SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% used %skill% and stole %effect%from %target%!").replace("%hero%", "$1").replace("%skill%", "$2").replace("%effect%", "$3").replace("%target%", "$4"));
+        this.setUseText(SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% used %skill% and stole %effect%from %target%!"));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class SkillStealEssence extends TargettedSkill {
             stolenNames += stolenEffect.getName() + " ";
         }
 
-        broadcast(player.getLocation(), getUseText(), player.getName(), getName(), stolenNames, tHero.getPlayer().getName());
+        broadcast(player.getLocation(), getUseText().replace("%hero%", player.getName()).replace("%skill%", getName()).replace("%effect%", stolenNames).replace("%target%", tHero.getPlayer().getName()));
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BAT_LOOP.value(), 0.8F, 2.0F);
 

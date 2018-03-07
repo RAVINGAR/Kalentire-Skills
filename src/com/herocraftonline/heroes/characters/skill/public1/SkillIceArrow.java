@@ -31,11 +31,11 @@ public class SkillIceArrow extends ActiveSkill {
 
     public SkillIceArrow(Heroes plugin) {
         super(plugin, "IceArrow");
-        this.setDescription("Your arrows will freeze their target, but drain $1 mana per shot.");
-        this.setUsage("/skill iarrow");
-        this.setArgumentRange(0, 0);
-        this.setIdentifiers("skill iarrow", "skill icearrow");
-        this.setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCEABLE);
+        setDescription("Your arrows will freeze their target, but drain $1 mana per shot.");
+        setUsage("/skill iarrow");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill iarrow", "skill icearrow");
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCEABLE);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -54,9 +54,9 @@ public class SkillIceArrow extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        this.setUseText("%hero% imbues their arrows with ice!".replace("%hero%", "$1"));
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is slowed by %hero%s !").replace("%target%", "$1").replace("%hero%", "$2");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!").replace("%hero%", "$1");
+        setUseText("%hero% imbues their arrows with ice!".replace("%hero%", "$1"));
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!");
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SkillIceArrow extends ActiveSkill {
             return SkillResult.SKIP_POST_USAGE;
         }
         hero.addEffect(new IceArrowBuff(this));
-        this.broadcastExecuteText(hero);
+        broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 
@@ -74,15 +74,15 @@ public class SkillIceArrow extends ActiveSkill {
 
         public IceArrowBuff(Skill skill) {
             super(skill, "IceArrowBuff");
-            this.types.add(EffectType.ICE);
-            this.setDescription("ice arrow");
+            types.add(EffectType.ICE);
+            setDescription("ice arrow");
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
-            this.broadcast(player.getLocation(), SkillIceArrow.this.expireText, player.getDisplayName());
+            broadcast(player.getLocation(), expireText.replace("%hero%", player.getDisplayName()));
         }
     }
 
@@ -111,15 +111,14 @@ public class SkillIceArrow extends ActiveSkill {
             }
 
             final Player player = (Player) arrow.getShooter();
-            final Hero hero = SkillIceArrow.this.plugin.getCharacterManager().getHero(player);
+            final Hero hero = plugin.getCharacterManager().getHero(player);
 
             if (hero.hasEffect("IceArrowBuff")) {
-                final long duration = SkillConfigManager.getUseSetting(hero, this.skill, "duration", 5000, false);
-                final int amplifier = SkillConfigManager.getUseSetting(hero, this.skill, "speed-multiplier", 2, false);
-                final SlowEffect iceSlowEffect = new SlowEffect(this.skill, hero.getPlayer(), duration, amplifier, SkillIceArrow.this.applyText, "$1 is no longer slowed.");
+                final long duration = SkillConfigManager.getUseSetting(hero, skill, "duration", 5000, false);
+                final int amplifier = SkillConfigManager.getUseSetting(hero, skill, "speed-multiplier", 2, false);
+                final SlowEffect iceSlowEffect = new SlowEffect(skill, hero.getPlayer(), duration, amplifier, applyText, "$1 is no longer slowed."); //TODO Implicit broadcast() call - may need changes?
                 final LivingEntity target = (LivingEntity) event.getEntity();
-                SkillIceArrow.this.plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
-                SkillIceArrow.this.broadcast(target.getLocation(), SkillIceArrow.this.applyText, CustomNameManager.getName(target), player.getDisplayName());
+                plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
             }
         }
 
@@ -128,9 +127,9 @@ public class SkillIceArrow extends ActiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
-            final Hero hero = SkillIceArrow.this.plugin.getCharacterManager().getHero((Player) event.getEntity());
+            final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("IceArrowBuff")) {
-                final int mana = SkillConfigManager.getUseSetting(hero, this.skill, "mana-per-shot", 1, true);
+                final int mana = SkillConfigManager.getUseSetting(hero, skill, "mana-per-shot", 1, true);
                 if (hero.getMana() < mana) {
                     hero.removeEffect(hero.getEffect("IceArrowBuff"));
                 } else {
@@ -143,6 +142,6 @@ public class SkillIceArrow extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         final int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, false);
-        return this.getDescription().replace("$1", mana + "");
+        return getDescription().replace("$1", mana + "");
     }
 }

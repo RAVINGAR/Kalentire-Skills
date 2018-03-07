@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
@@ -56,7 +57,7 @@ public class SkillSear extends TargettedSkill
 		SearEffect sear = new SearEffect(plugin, this, duration, damage, p, h);
 		targCT.addEffect(sear);
 
-		broadcast(player.getLocation(), "§7[§2Skill§7] §f" + hero.getName() + " §7used §f" + this.getName() + " §7on §f" + target.getName() + "§7!" );
+		broadcast(player.getLocation(), ChatComponents.GENERIC_SKILL + ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!" );
 		return SkillResult.NORMAL;
 	}
 
@@ -81,13 +82,13 @@ public class SkillSear extends TargettedSkill
 		public void applyToHero(Hero hero)
 		{
 			super.applyToHero(hero);
-			hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY +"] You have been §fSeared" + ChatColor.GRAY + " by " + ChatColor.WHITE + applyH.getName() + ChatColor.GRAY + "!");
+			hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + "You have been " + ChatColor.WHITE + "Seared" + ChatColor.GRAY + " by " + ChatColor.WHITE + applyH.getName() + ChatColor.GRAY + "!");
 		}
 
 		public void removeFromHero(Hero hero)
 		{
 			super.removeFromHero(hero);
-			hero.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are no longer seared.");
+			hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL+ "You are no longer seared.");
 		}
 		
 		public void tickHero(Hero hero)

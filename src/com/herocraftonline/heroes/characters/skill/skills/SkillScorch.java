@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -56,7 +57,7 @@ public class SkillScorch extends TargettedSkill
 		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 25, 16);
 		target.getWorld().playSound(target.getEyeLocation(), Sound.BLOCK_FIRE_AMBIENT, 1.3F, 1.0F);
 
-		broadcast(player.getLocation(), " �f" + hero.getName() + " §7used §f" + this.getName() + " §7on §f" + target.getName() + "§7!" );
+		broadcast(player.getLocation(),ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + this.getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!" );
 		return SkillResult.NORMAL;
 	}
 

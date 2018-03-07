@@ -54,7 +54,7 @@ public class SkillWeb extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$1").replace("%target%", "$2");
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjured a web at %target%'s feet!").replace("%target%", "$1").replace("%hero%", "$2");
     }
 
     @Override
@@ -68,7 +68,6 @@ public class SkillWeb extends TargettedSkill {
             name = CustomNameManager.getName(target).toLowerCase();
         }
 
-        this.broadcast(player.getLocation(), this.applyText, player.getDisplayName(), name);
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         final WebEffect wEffect = new WebEffect(this, player, duration, target.getLocation().getBlock().getLocation());
         hero.addEffect(wEffect);
@@ -96,7 +95,7 @@ public class SkillWeb extends TargettedSkill {
         private final Location loc;
 
         public WebEffect(Skill skill, Player applier, long duration, Location location) {
-            super(skill, "Web", applier, duration);
+            super(skill, "Web", applier, duration, applyText, null); //TODO Implicit broadcast() call - may need changes?
             this.loc = location;
         }
 

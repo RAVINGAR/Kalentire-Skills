@@ -57,7 +57,7 @@ public class SkillDeconstruct extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        setUseText(SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "%hero% has deconstructed a %item%").replace("%hero%", "$1").replace("%item%", "$2"));
+        setUseText(SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "%hero% has deconstructed a %item%"));
     }
 
     @Override
@@ -232,7 +232,7 @@ public class SkillDeconstruct extends ActiveSkill {
         hero.gainExp(xp, ExperienceType.CRAFTING, expLoc);
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.BLOCK_ANVIL_USE.value() , 0.6F, 1.0F);
-        broadcast(player.getLocation(), getUseText(), player.getName(), matName.toLowerCase().replace("_", " "));
+        broadcast(player.getLocation(), getUseText().replace("%hero%", player.getName()).replace("%item%", matName.toLowerCase().replace("_", " ")));
         return SkillResult.NORMAL;
     }
 }

@@ -29,11 +29,11 @@ public class SkillPickPocket extends TargettedSkill {
 
     public SkillPickPocket(Heroes plugin) {
         super(plugin, "PickPocket");
-        this.setDescription("You attempt to steal an item from your target.");
-        this.setUsage("/skill pickpocket");
-        this.setArgumentRange(0, 0);
-        this.setIdentifiers("skill pickpocket", "skill ppocket", "skill pickp");
-        this.setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
+        setDescription("You attempt to steal an item from your target.");
+        setUsage("/skill pickpocket");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill pickpocket", "skill ppocket", "skill pickp");
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class SkillPickPocket extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        this.failMessage = SkillConfigManager.getRaw(this, "failure-message", "%hero% failed to steal from %target%!").replace("%hero%", "$1").replace("%target%", "$2");
-        this.noisySuccessMessage = SkillConfigManager.getRaw(this, "noisy-success-message", "%hero% stole %target%s %item%!").replace("%hero", "$1").replace("%target%", "$2").replace("%item%", "$3");
+        failMessage = SkillConfigManager.getRaw(this, "failure-message", "%hero% failed to steal from %target%!");
+        noisySuccessMessage = SkillConfigManager.getRaw(this, "noisy-success-message", "%hero% stole %target%'s %item%!");
     }
 
     @Override
@@ -70,7 +70,7 @@ public class SkillPickPocket extends TargettedSkill {
 
         if (Util.nextRand() >= chance) {
             if (Util.nextRand() >= chance) {
-                this.broadcast(player.getLocation(), this.failMessage, player.getDisplayName(), tPlayer.getDisplayName());
+                broadcast(player.getLocation(), failMessage.replace("%hero%", player.getDisplayName()).replace("%target%", tPlayer.getDisplayName()));
             }
             player.sendMessage(ChatColor.GRAY + "You failed to steal anything from " + tPlayer.getDisplayName());
             return SkillResult.NORMAL;
@@ -112,7 +112,7 @@ public class SkillPickPocket extends TargettedSkill {
         }
         player.updateInventory();
         if (Math.random() >= chance) {
-            this.broadcast(player.getLocation(), this.noisySuccessMessage, player.getDisplayName(), tPlayer.getDisplayName(), items[slot].getType().name().replace("_", " ").toLowerCase());
+            broadcast(player.getLocation(), noisySuccessMessage.replace("%hero%", player.getDisplayName()).replace("%target%", tPlayer.getDisplayName()).replace("%item%", items[slot].getType().name().replace("_", " ").toLowerCase()));
         }
 
         return SkillResult.NORMAL;
@@ -121,7 +121,7 @@ public class SkillPickPocket extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return this.getDescription();
+        return getDescription();
     }
 
 

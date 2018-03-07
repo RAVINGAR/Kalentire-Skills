@@ -23,8 +23,8 @@ public class SkillReborn extends PassiveSkill {
 
     public SkillReborn(Heroes plugin) {
         super(plugin, "Reborn");
-        this.setDescription("If you are about to die instead you regain $1% hp, can only trigger once every $2 seconds.");
-        this.setTypes(SkillType.DISABLE_COUNTERING, SkillType.ABILITY_PROPERTY_DARK);
+        setDescription("If you are about to die instead you regain $1% hp, can only trigger once every $2 seconds.");
+        setTypes(SkillType.DISABLE_COUNTERING, SkillType.ABILITY_PROPERTY_DARK);
         Bukkit.getServer().getPluginManager().registerEvents(new RebornListener(this), plugin);
     }
 
@@ -43,14 +43,14 @@ public class SkillReborn extends PassiveSkill {
     public String getDescription(Hero hero) {
         final double health = ((SkillConfigManager.getUseSetting(hero, this, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, this, "health-increase", 0.0, false) * hero.getHeroLevel(this))) * 100);
         final int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel(this));
-        final String description = this.getDescription().replace("$1", health + "").replace("$2", cooldown + "");
+        final String description = getDescription().replace("$1", health + "").replace("$2", cooldown + "");
         return description;
     }
 
     @Override
     public void init() {
         super.init();
-        this.rebornText = SkillConfigManager.getUseSetting(null, this, "on-reborn-text", "%hero% is saved from death, but weakened!").replace("%hero%", "$1");
+        rebornText = SkillConfigManager.getUseSetting(null, this, "on-reborn-text", "%hero% is saved from death, but weakened!");
     }
 
     public class RebornListener implements Listener {
@@ -67,25 +67,25 @@ public class SkillReborn extends PassiveSkill {
                 return;
             }
             final Player player = (Player) event.getEntity();
-            final Hero hero = SkillReborn.this.plugin.getCharacterManager().getHero(player);
+            final Hero hero = plugin.getCharacterManager().getHero(player);
             final double currentHealth = player.getHealth();
             if (currentHealth > event.getDamage()) {
                 return;
             }
             if (hero.hasEffect("Reborn")) {
                 if ((hero.getCooldown("Reborn") == null) || (hero.getCooldown("Reborn") <= System.currentTimeMillis())) {
-                    final double regainPercent = SkillConfigManager.getUseSetting(hero, this.skill, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, this.skill, "health-increase", 0.0, false) * hero.getHeroLevel(this.skill));
+                    final double regainPercent = SkillConfigManager.getUseSetting(hero, skill, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, skill, "health-increase", 0.0, false) * hero.getHeroLevel(skill));
                     final double healthRegain = (player.getMaxHealth() * regainPercent);
-                    final HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, this.skill, hero);
+                    final HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healthRegain, skill, hero);
                     if (hrh.isCancelled() || (hrh.getDelta() == 0)) {
                         return;
                     }
                     event.setDamage(0);
                     event.setCancelled(true);
                     hero.heal(hrh.getDelta());
-                    final long cooldown = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel());
+                    final long cooldown = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel());
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());
-                    SkillReborn.this.broadcast(player.getLocation(), SkillReborn.this.rebornText, player.getDisplayName());
+                    broadcast(player.getLocation(), rebornText.replace("%hero%", player.getDisplayName()));
                     player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
                 }
             }

@@ -132,7 +132,7 @@ public class SkillFlashFreeze
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 1.5, 0), Effect.TILE_BREAK, Material.PACKED_ICE.getId(), 0, 1.0F, 1.5F, 1.0F, 0.0F, 150, 16);
         target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 3.0F, 1.0F);
 
-        broadcast(player.getLocation(), "§f" + hero.getName() + " §7used §f" + this.getName() + " §7on §f" + target.getName() + "§7!");
+        broadcast(player.getLocation(), ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + this.getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!");
         return SkillResult.NORMAL;
     }
 

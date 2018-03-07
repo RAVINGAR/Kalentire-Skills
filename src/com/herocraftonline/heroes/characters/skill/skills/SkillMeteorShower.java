@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -152,9 +153,8 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 			}
 		}.runTaskTimer(plugin, 1, 5);
 
-		broadcast(player.getLocation(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] "
-				+ ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " causes a " + ChatColor.WHITE + "Meteor Shower"
-				+ ChatColor.GRAY + "!");
+		broadcast(player.getLocation(), ChatComponents.GENERIC_SKILL + ChatColor.WHITE + hero.getName()
+				+ ChatColor.GRAY + " causes a " + ChatColor.WHITE + "Meteor Shower" + ChatColor.GRAY + "!");
 
 		return SkillResult.NORMAL;
 	}

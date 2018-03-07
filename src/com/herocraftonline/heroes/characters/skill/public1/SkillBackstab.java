@@ -88,7 +88,7 @@ public class SkillBackstab extends ActiveSkill {
 
     public void init() {
         super.init();
-        backstabText = SkillConfigManager.getRaw(this, "backstab-text", "").replace("%hero%", "$1").replace("%target%", "$2");
+        backstabText = SkillConfigManager.getRaw(this, "backstab-text", "");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -191,9 +191,9 @@ public class SkillBackstab extends ActiveSkill {
                     target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
                     target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_ENDERDRAGON_HURT.value(), 1.0F, 0.6F);
                     if (target instanceof Monster)
-                        broadcast(player.getLocation(), backstabText, player.getName(), CustomNameManager.getName((Monster) target));
+                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
                     else if (target instanceof Player)
-                        broadcast(player.getLocation(), backstabText, player.getName(), ((Player) target).getName());
+                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", target.getName()));
                 }
             }
         }

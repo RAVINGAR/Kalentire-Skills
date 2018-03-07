@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
@@ -206,9 +207,7 @@ public class SkillFlare extends ActiveSkill
 			}
 		}.runTaskTimer(plugin, 1, boltInterval);
 
-		broadcast(player.getLocation(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN
-				+ "Skill" + ChatColor.GRAY + "] " + ChatColor.WHITE + hero.getName() + ChatColor.GRAY +
-				" unleashes a Flare!");
+		broadcast(player.getLocation(), ChatComponents.GENERIC_SKILL + ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " unleashes a Flare!");
 
 		return SkillResult.NORMAL;
 	}

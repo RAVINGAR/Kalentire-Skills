@@ -56,7 +56,7 @@ public class SkillReborn extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        rebornText = SkillConfigManager.getUseSetting(null, this, "on-reborn-text", "%hero% is saved from death, but weakened!").replace("%hero%", "$1");
+        rebornText = SkillConfigManager.getUseSetting(null, this, "on-reborn-text", "%hero% is saved from death, but weakened!");
     }
     
     @Override
@@ -125,7 +125,7 @@ public class SkillReborn extends ActiveSkill {
                     long cooldown = (long) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false)
                             + (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel()));
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());
-                    broadcast(player.getLocation(),rebornText,player.getName());
+                    broadcast(player.getLocation(), rebornText.replace("%hero%", player.getName()));
                     player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
                 }
             }

@@ -52,8 +52,8 @@ public class SkillPickPocket extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        failMessage = SkillConfigManager.getRaw(this, "failure-message", "%hero% failed to steal from %target%!").replace("%hero%", "$1").replace("%target%", "$2");
-        noisySuccessMessage = SkillConfigManager.getRaw(this, "noisy-success-message", "%hero% stole %target%s %item%!").replace("%hero", "$1").replace("%target%", "$2").replace("%item%", "$3");
+        failMessage = SkillConfigManager.getRaw(this, "failure-message", "%hero% failed to steal from %target%!");
+        noisySuccessMessage = SkillConfigManager.getRaw(this, "noisy-success-message", "%hero% stole %target%'s %item%!");
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SkillPickPocket extends TargettedSkill {
 
         if (Util.nextRand() >= chance) {
             if (Util.nextRand() >= chance) {
-                broadcast(player.getLocation(), failMessage, player.getName(), tPlayer.getName());
+                broadcast(player.getLocation(), failMessage.replace("%hero%", player.getDisplayName()).replace("%target%", tPlayer.getDisplayName()));
             }
             player.sendMessage("You failed to steal anything from " + tPlayer.getName());
             return SkillResult.NORMAL;
@@ -110,7 +110,7 @@ public class SkillPickPocket extends TargettedSkill {
         }
         player.updateInventory();
         if (Math.random() >= chance)
-            broadcast(player.getLocation(), noisySuccessMessage, player.getName(), tPlayer.getName(), items[slot].getType().name().replace("_", " ").toLowerCase());
+            broadcast(player.getLocation(), noisySuccessMessage.replace("%hero%", player.getName()).replace("%target%", tPlayer.getName()).replace("%item%", items[slot].getType().name().replace("_", " ").toLowerCase()));
 
         return SkillResult.NORMAL;
         //and that's all folks!

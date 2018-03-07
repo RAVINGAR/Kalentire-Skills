@@ -201,7 +201,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 			}
 
 			Player player = hero.getPlayer();
-			broadcast(player.getLocation(), shotText, player.getDisplayName());
+			broadcast(player.getLocation(), shotText.replace("%hero%", player.getDisplayName()));
 
 			// Add the projectile to the hashlist
 			Arrow explosiveShot = (Arrow) event.getProjectile();

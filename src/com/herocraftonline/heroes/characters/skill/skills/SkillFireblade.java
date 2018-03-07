@@ -61,7 +61,7 @@ public class SkillFireblade extends ActiveSkill {
         super.init();
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s weapon is sheathed in flame!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s weapon is no longer aflame!").replace("%hero%", "$1");
-        igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% has lit %target% aflame!").replace("%hero%", "$1").replace("%target%", "$2");
+        igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% has lit %target% aflame!");
     }
 
     @Override
@@ -104,31 +104,17 @@ public class SkillFireblade extends ActiveSkill {
             target.setFireTicks(fireTicks);
             plugin.getCharacterManager().getCharacter(target).addEffect(new CombustEffect(skill, player));
 
-            broadcast(player.getLocation(), igniteText, player.getName(), CustomNameManager.getName(target));
+            broadcast(player.getLocation(), igniteText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
         }
     }
 
     public class FirebladeEffect extends ExpirableEffect {
 
         public FirebladeEffect(Skill skill, Player applier, long duration) {
-            super(skill, "Fireblade", applier, duration);
+            super(skill, "Fireblade", applier, duration, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.FIRE);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
 

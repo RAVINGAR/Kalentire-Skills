@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.ChatColor;
@@ -55,7 +56,7 @@ public class SkillChainLightning extends TargettedSkill {
         int maxBounce = (int) SkillConfigManager.getUseSetting(hero, this, "maxBounce", 5, false);
         CharacterTemplate cT = plugin.getCharacterManager().getCharacter(target);
         cT.addEffect(new ChainLightningEffect(this, plugin, bounceTime, damage, hero, damageReductionPercent, bounceRadius, cdr, maxBounce));
-        broadcast(hero.getPlayer().getLocation(), ChatColor.GRAY + "[" + ChatColor.GREEN + "Skill" + ChatColor.GRAY + "] " + hero.getName() + " used ChainLightning!");
+        broadcast(hero.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL + hero.getName() + " used ChainLightning!");
         return SkillResult.NORMAL;
     }
 

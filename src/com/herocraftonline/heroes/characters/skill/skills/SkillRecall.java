@@ -467,7 +467,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             return true;
         }
         catch (Exception ex) {
-            broadcast(player.getLocation(), "Tried to parse an invalid integar. Not valid.", player.getName());  // DEBUG
+            broadcast(player.getLocation(), "Tried to parse an invalid integar. Not valid.");  // DEBUG
             return false;
         }
     }

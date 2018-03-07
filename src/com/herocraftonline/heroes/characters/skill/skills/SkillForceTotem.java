@@ -73,7 +73,7 @@ public class SkillForceTotem extends SkillBaseTotem {
                     name = player.getName();
                 }
                 else name = CustomNameManager.getName(character);
-                broadcast(entity.getLocation(), getApplyText(), name, heroP.getName());
+                broadcast(entity.getLocation(), getApplyText().replace("$1", name).replace("$2", heroP.getName()));
             }
             else {
                 ((ExpirableEffect)character.getEffect("ForceTotemNauseaEffect")).setExpireText(null);
@@ -91,7 +91,7 @@ public class SkillForceTotem extends SkillBaseTotem {
             if(damage > 0) {
                 damageEntity(entity, heroP, damage);
             }
-            character.addEffect(new NauseaEffect(this, "ForceTotemNauseaEffect", heroP, getDisorientationDuration(hero), getDisorientationLevel(hero), null, getUnapplyText()));
+            character.addEffect(new NauseaEffect(this, "ForceTotemNauseaEffect", heroP, getDisorientationDuration(hero), getDisorientationLevel(hero), null, getUnapplyText())); //TODO Implicit broadcast() call - may need changes?
 
             // Let's bypass the nocheat issues...
             NCPUtils.applyExemptions(entity, new NCPFunction() {

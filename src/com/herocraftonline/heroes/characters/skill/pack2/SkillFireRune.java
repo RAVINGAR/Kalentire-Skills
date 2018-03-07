@@ -173,7 +173,7 @@ public class SkillFireRune extends ActiveSkill {
                     double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
                     damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!").replace("%target%", "$1");
+                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!");
 
                     // Damage the target
                     addSpellTarget((LivingEntity) targEnt, hero);
@@ -182,7 +182,7 @@ public class SkillFireRune extends ActiveSkill {
                     targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
 
                     // Announce that the player has been hit with the skill
-                    broadcast(targEnt.getLocation(), "    " + applyText, targCT.getName());
+                    broadcast(targEnt.getLocation(), "    " + applyText.replace("%target%", targCT.getName()));
 
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);

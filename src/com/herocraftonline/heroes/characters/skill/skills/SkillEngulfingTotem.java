@@ -79,8 +79,8 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
                 continue;
             }
             if(entity instanceof Player) {
-                character.addEffect(new EngulfingTotemDexterityEffect(this, hero, totem.getEffect().getRemainingTime(), getDexterityReduceAmount(hero), getSlownessAmplitude(hero), null, getExpireText()));
-                broadcast(entity.getLocation(), getApplyText(), entity.getName(), heroP.getName());
+                character.addEffect(new EngulfingTotemDexterityEffect(this, hero, totem.getEffect().getRemainingTime(), getDexterityReduceAmount(hero), getSlownessAmplitude(hero), null, getExpireText())); //TODO Implicit broadcast() call - may need changes?
+                broadcast(entity.getLocation(), getApplyText().replace("$1", entity.getName()).replace("$2", heroP.getName()));
             }
             else {
                 character.addEffect(new EngulfingTotemDexterityEffect(this, hero, totem.getEffect().getRemainingTime(), getDexterityReduceAmount(hero), getSlownessAmplitude(hero)));
