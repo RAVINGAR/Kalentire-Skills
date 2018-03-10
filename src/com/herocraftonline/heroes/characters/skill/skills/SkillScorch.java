@@ -25,15 +25,15 @@ public class SkillScorch extends TargettedSkill
 		setDescription("You deal $1 damage to your target and sear them with intense heat, slowing them for $2 seconds.");
 		setUsage("/skill scorch");
 		setArgumentRange(0, 0);
-		setIdentifiers(new String[] { "skill scorch" });
-		setTypes(new SkillType[] { SkillType.INTERRUPTING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING });
+		setIdentifiers("skill scorch");
+		setTypes(SkillType.INTERRUPTING, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING);
 	}
 
 	public ConfigurationSection getDefaultConfig()
 	{
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set(SkillSetting.DAMAGE.node(), Integer.valueOf(15));
-		node.set(SkillSetting.DAMAGE_INCREASE.node(), Double.valueOf(0.5D));
+		node.set(SkillSetting.DAMAGE.node(), 15);
+		node.set(SkillSetting.DAMAGE_INCREASE.node(), 0.5D);
 		node.set(SkillSetting.DURATION.node(), 2000);
 		node.set(SkillSetting.DURATION_INCREASE.node(), 40);
 		return node;
@@ -49,7 +49,7 @@ public class SkillScorch extends TargettedSkill
 
 		addSpellTarget(target, hero);
 		damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK, false);
-		CharacterTemplate targCT = this.plugin.getCharacterManager().getCharacter(target);
+		CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 		SlowEffect slow = new SlowEffect(this, "ScorchSlow", player, duration, 0, "", "");
 		targCT.addEffect(slow);
 
@@ -57,7 +57,7 @@ public class SkillScorch extends TargettedSkill
 		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 25, 16);
 		target.getWorld().playSound(target.getEyeLocation(), Sound.BLOCK_FIRE_AMBIENT, 1.3F, 1.0F);
 
-		broadcast(player.getLocation(),ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + this.getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!" );
+		broadcast(player.getLocation(),ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!" );
 		return SkillResult.NORMAL;
 	}
 

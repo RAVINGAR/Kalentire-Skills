@@ -63,7 +63,7 @@ public class SkillLullaby extends ActiveSkill
 
 		node.set(SkillSetting.DAMAGE.node(), 20);
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_CHARISMA.node(), 0.7);
-		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(5));
+		node.set(SkillSetting.RADIUS.node(), 5);
 		node.set(SkillSetting.RADIUS_INCREASE_PER_CHARISMA.node(), 0.06);
 		node.set(SkillSetting.DURATION.node(), 3000);
 		node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 20);
@@ -155,17 +155,14 @@ public class SkillLullaby extends ActiveSkill
 	{
 		private final String applyText;
 		private final String expireText;
-		private final long duration;
 
 		private Location loc;
 
 		public LullabyEffect(Skill skill, long period, long duration, Player applier, String applyText, String expireText)
 		{
 			super(skill, "Lullaby", applier, period, duration);
-			this.applier = applier;
 			this.applyText = applyText;
 			this.expireText = expireText;
-			this.duration = duration;
 			this.types.add(EffectType.ROOT);
 			this.types.add(EffectType.HARMFUL);
 			this.types.add(EffectType.DISPELLABLE);
@@ -183,9 +180,9 @@ public class SkillLullaby extends ActiveSkill
 			super.applyToHero(hero);
 			final Player player = hero.getPlayer();
 			loc = hero.getPlayer().getLocation();
-			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) duration / 50, 3)); // This actually makes the effects last roughly 5 minutes but they're removed after the effect wears off.
-			player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) duration / 50, 3));
-			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, (int) duration / 50, 3));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) getDuration() / 50, 3)); // This actually makes the effects last roughly 5 minutes but they're removed after the effect wears off.
+			player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) getDuration() / 50, 3));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, (int) getDuration() / 50, 3));
 			player.sendMessage(applyText);
 		}
 

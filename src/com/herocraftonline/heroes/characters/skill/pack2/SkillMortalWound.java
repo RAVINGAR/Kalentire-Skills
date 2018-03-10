@@ -14,9 +14,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
@@ -35,7 +33,7 @@ public class SkillMortalWound extends TargettedSkill {
     private String expireText;
 
     public SkillMortalWound(Heroes plugin) {
-        super(plugin, "MortalWound");
+        super(plugin, "MortalWoundEffect");
         setDescription("You strike your target reducing healing by $1%, and causing them to bleed for $2 damage over $3 seconds.");
         setUsage("/skill mortalwound");
         setArgumentRange(0, 0);
@@ -93,7 +91,7 @@ public class SkillMortalWound extends TargettedSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
-        plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWound(this, player, period, duration, tickDamage, healMultiplier));
+        plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWoundEffect(this, player, period, duration, tickDamage, healMultiplier));
 
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.MOBSPAWNER_FLAMES, 3);
@@ -102,43 +100,20 @@ public class SkillMortalWound extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    public class MortalWound extends PeriodicDamageEffect {
+    public class MortalWoundEffect extends PeriodicDamageEffect {
 
         private final double healMultiplier;
 
-        public MortalWound(Skill skill, Player applier, long period, long duration, double tickDamage, double healMultiplier) {
-            super(skill, "MortalWound", applier, period, duration, tickDamage);
+        public MortalWoundEffect(Skill skill, Player applier, long period, long duration, double tickDamage, double healMultiplier) {
+            super(skill, "MortalWoundEffect", applier, period, duration, tickDamage, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
             this.healMultiplier = healMultiplier;
 
             types.add(EffectType.BLEED);
             types.add(EffectType.HARMFUL);
         }
 
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster), applier.getName());
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
+        public double getHealMultiplier() {
+            return healMultiplier;
         }
     }
 
@@ -151,17 +126,21 @@ public class SkillMortalWound extends TargettedSkill {
             }
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (hero.hasEffect("MortalWound")) {
-                MortalWound mEffect = (MortalWound) hero.getEffect("MortalWound");
-                event.setAmount((event.getAmount() * mEffect.healMultiplier));
+            if (hero.hasEffect("MortalWoundEffect")) {
+                MortalWoundEffect mwEffect = (MortalWoundEffect) hero.getEffect("MortalWoundEffect");
+                if (mwEffect != null) {
+                    event.setAmount((event.getAmount() * mwEffect.getHealMultiplier()));
+                }
             }
         }
         
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onHeroRegainHealth(HeroRegainHealthEvent event) {
-            if (event.getHero().hasEffect("MortalWound")) {
-                MortalWound mEffect = (MortalWound) event.getHero().getEffect("MortalWound");
-                event.setDelta((event.getDelta() * mEffect.healMultiplier));
+            if (event.getHero().hasEffect("MortalWoundEffect")) {
+                MortalWoundEffect mwEffect = (MortalWoundEffect) event.getHero().getEffect("MortalWoundEffect");
+                if (mwEffect != null) {
+                    event.setDelta((event.getDelta() * mwEffect.getHealMultiplier()));
+                }
             }
         }
     }

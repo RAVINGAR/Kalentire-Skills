@@ -15,11 +15,11 @@ public class SkillPray extends SkillBaseHeal {
 
     public SkillPray(Heroes plugin) {
         super(plugin, "Pray");
-        this.setDescription("You restore $1 health to your target. If healing yourself, only $2 health is restored..");
-        this.setUsage("/skill pray");
-        this.setArgumentRange(0, 1);
-        this.setIdentifiers("skill pray");
-        this.setTypes(SkillType.HEALING, SkillType.SILENCEABLE);
+        setDescription("You pray for renewal, healing your target (within 8 blocks) for $1 health. If healing yourself, only $2 health is restored.");
+        setUsage("/skill pray");
+        setArgumentRange(0, 1);
+        setIdentifiers("skill pray");
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

@@ -133,7 +133,7 @@ public class SkillBladegrasp extends ActiveSkill {
             if (hero.hasEffect(getName())) {
                 hero.getEffect(getName()).removeFromHero(hero);
                 event.setCancelled(true);
-                String message = (parrySkillText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(event.getDamager())).replace("%skill%", event.getSkill().getName()));
+                String message = parrySkillText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(event.getDamager())).replace("%skill%", event.getSkill().getName());
                 player.sendMessage(message);
                 if (event.getDamager() instanceof Hero) {
                     ((Hero) event.getDamager()).getPlayer().sendMessage(message);

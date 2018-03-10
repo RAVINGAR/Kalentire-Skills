@@ -34,8 +34,8 @@ public class SkillFlashFreeze
         setDescription("You encase your target in a block of ice for $1 seconds. During this time they cannot attack or be damaged.");
         setUsage("/skill flashfreeze");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[]{"skill flashfreeze"});
-        setTypes(new SkillType[]{SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.ABILITY_PROPERTY_ICE});
+        setIdentifiers("skill flashfreeze");
+        setTypes(SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.ABILITY_PROPERTY_ICE);
         Bukkit.getServer().getPluginManager().registerEvents(new FlashFreezeBreakListener(), plugin);
     }
 
@@ -78,7 +78,7 @@ public class SkillFlashFreeze
             boolean revert = false;
 
             public void run() {
-                if (revert == false) {
+                if (!revert) {
                     for (int y = 0; y < 3; y++) {
                         for (int x = -1; x <= 1; x++) {
                             for (int z = -1; z <= 1; z++) {
@@ -120,8 +120,7 @@ public class SkillFlashFreeze
                             //        " I'm just putting this here to piss off Radicater. - Dewyn");
                         }
                     }
-                    for (Location l : toRemove)
-                        locations.remove(l);
+                    locations.removeAll(toRemove);
                 }
             }
         }.runTaskTimer(plugin, 5, duration / 50);
@@ -161,14 +160,14 @@ public class SkillFlashFreeze
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             final Player p = hero.getPlayer();
-            broadcast(p.getLocation(), "�f" + hero.getName() + "�7 was flash frozen!");
+            broadcast(p.getLocation(), ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " was flash frozen!");
             p.setFallDistance(-20.0F);
         }
 
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             final Player p = hero.getPlayer();
-            broadcast(p.getLocation(), "�f" + hero.getName() + "�7 thaws out!");
+            broadcast(p.getLocation(), ChatColor.WHITE + hero.getName() + ChatColor.GRAY + "thaws out!");
         }
     }
 }
