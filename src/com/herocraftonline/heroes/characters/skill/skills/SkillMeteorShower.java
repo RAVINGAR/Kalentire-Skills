@@ -47,7 +47,7 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 	public String getDescription(Hero hero)
 	{
 		int meteors = SkillConfigManager.getUseSetting(hero, this, "meteors", 20, false);
-		meteors += SkillConfigManager.getUseSetting(hero, this, "meteors-per-level", 0.5, false) * hero.getSkillLevel(this);
+		meteors += SkillConfigManager.getUseSetting(hero, this, "meteors-per-level", 0.5, false) * hero.getHeroLevel(this);
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2, false)
@@ -94,7 +94,7 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 	public SkillResult use(Hero hero, String[] args)
 	{
 		final int maxMeteors = (int) Math.floor(SkillConfigManager.getUseSetting(hero, this, "meteors", 20, true)
-				+ ((SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 0.5, false) * hero.getSkillLevel(this))));
+				+ ((SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 0.5, false) * hero.getHeroLevel(this))));
 		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
 		int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
 

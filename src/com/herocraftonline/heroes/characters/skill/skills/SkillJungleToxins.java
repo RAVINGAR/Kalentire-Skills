@@ -66,7 +66,7 @@ public class SkillJungleToxins extends ActiveSkill
 		final Player player = hero.getPlayer();
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 14000, false);
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
-		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.1, false) * hero.getSkillLevel(this);
+		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.1, false) * hero.getHeroLevel(this);
 
 		String aText1 = SkillConfigManager.getUseSetting(hero, this, SkillSetting.APPLY_TEXT, " §f%hero%§7 poisons his weapons!").replace("%hero%", hero.getName());
 		String eText1 = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EXPIRE_TEXT, " §f%hero%§7's weapons are no longer poisoned.").replace("%hero%", hero.getName());

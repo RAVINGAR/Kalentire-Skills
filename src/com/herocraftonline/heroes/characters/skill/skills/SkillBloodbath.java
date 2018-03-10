@@ -34,7 +34,7 @@ public class SkillBloodbath extends PassiveSkill
 	public String getDescription(Hero hero) 
 	{
 		double healingAmount = SkillConfigManager.getUseSetting(hero, this, "heal-per-kill", 20, false);
-		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, "heal-per-kill-increase", 0.2, false) * hero.getSkillLevel(this);
+		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, "heal-per-kill-increase", 0.2, false) * hero.getHeroLevel(this);
 		healingAmount += healingIncrease;
 
 		return getDescription().replace("$1", healingAmount + "");
@@ -74,7 +74,7 @@ public class SkillBloodbath extends PassiveSkill
 			if (!hero.canUseSkill(skill)) return;
 
 			double healingAmount = SkillConfigManager.getUseSetting(hero, skill, "heal-per-kill", 20, false);
-			double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, "heal-per-kill-increase", 0.2, false) * hero.getSkillLevel(skill);
+			double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, "heal-per-kill-increase", 0.2, false) * hero.getHeroLevel(skill);
 			healingAmount += healingIncrease;
 
 			HeroRegainHealthEvent heal = new HeroRegainHealthEvent(hero, healingAmount, skill);

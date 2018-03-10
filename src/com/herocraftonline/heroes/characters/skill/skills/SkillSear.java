@@ -44,7 +44,7 @@ public class SkillSear extends TargettedSkill
 		Hero h = hero;
 		Player p = player;
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
-		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.2, false) * hero.getSkillLevel(this);
+		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.2, false) * hero.getHeroLevel(this);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
 		
 		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.4F, 45, 16);
@@ -64,7 +64,7 @@ public class SkillSear extends TargettedSkill
 	public String getDescription(Hero hero)
 	{
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
-		damage += (int)(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.2, false) * hero.getSkillLevel(this));
+		damage += (int)(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.2, false) * hero.getHeroLevel(this));
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
 		String formattedDuration = String.valueOf(duration / 1000);
 		return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);

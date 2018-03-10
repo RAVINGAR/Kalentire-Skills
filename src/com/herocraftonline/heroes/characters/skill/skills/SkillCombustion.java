@@ -55,7 +55,7 @@ public class SkillCombustion extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false) + ((SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.75, false) * hero.getSkillLevel(this)));
+        final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false) + ((SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.75, false) * hero.getHeroLevel(this)));
 
         Player player = hero.getPlayer();
         Location launchLoc = player.getLocation().add(0, 0.5, 0);
@@ -179,7 +179,7 @@ public class SkillCombustion extends ActiveSkill {
                     addSpellTarget(entity, hero);
                     damagedEntities.add(entity);
                     double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 20, false);
-                    damage += (double) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0.75, false) * hero.getSkillLevel(skill));
+                    damage += (double) (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0.75, false) * hero.getHeroLevel(skill));
                     damageEntity(entity, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                     event.setCancelled(true);
                 }
@@ -209,7 +209,7 @@ public class SkillCombustion extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
-        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.75, false) * hero.getSkillLevel(this));
+        damage += (int) (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.75, false) * hero.getHeroLevel(this));
         return getDescription().replace("$1", damage + "");
     }
 }

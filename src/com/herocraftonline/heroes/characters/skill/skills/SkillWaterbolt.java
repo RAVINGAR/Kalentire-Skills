@@ -48,7 +48,7 @@ public class SkillWaterbolt extends ActiveSkill
 	public String getDescription(Hero hero)
 	{
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, true);
-		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 1, true) * hero.getSkillLevel(this);
+		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 1, true) * hero.getHeroLevel(this);
 		return getDescription().replace("$1", damage + "");
 	}
 
@@ -184,7 +184,7 @@ public class SkillWaterbolt extends ActiveSkill
 			Hero hero = plugin.getCharacterManager().getHero(player);
 			double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 40, true);
 			int manaRestored = SkillConfigManager.getUseSetting(hero, skill, "mana-restored", 25, true);
-			damage += SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 1, true) * hero.getSkillLevel(skill);
+			damage += SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 1, true) * hero.getHeroLevel(skill);
 
 			if (target.getFireTicks() > 0)
 			{

@@ -43,9 +43,9 @@ public class SkillScorch extends TargettedSkill
 	{
 		Player player = hero.getPlayer();
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 15, false);
-		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.5D, false) * hero.getSkillLevel(this);
+		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.5D, false) * hero.getHeroLevel(this);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getSkillLevel(this);
+		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getHeroLevel(this);
 
 		addSpellTarget(target, hero);
 		damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK, false);
@@ -64,9 +64,9 @@ public class SkillScorch extends TargettedSkill
 	public String getDescription(Hero hero)
 	{
 		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 15, false);
-		damage += (int)(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.5D, false) * hero.getSkillLevel(this));
+		damage += (int)(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.5D, false) * hero.getHeroLevel(this));
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getSkillLevel(this);
+		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getHeroLevel(this);
 		String dur = String.valueOf(Math.ceil(duration / 1000));
 		return getDescription().replace("$1", damage + "").replace("$2", dur);
 	}

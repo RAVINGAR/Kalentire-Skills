@@ -45,7 +45,7 @@ public class SkillFlare extends ActiveSkill
 	public String getDescription(Hero hero)
 	{
 		int firebolts = SkillConfigManager.getUseSetting(hero, this, "firebolts", 30, false);
-		firebolts += SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 2, false) * hero.getSkillLevel(this);
+		firebolts += SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 2, false) * hero.getHeroLevel(this);
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.3, false) * hero.getAttributeValue(AttributeType.INTELLECT);
@@ -94,7 +94,7 @@ public class SkillFlare extends ActiveSkill
 	@SuppressWarnings("deprecation")
 	public SkillResult use(Hero hero, String[] args)
 	{
-		final int firebolts = SkillConfigManager.getUseSetting(hero, this, "firebolts", 30, false) + ((SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 2, false) * hero.getSkillLevel(this)));
+		final int firebolts = SkillConfigManager.getUseSetting(hero, this, "firebolts", 30, false) + ((SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 2, false) * hero.getHeroLevel(this)));
 		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
 		int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
 		final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false) + SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.3, false) * hero.getAttributeValue(AttributeType.INTELLECT);

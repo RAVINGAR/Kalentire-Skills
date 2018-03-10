@@ -44,7 +44,7 @@ public class SkillSoothingRain extends ActiveSkill
 
         int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restored", 13, false);
         double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restored-increase-per-level", 0.05, false);
-        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getSkillLevel(this));
+        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getHeroLevel(this));
 
         SoothingRainEffect srEffect = new SoothingRainEffect(this, hero.getPlayer(), period, duration, radius, manaRestoreTick);
         hero.addEffect(srEffect);

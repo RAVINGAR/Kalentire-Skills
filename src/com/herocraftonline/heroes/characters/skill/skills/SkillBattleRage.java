@@ -24,8 +24,8 @@ public class SkillBattleRage
   public String getDescription(Hero hero)
   {
    
-	double healthPercentage = SkillConfigManager.getUseSetting(hero, this, "health-percentage", 0.2D, false) + SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase", 0.0D, false) * hero.getSkillLevel(this);
-    double damageMod = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0.2D, false) + SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase", 0.0D, false) * hero.getSkillLevel(this);
+	double healthPercentage = SkillConfigManager.getUseSetting(hero, this, "health-percentage", 0.2D, false) + SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase", 0.0D, false) * hero.getHeroLevel(this);
+    double damageMod = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0.2D, false) + SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase", 0.0D, false) * hero.getHeroLevel(this);
     
     damageMod = damageMod > 0.0D ? damageMod : 0.0D;
     String description = getDescription().replace("$1", healthPercentage + "").replace("$2", damageMod + "");
@@ -62,7 +62,7 @@ public class SkillBattleRage
         Player p = hero.getPlayer();
         if (hero.hasEffect("BattleRage"))
         {
-          double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE.node(), 1.5, false) + SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE.node(), 0, false) * hero.getSkillLevel(this.skill);
+          double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE.node(), 1.5, false) + SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE.node(), 0, false) * hero.getHeroLevel(this.skill);
           //Convoluted way of adding damage for every 5% of damage
          double missingHealth = p.getMaxHealth()- p.getHealth();
          double mhPercent = (missingHealth/p.getMaxHealth())*100;

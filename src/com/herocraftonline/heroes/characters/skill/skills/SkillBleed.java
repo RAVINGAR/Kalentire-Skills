@@ -62,7 +62,7 @@ public class SkillBleed extends TargettedSkill {
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 20, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false);
         double damageIncreasePower = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_POWER, 1.0, false);
-        tickDamage += Math.pow(damageIncrease * hero.getSkillLevel(this), damageIncreasePower);
+        tickDamage += Math.pow(damageIncrease * hero.getHeroLevel(this), damageIncreasePower);
         final BleedSkillEffect bEffect = new BleedSkillEffect(this, duration, period, tickDamage, player);
         this.plugin.getCharacterManager().getCharacter(target).addEffect(bEffect);
         this.broadcastExecuteText(hero, target);
@@ -109,7 +109,7 @@ public class SkillBleed extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 20, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false);
         double damageIncreasePower = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_POWER, 1.0, false);
-        damage += Math.pow(damageIncrease * hero.getSkillLevel(this), damageIncreasePower);
+        damage += Math.pow(damageIncrease * hero.getHeroLevel(this), damageIncreasePower);
         damage = (damage * duration) / period;
         return this.getDescription().replace("$1", damage + "").replace("$2", (duration / 1000) + "");
     }
