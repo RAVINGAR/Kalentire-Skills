@@ -64,17 +64,20 @@ public class SkillTypicalHuman extends PassiveSkill {
 
     public void addTypicalHumanEffect(Hero hero) {
         if (!(hero.hasEffect("TypicalHumanHealthEffect"))) {
-            // code just for reference:
-//            int bloodUnionResetPeriod = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 25000, false);
-//            int maxBloodUnion = SkillConfigManager.getUseSetting(hero, this, "max-blood-union", 4, false);
-//            hero.addEffect(new BloodUnionEffect(this, bloodUnionResetPeriod, maxBloodUnion));
 
-            //FIXME: additional helath not currently in use, need to first work out how to implement % health boost
+            //FIXME: additional health not currently in use, need to first work out how to implement % health boost
             double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
 
 //            TypicalHumanEffect typicalHumanEffect = new Effect(this, "TypicalHumanEffect", EffectType.BENEFICIAL, EffectType.MAX_HEALTH_INCREASING);
             //TODO test adding raw health
-            hero.addEffect(new MaxHealthIncreaseEffect(this,"TypicalHumanHealthEffect", hero.getPlayer(), -1, 50));
+//            hero.addEffect(new MaxHealthIncreaseEffect(this,"TypicalHumanHealthEffect", hero.getPlayer(), -1, 50));
+
+            //FIXME: remove try catch when MaxHealthPercentIncreaseEffect is recognised. (It exists in another repository, therefore this is just to catch existence issues)
+            try {
+                hero.addEffect(new MaxHealthPercentIncreaseEffect(this, "MaxHealthPercentIncreaseEffect", additionalHealth));
+            } catch (Exception e){
+                // Catch exceptions if "MaxHealthPercentIncreaseEffect" isn't a defined class
+            }
         }
     }
 
