@@ -76,7 +76,7 @@ public class SkillFauxBomb extends ActiveSkill {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
-                explodeSheep(sheep);
+                //explodeSheep(sheep);
             }
         }, fuse / 1000 * 20);
 
@@ -112,12 +112,12 @@ public class SkillFauxBomb extends ActiveSkill {
                     event.setDamage(0.0);
                     event.setCancelled(true);
                 }
-                else
-                    explodeSheep(sheep);
+                //else
+                  //  explodeSheep(sheep);
             }
         }
     }
-
+/*
     private void explodeSheep(LivingEntity sheep) {
         int id = sheep.getEntityId();
         if (sheepMap.containsKey(id)) {
@@ -153,4 +153,5 @@ public class SkillFauxBomb extends ActiveSkill {
             sheepMap.remove(id);
         }
     }
+    */
 }
