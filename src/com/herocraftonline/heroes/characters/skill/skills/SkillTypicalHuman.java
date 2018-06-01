@@ -32,7 +32,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set("additional-physical-damage-percent", 0.05);
+        node.set("additional-physical-damage-percent", 0.5);
         node.set("additional-health-percent", 0.05);
 
         return node;
@@ -80,7 +80,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
                 if (hero.hasEffect(getName())) {
                     double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,
-                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
+                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.5, false);
 
                     double originalDamage = event.getDamage();
                     event.setDamage(originalDamage * (1 + additionalPhysicalDamagePercent));
@@ -99,7 +99,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
                 if (hero.hasEffect(getName())) {
                     double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,
-                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
+                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.5, false);
 
                     double originalDamage = event.getDamage();
                     event.setDamage(originalDamage * (1 + additionalPhysicalDamagePercent));
