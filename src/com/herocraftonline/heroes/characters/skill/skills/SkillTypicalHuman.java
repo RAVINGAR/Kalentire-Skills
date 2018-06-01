@@ -1,5 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.api.events.SkillUseEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.MaxHealthPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
@@ -7,10 +12,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.events.SkillUseEvent;
-import com.herocraftonline.heroes.characters.Hero;
 
 public class SkillTypicalHuman extends PassiveSkill {
 
@@ -61,6 +62,52 @@ public class SkillTypicalHuman extends PassiveSkill {
             }
             hero.resolveMaxHealth();
         }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.getDamage() == 0)
+                return;
+
+            //Un omment when proved extra damage works, so that only physical damage occurs
+//            Skill skill = event.getSkill();
+//            if (!skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL)){
+//                return;
+//            }
+
+            // Handle outgoing
+            if (event.getDamager() instanceof Hero) {
+                Hero hero = (Hero) event.getDamager();
+
+                if (hero.hasEffect(getName())) {
+                    double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,
+                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
+
+                    double originalDamage = event.getDamage();
+                    event.setDamage(originalDamage * (1 + additionalPhysicalDamagePercent));
+                }
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.getDamage() == 0)
+                return;
+
+            // Handle outgoing
+            if (event.getDamager() instanceof Hero) {
+                Hero hero = (Hero) event.getDamager();
+
+                if (hero.hasEffect(getName())) {
+                    double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,
+                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
+
+                    double originalDamage = event.getDamage();
+                    event.setDamage(originalDamage * (1 + additionalPhysicalDamagePercent));
+                }
+            }
+        }
+
+
     }
 
     public void addTypicalHumanEffect(Hero hero) {
