@@ -59,6 +59,7 @@ public class SkillTypicalHuman extends PassiveSkill {
             else {
                 removeTypicalHumanEffect(hero);
             }
+            hero.resolveMaxHealth();
         }
     }
 
@@ -72,12 +73,7 @@ public class SkillTypicalHuman extends PassiveSkill {
             //TODO test adding raw health
 //            hero.addEffect(new MaxHealthIncreaseEffect(this,"TypicalHumanHealthEffect", hero.getPlayer(), -1, 50));
 
-            //FIXME: remove try catch when MaxHealthPercentIncreaseEffect is recognised. (It exists in another repository, therefore this is just to catch existence issues)
-//            try {
-                hero.addEffect(new MaxHealthPercentIncreaseEffect(this, TYPICAL_HUMAN_HEALTH_EFFECT_NAME, additionalHealth));
-//            } catch (Exception e){
-//                 Catch exceptions if "MaxHealthPercentIncreaseEffect" isn't a defined class
-//            }
+            hero.addEffect(new MaxHealthPercentIncreaseEffect(this, TYPICAL_HUMAN_HEALTH_EFFECT_NAME, additionalHealth));
         }
     }
 
