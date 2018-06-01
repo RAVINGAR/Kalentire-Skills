@@ -20,7 +20,7 @@ public class SkillTypicalHuman extends PassiveSkill {
     public SkillTypicalHuman(Heroes plugin) {
         super(plugin, "TypicalHuman");
         //TODO: set description
-        setDescription("Passive: additional 5% damage to physical damage and 5% to health pool.");
+        setDescription("Passive: additional $1% damage to physical damage and $2% to health pool.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.MAX_HEALTH_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new TypicalHumanListener(this), plugin);
@@ -32,7 +32,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set("additional-physical-damage-percent", 0.5);
+        node.set("additional-physical-damage-percent", 0.05);
         node.set("additional-health-percent", 0.05);
 
         return node;
@@ -40,7 +40,10 @@ public class SkillTypicalHuman extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
+        double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
+
+        return getDescription().replace("$1",(additionalPhysicalDamagePercent*100) + "").replace("$2",(additionalHealth*100) + "");
     }
 
     private class TypicalHumanListener implements Listener {
@@ -68,11 +71,11 @@ public class SkillTypicalHuman extends PassiveSkill {
             if (event.getDamage() == 0)
                 return;
 
-            //Un omment when proved extra damage works, so that only physical damage occurs
-//            Skill skill = event.getSkill();
-//            if (!skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL)){
-//                return;
-//            }
+            //boost only physical damage
+            Skill skill = event.getSkill();
+            if (!skill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL)){
+                return;
+            }
 
             // Handle outgoing
             if (event.getDamager() instanceof Hero) {
@@ -80,7 +83,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
                 if (hero.hasEffect(getName())) {
                     double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,
-                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.5, false);
+                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
 
                     double originalDamage = event.getDamage();
                     event.setDamage(originalDamage * (1 + additionalPhysicalDamagePercent));
@@ -99,7 +102,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
                 if (hero.hasEffect(getName())) {
                     double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,
-                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.5, false);
+                            SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
 
                     double originalDamage = event.getDamage();
                     event.setDamage(originalDamage * (1 + additionalPhysicalDamagePercent));
@@ -113,7 +116,8 @@ public class SkillTypicalHuman extends PassiveSkill {
     public void addTypicalHumanEffect(Hero hero) {
         if (!(hero.hasEffect(TYPICAL_HUMAN_HEALTH_EFFECT_NAME))) {
 
-            //FIXME: additional health not currently in use, need to first work out how to implement % health boost
+            //FIXME: need to first work out how to implement % health boost, as currently method doesn't seem to work
+            //For reference this effect's health is applied in Hero.resolveMaxHealth()
             double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
 
 //            TypicalHumanEffect typicalHumanEffect = new Effect(this, "TypicalHumanEffect", EffectType.BENEFICIAL, EffectType.MAX_HEALTH_INCREASING);
