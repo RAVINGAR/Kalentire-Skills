@@ -112,12 +112,13 @@ public class SkillFauxBomb extends ActiveSkill {
                     event.setDamage(0.0);
                     event.setCancelled(true);
                 }
-                //else
-                  //  explodeSheep(sheep);
+                else {
+                    explodeSheep(sheep);
+                }
             }
         }
     }
-/*
+
     private void explodeSheep(LivingEntity sheep) {
         int id = sheep.getEntityId();
         if (sheepMap.containsKey(id)) {
@@ -143,6 +144,10 @@ public class SkillFauxBomb extends ActiveSkill {
 
                     LivingEntity target = (LivingEntity) entity;
 
+                    if (target.equals(sheep) || (target instanceof Sheep && entity.getEntityId() == id)){
+                        continue;
+                    }
+
                     if (hero != null) {
                         addSpellTarget(target, hero);
                         damageEntity(target, player, 0.0, DamageCause.MAGIC);
@@ -153,5 +158,5 @@ public class SkillFauxBomb extends ActiveSkill {
             sheepMap.remove(id);
         }
     }
-    */
+
 }
