@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.events.ClassChangeEvent;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
@@ -54,7 +55,7 @@ public class SkillTypicalHuman extends PassiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onClassChange(SkillUseEvent event) {
+        public void onClassChange(ClassChangeEvent event) {
             Hero hero = event.getHero();
 
             if (hero.canUseSkill(skill)) {
