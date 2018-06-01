@@ -50,7 +50,7 @@ public class SkillTypicalHuman extends PassiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillUse(SkillUseEvent event) {
+        public void onClassChange(SkillUseEvent event) {
             Hero hero = event.getHero();
 
             if (hero.canUseSkill(skill)) {
