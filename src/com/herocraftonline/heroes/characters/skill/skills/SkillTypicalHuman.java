@@ -20,8 +20,9 @@ public class SkillTypicalHuman extends PassiveSkill {
 
     public SkillTypicalHuman(Heroes plugin) {
         super(plugin, "TypicalHuman");
-        //TODO: set description
-        setDescription("Passive: additional $1% damage to physical damage and $2% to health pool.");
+        //commented out as this skill currently on provides damage boost
+//        setDescription("Passive: additional $1% damage to physical damage and $2% to health pool.");
+        setDescription("Passive: additional $1% damage to physical damage.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.MAX_HEALTH_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new TypicalHumanListener(this), plugin);
@@ -42,9 +43,10 @@ public class SkillTypicalHuman extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
-        double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
+//        double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
 
-        return getDescription().replace("$1",(additionalPhysicalDamagePercent*100) + "").replace("$2",(additionalHealth*100) + "");
+//        return getDescription().replace("$1",(additionalPhysicalDamagePercent*100) + "").replace("$2",(additionalHealth*100) + "");
+        return getDescription().replace("$1",(additionalPhysicalDamagePercent*100) + "");
     }
 
     private class TypicalHumanListener implements Listener {
@@ -56,6 +58,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onClassChange(ClassChangeEvent event) {
+            //FIXME: not sure what event would be most useful for health boost (when it works)
             Hero hero = event.getHero();
 
             if (hero.canUseSkill(skill)) {
@@ -122,7 +125,7 @@ public class SkillTypicalHuman extends PassiveSkill {
             double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
 
 //            TypicalHumanEffect typicalHumanEffect = new Effect(this, "TypicalHumanEffect", EffectType.BENEFICIAL, EffectType.MAX_HEALTH_INCREASING);
-            //TODO test adding raw health
+            //test adding raw health
 //            hero.addEffect(new MaxHealthIncreaseEffect(this,"TypicalHumanHealthEffect", hero.getPlayer(), -1, 50));
 
             hero.addEffect(new MaxHealthPercentIncreaseEffect(this, TYPICAL_HUMAN_HEALTH_EFFECT_NAME, additionalHealth));
