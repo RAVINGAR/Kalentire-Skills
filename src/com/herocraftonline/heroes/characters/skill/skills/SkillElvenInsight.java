@@ -38,8 +38,8 @@ public class SkillElvenInsight extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double additionalMagicalDamagePercent = SkillConfigManager.getUseSetting(hero,SkillElvenInsight.this, "additional-magical-damage-percent", DEFAULT_MAGICAL_DAMAGE_PERCENT, false);
-        double additionalProjectileDamagePercent = SkillConfigManager.getUseSetting(hero,SkillElvenInsight.this, "additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT, false);
+        double additionalMagicalDamagePercent = SkillConfigManager.getUseSetting(hero,this, "additional-magical-damage-percent", DEFAULT_MAGICAL_DAMAGE_PERCENT, false);
+        double additionalProjectileDamagePercent = SkillConfigManager.getUseSetting(hero,this, "additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT, false);
 
         return getDescription().replace("$1",(additionalMagicalDamagePercent*100) + "")
                 .replace("$2",(additionalProjectileDamagePercent*100) + "");

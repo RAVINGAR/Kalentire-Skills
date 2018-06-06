@@ -17,9 +17,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
     public SkillTypicalHuman(Heroes plugin) {
         super(plugin, "TypicalHuman");
-        //commented out as this skill currently on provides damage boost
-//        setDescription("Passive: additional $1% damage to physical damage and $2% to health pool.");
-        setDescription("Passive: additional $1% damage to physical damage.");
+        setDescription("Passive: additional $1% damage to physical damage and $2% to health pool.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.MAX_HEALTH_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new TypicalHumanListener(this), plugin);
@@ -39,11 +37,11 @@ public class SkillTypicalHuman extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,SkillTypicalHuman.this, "additional-physical-damage-percent", 0.05, false);
-//        double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
+        double additionalPhysicalDamagePercent = SkillConfigManager.getUseSetting(hero,this, "additional-physical-damage-percent", 0.05, false);
+        double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
 
-//        return getDescription().replace("$1",(additionalPhysicalDamagePercent*100) + "").replace("$2",(additionalHealth*100) + "");
-        return getDescription().replace("$1",(additionalPhysicalDamagePercent*100) + "");
+        return getDescription().replace("$1",(additionalPhysicalDamagePercent*100) + "")
+                .replace("$2",(additionalHealth*100) + "");
     }
 
     private class TypicalHumanListener implements Listener {
@@ -111,17 +109,12 @@ public class SkillTypicalHuman extends PassiveSkill {
         // Remove effect
         super.unapply(hero);
         hero.resolveMaxHealth();
+        //FIXME hero health doesn't correctly update without changes race twice
     }
 
     private void addTypicalHumanEffect(Hero hero) {
-        //FIXME: need to first work out how to implement % health boost, as currently method doesn't seem to work
         //For reference this effect's health is applied in Hero.resolveMaxHealth()
         double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
-
-//            TypicalHumanEffect typicalHumanEffect = new Effect(this, "TypicalHumanEffect", EffectType.BENEFICIAL, EffectType.MAX_HEALTH_INCREASING);
-        //test adding raw health
-//            hero.addEffect(new MaxHealthIncreaseEffect(this,"TypicalHumanHealthEffect", hero.getPlayer(), -1, 50));
-
         Effect healthBoostEffect = new MaxHealthPercentIncreaseEffect(this, this.getName(), additionalHealth);
         healthBoostEffect.setPersistent(true);
         hero.addEffect(healthBoostEffect);

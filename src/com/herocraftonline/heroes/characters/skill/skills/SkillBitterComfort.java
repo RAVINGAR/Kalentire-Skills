@@ -36,7 +36,7 @@ public class SkillBitterComfort extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double additionalProjectileDamagePercent = SkillConfigManager.getUseSetting(hero,SkillBitterComfort.this,
+        double additionalProjectileDamagePercent = SkillConfigManager.getUseSetting(hero,this,
                 "additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT, false);
 
         return getDescription().replace("$1",(additionalProjectileDamagePercent*100) + "");
