@@ -1,11 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.events.ClassChangeEvent;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.MaxHealthPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
@@ -15,8 +14,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 public class SkillTypicalHuman extends PassiveSkill {
-
-    private static final String TYPICAL_HUMAN_HEALTH_EFFECT_NAME = "TypicalHumanHealthEffect";
 
     public SkillTypicalHuman(Heroes plugin) {
         super(plugin, "TypicalHuman");
@@ -54,20 +51,6 @@ public class SkillTypicalHuman extends PassiveSkill {
 
         public TypicalHumanListener(Skill skill) {
             this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onClassChange(ClassChangeEvent event) {
-            //FIXME: not sure what event would be most useful for health boost (when it works)
-            Hero hero = event.getHero();
-
-            if (hero.canUseSkill(skill)) {
-                addTypicalHumanEffect(hero);
-            }
-            else {
-                removeTypicalHumanEffect(hero);
-            }
-            hero.resolveMaxHealth();
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -114,28 +97,32 @@ public class SkillTypicalHuman extends PassiveSkill {
             }
         }
 
-
     }
 
-    public void addTypicalHumanEffect(Hero hero) {
-        if (!(hero.hasEffect(TYPICAL_HUMAN_HEALTH_EFFECT_NAME))) {
+    @Override
+    protected void apply(Hero hero) {
+        //super.apply(hero);
+        addTypicalHumanEffect(hero);
+    }
 
-            //FIXME: need to first work out how to implement % health boost, as currently method doesn't seem to work
-            //For reference this effect's health is applied in Hero.resolveMaxHealth()
-            double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
+    @Override
+    protected void unapply(Hero hero) {
+        // Remove effect
+        super.unapply(hero);
+    }
+
+    private void addTypicalHumanEffect(Hero hero) {
+        //FIXME: need to first work out how to implement % health boost, as currently method doesn't seem to work
+        //For reference this effect's health is applied in Hero.resolveMaxHealth()
+        double additionalHealth = SkillConfigManager.getUseSetting(hero, this, "additional-health-percent", 0.05, false);
 
 //            TypicalHumanEffect typicalHumanEffect = new Effect(this, "TypicalHumanEffect", EffectType.BENEFICIAL, EffectType.MAX_HEALTH_INCREASING);
-            //test adding raw health
+        //test adding raw health
 //            hero.addEffect(new MaxHealthIncreaseEffect(this,"TypicalHumanHealthEffect", hero.getPlayer(), -1, 50));
 
-            hero.addEffect(new MaxHealthPercentIncreaseEffect(this, TYPICAL_HUMAN_HEALTH_EFFECT_NAME, additionalHealth));
-        }
+        Effect healthBoostEffect = new MaxHealthPercentIncreaseEffect(this, this.getName(), additionalHealth);
+        healthBoostEffect.setPersistent(true);
+        hero.addEffect(healthBoostEffect);
     }
 
-    public void removeTypicalHumanEffect(Hero hero) {
-        if (hero.hasEffect(TYPICAL_HUMAN_HEALTH_EFFECT_NAME)) {
-            hero.removeEffect(hero.getEffect(TYPICAL_HUMAN_HEALTH_EFFECT_NAME));
-        }
-
-    }
 }
