@@ -103,6 +103,7 @@ public class SkillTypicalHuman extends PassiveSkill {
     protected void apply(Hero hero) {
         //super.apply(hero);
         addTypicalHumanEffect(hero);
+        hero.resolveMaxHealth();
     }
 
     @Override
