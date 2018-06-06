@@ -110,6 +110,7 @@ public class SkillTypicalHuman extends PassiveSkill {
     protected void unapply(Hero hero) {
         // Remove effect
         super.unapply(hero);
+        hero.resolveMaxHealth();
     }
 
     private void addTypicalHumanEffect(Hero hero) {
