@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.MaxHealthPercentIncreaseEff
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -110,6 +111,11 @@ public class SkillTypicalHuman extends PassiveSkill {
         super.unapply(hero);
         hero.resolveMaxHealth();
         //FIXME hero health doesn't correctly update without changes race twice
+
+        //TODO remove following after testing
+        final Player player = hero.getPlayer();
+        String effect_message = hero.hasEffect(this.getName()) ? "you still have the health boost" : "you no longer have health boost";
+        this.broadcast(player.getLocation(),"    " + effect_message + "(" + player.getMaxHealth() + ")", player.getName(), this.getName());
     }
 
     private void addTypicalHumanEffect(Hero hero) {
