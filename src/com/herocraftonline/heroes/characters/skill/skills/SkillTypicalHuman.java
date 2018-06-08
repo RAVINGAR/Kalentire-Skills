@@ -96,17 +96,17 @@ public class SkillTypicalHuman extends PassiveSkill {
 
     }
 
-    @Override
-    public void tryApplying(Hero hero) {
-        //TODO remove following after testing
-        final Player player = hero.getPlayer();
-        String apply_message = hero.canUseSkill(this) ? ( !hero.hasEffect(this.getName()) ? "apply":"not apply") : "unapply";
-        this.broadcast(player.getLocation(),
-                "    (" + apply_message + ")(" + player.getMaxHealth() + ")",
-                player.getName(), this.getName());
-
-        super.tryApplying(hero);
-    }
+// Commented out as only testing code for the apply/unapply of the skill's effect (remains here as may be useful in future)
+//    @Override
+//    public void tryApplying(Hero hero) {
+//        final Player player = hero.getPlayer();
+//        String apply_message = hero.canUseSkill(this) ? ( !hero.hasEffect(this.getName()) ? "apply":"not apply") : "unapply";
+//        this.broadcast(player.getLocation(),
+//                "    (" + apply_message + ")(" + player.getMaxHealth() + ")",
+//                player.getName(), this.getName());
+//
+//        super.tryApplying(hero);
+//    }
 
     @Override
     protected void apply(Hero hero) {
@@ -120,12 +120,6 @@ public class SkillTypicalHuman extends PassiveSkill {
         // Remove effect
         super.unapply(hero);
         hero.resolveMaxHealth();
-        //FIXME hero health doesn't correctly update without changes race twice
-
-        //TODO remove following after testing
-        final Player player = hero.getPlayer();
-        String effect_message = hero.hasEffect(this.getName()) ? "you still have the health boost" : "you no longer have health boost";
-        this.broadcast(player.getLocation(),"    " + effect_message + "(" + player.getMaxHealth() + ")", player.getName(), this.getName());
     }
 
     private void addTypicalHumanEffect(Hero hero) {

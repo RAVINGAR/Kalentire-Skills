@@ -46,18 +46,6 @@ public class SkillElvenInsight extends PassiveSkill {
                 .replace("$2",(additionalProjectileDamagePercent*100) + "");
     }
 
-    @Override
-    public void tryApplying(Hero hero) {
-        //TODO remove following after testing
-        final Player player = hero.getPlayer();
-        String apply_message = hero.canUseSkill(this) ? ( !hero.hasEffect(this.getName()) ? "apply":"not apply") : "unapply";
-        this.broadcast(player.getLocation(),
-                "    (" + apply_message + ")",
-                player.getName(), this.getName());
-
-        super.tryApplying(hero);
-    }
-
     private class ElvenInsightListener implements Listener {
         private Skill skill;
 
@@ -121,7 +109,6 @@ public class SkillElvenInsight extends PassiveSkill {
                 }
             }
         }
-
 
     }
 }
