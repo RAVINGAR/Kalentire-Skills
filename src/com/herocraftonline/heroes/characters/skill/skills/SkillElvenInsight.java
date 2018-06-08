@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -43,6 +44,18 @@ public class SkillElvenInsight extends PassiveSkill {
 
         return getDescription().replace("$1",(additionalMagicalDamagePercent*100) + "")
                 .replace("$2",(additionalProjectileDamagePercent*100) + "");
+    }
+
+    @Override
+    public void tryApplying(Hero hero) {
+        //TODO remove following after testing
+        final Player player = hero.getPlayer();
+        String apply_message = hero.canUseSkill(this) ? ( !hero.hasEffect(this.getName()) ? "apply":"not apply") : "unapply";
+        this.broadcast(player.getLocation(),
+                "    (" + apply_message + ")",
+                player.getName(), this.getName());
+
+        super.tryApplying(hero);
     }
 
     private class ElvenInsightListener implements Listener {
