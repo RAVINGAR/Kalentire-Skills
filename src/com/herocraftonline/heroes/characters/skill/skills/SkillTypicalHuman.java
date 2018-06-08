@@ -46,10 +46,8 @@ public class SkillTypicalHuman extends PassiveSkill {
     }
 
     private class TypicalHumanListener implements Listener {
-        private Skill skill;
 
         public TypicalHumanListener(Skill skill) {
-            this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -96,6 +94,18 @@ public class SkillTypicalHuman extends PassiveSkill {
             }
         }
 
+    }
+
+    @Override
+    public void tryApplying(Hero hero) {
+        //TODO remove following after testing
+        final Player player = hero.getPlayer();
+        String apply_message = hero.canUseSkill(this) ? ( !hero.hasEffect(this.getName()) ? "apply":"not apply") : "unapply";
+        this.broadcast(player.getLocation(),
+                "    (" + apply_message + ")(" + player.getMaxHealth() + ")",
+                player.getName(), this.getName());
+
+        super.tryApplying(hero);
     }
 
     @Override
