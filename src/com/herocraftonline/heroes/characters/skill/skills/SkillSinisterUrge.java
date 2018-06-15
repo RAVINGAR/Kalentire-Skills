@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,10 +15,11 @@ import org.bukkit.event.Listener;
 public class SkillSinisterUrge extends PassiveSkill {
 
     private static final double DEFAULT_PROJECTILE_DAMAGE_PERCENT = 0.05;
+    private static final double DEFAULT_MANA_REGEN_PERCENT = 0.05;
 
     public SkillSinisterUrge(Heroes plugin) {
         super(plugin, "SinisterUrge");
-        setDescription("Passive: additional $1% projectile damage.");
+        setDescription("Passive: additional $1% projectile damage and $2% mana regen.");
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE);
 
         Bukkit.getPluginManager().registerEvents(new SinisterUrgeListener(this), plugin);
@@ -30,6 +32,7 @@ public class SkillSinisterUrge extends PassiveSkill {
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT);
+        node.set("additional-mana-regen-percent", DEFAULT_MANA_REGEN_PERCENT);
 
         return node;
     }
@@ -38,8 +41,11 @@ public class SkillSinisterUrge extends PassiveSkill {
     public String getDescription(Hero hero) {
         double additionalProjectileDamagePercent = SkillConfigManager.getUseSetting(hero,this,
                 "additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT, false);
+        double additionalManaRegenPercent = SkillConfigManager.getUseSetting(hero,this,
+                "additional-mana-regen-percent", DEFAULT_MANA_REGEN_PERCENT, false);
 
-        return getDescription().replace("$1",(additionalProjectileDamagePercent*100) + "");
+        return getDescription().replace("$1",(additionalProjectileDamagePercent*100) + "")
+                .replace("$2",(additionalManaRegenPercent*100) + "");
     }
 
     private class SinisterUrgeListener implements Listener {
@@ -96,7 +102,28 @@ public class SkillSinisterUrge extends PassiveSkill {
                 }
             }
         }
-
-
     }
+
+//FIXME: Uncomment once heroes maven is updated (so effect exists)
+//    @Override
+//    protected void apply(Hero hero) {
+//        addSinisterUrgeEffect(hero);
+//        hero.resolveManaRegen();
+//    }
+//
+//    @Override
+//    protected void unapply(Hero hero) {
+//        //Remove effect
+//        super.unapply(hero);
+//        hero.resolveManaRegen();
+//    }
+//
+//    private void addSinisterUrgeEffect(Hero hero) {
+//        //For reference this effect's health is applied in Hero.resolveMaxHealth()
+//        double additionalManaRegenPercent = SkillConfigManager.getUseSetting(hero, this,
+//                "additional-mana-regen-percent", DEFAULT_MANA_REGEN_PERCENT, false);
+//        Effect manaBoostEffect = new ManaRegenPercentIncreaseEffect(this, this.getName(), additionalManaRegenPercent);
+//        manaBoostEffect.setPersistent(true);
+//        hero.addEffect(manaBoostEffect);
+//    }
 }

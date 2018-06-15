@@ -134,7 +134,7 @@ public class SkillElvenInsight extends PassiveSkill {
     }
 
     private void addElvenInsightEffect(Hero hero) {
-        //For reference this effect's health is applied in Hero.resolveMaxHealth()
+        //For reference this effect's health is applied in Hero.resolveMaxMana()
         double additionalManaPercent = SkillConfigManager.getUseSetting(hero, this,
                 "additional-mana-percent", DEFAULT_MANA_PERCENT, false);
         Effect manaBoostEffect = new MaxManaPercentIncreaseEffect(this, this.getName(), additionalManaPercent);
