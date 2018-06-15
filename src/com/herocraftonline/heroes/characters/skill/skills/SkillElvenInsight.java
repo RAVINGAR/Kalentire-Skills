@@ -4,10 +4,11 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.MaxManaPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,11 +17,12 @@ public class SkillElvenInsight extends PassiveSkill {
 
     private static final double DEFAULT_MAGICAL_DAMAGE_PERCENT = 0.05;
     private static final double DEFAULT_PROJECTILE_DAMAGE_PERCENT = 0.05;
+    private static final double DEFAULT_MANA_PERCENT = 0.05;
 
     public SkillElvenInsight(Heroes plugin) {
         super(plugin, "ElvenInsight");
-        setDescription("Passive: additional $1% magic damage and $2% projectile damage.");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE);
+        setDescription("Passive: additional $1% magic damage and $2% projectile damage. Also provides +$3% mana.");
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.MAX_MANA_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new ElvenInsightListener(this), plugin);
     }
@@ -33,17 +35,23 @@ public class SkillElvenInsight extends PassiveSkill {
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("additional-magical-damage-percent", DEFAULT_MAGICAL_DAMAGE_PERCENT);
         node.set("additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT);
+        node.set("additional-mana-percent", DEFAULT_MANA_PERCENT);
 
         return node;
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double additionalMagicalDamagePercent = SkillConfigManager.getUseSetting(hero,this, "additional-magical-damage-percent", DEFAULT_MAGICAL_DAMAGE_PERCENT, false);
-        double additionalProjectileDamagePercent = SkillConfigManager.getUseSetting(hero,this, "additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT, false);
+        double additionalMagicalDamagePercent = SkillConfigManager.getUseSetting(hero,this,
+                "additional-magical-damage-percent", DEFAULT_MAGICAL_DAMAGE_PERCENT, false);
+        double additionalProjectileDamagePercent = SkillConfigManager.getUseSetting(hero,this,
+                "additional-projectile-damage-percent", DEFAULT_PROJECTILE_DAMAGE_PERCENT, false);
+        double additionalManaPercent = SkillConfigManager.getUseSetting(hero,this,
+                "additional-mana-percent", DEFAULT_MANA_PERCENT, false);
 
         return getDescription().replace("$1",(additionalMagicalDamagePercent*100) + "")
-                .replace("$2",(additionalProjectileDamagePercent*100) + "");
+                .replace("$2",(additionalProjectileDamagePercent*100) + "")
+                .replace("$3",(additionalManaPercent*100) + "");
     }
 
     private class ElvenInsightListener implements Listener {
@@ -110,5 +118,27 @@ public class SkillElvenInsight extends PassiveSkill {
             }
         }
 
+    }
+
+    @Override
+    protected void apply(Hero hero) {
+        addElvenInsightEffect(hero);
+        hero.resolveMaxMana();
+    }
+
+    @Override
+    protected void unapply(Hero hero) {
+        // Remove effect
+        super.unapply(hero);
+        hero.resolveMaxMana();
+    }
+
+    private void addElvenInsightEffect(Hero hero) {
+        //For reference this effect's health is applied in Hero.resolveMaxHealth()
+        double additionalManaPercent = SkillConfigManager.getUseSetting(hero, this,
+                "additional-mana-percent", DEFAULT_MANA_PERCENT, false);
+        Effect manaBoostEffect = new MaxManaPercentIncreaseEffect(this, this.getName(), additionalManaPercent);
+        manaBoostEffect.setPersistent(true);
+        hero.addEffect(manaBoostEffect);
     }
 }
