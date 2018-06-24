@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.ManaRegenPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,7 +20,7 @@ public class SkillSinisterUrge extends PassiveSkill {
 
     public SkillSinisterUrge(Heroes plugin) {
         super(plugin, "SinisterUrge");
-        setDescription("Passive: additional $1% projectile damage and $2% mana regen.");
+        setDescription("Passive: additional $1% projectile damage and +$2% mana regen.");
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.MANA_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new SinisterUrgeListener(this), plugin);
@@ -104,26 +105,25 @@ public class SkillSinisterUrge extends PassiveSkill {
         }
     }
 
-//FIXME: Uncomment once heroes maven is updated (so effect exists)
-//    @Override
-//    protected void apply(Hero hero) {
-//        addSinisterUrgeEffect(hero);
-//        hero.resolveManaRegen();
-//    }
-//
-//    @Override
-//    protected void unapply(Hero hero) {
-//        //Remove effect
-//        super.unapply(hero);
-//        hero.resolveManaRegen();
-//    }
-//
-//    private void addSinisterUrgeEffect(Hero hero) {
-//        //For reference this effect's health is applied in Hero.resolveMaxHealth()
-//        double additionalManaRegenPercent = SkillConfigManager.getUseSetting(hero, this,
-//                "additional-mana-regen-percent", DEFAULT_MANA_REGEN_PERCENT, false);
-//        Effect manaRegenBoostEffect = new ManaRegenPercentIncreaseEffect(this, this.getName(), additionalManaRegenPercent);
-//        manaRegenBoostEffect.setPersistent(true);
-//        hero.addEffect(manaRegenBoostEffect);
-//    }
+    @Override
+    protected void apply(Hero hero) {
+        addSinisterUrgeEffect(hero);
+        hero.resolveManaRegen();
+    }
+
+    @Override
+    protected void unapply(Hero hero) {
+        //Remove effect
+        super.unapply(hero);
+        hero.resolveManaRegen();
+    }
+
+    private void addSinisterUrgeEffect(Hero hero) {
+        //For reference this effect's health is applied in Hero.resolveMaxHealth()
+        double additionalManaRegenPercent = SkillConfigManager.getUseSetting(hero, this,
+                "additional-mana-regen-percent", DEFAULT_MANA_REGEN_PERCENT, false);
+        Effect manaRegenBoostEffect = new ManaRegenPercentIncreaseEffect(this, this.getName(), additionalManaRegenPercent);
+        manaRegenBoostEffect.setPersistent(true);
+        hero.addEffect(manaRegenBoostEffect);
+    }
 }

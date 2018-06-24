@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.StaminaRegenPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,7 +20,7 @@ public class SkillBitterComfort extends PassiveSkill {
 
     public SkillBitterComfort(Heroes plugin) {
         super(plugin, "BitterComfort");
-        setDescription("Passive: additional $1% projectile damage and $2% stamina regen.");
+        setDescription("Passive: additional $1% projectile damage and +$2% stamina regen.");
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.STAMINA_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new BitterComfortListener(this), plugin);
@@ -104,26 +105,25 @@ public class SkillBitterComfort extends PassiveSkill {
         }
     }
 
-//FIXME: Uncomment once heroes maven is updated (so effect exists)
-//    @Override
-//    protected void apply(Hero hero) {
-//        addBitterComfortEffect(hero);
-//        hero.resolveStaminaRegen();
-//    }
-//
-//    @Override
-//    protected void unapply(Hero hero) {
-//        //Remove effect
-//        super.unapply(hero);
-//        hero.resolveStaminaRegen();
-//    }
-//
-//    private void addBitterComfortEffect(Hero hero) {
-//        //For reference this effect's health is applied in Hero.resolveMaxMana()
-//        double additionalStaminaPercent = SkillConfigManager.getUseSetting(hero, this,
-//                "additional-stamina-regen-percent", DEFAULT_STAMINA_REGEN_PERCENT, false);
-//        Effect staminaRegenBoostEffect = new StaminaRegenPercentIncreaseEffect(this, this.getName(), additionalStaminaPercent);
-//        staminaRegenBoostEffect.setPersistent(true);
-//        hero.addEffect(staminaRegenBoostEffect);
-//    }
+    @Override
+    protected void apply(Hero hero) {
+        addBitterComfortEffect(hero);
+        hero.resolveStaminaRegen();
+    }
+
+    @Override
+    protected void unapply(Hero hero) {
+        //Remove effect
+        super.unapply(hero);
+        hero.resolveStaminaRegen();
+    }
+
+    private void addBitterComfortEffect(Hero hero) {
+        //For reference this effect's health is applied in Hero.resolveMaxMana()
+        double additionalStaminaPercent = SkillConfigManager.getUseSetting(hero, this,
+                "additional-stamina-regen-percent", DEFAULT_STAMINA_REGEN_PERCENT, false);
+        Effect staminaRegenBoostEffect = new StaminaRegenPercentIncreaseEffect(this, this.getName(), additionalStaminaPercent);
+        staminaRegenBoostEffect.setPersistent(true);
+        hero.addEffect(staminaRegenBoostEffect);
+    }
 }
