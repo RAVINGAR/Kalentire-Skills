@@ -107,13 +107,15 @@ public class SkillFearless extends ActiveSkill {
             }
 
             // Handle incoming
-            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            if (defenderCT.hasEffect("Fearless")) {
-                FearlessEffect fEffect = (FearlessEffect) defenderCT.getEffect("Fearless");
+            if (event.getEntity() instanceof LivingEntity) {
+                CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                if (defenderCT.hasEffect("Fearless")) {
+                    FearlessEffect fEffect = (FearlessEffect) defenderCT.getEffect("Fearless");
 
-                double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
-                double newDamage = damageIncreasePercent * event.getDamage();
-                event.setDamage(newDamage);
+                    double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
+                    double newDamage = damageIncreasePercent * event.getDamage();
+                    event.setDamage(newDamage);
+                }
             }
         }
 
@@ -131,13 +133,15 @@ public class SkillFearless extends ActiveSkill {
             }
 
             // Handle incoming
-            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            if (defenderCT.hasEffect("Fearless")) {
-                FearlessEffect fEffect = (FearlessEffect) defenderCT.getEffect("Fearless");
+            if (event.getEntity() instanceof LivingEntity) {
+                CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                if (defenderCT.hasEffect("Fearless")) {
+                    FearlessEffect fEffect = (FearlessEffect) defenderCT.getEffect("Fearless");
 
-                double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
-                double newDamage = damageIncreasePercent * event.getDamage();
-                event.setDamage(newDamage);
+                    double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
+                    double newDamage = damageIncreasePercent * event.getDamage();
+                    event.setDamage(newDamage);
+                }
             }
         }
     }
