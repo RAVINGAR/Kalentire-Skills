@@ -40,6 +40,7 @@ public class SkillGroupHeal extends ActiveSkill
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
 
 		double healing = SkillConfigManager.getUseSetting(hero, this, "healing", 20, false);
+		healing = getScaledHealing(hero, healing);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, "healing-increase-per-wisdom", 1, false);
 		healing += (healingIncrease * hero.getAttributeValue(AttributeType.WISDOM));
 
@@ -66,6 +67,7 @@ public class SkillGroupHeal extends ActiveSkill
 		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
 
 		double healing = SkillConfigManager.getUseSetting(hero, this, "healing", 20, false);
+		healing = getScaledHealing(hero, healing);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, "healing-increase-per-wisdom", 1, false);
 		healing += (healingIncrease * hero.getAttributeValue(AttributeType.WISDOM));
 

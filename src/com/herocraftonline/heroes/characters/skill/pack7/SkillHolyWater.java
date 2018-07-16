@@ -46,6 +46,7 @@ public class SkillHolyWater extends ActiveSkill {
 
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 8, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
@@ -133,6 +134,7 @@ public class SkillHolyWater extends ActiveSkill {
             int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 7, false);
 
             double healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING.node(), 85, false);
+            healing = getScaledHealing(hero, healing);
             double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.0, false);
             healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 

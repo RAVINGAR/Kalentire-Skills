@@ -50,6 +50,7 @@ public class SkillHolyAura extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 16000, false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 17, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.15, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
@@ -101,6 +102,7 @@ public class SkillHolyAura extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 16000, false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 

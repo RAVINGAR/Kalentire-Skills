@@ -32,9 +32,10 @@ public class SkillDivineBlessing extends ActiveSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-		int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
+		double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
+		healing = getScaledHealing(hero, healing);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
-		healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+		healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
 		return getDescription().replace("$1", healing + "");
 	}
@@ -106,6 +107,7 @@ public class SkillDivineBlessing extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
 		double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 125, false);
+		healing = getScaledHealing(hero, healing);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1.75, false);
 		healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 

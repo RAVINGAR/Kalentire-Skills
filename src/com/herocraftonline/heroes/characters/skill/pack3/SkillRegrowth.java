@@ -40,6 +40,7 @@ public class SkillRegrowth extends TargettedSkill {
 
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
         healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 
@@ -47,6 +48,7 @@ public class SkillRegrowth extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 15000, false);
 
         double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 29, false);
+        hot = getScaledHealing(hero, hot);
         double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 0.7, false);
         hot += hero.getAttributeValue(AttributeType.WISDOM) * hotIncrease;
 
@@ -110,6 +112,7 @@ public class SkillRegrowth extends TargettedSkill {
         }
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
         healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 
@@ -117,6 +120,7 @@ public class SkillRegrowth extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 15000, false);
 
         double hot = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 29, false);
+        hot = getScaledHealing(hero, hot);
         double hotIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 0.7, false);
         hot += hero.getAttributeValue(AttributeType.WISDOM) * hotIncrease;
 

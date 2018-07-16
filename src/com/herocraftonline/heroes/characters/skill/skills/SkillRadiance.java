@@ -33,9 +33,10 @@ public class SkillRadiance extends ActiveSkill
     public String getDescription(Hero ardorPlayer)
     {
         double radius = SkillConfigManager.getUseSetting(ardorPlayer, this, SkillSetting.RADIUS, 8, true);
-        double healing = SkillConfigManager.getUseSetting(ardorPlayer, this, SkillSetting.HEALING, 100, true) +
-                (SkillConfigManager.getUseSetting(ardorPlayer, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 3, true)
-                        * ardorPlayer.getAttributeValue(AttributeType.WISDOM));
+        double healing = SkillConfigManager.getUseSetting(ardorPlayer, this, SkillSetting.HEALING, 100, true);
+        healing = getScaledHealing(ardorPlayer, healing);
+        healing += (SkillConfigManager.getUseSetting(ardorPlayer, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 3, true)
+                * ardorPlayer.getAttributeValue(AttributeType.WISDOM));
         long duration = SkillConfigManager.getUseSetting(ardorPlayer, this, SkillSetting.DURATION, 8000, true);
         String formattedDuration = String.valueOf((double) duration / 1000);
 
@@ -61,9 +62,10 @@ public class SkillRadiance extends ActiveSkill
         final Player player = hero.getPlayer();
 
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, true);
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 100, true) +
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 3, true)
-                        * hero.getAttributeValue(AttributeType.WISDOM));
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 100, true);
+        healing = getScaledHealing(hero, healing);
+        healing += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 3, true)
+                * hero.getAttributeValue(AttributeType.WISDOM));
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, true);
         final double healingPerTick = (healing / (duration / 50));
 

@@ -42,6 +42,7 @@ public class SkillChakra extends ActiveSkill {
 		radius += (int) (wisdom * radiusIncrease);
 
 		double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
+		healing = getScaledHealing(hero, healing);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
 		healing += (wisdom * healingIncrease);
 
@@ -100,6 +101,7 @@ public class SkillChakra extends ActiveSkill {
 		int radiusSquared = radius * radius;
 
 		double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
+		healing = getScaledHealing(hero, healing);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
 		healing += (wisdom * healingIncrease);
 

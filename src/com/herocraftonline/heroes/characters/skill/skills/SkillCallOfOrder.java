@@ -34,8 +34,9 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 		long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
-		final double healTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 100d, false)
-				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
+		double healTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 100d, false);
+		healTick = getScaledHealing(hero, healTick);
+		healTick += SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
 
 		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
 		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
@@ -73,10 +74,12 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 			long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 			long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
-			final double healTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 100d, false)
-					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
+			double healTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 100d, false);
+			healTick = getScaledHealing(hero, healTick);
+			healTick += SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
+            double finalHealTick = healTick;
 
-			applyAreaSphereEffect(hero, period, duration, radius, new SphereActions() {
+            applyAreaSphereEffect(hero, period, duration, radius, new SphereActions() {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
@@ -89,7 +92,7 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 					if (target instanceof Player) {
 						Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 						if (targetHero == hero || (hero.hasParty() && hero.getParty().isPartyMember(targetHero))) {
-							targetHero.heal(healTick);
+							targetHero.heal(finalHealTick);
 						}
 					}
 				}

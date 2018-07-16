@@ -26,9 +26,10 @@ public class SkillBloodGift extends TargettedSkill {
 
     public String getDescription(Hero hero) {
 
-        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 130, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 130, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false);
-        healing += (int) (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
         
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 85, false);
         int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 110, false);
@@ -71,6 +72,7 @@ public class SkillBloodGift extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double healAmount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 130, false);
+        healAmount = getScaledHealing(hero, healAmount);
         double wisHealIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * SkillConfigManager.getUseSetting(hero, this,
                 SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false));
         healAmount += wisHealIncrease;
