@@ -56,16 +56,18 @@ public class SkillMegaSmeltIron extends ActiveSkill{
 			if ((stack != null) && (stack.getType() == Material.IRON_ORE)) {
 				// Remove 10 Iron ore from their inventory
 				final int curAmount = stack.getAmount();
-				if (curAmount <= itemsToSmelt) {
+				if (curAmount <= (itemsToSmelt - itemsSmelted)) {
                     player.getInventory().setItem(i, null);
                     itemsSmelted = curAmount;
                 } else {
-                    stack.setAmount(curAmount - itemsToSmelt);
-                    itemsSmelted = curAmount - itemsToSmelt;
+                    stack.setAmount(curAmount - (itemsToSmelt - itemsSmelted));
+                    itemsSmelted = curAmount - (itemsToSmelt - itemsSmelted);
                 }
 
                 // Exit loop
-				break;
+				if (itemsSmelted == itemsToSmelt) {
+					break;
+				}
 			}
 		}
 
