@@ -37,6 +37,7 @@ public class SkillRejuvenate extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
@@ -81,6 +82,7 @@ public class SkillRejuvenate extends TargettedSkill {
         }
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
+        healing = getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
