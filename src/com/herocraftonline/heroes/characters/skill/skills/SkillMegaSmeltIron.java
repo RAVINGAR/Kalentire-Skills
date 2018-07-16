@@ -58,10 +58,10 @@ public class SkillMegaSmeltIron extends ActiveSkill{
 				final int curAmount = stack.getAmount();
 				if (curAmount <= (itemsToSmelt - itemsSmelted)) {
                     player.getInventory().setItem(i, null);
-                    itemsSmelted = curAmount;
+                    itemsSmelted += curAmount;
                 } else {
                     stack.setAmount(curAmount - (itemsToSmelt - itemsSmelted));
-                    itemsSmelted = curAmount - (itemsToSmelt - itemsSmelted);
+                    itemsSmelted += itemsToSmelt - itemsSmelted;
                 }
 
                 // Exit loop

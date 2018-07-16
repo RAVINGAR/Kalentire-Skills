@@ -54,13 +54,13 @@ public class SkillMegaSmeltGold extends ActiveSkill {
 			ItemStack stack = contents[i];
 			if ((stack != null) && (stack.getType() == Material.GOLD_ORE)) {
 				// Remove 10 gold ore from their inventory
-				int curAmount = stack.getAmount();
+				final int curAmount = stack.getAmount();
 				if (curAmount <= (itemsToSmelt - itemsSmelted)) {
 					player.getInventory().setItem(i, null);
-					itemsSmelted = curAmount;
+					itemsSmelted += curAmount;
 				} else {
 					stack.setAmount(curAmount - (itemsToSmelt - itemsSmelted));
-					itemsSmelted = curAmount - (itemsToSmelt - itemsSmelted);
+					itemsSmelted += itemsToSmelt - itemsSmelted;
 				}
 
                 // Exit loop
