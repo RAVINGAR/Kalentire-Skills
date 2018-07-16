@@ -56,7 +56,7 @@ public class SkillFistOfJin extends PassiveSkill {
         double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
         radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
 
-        return getDescription().replace("$1", selfHeal + "").replace("$2", partyHeal + "").replace("$3", radius + "").replace("$4", cdDuration + "");
+        return getDescription().replace("$1", ((int)selfHeal) + "").replace("$2", ((int)partyHeal) + "").replace("$3", radius + "").replace("$4", cdDuration + "");
     }
 
     @Override

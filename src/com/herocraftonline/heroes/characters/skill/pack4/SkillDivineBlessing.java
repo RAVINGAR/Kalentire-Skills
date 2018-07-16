@@ -32,10 +32,10 @@ public class SkillDivineBlessing extends ActiveSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-		double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
-		healing = getScaledHealing(hero, healing);
+		int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
+		healing = (int) getScaledHealing(hero, healing);
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
-		healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+		healing += (int)(hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
 		return getDescription().replace("$1", healing + "");
 	}

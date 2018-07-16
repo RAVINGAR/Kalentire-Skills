@@ -32,10 +32,10 @@ public class SkillInfusion extends TargettedSkill {
 
     public String getDescription(Hero hero) {
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 130, false);
-        healing = getScaledHealing(hero, healing);
+        int healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 130, false);
+        healing = (int) getScaledHealing(hero, healing);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.8, false);
-        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
+        healing += (int)(hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 85, false);
         int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 110, false);

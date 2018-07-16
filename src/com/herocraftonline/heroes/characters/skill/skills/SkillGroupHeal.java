@@ -44,7 +44,7 @@ public class SkillGroupHeal extends ActiveSkill
 		double healingIncrease = SkillConfigManager.getUseSetting(hero, this, "healing-increase-per-wisdom", 1, false);
 		healing += (healingIncrease * hero.getAttributeValue(AttributeType.WISDOM));
 
-		return getDescription().replace("$1", radius + "").replace("$2", healing + "");
+		return getDescription().replace("$1", radius + "").replace("$2", ((int)healing) + "");
 	}
 
 	@Override

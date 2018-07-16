@@ -41,7 +41,7 @@ public class SkillRadiance extends ActiveSkill
         String formattedDuration = String.valueOf((double) duration / 1000);
 
         return getDescription().replace("$1", radius + "")
-                .replace("$2", healing + "")
+                .replace("$2", ((int)healing) + "")
                 .replace("$3", formattedDuration);
     }
 

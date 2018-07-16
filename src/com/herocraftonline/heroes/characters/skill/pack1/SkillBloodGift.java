@@ -36,7 +36,7 @@ public class SkillBloodGift extends TargettedSkill {
 
         int healIncrease = (int) (SkillConfigManager.getUseSetting(hero, this, "health-increase-percent-per-blood-union", 0.04, false) * 100);
 
-        return getDescription().replace("$1", healing + "").replace("$2", healthCost + "").replace("$3", manacost + "").replace("$4", healIncrease + "");
+        return getDescription().replace("$1", ((int)healing) + "").replace("$2", healthCost + "").replace("$3", manacost + "").replace("$4", healIncrease + "");
     }
 
     public ConfigurationSection getDefaultConfig() {
