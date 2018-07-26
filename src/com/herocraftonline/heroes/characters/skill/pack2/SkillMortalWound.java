@@ -33,7 +33,7 @@ public class SkillMortalWound extends TargettedSkill {
     private String expireText;
 
     public SkillMortalWound(Heroes plugin) {
-        super(plugin, "MortalWoundEffect");
+        super(plugin, "MortalWound");
         setDescription("You strike your target reducing healing by $1%, and causing them to bleed for $2 damage over $3 seconds.");
         setUsage("/skill mortalwound");
         setArgumentRange(0, 0);
