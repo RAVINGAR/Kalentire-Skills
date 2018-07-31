@@ -27,8 +27,8 @@ public class SkillCharge
         setDescription("You execute a charging leap to your target (within $2 blocks), ramming them for $1 damage.");
         setUsage("/skill charge");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[]{"skill charge"});
-        setTypes(new SkillType[]{SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING});
+        setIdentifiers("skill charge");
+        setTypes(SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING);
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;
     }
@@ -60,6 +60,8 @@ public class SkillCharge
 
         final LivingEntity t = target;
 
+        final boolean[] targetInDifferentWorld = {false};
+
         this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
             public void run() {
                 final Location playerLoc = player.getLocation();
@@ -72,14 +74,25 @@ public class SkillCharge
                 player.setFallDistance(-20.0F);
                 new BukkitRunnable() {
                     public void run() {
-                        if (player.getLocation().distance(targetLoc) <= 2.0D) {
-                            player.setVelocity(player.getVelocity().multiply(0.3));
-                            cancel();
+                        if (player.getLocation().getWorld().equals(targetLoc.getWorld())) {
+                            //Same world
+                            if (player.getLocation().distance(targetLoc) <= 2.0D) {
+                                player.setVelocity(player.getVelocity().multiply(0.3));
+                                cancel();
+                            }
+                        } else {
+                            targetInDifferentWorld[0] = true;
+                            cancel(); //target entered another world, cancel charge
                         }
                     }
                 }.runTaskTimer(plugin, 0, 2);
             }
         }, 10L);
+
+        if (targetInDifferentWorld[0]){
+            player.sendMessage("Unable to harm the target at this time! Target changed world.");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
