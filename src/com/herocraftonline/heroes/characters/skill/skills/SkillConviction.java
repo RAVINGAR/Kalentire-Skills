@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -160,21 +161,27 @@ public class SkillConviction extends ActiveSkill {
                 return;
             }
 
-            CharacterTemplate character = SkillConviction.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            if (character.hasEffect("Conviction")) {
-                double damageModifier = ((ConvictionEffect) character.getEffect("Conviction")).damageModifier;
-                event.setDamage((event.getDamage() * damageModifier));
-            }           
+            Entity entity = event.getEntity();
+            if (entity instanceof LivingEntity) {
+                CharacterTemplate character = SkillConviction.this.plugin.getCharacterManager().getCharacter((LivingEntity) entity);
+                if (character.hasEffect("Conviction")) {
+                    double damageModifier = ((ConvictionEffect) character.getEffect("Conviction")).damageModifier;
+                    event.setDamage((event.getDamage() * damageModifier));
+                }
+            }
         }
         
         @EventHandler
         public void onSkillDamage(SkillDamageEvent event) {
-        	
-        	CharacterTemplate character = SkillConviction.this.plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-        	if(character.hasEffect("Conviction")) {
-        		double damageModifier = ((ConvictionEffect) character.getEffect("Conviction")).damageModifier;
-        		event.setDamage((event.getDamage() * damageModifier));
-        	}
+
+            Entity entity = event.getEntity();
+            if (entity instanceof LivingEntity) {
+                CharacterTemplate character = SkillConviction.this.plugin.getCharacterManager().getCharacter((LivingEntity) entity);
+                if (character.hasEffect("Conviction")) {
+                    double damageModifier = ((ConvictionEffect) character.getEffect("Conviction")).damageModifier;
+                    event.setDamage((event.getDamage() * damageModifier));
+                }
+            }
         }
     }
 }
