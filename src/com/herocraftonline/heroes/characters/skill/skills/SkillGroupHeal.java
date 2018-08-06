@@ -75,7 +75,7 @@ public class SkillGroupHeal extends ActiveSkill
 		{
 			HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(hero, healing, this, hero);
 			plugin.getServer().getPluginManager().callEvent(hrh);
-			hero.heal(healing * 2);
+			hero.heal(healing);
 		}
 		else 
 		{
@@ -96,15 +96,7 @@ public class SkillGroupHeal extends ActiveSkill
 
 				HeroRegainHealthEvent hrh = new HeroRegainHealthEvent(mem, healing, this, hero);
 				plugin.getServer().getPluginManager().callEvent(hrh);
-				if (mem == hero)
-				{
-					mem.heal(healing * 2);
-				}
-				else
-				{
-					mem.heal(healing);
-				}
-
+				mem.heal(healing);
 			}
 		}		
 
