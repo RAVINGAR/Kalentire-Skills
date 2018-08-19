@@ -50,7 +50,9 @@ public class SkillJudgement extends ActiveSkill implements Listener
             public void run() {
                 HashMap<JudgementEvent, Long> newJudgedEvents = new HashMap<JudgementEvent, Long>();
                 for (Map.Entry<JudgementEvent, Long> e : judgedEvents.entrySet()) {
-                    if (e.getValue() > System.currentTimeMillis() - 10000) newJudgedEvents.put(e.getKey(), e.getValue());
+                    if (e.getValue() > System.currentTimeMillis() - 10000){
+                        newJudgedEvents.put(e.getKey(), e.getValue());
+                    }
                 }
                 judgedEvents = newJudgedEvents;
             }
@@ -86,13 +88,18 @@ public class SkillJudgement extends ActiveSkill implements Listener
         new BukkitRunnable() {
             int index = 0;
             public void run() {
-                if (ap.getDelayedSkill() == null) cancel();
+                if (ap.getDelayedSkill() == null){
+                    cancel();
+                }
+
                 ArrayList<Location> circle = GeometryUtil.circle(p.getLocation().add(0, 0.4, 0), 32, radius);
                 for (int i = 0; i < 4; i++) {
                     Location l = circle.get(index);
                     l.getWorld().spigot().playEffect(l, Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.4F, 0.0F, 0.0F, 12, 128);
                     index++;
-                    if (index == circle.size()) index = 0;
+                    if (index == circle.size()){
+                        index = 0;
+                    }
                 }
             }
         }.runTaskTimer(plugin, 0, 1);
@@ -118,24 +125,36 @@ public class SkillJudgement extends ActiveSkill implements Listener
             HashMap<JudgementEvent, Long> newJudgedEvents = new HashMap<JudgementEvent, Long>(); // incidental cleanup
             for (Map.Entry<JudgementEvent, Long> entry : judgedEvents.entrySet()) {
                 if (entry.getValue() >= System.currentTimeMillis() - judgementPeriod) {
-                    if (entry.getKey().getDamager().equals(targAle) || entry.getKey().getDamaged().equals(targAle)) relevantEvents.add(entry.getKey());
+                    if (entry.getKey().getDamager().equals(targAle) || entry.getKey().getDamaged().equals(targAle)){
+                        relevantEvents.add(entry.getKey());
+                    }
                 }
-                else newJudgedEvents.put(entry.getKey(), entry.getValue());
+                else {
+                    newJudgedEvents.put(entry.getKey(), entry.getValue());
+                }
             }
             judgedEvents = newJudgedEvents;
             if (relevantEvents.isEmpty()) {
-                if (target instanceof Player) target.sendMessage(ChatComponents.GENERIC_SKILL + "You are not judged, for you have taken no action.");
+                if (target instanceof Player){
+                    target.sendMessage(ChatComponents.GENERIC_SKILL + "You are not judged, for you have taken no action.");
+                }
                 continue;
             }
             double damagedByTarget = 0.0D;
             double damageToTarget = 0.0D;
             for (JudgementEvent event : relevantEvents)
             {
-                if (targAle.equals(event.getDamager())) damagedByTarget += event.getDamage();
-                else if (targAle.equals(event.getDamaged())) damageToTarget += event.getDamage();
+                if (targAle.equals(event.getDamager())){
+                    damagedByTarget += event.getDamage();
+                }
+                else if (targAle.equals(event.getDamaged())){
+                    damageToTarget += event.getDamage();
+                }
             }
 
-            if (isAlly) ((Hero) targAle).heal(damageToTarget * healingPerDamageTaken);
+            if (isAlly){
+                ((Hero) targAle).heal(damageToTarget * healingPerDamageTaken);
+            }
             else {
                 addSpellTarget(target, ap);
                 damageEntity(target, p, damagedByTarget * damagePerDamageDealt, EntityDamageEvent.DamageCause.MAGIC, false);
@@ -157,12 +176,15 @@ public class SkillJudgement extends ActiveSkill implements Listener
                     public void run() {
                         if (ticks == maxTicks) cancel();
                         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.3F, 0.1F + (0.2F * ticks));
+                        ticks++;
                     }
                 }.runTaskTimer(plugin, 0, 1);
             }
             else {
                 target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0F, 0.5F);
-                if (target instanceof Player) target.sendMessage(ChatComponents.GENERIC_SKILL + "Divine judgement has been passed upon you!");
+                if (target instanceof Player){
+                    target.sendMessage(ChatComponents.GENERIC_SKILL + "Divine judgement has been passed upon you!");
+                }
             }
         }
 
@@ -172,14 +194,17 @@ public class SkillJudgement extends ActiveSkill implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void registerJudgementEvents(EntityDamageByEntityEvent e)
     {
-        if (!(e.getEntity() instanceof LivingEntity) || (!(e.getDamager() instanceof LivingEntity) && !(e.getDamager() instanceof Projectile))) return;
+        if (!(e.getEntity() instanceof LivingEntity) || (!(e.getDamager() instanceof LivingEntity) && !(e.getDamager() instanceof Projectile))){
+            return;
+        }
         CharacterTemplate dmgerAle = null;
-        if (e.getDamager() instanceof LivingEntity) dmgerAle = plugin.getCharacterManager().getCharacter((LivingEntity) e.getDamager());
+        if (e.getDamager() instanceof LivingEntity) {
+            dmgerAle = plugin.getCharacterManager().getCharacter((LivingEntity) e.getDamager());
             // this next line is gross and full of parentheses - i'll have to do something about that. later. yeah.
-        // jk
-        else if (e.getDamager() instanceof Projectile
-                && ((Projectile) e.getDamager()).getShooter() instanceof LivingEntity) dmgerAle
-                = plugin.getCharacterManager().getCharacter((LivingEntity) (((Projectile) e.getDamager()).getShooter()));
+            // jk
+        } else if (e.getDamager() instanceof Projectile && ((Projectile) e.getDamager()).getShooter() instanceof LivingEntity) {
+            dmgerAle = plugin.getCharacterManager().getCharacter((LivingEntity) (((Projectile) e.getDamager()).getShooter()));
+        }
         if (dmgerAle == null) return;
         CharacterTemplate entAle = plugin.getCharacterManager().getCharacter(((LivingEntity) e.getEntity()));
         judgedEvents.put(new JudgementEvent(dmgerAle, entAle, e.getDamage()), System.currentTimeMillis());
