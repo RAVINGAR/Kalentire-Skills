@@ -23,6 +23,7 @@ package com.herocraftonline.heroes.characters.skill.pack2;
 
 import java.util.ArrayList;
 
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -182,7 +183,7 @@ public class SkillFireRune extends ActiveSkill {
                     targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
 
                     // Announce that the player has been hit with the skill
-                    broadcast(targEnt.getLocation(), "    " + applyText.replace("%target%", targCT.getName()));
+                    broadcast(targEnt.getLocation(), "    " + applyText.replace("%target%", CustomNameManager.getName(targCT)));
 
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
