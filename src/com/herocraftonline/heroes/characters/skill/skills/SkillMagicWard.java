@@ -77,6 +77,7 @@ public class SkillMagicWard extends ActiveSkill {
             case IRON_DOOR:
             case WOOD_DOOR:
             case TRAP_DOOR:
+            case SHIELD:
                 broadcastExecuteText(hero);
 
                 int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
@@ -87,10 +88,28 @@ public class SkillMagicWard extends ActiveSkill {
                 player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BLAZE_AMBIENT.value(), 0.8F, 1.0F);
 
                 return SkillResult.NORMAL;
-            default:
-                player.sendMessage("You must have a shield equipped to use this skill");
-                return SkillResult.FAIL;
         }
+
+        switch (NMSHandler.getInterface().getItemInOffHand(player.getInventory()).getType()) {
+            case IRON_DOOR:
+            case WOOD_DOOR:
+            case TRAP_DOOR:
+            case SHIELD:
+                broadcastExecuteText(hero);
+
+                int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+                double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
+
+                hero.addEffect(new MagicWardEffect(this, player, duration, damageReduction));
+
+                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BLAZE_AMBIENT.value(), 0.8F, 1.0F);
+
+                return SkillResult.NORMAL;
+        }
+
+        player.sendMessage("You must have a shield equipped to use this skill");
+        return SkillResult.FAIL;
+
     }
 
     public class SkillHeroListener implements Listener {

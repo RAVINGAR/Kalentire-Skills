@@ -118,6 +118,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
         for (Entity e : p.getNearbyEntities(radius, radius, radius))
         {
             if (!(e instanceof LivingEntity)) continue;
+
             LivingEntity target = (LivingEntity) e;
             CharacterTemplate targAle = plugin.getCharacterManager().getCharacter(target);
             HashSet<JudgementEvent> relevantEvents = new HashSet<JudgementEvent>();
