@@ -109,7 +109,6 @@ public class SkillMagicWard extends ActiveSkill {
 
         player.sendMessage("You must have a shield equipped to use this skill");
         return SkillResult.FAIL;
-
     }
 
     public class SkillHeroListener implements Listener {
@@ -133,9 +132,19 @@ public class SkillMagicWard extends ActiveSkill {
                 case IRON_DOOR:
                 case WOOD_DOOR:
                 case TRAP_DOOR:
+                case SHIELD:
                     double damageReduction = 1.0 - ((MagicWardEffect) defenderHero.getEffect("MagicWard")).damageReduction;
                     event.setDamage((event.getDamage() * damageReduction));
-                default:
+                    return;
+            }
+
+            switch (NMSHandler.getInterface().getItemInOffHand(defenderPlayer.getInventory()).getType()) {
+                case IRON_DOOR:
+                case WOOD_DOOR:
+                case TRAP_DOOR:
+                case SHIELD:
+                    double damageReduction = 1.0 - ((MagicWardEffect) defenderHero.getEffect("MagicWard")).damageReduction;
+                    event.setDamage((event.getDamage() * damageReduction));
             }
         }
     }
