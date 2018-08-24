@@ -49,6 +49,11 @@ public class SkillTeleport extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
+        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()){
+            player.sendMessage("You need to specify the party member to teleport to! Use /skill teleport <player>");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
         Player targetPlayer = plugin.getServer().getPlayer(args[0]);
         if (targetPlayer == null)
             return SkillResult.INVALID_TARGET;
