@@ -115,8 +115,12 @@ public class SkillJudgement extends ActiveSkill implements Listener
 
         broadcastExecuteText(ap);
 
+        p.sendMessage("DEBUG: radius of nearby entities = " + radius);
+
         for (Entity e : p.getNearbyEntities(radius, radius, radius))
         {
+            p.sendMessage("nearby entity = " + e.getName() + " " + (e instanceof LivingEntity ? "LE," : "")
+                + (e instanceof LivingEntity && e instanceof Player ? " P" : " Not P"));
             if (!(e instanceof LivingEntity)) continue;
 
             LivingEntity target = (LivingEntity) e;
@@ -134,6 +138,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
                     newJudgedEvents.put(entry.getKey(), entry.getValue());
                 }
             }
+            p.sendMessage("DEBUG: judgedEvents: " + newJudgedEvents.size() + " events");
             judgedEvents = newJudgedEvents;
             if (relevantEvents.isEmpty()) {
                 if (target instanceof Player){
