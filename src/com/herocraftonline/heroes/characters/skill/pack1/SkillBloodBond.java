@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack1;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -104,9 +105,10 @@ public class SkillBloodBond extends ActiveSkill {
         hero.addEffect(new BloodBondEffect(this, manaTick, manaTickPeriod, applyText, expireText));
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
-        for (int i = 0; i < circle(hero.getPlayer().getLocation(), 36, 1.5).size(); i++)
+        List<Location> circle = circle(hero.getPlayer().getLocation(), 36, 1.5);
+        for (int i = 0; i < circle.size(); i++)
 		{
-			hero.getPlayer().getWorld().spigot().playEffect(circle(hero.getPlayer().getLocation(), 36, 1.5).get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+			hero.getPlayer().getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
 		}
         return SkillResult.NORMAL;
     }
