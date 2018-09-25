@@ -70,8 +70,6 @@ public class SkillToss extends TargettedSkill {
 
         boolean weakenVelocity = false;
         switch (mat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
