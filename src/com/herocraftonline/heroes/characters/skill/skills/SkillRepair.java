@@ -27,8 +27,8 @@ public class SkillRepair extends ActiveSkill {
     public SkillRepair(Heroes plugin) {
         super(plugin, "Repair");
         setDescription("You are able to repair tools and armor. There is a $1% chance the item will be disenchanted.");
-        setUsage("/skill repair");
-        setArgumentRange(0, 0);
+        setUsage("/skill repair <hotbarslot>");
+        setArgumentRange(0, 1);
         setIdentifiers("skill repair");
         setTypes(SkillType.ITEM_MODIFYING, SkillType.ABILITY_PROPERTY_PHYSICAL);
     }
@@ -76,7 +76,26 @@ public class SkillRepair extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        ItemStack is = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
+        ItemStack is;
+        if (args == null || args.length < 1 ) {
+            is = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
+        } else {
+            int itemSlotNumber = 0;
+            try {
+                itemSlotNumber = Integer.parseInt(args[0]);
+            } catch (final NumberFormatException e){
+                player.sendMessage("That is not a valid slot number (0-8).");
+                return SkillResult.INVALID_TARGET_NO_MSG;
+            }
+
+            // Support only hotbar slots
+            if (itemSlotNumber > 8){
+                player.sendMessage("That is not a valid hotbar slot number (0-8).");
+                return SkillResult.INVALID_TARGET_NO_MSG;
+            }
+
+            is = player.getInventory().getItem(itemSlotNumber);
+        }
         Material isType = is.getType();
         int level = getRequiredLevel(hero, isType);
         Material reagent = getRequiredReagent(isType);
