@@ -13,12 +13,7 @@ import java.util.logging.Level;
 import com.herocraftonline.townships.users.TownshipsUser;
 import com.herocraftonline.townships.users.UserManager;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
@@ -371,7 +366,8 @@ public class SkillRecall extends ActiveSkill implements Listener {
             broadcastExecuteText(hero);
     
             player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
-            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+            //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, hero.getPlayer().getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.RED, 1));
         }
 
         // Removed for now until I have time to properly test it.
@@ -387,7 +383,9 @@ public class SkillRecall extends ActiveSkill implements Listener {
         player.teleport(teleportLocation);
 
         teleportLocation.getWorld().playSound(teleportLocation, CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
-        teleportLocation.getWorld().spigot().playEffect(teleportLocation, Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+        //teleportLocation.getWorld().spigot().playEffect(teleportLocation, Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+        hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, hero.getPlayer().getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.RED, 1));
+
 
         return SkillResult.NORMAL;
     }

@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -78,11 +80,14 @@ public class SkillCleave extends TargettedSkill {
 
             addSpellTarget(entity, hero);
             damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
+            // FIXME explore what particle replaces `TILE_BREAK`
             entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.5, 0), org.bukkit.Effect.TILE_BREAK, 115, 3, 0.3F, 0.2F, 0.3F, 0.5F, 5, 16);
         }
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_HURT.value(), 0.8F, 1.0F);
-        target.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.CRIT, 0, 0, 1.5F, 1.0F, 1.5F, 0.4F, 45, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.CRIT, 0, 0, 1.5F, 1.0F, 1.5F, 0.4F, 45, 16);
+        target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 45, 1.5, 1.5, 1.5, 0.4);
+        // FIXME explore what particle replaces `TILE_BREAK`
         target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.TILE_BREAK, 115, 3, 0.3F, 0.2F, 0.3F, 0.5F, 45, 16);
 
         return SkillResult.NORMAL;

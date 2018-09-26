@@ -10,10 +10,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -95,7 +92,8 @@ public class SkillJudgement extends ActiveSkill implements Listener
                 ArrayList<Location> circle = GeometryUtil.circle(p.getLocation().add(0, 0.4, 0), 32, radius);
                 for (int i = 0; i < 4; i++) {
                     Location l = circle.get(index);
-                    l.getWorld().spigot().playEffect(l, Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.4F, 0.0F, 0.0F, 12, 128);
+                    //l.getWorld().spigot().playEffect(l, Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.4F, 0.0F, 0.0F, 12, 128);
+                    l.getWorld().spawnParticle(Particle.SPELL_INSTANT, l, 12, 0, 0.4, 0, 0, true);
                     index++;
                     if (index == circle.size()){
                         index = 0;
@@ -200,12 +198,15 @@ public class SkillJudgement extends ActiveSkill implements Listener
                         + (damagedByTarget * damagePerDamageDealt) + " damage");
             }
 
+            // FIXME Looks like it actually does get used
             MovingParticle.createMovingParticle(target.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 1.5F, 0.5F,
                     0.0F, -0.1F, 0.0F, 0.0F, -0.2F, 0.0F, 125, 128, false, false);
             target.getWorld().strikeLightningEffect(target.getLocation());
-            target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.1F, 55, 128);
-            target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), (isAlly ? Effect.HAPPY_VILLAGER : Effect.PARTICLE_SMOKE), 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 55, 128);
-            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 1.0F, 2.0F);
+            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.1F, 55, 128);
+            target.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 1, 0), 55, 0.5, 0.5, 0.5, 0.1, true);
+            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), (isAlly ? Effect.HAPPY_VILLAGER : Effect.PARTICLE_SMOKE), 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 55, 128);
+            target.getWorld().spawnParticle((isAlly ? Particle.VILLAGER_HAPPY : Particle.VILLAGER_ANGRY), target.getLocation().add(0, 1, 0), 55, 0.5, 0.5, 0.5, 0, true);
+            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 2.0F);
             if (isAlly)
             {
                 target.sendMessage(ChatComponents.GENERIC_SKILL + "The divines heal a portion of your injuries.");
