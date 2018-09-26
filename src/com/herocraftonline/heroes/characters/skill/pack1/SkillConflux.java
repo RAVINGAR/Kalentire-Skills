@@ -188,6 +188,8 @@ public class SkillConflux extends ActiveSkill {
 
             Material belowMat = lEntity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
             switch (belowMat) {
+                case STATIONARY_WATER:
+                case STATIONARY_LAVA:
                 case WATER:
                 case LAVA:
                 case SOUL_SAND:
