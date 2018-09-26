@@ -3,10 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack2;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -190,7 +187,8 @@ public class SkillIronFist extends ActiveSkill {
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+				//player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
 			}
 		}
 

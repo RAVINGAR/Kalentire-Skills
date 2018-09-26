@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack2;
 
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -80,7 +81,8 @@ public class SkillHeadbutt extends TargettedSkill {
 
         target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_ENDERDRAGON_GROWL.value(), 0.7F, 2.0F);
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
         return SkillResult.NORMAL;
     }
 }
