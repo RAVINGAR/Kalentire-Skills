@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack5;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -80,8 +81,6 @@ public class SkillForcePull extends TargettedSkill {
 
         boolean weakenVelocity = false;
         switch (mat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -132,7 +131,8 @@ public class SkillForcePull extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 150, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;
     }

@@ -74,6 +74,8 @@ public class SkillForage extends ActiveSkill {
         int maxFinds = 0;
         //Get the list of foragable stuff here
         List<String> materialNames = new ArrayList<>();
+
+        //FIXME Someone with more knoladge of the skill should address this switch statement
         switch (biome) {
         default:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
@@ -81,21 +83,22 @@ public class SkillForage extends ActiveSkill {
         case TAIGA_HILLS:
         case FROZEN_OCEAN:
         case FROZEN_RIVER:
-        case ICE_FLATS:
-        case ICE_MOUNTAINS:
+        //case ICE_FLATS:
+        //case ICE_MOUNTAINS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
             chance = SkillConfigManager.getUseSetting(hero, this, "ice.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "ice.max-found", 3, false);
             break;
         case FOREST:
-        case FOREST_HILLS:
-        case EXTREME_HILLS:
-        case SMALLER_EXTREME_HILLS:
+        //case FOREST_HILLS:
+        //case EXTREME_HILLS:
+        //case SMALLER_EXTREME_HILLS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "forest.items", Arrays.asList(new String[] { "APPLE", "MELON" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "forest.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "forest.max-found", 3, false);
             break;
-        case SWAMPLAND:
+        case SWAMP:
+        case SWAMP_HILLS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "swamp.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "swamp.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "swamp.max-found", 4, false);
@@ -113,23 +116,28 @@ public class SkillForage extends ActiveSkill {
             break;
         case OCEAN:
         case RIVER:
-        case BEACHES:
+        case BEACH:
+        //case SNOWY_BEACH:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "water.items", Arrays.asList(new String[] { "RAW_FISH" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "water.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "water.max-found", 3, false);
             break;
-        case MUSHROOM_ISLAND_SHORE:
-        case MUSHROOM_ISLAND:
+        case MUSHROOM_FIELDS:
+        case MUSHROOM_FIELD_SHORE:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "mushroom.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "mushroom.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "mushroom.max-found", 2, false);
             break;
-        case HELL:
+        case NETHER:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[] { "ROTTEN_FLESH" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "hell.max-found", 1, false);
             break;
-        case SKY:
+        case THE_END:
+        case END_BARRENS:
+        case END_MIDLANDS:
+        case END_HIGHLANDS:
+        case SMALL_END_ISLANDS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "sky.items", Arrays.asList(new String[] { "VINE" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "sky.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "sky.max-found", 3, false);

@@ -3,10 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack5;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -117,8 +114,6 @@ public class SkillTremor extends ActiveSkill{
             Material mat = target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
 
             switch (mat) {
-                case STATIONARY_WATER:
-                case STATIONARY_LAVA:
                 case WATER:
                 case LAVA:
                 case SOUL_SAND:
@@ -158,7 +153,8 @@ public class SkillTremor extends ActiveSkill{
         }
 
         //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
-        player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3);
+        //player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getLocation(), 3, 0, 0, 0, 1);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
@@ -168,7 +164,8 @@ public class SkillTremor extends ActiveSkill{
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+				//player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
 			}
 		}
 

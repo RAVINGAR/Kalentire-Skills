@@ -93,7 +93,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         final int taskId = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override
             public void run() {
-                player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD);
+                //player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD);
+                player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 1, 0, 0, 0, 1);
             }
         }, 0, 1).getTaskId();
         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
@@ -149,30 +150,31 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                     if (b.getLocation().getBlockY() == loc.getBlockY() - 1) {
                         //TODO potentially make this section a Util.transparentBlocks
                         if (b.getType() != Material.AIR
-                                && b.getType() != Material.SIGN_POST
+                                //FIXME Will deal with this later, also may want to use nms physics for this as there is an easy method (will look into later).
+                                //&& b.getType() != Material.SIGN_POST
                                 && b.getType() != Material.CHEST
-                                && b.getType() != Material.STONE_PLATE
-                                && b.getType() != Material.WOOD_PLATE
+                                //&& b.getType() != Material.STONE_PLATE
+                                //&& b.getType() != Material.WOOD_PLATE
                                 && b.getType() != Material.WALL_SIGN
-                                && b.getType() != Material.WALL_BANNER
-                                && b.getType() != Material.STANDING_BANNER
-                                && b.getType() != Material.CROPS
-                                && b.getType() != Material.LONG_GRASS
-                                && b.getType() != Material.SAPLING
+                                //&& b.getType() != Material.WALL_BANNER
+                                //&& b.getType() != Material.STANDING_BANNER
+                                //&& b.getType() != Material.CROPS
+                                //&& b.getType() != Material.LONG_GRASS
+                                //&& b.getType() != Material.SAPLING
                                 && b.getType() != Material.DEAD_BUSH
-                                && b.getType() != Material.RED_ROSE
+                                //&& b.getType() != Material.RED_ROSE
                                 && b.getType() != Material.RED_MUSHROOM
                                 && b.getType() != Material.BROWN_MUSHROOM
                                 && b.getType() != Material.TORCH
                                 && b.getType() != Material.LADDER
                                 && b.getType() != Material.VINE
-                                && b.getType() != Material.DOUBLE_PLANT
-                                && b.getType() != Material.PORTAL
+//                                && b.getType() != Material.DOUBLE_PLANT
+//                                && b.getType() != Material.PORTAL
                                 && b.getType() != Material.CACTUS
                                 && b.getType() != Material.WATER
-                                && b.getType() != Material.STATIONARY_WATER
+//                                && b.getType() != Material.STATIONARY_WATER
                                 && b.getType() != Material.LAVA
-                                && b.getType() != Material.STATIONARY_LAVA
+//                                && b.getType() != Material.STATIONARY_LAVA
                                 && b.getType().isSolid() // Was an NMS call for 1.8 Spigot, this may not be as accurate
                                 && b.getType().getId() != 43
                                 && b.getType().getId() != 44
@@ -208,7 +210,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             event.setCancelled(true);
             fallingBlocks.remove(event.getEntity());
             FallingBlock fb = (FallingBlock) event.getEntity();
-            fb.getWorld().spigot().playEffect(fb.getLocation(), Effect.TILE_BREAK, fb.getBlockId(), fb.getBlockData(), 0, 0, 0, 0.4f, 50, 128);
+            //fb.getWorld().spigot().playEffect(fb.getLocation(), Effect.TILE_BREAK, fb.getBlockId(), fb.getBlockData(), 0, 0, 0, 0.4f, 50, 128);
+            fb.getWorld().spawnParticle(Particle.BLOCK_CRACK, fb.getLocation(), 50, 0, 0, 0, 0.4, fb.getBlockData());
             fb.getWorld().playSound(fb.getLocation(), CompatSound.BLOCK_STONE_STEP.value(), 1, 1);
             event.getEntity().remove();
         }
