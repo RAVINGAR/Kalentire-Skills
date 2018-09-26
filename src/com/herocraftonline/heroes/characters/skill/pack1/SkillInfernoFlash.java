@@ -89,8 +89,6 @@ public class SkillInfernoFlash extends ActiveSkill {
 
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         switch (mat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
