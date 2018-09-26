@@ -116,6 +116,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
         broadcastExecuteText(ap);
 
         p.sendMessage("DEBUG: radius of nearby entities = " + radius);
+        p.sendMessage("DEBUG: period of judgement (ms) = " + judgementPeriod);
 
         for (Entity e : p.getNearbyEntities(radius, radius, radius))
         {
@@ -138,7 +139,36 @@ public class SkillJudgement extends ActiveSkill implements Listener
                     newJudgedEvents.put(entry.getKey(), entry.getValue());
                 }
             }
-            p.sendMessage("DEBUG: judgedEvents: " + newJudgedEvents.size() + " events");
+            p.sendMessage("DEBUG: current time ms: " + System.currentTimeMillis());
+            p.sendMessage("DEBUG: relevantEvents: " + relevantEvents.size() + " events");
+            p.sendMessage("DEBUG: new judgedEvents: " + newJudgedEvents.size() + " events");
+
+            if (!relevantEvents.isEmpty()) {
+                p.sendMessage("DEBUG: relevantEvents Info: (damager, damaged, damage) [damager id, damaged id]");
+                int i = 1;
+                for (JudgementEvent event : relevantEvents){
+                    p.sendMessage(i + ". " + (event.getDamager().getEntity() instanceof Player ? event.getDamager().getName() : event.getDamager().getEntity().getCustomName())
+                            + ","
+                            + (event.getDamaged().getEntity() instanceof Player ? event.getDamaged().getName() : event.getDamaged().getEntity().getCustomName())
+                            + "," + event.getDamage()
+                            + "[" + event.getDamager().getEntity().getEntityId() + "," + event.getDamaged().getEntity().getEntityId() + "]");
+                    i++;
+                }
+            }
+            if (!newJudgedEvents.isEmpty()) {
+                p.sendMessage("DEBUG: new judgedEvents Info: (damager, damaged, damage) (time ms) [damager id, damaged id]");
+                int i = 1;
+                for (Map.Entry<JudgementEvent, Long> entry : newJudgedEvents.entrySet()){
+                    JudgementEvent event = entry.getKey();
+                    p.sendMessage(i + ". " + (event.getDamager().getEntity() instanceof Player ? event.getDamager().getName() : event.getDamager().getEntity().getCustomName())
+                            + ","
+                            + (event.getDamaged().getEntity() instanceof Player ? event.getDamaged().getName() : event.getDamaged().getEntity().getCustomName())
+                            + "," + event.getDamage() + " (" + entry.getValue() + ")"
+                            + "[" + event.getDamager().getEntity().getEntityId() + "," + event.getDamaged().getEntity().getEntityId() + "]");
+                    i++;
+                }
+            }
+
             judgedEvents = newJudgedEvents;
             if (relevantEvents.isEmpty()) {
                 if (target instanceof Player){
@@ -160,10 +190,14 @@ public class SkillJudgement extends ActiveSkill implements Listener
 
             if (isAlly){
                 ((Hero) targAle).heal(damageToTarget * healingPerDamageTaken);
+                p.sendMessage("DEBUG: Healed " + ((Hero) targAle).getPlayer().getName()
+                        + " (" + (damageToTarget * healingPerDamageTaken) + " amount)");
             }
             else {
                 addSpellTarget(target, ap);
                 damageEntity(target, p, damagedByTarget * damagePerDamageDealt, EntityDamageEvent.DamageCause.MAGIC, false);
+                p.sendMessage("DEBUG: Damaged " + target.getName() + " (" + target.getCustomName() + ") by "
+                        + (damagedByTarget * damagePerDamageDealt) + " damage");
             }
 
             MovingParticle.createMovingParticle(target.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 1.5F, 0.5F,
