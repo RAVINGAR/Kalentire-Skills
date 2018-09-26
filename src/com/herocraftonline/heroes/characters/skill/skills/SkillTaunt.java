@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -105,7 +106,8 @@ public class SkillTaunt extends ActiveSkill {
                 continue;
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 1.0F, 0.5F, 1.0F, 0.2F, 35, 16);
+            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 1.0F, 0.5F, 1.0F, 0.2F, 35, 16);
+            target.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation().add(0, 1, 0), 35, 1.0F, 0.5F, 1.0F, 0.2);
             targetCT.addEffect(tEffect);
         }
 

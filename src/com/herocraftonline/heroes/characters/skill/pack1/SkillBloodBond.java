@@ -29,6 +29,9 @@ import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBloodBond extends ActiveSkill {
+
+    private static final Particle.DustOptions skillEffectDustOptions = new Particle.DustOptions(Color.RED, 1);
+
     public SkillBloodBond(Heroes plugin) {
         super(plugin, "BloodBond");
         setDescription("Form a Blood Bond with your party. While bound, you convert $1% of your magic damage into health for you and all party members within a $2 block radius. Costs $4 health to use, and $3 mana per second to maintain the effect.");
@@ -106,7 +109,7 @@ public class SkillBloodBond extends ActiveSkill {
         for (int i = 0; i < circle.size(); i++)
 		{
 			//hero.getPlayer().getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
-            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, new Particle.DustOptions(Color.RED, 1), true);
+            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
 		}
         return SkillResult.NORMAL;
     }
@@ -157,7 +160,7 @@ public class SkillBloodBond extends ActiveSkill {
             for (int i = 0; i < circle.size(); i++)
     		{
             	//hero.getPlayer().getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
-                hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, new Particle.DustOptions(Color.RED, 1), true);
+                hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
     		}
 
             // Check if the hero has a party
