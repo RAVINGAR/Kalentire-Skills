@@ -1,11 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.pack2;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -100,12 +98,16 @@ public class SkillRuneword extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_DEATH.value(), 0.5F, 1.0F);
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0.1F, 1.0F, 0.1F, 0.1F, 30, 10);
-        
-        for (int i = 0; i < circle(target.getLocation(), 36, 1.5).size(); i++)
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0.1F, 1.0F, 0.1F, 0.1F, 30, 10);
+        player.getWorld().spawnParticle(Particle.SPELL_WITCH, player.getLocation(), 30, 0.1, 1, 0.1, 0.1);
+
+        List<Location> circle = circle(target.getLocation(), 36, 1.5);
+        for (int i = 0; i < circle.size(); i++)
 		{
-        	target.getWorld().spigot().playEffect(circle(target.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.PORTAL, 0, 0, 0.2F, 1.0F, 0.2F, 0.4F, 10, 16);
-        	target.getWorld().spigot().playEffect(circle(target.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.2F, 1.0F, 0.2F, 0.2F, 10, 16);
+        	//target.getWorld().spigot().playEffect(circle(target.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.PORTAL, 0, 0, 0.2F, 1.0F, 0.2F, 0.4F, 10, 16);
+            target.getWorld().spawnParticle(Particle.PORTAL, circle.get(i), 10, 0.2, 1, 0.2, 0.4);
+        	//target.getWorld().spigot().playEffect(circle(target.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.2F, 1.0F, 0.2F, 0.2F, 10, 16);
+            target.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, circle.get(i), 10, 0.2, 1, 0.2, 0.2);
 		}
 
         return SkillResult.NORMAL;

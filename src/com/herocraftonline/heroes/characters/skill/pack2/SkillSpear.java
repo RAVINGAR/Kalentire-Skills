@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack2;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -100,7 +101,8 @@ public class SkillSpear extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spawnParticle(Particle.CRIT, 25, 0, 0, 0, 1);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_HURT.value(), 0.8F, 1.0F);
 
         return SkillResult.NORMAL;

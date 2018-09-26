@@ -1,9 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -124,13 +126,17 @@ public class SkillChakra extends ActiveSkill {
 
 		broadcastExecuteText(hero);
 
-		for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+		List<Location> circle1 = circle(player.getLocation(), 72, radius);
+		for (int i = 0; i < circle1.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+			//player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+			player.getWorld().spawnParticle(Particle.SPELL_INSTANT, circle1.get(i), 16, 0, 0, 0, 0);
 		}
-		for (int i = 0; i < circle(player.getLocation(), 36, radius / 2).size(); i++)
+		List<Location> circle2 = circle(player.getLocation(), 36, radius / 2f);
+		for (int i = 0; i < circle2.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+			//player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+			player.getWorld().spawnParticle(Particle.SPELL_INSTANT, circle2.get(i), 16, 0, 0, 0, 0);
 		}
 		
 		player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);

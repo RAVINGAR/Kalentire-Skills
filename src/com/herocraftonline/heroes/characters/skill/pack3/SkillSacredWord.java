@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -49,13 +50,14 @@ public class SkillSacredWord extends SkillBaseHeal {
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.HAPPY_VILLAGER, // effect
-                0, // id
-                0, // data
-                1, 1, 1, // offset
-                1.0f, // speed
-                25, // particle count
-                1); // radius
+//        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+//                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+//                0, // id
+//                0, // data
+//                1, 1, 1, // offset
+//                1.0f, // speed
+//                25, // particle count
+//                1); // radius
+        world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(0, 0.5, 0), 25, 1, 1, 1, 1);
     }
 }

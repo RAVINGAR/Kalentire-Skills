@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -165,7 +166,8 @@ public class SkillWhirlwind extends ActiveSkill {
 				ArrayList<Location> locations = circle(player.getLocation(), 36, (double) h + 1.2);
 				for (int i = 0; i < locations.size(); i++)
 				{
-					player.getWorld().spigot().playEffect(locations.get(i).add(0, (double) h + 0.2, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 0, 8, 16);
+					//player.getWorld().spigot().playEffect(locations.get(i).add(0, (double) h + 0.2, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 0, 8, 16);
+					player.getWorld().spawnParticle(Particle.CLOUD, locations.get(i).add(0, (double) h + 0.2, 0), 8, 0, 0, 0, 0);
 				}
 			}
 

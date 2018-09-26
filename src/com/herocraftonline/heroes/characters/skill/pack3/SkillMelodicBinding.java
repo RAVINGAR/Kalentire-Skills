@@ -21,6 +21,7 @@ import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -118,6 +119,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
         hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
 
+        //FIXME No idea what to do here
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
@@ -164,7 +166,8 @@ public class SkillMelodicBinding extends ActiveSkill {
                 ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r);
                 for (int i = 0; i < particleLocations.size(); i++)
                 {
-                    player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                    //player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                    player.getWorld().spawnParticle(Particle.NOTE, particleLocations.get(i), 1, 0, 0.1, 0, 0);
                 }
             }
 

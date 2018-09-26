@@ -22,11 +22,9 @@ package com.herocraftonline.heroes.characters.skill.pack2;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -140,10 +138,12 @@ public class SkillToxicRune extends ActiveSkill {
         // Play Effects
         Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_AMBIENT.value(), 0.5F, 1.0F);
-        
-        for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+
+        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+        for (int i = 0; i < circle.size(); i++)
 		{
-        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+        	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, circle.get(i), 0, 0, 0, 0);
 		}
 
         return SkillResult.NORMAL;
@@ -205,7 +205,8 @@ public class SkillToxicRune extends ActiveSkill {
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
                     player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
-                    targCT.getEntity().getWorld().spigot().playEffect(targCT.getEntity().getLocation().add(0, 1, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.0F, 0.5F, 0.2F, 35, 16);
+                    //targCT.getEntity().getWorld().spigot().playEffect(targCT.getEntity().getLocation().add(0, 1, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.0F, 0.5F, 0.2F, 35, 16);
+                    targCT.getEntity().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, targCT.getEntity().getLocation(), 35, 0.5, 0, 0.5, 0.2);
                 }
             }, (long) (0.1 * 20));
 

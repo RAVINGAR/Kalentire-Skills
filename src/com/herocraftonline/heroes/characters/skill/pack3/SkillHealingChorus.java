@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack3;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -109,6 +110,7 @@ public class SkillHealingChorus extends ActiveSkill {
             hero.addEffect(new HealingChorusEffect(this, player, period, duration, healing));
         }
 
+        //FIXME No idea what to do here
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
@@ -142,7 +144,8 @@ public class SkillHealingChorus extends ActiveSkill {
                         Location location = p.getLocation();
                         if (time < 0.5)
                         {
-                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 1);
                         }
                         else
                         {

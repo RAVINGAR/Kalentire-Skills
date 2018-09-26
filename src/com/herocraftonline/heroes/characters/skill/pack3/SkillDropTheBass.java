@@ -14,11 +14,13 @@ import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SkillDropTheBass extends ActiveSkill {
 
@@ -98,9 +100,11 @@ public class SkillDropTheBass extends ActiveSkill {
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15, false);
 
-        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        List<Location> circle = circle(player.getLocation(), 72, radius);
+        for (int i = 0; i < circle.size(); i++)
         {
-            player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+            //player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+            player.getWorld().spawnParticle(Particle.NOTE, circle.get(i), 1, 0, 0.2, 0, 1);
         }
 
         double radiusSquared = Math.pow(radius, 2);
@@ -115,13 +119,15 @@ public class SkillDropTheBass extends ActiveSkill {
                     member.addEffect(new SafeFallEffect(theSkill, player, duration));
                 }
 
-                member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
+                //member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
+                member.getPlayer().getWorld().spawnParticle(Particle.CLOUD, member.getPlayer().getLocation(), 16, 0, 0, 0, 1);
             }
         }
         else {
             hero.addEffect(new SafeFallEffect(theSkill, player, duration));
         }
 
+        //FIXME No idea what to do here
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);

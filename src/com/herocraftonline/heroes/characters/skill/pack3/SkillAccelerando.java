@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.List;
 
 //import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
 
@@ -138,9 +139,11 @@ public class SkillAccelerando extends ActiveSkill {
 
         Location playerLoc = player.getLocation();
 
-        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        List<Location> circle = circle(playerLoc, 72, radius);
+        for (int i = 0; i < circle.size(); i++)
         {
-            player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+            //player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+            player.getWorld().spawnParticle(Particle.NOTE, circle.get(i), 1, 0, 0.2, 0, 1);
         }
 
         //Apply the effect to all party members
@@ -153,9 +156,11 @@ public class SkillAccelerando extends ActiveSkill {
                 continue;
 
             tHero.addEffect(accelEffect);
-            tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
+            //tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
+            tHero.getPlayer().getWorld().spawnParticle(Particle.CLOUD, tHero.getPlayer().getLocation(), 16, 0, 0, 0, 1);
         }
 
+        //FIXME No idea what to do here
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);

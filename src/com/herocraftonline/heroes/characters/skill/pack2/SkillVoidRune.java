@@ -22,12 +22,9 @@ package com.herocraftonline.heroes.characters.skill.pack2;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -132,10 +129,13 @@ public class SkillVoidRune extends ActiveSkill {
         // Play Effects
         Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_AMBIENT.value(), 0.5F, 1.0F);
-        
-        for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+
+        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+        for (int i = 0; i < circle.size(); i++)
 		{
-        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.ENDER_SIGNAL, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+        	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.ENDER_SIGNAL, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+            //TODO See if this works?
+            player.getWorld().playEffect(circle.get(i), Effect.ENDER_SIGNAL, 0);
 		}
 
         return SkillResult.NORMAL;
@@ -190,7 +190,8 @@ public class SkillVoidRune extends ActiveSkill {
                     // Damage and silence the target
                     addSpellTarget(targEnt, hero);
                     damageEntity((LivingEntity) targEnt, player, damage, DamageCause.MAGIC, false);
-                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.PORTAL, 0, 0, 0, 0, 0, 0.5F, 35, 16);
+                    //targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.PORTAL, 0, 0, 0, 0, 0, 0.5F, 35, 16);
+                    targEnt.getWorld().spawnParticle(Particle.PORTAL, targEnt.getLocation(), 35, 0, 0, 0, 0.5);
                     
                     VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, player, duration, applyText, expireText);
 

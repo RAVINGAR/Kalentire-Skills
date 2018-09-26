@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack2;
 
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -70,7 +71,8 @@ public class SkillMightyBlow extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spawnParticle(Particle.CRIT_MAGIC, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
         return SkillResult.NORMAL;
     }
 }

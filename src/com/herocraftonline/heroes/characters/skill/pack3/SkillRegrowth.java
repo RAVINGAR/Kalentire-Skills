@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -139,10 +140,12 @@ public class SkillRegrowth extends TargettedSkill {
         ArrayList<Location> particleLocations = helix(targetHero.getPlayer().getLocation(), 3.0D, 2.0D, 0.05D);
         for (Location l : particleLocations)
         {
-        	player.getWorld().spigot().playEffect(l, org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0, 0, 0, 0, 1, 16);
+        	//player.getWorld().spigot().playEffect(l, org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0, 0, 0, 0, 1, 16);
+        	player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, l, 1, 0, 0, 0, 0);
         }
         
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 35, 16);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 35, 16);
+        player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 35, 0.5, 1, 0.5, 1);
 
         return SkillResult.NORMAL;
     }
@@ -174,7 +177,8 @@ public class SkillRegrowth extends TargettedSkill {
         {
         	super.tickHero(hero);
         	Player player = hero.getPlayer();
-        	player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+        	//player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 25, 0.5, 1, 0.5, 1);
         }
     }
 }
