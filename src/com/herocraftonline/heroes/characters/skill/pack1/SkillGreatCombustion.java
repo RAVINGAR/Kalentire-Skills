@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -98,9 +99,13 @@ public class SkillGreatCombustion extends ActiveSkill {
             Location targetLocation = targetBlock.getLocation().clone();
             targetLocation.add(new Vector(.5, .5, .5));
 
+            //FIXME Figure out what to do with `LAVA_POP`
             player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.0, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 135, 16);
-            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
-            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 3, 16);
+            //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
+            //TODO Test if this replacement works.
+            player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
+            //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 3, 16);
+            player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, targetBlock.getLocation().add(0, 0.5, 0), 3, 0, 0, 0, 0);
             player.getWorld().playSound(targetBlock.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 6.0F, 1);
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);

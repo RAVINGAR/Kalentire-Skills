@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -97,9 +98,11 @@ public class SkillFireblast extends ActiveSkill {
         if (targetBlock != null) {
             Location blastLocation = targetBlock.getLocation().clone();
             blastLocation.add(new Vector(.5, 0, .5));
-            
+
+            //FIXME Figure out what to do with `LAVA_POP`
             player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
-            player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);
+            //player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);
+            player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, blastLocation, 10, 1,1,1,1);
             player.getWorld().playSound(blastLocation, CompatSound.ENTITY_GENERIC_EXPLODE.value(), 6.0F, 1);
             player.getWorld().playSound(blastLocation, CompatSound.BLOCK_FIRE_AMBIENT.value(), 8.0F, 1);
 

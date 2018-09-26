@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack1;
 
 import java.util.ArrayList;
 
+import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -63,7 +64,8 @@ public class SkillCauterize extends TargettedSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 1.6F, 1.3F);
-        player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SMOKE, 0, 0, 0.3F, 0.6F, 0.3F, 0.0F, 25, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SMOKE, 0, 0, 0.3F, 0.6F, 0.3F, 0.0F, 25, 16);
+        player.getWorld().spawnParticle(Particle.SMOKE_NORMAL, target.getLocation(), 25, 0.3, 0.3, 0.3, 0);
 
         return SkillResult.NORMAL;
     }

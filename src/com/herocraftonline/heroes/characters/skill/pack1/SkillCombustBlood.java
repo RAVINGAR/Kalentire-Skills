@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack1;
 
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -101,9 +102,12 @@ public class SkillCombustBlood extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         broadcastExecuteText(hero, target);
-        
+
+        //FIXME Figure out what to do with `LAVA_POP`
         player.getWorld().spigot().playEffect(target.getLocation(), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 75, 16);
-        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);
+        //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getEyeLocation(), 10, 0, 0, 0, 0);
+        //FIXME Explore replacement for `TILE_BREAK`
         player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
         player.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 10.0F, 16);
         player.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_FIRE_AMBIENT.value(), 10.0F, 16);

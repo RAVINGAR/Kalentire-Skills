@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -89,7 +90,8 @@ public class SkillDragonsBreath extends ActiveSkill {
 
         int numBlocks = 0;
         
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1, 1);
         
         while (iter.hasNext()) {
             tempBlock = iter.next();
@@ -119,7 +121,9 @@ public class SkillDragonsBreath extends ActiveSkill {
                     public void run() {
                         try {
                             for (Location location : locations) {
-                            	player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
+                            	//player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
+                                //TODO Test if this replacement works.
+                                player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

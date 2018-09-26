@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack1;
 
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -141,7 +142,9 @@ public class SkillBoilBlood extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) entity;
             
-            player.getWorld().spigot().playEffect(target.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0, 0, 0, 0.2F, 50, 16);
+            //player.getWorld().spigot().playEffect(target.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0, 0, 0, 0.2F, 50, 16);
+            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getLocation(), 50, 0, 0, 0, 0.2);
+            //FIXME Explore replacement for `TILE_BREAK`
             player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
             player.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_LAVA_AMBIENT.value(), 10.0F, 16);
 

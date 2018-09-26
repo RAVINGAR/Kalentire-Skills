@@ -2,10 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack1;
 
 import java.util.ArrayList;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -111,7 +108,9 @@ public class SkillInfernoFlash extends ActiveSkill {
         }
         while (iter.hasNext()) {
             currentBlock = iter.next();
-            currentBlock.getWorld().spigot().playEffect(currentBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
+            //currentBlock.getWorld().spigot().playEffect(currentBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
+            //TODO Test if this replacement works.
+            player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
             Material currentBlockType = currentBlock.getType();
 
             if (Util.transparentBlocks.contains(currentBlockType)) {
@@ -146,9 +145,11 @@ public class SkillInfernoFlash extends ActiveSkill {
             ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
             for (int i = 0; i < locations.size(); i++)
     		{
-    			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+    			//player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+                player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
     		}
-            teleport.getWorld().spigot().playEffect(teleport, Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 45, 16);
+            //teleport.getWorld().spigot().playEffect(teleport, Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 45, 16);
+            player.getWorld().spawnParticle(Particle.FLAME, teleport, 45, 0.5, 0.5, 0.5, 0.5);
             player.teleport(teleport);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
             player.getWorld().playSound(loc, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);

@@ -101,7 +101,9 @@ public class SkillBloodRitual extends TargettedSkill {
         buEffect.setBloodUnionLevel(0);
         
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.5F, 1.0F);
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        //TODO Test if this replacement works.
+        player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
         return SkillResult.NORMAL;
     }
 }
