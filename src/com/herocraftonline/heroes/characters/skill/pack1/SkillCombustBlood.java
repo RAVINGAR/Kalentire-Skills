@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack1;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -108,7 +109,8 @@ public class SkillCombustBlood extends TargettedSkill {
         //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);
         player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getEyeLocation(), 10, 0, 0, 0, 0);
         //FIXME Explore replacement for `TILE_BREAK`
-        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
+        //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
+        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 16, 0, 0.1, 0, 0.1, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
         player.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 10.0F, 16);
         player.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_FIRE_AMBIENT.value(), 10.0F, 16);
 
