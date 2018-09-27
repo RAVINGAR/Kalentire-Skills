@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.public1;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -94,7 +95,8 @@ public class SkillFlameshield extends ActiveSkill {
         ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
         for (int i = 0; i < locations.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+            //player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+            player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
 		}
 
         player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_FIRE_AMBIENT.value(), 0.4F, 1.0F);

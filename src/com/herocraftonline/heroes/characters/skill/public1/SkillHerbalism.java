@@ -120,6 +120,7 @@ public class SkillHerbalism extends PassiveSkill {
 			int extraDrops = 0;
 			Material mat = null;
 			switch (block.getType()) {
+			//FIXME MC Flatening makes this a pain
 			case CROPS:                    
 				mat = Material.WHEAT;
 				extraDrops = 3;
@@ -159,7 +160,8 @@ public class SkillHerbalism extends PassiveSkill {
 			}
 			if (mat != null) {
 				block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(mat, extraDrops));
-			} 
+			}
+			//FIXME Not up for mass enum additions atm
 			else if (block.getType() == Material.LEAVES || block.getType() == Material.LEAVES_2)
 			{
 				block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, transmuteLeaves(block.getType(), block.getData())));

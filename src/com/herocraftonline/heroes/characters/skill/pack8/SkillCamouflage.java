@@ -52,6 +52,7 @@ public class SkillCamouflage extends ActiveSkill {
         allowedMaterials.add(Material.JUNGLE_LEAVES);
         allowedMaterials.add(Material.OAK_LEAVES);
         allowedMaterials.add(Material.SPRUCE_LEAVES);
+        //FIXME Not sure about this stuff
         allowedMaterials.add(Material.LONG_GRASS);
         allowedMaterials.add(Material.CACTUS);
         allowedMaterials.add(Material.HUGE_MUSHROOM_1);
