@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -83,7 +84,8 @@ public class SkillDivineBlessing extends ActiveSkill {
 				if (time < 1.0) 
 				{
 					player.getLocation(playerLoc).add(0.7 * Math.sin(time * 16), time * 2.2, 0.7 * Math.cos(time * 16));
-                    player.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.1f, 1, 16);			
+                    //player.getWorld().spigot().playEffect(playerLoc, Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0.1f, 1, 16);
+					player.getWorld().spawnParticle(Particle.SPELL_INSTANT, playerLoc, 1, 0, 0, 0, 0.1);
 				} 
 				else 
 				{
@@ -93,7 +95,8 @@ public class SkillDivineBlessing extends ActiveSkill {
 						ArrayList<Location> particleLocations = circle(playerLoc, 36, r / 2);
 						for (int i = 0; i < particleLocations.size(); i++)
 						{
-							playerLoc.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+							//playerLoc.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+							playerLoc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
 						}
 					}
 					cancel();

@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack4;
 
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -65,7 +66,8 @@ public class SkillEnergize extends ActiveSkill {
         if (hero.isVerboseStamina())
             player.sendMessage(ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), true));
 
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0, 45, 16);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0, 45, 16);
+        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, player.getLocation(), 45, 0.5, 1, 0.5, 0);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 1.0F);
 
         return SkillResult.NORMAL;

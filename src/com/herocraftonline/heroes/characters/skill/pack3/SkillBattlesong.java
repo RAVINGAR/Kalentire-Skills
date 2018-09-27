@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -104,6 +105,7 @@ public class SkillBattlesong extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
+        //FIXME What do I do here
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
         player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
@@ -146,6 +148,7 @@ public class SkillBattlesong extends ActiveSkill {
                         Location location = p.getLocation();
                         if (time < 0.8)
                         {
+                            //FIXME What do I do here?
                             p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
                         }
                         else
@@ -186,7 +189,8 @@ public class SkillBattlesong extends ActiveSkill {
                             HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(member, staminaRestore, skill);
                             plugin.getServer().getPluginManager().callEvent(hrsEvent);
                             if (!hrsEvent.isCancelled()) {
-                                member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+                                //member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+                                member.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, member.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
                                 member.setStamina(hrsEvent.getDelta() + member.getStamina());
                             }
                         }
@@ -197,7 +201,8 @@ public class SkillBattlesong extends ActiveSkill {
                 HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
                 plugin.getServer().getPluginManager().callEvent(hrsEvent);
                 if (!hrsEvent.isCancelled()) {
-                    hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+                    //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+                    hero.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, hero.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
 
                     hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
                 }

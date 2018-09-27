@@ -73,6 +73,7 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
                     hero.removeEffect(effect);
+                    //FIXME What is the replacement for this
                     hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.EXTINGUISH, 0, 0, 0, 0.4F, 0, 0.7F, 35, 16);
                     hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
                 }

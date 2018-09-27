@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -77,7 +78,8 @@ public class SkillMegabolt extends TargettedSkill {
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
         target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), lightningVolume, 1.0F);
         target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), lightningVolume, 1.0F);
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_HUGE, 0, 0, 0, 0, 0, 0, 1, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_HUGE, 0, 0, 0, 0, 0, 0, 1, 16);
+        target.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, target.getLocation(), 1, 0, 0, 0, 0);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 

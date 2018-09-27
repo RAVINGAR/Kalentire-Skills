@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack6;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -65,7 +66,8 @@ public class SkillInnervate extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
         
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0, 0.9F, 0, 0.1F, 65, 11);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0, 0.9F, 0, 0.1F, 65, 11);
+        player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 65, 0, 0.9, 0, 0.1);
 
         return SkillResult.NORMAL;
     }

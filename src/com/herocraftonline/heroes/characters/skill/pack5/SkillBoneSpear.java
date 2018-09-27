@@ -102,8 +102,10 @@ public class SkillBoneSpear extends ActiveSkill {
                     	
                         //attempting spigot particles
                     	// Why does it play a bunch of crit particles every block the spear travels?
-                        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-                        player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 4, 16);                        
+                        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                        player.getWorld().spawnParticle(Particle.CRIT, player.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
+                        //player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 4, 16);
+                        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation, 4, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.QUARTZ_BLOCK));
                         
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {

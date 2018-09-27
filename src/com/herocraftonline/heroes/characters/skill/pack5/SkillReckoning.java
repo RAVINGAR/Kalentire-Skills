@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -139,9 +140,11 @@ public class SkillReckoning extends ActiveSkill {
         }
 
 
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.CLOUD, 3);
+        //TODO Test if this does the trick
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 2.5, 0), 3, 0, 0, 0, 1);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), 0.0F, 0.0F);
         //player.getWorld().strikeLightningEffect(player.getLocation());
         // remove because of things and stuff.

@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack5;
 
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -77,7 +78,8 @@ public class SkillDuskblade extends TargettedSkill {
         
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_HURT.value(), 0.8F, 1.0F);
         
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.INSTANT_SPELL, 0, 0, 0, 0.1F, 0, 0.1F, 20, 5);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.INSTANT_SPELL, 0, 0, 0, 0.1F, 0, 0.1F, 20, 5);
+        player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 20, 0, 0.1, 0, 0.1);
 
         return SkillResult.NORMAL;
     }

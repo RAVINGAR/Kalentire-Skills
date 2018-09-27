@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -100,7 +101,8 @@ public class SkillDarkBlade extends TargettedSkill {
                 player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
         }
 
-        player.getWorld().spigot().playEffect(target.getEyeLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 35, 16);
+        //player.getWorld().spigot().playEffect(target.getEyeLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 35, 16);'
+        player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0), 35, 0, 0, 0, 1);
         player.getWorld().playSound(target.getLocation(), CompatSound.AMBIENT_CAVE.value(), 5.0F, 0.2F);
         return SkillResult.NORMAL;
     }

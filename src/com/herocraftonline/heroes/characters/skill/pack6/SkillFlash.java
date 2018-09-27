@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack6;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,8 +69,6 @@ public class SkillFlash extends ActiveSkill {
 
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         switch (mat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -123,9 +122,11 @@ public class SkillFlash extends ActiveSkill {
             teleport.setPitch(loc.getPitch());
             teleport.setYaw(loc.getYaw());
 
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1.5F, 35, 16);
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1.5F, 35, 16);
+            player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 35, 0, 0, 0, 1.5);
             player.teleport(teleport);
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1.5F, 35, 16);
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1.5F, 35, 16);
+            player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 35, 0, 0, 0, 1.5);
             player.getWorld().playSound(loc, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
 
             return SkillResult.NORMAL;

@@ -1,6 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -57,7 +60,8 @@ public class SkillIre extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         
-        target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, org.bukkit.Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 75, 16);
+        //target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, org.bukkit.Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 75, 16);
+        target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation(), 75, 0.2, 0.2, 0.2, 0.1, Bukkit.createBlockData(Material.DIRT));
         target.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_GRAVEL_HIT.value(), 7.0F, 0.6F);
 
         return SkillResult.NORMAL;

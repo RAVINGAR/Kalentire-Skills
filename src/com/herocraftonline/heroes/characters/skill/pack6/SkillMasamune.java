@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -104,7 +105,8 @@ public class SkillMasamune extends ActiveSkill {
         // hero.addEffect(healEffect);
         hero.addEffect(slowEffect);        
 
-        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
+        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;
     }

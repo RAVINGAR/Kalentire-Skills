@@ -140,6 +140,7 @@ public class SkillDoomwave extends ActiveSkill {
 
             doomPearls.remove(projectile);
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
+            //FIXME What is the replacement for LAVA_POP
             targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5, 0), Effect.LAVA_POP, 0, 0, 0.2F, 0.2F, 0.2F, 0.4F, 45, 16);
             ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof Entity))
