@@ -2,10 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack7;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -184,7 +181,8 @@ public class SkillHolyAura extends ActiveSkill {
     			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
     			for (int i = 0; i < particleLocations.size(); i++)
     			{
-    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+    				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+                    player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
     			}
     		}
 

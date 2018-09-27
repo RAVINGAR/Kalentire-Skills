@@ -209,6 +209,7 @@ public class SkillRampartVine extends ActiveSkill {
                             data |= VINE_EAST;
                         }
 
+                        //FIXME Idk what to do here (Soren)
                         workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
 
                         break;

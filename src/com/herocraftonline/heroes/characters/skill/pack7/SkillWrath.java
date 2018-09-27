@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -78,12 +79,19 @@ public class SkillWrath extends TargettedSkill {
 
         //public void playEffect(Location location, Effect effect, int_ id, int_ data, float_ offsetX, float_ offsetY, float_ offsetZ, float_ speed, int_ particleCount, int_ radius)
         //public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 1, 1, 1F, 1F, 1F, 1F, 30, 10);
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 1, 1, 10F, 1F, 1F, 50F, 30, 10);
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.PORTAL, 1, 1, 0F, 0F, 0F, 10F, 200, 10);
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.PORTAL, 1, 1, -5F, -5F, -5F, 10F, 100, 10);
+
+        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 1, 1, 1F, 1F, 1F, 1F, 30, 10);
+        target.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation(), 30, 1, 1, 1, 1);
+        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.VILLAGER_THUNDERCLOUD, 1, 1, 10F, 1F, 1F, 50F, 30, 10);
+        target.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation(), 30, 10, 1, 1, 50);
+        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.PORTAL, 1, 1, 0F, 0F, 0F, 10F, 200, 10);
+        target.getWorld().spawnParticle(Particle.PORTAL, target.getLocation(), 200, 0, 0, 0, 10);
+        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.PORTAL, 1, 1, -5F, -5F, -5F, 10F, 100, 10);
+        target.getWorld().spawnParticle(Particle.PORTAL, target.getLocation(), 100, 5, 5, 5, 10);
         player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
+        //FIXME What is the replacement for this
         player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.POTION_SWIRL, 0, 0, 0.3F, 0.3F, 0.3F, 25, 100, 20);
+
         /*player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(4.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(3.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);

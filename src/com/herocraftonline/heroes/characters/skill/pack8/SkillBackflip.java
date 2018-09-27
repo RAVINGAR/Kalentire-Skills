@@ -86,8 +86,6 @@ public class SkillBackflip extends ActiveSkill {
 
         boolean weakenVelocity = false;
         switch (belowMat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -162,12 +160,15 @@ public class SkillBackflip extends ActiveSkill {
     private static final Set<Material> requiredMaterials;
     static {
         requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.STATIONARY_WATER);
-        requiredMaterials.add(Material.STATIONARY_LAVA);
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEAVES);
+        requiredMaterials.add(Material.ACACIA_LEAVES);
+        requiredMaterials.add(Material.BIRCH_LEAVES);
+        requiredMaterials.add(Material.DARK_OAK_LEAVES);
+        requiredMaterials.add(Material.JUNGLE_LEAVES);
+        requiredMaterials.add(Material.OAK_LEAVES);
+        requiredMaterials.add(Material.SPRUCE_LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
 }

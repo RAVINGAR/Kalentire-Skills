@@ -36,19 +36,29 @@ public class SkillCamouflage extends ActiveSkill {
     private static Set<Material> allowedMaterials = EnumSet.noneOf(Material.class);
 
     static {
+        //FIXME Did the best I could
         allowedMaterials.add(Material.DIRT);
         allowedMaterials.add(Material.GRASS);
         allowedMaterials.add(Material.GRAVEL);
-        allowedMaterials.add(Material.LOG);
-        allowedMaterials.add(Material.LEAVES);
-        allowedMaterials.add(Material.LOG);
+        allowedMaterials.add(Material.ACACIA_LOG);
+        allowedMaterials.add(Material.BIRCH_LOG);
+        allowedMaterials.add(Material.DARK_OAK_LOG);
+        allowedMaterials.add(Material.JUNGLE_LOG);
+        allowedMaterials.add(Material.OAK_LOG);
+        allowedMaterials.add(Material.SPRUCE_LOG);
+        allowedMaterials.add(Material.ACACIA_LEAVES);
+        allowedMaterials.add(Material.BIRCH_LEAVES);
+        allowedMaterials.add(Material.DARK_OAK_LEAVES);
+        allowedMaterials.add(Material.JUNGLE_LEAVES);
+        allowedMaterials.add(Material.OAK_LEAVES);
+        allowedMaterials.add(Material.SPRUCE_LEAVES);
         allowedMaterials.add(Material.LONG_GRASS);
         allowedMaterials.add(Material.CACTUS);
         allowedMaterials.add(Material.HUGE_MUSHROOM_1);
         allowedMaterials.add(Material.HUGE_MUSHROOM_2);
         allowedMaterials.add(Material.MOSSY_COBBLESTONE);
-        allowedMaterials.add(Material.MYCEL);
-        allowedMaterials.add(Material.MELON_BLOCK);
+        allowedMaterials.add(Material.MYCELIUM);
+        allowedMaterials.add(Material.MELON);
         allowedMaterials.add(Material.PUMPKIN);
         allowedMaterials.add(Material.SAND);
         allowedMaterials.add(Material.SANDSTONE);

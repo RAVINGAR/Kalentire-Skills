@@ -215,10 +215,13 @@ public class SkillDarkBolt extends ActiveSkill {
         double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
         
         // Effects
-        darkBolt.getWorld().spigot().playEffect(darkBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0, 15, 16);
-        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        //darkBolt.getWorld().spigot().playEffect(darkBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0, 15, 16);
+        darkBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, darkBolt.getLocation(), 15, 1, 1, 1, 0);
+        List<Location> circle = circle(player.getLocation(), 72, radius);
+        for (int i = 0; i < circle.size(); i++)
 		{
-			darkBolt.getWorld().spigot().playEffect(circle(darkBolt.getLocation(), 72, radius).get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.2F, 0.3F, 0.2F, 0, 2, 16);
+			//darkBolt.getWorld().spigot().playEffect(circle(darkBolt.getLocation(), 72, radius).get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.2F, 0.3F, 0.2F, 0, 2, 16);
+            darkBolt.getWorld().spawnParticle(Particle.SPELL_WITCH, circle.get(i), 2, 0.2, 0.3, 0.2, 0);
 		}
 
         List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);

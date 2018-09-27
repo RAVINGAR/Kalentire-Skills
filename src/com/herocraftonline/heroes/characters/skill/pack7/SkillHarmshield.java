@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -101,7 +102,8 @@ public class SkillHarmshield extends ActiveSkill {
         ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
         for (int i = 0; i < locations.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 1.2F, 0, 0, 1, 16);
+			//player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 1.2F, 0, 0, 1, 16);
+            player.getWorld().spawnParticle(Particle.SPELL_WITCH, locations.get(i), 1, 0, 1.2, 0);
 		}
 
         return SkillResult.NORMAL;

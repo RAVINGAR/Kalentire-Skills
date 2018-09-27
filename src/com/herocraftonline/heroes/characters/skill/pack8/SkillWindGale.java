@@ -3,10 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack8;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -135,7 +132,8 @@ public class SkillWindGale extends ActiveSkill {
                     public void run() {
                         for (Location location : locations) {
                             location.getWorld().playSound(location, CompatSound.ENTITY_GENERIC_BURN.value(), 0.25F, 1.0F);
-                            location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 0.1F, 25, 16);
+                            //location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 0.1F, 25, 16);
+                            location.getWorld().spawnParticle(Particle.CLOUD, 25, 0, 0, 0, 0.1);
                         }
 
 
@@ -174,8 +172,6 @@ public class SkillWindGale extends ActiveSkill {
 
                             boolean weakenVelocity = false;
                             switch (mat) {
-                                case STATIONARY_WATER:
-                                case STATIONARY_LAVA:
                                 case WATER:
                                 case LAVA:
                                 case SOUL_SAND:

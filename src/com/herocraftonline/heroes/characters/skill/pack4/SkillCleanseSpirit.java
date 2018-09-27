@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -57,14 +58,15 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.HAPPY_VILLAGER, // effect
-                0, // id
-                0, // data
-                0.5F, 0.5F, 0.5F, // offset
-                1.0f, // speed
-                25, // particle count
-                16); // radius
+//        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+//                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+//                0, // id
+//                0, // data
+//                0.5F, 0.5F, 0.5F, // offset
+//                1.0f, // speed
+//                25, // particle count
+//                16); // radius
+        world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(0, 0.5, 0), 25, 0.5, 0.5, 0.5, 1);
     }
 
     @Override

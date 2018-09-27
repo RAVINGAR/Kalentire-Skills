@@ -1,7 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -75,7 +77,8 @@ public class SkillEviscerate extends TargettedSkill {
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_IRONGOLEM_HURT.value(), 0.4F, 2.0F);
         //player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_HURT.value(), 0.4F, 2.0F);
         
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.TILE_BREAK, 115, 3, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.TILE_BREAK, 115, 3, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
+        target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 1, 0), 45, 0.4, 0.2, 0.4, 0.3, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
 
         return SkillResult.NORMAL;
     }

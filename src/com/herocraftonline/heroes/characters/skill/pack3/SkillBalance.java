@@ -13,12 +13,14 @@ import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class SkillBalance extends ActiveSkill {
 
@@ -122,9 +124,11 @@ public class SkillBalance extends ActiveSkill {
                 else {
                     applyHero.getPlayer().sendMessage(ChatColor.GRAY + hero.getName() + " balanced your health with that of your party!");
                 }
-                for (int i = 0; i < circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5).size(); i++)
+                List<Location> circle = circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
+                for (int i = 0; i < circle.size(); i++)
         		{
-        			applyHero.getPlayer().getWorld().spigot().playEffect(circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+        			//applyHero.getPlayer().getWorld().spigot().playEffect(circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+        		    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, circle.get(i), 16, 0, 0, 0, 0);
         		}
             }
         }

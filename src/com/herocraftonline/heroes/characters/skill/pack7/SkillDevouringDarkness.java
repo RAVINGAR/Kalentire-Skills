@@ -17,6 +17,7 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -95,9 +96,12 @@ public class SkillDevouringDarkness extends ActiveSkill {
 
         hero.addEffect(new DevouringDarknessEffect(this, hero.getPlayer(), period, duration, radius));
 
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.FLYING_GLYPH, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
+        //player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 3);
+        player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, player.getLocation().add(0, 2.5, 0), 3, 0, 0, 0, 1);
+        //player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.FLYING_GLYPH, 3);
+        player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation().add(0, 2.5, 0), 3, 0, 0, 0, 1);
+        //player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), Effect.WITCH_MAGIC, 3);
+        player.getWorld().spawnParticle(Particle.SPELL_WITCH, player.getLocation().add(0, 2.5, 0), 3, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;
     }
@@ -140,7 +144,8 @@ public class SkillDevouringDarkness extends ActiveSkill {
             {
                 ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r);
                 for (Location particleLocation : particleLocations) {
-                    player.getWorld().spigot().playEffect(particleLocation.add(0, 0.1, 0), Effect.PARTICLE_SMOKE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                    //player.getWorld().spigot().playEffect(particleLocation.add(0, 0.1, 0), Effect.PARTICLE_SMOKE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                    player.getWorld().spawnParticle(Particle.SMOKE_NORMAL, particleLocation.add(0, 0.1, 0), 1, 0, 0.1, 0, 0);
                 }
             }
 
