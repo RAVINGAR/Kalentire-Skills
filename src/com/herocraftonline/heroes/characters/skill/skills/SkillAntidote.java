@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -48,9 +49,10 @@ public class SkillAntidote extends TargettedSkill {
             } else {
                 broadcastExecuteText(hero, target);
 
-                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
-                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
-                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
+//                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
+//                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
+//                player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.HAPPY_VILLAGER, 3);
+                player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation().add(0, 2.5, 0), 3, 0, 0, 0, 1);
             }
             return SkillResult.NORMAL;
         }

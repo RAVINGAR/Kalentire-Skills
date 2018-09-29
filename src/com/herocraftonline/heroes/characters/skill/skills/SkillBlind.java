@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -75,7 +76,8 @@ public class SkillBlind extends TargettedSkill {
 
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
 
-        player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+        player.getWorld().spawnParticle(Particle.SPELL, target.getLocation(), 10, 0, 0, 0, 0);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERMEN_AMBIENT.value(), 0.8F, 1.0F);
 
         return SkillResult.NORMAL;

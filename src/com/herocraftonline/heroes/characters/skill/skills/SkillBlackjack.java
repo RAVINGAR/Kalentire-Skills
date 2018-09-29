@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -120,7 +122,8 @@ public class SkillBlackjack extends TargettedSkill {
             }
         }
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 150, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1, new Particle.DustOptions(Color.BLACK, 1));
         return SkillResult.NORMAL;
     }
 }

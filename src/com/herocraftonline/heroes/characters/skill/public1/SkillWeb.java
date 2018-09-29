@@ -141,7 +141,7 @@ public class SkillWeb extends TargettedSkill {
                 case AIR:
                     changedBlocks.add(location);
                     this.locations.add(location);
-                    location.getBlock().setType(Material.WEB);
+                    location.getBlock().setType(Material.COBWEB);
                 default:
             }
         }

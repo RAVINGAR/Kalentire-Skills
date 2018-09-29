@@ -13,11 +13,7 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -166,7 +162,8 @@ public class SkillBlizzard extends ActiveSkill {
                     Vector vel = new Vector(randomX, -yVelocity, randomZ);
 
                     Snowball iceBolt = world.spawn(fLoc, Snowball.class);
-                    iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                    //iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                    iceBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, iceBolt.getLocation(), 2, 0.4, 0.4, 0.4, 0);
                     iceBolt.setShooter(player);
                     iceBolt.setVelocity(vel);
                     blizzardIceBolts.put(iceBolt, System.currentTimeMillis());
