@@ -130,28 +130,28 @@ public class SkillRepair extends ActiveSkill {
             case LEATHER_BOOTS:
             case IRON_BOOTS:
             case CHAINMAIL_BOOTS:
-            case GOLD_BOOTS:
+            case GOLDEN_BOOTS:
             case DIAMOND_BOOTS:
                 amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 3.0);
                 return amt < 1 ? 1 : amt;
             case LEATHER_HELMET:
             case IRON_HELMET:
             case CHAINMAIL_HELMET:
-            case GOLD_HELMET:
+            case GOLDEN_HELMET:
             case DIAMOND_HELMET:
                 amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 4.0);
                 return amt < 1 ? 1 : amt;
             case LEATHER_CHESTPLATE:
             case IRON_CHESTPLATE:
             case CHAINMAIL_CHESTPLATE:
-            case GOLD_CHESTPLATE:
+            case GOLDEN_CHESTPLATE:
             case DIAMOND_CHESTPLATE:
                 amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 7.0);
                 return amt < 1 ? 1 : amt;
             case LEATHER_LEGGINGS:
             case IRON_LEGGINGS:
             case CHAINMAIL_LEGGINGS:
-            case GOLD_LEGGINGS:
+            case GOLDEN_LEGGINGS:
             case DIAMOND_LEGGINGS:
                 amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 6.0);
                 return amt < 1 ? 1 : amt;
@@ -162,20 +162,20 @@ public class SkillRepair extends ActiveSkill {
 
     private int getRequiredLevel(Hero hero, Material material) {
         switch (material) {
-            case WOOD_SWORD:
-            case WOOD_AXE:
+            case WOODEN_SWORD:
+            case WOODEN_AXE:
             case BOW:
                 return SkillConfigManager.getUseSetting(hero, this, "wood-weapons", 1, true);
-            case WOOD_HOE:
-            case WOOD_PICKAXE:
-            case WOOD_SPADE:
+            case WOODEN_HOE:
+            case WOODEN_PICKAXE:
+            case WOODEN_SHOVEL:
                 return SkillConfigManager.getUseSetting(hero, this, "wood-tools", 1, true);
             case STONE_SWORD:
             case STONE_AXE:
                 return SkillConfigManager.getUseSetting(hero, this, "stone-weapons", 1, true);
             case STONE_HOE:
             case STONE_PICKAXE:
-            case STONE_SPADE:
+            case STONE_SHOVEL:
                 return SkillConfigManager.getUseSetting(hero, this, "stone-tools", 1, true);
             case SHEARS:
                 return SkillConfigManager.getUseSetting(hero, this, "shears", 1, true);
@@ -191,24 +191,24 @@ public class SkillRepair extends ActiveSkill {
                 return SkillConfigManager.getUseSetting(hero, this, "iron-weapons", 1, true);
             case IRON_HOE:
             case IRON_PICKAXE:
-            case IRON_SPADE:
+            case IRON_SHOVEL:
                 return SkillConfigManager.getUseSetting(hero, this, "iron-tools", 1, true);
             case CHAINMAIL_HELMET:
             case CHAINMAIL_CHESTPLATE:
             case CHAINMAIL_BOOTS:
             case CHAINMAIL_LEGGINGS:
                 return SkillConfigManager.getUseSetting(hero, this, "chain-armor", 1, true);
-            case GOLD_CHESTPLATE:
-            case GOLD_LEGGINGS:
-            case GOLD_BOOTS:
-            case GOLD_HELMET:
+            case GOLDEN_CHESTPLATE:
+            case GOLDEN_LEGGINGS:
+            case GOLDEN_BOOTS:
+            case GOLDEN_HELMET:
                 return SkillConfigManager.getUseSetting(hero, this, "gold-armor", 1, true);
-            case GOLD_SWORD:
-            case GOLD_AXE:
+            case GOLDEN_SWORD:
+            case GOLDEN_AXE:
                 return SkillConfigManager.getUseSetting(hero, this, "gold-weapons", 1, true);
-            case GOLD_HOE:
-            case GOLD_PICKAXE:
-            case GOLD_SPADE:
+            case GOLDEN_HOE:
+            case GOLDEN_PICKAXE:
+            case GOLDEN_SHOVEL:
                 return SkillConfigManager.getUseSetting(hero, this, "gold-tools", 1, true);
             case DIAMOND_CHESTPLATE:
             case DIAMOND_LEGGINGS:
@@ -220,7 +220,7 @@ public class SkillRepair extends ActiveSkill {
                 return SkillConfigManager.getUseSetting(hero, this, "diamond-weapons", 1, true);
             case DIAMOND_HOE:
             case DIAMOND_PICKAXE:
-            case DIAMOND_SPADE:
+            case DIAMOND_SHOVEL:
                 return SkillConfigManager.getUseSetting(hero, this, "diamond-tools", 1, true);
             case LEATHER_BOOTS:
             case LEATHER_CHESTPLATE:
@@ -236,17 +236,18 @@ public class SkillRepair extends ActiveSkill {
 
     private Material getRequiredReagent(Material material) {
         switch (material) {
-            case WOOD_SWORD:
-            case WOOD_AXE:
-            case WOOD_HOE:
-            case WOOD_PICKAXE:
-            case WOOD_SPADE:
+            case WOODEN_SWORD:
+            case WOODEN_AXE:
+            case WOODEN_HOE:
+            case WOODEN_PICKAXE:
+            case WOODEN_SHOVEL:
+                // FIXME There are 6 types of wood now, what do here.
                 return Material.WOOD;
             case STONE_SWORD:
             case STONE_AXE:
             case STONE_HOE:
             case STONE_PICKAXE:
-            case STONE_SPADE:
+            case STONE_SHOVEL:
                 return Material.COBBLESTONE;
             case SHEARS:
             case FLINT_AND_STEEL:
@@ -258,17 +259,17 @@ public class SkillRepair extends ActiveSkill {
             case IRON_AXE:
             case IRON_HOE:
             case IRON_PICKAXE:
-            case IRON_SPADE:
+            case IRON_SHOVEL:
                 return Material.IRON_INGOT;
-            case GOLD_CHESTPLATE:
-            case GOLD_LEGGINGS:
-            case GOLD_BOOTS:
-            case GOLD_HELMET:
-            case GOLD_SWORD:
-            case GOLD_AXE:
-            case GOLD_HOE:
-            case GOLD_PICKAXE:
-            case GOLD_SPADE:
+            case GOLDEN_CHESTPLATE:
+            case GOLDEN_LEGGINGS:
+            case GOLDEN_BOOTS:
+            case GOLDEN_HELMET:
+            case GOLDEN_SWORD:
+            case GOLDEN_AXE:
+            case GOLDEN_HOE:
+            case GOLDEN_PICKAXE:
+            case GOLDEN_SHOVEL:
                 return Material.GOLD_INGOT;
             case DIAMOND_CHESTPLATE:
             case DIAMOND_LEGGINGS:
@@ -278,7 +279,7 @@ public class SkillRepair extends ActiveSkill {
             case DIAMOND_AXE:
             case DIAMOND_HOE:
             case DIAMOND_PICKAXE:
-            case DIAMOND_SPADE:
+            case DIAMOND_SHOVEL:
                 return Material.DIAMOND;
             case LEATHER_BOOTS:
             case LEATHER_CHESTPLATE:
@@ -292,7 +293,7 @@ public class SkillRepair extends ActiveSkill {
             case CHAINMAIL_CHESTPLATE:
             case CHAINMAIL_BOOTS:
             case CHAINMAIL_LEGGINGS:
-                return Material.IRON_FENCE;
+                return Material.IRON_BARS;
             default:
                 return null;
         }

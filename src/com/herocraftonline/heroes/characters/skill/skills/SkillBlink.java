@@ -1,8 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,8 +66,6 @@ public class SkillBlink extends ActiveSkill {
 
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         switch (mat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -123,10 +119,12 @@ public class SkillBlink extends ActiveSkill {
             teleport.setPitch(loc.getPitch());
             teleport.setYaw(loc.getYaw());
 
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.6F, 1.0F, 0.6F, 0.2F, 45, 16);
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.6F, 1.0F, 0.6F, 0.2F, 45, 16);
+            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 45, 0.6, 1, 0.6, 0.2, new Particle.DustOptions(Color.FUCHSIA, 1));
             player.teleport(teleport);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.6F, 1.0F, 0.6F, 0.2F, 45, 16);
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.6F, 1.0F, 0.6F, 0.2F, 45, 16);
+            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 45, 0.6, 1, 0.6, 0.2, new Particle.DustOptions(Color.FUCHSIA, 1));
             player.getWorld().playSound(loc, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
