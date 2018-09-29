@@ -3,11 +3,7 @@ package com.herocraftonline.heroes.characters.skill.public1;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -118,7 +114,8 @@ public class SkillEntangle extends TargettedSkill {
 		ArrayList<Location> particleLocations = circle(player.getLocation(), 36, 1.5);
 		for (int i = 0; i < particleLocations.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, Material.WOOD.getId(), 0, 0, 0.1F, 0, 0.0F, 1, 16);
+			//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, Material.WOOD.getId(), 0, 0, 0.1F, 0, 0.0F, 1, 16);
+			player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 1, 0, 0.1, 0, 0, Bukkit.createBlockData(Material.OAK_WOOD));
 		}
 
 		return SkillResult.NORMAL;

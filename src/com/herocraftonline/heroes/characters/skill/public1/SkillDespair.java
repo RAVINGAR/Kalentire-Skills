@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -137,7 +138,8 @@ public class SkillDespair extends ActiveSkill {
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.SPELL, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.SPELL, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                player.getWorld().spawnParticle(Particle.SPELL, particleLocations.get(i), 1, 0, 0.1, 0, 0);
 			}
 		}
 

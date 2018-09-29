@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -165,7 +166,8 @@ public class SkillExplosiveShot extends ActiveSkill {
 					if(explosiveShots.containsKey(p))
 					{												
 						Location loc = p.getLocation();
-						p.getWorld().spigot().playEffect(loc, org.bukkit.Effect.SMOKE, 0, 0, 0.0F, 0.1F, 0.0F, 0.0F, 1, 16);
+						//p.getWorld().spigot().playEffect(loc, org.bukkit.Effect.SMOKE, 0, 0, 0.0F, 0.1F, 0.0F, 0.0F, 1, 16);
+						p.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc, 1, 0, 0.1, 0, 0);
 					}
 					else
 					{
@@ -285,7 +287,8 @@ public class SkillExplosiveShot extends ActiveSkill {
         Hero hero = plugin.getCharacterManager().getHero(shooter);
 
         // BOOM - for some reason the code in the try/catch block down there isn't happy about the whole "working" thing
-        projectile.getWorld().spigot().playEffect(projectile.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 10, 16);
+        //projectile.getWorld().spigot().playEffect(projectile.getLocation(), org.bukkit.Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 10, 16);
+		projectile.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, projectile.getLocation(), 10, 1, 1, 1, 0);
         projectile.getWorld().playSound(projectile.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 1.0F, 1.0F);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
@@ -297,7 +300,8 @@ public class SkillExplosiveShot extends ActiveSkill {
         // Play explosion effect
         projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
         try {
-            projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
+            //projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
+			projectile.getWorld().spawnParticle(Particle.FLAME, projectile.getLocation().add(0, 0.9, 0), 700, 0, 0, 0, 1);
 
             //projectile.getWorld().playSound(projectile.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 1.0F, 1.0F);
 

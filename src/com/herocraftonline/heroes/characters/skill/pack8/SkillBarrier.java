@@ -1,11 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -126,9 +124,11 @@ public class SkillBarrier extends ActiveSkill {
 
 		hero.addEffect(new BarrierEffect(this, player, duration, slowAmplifier, disarmDuration));
 
-		for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+		for (int i = 0; i < circle.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+			//player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+            player.getWorld().spawnParticle(Particle.BLOCK_CRACK, circle.get(i), 4, 0.2, 1.5, 0.2, 0);
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
