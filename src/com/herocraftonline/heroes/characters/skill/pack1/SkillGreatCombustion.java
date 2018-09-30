@@ -99,8 +99,8 @@ public class SkillGreatCombustion extends ActiveSkill {
             Location targetLocation = targetBlock.getLocation().clone();
             targetLocation.add(new Vector(.5, .5, .5));
 
-            //FIXME Figure out what to do with `LAVA_POP`
-            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.0, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 135, 16);
+            //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.0, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 135, 16);
+            player.getWorld().spawnParticle(Particle.LAVA, targetBlock.getLocation().add(0, 1, 0), 135, 0, 0, 0, 1);
             //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
             //TODO Test if this replacement works.
             player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 1);

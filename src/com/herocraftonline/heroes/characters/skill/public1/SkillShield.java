@@ -40,6 +40,7 @@ public class SkillShield extends PassiveSkill {
 
 		//shieldNames.add("Worn Shield of Ironpass"); // I always put ArrayList components in the class constructor itself :P
 		shieldItems.add(Material.IRON_DOOR);
+		//FIXME Flattening
 		shieldItems.add(Material.WOOD_DOOR);
 		shieldItems.add(Material.TRAP_DOOR);
 	}
@@ -85,6 +86,7 @@ public class SkillShield extends PassiveSkill {
 			if (hero.hasEffect(getName())) {
 				Material type = NMSHandler.getInterface().getItemInOffHand(player.getInventory()).getType();
 				double multiplier = 1;
+				//FIXME Flattening (should make switch case
 				if (type == Material.IRON_DOOR) {
 					multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-door", 0.75, true);
 				} else if (type == Material.WOOD_DOOR) {

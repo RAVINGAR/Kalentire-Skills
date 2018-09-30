@@ -10,6 +10,7 @@ import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -96,12 +97,15 @@ public class SkillCharge
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0.4F, 0.4F, 0.4F, 0.3F, 55, 16);
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.PARTICLE_SMOKE, 0, 0, 0.4F, 0.4F, 0.4F, 0.3F, 25, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0.4F, 0.4F, 0.4F, 0.3F, 55, 16);
+        target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 55, 0.4, 0.4, 0.4, 0.3);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.PARTICLE_SMOKE, 0, 0, 0.4F, 0.4F, 0.4F, 0.3F, 25, 16);
+        target.getWorld().spawnParticle(Particle.SMOKE_NORMAL, target.getLocation().add(0, 0.5, 0), 25, 0.4, 0.4, 0.4, 0.3);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
         target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GRAVEL_BREAK, 1.0F, 0.5F);
 
-        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.2, 0), org.bukkit.Effect.CLOUD, 0, 0, 0.3F, 0.1F, 0.3F, 0.2F, 35, 16);
+        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.2, 0), org.bukkit.Effect.CLOUD, 0, 0, 0.3F, 0.1F, 0.3F, 0.2F, 35, 16);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 0.2, 0), 35, 0.3, 0.3, 0.3, 0.2);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_HORSE_JUMP, 1.0F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;

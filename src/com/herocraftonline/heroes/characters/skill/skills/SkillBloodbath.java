@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -83,8 +84,10 @@ public class SkillBloodbath extends PassiveSkill
 			{
 				hero.heal(healingAmount);
 			}
-			killer.getWorld().spigot().playEffect(killer.getLocation().add(0, 1, 0), Effect.COLOURED_DUST, 0, 0, 0.4F, 1.0F, 0.4F, 0.0F, 65, 16);
-			killer.getWorld().spigot().playEffect(killer.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 1.0F, 0.4F, 0.0F, 35, 16);
+			//killer.getWorld().spigot().playEffect(killer.getLocation().add(0, 1, 0), Effect.COLOURED_DUST, 0, 0, 0.4F, 1.0F, 0.4F, 0.0F, 65, 16);
+			killer.getWorld().spawnParticle(Particle.REDSTONE, killer.getLocation().add(0, 1, 0), 65, 0.4, 1, 0.4, 0);
+			//killer.getWorld().spigot().playEffect(killer.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 1.0F, 0.4F, 0.0F, 35, 16);
+			killer.getWorld().spawnParticle(Particle.SMOKE_LARGE, killer.getLocation().add(0, 1, 0), 35, 0.4, 1, 0.4, 0);
 			killer.getWorld().playSound(killer.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0F, 1.2F);
 		}
 	}

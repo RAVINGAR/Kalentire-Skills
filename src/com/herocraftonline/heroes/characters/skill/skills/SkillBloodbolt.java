@@ -7,10 +7,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -92,8 +89,10 @@ public class SkillBloodbolt extends ActiveSkill
 				else
 				{
 					bolts.remove(theBloodbolt);
-					theBloodbolt.getWorld().spigot().playEffect(theBloodbolt.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 65, 64);
-					theBloodbolt.getWorld().spigot().playEffect(theBloodbolt.getLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+					//theBloodbolt.getWorld().spigot().playEffect(theBloodbolt.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 65, 64);
+					theBloodbolt.getWorld().spawnParticle(Particle.REDSTONE, theBloodbolt.getLocation(), 65, 0.3, 0.3, 0.3, 0.0, new Particle.DustOptions(Color.RED, 1), true);
+					//theBloodbolt.getWorld().spigot().playEffect(theBloodbolt.getLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+					theBloodbolt.getWorld().spawnParticle(Particle.BLOCK_CRACK, theBloodbolt.getLocation(), 35, 0.3, 0.3, 0.3, 0.0, Bukkit.createBlockData(Material.NETHER_WART_BLOCK), true);
 					theBloodbolt.getWorld().playSound(theBloodbolt.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 1.0F, 1.3F);
 					theBloodbolt.remove();
 					cancel();
@@ -101,6 +100,7 @@ public class SkillBloodbolt extends ActiveSkill
 			}
 		}.runTaskTimer(plugin, 0, 20);
 
+		//FIXME Well fuck
 		EntityUtil.persistentFX(theBloodbolt, new Vector(0, 0, 0), Effect.COLOURED_DUST, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 45, 64, plugin, 0, 1);
 		EntityUtil.persistentFX(theBloodbolt, new Vector(0, 0, 0), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 64, plugin, 0, 1);
 
@@ -150,7 +150,8 @@ public class SkillBloodbolt extends ActiveSkill
 			damageEntity(target, player, damage, DamageCause.MAGIC, false);
 			hero.heal(damage * (healthRestored/100));
 
-			target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 100, 16);
+			//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 100, 16);
+			target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 100, 0.3, 0.1, 0.3, new Particle.DustOptions(Color.RED, 1));
 			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 0.6F, 1.3F);
 			target.getWorld().playSound(target.getLocation(), Sound.WEATHER_RAIN, 1.0F, 1.0F);
 			target.getWorld().playSound(target.getLocation(), Sound.BLOCK_LAVA_AMBIENT, 1.0F, 1.0F);
@@ -169,8 +170,10 @@ public class SkillBloodbolt extends ActiveSkill
 				return;
 			}
 
-			snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 65, 64);
-			snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+			//snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 65, 64);
+			snowball.getWorld().spawnParticle(Particle.REDSTONE, snowball.getLocation(), 65, 0.3, 0.3, 0.3, 0.0, new Particle.DustOptions(Color.RED, 1), true);
+			//snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+			snowball.getWorld().spawnParticle(Particle.BLOCK_CRACK, snowball.getLocation(), 35, 0.3, 0.3, 0.3, 0.0, Bukkit.createBlockData(Material.NETHER_WART_BLOCK), true);
 			snowball.getWorld().playSound(snowball.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 0.6F, 1.3F);
 			snowball.getWorld().playSound(snowball.getLocation(), Sound.WEATHER_RAIN, 1.0F, 1.0F);
 			snowball.getWorld().playSound(snowball.getLocation(), Sound.BLOCK_LAVA_AMBIENT, 1.0F, 1.0F);

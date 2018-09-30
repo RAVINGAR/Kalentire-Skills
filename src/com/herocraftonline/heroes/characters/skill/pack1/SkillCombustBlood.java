@@ -104,8 +104,8 @@ public class SkillCombustBlood extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        //FIXME Figure out what to do with `LAVA_POP`
-        player.getWorld().spigot().playEffect(target.getLocation(), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 75, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation(), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 75, 16);
+        player.getWorld().spawnParticle(Particle.LAVA, target.getLocation(), 75, 0, 0, 0, 1);
         //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);
         player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getEyeLocation(), 10, 0, 0, 0, 0);
         //FIXME Explore replacement for `TILE_BREAK`

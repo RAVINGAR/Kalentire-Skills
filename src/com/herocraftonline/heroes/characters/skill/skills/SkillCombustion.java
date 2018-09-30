@@ -5,10 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -127,9 +124,12 @@ public class SkillCombustion extends ActiveSkill {
             }.runTaskTimer(plugin, 1, 20);
 
         }
-        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 50, 16);
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 25, 16);
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 25, 16);
+        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 50, 16);
+        player.getWorld().spawnParticle(Particle.FLAME, player.getLocation().add(0, 0.5, 0), 50, 0.5, 0.2, 0.5, 0.6);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 25, 16);
+        player.getWorld().spawnParticle(Particle.LAVA, player.getLocation(), 25, 0.5, 0.2, 0.5, 0.6);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 25, 16);
+        player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation(), 25, 0.5, 0.2, 0.5, 0.6);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.3F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0F, 0.6F);
         player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 2);
@@ -197,8 +197,10 @@ public class SkillCombustion extends ActiveSkill {
             SmallFireball fireball = (SmallFireball) event.getEntity();
             if (!fireballs.containsKey(fireball)) return;
             else {
-                fireball.getWorld().spigot().playEffect(fireball.getLocation().add(0, 0.3, 0), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 25, 16);
-                fireball.getWorld().spigot().playEffect(fireball.getLocation().add(0, 0.3, 0), Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 5, 16);
+                //fireball.getWorld().spigot().playEffect(fireball.getLocation().add(0, 0.3, 0), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 25, 16);
+                fireball.getWorld().spawnParticle(Particle.LAVA, fireball.getLocation().add(0, 0.3, 0), 25, 0.5, 0.2, 0.5, 0);
+                //fireball.getWorld().spigot().playEffect(fireball.getLocation().add(0, 0.3, 0), Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 5, 16);
+                fireball.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, fireball.getLocation().add(0, 0.3, 0), 5, 0.5, 0.2, 0.5, 0);
                 fireball.getWorld().playSound(fireball.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
                 fireballs.remove(fireball);
                 fireball.remove();
