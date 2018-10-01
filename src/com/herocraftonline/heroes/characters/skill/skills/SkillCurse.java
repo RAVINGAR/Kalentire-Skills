@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -93,7 +94,8 @@ public class SkillCurse extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.8F, 1.0F);
         
-        target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
+        target.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation(), 35, 0.5, 1, 0.5, 0.5);
 
         return SkillResult.NORMAL;
     }
@@ -130,7 +132,8 @@ public class SkillCurse extends TargettedSkill {
                 CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
                 if (cEffect != null && Util.nextRand() < cEffect.getMissChance()) {
                     event.setCancelled(true);
-                    character.getEntity().getWorld().spigot().playEffect(character.getEntity().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
+                    //character.getEntity().getWorld().spigot().playEffect(character.getEntity().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
+                    character.getEntity().getWorld().spawnParticle(Particle.SPELL_WITCH, character.getEntity().getLocation(), 35, 0.5, 1, 0.5, 0.5);
                     broadcast(character.getEntity().getLocation(), missText.replace("%target%", CustomNameManager.getName(character)));
                 }
             }

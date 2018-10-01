@@ -92,8 +92,6 @@ public class SkillDisengage extends ActiveSkill
 
         boolean weakenVelocity = false;
         switch (belowMat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -135,8 +133,9 @@ public class SkillDisengage extends ActiveSkill
         player.setVelocity(velocity);
         player.setFallDistance(-8f);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 7.0F, 1.0F);
-		player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 7.0F, 1.0F);
+		//player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 25, 0, 0.1, 0, 0.5);
 
         return SkillResult.NORMAL;
     }
@@ -172,12 +171,15 @@ public class SkillDisengage extends ActiveSkill
     private static final Set<Material> nodisengageMaterials;
     static {
         nodisengageMaterials = new HashSet<Material>();
-        nodisengageMaterials.add(Material.STATIONARY_WATER);
-        nodisengageMaterials.add(Material.STATIONARY_LAVA);
         nodisengageMaterials.add(Material.WATER);
         nodisengageMaterials.add(Material.LAVA);
         nodisengageMaterials.add(Material.AIR);
-        nodisengageMaterials.add(Material.LEAVES);
+        nodisengageMaterials.add(Material.ACACIA_LEAVES);
+        nodisengageMaterials.add(Material.SPRUCE_LEAVES);
+        nodisengageMaterials.add(Material.OAK_LEAVES);
+        nodisengageMaterials.add(Material.JUNGLE_LEAVES);
+        nodisengageMaterials.add(Material.DARK_OAK_LEAVES);
+        nodisengageMaterials.add(Material.BIRCH_LEAVES);
         nodisengageMaterials.add(Material.SOUL_SAND);
     }
 }
