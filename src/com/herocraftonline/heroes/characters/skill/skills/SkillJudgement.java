@@ -199,8 +199,8 @@ public class SkillJudgement extends ActiveSkill implements Listener
             }
 
             // FIXME Looks like it actually does get used
-            MovingParticle.createMovingParticle(target.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 1.5F, 0.5F,
-                    0.0F, -0.1F, 0.0F, 0.0F, -0.2F, 0.0F, 125, 128, false, false);
+//            MovingParticle.createMovingParticle(target.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 1.5F, 0.5F,
+//                    0.0F, -0.1F, 0.0F, 0.0F, -0.2F, 0.0F, 125, 128, false, false);
             target.getWorld().strikeLightningEffect(target.getLocation());
             //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.1F, 55, 128);
             target.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 1, 0), 55, 0.5, 0.5, 0.5, 0.1, true);

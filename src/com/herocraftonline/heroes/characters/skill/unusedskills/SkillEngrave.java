@@ -50,22 +50,23 @@ public class SkillEngrave extends ActiveSkill {
         itemList.addAll(Util.armors);
         itemList.addAll(Util.tools);
         itemList.add(Material.NOTE_BLOCK.toString());
-        itemList.add(Material.JUKEBOX.toString());
-        itemList.add(Material.RECORD_3.toString());
-        itemList.add(Material.RECORD_4.toString());
-        itemList.add(Material.RECORD_5.toString());
-        itemList.add(Material.RECORD_6.toString());
-        itemList.add(Material.RECORD_7.toString());
-        itemList.add(Material.RECORD_8.toString());
-        itemList.add(Material.RECORD_9.toString());
-        itemList.add(Material.RECORD_10.toString());
-        itemList.add(Material.RECORD_11.toString());
-        itemList.add(Material.RECORD_12.toString());
-        itemList.add(Material.GREEN_RECORD.toString());
-        itemList.add(Material.GOLD_RECORD.toString());
-        itemList.add(Material.STICK.toString());
-        itemList.add(Material.RAW_FISH.toString());
-        itemList.add(Material.BLAZE_ROD.toString());
+        //FIXME It's in unused so I don't care but should be fixed.
+//        itemList.add(Material.JUKEBOX.toString());
+//        itemList.add(Material.RECORD_3.toString());
+//        itemList.add(Material.RECORD_4.toString());
+//        itemList.add(Material.RECORD_5.toString());
+//        itemList.add(Material.RECORD_6.toString());
+//        itemList.add(Material.RECORD_7.toString());
+//        itemList.add(Material.RECORD_8.toString());
+//        itemList.add(Material.RECORD_9.toString());
+//        itemList.add(Material.RECORD_10.toString());
+//        itemList.add(Material.RECORD_11.toString());
+//        itemList.add(Material.RECORD_12.toString());
+//        itemList.add(Material.GREEN_RECORD.toString());
+//        itemList.add(Material.GOLD_RECORD.toString());
+//        itemList.add(Material.STICK.toString());
+//        itemList.add(Material.RAW_FISH.toString());
+//        itemList.add(Material.BLAZE_ROD.toString());
 
         node.set("possible-items", itemList);
 

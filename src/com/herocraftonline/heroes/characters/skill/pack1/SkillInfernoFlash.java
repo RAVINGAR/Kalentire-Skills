@@ -109,8 +109,8 @@ public class SkillInfernoFlash extends ActiveSkill {
         while (iter.hasNext()) {
             currentBlock = iter.next();
             //currentBlock.getWorld().spigot().playEffect(currentBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
-            //TODO Test if this replacement works.
-            player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
+            //FIXME See if this is correct
+            player.getWorld().spawnParticle(Particle.FLAME, currentBlock.getLocation(), 1, 0, 0.5, 0, 0);
             Material currentBlockType = currentBlock.getType();
 
             if (Util.transparentBlocks.contains(currentBlockType)) {

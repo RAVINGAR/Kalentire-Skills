@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -171,7 +172,9 @@ public class SkillFirestrikeTotem extends SkillBaseTotem {
                  * offset controls how spread out the particles are
                  * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                  * */
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 150, 16);
+                //targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.6, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 1, 150, 16);
+                //FIXME See if this is correct
+                targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation().add(0, 0.6, 0), 150, 0, 0, 0, 1);
 
                 LivingEntity expectedTarget = homingFireballs.get(projectile);
                 Iterator<Entry<Egg, LivingEntity>> fireballIter = homingFireballs.entrySet().iterator();

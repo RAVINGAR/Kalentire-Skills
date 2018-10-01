@@ -119,7 +119,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
         hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
 
-        //FIXME No idea what to do here
+        //FIXME Is it a particle or a sound
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);

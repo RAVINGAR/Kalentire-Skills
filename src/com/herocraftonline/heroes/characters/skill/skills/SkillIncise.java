@@ -49,71 +49,75 @@ public class SkillIncise
             return SkillResult.INVALID_TARGET_NO_MSG;
         Player pt = (Player) target;
         if(pt.getInventory().getHelmet() != null){
-            switch(pt.getInventory().getHelmet().getTypeId()){
-                case 298: armorPoints+= 1;
-                    break;
-                case 302: armorPoints+= 2;
-                    break;
-                case 306:armorPoints+= 2;
-                    break;
-                case 310:armorPoints+= 3;
-                    break;
-                case 314:armorPoints+= 2;
-                    break;
-                default: armorPoints+=0;	//They aren't wearing a helm.
-                    break;
-            }
+            //FIXME raw data use
+//            switch(pt.getInventory().getHelmet().getTypeId()){
+//                case 298: armorPoints+= 1;
+//                    break;
+//                case 302: armorPoints+= 2;
+//                    break;
+//                case 306:armorPoints+= 2;
+//                    break;
+//                case 310:armorPoints+= 3;
+//                    break;
+//                case 314:armorPoints+= 2;
+//                    break;
+//                default: armorPoints+=0;	//They aren't wearing a helm.
+//                    break;
+//            }
         }
         //next switch statement: Chestplates!
         if(pt.getInventory().getChestplate() != null){
-            switch(pt.getInventory().getChestplate().getTypeId()){
-                case 299: armorPoints+= 3;
-                    break;
-                case 303: armorPoints+= 5;
-                    break;
-                case 307:armorPoints+= 6;
-                    break;
-                case 311:armorPoints+= 8;
-                    break;
-                case 315:armorPoints+= 5;
-                    break;
-                default: armorPoints+=0;  //They aren't wearing a chest.
-                    break;
-            }
+            //FIXME raw data use
+//            switch(pt.getInventory().getChestplate().getTypeId()){
+//                case 299: armorPoints+= 3;
+//                    break;
+//                case 303: armorPoints+= 5;
+//                    break;
+//                case 307:armorPoints+= 6;
+//                    break;
+//                case 311:armorPoints+= 8;
+//                    break;
+//                case 315:armorPoints+= 5;
+//                    break;
+//                default: armorPoints+=0;  //They aren't wearing a chest.
+//                    break;
+//            }
         }
 //next switch statement: Leggings!
         if(pt.getInventory().getLeggings() != null){
-            switch(pt.getInventory().getLeggings().getTypeId()){
-                case 300: armorPoints+= 2;
-                    break;
-                case 304: armorPoints+= 4;
-                    break;
-                case 308:armorPoints+= 5;
-                    break;
-                case 312:armorPoints+= 6;
-                    break;
-                case 316:armorPoints+= 3;
-                    break;
-                default: armorPoints+=0;  //They aren't wearing leggings.
-                    break;
-            }
+            //FIXME raw data use
+//            switch(pt.getInventory().getLeggings().getTypeId()){
+//                case 300: armorPoints+= 2;
+//                    break;
+//                case 304: armorPoints+= 4;
+//                    break;
+//                case 308:armorPoints+= 5;
+//                    break;
+//                case 312:armorPoints+= 6;
+//                    break;
+//                case 316:armorPoints+= 3;
+//                    break;
+//                default: armorPoints+=0;  //They aren't wearing leggings.
+//                    break;
+//            }
         }
         //ayy were almost done. Boots are last!
         if(pt.getInventory().getBoots() != null){
-            switch(pt.getInventory().getBoots().getTypeId()){
-                case 301: armorPoints+= 1;
-                    break;
-                case 305: armorPoints+= 1;
-                    break;
-                case 309:armorPoints+= 2;
-                    break;
-                case 313:armorPoints+= 3;
-                    break;
-                case 317:armorPoints+= 1;
-                    break;
-                default: armorPoints+=0;  //They aren't wearing boots
-                    break;
-            }
+            //FIXME raw data use
+//            switch(pt.getInventory().getBoots().getTypeId()){
+//                case 301: armorPoints+= 1;
+//                    break;
+//                case 305: armorPoints+= 1;
+//                    break;
+//                case 309:armorPoints+= 2;
+//                    break;
+//                case 313:armorPoints+= 3;
+//                    break;
+//                case 317:armorPoints+= 1;
+//                    break;
+//                default: armorPoints+=0;  //They aren't wearing boots
+//                    break;
+//            }
 
         }
         double damage = armorPoints*damagePerPoint;

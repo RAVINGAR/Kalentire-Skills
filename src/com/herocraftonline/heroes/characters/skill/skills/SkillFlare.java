@@ -108,6 +108,7 @@ public class SkillFlare extends ActiveSkill
 
 		Player player = hero.getPlayer();
 
+		//FIXME data use
 		Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, distance);
 		Location center = targetBlock.getLocation().clone().add(0, 10, 0);
 
@@ -117,7 +118,7 @@ public class SkillFlare extends ActiveSkill
 			boltLocs.addAll(concentric);
 		}
 
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 2.0F, 0.5F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2.0F, 0.5F);
 
 		final ArrayList<Location> finalLocs = boltLocs;
 		final Player p = player;
@@ -132,7 +133,8 @@ public class SkillFlare extends ActiveSkill
 				if (!Flares.contains(p)) cancel();
 				for (Location l : finalLocs)
 				{
-					l.getWorld().spigot().playEffect(l, Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 1, 250);
+					//l.getWorld().spigot().playEffect(l, Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 1, 250);
+					l.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, l, 1, 1, 1, 1, 0, true);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 5);
@@ -167,12 +169,15 @@ public class SkillFlare extends ActiveSkill
 						if (Util.transparentBlocks.contains(tempBlockType)) 
 						{
 							final Location targetLocation = temp.getLocation().clone().add(new Vector(.5, 0, .5));
-							temp.getWorld().spigot().playEffect(targetLocation, Effect.FLAME, 0, 0, 0.2F, 0.5F, 0.2F, 0.05F, 3, 250);
+							//temp.getWorld().spigot().playEffect(targetLocation, Effect.FLAME, 0, 0, 0.2F, 0.5F, 0.2F, 0.05F, 3, 250);
+							temp.getWorld().spawnParticle(Particle.FLAME, targetLocation, 3, 0.2, 0.5, 0.2, 0.05, true);
 						}
 						else
 						{
-							temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 10, 16);
-							temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 3, 50);
+							//temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 10, 16);
+							temp.getWorld().spawnParticle(Particle.LAVA, temp.getLocation().add(0.5, 0.3, 0.5), 10, 0.5, 0.2, 0.5, 0);
+							//temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 3, 50);
+							temp.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, temp.getLocation().add(0.5, 0.3, 0.5), 3, 0.5, 0.2, 0.5, 0, true);
 							temp.getWorld().playSound(temp.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
 
 							Snowball test = temp.getWorld().spawn(temp.getLocation().add(0.5, 1.0, 0.5), Snowball.class);							

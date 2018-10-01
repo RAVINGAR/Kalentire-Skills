@@ -116,13 +116,12 @@ public class SkillVoidsong extends ActiveSkill {
         ArrayList<Location> particleLocations = helix(player.getLocation().add(0, 0.5, 0), 10.0D, 3.5D, 0.1D);
         for (Location l : particleLocations)
         {
-            //FIXME No idea what to do here
             //player.getWorld().spigot().playEffect(l, org.bukkit.Effect.NOTE, 0, 0, 0, 0, 0, 0, 1, 16);
             player.getWorld().spawnParticle(Particle.NOTE, l, 1, 0, 0, 0, 0);
         }
 
 
-        //FIXME No idea what to do here
+        //FIXME Is it a particle or a sound
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);

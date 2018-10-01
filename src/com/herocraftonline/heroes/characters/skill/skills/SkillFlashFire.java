@@ -84,7 +84,8 @@ public class SkillFlashFire extends ActiveSkill
 				* hero.getAttributeValue(AttributeType.INTELLECT);
 
 		for (Location l : circle(loc.add(0, 0.5, 0), 36, 2))
-			l.getWorld().spigot().playEffect(l, Effect.FLAME, 0, 0, 0.1F, 0.5F, 0.1F, 0.0F, 20, 16);
+			//l.getWorld().spigot().playEffect(l, Effect.FLAME, 0, 0, 0.1F, 0.5F, 0.1F, 0.0F, 20, 16);
+			l.getWorld().spawnParticle(Particle.FLAME, l, 20, 0.1, 0.5, 0.1, 0);
 		
 		final ArrayList<LivingEntity> damaged = new ArrayList<LivingEntity>();		
 
@@ -119,7 +120,8 @@ public class SkillFlashFire extends ActiveSkill
 			}
 			test.remove();
 			tests.remove(test);
-			b.getWorld().spigot().playEffect(b.getLocation().add(0.5, 0, 0.5), Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 35, 16);
+			//b.getWorld().spigot().playEffect(b.getLocation().add(0.5, 0, 0.5), Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 35, 16);
+			b.getWorld().spawnParticle(Particle.FLAME, b.getLocation().add(0.5, 0, 0.5), 35, 0.5, 0.5, 0.5, 0);
 			if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType())
 					|| Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType())))
 				prev = b;
@@ -134,13 +136,14 @@ public class SkillFlashFire extends ActiveSkill
 			Vector old = player.getVelocity();
 			player.teleport(teleport);
 			player.setVelocity(old);
-			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT , 0.8F, 1.0F);
+			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT , 0.8F, 1.0F);
 			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE , 0.8F, 1.0F);
 			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_FIRE_AMBIENT , 0.8F, 1.0F);
 			loc = player.getLocation();
 			for (Location l : circle(loc.add(0, 0.5, 0), 36, 2))
 			{
-				l.getWorld().spigot().playEffect(l, Effect.FLAME, 0, 0, 0.1F, 0.5F, 0.1F, 0.0F, 20, 16);
+				//l.getWorld().spigot().playEffect(l, Effect.FLAME, 0, 0, 0.1F, 0.5F, 0.1F, 0.0F, 20, 16);
+				l.getWorld().spawnParticle(Particle.FLAME, l, 20, 0.1, 0.5, 0.1, 0);
 			}
 			return SkillResult.NORMAL;
 		} else {
