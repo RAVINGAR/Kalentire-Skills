@@ -115,8 +115,10 @@ public class SkillCyclone extends ActiveSkill
 			addSpellTarget(target, hero);
 			damageEntity(target, player, damage, DamageCause.MAGIC, false);
 			
-			target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 10, 16);
-			target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 10, 16);
+			//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 10, 16);
+			target.getWorld().spawnParticle(Particle.WATER_SPLASH, target.getLocation().add(0, 0.5, 0), 10, 0.3, 0.3, 0.3, 0);
+			//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 10, 16);
+			target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 10, 0.3, 0.3, 0.3, 0, Bukkit.createBlockData(Material.WATER));
 			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
 		}
 		
@@ -132,16 +134,20 @@ public class SkillCyclone extends ActiveSkill
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 0.5, 0), 24, radius); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					player.getWorld().playSound(player.getLocation(), Sound.WEATHER_RAIN, 0.5F, 0.7F);
 					point++; // next point
 				}
 				else
 				{
 					point = 0; // reset the circle
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				ticks += 1;
@@ -163,15 +169,19 @@ public class SkillCyclone extends ActiveSkill
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 1, 0), 24, radius); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				else
 				{
 					point = 0; // reset the circle
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				ticks += 1;
@@ -193,15 +203,19 @@ public class SkillCyclone extends ActiveSkill
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 1.5, 0), 24, radius); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				else
 				{
 					point = 0; // reset the circle
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				ticks += 1;
@@ -223,15 +237,19 @@ public class SkillCyclone extends ActiveSkill
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 2, 0), 24, radius); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				else
 				{
 					point = 0; // reset the circle
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				ticks += 1;
@@ -253,15 +271,19 @@ public class SkillCyclone extends ActiveSkill
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 2.5, 0), 24, radius); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				else
 				{
 					point = 0; // reset the circle
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				ticks += 1;
@@ -283,15 +305,19 @@ public class SkillCyclone extends ActiveSkill
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 3, 0), 24, radius); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				else
 				{
 					point = 0; // reset the circle
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
+					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					point++; // next point
 				}
 				ticks += 1;
@@ -321,8 +347,10 @@ public class SkillCyclone extends ActiveSkill
 				{
 					int index = rand.nextInt(waterburstLocs.size());
 					Location loc = waterburstLocs.get(index).clone().setDirection(new Vector(0, 1, 0));
-					loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.2F, 0.2F, 0.2F, 0.5F, 3, 25);
-					loc.getWorld().spigot().playEffect(loc, Effect.SPLASH, 0, 0, 0.2F, 0.2F, 0.2F, 0.5F, 15, 25);
+					//loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.2F, 0.2F, 0.2F, 0.5F, 3, 25);
+					loc.getWorld().spawnParticle(Particle.BLOCK_CRACK, loc, 3, 0.2, 0.2, 0.2, 0.5, Bukkit.createBlockData(Material.WATER), true);
+					//loc.getWorld().spigot().playEffect(loc, Effect.SPLASH, 0, 0, 0.2F, 0.2F, 0.2F, 0.5F, 15, 25);
+					loc.getWorld().spawnParticle(Particle.WATER_SPLASH, loc, 15, 0.2, 0.2, 0.2, 0.5, true);
 					loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0F, 0.8F);
 					ticks++;
 				}
@@ -334,7 +362,7 @@ public class SkillCyclone extends ActiveSkill
 		}.runTaskTimer(plugin, 0, 2);
 		
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 0.9F);
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 1.0F, 1.3F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 1.3F);
 
 		broadcastExecuteText(hero);
 
