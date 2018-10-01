@@ -159,10 +159,13 @@ public class SkillAccelerando extends ActiveSkill {
             //tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
             tHero.getPlayer().getWorld().spawnParticle(Particle.CLOUD, tHero.getPlayer().getLocation(), 16, 0, 0, 0, 1);
         }
-        //FIXME What do
+
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().spawnParticle(Particle.NOTE,player.getLocation().add(0, 2.5, 0),3);
+        player.getWorld().spawnParticle(Particle.NOTE,player.getLocation().add(0, 2.5, 0),3);
+        player.getWorld().spawnParticle(Particle.NOTE,player.getLocation().add(0, 2.5, 0),3);
 
         return SkillResult.NORMAL;
     }
