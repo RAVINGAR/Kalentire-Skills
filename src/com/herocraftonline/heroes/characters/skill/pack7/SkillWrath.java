@@ -90,7 +90,7 @@ public class SkillWrath extends TargettedSkill {
         target.getWorld().spawnParticle(Particle.PORTAL, target.getLocation(), 100, 5, 5, 5, 10);
         player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
         //FIXME What is the replacement for this
-        player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.POTION_SWIRL, 0, 0, 0.3F, 0.3F, 0.3F, 25, 100, 20);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.POTION_SWIRL, 0, 0, 0.3F, 0.3F, 0.3F, 25, 100, 20);
 
         /*player.getWorld().spigot().playEffect(target.getLocation().add(5.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(4.0, 5.0, 0), Effect.LAVADRIP, 0, 0, 0, 0, 0, 1, 25, 16);

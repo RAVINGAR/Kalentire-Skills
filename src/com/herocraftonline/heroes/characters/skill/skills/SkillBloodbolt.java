@@ -101,8 +101,8 @@ public class SkillBloodbolt extends ActiveSkill
 		}.runTaskTimer(plugin, 0, 20);
 
 		//FIXME Well fuck
-		EntityUtil.persistentFX(theBloodbolt, new Vector(0, 0, 0), Effect.COLOURED_DUST, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 45, 64, plugin, 0, 1);
-		EntityUtil.persistentFX(theBloodbolt, new Vector(0, 0, 0), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 64, plugin, 0, 1);
+		//EntityUtil.persistentFX(theBloodbolt, new Vector(0, 0, 0), Effect.COLOURED_DUST, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 45, 64, plugin, 0, 1);
+		//EntityUtil.persistentFX(theBloodbolt, new Vector(0, 0, 0), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 64, plugin, 0, 1);
 
 		broadcastExecuteText(hero);
 

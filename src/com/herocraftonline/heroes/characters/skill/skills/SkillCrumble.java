@@ -6,10 +6,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -83,14 +80,16 @@ public class SkillCrumble extends TargettedSkill
 				ArrayList<Location> surrounding = circle(t.getLocation(), 24, 1); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
-					t.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 0.2F, 0.2F, 1.0F, 10, 16);
+					//t.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 0.2F, 0.2F, 1.0F, 10, 16);
+					t.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 10, 0.2, 0.2, 0.2, 1);
 					t.getWorld().playSound(t.getLocation(), Sound.BLOCK_STONE_BREAK, 0.4F, 0.8F);
 					point++; // next point
 				}
 				else
 				{
 					point = 0; // reset the circle
-					t.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 0.2F, 0.2F, 1.0F, 10, 16);
+					//t.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 0.2F, 0.2F, 1.0F, 10, 16);
+					t.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 10, 0.2, 0.2, 0.2, 1);
 					t.getWorld().playSound(t.getLocation(), Sound.BLOCK_STONE_BREAK, 0.4F, 0.8F);
 					point++; // next point
 				}

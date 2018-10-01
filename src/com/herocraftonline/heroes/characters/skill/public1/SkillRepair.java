@@ -241,8 +241,7 @@ public class SkillRepair extends ActiveSkill {
             case WOODEN_HOE:
             case WOODEN_PICKAXE:
             case WOODEN_SHOVEL:
-                // FIXME There are 6 types of wood now, what do here.
-                return Material.WOOD;
+                return Material.OAK_PLANKS;
             case STONE_SWORD:
             case STONE_AXE:
             case STONE_HOE:

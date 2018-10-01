@@ -74,7 +74,7 @@ public class SkillLight extends ActiveSkill {
         allowedBlocks.add(Material.RED_WOOL);
         allowedBlocks.add(Material.YELLOW_WOOL);
         //FIXME I don't want to add all this shit
-        allowedBlocks.add(Material.DOUBLE_STEP);
+        //allowedBlocks.add(Material.DOUBLE_STEP);
         allowedBlocks.add(Material.BRICK);
         allowedBlocks.add(Material.OBSIDIAN);
         allowedBlocks.add(Material.NETHER_BRICK);

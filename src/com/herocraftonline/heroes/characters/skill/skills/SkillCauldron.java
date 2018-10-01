@@ -194,7 +194,7 @@ public class SkillCauldron extends PassiveSkill {
 			}
 			Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
 
-			if(event.getClickedBlock().getType() == Material.WORKBENCH){
+			if(event.getClickedBlock().getType() == Material.CRAFTING_TABLE){
 				if(!player.contains(event.getPlayer())){
 					player.add(event.getPlayer());
 					usingCauldronbench.add(player.size()-1, false);

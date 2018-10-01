@@ -88,7 +88,7 @@ public class SkillTelekinesis extends ActiveSkill {
         Block attached = block.getRelative(face);
         BlockState attachedState = attached.getState();
         //FIXME Can't do this anymore
-        attached.setTypeId(0, true);
+        //attached.setTypeId(0, true);
         attachedState.update(true);
 
         this.broadcastExecuteText(hero);
