@@ -109,110 +109,110 @@ public class SkillFlare extends ActiveSkill
 		Player player = hero.getPlayer();
 
 		//FIXME data use
-		Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, distance);
-		Location center = targetBlock.getLocation().clone().add(0, 10, 0);
-
-		for (int i = 1; i <= radius; i++)
-		{
-			ArrayList<Location> concentric = circle(center, 12, (double) i);
-			boltLocs.addAll(concentric);
-		}
-
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2.0F, 0.5F);
-
-		final ArrayList<Location> finalLocs = boltLocs;
-		final Player p = player;
-		final Hero h = hero;
-		
-		Flares.add(p);
-
-		new BukkitRunnable() // visual
-		{
-			public void run()
-			{
-				if (!Flares.contains(p)) cancel();
-				for (Location l : finalLocs)
-				{
-					//l.getWorld().spigot().playEffect(l, Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 1, 250);
-					l.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, l, 1, 1, 1, 1, 0, true);
-				}
-			}
-		}.runTaskTimer(plugin, 0, 5);
-
-		new BukkitRunnable() // This is the actual storm.
-		{
-			private Random rand = new Random();
-			private int boltsStruck = 0;
-
-			public void run()
-			{
-				if (boltsStruck < firebolts)
-				{
-					int index = rand.nextInt(finalLocs.size());
-					Location boltLocation = finalLocs.get(index).clone().setDirection(new Vector(0, -1, 0));
-					BlockIterator iterator;
-					Block temp;
-
-					// everything here is visual
-					try 
-					{
-						iterator = new BlockIterator(boltLocation, 10);
-					}
-					catch (IllegalStateException ise)
-					{
-						return;
-					}
-					while (iterator.hasNext()) 
-					{
-						temp = iterator.next();
-						Material tempBlockType = temp.getType();
-						if (Util.transparentBlocks.contains(tempBlockType)) 
-						{
-							final Location targetLocation = temp.getLocation().clone().add(new Vector(.5, 0, .5));
-							//temp.getWorld().spigot().playEffect(targetLocation, Effect.FLAME, 0, 0, 0.2F, 0.5F, 0.2F, 0.05F, 3, 250);
-							temp.getWorld().spawnParticle(Particle.FLAME, targetLocation, 3, 0.2, 0.5, 0.2, 0.05, true);
-						}
-						else
-						{
-							//temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 10, 16);
-							temp.getWorld().spawnParticle(Particle.LAVA, temp.getLocation().add(0.5, 0.3, 0.5), 10, 0.5, 0.2, 0.5, 0);
-							//temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 3, 50);
-							temp.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, temp.getLocation().add(0.5, 0.3, 0.5), 3, 0.5, 0.2, 0.5, 0, true);
-							temp.getWorld().playSound(temp.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
-
-							Snowball test = temp.getWorld().spawn(temp.getLocation().add(0.5, 1.0, 0.5), Snowball.class);							
-							List<Entity> affected = test.getNearbyEntities(blastRadius, blastRadius, blastRadius);
-							test.remove();
-							for (Entity entity : affected)
-							{
-								if (!(entity instanceof LivingEntity)) return;
-								LivingEntity target2 = (LivingEntity) entity;
-
-								if (entity.getLocation().distanceSquared(temp.getLocation()) <= blastRadius*2)
-								{
-									if (!damageCheck(p, target2)) 
-									{
-										continue;
-									}
-									addSpellTarget(target2, h);
-									damageEntity(target2, p, damage, EntityDamageEvent.DamageCause.MAGIC);
-									target2.setFireTicks(ignitionSeconds * 20);
-								}
-							}
-							boltsStruck++;
-							break;
-						}
-					}
-				}
-				else
-				{
-					Flares.remove(p);
-					cancel();
-				}
-			}
-		}.runTaskTimer(plugin, 1, boltInterval);
-
-		broadcast(player.getLocation(), ChatComponents.GENERIC_SKILL + ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " unleashes a Flare!");
+//		Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, distance);
+//		Location center = targetBlock.getLocation().clone().add(0, 10, 0);
+//
+//		for (int i = 1; i <= radius; i++)
+//		{
+//			ArrayList<Location> concentric = circle(center, 12, (double) i);
+//			boltLocs.addAll(concentric);
+//		}
+//
+//		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2.0F, 0.5F);
+//
+//		final ArrayList<Location> finalLocs = boltLocs;
+//		final Player p = player;
+//		final Hero h = hero;
+//
+//		Flares.add(p);
+//
+//		new BukkitRunnable() // visual
+//		{
+//			public void run()
+//			{
+//				if (!Flares.contains(p)) cancel();
+//				for (Location l : finalLocs)
+//				{
+//					//l.getWorld().spigot().playEffect(l, Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0.0F, 1, 250);
+//					l.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, l, 1, 1, 1, 1, 0, true);
+//				}
+//			}
+//		}.runTaskTimer(plugin, 0, 5);
+//
+//		new BukkitRunnable() // This is the actual storm.
+//		{
+//			private Random rand = new Random();
+//			private int boltsStruck = 0;
+//
+//			public void run()
+//			{
+//				if (boltsStruck < firebolts)
+//				{
+//					int index = rand.nextInt(finalLocs.size());
+//					Location boltLocation = finalLocs.get(index).clone().setDirection(new Vector(0, -1, 0));
+//					BlockIterator iterator;
+//					Block temp;
+//
+//					// everything here is visual
+//					try
+//					{
+//						iterator = new BlockIterator(boltLocation, 10);
+//					}
+//					catch (IllegalStateException ise)
+//					{
+//						return;
+//					}
+//					while (iterator.hasNext())
+//					{
+//						temp = iterator.next();
+//						Material tempBlockType = temp.getType();
+//						if (Util.transparentBlocks.contains(tempBlockType))
+//						{
+//							final Location targetLocation = temp.getLocation().clone().add(new Vector(.5, 0, .5));
+//							//temp.getWorld().spigot().playEffect(targetLocation, Effect.FLAME, 0, 0, 0.2F, 0.5F, 0.2F, 0.05F, 3, 250);
+//							temp.getWorld().spawnParticle(Particle.FLAME, targetLocation, 3, 0.2, 0.5, 0.2, 0.05, true);
+//						}
+//						else
+//						{
+//							//temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.LAVA_POP, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 10, 16);
+//							temp.getWorld().spawnParticle(Particle.LAVA, temp.getLocation().add(0.5, 0.3, 0.5), 10, 0.5, 0.2, 0.5, 0);
+//							//temp.getWorld().spigot().playEffect(temp.getLocation().add(0.5, 0.3, 0.5), Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.2F, 0.5F, 0.0F, 3, 50);
+//							temp.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, temp.getLocation().add(0.5, 0.3, 0.5), 3, 0.5, 0.2, 0.5, 0, true);
+//							temp.getWorld().playSound(temp.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
+//
+//							Snowball test = temp.getWorld().spawn(temp.getLocation().add(0.5, 1.0, 0.5), Snowball.class);
+//							List<Entity> affected = test.getNearbyEntities(blastRadius, blastRadius, blastRadius);
+//							test.remove();
+//							for (Entity entity : affected)
+//							{
+//								if (!(entity instanceof LivingEntity)) return;
+//								LivingEntity target2 = (LivingEntity) entity;
+//
+//								if (entity.getLocation().distanceSquared(temp.getLocation()) <= blastRadius*2)
+//								{
+//									if (!damageCheck(p, target2))
+//									{
+//										continue;
+//									}
+//									addSpellTarget(target2, h);
+//									damageEntity(target2, p, damage, EntityDamageEvent.DamageCause.MAGIC);
+//									target2.setFireTicks(ignitionSeconds * 20);
+//								}
+//							}
+//							boltsStruck++;
+//							break;
+//						}
+//					}
+//				}
+//				else
+//				{
+//					Flares.remove(p);
+//					cancel();
+//				}
+//			}
+//		}.runTaskTimer(plugin, 1, boltInterval);
+//
+//		broadcast(player.getLocation(), ChatComponents.GENERIC_SKILL + ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " unleashes a Flare!");
 
 		return SkillResult.NORMAL;
 	}
