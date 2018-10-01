@@ -7,9 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -47,9 +45,12 @@ public class SkillSear extends TargettedSkill
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.2, false) * hero.getHeroLevel(this);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
 		
-		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.4F, 45, 16);
-		target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 15, 16);
-		target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 15, 16);
+		//target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.4F, 45, 16);
+		target.getWorld().spawnParticle(Particle.FLAME, target.getEyeLocation(), 45, 0.2, 0.2, 0.2, 0.4);
+		//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 15, 16);
+		target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 15, 0.4, 0.4, 0.4, 0, new Particle.DustOptions(Color.ORANGE, 1));
+		//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 15, 16);
+		target.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getLocation().add(0, 0.5, 0), 15, 0.4, 0.4, 0.4, 0);
 		target.getWorld().playEffect(target.getLocation(), Effect.BLAZE_SHOOT, 2);
 		target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.2F, 0.85F);
 		
@@ -94,7 +95,8 @@ public class SkillSear extends TargettedSkill
 		public void tickHero(Hero hero)
 		{
 			final Player player = hero.getPlayer();
-			player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.4F, 0.4F, 0.4F, 0.3F, 25, 16);
+			//player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.4F, 0.4F, 0.4F, 0.3F, 25, 16);
+			player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, player.getLocation().add(0, 0.5, 0), 25, 0.4, 0.4, 0.4, 0.3);
 			super.tickHero(hero);
 		}
 	}

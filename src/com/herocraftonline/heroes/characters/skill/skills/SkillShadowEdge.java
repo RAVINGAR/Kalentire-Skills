@@ -10,10 +10,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -203,7 +200,8 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
                     addSpellTarget(target, hero);
                     damageEntity(target, player, axe.getHitDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK);
 
-                    player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                    //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                    player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
                     player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 3);
 
                     axeItem.remove();

@@ -9,10 +9,7 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -121,7 +118,8 @@ public class SkillSummonVines extends ActiveSkill
 					{
 						int index = rand.nextInt(vineLocs.size());
 						Location loc = vineLocs.get(index).clone().setDirection(new Vector(0, 1, 0));
-						loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.VINE.getId(), 0, 0.2F, 2.5F, 0.2F, 0.5F, 75, 25);
+						//loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.VINE.getId(), 0, 0.2F, 2.5F, 0.2F, 0.5F, 75, 25);
+						loc.getWorld().spawnParticle(Particle.BLOCK_CRACK, loc, 75, 0.2, 2.5, 0.2, 0.5, Bukkit.createBlockData(Material.VINE));
 						ticks++;
 					}
 					else

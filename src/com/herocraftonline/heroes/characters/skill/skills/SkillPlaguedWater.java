@@ -117,8 +117,10 @@ public class SkillPlaguedWater extends ActiveSkill
 					{
 						int index = rand.nextInt(waterburstLocs.size() + 1);
 						Location loc = waterburstLocs.get(index).clone().setDirection(new Vector(0, 1, 0));
-						loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.2F, 0.2F, 0.2F, 0.5F, 35, 25);
-						loc.getWorld().spigot().playEffect(loc, Effect.SPLASH, 0, 0, 0.2F, 0.2F, 0.2F, 0.5F, 55, 25);
+						//loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.2F, 0.2F, 0.2F, 0.5F, 35, 25);
+						loc.getWorld().spawnParticle(Particle.BLOCK_CRACK, loc, 35, 0.2, 0.2, 0.2, 0.5, Bukkit.createBlockData(Material.WATER), true);
+						//loc.getWorld().spigot().playEffect(loc, Effect.SPLASH, 0, 0, 0.2F, 0.2F, 0.2F, 0.5F, 55, 25);
+						loc.getWorld().spawnParticle(Particle.WATER_SPLASH, loc, 55, 0.2, 0.2, 0.2, 0.5, true);
 						loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0F, 0.8F);
 						ticks++;
 					}
@@ -163,7 +165,8 @@ public class SkillPlaguedWater extends ActiveSkill
 				waterburstLocs.addAll(circle(player.getLocation().add(0, 0.5, 0), 8, (double) i));
 			
 			for (Location l : waterburstLocs)
-				l.getWorld().spigot().playEffect(l, Effect.SPLASH, 0, 0, 1.0F, 1.0F, 1.0F, 1.0F, 15, 16);
+				//l.getWorld().spigot().playEffect(l, Effect.SPLASH, 0, 0, 1.0F, 1.0F, 1.0F, 1.0F, 15, 16);
+				l.getWorld().spawnParticle(Particle.WATER_SPLASH, l, 15, 1, 1, 1, 1);
 			
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
 			

@@ -11,9 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -88,10 +86,12 @@ public class SkillSageTotem extends SkillBaseTotem implements Listener {
                              * offset controls how spread out the particles are
                              * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                              * */
-                            memberP.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 0.1f, 1, 16);
+                            //memberP.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 0.1f, 1, 16);
+                            memberP.getWorld().spawnParticle(Particle.REDSTONE, location, 1, 0, 0, 0, 0.1, new Particle.DustOptions(Color.BLUE, 1));
                         } else {
                             memberP.getLocation(location).add(0, 2.3, 0);
-                            memberP.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.LAPIS_BLOCK.getId(), 0, 0, 0, 0, 1f, 500, 16);
+                            //memberP.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.LAPIS_BLOCK.getId(), 0, 0, 0, 0, 1f, 500, 16);
+                            memberP.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, 500, 0, 0, 0, 1, Bukkit.createBlockData(Material.LAPIS_BLOCK));
                             cancel();
                         }
                         time += 0.01;

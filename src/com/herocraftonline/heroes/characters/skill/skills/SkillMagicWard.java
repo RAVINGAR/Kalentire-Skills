@@ -75,8 +75,9 @@ public class SkillMagicWard extends ActiveSkill {
 
         switch (NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType()) {
             case IRON_DOOR:
-            case WOOD_DOOR:
-            case TRAP_DOOR:
+            //FIXME Flattening
+//            case WOOD_DOOR:
+//            case TRAP_DOOR:
             case SHIELD:
                 broadcastExecuteText(hero);
 
@@ -92,8 +93,9 @@ public class SkillMagicWard extends ActiveSkill {
 
         switch (NMSHandler.getInterface().getItemInOffHand(player.getInventory()).getType()) {
             case IRON_DOOR:
-            case WOOD_DOOR:
-            case TRAP_DOOR:
+            //FIXME Flattening
+//            case WOOD_DOOR:
+//            case TRAP_DOOR:
             case SHIELD:
                 broadcastExecuteText(hero);
 
@@ -130,8 +132,9 @@ public class SkillMagicWard extends ActiveSkill {
 
             switch (NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType()) {
                 case IRON_DOOR:
-                case WOOD_DOOR:
-                case TRAP_DOOR:
+                //FIXME Flattening
+//                case WOOD_DOOR:
+//                case TRAP_DOOR:
                 case SHIELD:
                     double damageReduction = 1.0 - ((MagicWardEffect) defenderHero.getEffect("MagicWard")).damageReduction;
                     event.setDamage((event.getDamage() * damageReduction));
@@ -140,8 +143,9 @@ public class SkillMagicWard extends ActiveSkill {
 
             switch (NMSHandler.getInterface().getItemInOffHand(defenderPlayer.getInventory()).getType()) {
                 case IRON_DOOR:
-                case WOOD_DOOR:
-                case TRAP_DOOR:
+                //FIXME Flattening
+//                case WOOD_DOOR:
+//                case TRAP_DOOR:
                 case SHIELD:
                     double damageReduction = 1.0 - ((MagicWardEffect) defenderHero.getEffect("MagicWard")).damageReduction;
                     event.setDamage((event.getDamage() * damageReduction));

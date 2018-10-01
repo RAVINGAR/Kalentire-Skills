@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -53,8 +54,10 @@ public class SkillScorch extends TargettedSkill
 		SlowEffect slow = new SlowEffect(this, "ScorchSlow", player, duration, 0, "", "");
 		targCT.addEffect(slow);
 
-		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 45, 16);
-		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 25, 16);
+		//target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 45, 16);
+		target.getWorld().spawnParticle(Particle.FLAME, target.getEyeLocation(), 45, 0.2, 0.2, 0.2, 0.3);
+		//target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 25, 16);
+		target.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getEyeLocation(), 25, 0.2, 0.2, 0.2, 0.3);
 		target.getWorld().playSound(target.getEyeLocation(), Sound.BLOCK_FIRE_AMBIENT, 1.3F, 1.0F);
 
 		broadcast(player.getLocation(),ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!" );

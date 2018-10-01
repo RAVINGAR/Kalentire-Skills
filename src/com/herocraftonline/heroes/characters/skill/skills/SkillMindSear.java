@@ -109,15 +109,17 @@ public class SkillMindSear extends ActiveSkill
 			addSpellTarget(target, hero);
 			damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
-			target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 25, 16);
+			//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 25, 16);
+			target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 25, 0.3, 0.3, 0.3, 0, Bukkit.createBlockData(Material.ICE));
 			target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5F, 0.85F);
 		}
 
-		player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.EXPLOSION_LARGE, 0, 0, 6.5F, 0.8F, 6.5F, 0.0F, 100, 16);
+		//player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.EXPLOSION_LARGE, 0, 0, 6.5F, 0.8F, 6.5F, 0.0F, 100, 16);
+		player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, player.getLocation().add(0, 0.3, 0), 100, 6.5, 0.8, 6.5, 0);
 
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.5F, 1.5F);
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 0.7F, 0.85F);
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 1.3F, 1.25F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.3F, 1.25F);
 
 		broadcastExecuteText(hero);
 

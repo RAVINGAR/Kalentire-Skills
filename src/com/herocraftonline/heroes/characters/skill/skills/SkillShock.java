@@ -13,6 +13,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -98,7 +99,8 @@ public class SkillShock extends ActiveSkill
 					ArrayList<Location> aCircle = circle(player.getLocation().add(0, 0.5, 0), 36, rad);
 					for (Location l : aCircle)
 					{
-						l.getWorld().spigot().playEffect(l, Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.1F, 0.1F, 0.1F, 0.0F, 1, 16);
+						//l.getWorld().spigot().playEffect(l, Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.1F, 0.1F, 0.1F, 0.0F, 1, 16);
+						l.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, l, 1, 0.1, 0.1, 0.1, 0);
 					}
 					rad += 0.5;
 				}
@@ -130,7 +132,8 @@ public class SkillShock extends ActiveSkill
 			addSpellTarget(target, hero);
 			damageEntity(target, player, damage, DamageCause.MAGIC, false);
 
-			target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 3, 16);
+			//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 3, 16);
+			target.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getLocation().add(0, 0.5, 0), 3, 0.3, 0.3, 0.3, 0);
 		}
 
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 2.0F, 0.7F);

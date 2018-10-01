@@ -8,10 +8,7 @@ import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -113,8 +110,9 @@ public class SkillThickenWinds extends ActiveSkill
 				{
 					int index = rand.nextInt(windLocs.size() + 1);
 					Location loc = windLocs.get(index).clone().setDirection(new Vector(0, 1, 0));
-					loc.getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0.2F, 5.5F, 0.2F, 0.0F, 250, 25);
-					loc.getWorld().playSound(loc, Sound.ENTITY_ENDERDRAGON_FLAP, 1.3F, (float) (1 / (ticks + 1)));
+					//loc.getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0.2F, 5.5F, 0.2F, 0.0F, 250, 25);
+					loc.getWorld().spawnParticle(Particle.CLOUD, loc, 250, 0.2, 5.5, 0.2, 0, true);
+					loc.getWorld().playSound(loc, Sound.ENTITY_ENDER_DRAGON_FLAP, 1.3F, (float) (1 / (ticks + 1)));
 					ticks++;
 				}
 				else

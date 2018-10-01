@@ -25,7 +25,12 @@ public class SkillHighJump extends ActiveSkill {
         noJumpMaterials.add(Material.WATER);
         noJumpMaterials.add(Material.AIR);
         noJumpMaterials.add(Material.LAVA);
-        noJumpMaterials.add(Material.LEAVES);
+        noJumpMaterials.add(Material.ACACIA_LEAVES);
+        noJumpMaterials.add(Material.SPRUCE_LEAVES);
+        noJumpMaterials.add(Material.OAK_LEAVES);
+        noJumpMaterials.add(Material.JUNGLE_LEAVES);
+        noJumpMaterials.add(Material.DARK_OAK_LEAVES);
+        noJumpMaterials.add(Material.BIRCH_LEAVES);
         noJumpMaterials.add(Material.SOUL_SAND);
     }
     

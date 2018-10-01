@@ -88,9 +88,9 @@ public class SkillDash extends ActiveSkill
                 float minX = (float) (velocity.getX() * -1);
                 float minY = (float) (velocity.getY() * -1);
                 float minZ = (float) (velocity.getZ() * -1);
-                //FIXME Alter method
-                MovingParticle.createMovingParticle(player.getLocation().add(0, 1.5, 0), Effect.CLOUD, 0, 0,
-                        0.6F, 1.0F, 0.6F, minX, minY, minZ, 10, 128, true);
+                //FIXME Alter method source
+//                MovingParticle.createMovingParticle(player.getLocation().add(0, 1.5, 0), Effect.CLOUD, 0, 0,
+//                        0.6F, 1.0F, 0.6F, minX, minY, minZ, 10, 128, true);
                 for (Entity e : player.getNearbyEntities(3.0D, 3.0D, 3.0D))
                 {
                     if (!(e instanceof LivingEntity)) continue;

@@ -95,7 +95,7 @@ public class SkillPrimalRoar extends ActiveSkill
 
         int numBlocks = 0;
         
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0F, 1.0F);
         
         while (iter.hasNext()) 
         {        	
@@ -110,9 +110,12 @@ public class SkillPrimalRoar extends ActiveSkill
                     public void run() 
                     {
                     	targetLocation.getWorld().playSound(targetLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.7F, 1.3F);
-                    	targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 5, 20);
-                    	targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 25, 20);
-                    	targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.MAGIC_CRIT, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 40, 20);
+                    	//targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 5, 20);
+                        targetLocation.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, targetLocation, 5, 0.5, 0.5, 0.5, 0, true);
+                    	//targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 25, 20);
+                        targetLocation.getWorld().spawnParticle(Particle.NOTE, targetLocation, 25, 0.5, 0.5, 0.5, 0, true);
+                    	//targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.MAGIC_CRIT, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 40, 20);
+                        targetLocation.getWorld().spawnParticle(Particle.CRIT_MAGIC, targetLocation, 40, 0.4, 0.4, 0.4, 0, true);
                         for (Entity entity : nearbyEntities) 
                         {
                             if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)

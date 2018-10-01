@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -87,13 +88,16 @@ public class SkillRecover extends TargettedSkill
 
         tHero.heal(healAmount);
 		
-		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_LAUNCH, 1.0F, 1.0F);
+		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1.0F, 1.0F);
 		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.8F);
 		for (Location l : GeometryUtil.helix(tHero.getPlayer().getLocation(), 20, 1.5, 2.5, 0.05)) {
-			l.getWorld().spigot().playEffect(l, Effect.FIREWORKS_SPARK, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 1, 128);
+			//l.getWorld().spigot().playEffect(l, Effect.FIREWORKS_SPARK, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 1, 128);
+			l.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, l, 1, 0, 0, 0,  0, true);
 		}
-		tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation().add(0, 0.5, 0), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 50, 16);
-		tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation().add(0, 0.5, 0), Effect.HEART, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 50, 16);
+		//tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation().add(0, 0.5, 0), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 50, 16);
+		tHero.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, tHero.getPlayer().getLocation().add(0, 0.5, 0), 50, 0.5, 0.5, 0.5, 0.5);
+		//tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation().add(0, 0.5, 0), Effect.HEART, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 50, 16);
+		tHero.getPlayer().getWorld().spawnParticle(Particle.HEART, tHero.getPlayer().getLocation().add(0, 0.5, 0), 50, 0.5, 0.5, 0.5, 0.5);
 		broadcastExecuteText(hero, target);
 		return SkillResult.NORMAL;
 	}

@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -98,8 +99,6 @@ public class SkillTremorTotem extends SkillBaseTotem {
             Material mat = target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
 
             switch (mat) {
-                case STATIONARY_WATER:
-                case STATIONARY_LAVA:
                 case WATER:
                 case LAVA:
                 case SOUL_SAND:
@@ -125,14 +124,15 @@ public class SkillTremorTotem extends SkillBaseTotem {
             xDir = xDir / magnitude * individualHPower;
             zDir = zDir / magnitude * individualHPower;
             
-            // The effect code is up here because the targets are being sent flying up. Can't accurately put the effect where we want it then.
-            @SuppressWarnings("deprecation")
-            int id = entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getTypeId();
-            /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
-             * offset controls how spread out the particles are
-             * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
-             * */
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.6, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 150, 16);
+//            // The effect code is up here because the targets are being sent flying up. Can't accurately put the effect where we want it then.
+//            @SuppressWarnings("deprecation")
+//            int id = entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getTypeId();
+//            /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
+//             * offset controls how spread out the particles are
+//             * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
+//             * */
+//            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.6, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 150, 16);
+            entity.getWorld().spawnParticle(Particle.BLOCK_CRACK, entity.getLocation().add(0, 0.6, 0), 150, 0, 0, 0, 1, entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
             
             // Let's bypass the nocheat issues...
             final Vector velocity = new Vector(xDir, individualVPower, zDir);

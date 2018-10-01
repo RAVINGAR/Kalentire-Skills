@@ -43,12 +43,14 @@ public class SkillMonetize extends ActiveSkill{
 		int count=0;
 		for(ItemStack stack:inv.getContents()){
 			if(stack==null)continue;
-			if(stack.getTypeId()==266){
-				count+=stack.getAmount();
-			}
+			//FIXME number id use
+//			if(stack.getTypeId()==266){
+//				count+=stack.getAmount();
+//			}
 		}
 		if(count>0){
-			inv.remove(266);
+			//FIXME Number id use
+			//inv.remove(266);
 			final double amount =calculateCoins(hero)*count;
 			econ.depositPlayer(player.getName(),amount);
 	        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
