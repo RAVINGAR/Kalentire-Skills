@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SkillRepair extends ActiveSkill {
 
@@ -113,9 +114,42 @@ public class SkillRepair extends ActiveSkill {
             player.sendMessage("That item is already at full durability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
-        ItemStack reagentStack = new ItemStack(reagent, getRepairCost(is));
-        if (!hasReagentCost(player, reagentStack)) {
-            return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
+
+        ItemStack reagentStack = null;
+        if (reagent == Material.OAK_PLANKS){
+            //Handle all wood variants as a reagent
+            List<Material> woodMaterials = new ArrayList<Material>();
+            woodMaterials.add(Material.OAK_PLANKS);
+            woodMaterials.add(Material.BIRCH_PLANKS);
+            woodMaterials.add(Material.SPRUCE_PLANKS);
+            woodMaterials.add(Material.JUNGLE_PLANKS);
+            woodMaterials.add(Material.ACACIA_PLANKS);
+            woodMaterials.add(Material.DARK_OAK_PLANKS);
+
+            boolean hasReagant = false;
+            for (Material woodMaterial : woodMaterials) {
+                reagentStack = new ItemStack(woodMaterial, getRepairCost(is));
+                hasReagant = hasReagentCost(player, reagentStack);
+                if (hasReagant){
+                    // Found valid wood reagent that the player has
+                    break;
+                }
+            }
+
+            if (!hasReagant) {
+                String planksString = MaterialUtil.getFriendlyName(Material.OAK_PLANKS)
+                        + " or " + MaterialUtil.getFriendlyName(Material.BIRCH_PLANKS)
+                        + " or " + MaterialUtil.getFriendlyName(Material.SPRUCE_PLANKS)
+                        + " or " + MaterialUtil.getFriendlyName(Material.JUNGLE_PLANKS)
+                        + " or " + MaterialUtil.getFriendlyName(Material.ACACIA_PLANKS)
+                        + " or " + MaterialUtil.getFriendlyName(Material.DARK_OAK_PLANKS);
+                return new SkillResult(ResultType.MISSING_REAGENT, true, getRepairCost(is), planksString);
+            }
+        } else {
+            reagentStack = new ItemStack(reagent, getRepairCost(is));
+            if (!hasReagentCost(player, reagentStack)) {
+                return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
+            }
         }
 
         boolean lost = false;
@@ -259,8 +293,8 @@ public class SkillRepair extends ActiveSkill {
             case WOODEN_HOE:
             case WOODEN_PICKAXE:
             case WOODEN_SHOVEL:
-                // FIXME There are 6 types of wood now, what do here.
-                return Material.WOOD;
+                // There are 6 types of wooden planks use Oak as main reagent, see above.
+                return Material.OAK_PLANKS;
             case STONE_SWORD:
             case STONE_AXE:
             case STONE_HOE:
