@@ -7,9 +7,13 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseWeaponImbue;
 
 public class SkillWeaponImbueTest extends SkillBaseWeaponImbue {
 
-    public SkillWeaponImbueTest(Heroes plugin, String name) {
-        super(plugin, name);
+    public SkillWeaponImbueTest(Heroes plugin) {
+        super(plugin, "WeaponImbueTest");
         setDescription("Imbues your weapon with the amazing power of debugging!");
+
+        setUsage("/skill WeaponImbueTest");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill WeaponImbueTest");
     }
 
     @Override
