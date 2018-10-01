@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public class SkillBackstab extends ActiveSkill {
 
@@ -107,7 +108,17 @@ public class SkillBackstab extends ActiveSkill {
         double ambushDamage = 0;
         for (String weaponName : weapons) {
             Material weapon = Material.getMaterial(weaponName);
-            int baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
+            if (weapon == null){
+                Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " is not a valid weapon material name.");
+                continue;
+            }
+
+            int baseDamage = 0;
+            if (plugin.getDamageManager().getHighestItemDamage(hero, weapon) == null){
+                Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " has no damage set.");
+            } else {
+                baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
+            }
 
             backstabDamage = baseDamage * backstabDamageModifier;
             ambushDamage = baseDamage * ambushDamageModifier;
