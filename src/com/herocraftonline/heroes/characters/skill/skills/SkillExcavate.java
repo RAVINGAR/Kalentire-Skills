@@ -139,7 +139,8 @@ public class SkillExcavate extends ActiveSkill {
             case SNOW_BLOCK:
             case SNOW:
             case SOUL_SAND:
-            case SOIL:
+            //FIXME What do here
+            //case SOIL:
             case NETHERRACK:
                 return true;
             default:
