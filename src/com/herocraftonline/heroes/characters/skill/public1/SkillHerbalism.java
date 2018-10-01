@@ -52,50 +52,52 @@ public class SkillHerbalism extends PassiveSkill {
 	 */
 	public byte transmuteLeaves(Material mat, byte data)
 	{
-		if (mat == Material.LEAVES)
-		{
-			switch (data)
-			{
-			case 4:
-			case 8:
-			case 12:
-				return 0;
-			case 5:
-			case 9:
-			case 13:
-				return 1;
-			case 6:
-			case 10:
-			case 14:
-				return 2;
-			case 7:
-			case 11:
-			case 15:
-				return 3;
-			default:
-				return 0;
-			}
-		}
-		else if (mat == Material.LEAVES_2)
-		{
-			switch (data)
-			{
-			case 4:
-			case 8:
-			case 12:
-				return 0;
-			case 5:
-			case 9:
-			case 13:
-				return 1;
-			default:
-				return 0;
-			}
-		}
-		else
-		{
-			return 0;
-		}
+		//FIXME
+		return 0;
+//		if (mat == Material.LEAVES)
+//		{
+//			switch (data)
+//			{
+//			case 4:
+//			case 8:
+//			case 12:
+//				return 0;
+//			case 5:
+//			case 9:
+//			case 13:
+//				return 1;
+//			case 6:
+//			case 10:
+//			case 14:
+//				return 2;
+//			case 7:
+//			case 11:
+//			case 15:
+//				return 3;
+//			default:
+//				return 0;
+//			}
+//		}
+//		//else if (mat == Material.LEAVES_2)
+//		{
+//			switch (data)
+//			{
+//			case 4:
+//			case 8:
+//			case 12:
+//				return 0;
+//			case 5:
+//			case 9:
+//			case 13:
+//				return 1;
+//			default:
+//				return 0;
+//			}
+//		}
+//		//else
+//		{
+//			return 0;
+//		}
 	}
 
 	public class SkillBlockListener implements Listener {
@@ -121,26 +123,26 @@ public class SkillHerbalism extends PassiveSkill {
 			Material mat = null;
 			switch (block.getType()) {
 			//FIXME MC Flatening makes this a pain
-			case CROPS:                    
-				mat = Material.WHEAT;
-				extraDrops = 3;
-				break;
-			case SUGAR_CANE_BLOCK:
-				mat = Material.SUGAR_CANE;
-				extraDrops = 2;
-				break;
-			case MELON_BLOCK:
+//			case CROPS:
+//				mat = Material.WHEAT;
+//				extraDrops = 3;
+//				break;
+//				case SUGAR_CANE:
+//				mat = Material.SUGAR_CANE;
+//				extraDrops = 2;
+//				break;
+			case MELON:
 				mat = Material.MELON;
 				extraDrops = 7;
 				break;
-			case SAPLING:
-			case LEAVES:
-			case YELLOW_FLOWER:
-			case RED_ROSE:
+			//case SAPLING:
+			//case LEAVES:
+			case DANDELION:
+			case DANDELION_YELLOW:
 			case BROWN_MUSHROOM:
 			case RED_MUSHROOM:
 			case CACTUS:
-			case LONG_GRASS:
+			//case LONG_GRASS:
 			case PUMPKIN:
 			case DEAD_BUSH:
 				break;
@@ -162,14 +164,14 @@ public class SkillHerbalism extends PassiveSkill {
 				block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(mat, extraDrops));
 			}
 			//FIXME Not up for mass enum additions atm
-			else if (block.getType() == Material.LEAVES || block.getType() == Material.LEAVES_2)
-			{
-				block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, transmuteLeaves(block.getType(), block.getData())));
-			}
-			else
-			{
-				block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, block.getData()));
-			}
+//			else if (block.getType() == Material.LEAVES || block.getType() == Material.LEAVES_2)
+//			{
+//				block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, transmuteLeaves(block.getType(), block.getData())));
+//			}
+//			else
+//			{
+//				block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType(), extraDrops, block.getData()));
+//			}
 		}
 	}
 }

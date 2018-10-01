@@ -74,9 +74,9 @@ public class SkillChaoticStrength extends ActiveSkill {
         hero.addEffect(new ChaoticStrengthEffect(this, player, duration, strengthGain, intellectDrain));
 
         //FIXME What am I doing here?
-        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.NOTE, 3);
 
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_COW_HURT.value(), 1.3F, 0.5F);

@@ -210,7 +210,7 @@ public class SkillRampartVine extends ActiveSkill {
                         }
 
                         //FIXME Idk what to do here (Soren)
-                        workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
+                        //workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
 
                         break;
                     case VINE:

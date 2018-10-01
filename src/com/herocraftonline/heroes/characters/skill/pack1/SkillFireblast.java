@@ -99,8 +99,8 @@ public class SkillFireblast extends ActiveSkill {
             Location blastLocation = targetBlock.getLocation().clone();
             blastLocation.add(new Vector(.5, 0, .5));
 
-            //FIXME Figure out what to do with `LAVA_POP`
-            player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
+            //player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
+            player.getWorld().spawnParticle(Particle.LAVA, blastLocation, 75, 1, 1, 1, 1);
             //player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);
             player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, blastLocation, 10, 1,1,1,1);
             player.getWorld().playSound(blastLocation, CompatSound.ENTITY_GENERIC_EXPLODE.value(), 6.0F, 1);
