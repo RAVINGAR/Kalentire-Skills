@@ -102,6 +102,7 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 
 		Player player = hero.getPlayer();
 
+		//FIXME Data Use
 		Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, distance);
 		Location center = targetBlock.getLocation().clone().add(0, 40, 0);
 
@@ -130,6 +131,7 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 				{
 					int index = rand.nextInt(finalLocs.size());
 					Location meteorLocation = finalLocs.get(index).clone().setDirection(new Vector(0, -1, 0));
+					//FIXME Data Use
 					FallingBlock meteor = (FallingBlock) meteorLocation.getWorld().spawnFallingBlock(meteorLocation, Material.DRAGON_EGG.getId(), (byte) 0);
 					meteor.setDropItem(false);
 					meteors.put(meteor, p);
@@ -139,8 +141,10 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 					new BukkitRunnable() {
 						public void run() {
 							if (theMeteor.isDead()) cancel();
-							theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.LARGE_SMOKE, 0, 0, 1.0F, 1.0F, 1.0F, 0.2F, 40, 128);
-							theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.FLAME, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 30, 128);
+							//theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.LARGE_SMOKE, 0, 0, 1.0F, 1.0F, 1.0F, 0.2F, 40, 128);
+							theMeteor.getWorld().spawnParticle(Particle.SMOKE_LARGE, theMeteor.getLocation(), 40, 1, 1, 1, 0.2, true);
+							//theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.FLAME, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 30, 128);
+							theMeteor.getWorld().spawnParticle(Particle.FLAME, theMeteor.getLocation(), 30, 0.2, 1, 0.2, 0, true);
 						}						
 					}.runTaskTimer(plugin, 0, 1);
 					meteorCount++;
@@ -178,10 +182,13 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 						* hero.getAttributeValue(AttributeType.INTELLECT));
 				final double blastRadius = SkillConfigManager.getUseSetting(hero, this, "blast-radius", 2, true);
 				b.getWorld().playSound(b.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.75F, 1.0F);
-				b.getWorld().playSound(b.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5F, 1.0F);
-				b.getWorld().spigot().playEffect(b.getLocation(), Effect.EXPLOSION_LARGE, fallingBlock.getBlockId(), 0, (float) blastRadius / 2, (float) blastRadius / 2, (float) blastRadius / 2, 0.0F, 45, 128);
-				b.getWorld().spigot().playEffect(b.getLocation(), Effect.LARGE_SMOKE, fallingBlock.getBlockId(), 0, (float) blastRadius, (float) blastRadius, (float) blastRadius, 0.0F, 45, 128);
-				b.getWorld().spigot().playEffect(b.getLocation(), Effect.FLAME, fallingBlock.getBlockId(), 0, (float) blastRadius, (float) blastRadius, (float) blastRadius, 0.3F, 145, 128);
+				b.getWorld().playSound(b.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 1.0F);
+				//b.getWorld().spigot().playEffect(b.getLocation(), Effect.EXPLOSION_LARGE, fallingBlock.getBlockId(), 0, (float) blastRadius / 2, (float) blastRadius / 2, (float) blastRadius / 2, 0.0F, 45, 128);
+				b.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, b.getLocation(), 45, blastRadius, blastRadius, blastRadius, 0, true);
+				//b.getWorld().spigot().playEffect(b.getLocation(), Effect.LARGE_SMOKE, fallingBlock.getBlockId(), 0, (float) blastRadius, (float) blastRadius, (float) blastRadius, 0.0F, 45, 128);
+				b.getWorld().spawnParticle(Particle.SMOKE_LARGE, b.getLocation(), 45, blastRadius, blastRadius, blastRadius, 0, true);
+				//b.getWorld().spigot().playEffect(b.getLocation(), Effect.FLAME, fallingBlock.getBlockId(), 0, (float) blastRadius, (float) blastRadius, (float) blastRadius, 0.3F, 145, 128);
+				b.getWorld().spawnParticle(Particle.FLAME, b.getLocation(), 140, blastRadius, blastRadius, blastRadius, 0.3, true);
 				
 				for (Entity e : hero.getPlayer().getNearbyEntities(50, 50, 50)) {
 					if (e.getLocation().distance(b.getLocation()) > blastRadius) continue;

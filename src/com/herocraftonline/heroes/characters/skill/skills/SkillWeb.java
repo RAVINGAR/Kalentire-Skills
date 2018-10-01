@@ -102,7 +102,7 @@ public class SkillWeb extends TargettedSkill {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onBlockBreak(BlockBreakEvent event) {
-            if (event.getBlock().getType() != Material.WEB)
+            if (event.getBlock().getType() != Material.COBWEB)
                 return;
 
             if (changedBlocks.contains(event.getBlock().getLocation())) {
@@ -222,7 +222,7 @@ public class SkillWeb extends TargettedSkill {
                     if (!isBlockEntityBlock) {
                         changedBlocks.add(location);
                         locations.add(location);
-                        location.getBlock().setType(Material.WEB);
+                        location.getBlock().setType(Material.COBWEB);
                     }
                     break;
                 default:

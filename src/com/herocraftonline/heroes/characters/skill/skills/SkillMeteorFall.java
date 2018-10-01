@@ -12,10 +12,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -118,8 +115,8 @@ public class SkillMeteorFall extends ActiveSkill {
         double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
+        //FIXME Data Use
         Block tBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
-     // Block tBlock = player.getTargetBlock(null, maxDist);
         if (tBlock == null)
             return SkillResult.INVALID_TARGET;
 
@@ -163,7 +160,8 @@ public class SkillMeteorFall extends ActiveSkill {
                     Vector vel = new Vector(randomX, -yVelocity, randomZ);
 
                     LargeFireball iceBolt = world.spawn(fLoc, LargeFireball.class);
-                    iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                    //iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                    iceBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, iceBolt.getLocation(), 2, 0.4, 0.4, 0.4, 0, true);
                     iceBolt.setShooter(player);
                     iceBolt.setVelocity(vel);
                     MeteorBalls.put(iceBolt, System.currentTimeMillis());

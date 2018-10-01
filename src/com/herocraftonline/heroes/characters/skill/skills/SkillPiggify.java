@@ -74,9 +74,7 @@ public class SkillPiggify extends TargettedSkill {
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
         Material material = target.getLocation().getBlock().getType();
-        EntityType type = (material.equals(Material.WATER) ||
-                material.equals(Material.STATIONARY_WATER) ?
-                EntityType.SQUID : EntityType.PIG);
+        EntityType type = (material.equals(Material.WATER) ? EntityType.SQUID : EntityType.PIG);
 
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, creature));

@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -81,9 +82,10 @@ public class SkillSuckerPunch extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
        
-        target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.CRIT, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 45, 16);
+        //target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.CRIT, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 45, 16);
+        target.getWorld().spawnParticle(Particle.CRIT, target.getEyeLocation(), 45, 0.2, 0.2, 0.2, 0.3);
 
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.7F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.7F, 2.0F);
 
         return SkillResult.NORMAL;
     }

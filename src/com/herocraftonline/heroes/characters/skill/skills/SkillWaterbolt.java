@@ -7,10 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -95,8 +92,10 @@ public class SkillWaterbolt extends ActiveSkill
 				else
 				{
 					bolts.remove(theWaterbolt);
-					theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 65, 64);
-					theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+					//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 65, 64);
+					theWaterbolt.getWorld().spawnParticle(Particle.WATER_SPLASH, theWaterbolt.getLocation(), 65, 0.3, 0.3, 0.3, 0.5, true);
+					//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+					theWaterbolt.getWorld().spawnParticle(Particle.BLOCK_CRACK, theWaterbolt.getLocation(), 35, 0.3, 0.3, 0.3, 0, Bukkit.createBlockData(Material.WATER), true);
 					theWaterbolt.getWorld().playSound(theWaterbolt.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.3F);
 					theWaterbolt.remove();
 					cancel();
@@ -109,8 +108,10 @@ public class SkillWaterbolt extends ActiveSkill
 			public void run()
 			{
 				if (theWaterbolt.isDead()) cancel();
-				theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 45, 64);
-				theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 64);
+				//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 45, 64);
+				theWaterbolt.getWorld().spawnParticle(Particle.WATER_SPLASH, theWaterbolt.getLocation(), 45, 0.3, 0.3, 0.3, 0.1, true);
+				//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 64);
+				theWaterbolt.getWorld().spawnParticle(Particle.BLOCK_CRACK, theWaterbolt.getLocation(), 25, 0.1, 0.1, 0.1, 0, Bukkit.createBlockData(Material.WATER), true);
 			}
 		}.runTaskTimer(plugin, 0, 1);
 
@@ -135,7 +136,8 @@ public class SkillWaterbolt extends ActiveSkill
 				public void run()
 				{
 					if (!h.hasEffect("Saturated") || h.getPlayer().isDead()) cancel();
-					h.getPlayer().getWorld().spigot().playEffect(h.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					//h.getPlayer().getWorld().spigot().playEffect(h.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					h.getPlayer().getWorld().spawnParticle(Particle.WATER_SPLASH, h.getPlayer().getLocation(), 25, 0.3, 1, 0.3, 0);
 				}
 			}.runTaskTimer(plugin, 0, 8);
 		}
@@ -149,7 +151,8 @@ public class SkillWaterbolt extends ActiveSkill
 				public void run()
 				{
 					if (!m.hasEffect("Saturated") || m.getEntity().isDead()) cancel();
-					m.getEntity().getWorld().spigot().playEffect(m.getEntity().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					//m.getEntity().getWorld().spigot().playEffect(m.getEntity().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					m.getEntity().getWorld().spawnParticle(Particle.WATER_SPLASH, m.getEntity().getLocation(), 25, 0.3, 1, 0.3, 0);
 				}
 			}.runTaskTimer(plugin, 0, 8);
 		}
@@ -188,7 +191,8 @@ public class SkillWaterbolt extends ActiveSkill
 
 			if (target.getFireTicks() > 0)
 			{
-				target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXTINGUISH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 25, 16);
+				//FIXME Effect is a sound but played like a particle?
+				//target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXTINGUISH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 25, 16);
 				target.getWorld().playSound(target.getLocation(), Sound.ENTITY_CREEPER_HURT, 1.0F, 1.0F);
 				target.setFireTicks(0);
 			}
@@ -200,7 +204,8 @@ public class SkillWaterbolt extends ActiveSkill
 			CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 			targCT.addEffect(new SaturatedEffect(skill, player, 3000));
 
-			target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 100, 16);
+			//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 100, 16);
+			target.getWorld().spawnParticle(Particle.WATER_SPLASH, target.getLocation().add(0, 0.5, 0), 100, 0.3, 1, 0.3, 0);
 			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.3F);
 			target.getWorld().playSound(target.getLocation(), Sound.WEATHER_RAIN, 1.0F, 1.0F);
 			snowball.remove();
@@ -218,8 +223,10 @@ public class SkillWaterbolt extends ActiveSkill
 				return;
 			}
 
-			snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 65, 64);
-			snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+			//snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 65, 64);
+			snowball.getWorld().spawnParticle(Particle.WATER_SPLASH, snowball.getLocation(), 65, 0.3, 0.3, 0.3, 0.5, true);
+			//snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
+			snowball.getWorld().spawnParticle(Particle.BLOCK_CRACK, snowball.getLocation(), 35, 0.3, 0.3, 0.3, 0, Bukkit.createBlockData(Material.WATER), true);
 			snowball.getWorld().playSound(snowball.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.3F);
 			snowball.remove();
 		}
