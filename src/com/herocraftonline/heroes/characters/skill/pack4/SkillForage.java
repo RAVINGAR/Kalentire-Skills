@@ -83,6 +83,8 @@ public class SkillForage extends ActiveSkill {
         case TAIGA_HILLS:
         case FROZEN_OCEAN:
         case FROZEN_RIVER:
+        case ICE_SPIKES:
+        case SNOWY_MOUNTAINS:
         //case ICE_FLATS:
         //case ICE_MOUNTAINS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
@@ -90,6 +92,9 @@ public class SkillForage extends ActiveSkill {
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "ice.max-found", 3, false);
             break;
         case FOREST:
+        case BIRCH_FOREST_HILLS:
+        case DARK_FOREST_HILLS:
+        case WOODED_HILLS:
         //case FOREST_HILLS:
         //case EXTREME_HILLS:
         //case SMALLER_EXTREME_HILLS:
