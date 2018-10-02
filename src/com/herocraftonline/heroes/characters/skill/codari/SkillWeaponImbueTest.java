@@ -17,7 +17,7 @@ public class SkillWeaponImbueTest extends SkillBaseWeaponImbue {
         setDescription("Imbues your weapon with the amazing power of debugging!");
 
         setUsage("/skill WeaponImbueTest");
-        setArgumentRange(0, 0);
+        setArgumentRange(0, 10);
         setIdentifiers("skill WeaponImbueTest");
     }
 
@@ -29,33 +29,5 @@ public class SkillWeaponImbueTest extends SkillBaseWeaponImbue {
     @Override
     protected void apply(Hero hero, String[] strings, WeaponDamageEvent weaponDamageEvent) {
 
-        final String NAME = "Test Stacking Effect";
-
-        CharacterTemplate target = plugin.getCharacterManager().getCharacter((LivingEntity) weaponDamageEvent.getEntity());
-
-        TestStackingEffect effect = (TestStackingEffect) target.getEffect(NAME);
-        if (effect == null) {
-            effect = new TestStackingEffect(this, NAME);
-            target.addEffect(effect);
-        }
-
-        effect.addStack(hero, 10000, hero.getPlayer(), this);
-    }
-
-    public class TestStackingEffect extends PeriodicStackingEffect {
-
-        public TestStackingEffect(Skill skill, String name) {
-            super(skill, name, 5, 500);
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {
-
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            hero.getPlayer().sendMessage("You have " + getStackCount(hero) + " stacks");
-        }
     }
 }
