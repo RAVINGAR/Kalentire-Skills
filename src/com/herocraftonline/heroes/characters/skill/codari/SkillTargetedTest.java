@@ -64,5 +64,17 @@ public class SkillTargetedTest extends TargettedSkill {
         public void tickHero(Hero hero) {
             applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Stacks: " + ChatColor.WHITE + getStackCount(hero));
         }
+
+        @Override
+        public void apply(CharacterTemplate character) {
+            super.apply(character);
+            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Applied");
+        }
+
+        @Override
+        public void remove(CharacterTemplate character) {
+            super.remove(character);
+            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Removed");
+        }
     }
 }
