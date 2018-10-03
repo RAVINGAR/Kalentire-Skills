@@ -32,25 +32,21 @@ public class SkillTargetedTest extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] strings) {
 
+        final String STACKING = "Stacking";
+
         Player player = hero.getPlayer();
         CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
-        Test effect = (Test) targetCharacter.getEffect("Stacking");
-        if (effect == null) {
-            effect = new Test(this, "Stacking", player);
-            targetCharacter.addEffect(effect);
-        }
-
-        effect.addStack(targetCharacter, 2000, player, this);
+        targetCharacter.addEffectStack(STACKING, 2000, player, this, () -> new TestEffect(this, STACKING, player));
 
         return SkillResult.NORMAL;
     }
 
-    public class Test extends PeriodicStackingEffect {
+    public class TestEffect extends PeriodicStackingEffect {
 
         private Player applier;
 
-        public Test(Skill skill, String name, Player applier) {
+        public TestEffect(Skill skill, String name, Player applier) {
             super(skill, name, 10, 500);
             this.applier = applier;
         }
