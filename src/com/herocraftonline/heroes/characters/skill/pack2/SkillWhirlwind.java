@@ -5,11 +5,14 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -28,7 +31,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWhirlwind extends ActiveSkill {
@@ -158,7 +160,7 @@ public class SkillWhirlwind extends ActiveSkill {
 				}
 			}
 
-			player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BAT_LOOP.value(), 0.6F, 0.6F);
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP, 0.6F, 0.6F);
 
 			// TORNADOOOO
 			for (int h = 0; h < 2; h++)
@@ -193,7 +195,7 @@ public class SkillWhirlwind extends ActiveSkill {
 			}
 
 			if (hitTarget)
-				player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_ANVIL_LAND.value(), 0.3F, 1.6F);
+				player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3F, 1.6F);
 		}
 
 		@Override

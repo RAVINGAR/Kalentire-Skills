@@ -1,9 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -15,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDivineStun extends TargettedSkill {
@@ -74,7 +75,7 @@ public class SkillDivineStun extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5F, 1.0F);
 
         //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 1, 50, 16);
         player.getWorld().spawnParticle(Particle.SPELL, target.getLocation().add(0, 0.5, 0), 50, 0, 0, 0, 1);

@@ -13,11 +13,11 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -48,18 +48,18 @@ public class SkillAccelerando extends ActiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
         skillSong = new Song(
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.2F, 0),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.5F, 1),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.9F, 2),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.2F, 3),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.5F, 4),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.9F, 5),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.2F, 6),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.5F, 7),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.9F, 8),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.2F, 9),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.5F, 10),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.9F, 11)
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.2F, 0),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.5F, 1),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 2),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 3),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 4),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 5),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 6),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 7),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 8),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 9),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 10),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.9F, 11)
         );
     }
 

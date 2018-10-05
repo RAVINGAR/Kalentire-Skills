@@ -1,9 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,7 +32,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBecomeDeath extends ActiveSkill {
@@ -89,7 +90,7 @@ public class SkillBecomeDeath extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 120000, false);
         hero.addEffect(new BecomeDeathEffect(this, player, duration));
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CAT_AMBIENT.value(), 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 1.0F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -23,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillRuneword extends TargettedSkill {
 
@@ -97,7 +97,7 @@ public class SkillRuneword extends TargettedSkill {
         RunewordEffect effect = new RunewordEffect(this, player, duration, damageBonus);
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_DEATH.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.5F, 1.0F);
         //player.getWorld().spigot().playEffect(player.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0.1F, 1.0F, 0.1F, 0.1F, 30, 10);
         player.getWorld().spawnParticle(Particle.SPELL_WITCH, player.getLocation(), 30, 0.1, 1, 0.1, 0.1);
 

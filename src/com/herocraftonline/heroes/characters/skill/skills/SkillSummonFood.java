@@ -7,10 +7,10 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -60,7 +60,7 @@ public class SkillSummonFood extends ActiveSkill {
             player.sendMessage("Items have been dropped at your feet!");
         }
 
-        player.getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_PLAYER_BURP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_BURP, 0.8F, 1.0F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;

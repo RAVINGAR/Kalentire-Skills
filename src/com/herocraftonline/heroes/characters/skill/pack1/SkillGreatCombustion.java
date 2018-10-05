@@ -6,17 +6,19 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -106,7 +108,7 @@ public class SkillGreatCombustion extends ActiveSkill {
             player.getWorld().spawnParticle(Particle.FLAME, targetBlock.getLocation().add(0, 0.5, 0), 8, 0, 0, 0, 0);
             //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 3, 16);
             player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, targetBlock.getLocation().add(0, 0.5, 0), 3, 0, 0, 0, 0);
-            player.getWorld().playSound(targetBlock.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 6.0F, 1);
+            player.getWorld().playSound(targetBlock.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 6.0F, 1);
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);

@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -107,8 +106,8 @@ public class SkillMassPiggify extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PIG_DEATH.value(), 0.8F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PIG_AMBIENT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PIG_DEATH, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PIG_AMBIENT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

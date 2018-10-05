@@ -4,9 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -27,7 +29,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillEarthernFury extends TargettedSkill {
@@ -107,7 +108,7 @@ public class SkillEarthernFury extends TargettedSkill {
          * */
         //player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 1, 0), 25, 0, 0, 0, 1, Bukkit.createBlockData(Material.SOUL_SAND));
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_GRASS_HIT.value(), 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_HIT, 1.0F, 1.0F);
         
         // Create the effect and slow the target
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
@@ -183,7 +184,7 @@ public class SkillEarthernFury extends TargettedSkill {
                      * */
                     //fEntity.getWorld().spigot().playEffect(location, org.bukkit.Effect.TILE_BREAK, Material.SOUL_SAND.getId(), 0, 0, 0, 0, 0.1f, 25, 16);
                     fEntity.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, 25, 0, 0, 0, 0.1, Bukkit.createBlockData(Material.SOUL_SAND));
-                    fEntity.getWorld().playSound(location, CompatSound.BLOCK_GRAVEL_HIT.value(), 0.1F, 1.0F);
+                    fEntity.getWorld().playSound(location, Sound.BLOCK_GRAVEL_HIT, 0.1F, 1.0F);
                     
                     time += 0.01;
                 }

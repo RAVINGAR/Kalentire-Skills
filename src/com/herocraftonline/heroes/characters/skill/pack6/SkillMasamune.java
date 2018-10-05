@@ -2,8 +2,10 @@ package com.herocraftonline.heroes.characters.skill.pack6;
 
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -14,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMasamune extends ActiveSkill {
@@ -82,7 +83,7 @@ public class SkillMasamune extends ActiveSkill {
                 NMSHandler.getInterface().getItemInMainHand(player.getInventory()).setDurability((short) (dura + duraCost));
             } else if (maxDura - dura == duraCost) {
                 NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 1.0F);
             } else {
                 player.sendMessage("Your Katana doesn't have enough durability to use Masamune!");
                 return SkillResult.INVALID_TARGET_NO_MSG;

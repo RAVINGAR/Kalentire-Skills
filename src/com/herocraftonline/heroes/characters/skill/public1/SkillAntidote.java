@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffectType;
 
 public class SkillAntidote extends TargettedSkill {

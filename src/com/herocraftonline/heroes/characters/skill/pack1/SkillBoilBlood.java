@@ -1,13 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.pack1;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -26,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBoilBlood extends ActiveSkill {
@@ -147,7 +144,7 @@ public class SkillBoilBlood extends ActiveSkill {
             player.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getLocation(), 50, 0, 0, 0, 0.2);
             //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
             player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 16, 0, 0.1, 0, 0.1, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
-            player.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_LAVA_AMBIENT.value(), 10.0F, 16);
+            player.getWorld().playSound(target.getLocation(), Sound.BLOCK_LAVA_AMBIENT, 10.0F, 16);
 
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, DamageCause.MAGIC);

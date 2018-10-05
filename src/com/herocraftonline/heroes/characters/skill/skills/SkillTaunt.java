@@ -11,17 +11,14 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -111,8 +108,8 @@ public class SkillTaunt extends ActiveSkill {
             targetCT.addEffect(tEffect);
         }
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CHICKEN_STEP.value(), 0.8F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CHICKEN_HURT.value(), 0.8F, 1.25F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_STEP, 0.8F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_HURT, 0.8F, 1.25F);
         
         return SkillResult.NORMAL;
     }

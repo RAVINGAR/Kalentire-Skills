@@ -3,10 +3,13 @@ package com.herocraftonline.heroes.characters.skill.public1;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -17,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 
@@ -84,7 +86,7 @@ public class SkillCleave extends TargettedSkill {
             entity.getWorld().spawnParticle(Particle.BLOCK_CRACK, entity.getLocation().add(0, 0.5, 0), 5, 0.3, 0.2, 0.3, 0.5, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
         }
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_HURT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.8F, 1.0F);
         //target.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.CRIT, 0, 0, 1.5F, 1.0F, 1.5F, 0.4F, 45, 16);
         target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 45, 1.5, 1.5, 1.5, 0.4);
         //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.TILE_BREAK, 115, 3, 0.3F, 0.2F, 0.3F, 0.5F, 45, 16);

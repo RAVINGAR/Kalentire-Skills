@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -21,7 +22,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -170,7 +170,7 @@ public class SkillMark extends ActiveSkill {
             player.sendMessage("You have marked a new location on " + loc.getWorld().getName() + " at: " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
 
             //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value() , 0.5F, 1.0F);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN , 0.5F, 1.0F);
             //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
             hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, hero.getPlayer().getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.RED, 1));
             return SkillResult.NORMAL;

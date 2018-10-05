@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -13,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -83,6 +83,8 @@ public class SkillForage extends ActiveSkill {
         case TAIGA_HILLS:
         case FROZEN_OCEAN:
         case FROZEN_RIVER:
+        case ICE_SPIKES:
+        case SNOWY_MOUNTAINS:
         //case ICE_FLATS:
         //case ICE_MOUNTAINS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
@@ -90,6 +92,9 @@ public class SkillForage extends ActiveSkill {
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "ice.max-found", 3, false);
             break;
         case FOREST:
+        case BIRCH_FOREST_HILLS:
+        case DARK_FOREST_HILLS:
+        case WOODED_HILLS:
         //case FOREST_HILLS:
         //case EXTREME_HILLS:
         //case SMALLER_EXTREME_HILLS:
@@ -173,7 +178,7 @@ public class SkillForage extends ActiveSkill {
         }
         Util.syncInventory(player, plugin);
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_WOLF_HOWL.value(), 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WOLF_HOWL, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }

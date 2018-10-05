@@ -1,8 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -19,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMagicWard extends ActiveSkill {
@@ -86,7 +87,7 @@ public class SkillMagicWard extends ActiveSkill {
 
                 hero.addEffect(new MagicWardEffect(this, player, duration, damageReduction));
 
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BLAZE_AMBIENT.value(), 0.8F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.8F, 1.0F);
 
                 return SkillResult.NORMAL;
         }
@@ -104,7 +105,7 @@ public class SkillMagicWard extends ActiveSkill {
 
                 hero.addEffect(new MagicWardEffect(this, player, duration, damageReduction));
 
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BLAZE_AMBIENT.value(), 0.8F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.8F, 1.0F);
 
                 return SkillResult.NORMAL;
         }

@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,7 +23,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillEntangle extends TargettedSkill {
@@ -109,7 +109,7 @@ public class SkillEntangle extends TargettedSkill {
 		CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 		targetCT.addEffect(rootEffect);
 
-		player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD.value(), 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.8F, 1.0F);
 
 		ArrayList<Location> particleLocations = circle(player.getLocation(), 36, 1.5);
 		for (int i = 0; i < particleLocations.size(); i++)
