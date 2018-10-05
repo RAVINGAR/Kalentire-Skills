@@ -82,8 +82,6 @@ public class SkillFrontflip extends ActiveSkill {
 
         boolean weakenVelocity = false;
         switch (belowMat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -147,12 +145,10 @@ public class SkillFrontflip extends ActiveSkill {
     private static final Set<Material> requiredMaterials;
     static {
         requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.STATIONARY_WATER);
-        requiredMaterials.add(Material.STATIONARY_LAVA);
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEAVES);
+        //requiredMaterials.add(Material.LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
 }
