@@ -3,8 +3,10 @@ package com.herocraftonline.heroes.characters.skill.pack3;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.Effect;
 
 import com.herocraftonline.heroes.Heroes;

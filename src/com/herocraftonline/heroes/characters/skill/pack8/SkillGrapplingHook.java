@@ -10,6 +10,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -287,7 +288,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
             
@@ -328,7 +329,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         final Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
             

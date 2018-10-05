@@ -12,6 +12,7 @@ import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;

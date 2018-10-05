@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -108,7 +109,7 @@ public class SkillEntangle extends TargettedSkill {
 		CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 		targetCT.addEffect(rootEffect);
 
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.8F, 1.0F);
 
 		ArrayList<Location> particleLocations = circle(player.getLocation(), 36, 1.5);
 		for (int i = 0; i < particleLocations.size(); i++)

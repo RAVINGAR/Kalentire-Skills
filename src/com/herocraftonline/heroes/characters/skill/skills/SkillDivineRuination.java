@@ -104,7 +104,7 @@ public class SkillDivineRuination extends SkillBaseBlockWave {
 
 			@Override
 			public void run() {
-				world.playSound(hero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_BLAST, volume, 1f);
+				world.playSound(hero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, volume, 1f);
 				volume -= 0.1;
 
 				if (volume <= 0) {

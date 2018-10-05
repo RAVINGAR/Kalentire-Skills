@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;

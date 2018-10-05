@@ -2,8 +2,10 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffectType;
 
 import com.herocraftonline.heroes.Heroes;

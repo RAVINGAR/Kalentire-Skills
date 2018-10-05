@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.pack5;
 
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;

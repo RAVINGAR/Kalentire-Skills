@@ -87,7 +87,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         broadcastExecuteText(hero);
 
-        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_LAUNCH, 2, 1);
+        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2, 1);
         player.setVelocity(new Vector(0, upVelocity, 0));
         final int taskId = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override

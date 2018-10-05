@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 public class SkillChaoticStrength extends ActiveSkill {
     private String applyText;

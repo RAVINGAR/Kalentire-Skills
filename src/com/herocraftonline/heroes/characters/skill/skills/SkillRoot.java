@@ -5,6 +5,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -50,7 +51,7 @@ public class SkillRoot extends TargettedSkill {
         broadcastExecuteText(hero, target);
         
         //This is the Sound stuff.
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR , 0.8F, 1.0F);
         // this is our fireworks shit
         /*try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), 
