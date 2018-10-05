@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -21,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlameshield extends ActiveSkill {
@@ -99,7 +99,7 @@ public class SkillFlameshield extends ActiveSkill {
             player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
 		}
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_FIRE_AMBIENT.value(), 0.4F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.4F, 1.0F);
 
         return SkillResult.NORMAL;
     }

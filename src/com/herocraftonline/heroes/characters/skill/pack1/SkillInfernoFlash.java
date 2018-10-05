@@ -18,7 +18,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillInfernoFlash extends ActiveSkill {
@@ -152,7 +151,7 @@ public class SkillInfernoFlash extends ActiveSkill {
             player.getWorld().spawnParticle(Particle.FLAME, teleport, 45, 0.5, 0.5, 0.5, 0.5);
             player.teleport(teleport);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().playSound(loc, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
+            player.getWorld().playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
         }

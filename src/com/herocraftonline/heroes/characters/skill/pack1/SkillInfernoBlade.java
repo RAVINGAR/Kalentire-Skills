@@ -10,9 +10,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -91,7 +91,7 @@ public class SkillInfernoBlade extends SkillBaseSpike {
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_GHAST_SHOOT.value(), 0.2f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.2f, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {

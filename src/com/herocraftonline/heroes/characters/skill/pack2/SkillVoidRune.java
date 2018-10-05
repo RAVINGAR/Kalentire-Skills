@@ -50,7 +50,6 @@ import com.herocraftonline.heroes.characters.skill.runes.Rune;
 import com.herocraftonline.heroes.characters.skill.runes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runes.RuneApplicationEvent;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillVoidRune extends ActiveSkill {
@@ -128,7 +127,7 @@ public class SkillVoidRune extends ActiveSkill {
 
         // Play Effects
         Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_AMBIENT.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
         List<Location> circle = circle(player.getLocation(), 36, 1.5);
         for (int i = 0; i < circle.size(); i++)
@@ -200,7 +199,7 @@ public class SkillVoidRune extends ActiveSkill {
 
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-                    player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
                 }
             }, (long) (0.1 * 20));
 

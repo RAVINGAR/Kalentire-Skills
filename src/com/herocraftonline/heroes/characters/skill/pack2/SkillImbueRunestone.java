@@ -8,10 +8,10 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -119,7 +119,7 @@ public class SkillImbueRunestone extends ActiveSkill {
 
                 // Play Effects
                 Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_AMBIENT.value(), 0.5F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
                 broadcastExecuteText(hero);
 
