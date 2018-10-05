@@ -58,7 +58,7 @@ public class SkillManaburn extends TargettedSkill {
                 e.printStackTrace();
             }*/
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_CAT_HISS.value() , 0.8F, 1.0F);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_CAT_HISS , 0.8F, 1.0F);
             return SkillResult.NORMAL;
         } else {
             player.sendMessage("Target does not have enough mana!");

@@ -95,7 +95,7 @@ public class SkillTempest extends ActiveSkill {
                     // Lightning like this is too annoying.
                     // entity.getWorld().strikeLightningEffect(entity.getLocation());
                     entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
-                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER.value(), lightningVolume, 1.0F);
+                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, lightningVolume, 1.0F);
                     
                     // Increase counter
                     targetsHit++;

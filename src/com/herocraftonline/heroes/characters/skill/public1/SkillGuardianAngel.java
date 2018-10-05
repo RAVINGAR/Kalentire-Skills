@@ -66,7 +66,7 @@ public class SkillGuardianAngel extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

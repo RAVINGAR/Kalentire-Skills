@@ -67,7 +67,7 @@ public class SkillTornadoKick extends ActiveSkill {
     @Override
     public void onWarmup(Hero hero) {
         Player player = hero.getPlayer();
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN.value(), 0.7F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.7F, 0.4F);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class SkillTornadoKick extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }
