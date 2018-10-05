@@ -7,9 +7,9 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 import org.bukkit.Effect;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -101,7 +101,7 @@ public class SkillBloodGift extends TargettedSkill {
         // Heal target
         targetHero.heal(hrhEvent.getDelta());
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BLAZE_AMBIENT.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.5F, 1.0F);
         //target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
         target.getWorld().spawnParticle(Particle.HEART, target.getLocation(), 30, 0F, 1F, 0F, 50);
         return SkillResult.NORMAL;

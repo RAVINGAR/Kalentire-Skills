@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDarkBlade extends TargettedSkill {
@@ -103,7 +103,7 @@ public class SkillDarkBlade extends TargettedSkill {
 
         //player.getWorld().spigot().playEffect(target.getEyeLocation().add(0, 0.5, 0), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 0, 0, 1, 35, 16);'
         player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0), 35, 0, 0, 0, 1);
-        player.getWorld().playSound(target.getLocation(), CompatSound.AMBIENT_CAVE.value(), 5.0F, 0.2F);
+        player.getWorld().playSound(target.getLocation(), Sound.AMBIENT_CAVE, 5.0F, 0.2F);
         return SkillResult.NORMAL;
     }
 }
