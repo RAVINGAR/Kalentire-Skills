@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -54,7 +53,7 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 0.7f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 0.7f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
@@ -77,7 +76,7 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
                     hero.removeEffect(effect);
                     //FIXME What is the replacement for this
                     //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.EXTINGUISH, 0, 0, 0, 0.4F, 0, 0.7F, 35, 16);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
                 }
             }
         }

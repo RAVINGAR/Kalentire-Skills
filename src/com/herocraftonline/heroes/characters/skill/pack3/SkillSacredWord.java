@@ -7,7 +7,6 @@ import org.bukkit.entity.LivingEntity;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -46,7 +45,7 @@ public class SkillSacredWord extends SkillBaseHeal {
     }
 
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {

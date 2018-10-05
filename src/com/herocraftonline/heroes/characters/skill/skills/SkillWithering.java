@@ -19,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWithering extends TargettedSkill {
@@ -90,7 +89,7 @@ public class SkillWithering extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new WitheringEffect(this, player, period, duration, tickDamage));
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SHOOT.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT.value(), 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

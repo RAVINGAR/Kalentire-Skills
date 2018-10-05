@@ -31,7 +31,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBarrier extends ActiveSkill {
@@ -132,7 +131,7 @@ public class SkillBarrier extends ActiveSkill {
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
-		player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.7F, 2.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.7F, 2.0F);
 
 		return SkillResult.NORMAL;
 	}
@@ -193,7 +192,7 @@ public class SkillBarrier extends ActiveSkill {
 					addSpellTarget(damagerPlayer, defenderHero);
 					damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 
-					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
+					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
 
 					// Disarm checks
 					Material heldItem = NMSHandler.getInterface().getItemInMainHand(damagerPlayer.getInventory()).getType();

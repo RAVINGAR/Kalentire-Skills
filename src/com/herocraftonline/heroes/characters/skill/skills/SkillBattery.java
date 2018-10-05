@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.api.SkillResult.ResultType;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 import org.bukkit.Effect;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -71,7 +70,7 @@ public class SkillBattery extends TargettedSkill {
             tHero.setMana(tHero.getMana() + finalTransferAmount);
 
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-            player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5F, 1.0F);
             //target.getWorld().spigot().playEffect(target.getLocation(), Effect.WITCH_MAGIC, 1, 1, 0F, 1F, 0F, 10F, 55, 10);
             target.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation(), 55, 0, 1, 0, 10);
             return SkillResult.NORMAL;

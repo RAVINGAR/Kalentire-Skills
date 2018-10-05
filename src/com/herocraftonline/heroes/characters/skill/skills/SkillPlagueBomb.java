@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,7 +93,7 @@ public class SkillPlagueBomb
     sheep.setColor(DyeColor.BLUE);
     //sheep.getWorld().playEffect(sheep.getLocation(), Effect.EXPLOSION_HUGE, 3);
     sheep.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, sheep.getLocation(), 3);
-    sheep.getWorld().playSound(sheep.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.8F, 1.0F);
+    sheep.getWorld().playSound(sheep.getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 0.8F, 1.0F);
     sheep.damage(1000.0D);
     plagueBombs.remove(sheep.getEntityId());
     

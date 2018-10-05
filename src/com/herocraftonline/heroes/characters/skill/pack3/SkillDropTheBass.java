@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -35,16 +34,16 @@ public class SkillDropTheBass extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_SONG, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
 
         skillSong = new Song(
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 6.0F, 0),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 5.0F, 1),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 4.0F, 2),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 3.0F, 3),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 2.0F, 4),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.8F, 1.0F, 5),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.0F, 1.0F, 6),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.8F, 0.0F, 7),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.0F, 1.0F, 8),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 3.0F, 9)
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.8F, 6.0F, 0),
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.8F, 5.0F, 1),
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.8F, 4.0F, 2),
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.8F, 3.0F, 3),
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.8F, 2.0F, 4),
+                new Note(Sound.BLOCK_NOTE_BASS.value(), 0.8F, 1.0F, 5),
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.0F, 1.0F, 6),
+                new Note(Sound.BLOCK_NOTE_BASS.value(), 0.8F, 0.0F, 7),
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.0F, 1.0F, 8),
+                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.8F, 3.0F, 9)
         );
     }
 

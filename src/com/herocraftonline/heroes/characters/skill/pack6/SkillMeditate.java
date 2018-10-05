@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMeditate extends ActiveSkill {
@@ -81,7 +80,7 @@ public class SkillMeditate extends ActiveSkill {
                 player.sendMessage(ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), true));
         }
         
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
         //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 25, 16);
         player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, player.getLocation().add(0, 0.5, 0), 25, 0.3, 0.3, 0.3, 0);
         //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 25, 16);

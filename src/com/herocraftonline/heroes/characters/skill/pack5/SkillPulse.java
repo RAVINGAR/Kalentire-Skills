@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -117,8 +116,8 @@ public class SkillPulse extends ActiveSkill {
 			}
 		}
         
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 1.0F, 1.2F);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CHICKEN_EGG.value(), 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG.value(), 1.0F, 1.2F);
 
         return SkillResult.NORMAL;
     }

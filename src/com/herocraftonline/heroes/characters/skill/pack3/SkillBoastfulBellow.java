@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Particle;
@@ -68,7 +67,7 @@ public class SkillBoastfulBellow extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_GROWL.value(), 1.5F, .5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL.value(), 1.5F, .5F);
 
         long currentTime = System.currentTimeMillis();
         List<Entity> entities = target.getNearbyEntities(radius, radius, radius);

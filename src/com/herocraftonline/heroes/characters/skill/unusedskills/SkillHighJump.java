@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -15,7 +16,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillHighJump extends ActiveSkill {
 
@@ -70,7 +70,7 @@ public class SkillHighJump extends ActiveSkill {
         Vector v = player.getVelocity().setY(0.5).add(player.getLocation().getDirection().setY(0).normalize().multiply(multiplier * jumpForwards));
         player.setVelocity(v);
         player.setFallDistance(-8f);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_SILVERFISH_HURT.value() , 10.0F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_SILVERFISH_HURT , 10.0F, 1.0F);
         broadcastExecuteText(hero);
         
         return SkillResult.NORMAL;

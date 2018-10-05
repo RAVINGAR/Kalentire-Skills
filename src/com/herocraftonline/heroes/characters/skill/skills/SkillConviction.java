@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillConviction extends ActiveSkill {
@@ -110,7 +109,7 @@ public class SkillConviction extends ActiveSkill {
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_ANVIL_LAND.value(), 0.6F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND.value(), 0.6F, 1.0F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;

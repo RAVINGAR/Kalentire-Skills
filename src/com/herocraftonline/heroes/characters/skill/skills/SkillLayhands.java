@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillLayhands extends TargettedSkill {
 	
@@ -64,7 +63,7 @@ public class SkillLayhands extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -107,7 +106,7 @@ public class SkillTransmuteOre extends ActiveSkill {
             }
             player.sendMessage("Items have been dropped at your feet!");
         }
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 1.0F);
         Util.syncInventory(player, plugin);
         return SkillResult.NORMAL;
     }

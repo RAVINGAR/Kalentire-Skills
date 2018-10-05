@@ -17,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFullHeal extends TargettedSkill {
@@ -92,7 +91,7 @@ public class SkillFullHeal extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getDelta());
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
         
         Player targetPlayer = targetHero.getPlayer();

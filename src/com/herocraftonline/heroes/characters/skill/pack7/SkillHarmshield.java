@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillHarmshield extends ActiveSkill {
 
@@ -95,7 +94,7 @@ public class SkillHarmshield extends ActiveSkill {
         Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new HarmShieldEffect(this, player, duration));
         

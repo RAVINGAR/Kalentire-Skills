@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSummonSheep extends SkillBaseSummonEntity {
@@ -45,6 +44,6 @@ public class SkillSummonSheep extends SkillBaseSummonEntity {
     
     @Override
     protected void applySoundEffects(World world, Player player) {
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_SHEEP_AMBIENT.value() , 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SHEEP_AMBIENT.value() , 0.8F, 1.0F);
     }
 }

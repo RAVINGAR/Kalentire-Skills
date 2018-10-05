@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import com.herocraftonline.heroes.nms.physics.collision.Capsule;
-import com.herocraftonline.heroes.util.CompatSound;
 
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
@@ -20,6 +19,7 @@ import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -91,16 +91,16 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 			public void onRenderShot(Location origin, Capsule shot, int frame, boolean first, boolean last) {
 
 				if (first) {
-					origin.getWorld().playSound(origin, CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.05f, 0.2f);
+					origin.getWorld().playSound(origin, Sound.ENTITY_GENERIC_EXPLODE, 0.05f, 0.2f);
 				}
 
 				if (last) {
 					Location loc = shot.getPoint2().toLocation(origin.getWorld());
-					origin.getWorld().playSound(loc, CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.05f, 0.2f);
+					origin.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.05f, 0.2f);
 				}
 
 				Location travelSoundLoc = shot.getBounds().getCenter().toLocation(origin.getWorld());
-				origin.getWorld().playSound(travelSoundLoc, CompatSound.ENTITY_GENERIC_BURN.value(), 0.05f, 0.2f);
+				origin.getWorld().playSound(travelSoundLoc, Sound.ENTITY_GENERIC_BURN, 0.05f, 0.2f);
 
 				renderBeamShotFrame(origin, shot, ParticleEffect.FLAME, Color.ORANGE, (int) (shot.getPoint1().distanceSquared(shot.getPoint2()) * 10), 3, 32, 0.5, 1);
 

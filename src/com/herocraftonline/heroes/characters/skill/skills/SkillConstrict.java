@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillConstrict extends TargettedSkill {
     
@@ -59,7 +58,7 @@ public class SkillConstrict extends TargettedSkill {
         SlowEffect effect = new SlowEffect(this, hero.getPlayer(), duration, multiplier, applyText, expireText);
         effect.types.add(EffectType.MAGIC);
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_SPIDER_STEP.value() , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_SPIDER_STEP.value() , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
 

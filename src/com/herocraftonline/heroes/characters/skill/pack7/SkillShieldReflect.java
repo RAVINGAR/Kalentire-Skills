@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -94,7 +93,7 @@ public class SkillShieldReflect extends ActiveSkill {
             hero.addEffect(new ShieldReflectEffect(this, player, duration));
 
             player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-            player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.value(), 0.8F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.value(), 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
         }

@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -55,7 +54,7 @@ public class SkillSummonSword extends ActiveSkill {
             player.sendMessage("Item(s) have been dropped at your feet!");
         }
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;

@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -154,7 +153,7 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 					e.start();
 					em.disposeOnTermination();
 
-					player.getWorld().playSound(effect.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.25f, 0.0001f);
+					player.getWorld().playSound(effect.getLocation(), Sound.ENTITY_GENERIC_BURN.value(), 0.25f, 0.0001f);
 				}
 
 				@Override

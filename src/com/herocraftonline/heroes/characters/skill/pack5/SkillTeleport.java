@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillTeleport extends ActiveSkill {
@@ -73,7 +72,7 @@ public class SkillTeleport extends ActiveSkill {
 
         player.teleport(loc1);
         player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_PORTAL_TRAVEL.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL.value(), 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

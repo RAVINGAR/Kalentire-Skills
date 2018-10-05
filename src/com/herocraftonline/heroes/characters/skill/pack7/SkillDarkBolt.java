@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -108,7 +107,7 @@ public class SkillDarkBolt extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_DEATH.value(), 0.4F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH.value(), 0.4F, 2.0F);
 
         final Snowball darkBolt = player.launchProjectile(Snowball.class);
         darkBolts.put(darkBolt, System.currentTimeMillis());

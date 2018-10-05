@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -87,7 +86,7 @@ public class SkillLabelChest extends ActiveSkill {
             im.setDisplayName(str);
             item.setItemMeta(im);
 
-            player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_ANVIL_LAND.value(), 0.6F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND.value(), 0.6F, 1.0F);
 
             broadcastExecuteText(hero);
 

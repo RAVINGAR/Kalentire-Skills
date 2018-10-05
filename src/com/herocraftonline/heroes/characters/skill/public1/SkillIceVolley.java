@@ -37,7 +37,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIceVolley extends ActiveSkill {
@@ -333,7 +332,7 @@ public class SkillIceVolley extends ActiveSkill {
             
             //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.4F, 0.2F, 0.4F, 0.3F, 50, 16);
             target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 50, 0.4, 0.2, 0.4, 0.3, Bukkit.createBlockData(Material.ICE));
-            target.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_GLASS_BREAK.value(), 7.0F, 0.7F);
+            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);
 
             iceVolleyShots.remove(iceArrow);
         }

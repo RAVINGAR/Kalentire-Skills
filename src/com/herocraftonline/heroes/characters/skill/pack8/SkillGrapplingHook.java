@@ -38,7 +38,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillGrapplingHook extends ActiveSkill {
@@ -288,7 +287,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, CompatSound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
             
@@ -329,7 +328,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         final Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, CompatSound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
             

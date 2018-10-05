@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillQuantumLeap extends TargettedSkill {
     public SkillQuantumLeap(Heroes plugin) {
@@ -63,7 +62,7 @@ public class SkillQuantumLeap extends TargettedSkill {
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
 
         // Play sound
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT.value(), 0.5F, 1.0F);
 
         broadcastExecuteText(hero, target);
 

@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Bukkit;
@@ -111,8 +110,8 @@ public class SkillTaunt extends ActiveSkill {
             targetCT.addEffect(tEffect);
         }
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CHICKEN_STEP.value(), 0.8F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CHICKEN_HURT.value(), 0.8F, 1.25F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_STEP.value(), 0.8F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_HURT.value(), 0.8F, 1.25F);
         
         return SkillResult.NORMAL;
     }

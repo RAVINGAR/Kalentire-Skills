@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -295,7 +294,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, CompatSound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
         player.setVelocity(vec);
     }
 
@@ -344,7 +343,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, CompatSound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
         target.setVelocity(vec);
     }
 

@@ -7,7 +7,6 @@ import org.bukkit.entity.LivingEntity;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
@@ -40,7 +39,7 @@ public class SkillSacredHymn extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.BLOCK_NOTE_PLING.value(), 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.BLOCK_NOTE_PLING.value(), 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {

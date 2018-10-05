@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -108,7 +107,7 @@ public class SkillOvergrowth extends ActiveSkill {
 //            return SkillResult.FAIL;
 //        }
 //        player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-//        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.WEATHER_RAIN.value() , 0.8F, 1.0F);
+//        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.WEATHER_RAIN.value() , 0.8F, 1.0F);
 //        broadcastExecuteText(hero);
         return SkillResult.NORMAL;
 

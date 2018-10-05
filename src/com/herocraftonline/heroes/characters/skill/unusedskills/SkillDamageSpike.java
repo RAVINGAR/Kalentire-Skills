@@ -8,9 +8,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
-import com.herocraftonline.heroes.util.CompatSound;
 
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -66,7 +66,7 @@ public class SkillDamageSpike extends SkillBaseSpike {
 			damageEntity(livingEntity, player, damage, EntityDamageEvent.DamageCause.MAGIC);
 			livingEntity.setVelocity(new Vector(0, knockUp, 0));
 
-			player.getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GHAST_SHOOT.value(), 5, 0.00001f);
+			player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GHAST_SHOOT, 5, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {

@@ -23,7 +23,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHolyAura extends ActiveSkill {
@@ -109,7 +108,7 @@ public class SkillHolyAura extends ActiveSkill {
 
         hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
         
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_NOTE_HARP.value(), 7.0F, 16);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP.value(), 7.0F, 16);
 
         return SkillResult.NORMAL;
     }

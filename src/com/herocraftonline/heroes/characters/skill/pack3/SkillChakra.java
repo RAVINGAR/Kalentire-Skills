@@ -21,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillChakra extends ActiveSkill {
@@ -139,7 +138,7 @@ public class SkillChakra extends ActiveSkill {
 			player.getWorld().spawnParticle(Particle.SPELL_INSTANT, circle2.get(i), 16, 0, 0, 0, 0);
 		}
 		
-		player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
 
 		return SkillResult.NORMAL;
 	}

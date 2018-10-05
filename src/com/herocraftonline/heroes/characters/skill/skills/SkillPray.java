@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -35,7 +34,7 @@ public class SkillPray extends SkillBaseHeal {
 
     @Override
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_CHICKEN_EGG.value(), 0.5F, 0.01F);
+        world.playSound(target.getLocation(), Sound.ENTITY_CHICKEN_EGG.value(), 0.5F, 0.01F);
     }
 
     @Override

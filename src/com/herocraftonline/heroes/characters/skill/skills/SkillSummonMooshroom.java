@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillSummonMooshroom extends SkillBaseSummonEntity {
     
@@ -25,6 +24,6 @@ public class SkillSummonMooshroom extends SkillBaseSummonEntity {
     
     @Override
     protected void applySoundEffects(World world, Player player) {
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_COW_HURT.value() , 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_COW_HURT.value() , 0.8F, 1.0F);
     }
 }

@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseMissile;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
-import com.herocraftonline.heroes.util.CompatSound;
 
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
@@ -202,7 +201,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
                 Location loc = start.clone().add(end.clone().subtract(start).multiply(0.5)).toLocation(getWorld());
                 loc.setDirection(end.clone().subtract(start));
 
-                getWorld().playSound(loc, CompatSound.ENTITY_FIREWORK_BLAST.value(), 1, 1);
+                getWorld().playSound(loc, Sound.ENTITY_FIREWORK_BLAST.value(), 1, 1);
 
                 CylinderEffect cyl = new CylinderEffect(em);
                 cyl.setLocation(loc);
@@ -228,7 +227,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
 
         @Override
         protected void start() {
-            getWorld().playSound(getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.5f, 1f);
+            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 0.5f, 1f);
             if (getShooter() instanceof Entity) {
                 setEntityIgnoreTicks((Entity) getShooter(), 5);
             }
@@ -330,7 +329,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
 //
 //        @Override
 //        protected void start() {
-//            getWorld().playSound(getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.5f, 1f);
+//            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 0.5f, 1f);
 //        }
 //
 //        @Override
@@ -346,7 +345,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
 //                Location loc = start.clone().add(end.clone().subtract(start).multiply(0.5)).toLocation(getWorld());
 //                loc.setDirection(end.clone().subtract(start));
 //
-//                getWorld().playSound(loc, CompatSound.ENTITY_FIREWORK_BLAST.value(), 1, 1);
+//                getWorld().playSound(loc, Sound.ENTITY_FIREWORK_BLAST.value(), 1, 1);
 //
 //                CylinderEffect cyl = new CylinderEffect(em);
 //                cyl.setLocation(loc);

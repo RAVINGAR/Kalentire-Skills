@@ -28,7 +28,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAimedShot extends TargettedSkill {
@@ -134,8 +133,8 @@ public class SkillAimedShot extends TargettedSkill {
                 actualArrow.remove();
 
                 // Play wolf howl at both locations
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WOLF_HOWL.value(), 0.7f, 1.0F);
-                target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_WOLF_HOWL.value(), 0.7f, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_HOWL.value(), 0.7f, 1.0F);
+                target.getWorld().playSound(target.getLocation(), Sound.ENTITY_WOLF_HOWL.value(), 0.7f, 1.0F);
 
                 // Lower damage of shot based on how drawn back the bow is.
                 double tempDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 125, false);

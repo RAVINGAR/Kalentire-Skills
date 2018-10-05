@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFearless extends ActiveSkill {
@@ -83,7 +82,7 @@ public class SkillFearless extends ActiveSkill {
             double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
             hero.addEffect(new FearlessEffect(this, incomingDamageIncrease, outgoingDamageIncrease));
 
-            player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_GROWL.value(), 0.5F, 0.1F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL.value(), 0.5F, 0.1F);
         }
 
         return SkillResult.NORMAL;

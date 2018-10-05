@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -138,7 +137,7 @@ public class SkillFireball extends ActiveSkill {
 
                 //targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
                 targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation().add(0, 0.5, 0), 60, 0.2, 0.2, 0.2, 0.1);
-                targetLE.getWorld().playSound(targetLE.getLocation(), CompatSound.BLOCK_FIRE_AMBIENT.value(), 7.0F, 1.0F);
+                targetLE.getWorld().playSound(targetLE.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 7.0F, 1.0F);
             }
         }
     }

@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
-import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -43,14 +42,14 @@ public class SkillSacredTouch extends SkillBaseHeal {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
                     hero.removeEffect(effect);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 1.6F, 1.3F);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN.value(), 1.6F, 1.3F);
                 }
             }
         }
     }
 
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {

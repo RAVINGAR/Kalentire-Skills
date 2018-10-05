@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -113,7 +112,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
             }
         }, 3); // 1 sec after thrown, pull it back
         // 5 is 20 blocks
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ARROW_SHOOT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT.value(), 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -193,7 +192,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
 
                         //plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
                         player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
-                        player.getWorld().playSound(playerLoc, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
+                        player.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
                     }
 
 

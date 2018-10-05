@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillEscapeArtist extends ActiveSkill {
 
@@ -59,7 +58,7 @@ public class SkillEscapeArtist extends ActiveSkill {
             if (duration > 0 && multiplier > 0) {
                 hero.addEffect(new SpeedEffect(this, getName(), player, duration, multiplier, "$1 gained a burst of speed!", "$1 returned to normal speed!"));
                 broadcastExecuteText(hero);
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BAT_DEATH.value(), 0.8F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_DEATH.value(), 0.8F, 1.0F);
             }
         }
         else {

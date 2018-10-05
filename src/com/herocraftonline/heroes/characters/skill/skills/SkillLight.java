@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillLight extends ActiveSkill {
 
@@ -122,7 +121,7 @@ public class SkillLight extends ActiveSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
 
         hero.addEffect(new LightEffect(this, player, period, duration));
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

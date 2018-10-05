@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -23,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillPoison extends TargettedSkill {
@@ -110,7 +110,7 @@ public class SkillPoison extends TargettedSkill {
             e.printStackTrace();
         }
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ZOMBIE_INFECT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

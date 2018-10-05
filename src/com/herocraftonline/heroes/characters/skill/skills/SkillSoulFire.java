@@ -26,7 +26,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSoulFire extends ActiveSkill {
@@ -71,7 +70,7 @@ public class SkillSoulFire extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         hero.addEffect(new SoulFireEffect(this, hero.getPlayer(), duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ZOMBIE_VILLAGER_CURE.value() , 0.5F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE.value() , 0.5F, 1.0F);
         // this is our fireworks shit
         Player player = hero.getPlayer();
         /*try {

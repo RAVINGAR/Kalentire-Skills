@@ -21,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMight extends ActiveSkill {
@@ -107,7 +106,7 @@ public class SkillMight extends ActiveSkill {
             }
         }
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

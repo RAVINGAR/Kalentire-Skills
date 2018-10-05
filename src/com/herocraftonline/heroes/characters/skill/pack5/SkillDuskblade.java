@@ -16,7 +16,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDuskblade extends TargettedSkill {
@@ -76,7 +75,7 @@ public class SkillDuskblade extends TargettedSkill {
         if (!hrEvent.isCancelled())
             hero.heal(hrEvent.getDelta());
         
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_HURT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT.value(), 0.8F, 1.0F);
         
         //player.getWorld().spigot().playEffect(player.getLocation(), Effect.INSTANT_SPELL, 0, 0, 0, 0.1F, 0, 0.1F, 20, 5);
         player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 20, 0, 0.1, 0, 0.1);

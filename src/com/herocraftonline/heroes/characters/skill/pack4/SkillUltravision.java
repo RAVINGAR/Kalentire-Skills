@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillUltravision extends ActiveSkill {
 
@@ -64,7 +63,7 @@ public class SkillUltravision extends ActiveSkill {
         nveEffect.types.add(EffectType.DISPELLABLE);
         hero.addEffect(nveEffect);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

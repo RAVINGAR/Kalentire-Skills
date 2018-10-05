@@ -24,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFireblade extends ActiveSkill {
@@ -69,7 +68,7 @@ public class SkillFireblade extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         hero.addEffect(new FirebladeEffect(this, hero.getPlayer(), duration));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.BLOCK_ANVIL_USE.value() , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE.value() , 0.6F, 1.0F);
         return SkillResult.NORMAL;
     }
 

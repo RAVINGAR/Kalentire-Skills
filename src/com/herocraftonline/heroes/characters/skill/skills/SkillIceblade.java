@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIceblade extends TargettedSkill {
@@ -94,7 +93,7 @@ public class SkillIceblade extends TargettedSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_PLAYER_HURT.value() , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT.value() , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
     

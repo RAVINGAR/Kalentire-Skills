@@ -25,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWindGale extends ActiveSkill {
@@ -131,7 +130,7 @@ public class SkillWindGale extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         for (Location location : locations) {
-                            location.getWorld().playSound(location, CompatSound.ENTITY_GENERIC_BURN.value(), 0.25F, 1.0F);
+                            location.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN.value(), 0.25F, 1.0F);
                             //location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 0.1F, 25, 16);
                             location.getWorld().spawnParticle(Particle.CLOUD, 25, 0, 0, 0, 0.1);
                         }
