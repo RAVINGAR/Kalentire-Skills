@@ -118,9 +118,9 @@ public class SkillTownSpawn extends ActiveSkill {
         }
 
         broadcastExecuteText(hero);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F); // Sound stolen from Recall
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F); // Sound stolen from Recall
         player.teleport(spawnLoc);
-        player.getWorld().playSound(spawnLoc, Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F); // Sound stolen from Recall
+        player.getWorld().playSound(spawnLoc, Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F); // Sound stolen from Recall
 
         // Give money to town if we can. If we can't, the teleport was already paid for so oh well.
         if(costToTown > 0) {

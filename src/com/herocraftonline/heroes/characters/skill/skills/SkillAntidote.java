@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -28,7 +29,7 @@ public class SkillAntidote extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player) {
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value() , 0.5F, 1.0F);
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP , 0.5F, 1.0F);
             Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
             boolean cured = false;
             for (Effect effect : targetHero.getEffects()) {

@@ -116,8 +116,8 @@ public class SkillPulse extends ActiveSkill {
 			}
 		}
         
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 1.0F, 1.2F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG.value(), 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.2F);
 
         return SkillResult.NORMAL;
     }

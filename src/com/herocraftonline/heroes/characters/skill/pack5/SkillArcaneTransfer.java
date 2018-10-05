@@ -95,7 +95,7 @@ public class SkillArcaneTransfer extends TargettedSkill {
             possibleEffects.remove(stolenEffect);
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_AMBIENT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_AMBIENT, 0.8F, 1.0F);
         broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;

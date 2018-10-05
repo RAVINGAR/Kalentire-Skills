@@ -98,7 +98,7 @@ public class SkillChaosOrb extends ActiveSkill {
         }, ticksBeforeDrop);
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

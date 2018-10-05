@@ -102,7 +102,7 @@ public class SkillDisarm extends TargettedSkill {
         targetHero.addEffect(new DisarmEffect(this, player, duration, applyText, expireText));
 
         player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
 
         broadcastExecuteText(hero, target);
 

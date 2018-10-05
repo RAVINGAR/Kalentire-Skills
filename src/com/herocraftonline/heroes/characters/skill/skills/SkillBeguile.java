@@ -98,7 +98,7 @@ public class SkillBeguile extends TargettedSkill {
         beguileEffect.types.add(EffectType.DISPELLABLE);
         targetCT.addEffect(beguileEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

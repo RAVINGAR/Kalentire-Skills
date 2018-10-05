@@ -73,7 +73,7 @@ public class SkillKick extends TargettedSkill {
             plugin.getCharacterManager().getHero((Player) target).addEffect(sEffect);
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.8F, 1.0F);
         //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
 

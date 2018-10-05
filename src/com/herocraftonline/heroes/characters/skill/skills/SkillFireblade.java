@@ -68,7 +68,7 @@ public class SkillFireblade extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         hero.addEffect(new FirebladeEffect(this, hero.getPlayer(), duration));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE.value() , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE , 0.6F, 1.0F);
         return SkillResult.NORMAL;
     }
 

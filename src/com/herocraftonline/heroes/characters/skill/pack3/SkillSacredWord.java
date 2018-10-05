@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -45,7 +46,7 @@ public class SkillSacredWord extends SkillBaseHeal {
     }
 
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {

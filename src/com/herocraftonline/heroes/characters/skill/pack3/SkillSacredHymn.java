@@ -39,7 +39,7 @@ public class SkillSacredHymn extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.BLOCK_NOTE_PLING.value(), 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {

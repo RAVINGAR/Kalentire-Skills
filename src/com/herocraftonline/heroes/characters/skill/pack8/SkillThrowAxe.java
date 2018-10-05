@@ -128,7 +128,7 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
             }
         }, 20); // 1 sec after thrown, pull it back
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -153,7 +153,7 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 					e.start();
 					em.disposeOnTermination();
 
-					player.getWorld().playSound(effect.getLocation(), Sound.ENTITY_GENERIC_BURN.value(), 0.25f, 0.0001f);
+					player.getWorld().playSound(effect.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.25f, 0.0001f);
 				}
 
 				@Override

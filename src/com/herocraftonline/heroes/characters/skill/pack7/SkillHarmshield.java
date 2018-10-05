@@ -91,7 +91,7 @@ public class SkillHarmshield extends ActiveSkill {
         Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new HarmShieldEffect(this, player, duration));
         

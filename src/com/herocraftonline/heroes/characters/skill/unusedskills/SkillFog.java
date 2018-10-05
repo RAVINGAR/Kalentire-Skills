@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -49,7 +50,7 @@ public class SkillFog extends ActiveSkill {
         Player player = hero.getPlayer();
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
         hero.addEffect(new NightvisionEffect(this, hero.getPlayer(), duration, applyText, expireText));
-        hero.getPlayer().getWorld().playSound.* , 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN , 0.5F, 1.0F);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
         return SkillResult.NORMAL;
     }

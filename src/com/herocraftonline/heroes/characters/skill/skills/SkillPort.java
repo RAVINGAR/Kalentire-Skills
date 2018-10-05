@@ -210,7 +210,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             memberPlayer.teleport(portLocation);
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL.value(), 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
 //        hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
         hero.getPlayer().getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getLocation(), 50, 0, 0.1F, 0, 0.5F);
         return SkillResult.NORMAL;
@@ -319,7 +319,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         Player player = event.getPlayer();
         if (pendingPort.remove(player.getName())) {
             broadcastExecuteText(plugin.getCharacterManager().getHero(player));
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
         }
     }
 

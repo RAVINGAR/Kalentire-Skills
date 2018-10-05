@@ -72,7 +72,7 @@ public class SkillClarity extends ActiveSkill {
         ClarityEffect mEffect = new ClarityEffect(this, player, duration, manaRegen);
 
         broadcastExecuteText(hero);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
 
         if (!hero.hasParty()) {
             if (hero.hasEffect("Clarity")) {

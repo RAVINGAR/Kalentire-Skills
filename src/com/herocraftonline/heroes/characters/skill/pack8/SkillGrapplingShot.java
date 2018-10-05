@@ -294,7 +294,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
         player.setVelocity(vec);
     }
 
@@ -343,7 +343,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
         target.setVelocity(vec);
     }
 

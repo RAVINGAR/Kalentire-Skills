@@ -142,7 +142,7 @@ public class SkillDespair extends ActiveSkill {
 			}
 		}
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM.value(), 1.2F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 1.2F, 2.0F);
 
         return SkillResult.NORMAL;
     }

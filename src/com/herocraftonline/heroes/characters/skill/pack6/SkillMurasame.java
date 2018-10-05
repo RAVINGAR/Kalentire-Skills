@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack6;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -84,7 +85,7 @@ public class SkillMurasame extends TargettedSkill {
                 NMSHandler.getInterface().getItemInMainHand(player.getInventory()).setDurability((short) (dura + duraCost));
             } else if (maxDura - dura == duraCost) {
                 NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 1.0F);
             } else {
                 player.sendMessage("Your Katana doesn't have enough durability to use Murasame!");
                 return SkillResult.INVALID_TARGET_NO_MSG;

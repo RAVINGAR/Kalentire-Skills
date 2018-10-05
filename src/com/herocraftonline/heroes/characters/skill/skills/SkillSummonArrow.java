@@ -54,7 +54,7 @@ public class SkillSummonArrow extends ActiveSkill {
             player.sendMessage("Items have been dropped at your feet!");
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_WOOD_HIT.value(), 0.8F, 0.2F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_WOOD_HIT, 0.8F, 0.2F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;

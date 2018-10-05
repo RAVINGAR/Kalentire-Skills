@@ -6,6 +6,7 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -154,7 +155,7 @@ public class SkillInvuln extends ActiveSkill {
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 		hero.addEffect(new InvulnerabilityEffect(this, player, duration, applyText, expireText));
 
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 1.0F);
 
 		return SkillResult.NORMAL;
 	}

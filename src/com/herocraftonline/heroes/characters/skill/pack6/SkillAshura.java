@@ -92,7 +92,7 @@ public class SkillAshura extends TargettedSkill {
                 NMSHandler.getInterface().getItemInMainHand(player.getInventory()).setDurability((short) (dura + duraCost));
             } else if (maxDura - dura == duraCost) {
                 NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 1.0F);
             } else {
                 player.sendMessage("Your Katana doesn't have enough durability to use Ashura!");
                 return SkillResult.INVALID_TARGET_NO_MSG;

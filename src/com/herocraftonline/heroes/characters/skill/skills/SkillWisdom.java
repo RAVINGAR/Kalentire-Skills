@@ -77,7 +77,7 @@ public class SkillWisdom extends ActiveSkill {
         WisdomEffect mEffect = new WisdomEffect(this, player, duration, manaRegen);
 
         broadcastExecuteText(hero);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
 
         if (!hero.hasParty()) {
             if (hero.hasEffect("Wisdom")) {

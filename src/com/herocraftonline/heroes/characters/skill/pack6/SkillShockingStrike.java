@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -75,7 +76,7 @@ public class SkillShockingStrike extends TargettedSkill {
 
         // Strike some lightning
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER.value(), lightningVolume, 1.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.0F);
         
         // We have actual lightning now, so the effect isn't needed.
         /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
@@ -85,7 +86,7 @@ public class SkillShockingStrike extends TargettedSkill {
         /*player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.SNOW_SHOVEL, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spigot().playEffect(target.getLocation().add(0, 1.0, 0), Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);        
         
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER.value(), 0.7F, 1.0F);*/
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 0.7F, 1.0F);*/
         broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;

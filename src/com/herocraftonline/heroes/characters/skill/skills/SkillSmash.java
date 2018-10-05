@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -59,7 +60,7 @@ public class SkillSmash extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING.value(), 0.4F, 0.6F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.4F, 0.6F);
         broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;

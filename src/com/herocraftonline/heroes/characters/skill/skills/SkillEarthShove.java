@@ -134,7 +134,7 @@ public class SkillEarthShove extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_BURN.value(), 0.5f, 2.0f);
+        player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5f, 2.0f);
 
 //        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0),
 //                org.bukkit.Effect.WITCH_MAGIC,

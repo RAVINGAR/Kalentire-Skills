@@ -100,7 +100,7 @@ public class SkillIntervene extends TargettedSkill {
 
         targetHero.addEffect(new InterveneEffect(this, player, duration, damageSplitPercent, distanceRequired));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -131,7 +131,7 @@ public class SkillBalance extends ActiveSkill {
         		}
             }
         }
-        player.getWorld().playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
+        player.getWorld().playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);
         return SkillResult.NORMAL;
     }
 }

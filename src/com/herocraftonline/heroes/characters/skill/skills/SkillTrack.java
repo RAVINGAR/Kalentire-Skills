@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.Random;
 
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -77,7 +78,7 @@ public class SkillTrack extends ActiveSkill {
 
         hero.addEffect(new TrackingEffect(this, player, period, duration, target));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 5.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 5.0F);
 
         return SkillResult.NORMAL;
     }

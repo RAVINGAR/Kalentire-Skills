@@ -87,8 +87,8 @@ public class SkillTerror extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(dEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM.value(), 1.2F, 2.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_HOWL.value(), 0.4F, 1.8F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 1.2F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.4F, 1.8F);
         //target.getWorld().spigot().playEffect(target.getEyeLocation(), org.bukkit.Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.0F, 0.2F, 0.1F, 25, 16);
         target.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getEyeLocation(), 25, 0.2, 0, 0.2, 0.1);
         //target.getWorld().spigot().playEffect(target.getEyeLocation(), org.bukkit.Effect.EXPLOSION, 0, 0, 0.2F, 0.0F, 0.2F, 0.5F, 25, 16);

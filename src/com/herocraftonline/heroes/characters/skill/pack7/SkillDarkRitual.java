@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -67,7 +68,7 @@ public class SkillDarkRitual extends ActiveSkill {
             hero.getPlayer().sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.4F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.4F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -146,7 +146,7 @@ public class SkillBackflip extends ActiveSkill {
             }
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP.value(), 4.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
 
         if (hero.canUseSkill("Frontflip")) {
             long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);

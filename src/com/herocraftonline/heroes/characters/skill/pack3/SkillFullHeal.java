@@ -91,7 +91,7 @@ public class SkillFullHeal extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getDelta());
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
         
         Player targetPlayer = targetHero.getPlayer();

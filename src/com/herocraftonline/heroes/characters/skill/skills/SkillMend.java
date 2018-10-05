@@ -34,7 +34,7 @@ public class SkillMend extends SkillBaseHeal {
 
     @Override
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.ENTITY_CHICKEN_EGG.value(), 0.5F, 0.01F);
+        world.playSound(target.getLocation(), Sound.ENTITY_CHICKEN_EGG, 0.5F, 0.01F);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class SkillSafefall extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         hero.addEffect(new SafeFallEffect(this, player, duration));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP.value(), 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP, 1.0F, 1.0F);
 
         return SkillResult.NORMAL;
     }

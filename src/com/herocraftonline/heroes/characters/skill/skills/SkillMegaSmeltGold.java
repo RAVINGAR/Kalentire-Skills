@@ -78,7 +78,7 @@ public class SkillMegaSmeltGold extends ActiveSkill {
 		broadcastExecuteText(hero);
 
 		int amount = itemsSmelted;
-		hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND.value(), 0.6F, 1.0F);
+		hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
 
 		for (int i = 0; i < itemsSmelted; i++) {
 			if (calculateChance(hero) > Math.random() * 100.0D) {

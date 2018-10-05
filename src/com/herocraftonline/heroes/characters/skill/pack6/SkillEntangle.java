@@ -108,7 +108,7 @@ public class SkillEntangle extends TargettedSkill {
 		CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 		targetCT.addEffect(rootEffect);
 
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD.value(), 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.8F, 1.0F);
 
 		ArrayList<Location> particleLocations = circle(player.getLocation(), 36, 1.5);
 		for (int i = 0; i < particleLocations.size(); i++)

@@ -60,8 +60,8 @@ public class SkillArcaneblast extends TargettedSkill {
         target.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, 200, 0, 1, 0, 10);
         //target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_LARGE, 1, 1, 0F, 1F, 0F, 0.1F, 10, 10);
         target.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, 10, 0, 1, 0, 0.1);
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_FIREWORK_LARGE_BLAST.value(), 7.0F, 0.5F);
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 7.0F, 1.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_FIREWORK_LARGE_BLAST, 7.0F, 0.5F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 7.0F, 1.0F);
         
         return SkillResult.NORMAL;
     }

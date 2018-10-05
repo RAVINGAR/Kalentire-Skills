@@ -60,7 +60,7 @@ public class SkillManaShield extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         hero.addEffect(new ManaShieldEffect(this, hero.getPlayer(), duration));
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ITEM_BREAK.value() , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ITEM_BREAK , 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
 

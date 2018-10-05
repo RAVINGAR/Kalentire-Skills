@@ -96,9 +96,9 @@ public class SkillOrdain extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), volume, 1);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), volume, 1);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), volume, 1);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, volume, 1);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, volume, 1);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);

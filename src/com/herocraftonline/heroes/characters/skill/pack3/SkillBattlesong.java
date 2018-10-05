@@ -37,10 +37,10 @@ public class SkillBattlesong extends ActiveSkill {
         setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_BASS.value(), 0.8F, 1.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BASS.value(), 1.0F, 0.7F, 1),
-                new Note(Sound.BLOCK_NOTE_BASS.value(), 1.2F, 0.4F, 2),
-                new Note(Sound.BLOCK_NOTE_BASS.value(), 0.8F, 0.2F, 3)
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 0.7F, 1),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 1.2F, 0.4F, 2),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 0.2F, 3)
         );
     }
 

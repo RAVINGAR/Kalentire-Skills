@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -46,7 +47,7 @@ public class SkillAsuraSlash extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_FLINTANDSTEEL_USE.value() , 0.4F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ITEM_FLINTANDSTEEL_USE , 0.4F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

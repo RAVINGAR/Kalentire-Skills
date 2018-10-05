@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -98,9 +99,9 @@ public class SkillSacredGlimmer extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_GENERIC_BURN.value(), volume, 1);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_GENERIC_BURN.value(), volume, 1);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_GENERIC_BURN.value(), volume, 1);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_GENERIC_BURN, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_GENERIC_BURN, volume, 1);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_GENERIC_BURN, volume, 1);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);

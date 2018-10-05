@@ -89,7 +89,7 @@ public class SkillWithering extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new WitheringEffect(this, player, period, duration, tickDamage));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

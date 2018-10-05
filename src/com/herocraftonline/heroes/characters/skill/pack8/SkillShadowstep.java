@@ -110,7 +110,7 @@ public class SkillShadowstep extends TargettedSkill {
 
             //plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMEN_TELEPORT, 0.8F, 1.0F);
+            player.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
         }

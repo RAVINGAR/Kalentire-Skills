@@ -299,7 +299,7 @@ public class SkillExplosiveShot extends ActiveSkill {
             //projectile.getWorld().spigot().playEffect(projectile.getLocation().add(0, 0.9, 0), org.bukkit.Effect.FLAME, 0, 0, 0, 0, 0, 1, 700, 25);
 			projectile.getWorld().spawnParticle(Particle.FLAME, projectile.getLocation().add(0, 0.9, 0), 700, 0, 0, 0, 1);
 
-            //projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 1.0F, 1.0F);
+            //projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
 
         } catch (Exception e) {
             e.printStackTrace();

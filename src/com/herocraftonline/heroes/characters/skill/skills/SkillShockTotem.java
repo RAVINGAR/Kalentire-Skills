@@ -55,7 +55,7 @@ public class SkillShockTotem extends SkillBaseTotem {
             damageEntity(entity, heroP, getDamage(hero));
             // Strike some lightning
             entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER.value(), getLightningVolume(hero), 1.0F);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, getLightningVolume(hero), 1.0F);
             targetsHit++;
             // We have real lightning now, so this is pointless
             /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)

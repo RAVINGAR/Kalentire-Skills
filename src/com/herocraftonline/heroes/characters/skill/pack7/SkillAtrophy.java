@@ -88,7 +88,7 @@ public class SkillAtrophy extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new AtrophyEffect(this, player, duration, period, tickDamage));
 
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_HURT.value(), 0.8F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_HURT, 0.8F, 2.0F);
 
         return SkillResult.NORMAL;
     }

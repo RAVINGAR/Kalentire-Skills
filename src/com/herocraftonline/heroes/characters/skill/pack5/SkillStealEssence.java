@@ -86,7 +86,7 @@ public class SkillStealEssence extends TargettedSkill {
 
         broadcast(player.getLocation(), getUseText().replace("%hero%", player.getName()).replace("%skill%", getName()).replace("%effect%", stolenNames).replace("%target%", tHero.getPlayer().getName()));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP.value(), 0.8F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP, 0.8F, 2.0F);
 
         return SkillResult.NORMAL;
     }

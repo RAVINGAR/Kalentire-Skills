@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.pack3;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,8 +43,8 @@ public class SkillManasong extends ActiveSkill {
         setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_HARP.value(), 0.8F, 1.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BASS.value(), 0.8F, 1.0F, 1)
+                new Note(Sound.BLOCK_NOTE_BLOCK_HARP, 0.8F, 1.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 1)
         );
     }
 

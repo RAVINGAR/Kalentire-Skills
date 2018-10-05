@@ -365,7 +365,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         if (isDeparting) {
             broadcastExecuteText(hero);
     
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
             //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
             hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.ORANGE, 1));
         }
@@ -382,7 +382,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
         player.teleport(teleportLocation);
 
-        teleportLocation.getWorld().playSound(teleportLocation, Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        teleportLocation.getWorld().playSound(teleportLocation, Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
         //teleportLocation.getWorld().spigot().playEffect(teleportLocation, Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
         hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.ORANGE, 1));
 
@@ -429,7 +429,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         if (skillSettings != null && ("runestone".equals(skillSettings.getString("pending-teleport")) ||
                 "recall".equals(skillSettings.getString("pending-teleport")))) {
             broadcastExecuteText(hero);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
         }
     }
 

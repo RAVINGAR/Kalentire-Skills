@@ -107,7 +107,7 @@ public class SkillDarkBolt extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH.value(), 0.4F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.4F, 2.0F);
 
         final Snowball darkBolt = player.launchProjectile(Snowball.class);
         darkBolts.put(darkBolt, System.currentTimeMillis());

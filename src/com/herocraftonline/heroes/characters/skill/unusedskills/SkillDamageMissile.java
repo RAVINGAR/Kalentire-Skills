@@ -201,7 +201,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
                 Location loc = start.clone().add(end.clone().subtract(start).multiply(0.5)).toLocation(getWorld());
                 loc.setDirection(end.clone().subtract(start));
 
-                getWorld().playSound(loc, Sound.ENTITY_FIREWORK_BLAST.value(), 1, 1);
+                getWorld().playSound(loc, Sound.ENTITY_FIREWORK_BLAST, 1, 1);
 
                 CylinderEffect cyl = new CylinderEffect(em);
                 cyl.setLocation(loc);
@@ -227,7 +227,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
 
         @Override
         protected void start() {
-            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 0.5f, 1f);
+            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1f);
             if (getShooter() instanceof Entity) {
                 setEntityIgnoreTicks((Entity) getShooter(), 5);
             }
@@ -329,7 +329,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
 //
 //        @Override
 //        protected void start() {
-//            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE.value(), 0.5f, 1f);
+//            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1f);
 //        }
 //
 //        @Override
@@ -345,7 +345,7 @@ public class SkillDamageMissile extends SkillBaseMissile {
 //                Location loc = start.clone().add(end.clone().subtract(start).multiply(0.5)).toLocation(getWorld());
 //                loc.setDirection(end.clone().subtract(start));
 //
-//                getWorld().playSound(loc, Sound.ENTITY_FIREWORK_BLAST.value(), 1, 1);
+//                getWorld().playSound(loc, Sound.ENTITY_FIREWORK_BLAST, 1, 1);
 //
 //                CylinderEffect cyl = new CylinderEffect(em);
 //                cyl.setLocation(loc);

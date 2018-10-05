@@ -98,7 +98,7 @@ public class SkillImpale extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(sEffect);
 
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT.value(), 8.0F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 8.0F, 0.4F);
 
         //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 75, 16);
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 75, 0, 0, 0, 1);

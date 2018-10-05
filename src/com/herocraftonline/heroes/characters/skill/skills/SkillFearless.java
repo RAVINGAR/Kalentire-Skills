@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -82,7 +83,7 @@ public class SkillFearless extends ActiveSkill {
             double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
             hero.addEffect(new FearlessEffect(this, incomingDamageIncrease, outgoingDamageIncrease));
 
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL.value(), 0.5F, 0.1F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5F, 0.1F);
         }
 
         return SkillResult.NORMAL;

@@ -112,7 +112,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
             }
         }, 3); // 1 sec after thrown, pull it back
         // 5 is 20 blocks
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -192,7 +192,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
 
                         //plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
                         player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
-                        player.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
+                        player.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
                     }
 
 

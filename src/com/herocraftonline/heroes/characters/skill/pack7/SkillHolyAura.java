@@ -108,7 +108,7 @@ public class SkillHolyAura extends ActiveSkill {
 
         hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
         
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP.value(), 7.0F, 16);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 7.0F, 16);
 
         return SkillResult.NORMAL;
     }

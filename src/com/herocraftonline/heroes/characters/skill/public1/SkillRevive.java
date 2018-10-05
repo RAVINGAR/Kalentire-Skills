@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.public1;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
