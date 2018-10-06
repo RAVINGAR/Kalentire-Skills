@@ -81,6 +81,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 			keys.remove(setting.node());
 		}
 		keys.remove("cross-world");
+        keys.remove("icon-url");
 
 		if (args[0].equalsIgnoreCase("list")) {
 			for (String n : keys) {
