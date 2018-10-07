@@ -114,6 +114,8 @@ public class SkillExcavate extends ActiveSkill {
     private boolean isExcavatable(Material m) {
         switch (m) {
             case DIRT:
+            case FARMLAND:
+            case COARSE_DIRT:
             case GRASS:
             case GRAVEL:
             case SAND:
@@ -121,8 +123,6 @@ public class SkillExcavate extends ActiveSkill {
             case SNOW_BLOCK:
             case SNOW:
             case SOUL_SAND:
-            //FIXME What is the replacement
-            //case SOIL:
             case NETHERRACK:
                 return true;
             default:
