@@ -8,6 +8,7 @@ import static org.bukkit.ChatColor.GRAY;
 import static org.bukkit.ChatColor.RESET;
 
 import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -44,16 +45,14 @@ public class SkillMonetize extends ActiveSkill{
 		int count=0;
 		for(ItemStack stack:inv.getContents()){
 			if(stack==null)continue;
-			//FIXME number id use
-//			if(stack.getTypeId()==266){
-//				count+=stack.getAmount();
-//			}
+			if(stack.getType()== Material.GOLD_INGOT){
+				count+=stack.getAmount();
+			}
 		}
 		if(count>0){
-			//FIXME Number id use
-			//inv.remove(266);
+			inv.remove(Material.GOLD_INGOT);
 			final double amount =calculateCoins(hero)*count;
-			econ.depositPlayer(player.getName(),amount);
+			econ.bankDeposit(player.getName(),amount);
 	        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
 	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP , 0.8F, 1.0F);
 			broadcastExecuteText(hero);
@@ -77,7 +76,7 @@ public class SkillMonetize extends ActiveSkill{
 	// This may cause issues if the player doesn't have a second class
 	private Double calculateCoins(Hero hero){
 		return getUseSetting(hero, this, base, def_base, false)
-					+getUseSetting(hero,this,gain,def_gain,false)*hero.getHeroLevel(hero.getSecondClass());
+					+getUseSetting(hero,this,gain,def_gain,false)*hero.getHeroLevel(hero.getSecondaryClass());
 	}
 	
 	@Override

@@ -7,12 +7,10 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 // what the hell is this
@@ -32,107 +30,114 @@ public class SkillIncise
     public ConfigurationSection getDefaultConfig()
     {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE_INCREASE.node(), Integer.valueOf(0));
-        node.set(SkillSetting.MAX_DISTANCE.node(), Integer.valueOf(4));
-        node.set("damage-per-armor-point", Integer.valueOf(4));
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        node.set("damage-per-armor-point", 4);
         return node;
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args)
     {
         Player player = hero.getPlayer();
-        int armorPoints = 0;
         double damagePerPoint = SkillConfigManager.getUseSetting(hero, this, "damage-per-armor-point", 10, false);
-        damagePerPoint+= SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 4, false);
+        damagePerPoint+= SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false);
         //We will add up the armor points. Armor type order goes Leather, Chain, Iron, Diamond, Gold
         //first switch statement: Helmets!
-        if(!(target instanceof Player))
+        if(!(target instanceof Player)) {
+            player.sendMessage("Incise only effects players.");
             return SkillResult.INVALID_TARGET_NO_MSG;
-        Player pt = (Player) target;
-        if(pt.getInventory().getHelmet() != null){
-            //FIXME raw data use
-//            switch(pt.getInventory().getHelmet().getTypeId()){
-//                case 298: armorPoints+= 1;
-//                    break;
-//                case 302: armorPoints+= 2;
-//                    break;
-//                case 306:armorPoints+= 2;
-//                    break;
-//                case 310:armorPoints+= 3;
-//                    break;
-//                case 314:armorPoints+= 2;
-//                    break;
-//                default: armorPoints+=0;	//They aren't wearing a helm.
-//                    break;
-//            }
         }
-        //next switch statement: Chestplates!
-        if(pt.getInventory().getChestplate() != null){
-            //FIXME raw data use
-//            switch(pt.getInventory().getChestplate().getTypeId()){
-//                case 299: armorPoints+= 3;
-//                    break;
-//                case 303: armorPoints+= 5;
-//                    break;
-//                case 307:armorPoints+= 6;
-//                    break;
-//                case 311:armorPoints+= 8;
-//                    break;
-//                case 315:armorPoints+= 5;
-//                    break;
-//                default: armorPoints+=0;  //They aren't wearing a chest.
-//                    break;
-//            }
-        }
-//next switch statement: Leggings!
-        if(pt.getInventory().getLeggings() != null){
-            //FIXME raw data use
-//            switch(pt.getInventory().getLeggings().getTypeId()){
-//                case 300: armorPoints+= 2;
-//                    break;
-//                case 304: armorPoints+= 4;
-//                    break;
-//                case 308:armorPoints+= 5;
-//                    break;
-//                case 312:armorPoints+= 6;
-//                    break;
-//                case 316:armorPoints+= 3;
-//                    break;
-//                default: armorPoints+=0;  //They aren't wearing leggings.
-//                    break;
-//            }
-        }
-        //ayy were almost done. Boots are last!
-        if(pt.getInventory().getBoots() != null){
-            //FIXME raw data use
-//            switch(pt.getInventory().getBoots().getTypeId()){
-//                case 301: armorPoints+= 1;
-//                    break;
-//                case 305: armorPoints+= 1;
-//                    break;
-//                case 309:armorPoints+= 2;
-//                    break;
-//                case 313:armorPoints+= 3;
-//                    break;
-//                case 317:armorPoints+= 1;
-//                    break;
-//                default: armorPoints+=0;  //They aren't wearing boots
-//                    break;
-//            }
 
-        }
-        double damage = armorPoints*damagePerPoint;
+        // TODO consider adding other living entities (not just players) by using below method to get armor.
+        //target.getEquipment().getHelmet();
+
+        Player pt = (Player) target;
+        double damage = getArmorPoints(pt)*damagePerPoint;
         target.getWorld().playSound(target.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1.5f);
         damageEntity(target,player,damage, DamageCause.MAGIC);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 
+    private int getArmorPoints(Player pt) {
+        int armorPoints = 0;
+        if(pt.getInventory().getHelmet() != null){
+            switch(pt.getInventory().getHelmet().getType()){
+                case LEATHER_HELMET: armorPoints+= 1;
+                    break;
+                case CHAINMAIL_HELMET: armorPoints+= 2;
+                    break;
+                case IRON_HELMET: armorPoints+= 2;
+                    break;
+                case DIAMOND_HELMET: armorPoints+= 3;
+                    break;
+                case GOLDEN_HELMET: armorPoints+= 2;
+                    break;
+                case TURTLE_HELMET: armorPoints+= 2;
+                    break;
+                default: armorPoints+=0;	//They aren't wearing a helm.
+                    break;
+            }
+        }
+        //next switch statement: Chestplates!
+        if(pt.getInventory().getChestplate() != null){
+            switch(pt.getInventory().getChestplate().getType()){
+                case LEATHER_CHESTPLATE: armorPoints+= 3;
+                    break;
+                case CHAINMAIL_CHESTPLATE: armorPoints+= 5;
+                    break;
+                case IRON_CHESTPLATE: armorPoints+= 6;
+                    break;
+                case DIAMOND_CHESTPLATE: armorPoints+= 8;
+                    break;
+                case GOLDEN_CHESTPLATE: armorPoints+= 5;
+                    break;
+                default: armorPoints+=0;  //They aren't wearing a chest.
+                    break;
+            }
+        }
+        //next switch statement: Leggings!
+        if(pt.getInventory().getLeggings() != null){
+            switch(pt.getInventory().getLeggings().getType()){
+                case LEATHER_LEGGINGS: armorPoints+= 2;
+                    break;
+                case CHAINMAIL_LEGGINGS: armorPoints+= 4;
+                    break;
+                case IRON_LEGGINGS: armorPoints+= 5;
+                    break;
+                case DIAMOND_LEGGINGS: armorPoints+= 6;
+                    break;
+                case GOLDEN_LEGGINGS: armorPoints+= 3;
+                    break;
+                default: armorPoints+=0;  //They aren't wearing leggings.
+                    break;
+            }
+        }
+        //ayy were almost done. Boots are last!
+        if(pt.getInventory().getBoots() != null){
+            switch(pt.getInventory().getBoots().getType()){
+                case LEATHER_BOOTS: armorPoints+= 1;
+                    break;
+                case CHAINMAIL_BOOTS: armorPoints+= 1;
+                    break;
+                case IRON_BOOTS: armorPoints+= 2;
+                    break;
+                case DIAMOND_BOOTS: armorPoints+= 3;
+                    break;
+                case GOLDEN_BOOTS: armorPoints+= 1;
+                    break;
+                default: armorPoints+=0;  //They aren't wearing boots
+                    break;
+            }
+
+        }
+        return armorPoints;
+    }
+
     public String getDescription(Hero hero)
     {
+        //TODO may need to fix description and properly align with used stats (e.g. damage per armor points)
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
-
-
 
         double range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 4, false);
 

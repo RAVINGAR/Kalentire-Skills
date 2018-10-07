@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
+import com.griefcraft.scripting.MetaData;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -24,6 +25,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Vine;
+import org.bukkit.metadata.MetadataValue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -210,8 +214,14 @@ public class SkillRampartVine extends ActiveSkill {
                             data |= VINE_EAST;
                         }
 
-                        //FIXME Idk what to do here (Soren)
-                        //workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
+                        //FIXME Check if this works
+//                        workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
+                        workingBlock.setType(Material.VINE);
+                        if (workingBlock.getState().getData() instanceof Vine) {
+                            Vine vine = (Vine) workingBlock.getState().getData();
+                            vine.putOnFace(targetFace);
+                            workingBlock.getState().setData(vine);
+                        }
 
                         break;
                     case VINE:

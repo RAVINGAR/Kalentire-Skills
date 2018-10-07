@@ -346,10 +346,9 @@ public class SkillCauldron extends PassiveSkill {
 		}
 		ShapedRecipe comparedRecipe = (ShapedRecipe)recipe;
 		//If results don't match, then obviously its not the same
-		//FIXME ID USAGE
-//		if(comparedRecipe.getResult().getTypeId() != shapedRecipe.getResult().getTypeId()) {
-//			return false;
-//		}
+		if(comparedRecipe.getResult().getType() != shapedRecipe.getResult().getType()) {
+			return false;
+		}
 		/*
 		 * The following code shamelessly stolen/VERY slightly (pushing it) adapted (barely at all honestly)
 		 * from alkarin (with permission obviously who do you think I am)

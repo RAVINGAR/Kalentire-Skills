@@ -16,7 +16,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -103,23 +102,21 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 
 		Player player = hero.getPlayer();
 
-		//FIXME Data Use
-//		Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, distance);
-//		Location center = targetBlock.getLocation().clone().add(0, 40, 0);
+		Block targetBlock = player.getTargetBlock((HashSet<Material>)null, distance);
+		Location center = targetBlock.getLocation().clone().add(0, 40, 0);
 
 		for (int i = 1; i <= radius; i++)
 		{
-//			ArrayList<Location> concentric = circle(center, 12, (double) i);
-//			meteorLocs.addAll(concentric);
+			ArrayList<Location> concentric = circle(center, 12, (double) i);
+			meteorLocs.addAll(concentric);
 		}
 
 		player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1.0F, 2.0F);
 
 		final ArrayList<Location> finalLocs = meteorLocs;
 		final Player p = player;
-		final Hero h = hero;
-		
-		showers.add(p);
+
+        showers.add(p);
 
 		new BukkitRunnable()
 		{
@@ -132,22 +129,21 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 				{
 					int index = rand.nextInt(finalLocs.size());
 					Location meteorLocation = finalLocs.get(index).clone().setDirection(new Vector(0, -1, 0));
-					//FIXME Data Use
-//					FallingBlock meteor = (FallingBlock) meteorLocation.getWorld().spawnFallingBlock(meteorLocation, Material.DRAGON_EGG.getId(), (byte) 0);
-//					meteor.setDropItem(false);
-//					meteors.put(meteor, p);
-//
-//					final FallingBlock theMeteor = meteor;
-//
-//					new BukkitRunnable() {
-//						public void run() {
-//							if (theMeteor.isDead()) cancel();
-//							//theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.LARGE_SMOKE, 0, 0, 1.0F, 1.0F, 1.0F, 0.2F, 40, 128);
-//							theMeteor.getWorld().spawnParticle(Particle.SMOKE_LARGE, theMeteor.getLocation(), 40, 1, 1, 1, 0.2, true);
-//							//theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.FLAME, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 30, 128);
-//							theMeteor.getWorld().spawnParticle(Particle.FLAME, theMeteor.getLocation(), 30, 0.2, 1, 0.2, 0, true);
-//						}
-//					}.runTaskTimer(plugin, 0, 1);
+					FallingBlock meteor = meteorLocation.getWorld().spawnFallingBlock(meteorLocation, Material.DRAGON_EGG.createBlockData());
+					meteor.setDropItem(false);
+					meteors.put(meteor, p);
+
+					final FallingBlock theMeteor = meteor;
+
+					new BukkitRunnable() {
+						public void run() {
+							if (theMeteor.isDead()) cancel();
+							//theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.LARGE_SMOKE, 0, 0, 1.0F, 1.0F, 1.0F, 0.2F, 40, 128);
+							theMeteor.getWorld().spawnParticle(Particle.SMOKE_LARGE, theMeteor.getLocation(), 40, 1, 1, 1, 0.2, true);
+							//theMeteor.getWorld().spigot().playEffect(theMeteor.getLocation(), Effect.FLAME, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 30, 128);
+							theMeteor.getWorld().spawnParticle(Particle.FLAME, theMeteor.getLocation(), 30, 0.2, 1, 0.2, 0, true);
+						}
+					}.runTaskTimer(plugin, 0, 1);
 					meteorCount++;
 				}
 				else

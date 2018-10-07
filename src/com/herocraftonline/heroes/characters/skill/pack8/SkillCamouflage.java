@@ -37,7 +37,6 @@ public class SkillCamouflage extends ActiveSkill {
     private static Set<Material> allowedMaterials = EnumSet.noneOf(Material.class);
 
     static {
-        //FIXME Did the best I could
         allowedMaterials.add(Material.DIRT);
         allowedMaterials.add(Material.GRASS);
         allowedMaterials.add(Material.GRAVEL);
@@ -53,11 +52,12 @@ public class SkillCamouflage extends ActiveSkill {
         allowedMaterials.add(Material.JUNGLE_LEAVES);
         allowedMaterials.add(Material.OAK_LEAVES);
         allowedMaterials.add(Material.SPRUCE_LEAVES);
-        //FIXME Not sure about this stuff
-        //allowedMaterials.add(Material.LONG_GRASS);
+
+        allowedMaterials.add(Material.TALL_GRASS);
+        allowedMaterials.add(Material.TALL_SEAGRASS);
         allowedMaterials.add(Material.CACTUS);
-        //allowedMaterials.add(Material.HUGE_MUSHROOM_1);
-        //allowedMaterials.add(Material.HUGE_MUSHROOM_2);
+        allowedMaterials.add(Material.BROWN_MUSHROOM_BLOCK);
+        allowedMaterials.add(Material.RED_MUSHROOM_BLOCK);
         allowedMaterials.add(Material.MOSSY_COBBLESTONE);
         allowedMaterials.add(Material.MYCELIUM);
         allowedMaterials.add(Material.MELON);
