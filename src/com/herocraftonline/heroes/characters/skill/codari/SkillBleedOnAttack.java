@@ -172,11 +172,6 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                             }
 
                             targetCharacter.addEffectStacks(BleedEffect.NAME, bleedStackDuration, player, this, bleedStackAmount, name -> new BleedEffect(this));
-
-                            //TODO DEBUG
-                            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + " Bleed Stack applied on attack ["
-                                    + ChatColor.WHITE + bleedStackAmount + ChatColor.GRAY + "] For a total of `" + ChatColor.WHITE
-                                    + targetCharacter.getEffectStackCount(BleedEffect.NAME) + ChatColor.GRAY + "`");
                         }
 
                         return attackCount;

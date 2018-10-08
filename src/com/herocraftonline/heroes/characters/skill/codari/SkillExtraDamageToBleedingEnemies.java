@@ -37,7 +37,7 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
     private static final double DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK = 0.02;
 
     public SkillExtraDamageToBleedingEnemies(Heroes plugin) {
-        super(plugin, "Temp_Skirmisher_ExtraDamageToBleedingEnemies");
+        super(plugin, "ExtraDamageToBleedingEnemies");
         setDescription("Basic attack damage is increased by $1%$2 per stack of bleed on the target.");
     }
 
@@ -111,11 +111,6 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
                     }
 
                     double extraDamage = flatDamageIncreasePerBleedStack + (e.getDamage() * percentDamageIncreasePerBleedStack);
-
-                    //TODO DEBUG
-                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + " Extra damage with bleed stacks ["
-                            + ChatColor.WHITE + extraDamage + ChatColor.GRAY + "] (" + ChatColor.WHITE + e.getDamage() + " + " + extraDamage + ChatColor.GRAY + ")");
-
                     e.setDamage((e.getDamage() + extraDamage));
                 }
             }
