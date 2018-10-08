@@ -9,10 +9,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.standard.BleedEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import joptsimple.internal.Strings;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -170,6 +172,11 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                             }
 
                             targetCharacter.addEffectStacks(BleedEffect.NAME, bleedStackDuration, player, this, bleedStackAmount, name -> new BleedEffect(this));
+
+                            //TODO DEBUG
+                            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + " Bleed Stack applied on attack ["
+                                    + ChatColor.WHITE + bleedStackAmount + ChatColor.GRAY + "] For a total of `" + ChatColor.WHITE
+                                    + targetCharacter.getEffectStackCount(BleedEffect.NAME) + ChatColor.GRAY + "`");
                         }
 
                         return attackCount;

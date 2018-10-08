@@ -6,9 +6,11 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.physics.FluidCollision;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -153,6 +155,9 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
     private void onWeaponDamage(WeaponDamageEvent e) {
         if (appliedDamageMultiplier != null) {
             e.setDamage(e.getDamage() * appliedDamageMultiplier);
+            //TODO DEBUG
+            ((Hero) e.getDamager()).getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + " Pointy stick extra attack weapon damage multiplier applied ["
+                    + ChatColor.WHITE + hitRange + " : " + appliedDamageMultiplier + ChatColor.GRAY + "] for a total of `" + ChatColor.WHITE + e.getDamage() + e.getDamager() + ChatColor.GRAY + "`");
             appliedDamageMultiplier = null;
         }
     }

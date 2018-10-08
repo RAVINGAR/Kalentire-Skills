@@ -8,10 +8,12 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.standard.BleedEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import joptsimple.internal.Strings;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -71,13 +73,13 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
             percentDamageIncreasePerBleedStack = 0;
         }
 
-        String flatDamageIncreasePerBleedStackParam = flatDamageIncreasePerBleedStack > 0 ? Util.smallDecFormat.format(flatDamageIncreasePerBleedStack) : Strings.EMPTY;
+        String flatDamageIncreasePerBleedStackParam = flatDamageIncreasePerBleedStack > 0 ? " +" + Util.smallDecFormat.format(flatDamageIncreasePerBleedStack) : Strings.EMPTY;
         String percentDamageIncreasePerBleedStackParam = Util.smallDecFormat.format(percentDamageIncreasePerBleedStack * 100);
 
         return Messaging.parameterizeMessage(getDescription(), percentDamageIncreasePerBleedStackParam, flatDamageIncreasePerBleedStackParam);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     private void onWeaponDamage(WeaponDamageEvent e) {
 
         if (e.getDamager() instanceof Hero && e.getEntity() instanceof LivingEntity && e.getDamager().hasEffect(getName())) {
@@ -108,7 +110,13 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
                         percentDamageIncreasePerBleedStack = 0;
                     }
 
-                    e.setDamage((e.getDamage() * ((percentDamageIncreasePerBleedStack * bleedEffect.getStackCount(targetCharacter)) + 1)) + flatDamageIncreasePerBleedStack);
+                    double extraDamage = flatDamageIncreasePerBleedStack + (e.getDamage() * percentDamageIncreasePerBleedStack);
+
+                    //TODO DEBUG
+                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + " Extra damage with bleed stacks ["
+                            + ChatColor.WHITE + extraDamage + ChatColor.GRAY + "] (" + ChatColor.WHITE + e.getDamage() + " + " + extraDamage + ChatColor.GRAY + ")");
+
+                    e.setDamage((e.getDamage() + extraDamage));
                 }
             }
         }
