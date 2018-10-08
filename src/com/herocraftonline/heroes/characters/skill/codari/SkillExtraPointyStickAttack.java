@@ -31,6 +31,8 @@ import java.util.EnumSet;
 
 public class SkillExtraPointyStickAttack extends PassiveSkill implements Listener {
 
+    public static final String NAME = "ExtraPointyStickAttack";
+
     private static final double ATTACK_RANGE = 6;
 
     // TODO Find a unified place for this for multipul skills
@@ -49,7 +51,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
     private Double appliedDamageMultiplier = null;
 
     public SkillExtraPointyStickAttack(Heroes plugin) {
-        super(plugin, "ExtraPointyStickAttack");
+        super(plugin, NAME);
         setDescription("Adds a longer ranged attack with the trident right click, and replaces trident throw");
 
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
