@@ -31,7 +31,7 @@ import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
 
-public class SkillTridentRightClickAttack extends PassiveSkill implements Listener {
+public class SkillExtraPointyStickAttack extends PassiveSkill implements Listener {
 
     private static final double ATTACK_RANGE = 6;
     private static final EnumSet<Material> shovels = EnumSet.of(Material.WOODEN_SHOVEL, Material.STONE_SHOVEL, Material.IRON_SHOVEL, Material.GOLDEN_SHOVEL, Material.DIAMOND_SHOVEL);
@@ -45,8 +45,8 @@ public class SkillTridentRightClickAttack extends PassiveSkill implements Listen
     private HitRange hitRange;
     private Double appliedDamageMultiplier = null;
 
-    public SkillTridentRightClickAttack(Heroes plugin) {
-        super(plugin, "TridentRightClickAttack");
+    public SkillExtraPointyStickAttack(Heroes plugin) {
+        super(plugin, "ExtraPointyStickAttack");
         setDescription("Adds a longer ranged attack with the trident right click, and replaces trident throw");
 
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
@@ -88,54 +88,61 @@ public class SkillTridentRightClickAttack extends PassiveSkill implements Listen
 
             ItemStack weapon = player.getInventory().getItemInMainHand();
 
-            if (weapon != null && hasPassive(hero)) {
+            if (weapon != null) {
 
                 Material weaponType = weapon.getType();
 
-                if (shovels.contains(weaponType) && !hero.hasBind(weaponType)) {
+                if (shovels.contains(weaponType)) {
 
-                    World world = player.getWorld();
-                    Location eyeLocation = player.getEyeLocation();
+                    if (!player.isSneaking()) {
+                        e.setUseInteractedBlock(Event.Result.DENY);
+                    }
 
-                    Vector start = eyeLocation.toVector();
-                    Vector end = eyeLocation.getDirection().multiply(ATTACK_RANGE).add(start);
+                    if (!hero.hasBind(weaponType)) {
 
-                    RayCastHit hit = NMSPhysics.instance().rayCast(world, player, start, end, null, entity -> entity instanceof LivingEntity, FluidCollision.NEVER, true);
-                    if (hit != null && hit.isEntity()) {
+                        World world = player.getWorld();
+                        Location eyeLocation = player.getEyeLocation();
 
-                        LivingEntity target = (LivingEntity) hit.getEntity();
+                        Vector start = eyeLocation.toVector();
+                        Vector end = eyeLocation.getDirection().multiply(ATTACK_RANGE).add(start);
 
-                        if (target.getNoDamageTicks() <= 10 && damageCheck(player, target)) {
+                        RayCastHit hit = NMSPhysics.instance().rayCast(world, player, start, end, null, entity -> entity instanceof LivingEntity, FluidCollision.NEVER, true);
+                        if (hit != null && hit.isEntity()) {
 
-                            Vector hitPoint = hit.getPoint();
-                            double hitDistanceSquared = start.distanceSquared(hitPoint);
+                            LivingEntity target = (LivingEntity) hit.getEntity();
 
-                            if (hitDistanceSquared <= NumberConversions.square(2)) {
-                                // The distance is within the `near` range for less damage
-                                double percentWeaponDamageNear = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR, false);
-                                if (percentWeaponDamageNear < 0) {
-                                    percentWeaponDamageNear = 0;
+                            if (target.getNoDamageTicks() <= 10 && damageCheck(player, target)) {
+
+                                Vector hitPoint = hit.getPoint();
+                                double hitDistanceSquared = start.distanceSquared(hitPoint);
+
+                                if (hitDistanceSquared <= NumberConversions.square(2)) {
+                                    // The distance is within the `near` range for less damage
+                                    double percentWeaponDamageNear = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR, false);
+                                    if (percentWeaponDamageNear < 0) {
+                                        percentWeaponDamageNear = 0;
+                                    }
+                                    hitRange = HitRange.NEAR;
+                                    appliedDamageMultiplier = percentWeaponDamageNear;
+                                } else if (hitDistanceSquared > NumberConversions.square(4)) {
+                                    // The distance is within the `far` range for more damage
+                                    double percentWeaponDamageFar = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR, false);
+                                    if (percentWeaponDamageFar < 0) {
+                                        percentWeaponDamageFar = 0;
+                                    }
+                                    hitRange = HitRange.FAR;
+                                    appliedDamageMultiplier = percentWeaponDamageFar;
+                                } else {
+                                    hitRange = HitRange.MIDDLE;
                                 }
-                                hitRange = HitRange.NEAR;
-                                appliedDamageMultiplier = percentWeaponDamageNear;
-                            } else if (hitDistanceSquared > NumberConversions.square(4)) {
-                                // The distance is within the `far` range for more damage
-                                double percentWeaponDamageFar = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR, false);
-                                if (percentWeaponDamageFar < 0) {
-                                    percentWeaponDamageFar = 0;
-                                }
-                                hitRange = HitRange.FAR;
-                                appliedDamageMultiplier = percentWeaponDamageFar;
-                            } else {
-                                hitRange = HitRange.MIDDLE;
+
+                                // Heroes is going to overwrite the damage as long as it is not 0 so doesn't matter what I set.
+                                // We will override it later within `WeaponDamageEvent` if `appliedDamageMultiplier` gets set.
+                                damageEntity(target, player, 1.0);
+                                hitRange = HitRange.NONE;
+
+                                target.setNoDamageTicks(target.getMaximumNoDamageTicks());
                             }
-
-                            // Heroes is going to overwrite the damage as long as it is not 0 so doesn't matter what I set.
-                            // We will override it later within `WeaponDamageEvent` if `appliedDamageMultiplier` gets set.
-                            damageEntity(target, player, 1.0);
-                            hitRange = HitRange.NONE;
-
-                            target.setNoDamageTicks(target.getMaximumNoDamageTicks());
                         }
                     }
                 }
@@ -151,29 +158,6 @@ public class SkillTridentRightClickAttack extends PassiveSkill implements Listen
             e.setDamage(e.getDamage() * appliedDamageMultiplier);
             appliedDamageMultiplier = null;
             Bukkit.broadcastMessage("DAMAGE: " + e.getDamage());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onEntityChangeBlock(EntityChangeBlockEvent e) {
-        if (e.getEntity() instanceof Player && e.getTo() == Material.GRASS_PATH && e.getBlock().getType() == Material.GRASS_BLOCK) {
-
-            Player player = (Player) e.getEntity();
-
-            if (!player.isSneaking()) {
-
-                ItemStack mainHandItem = player.getInventory().getItemInMainHand();
-
-                if (mainHandItem != null && shovels.contains(mainHandItem.getType())) {
-
-                    Hero hero = plugin.getCharacterManager().getHero(player);
-
-                    if (hasPassive(hero)) {
-                        Bukkit.broadcastMessage("SHOVEL RIGHT CLICK ON GRASS");
-                        e.setCancelled(true);
-                    }
-                }
-            }
         }
     }
 
