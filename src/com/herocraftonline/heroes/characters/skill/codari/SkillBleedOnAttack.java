@@ -132,51 +132,48 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onWeaponDamage(WeaponDamageEvent e) {
 
-        if (!e.isProjectile() && e.getDamager() instanceof Hero && e.getEntity() instanceof LivingEntity && e.getDamager().hasEffect(getName())) {
+        if (!e.isProjectile() && e.getDamager() instanceof Hero && e.getEntity() instanceof LivingEntity) {
 
             LivingEntity target = (LivingEntity) e.getEntity();
 
-            if (target.getNoDamageTicks() <= 10) {
+            Hero hero = (Hero) e.getDamager();
+            Player player = hero.getPlayer();
+            ItemStack weapon = player.getInventory().getItemInMainHand();
 
-                Hero hero = (Hero) e.getDamager();
-                Player player = hero.getPlayer();
-                ItemStack weapon = player.getInventory().getItemInMainHand();
+            if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
 
-                if (weapon != null && shovels.contains(weapon.getType())) {
+                playerAttackCounts.compute(hero.getPlayer().getUniqueId(), (playerId, attackCount) -> {
 
-                    playerAttackCounts.compute(hero.getPlayer().getUniqueId(), (playerId, attackCount) -> {
+                    if (attackCount == null) {
+                        attackCount = 1;
+                    } else {
+                        attackCount++;
+                    }
 
-                        if (attackCount == null) {
-                            attackCount = 1;
-                        } else {
-                            attackCount++;
+                    int bleedApplyFrequency = SkillConfigManager.getUseSetting(hero, this, BLEED_FREQUENCY_NODE, DEFAULT_BLEED_FREQUENCY, true);
+                    if (bleedApplyFrequency < 1) {
+                        bleedApplyFrequency = 1;
+                    }
+
+                    if (attackCount % bleedApplyFrequency == 0) {
+
+                        CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
+
+                        int bleedStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_AMOUNT_NODE, DEFAULT_BLEED_STACK_AMOUNT, false);
+                        if (bleedStackAmount < 1) {
+                            bleedStackAmount = 1;
                         }
 
-                        int bleedApplyFrequency = SkillConfigManager.getUseSetting(hero, this, BLEED_FREQUENCY_NODE, DEFAULT_BLEED_FREQUENCY, true);
-                        if (bleedApplyFrequency < 1) {
-                            bleedApplyFrequency = 1;
+                        int bleedStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_DURATION_NODE, DEFAULT_BLEED_STACK_DURATION, false);
+                        if (bleedStackDuration < 0) {
+                            bleedStackDuration = 0;
                         }
 
-                        if (attackCount % bleedApplyFrequency == 0) {
+                        targetCharacter.addEffectStacks(BleedEffect.NAME, bleedStackDuration, player, this, bleedStackAmount, name -> new BleedEffect(this));
+                    }
 
-                            CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
-
-                            int bleedStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_AMOUNT_NODE, DEFAULT_BLEED_STACK_AMOUNT, false);
-                            if (bleedStackAmount < 1) {
-                                bleedStackAmount = 1;
-                            }
-
-                            int bleedStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_DURATION_NODE, DEFAULT_BLEED_STACK_DURATION, false);
-                            if (bleedStackDuration < 0) {
-                                bleedStackDuration = 0;
-                            }
-
-                            targetCharacter.addEffectStacks(BleedEffect.NAME, bleedStackDuration, player, this, bleedStackAmount, name -> new BleedEffect(this));
-                        }
-
-                        return attackCount;
-                    });
-                }
+                    return attackCount;
+                });
             }
         }
     }

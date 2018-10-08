@@ -22,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
@@ -84,7 +85,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
         return getDescription();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerInteract(PlayerInteractEvent e) {
 
         if (e.useItemInHand() != Event.Result.DENY && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
@@ -98,7 +99,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
                 Material weaponType = weapon.getType();
 
-                if (shovels.contains(weaponType)) {
+                if (shovels.contains(weaponType) && hasPassive(hero)) {
 
                     // Sorry, but if you have this skill I got to do this (no grass paths for you)
                     //TODO If ever a profession wants to provide grass paths, a toggle will need to be made to either allow this attack, or allow grass paths.
@@ -158,6 +159,25 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
         if (appliedDamageMultiplier != null) {
             e.setDamage(e.getDamage() * appliedDamageMultiplier);
             appliedDamageMultiplier = null;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
+
+        Player player = e.getPlayer();
+        Hero hero = plugin.getCharacterManager().getHero(player);
+
+        ItemStack weapon = player.getInventory().getItemInMainHand();
+
+        if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
+//            switch (e.getRightClicked().getType()) {
+//            case LLAMA:
+//            case HORSE:
+//                e.setCancelled(true);
+//            }
+            //TODO Attemot to complete the above switch case is cancelling this is a problem.
+            e.setCancelled(true);
         }
     }
 

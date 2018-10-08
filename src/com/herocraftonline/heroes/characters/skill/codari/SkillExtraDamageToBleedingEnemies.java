@@ -82,13 +82,13 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
     @EventHandler(priority = EventPriority.LOW)
     private void onWeaponDamage(WeaponDamageEvent e) {
 
-        if (e.getDamager() instanceof Hero && e.getEntity() instanceof LivingEntity && e.getDamager().hasEffect(getName())) {
+        if (e.getDamager() instanceof Hero && e.getEntity() instanceof LivingEntity) {
 
             Hero hero = (Hero) e.getDamager();
             Player player = hero.getPlayer();
             ItemStack weapon = player.getInventory().getItemInMainHand();
 
-            if (weapon != null && shovels.contains(weapon.getType())) {
+            if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
 
                 LivingEntity target = (LivingEntity) e.getEntity();
                 CharacterTemplate targetCharacter = Heroes.getInstance().getCharacterManager().getCharacter(target);
