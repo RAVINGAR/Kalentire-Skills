@@ -32,12 +32,10 @@ public class SkillTargetedTest extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] strings) {
 
-        final String STACKING = "Stacking";
-
         Player player = hero.getPlayer();
         CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
-        targetCharacter.addEffectStack(STACKING, 2000, player, this, () -> new TestEffect(this, STACKING, player));
+        targetCharacter.addEffectStack("Stacking", 2000, player, this, name -> new TestEffect(this, name, player));
 
         return SkillResult.NORMAL;
     }

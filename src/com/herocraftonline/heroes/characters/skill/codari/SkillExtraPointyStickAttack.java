@@ -30,6 +30,8 @@ import java.util.EnumSet;
 public class SkillExtraPointyStickAttack extends PassiveSkill implements Listener {
 
     private static final double ATTACK_RANGE = 6;
+
+    // TODO Find a unified place for this for multipul skills
     private static final EnumSet<Material> shovels = EnumSet.of(Material.WOODEN_SHOVEL, Material.STONE_SHOVEL, Material.IRON_SHOVEL, Material.GOLDEN_SHOVEL, Material.DIAMOND_SHOVEL);
 
     private static final String PERCENT_WEAPON_DAMAGE_NEAR_NODE = "percent-weapon-damage-near";
