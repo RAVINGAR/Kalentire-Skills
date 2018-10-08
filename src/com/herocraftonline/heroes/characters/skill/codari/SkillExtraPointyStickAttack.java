@@ -9,21 +9,17 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.physics.FluidCollision;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Trident;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
@@ -37,10 +33,13 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
     private static final EnumSet<Material> shovels = EnumSet.of(Material.WOODEN_SHOVEL, Material.STONE_SHOVEL, Material.IRON_SHOVEL, Material.GOLDEN_SHOVEL, Material.DIAMOND_SHOVEL);
 
     private static final String PERCENT_WEAPON_DAMAGE_NEAR_NODE = "percent-weapon-damage-near";
-    private static final double DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR = 0.8;
+    private static final double DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR = 0.25;
+
+    private static final String PERCENT_WEAPON_DAMAGE_MID_NODE = "percent-weapon-damage-mid";
+    private static final double DEFAULT_PERCENT_WEAPON_DAMAGE_MID = 1.0;
 
     private static final String PERCENT_WEAPON_DAMAGE_FAR_NODE = "percent-weapon-damage-far";
-    private static final double DEFAULT_PERCENT_WEAPON_DAMAGE_FAR = 1.2;
+    private static final double DEFAULT_PERCENT_WEAPON_DAMAGE_FAR = 1.25;
 
     private HitRange hitRange;
     private Double appliedDamageMultiplier = null;
@@ -68,6 +67,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR);
+        node.set(PERCENT_WEAPON_DAMAGE_MID_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_MID);
         node.set(PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR);
 
         return node;
@@ -94,9 +94,9 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
                 if (shovels.contains(weaponType)) {
 
-                    if (!player.isSneaking()) {
-                        e.setUseInteractedBlock(Event.Result.DENY);
-                    }
+                    // Sorry, but if you have this skill I got to do this (no grass paths for you)
+                    //TODO If ever a profession wants to provide grass paths, a toggle will need to be made to either allow this attack, or allow grass paths.
+                    e.setUseInteractedBlock(Event.Result.DENY);
 
                     if (!hero.hasBind(weaponType)) {
 
@@ -115,31 +115,28 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
                                 Vector hitPoint = hit.getPoint();
                                 double hitDistanceSquared = start.distanceSquared(hitPoint);
+                                double percentWeaponDamage;
 
                                 if (hitDistanceSquared <= NumberConversions.square(2)) {
-                                    // The distance is within the `near` range for less damage
-                                    double percentWeaponDamageNear = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR, false);
-                                    if (percentWeaponDamageNear < 0) {
-                                        percentWeaponDamageNear = 0;
-                                    }
+                                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR, false);
                                     hitRange = HitRange.NEAR;
-                                    appliedDamageMultiplier = percentWeaponDamageNear;
                                 } else if (hitDistanceSquared > NumberConversions.square(4)) {
-                                    // The distance is within the `far` range for more damage
-                                    double percentWeaponDamageFar = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR, false);
-                                    if (percentWeaponDamageFar < 0) {
-                                        percentWeaponDamageFar = 0;
-                                    }
+                                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR, false);
                                     hitRange = HitRange.FAR;
-                                    appliedDamageMultiplier = percentWeaponDamageFar;
                                 } else {
-                                    hitRange = HitRange.MIDDLE;
+                                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_MID_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_MID, false);
+                                    hitRange = HitRange.MID;
                                 }
 
+                                if (percentWeaponDamage < 0) {
+                                    percentWeaponDamage = 0;
+                                }
+                                appliedDamageMultiplier = percentWeaponDamage;
+
                                 // Heroes is going to overwrite the damage as long as it is not 0 so doesn't matter what I set.
-                                // We will override it later within `WeaponDamageEvent` if `appliedDamageMultiplier` gets set.
+                                // We will apply `percentWeaponDamage` later within the `WeaponDamageEvent` below.
                                 damageEntity(target, player, 1.0);
-                                hitRange = HitRange.NONE;
+                                hitRange = HitRange.NO_HIT;
 
                                 target.setNoDamageTicks(target.getMaximumNoDamageTicks());
                             }
@@ -147,8 +144,6 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
                     }
                 }
             }
-
-            player.sendMessage("INTERACT: " + e.getHand());
         }
     }
 
@@ -157,14 +152,13 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
         if (appliedDamageMultiplier != null) {
             e.setDamage(e.getDamage() * appliedDamageMultiplier);
             appliedDamageMultiplier = null;
-            Bukkit.broadcastMessage("DAMAGE: " + e.getDamage());
         }
     }
 
-    enum HitRange {
-        NONE,
+    public enum HitRange {
+        NO_HIT,
         NEAR,
-        MIDDLE,
-        FAR;
+        MID,
+        FAR
     }
 }
