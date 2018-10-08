@@ -13,15 +13,11 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -126,9 +122,9 @@ public class SkillEruption extends ActiveSkill {
     private class EruptionEffect extends Effect {
 
         // Effect settings
-        public ParticleEffect explosionParticle = ParticleEffect.EXPLOSION_NORMAL;
-        public ParticleEffect lavaDripParticle = ParticleEffect.DRIP_LAVA;
-        public ParticleEffect redDustParticle = ParticleEffect.REDSTONE;
+        public Particle explosionParticle = Particle.EXPLOSION_NORMAL;
+        public Particle lavaDripParticle = Particle.DRIP_LAVA;
+        public Particle redDustParticle = Particle.REDSTONE;
         public Color redDustColor = null;
 
         public Vector addVector = new Vector(0, 0, 0);

@@ -13,14 +13,11 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -111,7 +108,7 @@ public class SkillBlackHole extends ActiveSkill {
     private class BlackHoleEffect extends Effect {
 
         // Effect settings
-        public ParticleEffect smokeParticle = ParticleEffect.SMOKE_LARGE;
+        public Particle smokeParticle = Particle.SMOKE_LARGE;
 
         public int strands = 6;
         public int particles = 25;
