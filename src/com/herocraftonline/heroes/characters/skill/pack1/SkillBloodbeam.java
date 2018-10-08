@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -21,7 +22,7 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
 public class SkillBloodbeam extends SkillBaseBeam {
 
-	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.REDSTONE;
+	private static final Particle BEAM_PARTICLE = Particle.REDSTONE;
 
 	public SkillBloodbeam(Heroes plugin) {
 		super(plugin, "BloodBeam");

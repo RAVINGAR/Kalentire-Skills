@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
 public class SkillDisarray extends SkillBaseBeam {
 
-	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.SPELL;
+	private static final Particle BEAM_PARTICLE = Particle.SPELL;
 	
 	public SkillDisarray(Heroes plugin) {
 		super(plugin, "Disarray");

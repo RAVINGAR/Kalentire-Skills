@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -27,7 +28,7 @@ import org.bukkit.util.Vector;
 
 public class SkillEndlessNightmare extends SkillBaseSpike {
 
-	private static final ParticleEffect PARTICLE = ParticleEffect.SPELL_MOB_AMBIENT;
+	private static final Particle PARTICLE = Particle.SPELL_MOB_AMBIENT;
 
 	private static final String SLOW_AMPLIFIER = "slow-amplifier";
 	private static final String HUNGER_AMPLIFIER = "hunger-amplifier";

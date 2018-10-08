@@ -15,6 +15,7 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ import org.bukkit.util.Vector;
 
 public class SkillNightmare extends SkillBaseSpike {
 
-	private static final ParticleEffect PARTICLE = ParticleEffect.SPELL_MOB_AMBIENT;
+	private static final Particle PARTICLE = Particle.SPELL_MOB_AMBIENT;
 
 	public SkillNightmare(Heroes plugin) {
 		super(plugin, "Nightmare");

@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSphere;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -83,7 +84,7 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.SPELL_MOB, Color.AQUA);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, Particle.SPELL_MOB, Color.AQUA);
 					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5f, 0.000001f);
 					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 0.000001f);
 				}

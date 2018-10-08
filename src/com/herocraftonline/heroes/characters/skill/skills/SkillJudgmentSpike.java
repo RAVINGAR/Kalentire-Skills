@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -22,7 +23,7 @@ import org.bukkit.util.Vector;
 
 public class SkillJudgmentSpike extends SkillBaseSpike {
 
-	private static final ParticleEffect PARTICLE = ParticleEffect.FLAME;
+	private static final Particle PARTICLE = Particle.FLAME;
 
 	public SkillJudgmentSpike(Heroes plugin) {
 		super(plugin, "JudgmentSpike");

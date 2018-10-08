@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSphere;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -85,7 +86,7 @@ public class SkillSerenity extends SkillBaseSphere {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, ParticleEffect.SPELL_MOB, Color.GREEN);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, Particle.SPELL_MOB, Color.GREEN);
 					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 0.5f, 0.00001f);
 				}
 
