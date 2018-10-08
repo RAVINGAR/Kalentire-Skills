@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -44,7 +45,7 @@ public class SkillHealBeam extends SkillBaseBeam {
 		line.setTargetLocation(player.getEyeLocation().add(beam.getTrajectory()));
 		line.asynchronous = true;
 		line.particles = (int) beam.length() * 2;
-		line.particle = ParticleEffect.VILLAGER_HAPPY;
+		line.particle = Particle.VILLAGER_HAPPY;
 		line.start();
 		em.disposeOnTermination();
 

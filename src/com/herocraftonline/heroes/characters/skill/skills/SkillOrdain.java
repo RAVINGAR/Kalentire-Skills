@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 public class SkillOrdain extends SkillBaseBeam {
 
 	private static final float PARTICLE_OFFSET_FROM_FACE = 1;
-	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.VILLAGER_HAPPY;
+	private static final Particle BEAM_PARTICLE = Particle.VILLAGER_HAPPY;
 
 	public SkillOrdain(Heroes plugin) {
 		super(plugin, "Ordain");

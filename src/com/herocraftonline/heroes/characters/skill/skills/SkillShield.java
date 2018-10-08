@@ -40,9 +40,20 @@ public class SkillShield extends PassiveSkill {
 
 		//shieldNames.add("Worn Shield of Ironpass"); // I always put ArrayList components in the class constructor itself :P
 		shieldItems.add(Material.IRON_DOOR);
-		//FIXME Flatening stuff
-//		shieldItems.add(Material.WOOD_DOOR);
-//		shieldItems.add(Material.TRAP_DOOR);
+		shieldItems.add(Material.OAK_DOOR);
+		shieldItems.add(Material.BIRCH_DOOR);
+		shieldItems.add(Material.SPRUCE_DOOR);
+		shieldItems.add(Material.JUNGLE_DOOR);
+		shieldItems.add(Material.ACACIA_DOOR);
+		shieldItems.add(Material.DARK_OAK_DOOR);
+
+		shieldItems.add(Material.IRON_TRAPDOOR);
+		shieldItems.add(Material.OAK_TRAPDOOR);
+		shieldItems.add(Material.BIRCH_TRAPDOOR);
+		shieldItems.add(Material.SPRUCE_TRAPDOOR);
+		shieldItems.add(Material.JUNGLE_TRAPDOOR);
+		shieldItems.add(Material.ACACIA_TRAPDOOR);
+		shieldItems.add(Material.DARK_OAK_TRAPDOOR);
 	}
 
 	@Override
@@ -56,9 +67,12 @@ public class SkillShield extends PassiveSkill {
 
 		node.set(SkillSetting.APPLY_TEXT.node(), "");
 		node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-		node.set("iron-door", 0.85);
-		node.set("wooden-door", 0.90);
-		node.set("trapdoor", 0.95);
+
+		// Percentage of damage received when using shield
+		node.set("iron-door", 0.75);
+		node.set("wooden-door", 0.85);
+		node.set("iron-trapdoor", 0.90);
+		node.set("wooden-trapdoor", 0.95);
 
 		return node;
 	}
@@ -86,14 +100,30 @@ public class SkillShield extends PassiveSkill {
 			if (hero.hasEffect(getName())) {
 				Material type = NMSHandler.getInterface().getItemInOffHand(player.getInventory()).getType();
 				double multiplier = 1;
-				//FIXME Flattening stuff
-//				if (type == Material.IRON_DOOR) {
-//					multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-door", 0.75, true);
-//				} else if (type == Material.WOOD_DOOR) {
-//					multiplier = SkillConfigManager.getUseSetting(hero, skill, "wooden-door", 0.85, true);
-//				} else if (type == Material.TRAP_DOOR) {
-//					multiplier = SkillConfigManager.getUseSetting(hero, skill, "trapdoor", 0.60, true);
-//				}
+                switch (type) {
+                    case IRON_DOOR:
+                        multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-door", 0.75, true);
+                        break;
+                    case OAK_DOOR:
+                    case BIRCH_DOOR:
+                    case SPRUCE_DOOR:
+                    case JUNGLE_DOOR:
+                    case ACACIA_DOOR:
+                    case DARK_OAK_DOOR:
+                        multiplier = SkillConfigManager.getUseSetting(hero, skill, "wooden-door", 0.85, true);
+                        break;
+                    case IRON_TRAPDOOR:
+                        multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-trapdoor", 0.90, true);
+                        break;
+                    case OAK_TRAPDOOR:
+                    case BIRCH_TRAPDOOR:
+                    case SPRUCE_TRAPDOOR:
+                    case JUNGLE_TRAPDOOR:
+                    case ACACIA_TRAPDOOR:
+                    case DARK_OAK_TRAPDOOR:
+                        multiplier = SkillConfigManager.getUseSetting(hero, skill, "wooden-trapdoor", 0.95, true);
+                        break;
+                }
 				event.setDamage((event.getDamage() * multiplier));
 			}
 		}

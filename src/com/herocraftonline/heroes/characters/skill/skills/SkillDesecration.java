@@ -16,6 +16,7 @@ import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -98,7 +99,7 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 					Effect e = new Effect(em) {
 
 						int particlesPerRadius = 3;
-						ParticleEffect particle = ParticleEffect.REDSTONE;
+						Particle particle = Particle.REDSTONE;
 
 						@Override
 						public void onRun() {

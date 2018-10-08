@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseMarkedTelepor
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -20,7 +21,7 @@ public class SkillTimeWarp extends SkillBaseMarkedTeleport {
 		super(plugin, "TimeWarp", false, new EffectType[] {
 				EffectType.DAMAGING,
 				EffectType.HARMFUL
-		}, ParticleEffect.REDSTONE, new Color[] {
+		}, Particle.REDSTONE, new Color[] {
 				Color.PURPLE,
 				Color.BLACK
 		});
