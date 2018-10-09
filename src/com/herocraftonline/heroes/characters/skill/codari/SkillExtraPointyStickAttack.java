@@ -106,48 +106,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
                     e.setUseInteractedBlock(Event.Result.DENY);
 
                     if (!hero.hasBind(weaponType)) {
-
-                        World world = player.getWorld();
-                        Location eyeLocation = player.getEyeLocation();
-
-                        Vector start = eyeLocation.toVector();
-                        Vector end = eyeLocation.getDirection().multiply(ATTACK_RANGE).add(start);
-
-                        RayCastHit hit = NMSPhysics.instance().rayCast(world, player, start, end, null, entity -> entity instanceof LivingEntity, FluidCollision.NEVER, true);
-                        if (hit != null && hit.isEntity()) {
-
-                            LivingEntity target = (LivingEntity) hit.getEntity();
-
-                            if (target.getNoDamageTicks() <= 10 && damageCheck(player, target)) {
-
-                                Vector hitPoint = hit.getPoint();
-                                double hitDistanceSquared = start.distanceSquared(hitPoint);
-                                double percentWeaponDamage;
-
-                                if (hitDistanceSquared <= NumberConversions.square(2)) {
-                                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR, false);
-                                    hitRange = HitRange.NEAR;
-                                } else if (hitDistanceSquared > NumberConversions.square(4)) {
-                                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR, false);
-                                    hitRange = HitRange.FAR;
-                                } else {
-                                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_MID_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_MID, false);
-                                    hitRange = HitRange.MID;
-                                }
-
-                                if (percentWeaponDamage < 0) {
-                                    percentWeaponDamage = 0;
-                                }
-                                appliedDamageMultiplier = percentWeaponDamage;
-
-                                // Heroes is going to overwrite the damage as long as it is not 0 so doesn't matter what I set.
-                                // We will apply `percentWeaponDamage` later within the `WeaponDamageEvent` below.
-                                damageEntity(target, player, 1.0);
-                                hitRange = HitRange.NO_HIT;
-
-                                target.setNoDamageTicks(target.getMaximumNoDamageTicks());
-                            }
-                        }
+                        processAttack(hero);
                     }
                 }
             }
@@ -162,11 +121,70 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
         ItemStack weapon = player.getInventory().getItemInMainHand();
 
-        if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
-            switch (e.getRightClicked().getType()) {
-                case LLAMA:
-                case HORSE:
-                    e.setCancelled(true);
+        if (weapon != null) {
+
+            Material weaponType = weapon.getType();
+
+            if (shovels.contains(weaponType) && hasPassive(hero)) {
+                switch (e.getRightClicked().getType()) {
+                    case LLAMA:
+                    case HORSE: {
+
+                        // The entity types here prevent `PlayerInteractEvent` from occurring, so I must do it here.
+                        // TODO If ever a profession needs to right click these entities with a shovel (for whatever reason), a toggle... (see above)
+                        e.setCancelled(true);
+
+                        if (!hero.hasBind(weaponType)) {
+                            processAttack(hero);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void processAttack(Hero hero) {
+
+        Player player = hero.getPlayer();
+        World world = player.getWorld();
+        Location eyeLocation = player.getEyeLocation();
+
+        Vector start = eyeLocation.toVector();
+        Vector end = eyeLocation.getDirection().multiply(ATTACK_RANGE).add(start);
+
+        RayCastHit hit = NMSPhysics.instance().rayCast(world, player, start, end, null, entity -> entity instanceof LivingEntity, FluidCollision.NEVER, true);
+        if (hit != null && hit.isEntity()) {
+
+            LivingEntity target = (LivingEntity) hit.getEntity();
+
+            if (target.getNoDamageTicks() <= 10 && damageCheck(player, target)) {
+
+                Vector hitPoint = hit.getPoint();
+                double hitDistanceSquared = start.distanceSquared(hitPoint);
+                double percentWeaponDamage;
+
+                if (hitDistanceSquared <= NumberConversions.square(2)) {
+                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR, false);
+                    hitRange = HitRange.NEAR;
+                } else if (hitDistanceSquared > NumberConversions.square(4)) {
+                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR, false);
+                    hitRange = HitRange.FAR;
+                } else {
+                    percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_MID_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_MID, false);
+                    hitRange = HitRange.MID;
+                }
+
+                if (percentWeaponDamage < 0) {
+                    percentWeaponDamage = 0;
+                }
+                appliedDamageMultiplier = percentWeaponDamage;
+
+                // Heroes is going to overwrite the damage as long as it is not 0 so doesn't matter what I set.
+                // We will apply `percentWeaponDamage` later within the `WeaponDamageEvent` below.
+                damageEntity(target, player, 1.0);
+                hitRange = HitRange.NO_HIT;
+
+                target.setNoDamageTicks(target.getMaximumNoDamageTicks());
             }
         }
     }
