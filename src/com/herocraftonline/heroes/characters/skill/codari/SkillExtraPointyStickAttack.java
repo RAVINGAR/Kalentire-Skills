@@ -154,14 +154,6 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    private void onWeaponDamage(WeaponDamageEvent e) {
-        if (appliedDamageMultiplier != null) {
-            e.setDamage(e.getDamage() * appliedDamageMultiplier);
-            appliedDamageMultiplier = null;
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
 
@@ -171,13 +163,19 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
         ItemStack weapon = player.getInventory().getItemInMainHand();
 
         if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
-//            switch (e.getRightClicked().getType()) {
-//            case LLAMA:
-//            case HORSE:
-//                e.setCancelled(true);
-//            }
-            //TODO Attemot to complete the above switch case is cancelling this is a problem.
-            e.setCancelled(true);
+            switch (e.getRightClicked().getType()) {
+                case LLAMA:
+                case HORSE:
+                    e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    private void onWeaponDamage(WeaponDamageEvent e) {
+        if (appliedDamageMultiplier != null) {
+            e.setDamage(e.getDamage() * appliedDamageMultiplier);
+            appliedDamageMultiplier = null;
         }
     }
 
