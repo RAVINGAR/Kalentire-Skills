@@ -181,6 +181,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
                 // Heroes is going to overwrite the damage as long as it is not 0 so doesn't matter what I set.
                 // We will apply `percentWeaponDamage` later within the `WeaponDamageEvent` below.
+                //TODO Make damage only cause knockback when state is `NEAR`.
                 damageEntity(target, player, 1.0);
                 hitRange = HitRange.NO_HIT;
 
