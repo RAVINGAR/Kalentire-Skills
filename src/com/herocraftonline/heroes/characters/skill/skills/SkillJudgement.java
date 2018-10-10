@@ -120,8 +120,8 @@ public class SkillJudgement extends ActiveSkill implements Listener
 
         for (Entity e : p.getNearbyEntities(radius, radius, radius))
         {
-            p.sendMessage("nearby entity = " + e.getName() + " " + (e instanceof LivingEntity ? "LE," : "")
-                + (e instanceof LivingEntity && e instanceof Player ? " P" : " Not P"));
+//            p.sendMessage("nearby entity = " + e.getName() + " " + (e instanceof LivingEntity ? "LE," : "")
+//                + (e instanceof LivingEntity && e instanceof Player ? " P" : " Not P"));
             if (!(e instanceof LivingEntity)) continue;
 
             LivingEntity target = (LivingEntity) e;
@@ -140,9 +140,9 @@ public class SkillJudgement extends ActiveSkill implements Listener
                 }
             }
 //            p.sendMessage("DEBUG: current time ms: " + System.currentTimeMillis());
-            p.sendMessage("DEBUG: judgedEvents: " + judgedEvents.size() + " events");
-            p.sendMessage("DEBUG: relevantEvents: " + relevantEvents.size() + " events");
-            p.sendMessage("DEBUG: new judgedEvents: " + newJudgedEvents.size() + " events");
+//            p.sendMessage("DEBUG: judgedEvents: " + judgedEvents.size() + " events");
+//            p.sendMessage("DEBUG: relevantEvents: " + relevantEvents.size() + " events");
+//            p.sendMessage("DEBUG: new judgedEvents: " + newJudgedEvents.size() + " events");
 
 //            if (!relevantEvents.isEmpty()) {
 //                p.sendMessage("DEBUG: relevantEvents Info: (damager, damaged, damage) [damager id, damaged id]");
