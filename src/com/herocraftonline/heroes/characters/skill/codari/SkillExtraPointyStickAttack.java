@@ -17,6 +17,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -125,16 +126,20 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
             Material weaponType = weapon.getType();
 
-            if (shovels.contains(weaponType) && hasPassive(hero)) {
+            if (shovels.contains(weaponType) && hasPassive(hero) && !hero.hasBind(weaponType)) {
+                // The entity types here prevent `PlayerInteractEvent` from occurring, so I must do it here.
+                // TODO If ever a profession needs to right click these entities with a shovel (for whatever reason), a toggle... (see above)
                 switch (e.getRightClicked().getType()) {
+                    // The following seem to always block `PlayerInteractEvent`
                     case LLAMA:
                     case HORSE: {
-
-                        // The entity types here prevent `PlayerInteractEvent` from occurring, so I must do it here.
-                        // TODO If ever a profession needs to right click these entities with a shovel (for whatever reason), a toggle... (see above)
                         e.setCancelled(true);
-
-                        if (!hero.hasBind(weaponType)) {
+                        processAttack(hero);
+                    }
+                    case WOLF: {// Tamed wolves seem to block `PlayerInteractEvent`
+                        //TODO see if this true for all tamable stuff
+                        if (((Wolf) e.getRightClicked()).isTamed()) {
+                            e.setCancelled(true);
                             processAttack(hero);
                         }
                     }
@@ -162,16 +167,20 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
                 Vector hitPoint = hit.getPoint();
                 double hitDistanceSquared = start.distanceSquared(hitPoint);
                 double percentWeaponDamage;
+                boolean knockback;
 
                 if (hitDistanceSquared <= NumberConversions.square(2)) {
                     percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_NEAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_NEAR, false);
                     hitRange = HitRange.NEAR;
+                    knockback = true;
                 } else if (hitDistanceSquared > NumberConversions.square(4)) {
                     percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_FAR_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_FAR, false);
                     hitRange = HitRange.FAR;
+                    knockback = false;
                 } else {
                     percentWeaponDamage = SkillConfigManager.getUseSetting(hero, this, PERCENT_WEAPON_DAMAGE_MID_NODE, DEFAULT_PERCENT_WEAPON_DAMAGE_MID, false);
                     hitRange = HitRange.MID;
+                    knockback = false;
                 }
 
                 if (percentWeaponDamage < 0) {
@@ -181,8 +190,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
                 // Heroes is going to overwrite the damage as long as it is not 0 so doesn't matter what I set.
                 // We will apply `percentWeaponDamage` later within the `WeaponDamageEvent` below.
-                //TODO Make damage only cause knockback when state is `NEAR`.
-                damageEntity(target, player, 1.0);
+                damageEntity(target, player, 1.0, knockback);
                 hitRange = HitRange.NO_HIT;
 
                 target.setNoDamageTicks(target.getMaximumNoDamageTicks());
