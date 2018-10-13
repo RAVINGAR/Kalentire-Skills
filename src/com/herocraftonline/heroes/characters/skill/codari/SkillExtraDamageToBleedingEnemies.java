@@ -5,7 +5,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.standard.BleedEffect;
+import com.herocraftonline.heroes.characters.effects.standard.StandardBleedEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -93,10 +93,10 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
                 LivingEntity target = (LivingEntity) e.getEntity();
                 CharacterTemplate targetCharacter = Heroes.getInstance().getCharacterManager().getCharacter(target);
 
-                Effect effect = targetCharacter.getEffect(BleedEffect.NAME);
-                if (effect instanceof BleedEffect) {
+                Effect effect = targetCharacter.getEffect(StandardBleedEffect.NAME);
+                if (effect instanceof StandardBleedEffect) {
 
-                    BleedEffect bleedEffect = (BleedEffect) effect;
+                    StandardBleedEffect bleedEffect = (StandardBleedEffect) effect;
 
                     double flatDamageIncreasePerBleedStack = SkillConfigManager.getUseSetting(hero, this,
                             FLAT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEED_STACK, false);
@@ -110,7 +110,10 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
                         percentDamageIncreasePerBleedStack = 0;
                     }
 
-                    double extraDamage = flatDamageIncreasePerBleedStack + (e.getDamage() * percentDamageIncreasePerBleedStack);
+                    double flatDamageIncrease = flatDamageIncreasePerBleedStack * bleedEffect.getStackCount();
+                    double percentDamageIncrease = percentDamageIncreasePerBleedStack * bleedEffect.getStackCount();
+
+                    double extraDamage = flatDamageIncrease + (e.getDamage() * percentDamageIncrease);
                     e.setDamage((e.getDamage() + extraDamage));
                 }
             }

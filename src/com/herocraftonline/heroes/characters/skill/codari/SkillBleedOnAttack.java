@@ -6,7 +6,7 @@ import com.herocraftonline.heroes.api.events.HeroLeaveCombatEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.standard.BleedEffect;
+import com.herocraftonline.heroes.characters.effects.standard.StandardBleedEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -169,7 +169,7 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                             bleedStackDuration = 0;
                         }
 
-                        targetCharacter.addEffectStacks(BleedEffect.NAME, bleedStackDuration, player, this, bleedStackAmount, name -> new BleedEffect(this));
+                        targetCharacter.addEffectStacks(StandardBleedEffect.NAME, bleedStackDuration, player, this, bleedStackAmount, name -> new StandardBleedEffect(this, player));
                     }
 
                     return attackCount;
