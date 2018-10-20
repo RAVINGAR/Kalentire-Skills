@@ -42,21 +42,18 @@ public class SkillTargetedTest extends TargettedSkill {
 
     public class TestEffect extends PeriodicStackingEffect {
 
-        private Player applier;
-
         public TestEffect(Skill skill, String name, Player applier) {
-            super(skill, name, 10, 500);
-            this.applier = applier;
+            super(skill, name, applier, 10, 500);
         }
 
         @Override
         public void tickMonster(Monster monster) {
-            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Stacks: " + ChatColor.WHITE + getStackCount(monster));
+            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Stacks: " + ChatColor.WHITE + getStackCount());
         }
 
         @Override
         public void tickHero(Hero hero) {
-            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Stacks: " + ChatColor.WHITE + getStackCount(hero));
+            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Stacks: " + ChatColor.WHITE + getStackCount());
         }
 
         @Override
