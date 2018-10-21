@@ -137,7 +137,7 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
             LivingEntity target = (LivingEntity) e.getEntity();
 
             Hero hero = (Hero) e.getDamager();
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             ItemStack weapon = player.getInventory().getItemInMainHand();
 
             if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
@@ -169,7 +169,7 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                             bleedStackDuration = 0;
                         }
 
-                        targetCharacter.addEffectStacks(StandardBleedEffect.NAME, bleedStackDuration, player, this, bleedStackAmount, name -> new StandardBleedEffect(this, player));
+                        targetCharacter.addEffectStacks(StandardBleedEffect.NAME, bleedStackDuration, this, player, bleedStackAmount, () -> new StandardBleedEffect(this, player));
                     }
 
                     return attackCount;
