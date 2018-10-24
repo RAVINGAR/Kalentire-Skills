@@ -12,9 +12,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.collision.Sphere;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -36,7 +34,7 @@ public class SkillPair extends ActiveSkill implements Listener {
     private static final String RIPOSTE_RECAST_NAME = "Riposte";
 
     private static final String DAMAGE_IMMUNITY_DURATION_NODE = "damage-immunity-duration";
-    private static final int DEFAULT_DAMAGE_IMMUNITY_DURATION = 500;
+    private static final int DEFAULT_DAMAGE_IMMUNITY_DURATION = 1000;
 
     private static final String RIPOSTE_RADIUS_NODE = "riposte-radius";
     private static final double DEFAULT_RIPOSTE_RADIUS = 3;
@@ -56,7 +54,11 @@ public class SkillPair extends ActiveSkill implements Listener {
     private static final String RIPOSTE_SLOW_DURATION_NODE = "riposte-slow-duration";
     private static final int DEFAULT_RIPOSTE_SLOW_DURATION = 3000;
 
+    private static final String COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE = "cooldown-reduction-percentage-on-riposte-hit";
+    private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT = 0.8;
+
     private final Set<UUID> damageBlockedSet = new HashSet<>();
+    private final Set<UUID> riposteHit = new HashSet<>();
 
     public SkillPair(Heroes plugin) {
         super(plugin, "Pair");
@@ -85,6 +87,7 @@ public class SkillPair extends ActiveSkill implements Listener {
         node.set(RIPOSTE_BLEED_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEED_STACK_DURATION);
         node.set(RIPOSTE_SLOW_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOW_STRENGTH);
         node.set(RIPOSTE_SLOW_DURATION_NODE, DEFAULT_RIPOSTE_SLOW_DURATION);
+        node.set(COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT);
 
         return node;
     }
@@ -112,8 +115,11 @@ public class SkillPair extends ActiveSkill implements Listener {
     protected void recast(Hero hero, RecastData data) {
 
         Player player = hero.getPlayer();
+        UUID playerId = player.getUniqueId();
 
-        if (damageBlockedSet.contains(player.getUniqueId())) {
+        if (damageBlockedSet.contains(playerId)) {
+
+            World world = player.getWorld();
 
             double riposteRadius = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_RADIUS_NODE, DEFAULT_RIPOSTE_RADIUS, false);
             if (riposteRadius < 1) {
@@ -123,38 +129,56 @@ public class SkillPair extends ActiveSkill implements Listener {
             Vector riposteCenter = NMSPhysics.instance().getEntityAABB(player).getCenter();
             Sphere riposteEffectArea = NMSPhysics.instance().createSphere(riposteCenter, riposteRadius);
 
+            world.playSound(riposteCenter.toLocation(world), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1, 1);
+
             List<Entity> targets = NMSPhysics.instance().getEntitiesInVolume(player.getWorld(), player, riposteEffectArea,
                     entity -> entity instanceof LivingEntity && damageCheck(player, (LivingEntity) entity));
 
-            double riposteDamage = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_DAMAGE_NODE, DEFAULT_RIPOSTE_DAMAGE, false);
+            if (!targets.isEmpty()) {
 
-            int riposteBleedStackAmount = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEED_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEED_STACK_AMOUNT, false);
-            int riposteBleedStackDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEED_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEED_STACK_DURATION, false);
+                double riposteDamage = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_DAMAGE_NODE, DEFAULT_RIPOSTE_DAMAGE, false);
 
-            int riposteSlowStrength = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOW_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOW_STRENGTH, false);
-            int riposteSlowDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOW_DURATION_NODE, DEFAULT_RIPOSTE_SLOW_DURATION, false);
+                int riposteBleedStackAmount = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEED_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEED_STACK_AMOUNT, false);
+                int riposteBleedStackDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEED_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEED_STACK_DURATION, false);
 
-            for (Entity entity : targets) {
+                int riposteSlowStrength = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOW_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOW_STRENGTH, false);
+                int riposteSlowDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOW_DURATION_NODE, DEFAULT_RIPOSTE_SLOW_DURATION, false);
 
-                LivingEntity target = (LivingEntity) entity;
-                CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
+                for (Entity entity : targets) {
 
-                if (riposteDamage > 0) {
-                    addSpellTarget(entity, hero);
-                    damageEntity(target, player, riposteDamage);
+                    LivingEntity target = (LivingEntity) entity;
+                    CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
+
+                    if (riposteDamage > 0) {
+                        addSpellTarget(entity, hero);
+                        damageEntity(target, player, riposteDamage);
+                    }
+
+                    if (riposteBleedStackAmount > 0) {
+                        StandardBleedEffect.applyStacks(targetCharacter, this, player, riposteBleedStackDuration, riposteBleedStackAmount);
+                    }
+
+                    if (riposteSlowStrength > 0) {
+                        StandardSlowEffect.addDuration(targetCharacter, this, player, riposteSlowDuration, riposteSlowStrength);
+                    }
                 }
 
-                if (riposteBleedStackAmount > 0) {
-                    StandardBleedEffect.applyStacks(targetCharacter, this, player, riposteBleedStackDuration, riposteBleedStackAmount);
-                }
-
-                if (riposteSlowStrength > 0) {
-                    StandardSlowEffect.addDuration(targetCharacter, this, player, riposteSlowDuration, riposteSlowStrength);
-                }
+                riposteHit.add(playerId);
             }
         }
 
         endRecast(hero);
+    }
+
+    @Override
+    protected int alterAppliedCooldown(Hero hero, int cooldown) {
+        if (riposteHit.remove(hero.getPlayer().getUniqueId())) {
+            double cooldownReductionPercentage = SkillConfigManager.getUseSetting(hero, this,
+                    COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT, false);
+            return cooldown - (int)(cooldown * cooldownReductionPercentage);
+        } else {
+            return cooldown;
+        }
     }
 
     @Override
