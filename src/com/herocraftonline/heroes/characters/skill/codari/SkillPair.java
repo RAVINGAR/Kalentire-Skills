@@ -154,11 +154,11 @@ public class SkillPair extends ActiveSkill implements Listener {
                         damageEntity(target, player, riposteDamage);
                     }
 
-                    if (riposteBleedStackAmount > 0) {
+                    if (riposteBleedStackAmount > 0 && riposteBleedStackDuration > 0) {
                         StandardBleedEffect.applyStacks(targetCharacter, this, player, riposteBleedStackDuration, riposteBleedStackAmount);
                     }
 
-                    if (riposteSlowStrength > 0) {
+                    if (riposteSlowStrength > 0 && riposteSlowDuration > 0) {
                         StandardSlowEffect.addDuration(targetCharacter, this, player, riposteSlowDuration, riposteSlowStrength);
                     }
                 }
