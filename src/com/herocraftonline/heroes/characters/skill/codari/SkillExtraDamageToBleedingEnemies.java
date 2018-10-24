@@ -93,10 +93,8 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
                 LivingEntity target = (LivingEntity) e.getEntity();
                 CharacterTemplate targetCharacter = Heroes.getInstance().getCharacterManager().getCharacter(target);
 
-                Effect effect = targetCharacter.getEffect(StandardBleedEffect.NAME);
-                if (effect instanceof StandardBleedEffect) {
-
-                    StandardBleedEffect bleedEffect = (StandardBleedEffect) effect;
+                StandardBleedEffect bleedEffect = StandardBleedEffect.get(hero);
+                if (bleedEffect != null) {
 
                     double flatDamageIncreasePerBleedStack = SkillConfigManager.getUseSetting(hero, this,
                             FLAT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEED_STACK, false);

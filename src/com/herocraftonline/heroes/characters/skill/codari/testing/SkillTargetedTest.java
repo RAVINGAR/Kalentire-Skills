@@ -35,7 +35,7 @@ public class SkillTargetedTest extends TargettedSkill {
         Player player = hero.getPlayer();
         CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
-        targetCharacter.addEffectStack("Stacking", 2000, this, player, () -> new TestEffect(this, "Stacking", player));
+        //targetCharacter.addEffectStack("Stacking", 2000, this, player, () -> new TestEffect(this, "Stacking", player));
 
         return SkillResult.NORMAL;
     }

@@ -169,7 +169,7 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                             bleedStackDuration = 0;
                         }
 
-                        targetCharacter.addEffectStacks(StandardBleedEffect.NAME, bleedStackDuration, this, player, bleedStackAmount, () -> new StandardBleedEffect(this, player));
+                        StandardBleedEffect.applyStacks(targetCharacter, bleedStackDuration, this, player, bleedStackAmount);
                     }
 
                     return attackCount;

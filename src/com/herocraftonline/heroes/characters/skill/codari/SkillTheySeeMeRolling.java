@@ -5,11 +5,11 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 
-public class SkillRoll extends ActiveSkill {
+public class SkillTheySeeMeRolling extends ActiveSkill {
 
 
-    public SkillRoll(Heroes plugin) {
-        super(plugin, "Roll");
+    public SkillTheySeeMeRolling(Heroes plugin) {
+        super(plugin, "TheySeeMeRolling");
         setDescription("Stuff");
 
         setUsage("/skill " + getName());
