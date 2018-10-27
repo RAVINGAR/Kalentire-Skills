@@ -23,8 +23,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
-import static com.herocraftonline.heroes.util.EntityUtil.ghost;
-
 public class SkillSoulreaper extends ActiveSkill {
 
     public SkillSoulreaper(Heroes plugin) {
@@ -123,7 +121,7 @@ public class SkillSoulreaper extends ActiveSkill {
 
                     sickle.getWorld().playSound(sickle, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 0.5f, 1.0f); // i have no clue what this sounds like
                     Snowball test = (Snowball) sickle.getWorld().spawnEntity(sickle, EntityType.SNOWBALL);
-                    ghost(test);
+                    //ghost(test);
 //                    test.getWorld().spigot().playEffect(test.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.2f, 0.2f, 0.2f, 0.0f,
 //                            25, 128);
                     test.getWorld().spawnParticle(Particle.SPELL_WITCH, test.getLocation(), 25, 0.2, 0.2, 0.2, 0, true);
