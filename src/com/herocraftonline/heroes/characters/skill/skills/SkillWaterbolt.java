@@ -25,8 +25,6 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 
-import static com.herocraftonline.heroes.util.EntityUtil.ghost;
-
 public class SkillWaterbolt extends ActiveSkill
 {
 	private HashMap<Snowball, Player> bolts = new HashMap<Snowball, Player>();
@@ -67,7 +65,7 @@ public class SkillWaterbolt extends ActiveSkill
 		float speed = (float) SkillConfigManager.getUseSetting(hero, this, "speed", 2.0, false);
 
 		Snowball bolt = player.launchProjectile(Snowball.class);
-		ghost(bolt);
+		//ghost(bolt);
 		final Vector velocity = player.getLocation().getDirection().normalize().multiply(speed);
 		bolt.setVelocity(velocity);
 		player.getWorld().playSound(player.getLocation(), Sound.WEATHER_RAIN, 1.0F, 1.3F);

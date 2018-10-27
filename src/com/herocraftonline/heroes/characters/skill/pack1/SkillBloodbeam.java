@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -85,7 +86,7 @@ public class SkillBloodbeam extends SkillBaseBeam {
 			}
 		});
 
-		renderEyeBeam(player, beam, BEAM_PARTICLE, 60, 10, 40, 0.125, 1);
+		renderEyeBeam(player, beam, BEAM_PARTICLE, Color.RED, 60, 10, 40, 0.125, 1);
 
 		new BukkitRunnable() {
 

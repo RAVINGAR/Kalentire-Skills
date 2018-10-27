@@ -25,8 +25,6 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 
-import static com.herocraftonline.heroes.util.EntityUtil.ghost;
-
 public class SkillJolt extends ActiveSkill 
 {
 	private HashMap<SmallFireball, Player> fireballs = new HashMap<SmallFireball, Player>();
@@ -66,7 +64,7 @@ public class SkillJolt extends ActiveSkill
         fireball.setYield(0.0F);
         
 		final SmallFireball f = fireball;
-		ghost(f);
+		//ghost(f);
 
 		new BukkitRunnable() // velocity check, 8 times
 		{

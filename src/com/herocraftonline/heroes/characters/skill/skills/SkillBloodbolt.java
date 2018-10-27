@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import com.herocraftonline.heroes.util.EntityUtil;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -67,7 +66,7 @@ public class SkillBloodbolt extends ActiveSkill
 		float speed = (float) SkillConfigManager.getUseSetting(hero, this, "speed", 2.0, false);
 
 		Snowball bolt = player.launchProjectile(Snowball.class);
-		EntityUtil.ghost(bolt);
+		//EntityUtil.ghost(bolt);
 		final Vector velocity = player.getLocation().getDirection().normalize().multiply(speed);
 		bolt.setVelocity(velocity);
 		player.getWorld().playSound(player.getLocation(), Sound.WEATHER_RAIN, 0.6F, 1.3F);
