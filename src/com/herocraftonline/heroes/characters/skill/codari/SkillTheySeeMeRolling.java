@@ -7,8 +7,9 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class SkillTheySeeMeRolling extends ActiveSkill {
+import java.util.UUID;
 
+public class SkillTheySeeMeRolling extends ActiveSkill {
 
     public SkillTheySeeMeRolling(Heroes plugin) {
         super(plugin, "TheySeeMeRolling");
@@ -35,23 +36,27 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
             return SkillResult.CANCELLED;
         }
 
-        double yawLook = player.getEyeLocation().getYaw();
+        double yawDirection = player.getEyeLocation().getYaw();
+        player.sendMessage("DIRECTION: " + yawDirection);
 
         Vector velocity = player.getVelocity();
         double yawVelocity = (float)Math.toDegrees((Math.atan2(-velocity.getX(), velocity.getZ()) + (Math.PI * 2)) % (Math.PI * 2));
+        player.sendMessage("VELOCITY: " + velocity + " : " + yawVelocity);
 
-        double yawDifference = Math.abs(((yawVelocity - yawLook) + 180) % 360 - 180);
+        double yawDifference = Math.min(360 - Math.abs(yawDirection - yawVelocity), Math.abs(yawDirection - yawVelocity));
+        player.sendMessage("DIFFERENCE: " + yawDifference);
 
-        if (yawDifference < 45) {
-            // Forward
-            player.sendMessage("FORWARD: " + yawDifference);
-        } else if (yawDifference <= 135) {
-            player.sendMessage("SIDEWAYS: " + yawDifference);
-        } else {
-            player.sendMessage("BACKWARDS: " + yawDifference);
-        }
+//        if (yawDifference < 45) {
+//            // Forward
+//            player.sendMessage("FORWARD: " + yawDifference);
+//        } else if (yawDifference <= 135) {
+//            player.sendMessage("SIDEWAYS: " + yawDifference);
+//        } else {
+//            player.sendMessage("BACKWARDS: " + yawDifference);
+//        }
 
-        player.setVelocity(velocity.normalize().setY(0.5).multiply(3));
+        Vector rollVelocity = velocity.setY(0).normalize().setY(0.25).multiply(3);
+        player.setVelocity(rollVelocity);
 
         return SkillResult.NORMAL;
     }
