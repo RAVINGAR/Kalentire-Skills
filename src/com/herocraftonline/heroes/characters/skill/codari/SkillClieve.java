@@ -2,10 +2,12 @@ package com.herocraftonline.heroes.characters.skill.codari;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseWeaponImbue;
 
-public class SkillClieve extends ActiveSkill {
+public class SkillClieve extends SkillBaseWeaponImbue {
 
     public SkillClieve(Heroes plugin) {
         super(plugin, "Clieve");
@@ -22,7 +24,7 @@ public class SkillClieve extends ActiveSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] strings) {
-        return null;
+    protected void apply(Hero hero, String[] strings, WeaponDamageEvent weaponDamageEvent) {
+
     }
 }

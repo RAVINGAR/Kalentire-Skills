@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.RecastData;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -43,6 +44,10 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
     public SkillResult use(Hero hero, String[] strings) {
 
         Player player = hero.getPlayer();
+
+        RecastData recastData = new RecastData("Spear Throw");
+        recastData.setNeverReady();
+        startRecast(hero, recastData);
 
         Trident projectile = player.launchProjectile(Trident.class);
         projectile.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
