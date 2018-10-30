@@ -4,12 +4,23 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class SkillTheySeeMeRolling extends ActiveSkill {
+
+    private Map<UUID, Vector> playerMovement = new HashMap<>();
 
     public SkillTheySeeMeRolling(Heroes plugin) {
         super(plugin, "TheySeeMeRolling");
@@ -22,6 +33,11 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
     }
 
     @Override
+    public void init() {
+        super.init();
+    }
+
+    @Override
     public String getDescription(Hero hero) {
         return getDescription();
     }
@@ -29,34 +45,49 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] strings) {
 
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         if (!player.isOnGround()) {
             player.sendMessage("Not on ground");
             return SkillResult.CANCELLED;
         }
 
-        double yawDirection = player.getEyeLocation().getYaw();
-        player.sendMessage("DIRECTION: " + yawDirection);
+        final Vector origin = player.getLocation().toVector();
 
-        Vector velocity = player.getVelocity();
-        double yawVelocity = (float)Math.toDegrees((Math.atan2(-velocity.getX(), velocity.getZ()) + (Math.PI * 2)) % (Math.PI * 2));
-        player.sendMessage("VELOCITY: " + velocity + " : " + yawVelocity);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
 
-        double yawDifference = Math.min(360 - Math.abs(yawDirection - yawVelocity), Math.abs(yawDirection - yawVelocity));
-        player.sendMessage("DIFFERENCE: " + yawDifference);
+            double yawDirection = (player.getEyeLocation().getYaw() + 360) % 360;
+            player.sendMessage("DIRECTION YAW: " + yawDirection + " : " + player.getLocation().getYaw());
 
-//        if (yawDifference < 45) {
-//            // Forward
-//            player.sendMessage("FORWARD: " + yawDifference);
-//        } else if (yawDifference <= 135) {
-//            player.sendMessage("SIDEWAYS: " + yawDifference);
-//        } else {
-//            player.sendMessage("BACKWARDS: " + yawDifference);
-//        }
+            Vector movement = player.getLocation().toVector().subtract(origin);
+            player.sendMessage("MOVEMENT: " + movement);
+            double yawMovement;
 
-        Vector rollVelocity = velocity.setY(0).normalize().setY(0.25).multiply(3);
-        player.setVelocity(rollVelocity);
+            if (movement.getX() != 0 && movement.getZ() != 0) {
+                yawMovement = (float)Math.toDegrees((Math.atan2(-movement.getX(), movement.getZ()) + (Math.PI * 2)) % (Math.PI * 2));
+            } else {
+                yawMovement = yawDirection;
+            }
+
+            player.sendMessage("MOVEMENT YAW: " + yawMovement);
+
+            double yawDifference = Math.min(360 - Math.abs(yawDirection - yawMovement), Math.abs(yawDirection - yawMovement));
+            player.sendMessage("DIFFERENCE YAW: " + yawDifference);
+
+            if (yawDifference < 45) {
+                player.sendMessage("FORWARD");
+            } else if (yawDifference <= 135) {
+                player.sendMessage("SIDEWAYS");
+            } else {
+                player.sendMessage("BACKWARDS");
+            }
+
+            double yawMovementRadians = Math.toRadians(yawMovement + 90);
+            Vector rollVelocity = new Vector(Math.cos(yawMovementRadians), 0.25, Math.sin(yawMovementRadians));
+
+            player.setVelocity(rollVelocity);
+
+        }, 1);
 
         return SkillResult.NORMAL;
     }

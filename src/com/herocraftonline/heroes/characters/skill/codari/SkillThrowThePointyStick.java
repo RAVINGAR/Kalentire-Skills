@@ -6,10 +6,8 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.RecastData;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Trident;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -51,6 +49,7 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
         Trident projectile = player.launchProjectile(Trident.class);
         projectile.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
+        projectile.setVelocity(projectile.getVelocity().multiply(0.5));
 
         double damage = 5;
 
@@ -61,15 +60,47 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private void onProjectileHit(ProjectileHitEvent e) {
+
         if (e.getEntity() instanceof Trident && e.getEntity().hasMetadata(PROJECTILE_METADATA_KEY)) {
 
+            Player player = (Player) e.getEntity().getShooter();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
+            player.sendMessage("----------------------------------------------------");
+            player.sendMessage("PROJECTILE HIT: isEntity=" + (e.getHitEntity() != null));
+            endRecast(hero);
+
+            if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
+
+                LivingEntity target = (LivingEntity) e.getHitEntity();
+                if (damageCheck(player, target)) {
+
+                    double tridentYaw = (e.getEntity().getLocation().getYaw() + 540) % 360;
+                    player.sendMessage("YAW TRIDENT: " + tridentYaw);
+                    double targetYaw = (target.getLocation().getYaw() + 360) % 360;
+                    player.sendMessage("YAW TARGET: " + targetYaw);
+
+                    double yawDifference = Math.min(360 - Math.abs(tridentYaw - targetYaw), Math.abs(tridentYaw - targetYaw));
+                    player.sendMessage("YAW DIFFERENCE: " + yawDifference);
+
+                    if (yawDifference <= 90) {
+                        player.sendMessage("LOOKING AT YOU");
+                    } else {
+                        player.sendMessage("LOOKING AWAY FROM YOU");
+                    }
+                }
+            }
+
+            if (e.getHitBlock() != null) {
+                e.getEntity().remove();
+            }
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void onWeaponDamage(WeaponDamageEvent e) {
         if (e.isProjectile() && e.getAttackerEntity() instanceof Trident && e.getAttackerEntity().hasMetadata(PROJECTILE_METADATA_KEY)) {
-
+            e.setCancelled(true);
         }
     }
 }
