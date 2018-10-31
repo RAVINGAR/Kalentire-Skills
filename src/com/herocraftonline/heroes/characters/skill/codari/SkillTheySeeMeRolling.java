@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.RecastData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,10 +53,14 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
             return SkillResult.CANCELLED;
         }
 
+        RecastData recastData = new RecastData("Roll");
+        recastData.setNeverReady();
+
         final Vector origin = player.getLocation().toVector();
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
 
+            //double yawDirection = (player.getEyeLocation().getYaw() + 360) % 360;
             double yawDirection = (player.getEyeLocation().getYaw() + 360) % 360;
             player.sendMessage("DIRECTION YAW: " + yawDirection + " : " + player.getLocation().getYaw());
 

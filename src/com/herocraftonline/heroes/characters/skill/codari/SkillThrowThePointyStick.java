@@ -6,17 +6,29 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.RecastData;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.Vector;
 
 public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
     private static final String PROJECTILE_METADATA_KEY = "thrown-pointy-stick";
+
+    private static final double DEFAULT_DAMAGE = 10;
+
+    private static final String FRONTAL_ARC_NODE = "frontal-arc";
+    private static final double DEFAULT_FRONTAL_ARC = 90;
+
+    private static final String THROW_VELOCITY_NODE = "throw-velocity";
+    private static final double DEFAULT_THROW_VELOCITY = 2.5;
 
     public SkillThrowThePointyStick(Heroes plugin) {
         super(plugin, "ThrowThePointyStick");
@@ -31,6 +43,18 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
     public void init() {
         super.init();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.DAMAGE.node(), DEFAULT_DAMAGE);
+        node.set(FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC);
+        node.set(THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY);
+
+        return node;
     }
 
     @Override
@@ -49,12 +73,18 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
         Trident projectile = player.launchProjectile(Trident.class);
         projectile.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
-        projectile.setVelocity(projectile.getVelocity().multiply(0.5));
 
-        double damage = 5;
+        double throwVelocity = SkillConfigManager.getUseSetting(hero, this, THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY, false);
+        if (throwVelocity < 1) {
+            throwVelocity = 1;
+        }
 
-        projectile.setMetadata(PROJECTILE_METADATA_KEY, new FixedMetadataValue(plugin, damage));
+        projectile.setVelocity(projectile.getVelocity().normalize().multiply(throwVelocity));
 
+        projectile.setMetadata(PROJECTILE_METADATA_KEY, new FixedMetadataValue(plugin, null));
+
+        broadcastExecuteText(hero);
+        
         return SkillResult.NORMAL;
     }
 
@@ -66,8 +96,6 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
             Player player = (Player) e.getEntity().getShooter();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            player.sendMessage("----------------------------------------------------");
-            player.sendMessage("PROJECTILE HIT: isEntity=" + (e.getHitEntity() != null));
             endRecast(hero);
 
             if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
@@ -75,15 +103,36 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
                 LivingEntity target = (LivingEntity) e.getHitEntity();
                 if (damageCheck(player, target)) {
 
-                    double tridentYaw = (e.getEntity().getLocation().getYaw() + 540) % 360;
-                    player.sendMessage("YAW TRIDENT: " + tridentYaw);
+                    double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, DEFAULT_DAMAGE, false);
+                    if (damage < 0) {
+                        damage = 0;
+                    }
+
+                    if (damage > 0) {
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, damage);
+                    }
+
                     double targetYaw = (target.getLocation().getYaw() + 360) % 360;
-                    player.sendMessage("YAW TARGET: " + targetYaw);
+
+                    Vector tridentVelocity = e.getEntity().getVelocity();
+                    double tridentYaw;
+                    if (tridentVelocity.getX() != 0 && tridentVelocity.getZ() != 0) {
+                        tridentYaw = (float)Math.toDegrees((Math.atan2(-tridentVelocity.getX(), tridentVelocity.getZ()) + (Math.PI * 2)) % (Math.PI * 2));
+                    } else {
+                        tridentYaw = targetYaw;
+                    }
 
                     double yawDifference = Math.min(360 - Math.abs(tridentYaw - targetYaw), Math.abs(tridentYaw - targetYaw));
-                    player.sendMessage("YAW DIFFERENCE: " + yawDifference);
 
-                    if (yawDifference <= 90) {
+                    double frontalArc = SkillConfigManager.getUseSetting(hero, this, FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC, false);
+                    if (frontalArc < 10) {
+                        frontalArc = 10;
+                    } else if (frontalArc > 180) {
+                        frontalArc = 180;
+                    }
+
+                    if (yawDifference >= (180 - (frontalArc / 2))) {
                         player.sendMessage("LOOKING AT YOU");
                     } else {
                         player.sendMessage("LOOKING AWAY FROM YOU");
