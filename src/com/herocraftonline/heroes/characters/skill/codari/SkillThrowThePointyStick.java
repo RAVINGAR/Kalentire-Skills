@@ -38,14 +38,17 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
     private static final String FRONTAL_ARC_NODE = "frontal-arc";
     private static final double DEFAULT_FRONTAL_ARC = 90;
 
-    private static final String SLOWNESS_STRENGTH_ON_REAR_HIT_NODE = "slowness-strength-on-rear-hit";
-    private static final int DEFAULT_SLOWNESS_STRENGTH_ON_REAR_HIT = 2;
+    private static final String REAR_HIT_SLOWNESS_DURATION_NODE = "rear-hit-slowness-duration";
+    private static final int DEFAULT_REAR_HIT_SLOWNESS_DURATION = 3000;
 
-    private static final String SLOWNESS_DURATION_ON_REAR_HIT_NODE = "slowness-duration-on-rear-hit";
-    private static final int DEFAULT_SLOWNESS_DURATION_ON_REAR_HIT = 3000;
+    private static final String REAR_HIT_SLOWNESS_STRENGTH_NODE = "rear-hit-slowness-strength";
+    private static final int DEFAULT_REAR_HIT_SLOWNESS_STRENGTH = 2;
 
-    private static final String COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE = "cooldown-reduction-percentage-on-rear-hit";
-    private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT = 0.5;
+    private static final String REAR_HIT_FLAT_COOLDOWN_REDUCTION_NODE = "rear-hit-flat-cooldown-reduction";
+    private static final int DEFAULT_REAR_HIT_FLAT_COOLDOWN_REDUCTION = 0;
+
+    private static final String REAR_HIT_PERCENT_COOLDOWN_REDUCTION_NODE = "rear-hit-percent-cooldown-reduction";
+    private static final double DEFAULT_REAR_HIT_PERCENT_COOLDOWN_REDUCTION = 0.5;
 
     private Set<UUID> rearHit = new HashSet<>();
 
@@ -73,9 +76,10 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
         node.set(REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE);
         node.set(THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY);
         node.set(FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC);
-        node.set(SLOWNESS_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_STRENGTH_ON_REAR_HIT);
-        node.set(SLOWNESS_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_DURATION_ON_REAR_HIT);
-        node.set(COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT);
+        node.set(REAR_HIT_SLOWNESS_DURATION_NODE, DEFAULT_REAR_HIT_SLOWNESS_DURATION);
+        node.set(REAR_HIT_SLOWNESS_STRENGTH_NODE, DEFAULT_REAR_HIT_SLOWNESS_STRENGTH);
+        node.set(REAR_HIT_FLAT_COOLDOWN_REDUCTION_NODE, DEFAULT_REAR_HIT_FLAT_COOLDOWN_REDUCTION);
+        node.set(REAR_HIT_PERCENT_COOLDOWN_REDUCTION_NODE, DEFAULT_REAR_HIT_PERCENT_COOLDOWN_REDUCTION);
 
         return node;
     }
@@ -158,11 +162,13 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
                         // Rear Hit
                         damage = SkillConfigManager.getUseSetting(hero, this, REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE, false);
 
-                        int slownessStrength = SkillConfigManager.getUseSetting(hero, this, SLOWNESS_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_STRENGTH_ON_REAR_HIT, false);
-                        int slownessDuration = SkillConfigManager.getUseSetting(hero, this, SLOWNESS_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_DURATION_ON_REAR_HIT, false);
-                        if (slownessStrength > 0 && slownessDuration > 0) {
+                        int slownessDuration = SkillConfigManager.getUseSetting(hero, this, REAR_HIT_SLOWNESS_DURATION_NODE, DEFAULT_REAR_HIT_SLOWNESS_DURATION, false);
+                        int slownessStrength = SkillConfigManager.getUseSetting(hero, this, REAR_HIT_SLOWNESS_STRENGTH_NODE, DEFAULT_REAR_HIT_SLOWNESS_STRENGTH, false);
+
+                        if (slownessDuration > 0 && slownessStrength > 0) {
                             SlownessEffect.addDuration(targetCharacter, this, player, slownessDuration, slownessStrength);
                         }
+
                         rearHit.add(player.getUniqueId());
                     }
 
@@ -183,17 +189,24 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
     @Override
     protected int alterAppliedCooldown(Hero hero, int cooldown) {
+
         if (rearHit.contains(hero.getPlayer().getUniqueId())) {
 
-            double cooldownReductionPercentage = SkillConfigManager.getUseSetting(hero, this,
-                    COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT, false);
-            if (cooldownReductionPercentage < 0) {
-                cooldownReductionPercentage = 0;
-            } else if (cooldownReductionPercentage > 1) {
-                cooldownReductionPercentage = 1;
+            int flatCooldownReduction = SkillConfigManager.getUseSetting(hero, this,
+                    REAR_HIT_FLAT_COOLDOWN_REDUCTION_NODE, DEFAULT_REAR_HIT_FLAT_COOLDOWN_REDUCTION, false);
+            if (flatCooldownReduction < 0) {
+                flatCooldownReduction = 0;
             }
 
-            return cooldown - (int)(cooldown * cooldownReductionPercentage);
+            double percentCooldownReduction = SkillConfigManager.getUseSetting(hero, this,
+                    REAR_HIT_PERCENT_COOLDOWN_REDUCTION_NODE, DEFAULT_REAR_HIT_PERCENT_COOLDOWN_REDUCTION, false);
+            if (percentCooldownReduction < 0) {
+                percentCooldownReduction = 0;
+            } else if (percentCooldownReduction > 1) {
+                percentCooldownReduction = 1;
+            }
+
+            return cooldown - (flatCooldownReduction + (int)(cooldown * percentCooldownReduction));
         } else {
             return cooldown;
         }

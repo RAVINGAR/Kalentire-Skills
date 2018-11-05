@@ -38,20 +38,23 @@ public class SkillPair extends ActiveSkill implements Listener {
     private static final String RIPOSTE_DAMAGE_NODE = "riposte-damage";
     private static final double DEFAULT_RIPOSTE_DAMAGE = 10;
 
-    private static final String RIPOSTE_BLEEDING_STACK_AMOUNT_NODE = "riposte-bleeding-stack-amount";
-    private static final int DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT = 0;
-
     private static final String RIPOSTE_BLEEDING_STACK_DURATION_NODE = "riposte-bleeding-stack-duration";
     private static final int DEFAULT_RIPOSTE_BLEEDING_STACK_DURATION = 3000;
 
-    private static final String RIPOSTE_SLOWNESS_STRENGTH_NODE = "riposte-slowness-strength";
-    private static final int DEFAULT_RIPOSTE_SLOWNESS_STRENGTH = 0;
+    private static final String RIPOSTE_BLEEDING_STACK_AMOUNT_NODE = "riposte-bleeding-stack-amount";
+    private static final int DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT = 0;
 
     private static final String RIPOSTE_SLOWNESS_DURATION_NODE = "riposte-slowness-duration";
     private static final int DEFAULT_RIPOSTE_SLOWNESS_DURATION = 3000;
 
-    private static final String COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE = "cooldown-reduction-percentage-on-riposte-hit";
-    private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT = 0.5;
+    private static final String RIPOSTE_SLOWNESS_STRENGTH_NODE = "riposte-slowness-strength";
+    private static final int DEFAULT_RIPOSTE_SLOWNESS_STRENGTH = 0;
+
+    private static final String RIPOSTE_HIT_FLAT_COOLDOWN_REDUCTION_NODE = "riposte-hit-flat-cooldown-reduction";
+    private static final int DEFAULT_RIPOSTE_HIT_FLAT_COOLDOWN_REDUCTION = 0;
+
+    private static final String RIPOSTE_HIT_PERCENT_COOLDOWN_REDUCTION_NODE = "riposte-hit-percent-cooldown-reduction";
+    private static final double DEFAULT_RIPOSTE_HIT_PERCENT_COOLDOWN_REDUCTION = 0.5;
 
     private final Set<UUID> damageBlockedSet = new HashSet<>();
     private final Set<UUID> riposteHit = new HashSet<>();
@@ -79,11 +82,12 @@ public class SkillPair extends ActiveSkill implements Listener {
         node.set(DAMAGE_IMMUNITY_DURATION_NODE, DEFAULT_DAMAGE_IMMUNITY_DURATION);
         node.set(RIPOSTE_RADIUS_NODE, DEFAULT_RIPOSTE_RADIUS);
         node.set(RIPOSTE_DAMAGE_NODE, DEFAULT_RIPOSTE_DAMAGE);
-        node.set(RIPOSTE_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT);
         node.set(RIPOSTE_BLEEDING_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_DURATION);
-        node.set(RIPOSTE_SLOWNESS_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOWNESS_STRENGTH);
+        node.set(RIPOSTE_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT);
         node.set(RIPOSTE_SLOWNESS_DURATION_NODE, DEFAULT_RIPOSTE_SLOWNESS_DURATION);
-        node.set(COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT);
+        node.set(RIPOSTE_SLOWNESS_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOWNESS_STRENGTH);
+        node.set(RIPOSTE_HIT_FLAT_COOLDOWN_REDUCTION_NODE, DEFAULT_RIPOSTE_HIT_FLAT_COOLDOWN_REDUCTION);
+        node.set(RIPOSTE_HIT_PERCENT_COOLDOWN_REDUCTION_NODE, DEFAULT_RIPOSTE_HIT_PERCENT_COOLDOWN_REDUCTION);
 
         return node;
     }
@@ -134,11 +138,11 @@ public class SkillPair extends ActiveSkill implements Listener {
 
                 double riposteDamage = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_DAMAGE_NODE, DEFAULT_RIPOSTE_DAMAGE, false);
 
-                int riposteBleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT, false);
                 int riposteBleedingStackDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEEDING_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_DURATION, false);
+                int riposteBleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT, false);
 
-                int riposteSlownessStrength = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOWNESS_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOWNESS_STRENGTH, false);
                 int riposteSlownessDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOWNESS_DURATION_NODE, DEFAULT_RIPOSTE_SLOWNESS_DURATION, false);
+                int riposteSlownessStrength = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOWNESS_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOWNESS_STRENGTH, false);
 
                 for (Entity entity : targets) {
 
@@ -150,11 +154,11 @@ public class SkillPair extends ActiveSkill implements Listener {
                         damageEntity(target, player, riposteDamage);
                     }
 
-                    if (riposteBleedingStackAmount > 0 && riposteBleedingStackDuration > 0) {
+                    if (riposteBleedingStackDuration > 0 && riposteBleedingStackAmount > 0) {
                         BleedingEffect.applyStacks(targetCharacter, this, player, riposteBleedingStackDuration, riposteBleedingStackAmount);
                     }
 
-                    if (riposteSlownessStrength > 0 && riposteSlownessDuration > 0) {
+                    if (riposteSlownessDuration > 0 && riposteSlownessStrength > 0) {
                         SlownessEffect.addDuration(targetCharacter, this, player, riposteSlownessDuration, riposteSlownessStrength);
                     }
                 }
@@ -168,17 +172,24 @@ public class SkillPair extends ActiveSkill implements Listener {
 
     @Override
     protected int alterAppliedCooldown(Hero hero, int cooldown) {
+
         if (riposteHit.contains(hero.getPlayer().getUniqueId())) {
 
-            double cooldownReductionPercentage = SkillConfigManager.getUseSetting(hero, this,
-                    COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT, false);
-            if (cooldownReductionPercentage < 0) {
-                cooldownReductionPercentage = 0;
-            } else if (cooldownReductionPercentage > 1) {
-                cooldownReductionPercentage = 1;
+            int flatCooldownReduction = SkillConfigManager.getUseSetting(hero, this,
+                    RIPOSTE_HIT_FLAT_COOLDOWN_REDUCTION_NODE, DEFAULT_RIPOSTE_HIT_FLAT_COOLDOWN_REDUCTION, false);
+            if (flatCooldownReduction < 0) {
+                flatCooldownReduction = 0;
             }
 
-            return cooldown - (int)(cooldown * cooldownReductionPercentage);
+            double percentCooldownReduction = SkillConfigManager.getUseSetting(hero, this,
+                    RIPOSTE_HIT_PERCENT_COOLDOWN_REDUCTION_NODE, DEFAULT_RIPOSTE_HIT_PERCENT_COOLDOWN_REDUCTION, false);
+            if (percentCooldownReduction < 0) {
+                percentCooldownReduction = 0;
+            } else if (percentCooldownReduction > 1) {
+                percentCooldownReduction = 1;
+            }
+
+            return cooldown - (flatCooldownReduction + (int)(cooldown * percentCooldownReduction));
         } else {
             return cooldown;
         }
