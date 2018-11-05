@@ -157,6 +157,8 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
 
     private void sidewaysRecast(Hero hero) {
 
+
+        endRecast(hero);
     }
 
     private void backwardsRecast(Hero hero) {

@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.RecastData;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -39,11 +38,11 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
     private static final String FRONTAL_ARC_NODE = "frontal-arc";
     private static final double DEFAULT_FRONTAL_ARC = 90;
 
-    private static final String SLOW_STRENGTH_ON_REAR_HIT_NODE = "slow-strength-on-rear-hit";
-    private static final int DEFAULT_SLOW_STRENGTH_ON_REAR_HIT = 2;
+    private static final String SLOWNESS_STRENGTH_ON_REAR_HIT_NODE = "slowness-strength-on-rear-hit";
+    private static final int DEFAULT_SLOWNESS_STRENGTH_ON_REAR_HIT = 2;
 
-    private static final String SLOW_DURATION_ON_REAR_HIT_NODE = "slow-duration-on-rear-hit";
-    private static final int DEFAULT_SLOW_DURATION_ON_REAR_HIT = 3000;
+    private static final String SLOWNESS_DURATION_ON_REAR_HIT_NODE = "slowness-duration-on-rear-hit";
+    private static final int DEFAULT_SLOWNESS_DURATION_ON_REAR_HIT = 3000;
 
     private static final String COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE = "cooldown-reduction-percentage-on-rear-hit";
     private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT = 0.5;
@@ -74,8 +73,8 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
         node.set(REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE);
         node.set(THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY);
         node.set(FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC);
-        node.set(SLOW_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOW_STRENGTH_ON_REAR_HIT);
-        node.set(SLOW_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOW_DURATION_ON_REAR_HIT);
+        node.set(SLOWNESS_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_STRENGTH_ON_REAR_HIT);
+        node.set(SLOWNESS_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_DURATION_ON_REAR_HIT);
         node.set(COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT);
 
         return node;
@@ -159,10 +158,10 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
                         // Rear Hit
                         damage = SkillConfigManager.getUseSetting(hero, this, REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE, false);
 
-                        int slowStrength = SkillConfigManager.getUseSetting(hero, this, SLOW_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOW_STRENGTH_ON_REAR_HIT, false);
-                        int slowDuration = SkillConfigManager.getUseSetting(hero, this, SLOW_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOW_DURATION_ON_REAR_HIT, false);
-                        if (slowStrength > 0 && slowDuration > 0) {
-                            SlownessEffect.addDuration(targetCharacter, this, player, slowDuration, slowStrength);
+                        int slownessStrength = SkillConfigManager.getUseSetting(hero, this, SLOWNESS_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_STRENGTH_ON_REAR_HIT, false);
+                        int slownessDuration = SkillConfigManager.getUseSetting(hero, this, SLOWNESS_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOWNESS_DURATION_ON_REAR_HIT, false);
+                        if (slownessStrength > 0 && slownessDuration > 0) {
+                            SlownessEffect.addDuration(targetCharacter, this, player, slownessDuration, slownessStrength);
                         }
                         rearHit.add(player.getUniqueId());
                     }

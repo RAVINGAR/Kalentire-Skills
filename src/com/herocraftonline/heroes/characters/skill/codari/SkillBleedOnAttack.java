@@ -7,15 +7,12 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
-import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import joptsimple.internal.Strings;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -36,14 +33,14 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
     // TODO Find a unified place for this for multipul skills
     private static final EnumSet<Material> shovels = EnumSet.of(Material.WOODEN_SHOVEL, Material.STONE_SHOVEL, Material.IRON_SHOVEL, Material.GOLDEN_SHOVEL, Material.DIAMOND_SHOVEL);
 
-    private static final String BLEED_FREQUENCY_NODE = "bleed-frequency";
-    private static final int DEFAULT_BLEED_FREQUENCY = 2;
+    private static final String BLEEDING_FREQUENCY_NODE = "bleeding-frequency";
+    private static final int DEFAULT_BLEEDING_FREQUENCY = 2;
 
-    private static final String BLEED_STACK_AMOUNT_NODE = "bleed-stack-amount";
-    private static final int DEFAULT_BLEED_STACK_AMOUNT = 1;
+    private static final String BLEEDING_STACK_AMOUNT_NODE = "bleeding-stack-amount";
+    private static final int DEFAULT_BLEEDING_STACK_AMOUNT = 1;
 
-    private static final String BLEED_STACK_DURATION_NODE = "bleed-stack-duration";
-    private static final int DEFAULT_BLEED_STACK_DURATION = 2000;
+    private static final String BLEEDING_STACK_DURATION_NODE = "bleeding-stack-duration";
+    private static final int DEFAULT_BLEEDING_STACK_DURATION = 2000;
 
     private final Map<UUID, Integer> playerAttackCounts;
 
@@ -65,9 +62,9 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(BLEED_FREQUENCY_NODE, DEFAULT_BLEED_FREQUENCY);
-        node.set(BLEED_STACK_AMOUNT_NODE, DEFAULT_BLEED_STACK_AMOUNT);
-        node.set(BLEED_STACK_DURATION_NODE, DEFAULT_BLEED_STACK_DURATION);
+        node.set(BLEEDING_FREQUENCY_NODE, DEFAULT_BLEEDING_FREQUENCY);
+        node.set(BLEEDING_STACK_AMOUNT_NODE, DEFAULT_BLEEDING_STACK_AMOUNT);
+        node.set(BLEEDING_STACK_DURATION_NODE, DEFAULT_BLEEDING_STACK_DURATION);
 
         return node;
     }
@@ -75,39 +72,39 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
     @Override
     public String getDescription(Hero hero) {
 
-        int bleedFrequency = SkillConfigManager.getUseSetting(hero, this, BLEED_FREQUENCY_NODE, DEFAULT_BLEED_FREQUENCY, true);
-        if (bleedFrequency < 1) {
-            bleedFrequency = 1;
+        int bleedingFrequency = SkillConfigManager.getUseSetting(hero, this, BLEEDING_FREQUENCY_NODE, DEFAULT_BLEEDING_FREQUENCY, true);
+        if (bleedingFrequency < 1) {
+            bleedingFrequency = 1;
         }
 
-        int bleedStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_AMOUNT_NODE, DEFAULT_BLEED_STACK_AMOUNT, false);
-        if (bleedStackAmount < 1) {
-            bleedStackAmount = 1;
+        int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_AMOUNT_NODE, DEFAULT_BLEEDING_STACK_AMOUNT, false);
+        if (bleedingStackAmount < 1) {
+            bleedingStackAmount = 1;
         }
 
-        int bleedStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_DURATION_NODE, DEFAULT_BLEED_STACK_DURATION, false);
-        if (bleedStackDuration < 0) {
-            bleedStackDuration = 0;
+        int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_DURATION_NODE, DEFAULT_BLEEDING_STACK_DURATION, false);
+        if (bleedingStackDuration < 0) {
+            bleedingStackDuration = 0;
         }
 
         String bleedFrequencyParam;
-        switch (bleedFrequency) {
+        switch (bleedingFrequency) {
             case 1:
                 bleedFrequencyParam = Strings.EMPTY;
                 break;
             case 2:
-                bleedFrequencyParam = bleedFrequency + "nd ";
+                bleedFrequencyParam = bleedingFrequency + "nd ";
                 break;
             case 3:
-                bleedFrequencyParam = bleedFrequency + "rd ";
+                bleedFrequencyParam = bleedingFrequency + "rd ";
                 break;
             default:
-                bleedFrequencyParam = bleedFrequency + "th ";
+                bleedFrequencyParam = bleedingFrequency + "th ";
                 break;
         }
 
-        String bleedStackAmountParam = Integer.toString(bleedStackAmount);
-        String bleedStackDurationParam = Util.smallDecFormat.format(bleedStackDuration / 1000.0);
+        String bleedStackAmountParam = Integer.toString(bleedingStackAmount);
+        String bleedStackDurationParam = Util.smallDecFormat.format(bleedingStackDuration / 1000.0);
 
 
         return Messaging.parameterizeMessage(getDescription(), bleedStackAmountParam, bleedStackDurationParam, bleedFrequencyParam);
@@ -151,26 +148,26 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                         attackCount++;
                     }
 
-                    int bleedApplyFrequency = SkillConfigManager.getUseSetting(hero, this, BLEED_FREQUENCY_NODE, DEFAULT_BLEED_FREQUENCY, true);
-                    if (bleedApplyFrequency < 1) {
-                        bleedApplyFrequency = 1;
+                    int bleedingApplyFrequency = SkillConfigManager.getUseSetting(hero, this, BLEEDING_FREQUENCY_NODE, DEFAULT_BLEEDING_FREQUENCY, true);
+                    if (bleedingApplyFrequency < 1) {
+                        bleedingApplyFrequency = 1;
                     }
 
-                    if (attackCount % bleedApplyFrequency == 0) {
+                    if (attackCount % bleedingApplyFrequency == 0) {
 
                         CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
-                        int bleedStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_AMOUNT_NODE, DEFAULT_BLEED_STACK_AMOUNT, false);
-                        if (bleedStackAmount < 1) {
-                            bleedStackAmount = 1;
+                        int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_AMOUNT_NODE, DEFAULT_BLEEDING_STACK_AMOUNT, false);
+                        if (bleedingStackAmount < 1) {
+                            bleedingStackAmount = 1;
                         }
 
-                        int bleedStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEED_STACK_DURATION_NODE, DEFAULT_BLEED_STACK_DURATION, false);
-                        if (bleedStackDuration < 0) {
-                            bleedStackDuration = 0;
+                        int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_DURATION_NODE, DEFAULT_BLEEDING_STACK_DURATION, false);
+                        if (bleedingStackDuration < 0) {
+                            bleedingStackDuration = 0;
                         }
 
-                        BleedingEffect.applyStacks(targetCharacter, this, player, bleedStackDuration, bleedStackAmount);
+                        BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
                     }
 
                     return attackCount;

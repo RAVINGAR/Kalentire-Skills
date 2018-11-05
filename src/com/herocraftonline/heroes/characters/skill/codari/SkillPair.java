@@ -4,12 +4,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
 import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.collision.Sphere;
 import org.bukkit.*;
@@ -27,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class SkillPair extends ActiveSkill implements Listener {
 
@@ -42,17 +38,17 @@ public class SkillPair extends ActiveSkill implements Listener {
     private static final String RIPOSTE_DAMAGE_NODE = "riposte-damage";
     private static final double DEFAULT_RIPOSTE_DAMAGE = 10;
 
-    private static final String RIPOSTE_BLEED_STACK_AMOUNT_NODE = "riposte-bleed-stack-amount";
-    private static final int DEFAULT_RIPOSTE_BLEED_STACK_AMOUNT = 0;
+    private static final String RIPOSTE_BLEEDING_STACK_AMOUNT_NODE = "riposte-bleeding-stack-amount";
+    private static final int DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT = 0;
 
-    private static final String RIPOSTE_BLEED_STACK_DURATION_NODE = "riposte-bleed-stack-duration";
-    private static final int DEFAULT_RIPOSTE_BLEED_STACK_DURATION = 3000;
+    private static final String RIPOSTE_BLEEDING_STACK_DURATION_NODE = "riposte-bleeding-stack-duration";
+    private static final int DEFAULT_RIPOSTE_BLEEDING_STACK_DURATION = 3000;
 
-    private static final String RIPOSTE_SLOW_STRENGTH_NODE = "riposte-slow-strength";
-    private static final int DEFAULT_RIPOSTE_SLOW_STRENGTH = 0;
+    private static final String RIPOSTE_SLOWNESS_STRENGTH_NODE = "riposte-slowness-strength";
+    private static final int DEFAULT_RIPOSTE_SLOWNESS_STRENGTH = 0;
 
-    private static final String RIPOSTE_SLOW_DURATION_NODE = "riposte-slow-duration";
-    private static final int DEFAULT_RIPOSTE_SLOW_DURATION = 3000;
+    private static final String RIPOSTE_SLOWNESS_DURATION_NODE = "riposte-slowness-duration";
+    private static final int DEFAULT_RIPOSTE_SLOWNESS_DURATION = 3000;
 
     private static final String COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE = "cooldown-reduction-percentage-on-riposte-hit";
     private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT = 0.5;
@@ -83,10 +79,10 @@ public class SkillPair extends ActiveSkill implements Listener {
         node.set(DAMAGE_IMMUNITY_DURATION_NODE, DEFAULT_DAMAGE_IMMUNITY_DURATION);
         node.set(RIPOSTE_RADIUS_NODE, DEFAULT_RIPOSTE_RADIUS);
         node.set(RIPOSTE_DAMAGE_NODE, DEFAULT_RIPOSTE_DAMAGE);
-        node.set(RIPOSTE_BLEED_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEED_STACK_AMOUNT);
-        node.set(RIPOSTE_BLEED_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEED_STACK_DURATION);
-        node.set(RIPOSTE_SLOW_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOW_STRENGTH);
-        node.set(RIPOSTE_SLOW_DURATION_NODE, DEFAULT_RIPOSTE_SLOW_DURATION);
+        node.set(RIPOSTE_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT);
+        node.set(RIPOSTE_BLEEDING_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_DURATION);
+        node.set(RIPOSTE_SLOWNESS_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOWNESS_STRENGTH);
+        node.set(RIPOSTE_SLOWNESS_DURATION_NODE, DEFAULT_RIPOSTE_SLOWNESS_DURATION);
         node.set(COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT);
 
         return node;
@@ -138,11 +134,11 @@ public class SkillPair extends ActiveSkill implements Listener {
 
                 double riposteDamage = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_DAMAGE_NODE, DEFAULT_RIPOSTE_DAMAGE, false);
 
-                int riposteBleedStackAmount = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEED_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEED_STACK_AMOUNT, false);
-                int riposteBleedStackDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEED_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEED_STACK_DURATION, false);
+                int riposteBleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_AMOUNT, false);
+                int riposteBleedingStackDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_BLEEDING_STACK_DURATION_NODE, DEFAULT_RIPOSTE_BLEEDING_STACK_DURATION, false);
 
-                int riposteSlowStrength = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOW_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOW_STRENGTH, false);
-                int riposteSlowDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOW_DURATION_NODE, DEFAULT_RIPOSTE_SLOW_DURATION, false);
+                int riposteSlownessStrength = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOWNESS_STRENGTH_NODE, DEFAULT_RIPOSTE_SLOWNESS_STRENGTH, false);
+                int riposteSlownessDuration = SkillConfigManager.getUseSetting(hero, this, RIPOSTE_SLOWNESS_DURATION_NODE, DEFAULT_RIPOSTE_SLOWNESS_DURATION, false);
 
                 for (Entity entity : targets) {
 
@@ -154,12 +150,12 @@ public class SkillPair extends ActiveSkill implements Listener {
                         damageEntity(target, player, riposteDamage);
                     }
 
-                    if (riposteBleedStackAmount > 0 && riposteBleedStackDuration > 0) {
-                        BleedingEffect.applyStacks(targetCharacter, this, player, riposteBleedStackDuration, riposteBleedStackAmount);
+                    if (riposteBleedingStackAmount > 0 && riposteBleedingStackDuration > 0) {
+                        BleedingEffect.applyStacks(targetCharacter, this, player, riposteBleedingStackDuration, riposteBleedingStackAmount);
                     }
 
-                    if (riposteSlowStrength > 0 && riposteSlowDuration > 0) {
-                        SlownessEffect.addDuration(targetCharacter, this, player, riposteSlowDuration, riposteSlowStrength);
+                    if (riposteSlownessStrength > 0 && riposteSlownessDuration > 0) {
+                        SlownessEffect.addDuration(targetCharacter, this, player, riposteSlownessDuration, riposteSlownessStrength);
                     }
                 }
 

@@ -4,16 +4,13 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import joptsimple.internal.Strings;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -30,11 +27,11 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
     // TODO Find a unified place for this for multipul skills
     private static final EnumSet<Material> shovels = EnumSet.of(Material.WOODEN_SHOVEL, Material.STONE_SHOVEL, Material.IRON_SHOVEL, Material.GOLDEN_SHOVEL, Material.DIAMOND_SHOVEL);
 
-    private static final String FLAT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE = "flat-damage-increase-per-bleed-stack";
-    private static final double DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEED_STACK = 2.0;
+    private static final String FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE = "flat-damage-increase-per-bleeding-stack";
+    private static final double DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK = 2.0;
 
-    private static final String PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE = "percent-damage-increase-per-bleed-stack";
-    private static final double DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK = 0.02;
+    private static final String PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE = "percent-damage-increase-per-bleeding-stack";
+    private static final double DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK = 0.02;
 
     public SkillExtraDamageToBleedingEnemies(Heroes plugin) {
         super(plugin, "ExtraDamageToBleedingEnemies");
@@ -52,8 +49,8 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(FLAT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEED_STACK);
-        node.set(PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK);
+        node.set(FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK);
+        node.set(PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK);
 
         return node;
     }
@@ -61,20 +58,20 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
     @Override
     public String getDescription(Hero hero) {
 
-        double flatDamageIncreasePerBleedStack = SkillConfigManager.getUseSetting(hero, this,
-                FLAT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEED_STACK, false);
-        if (flatDamageIncreasePerBleedStack < 0) {
-            flatDamageIncreasePerBleedStack = 0;
+        double flatDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
+                FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
+        if (flatDamageIncreasePerBleedingStack < 0) {
+            flatDamageIncreasePerBleedingStack = 0;
         }
 
-        double percentDamageIncreasePerBleedStack = SkillConfigManager.getUseSetting(hero, this,
-                PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK, false);
-        if (percentDamageIncreasePerBleedStack < 0) {
-            percentDamageIncreasePerBleedStack = 0;
+        double percentDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
+                PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
+        if (percentDamageIncreasePerBleedingStack < 0) {
+            percentDamageIncreasePerBleedingStack = 0;
         }
 
-        String flatDamageIncreasePerBleedStackParam = flatDamageIncreasePerBleedStack > 0 ? " +" + Util.smallDecFormat.format(flatDamageIncreasePerBleedStack) : Strings.EMPTY;
-        String percentDamageIncreasePerBleedStackParam = Util.smallDecFormat.format(percentDamageIncreasePerBleedStack * 100);
+        String flatDamageIncreasePerBleedStackParam = flatDamageIncreasePerBleedingStack > 0 ? " +" + Util.smallDecFormat.format(flatDamageIncreasePerBleedingStack) : Strings.EMPTY;
+        String percentDamageIncreasePerBleedStackParam = Util.smallDecFormat.format(percentDamageIncreasePerBleedingStack * 100);
 
         return Messaging.parameterizeMessage(getDescription(), percentDamageIncreasePerBleedStackParam, flatDamageIncreasePerBleedStackParam);
     }
@@ -96,20 +93,20 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
                 BleedingEffect bleedEffect = BleedingEffect.get(hero);
                 if (bleedEffect != null) {
 
-                    double flatDamageIncreasePerBleedStack = SkillConfigManager.getUseSetting(hero, this,
-                            FLAT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEED_STACK, false);
-                    if (flatDamageIncreasePerBleedStack < 0) {
-                        flatDamageIncreasePerBleedStack = 0;
+                    double flatDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
+                            FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
+                    if (flatDamageIncreasePerBleedingStack < 0) {
+                        flatDamageIncreasePerBleedingStack = 0;
                     }
 
-                    double percentDamageIncreasePerBleedStack = SkillConfigManager.getUseSetting(hero, this,
-                            PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEED_STACK, false);
-                    if (percentDamageIncreasePerBleedStack < 0) {
-                        percentDamageIncreasePerBleedStack = 0;
+                    double percentDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
+                            PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
+                    if (percentDamageIncreasePerBleedingStack < 0) {
+                        percentDamageIncreasePerBleedingStack = 0;
                     }
 
-                    double flatDamageIncrease = flatDamageIncreasePerBleedStack * bleedEffect.getStackCount();
-                    double percentDamageIncrease = percentDamageIncreasePerBleedStack * bleedEffect.getStackCount();
+                    double flatDamageIncrease = flatDamageIncreasePerBleedingStack * bleedEffect.getStackCount();
+                    double percentDamageIncrease = percentDamageIncreasePerBleedingStack * bleedEffect.getStackCount();
 
                     double extraDamage = flatDamageIncrease + (e.getDamage() * percentDamageIncrease);
                     e.setDamage((e.getDamage() + extraDamage));

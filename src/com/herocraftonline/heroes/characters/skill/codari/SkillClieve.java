@@ -1,14 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.codari;
 
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseWeaponImbue;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -25,8 +22,8 @@ public class SkillClieve extends SkillBaseWeaponImbue {
     private static final String BASE_EXECUTE_HEALTH_PERCENTAGE_NODE = "base-execute-health-percentage";
     private static final double DEFAULT_BASE_EXECUTE_HEALTH_PERCENTAGE = 0.05;
 
-    private static final String ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEED_STACK_NODE = "added-execute-health-percentage-per-bleed-stack";
-    private static final double DEFAULT_ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEED_STACK = 0.02;
+    private static final String ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEEDING_STACK_NODE = "added-execute-health-percentage-per-bleeding-stack";
+    private static final double DEFAULT_ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEEDING_STACK = 0.02;
 
     public SkillClieve(Heroes plugin) {
         super(plugin, "Clieve");
@@ -43,7 +40,7 @@ public class SkillClieve extends SkillBaseWeaponImbue {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(BASE_EXECUTE_HEALTH_PERCENTAGE_NODE, DEFAULT_BASE_EXECUTE_HEALTH_PERCENTAGE);
-        node.set(ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEED_STACK_NODE, DEFAULT_ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEED_STACK);
+        node.set(ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEEDING_STACK_NODE, DEFAULT_ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEEDING_STACK);
 
         return node;
     }
@@ -72,13 +69,13 @@ public class SkillClieve extends SkillBaseWeaponImbue {
                 basePercentage = 0;
             }
 
-            double addedPercentageBerBleedStack = SkillConfigManager.getUseSetting(hero, this,
-                    ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEED_STACK_NODE, DEFAULT_ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEED_STACK, false);
-            if (addedPercentageBerBleedStack < 0) {
-                addedPercentageBerBleedStack = 0;
+            double addedPercentageBerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
+                    ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEEDING_STACK_NODE, DEFAULT_ADDED_EXECUTE_HEALTH_PERCENTAGE_PER_BLEEDING_STACK, false);
+            if (addedPercentageBerBleedingStack < 0) {
+                addedPercentageBerBleedingStack = 0;
             }
 
-            double healthPercentageResult = basePercentage + (addedPercentageBerBleedStack + BleedingEffect.getStackCount(targetCharacter));
+            double healthPercentageResult = basePercentage + (addedPercentageBerBleedingStack + BleedingEffect.getStackCount(targetCharacter));
 
             if (target.getHealth() / target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() <= healthPercentageResult) {
                 // Execute
