@@ -5,7 +5,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.standard.StandardBleedEffect;
+import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -93,7 +93,7 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
                 LivingEntity target = (LivingEntity) e.getEntity();
                 CharacterTemplate targetCharacter = Heroes.getInstance().getCharacterManager().getCharacter(target);
 
-                StandardBleedEffect bleedEffect = StandardBleedEffect.get(hero);
+                BleedingEffect bleedEffect = BleedingEffect.get(hero);
                 if (bleedEffect != null) {
 
                     double flatDamageIncreasePerBleedStack = SkillConfigManager.getUseSetting(hero, this,

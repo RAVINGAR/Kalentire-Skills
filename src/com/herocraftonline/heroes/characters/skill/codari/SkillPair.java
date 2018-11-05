@@ -6,8 +6,8 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.standard.StandardBleedEffect;
-import com.herocraftonline.heroes.characters.effects.standard.StandardSlowEffect;
+import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
+import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
@@ -155,11 +155,11 @@ public class SkillPair extends ActiveSkill implements Listener {
                     }
 
                     if (riposteBleedStackAmount > 0 && riposteBleedStackDuration > 0) {
-                        StandardBleedEffect.applyStacks(targetCharacter, this, player, riposteBleedStackDuration, riposteBleedStackAmount);
+                        BleedingEffect.applyStacks(targetCharacter, this, player, riposteBleedStackDuration, riposteBleedStackAmount);
                     }
 
                     if (riposteSlowStrength > 0 && riposteSlowDuration > 0) {
-                        StandardSlowEffect.addDuration(targetCharacter, this, player, riposteSlowDuration, riposteSlowStrength);
+                        SlownessEffect.addDuration(targetCharacter, this, player, riposteSlowDuration, riposteSlowStrength);
                     }
                 }
 

@@ -5,7 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.standard.StandardBleedEffect;
+import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -78,7 +78,7 @@ public class SkillClieve extends SkillBaseWeaponImbue {
                 addedPercentageBerBleedStack = 0;
             }
 
-            double healthPercentageResult = basePercentage + (addedPercentageBerBleedStack + targetCharacter.getEffectStackCount(StandardBleedEffect.NAME));
+            double healthPercentageResult = basePercentage + (addedPercentageBerBleedStack + BleedingEffect.getStackCount(targetCharacter));
 
             if (target.getHealth() / target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() <= healthPercentageResult) {
                 // Execute

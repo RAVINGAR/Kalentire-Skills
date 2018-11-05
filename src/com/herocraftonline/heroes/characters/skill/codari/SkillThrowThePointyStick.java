@@ -5,7 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.standard.StandardSlowEffect;
+import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.RecastData;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -162,7 +162,7 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
                         int slowStrength = SkillConfigManager.getUseSetting(hero, this, SLOW_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOW_STRENGTH_ON_REAR_HIT, false);
                         int slowDuration = SkillConfigManager.getUseSetting(hero, this, SLOW_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOW_DURATION_ON_REAR_HIT, false);
                         if (slowStrength > 0 && slowDuration > 0) {
-                            StandardSlowEffect.addDuration(targetCharacter, this, player, slowDuration, slowStrength);
+                            SlownessEffect.addDuration(targetCharacter, this, player, slowDuration, slowStrength);
                         }
                         rearHit.add(player.getUniqueId());
                     }
