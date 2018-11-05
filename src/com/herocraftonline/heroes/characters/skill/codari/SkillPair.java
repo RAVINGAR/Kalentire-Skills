@@ -55,7 +55,7 @@ public class SkillPair extends ActiveSkill implements Listener {
     private static final int DEFAULT_RIPOSTE_SLOW_DURATION = 3000;
 
     private static final String COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE = "cooldown-reduction-percentage-on-riposte-hit";
-    private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT = 0.8;
+    private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT = 0.5;
 
     private final Set<UUID> damageBlockedSet = new HashSet<>();
     private final Set<UUID> riposteHit = new HashSet<>();
@@ -172,9 +172,16 @@ public class SkillPair extends ActiveSkill implements Listener {
 
     @Override
     protected int alterAppliedCooldown(Hero hero, int cooldown) {
-        if (riposteHit.remove(hero.getPlayer().getUniqueId())) {
+        if (riposteHit.contains(hero.getPlayer().getUniqueId())) {
+
             double cooldownReductionPercentage = SkillConfigManager.getUseSetting(hero, this,
                     COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_RIPOSTE_HIT, false);
+            if (cooldownReductionPercentage < 0) {
+                cooldownReductionPercentage = 0;
+            } else if (cooldownReductionPercentage > 1) {
+                cooldownReductionPercentage = 1;
+            }
+
             return cooldown - (int)(cooldown * cooldownReductionPercentage);
         } else {
             return cooldown;
@@ -182,7 +189,7 @@ public class SkillPair extends ActiveSkill implements Listener {
     }
 
     @Override
-    protected void onRecastEnd(Hero hero, RecastData data) {
+    protected void finalizeSkillUse(Hero hero) {
         damageBlockedSet.remove(hero.getPlayer().getUniqueId());
     }
 

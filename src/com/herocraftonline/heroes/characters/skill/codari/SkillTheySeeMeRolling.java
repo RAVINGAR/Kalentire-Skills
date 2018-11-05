@@ -21,8 +21,6 @@ import java.util.UUID;
 
 public class SkillTheySeeMeRolling extends ActiveSkill {
 
-    private Map<UUID, Vector> playerMovement = new HashMap<>();
-
     public SkillTheySeeMeRolling(Heroes plugin) {
         super(plugin, "TheySeeMeRolling");
         setDescription("Stuff");
@@ -60,31 +58,27 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
 
-            //double yawDirection = (player.getEyeLocation().getYaw() + 360) % 360;
             double yawDirection = (player.getEyeLocation().getYaw() + 360) % 360;
-            player.sendMessage("DIRECTION YAW: " + yawDirection + " : " + player.getLocation().getYaw());
 
             Vector movement = player.getLocation().toVector().subtract(origin);
-            player.sendMessage("MOVEMENT: " + movement);
             double yawMovement;
-
             if (movement.getX() != 0 && movement.getZ() != 0) {
                 yawMovement = (float)Math.toDegrees((Math.atan2(-movement.getX(), movement.getZ()) + (Math.PI * 2)) % (Math.PI * 2));
             } else {
                 yawMovement = yawDirection;
             }
 
-            player.sendMessage("MOVEMENT YAW: " + yawMovement);
-
             double yawDifference = Math.min(360 - Math.abs(yawDirection - yawMovement), Math.abs(yawDirection - yawMovement));
-            player.sendMessage("DIFFERENCE YAW: " + yawDifference);
 
-            if (yawDifference < 45) {
-                player.sendMessage("FORWARD");
-            } else if (yawDifference <= 135) {
-                player.sendMessage("SIDEWAYS");
+            if (yawDifference <= 45) {
+                // Forward
+
+            } else if (yawDifference < 135) {
+                // Sideways
+
             } else {
-                player.sendMessage("BACKWARDS");
+                // Backwards
+
             }
 
             double yawMovementRadians = Math.toRadians(yawMovement + 90);
@@ -95,5 +89,10 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
         }, 1);
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    protected void recast(Hero hero, RecastData data) {
+
     }
 }

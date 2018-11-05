@@ -81,7 +81,11 @@ public class SkillClieve extends SkillBaseWeaponImbue {
             double healthPercentageResult = basePercentage + (addedPercentageBerBleedStack + targetCharacter.getEffectStackCount(StandardBleedEffect.NAME));
 
             if (target.getHealth() / target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() <= healthPercentageResult) {
-                hero.getPlayer().sendMessage("YOU EXECUTED");
+                // Execute
+
+            } else {
+                // Non Execute
+
             }
         }
     }

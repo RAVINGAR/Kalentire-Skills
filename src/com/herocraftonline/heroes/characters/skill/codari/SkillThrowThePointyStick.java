@@ -27,7 +27,11 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
     private static final String PROJECTILE_METADATA_KEY = "thrown-pointy-stick";
 
-    private static final double DEFAULT_DAMAGE = 10;
+    private static final String FRONTAL_DAMAGE_NODE = "frontal-damage";
+    private static final double DEFAULT_FRONTAL_DAMAGE = 10;
+
+    private static final String REAR_DAMAGE_NODE = "rear-damage";
+    private static final double DEFAULT_REAR_DAMAGE = 10;
 
     private static final String THROW_VELOCITY_NODE = "throw-velocity";
     private static final double DEFAULT_THROW_VELOCITY = 2.5;
@@ -66,7 +70,8 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.DAMAGE.node(), DEFAULT_DAMAGE);
+        node.set(FRONTAL_DAMAGE_NODE, DEFAULT_FRONTAL_DAMAGE);
+        node.set(REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE);
         node.set(THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY);
         node.set(FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC);
         node.set(SLOW_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOW_STRENGTH_ON_REAR_HIT);
@@ -122,12 +127,6 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
                     CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
-                    double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, DEFAULT_DAMAGE, false);
-                    if (damage > 0) {
-                        addSpellTarget(target, hero);
-                        damageEntity(target, player, damage);
-                    }
-
                     double targetYaw = (target.getLocation().getYaw() + 360) % 360;
 
                     Vector tridentVelocity = e.getEntity().getVelocity();
@@ -147,19 +146,30 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
                         frontalArc = 180;
                     }
 
+                    double damage;
+
                     if (yawDifference >= (180 - (frontalArc / 2))) {
                         // Frontal Hit
+                        damage = SkillConfigManager.getUseSetting(hero, this, FRONTAL_DAMAGE_NODE, DEFAULT_FRONTAL_DAMAGE, false);
+
                         if (targetCharacter instanceof Hero) {
                             ((Hero) targetCharacter).interruptDelayedSkill();
                         }
                     } else {
                         // Rear Hit
+                        damage = SkillConfigManager.getUseSetting(hero, this, REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE, false);
+
                         int slowStrength = SkillConfigManager.getUseSetting(hero, this, SLOW_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOW_STRENGTH_ON_REAR_HIT, false);
                         int slowDuration = SkillConfigManager.getUseSetting(hero, this, SLOW_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOW_DURATION_ON_REAR_HIT, false);
                         if (slowStrength > 0 && slowDuration > 0) {
                             StandardSlowEffect.addDuration(targetCharacter, this, player, slowDuration, slowStrength);
                         }
                         rearHit.add(player.getUniqueId());
+                    }
+
+                    if (damage > 0) {
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, damage);
                     }
                 }
             }
@@ -170,6 +180,29 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
             endRecast(hero);
         }
+    }
+
+    @Override
+    protected int alterAppliedCooldown(Hero hero, int cooldown) {
+        if (rearHit.contains(hero.getPlayer().getUniqueId())) {
+
+            double cooldownReductionPercentage = SkillConfigManager.getUseSetting(hero, this,
+                    COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT, false);
+            if (cooldownReductionPercentage < 0) {
+                cooldownReductionPercentage = 0;
+            } else if (cooldownReductionPercentage > 1) {
+                cooldownReductionPercentage = 1;
+            }
+
+            return cooldown - (int)(cooldown * cooldownReductionPercentage);
+        } else {
+            return cooldown;
+        }
+    }
+
+    @Override
+    protected void finalizeSkillUse(Hero hero) {
+        rearHit.remove(hero.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
