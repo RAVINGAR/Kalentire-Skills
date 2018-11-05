@@ -3,12 +3,13 @@ package com.herocraftonline.heroes.characters.skill.codari;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.standard.StandardSlowEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.RecastData;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -18,17 +19,32 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
     private static final String PROJECTILE_METADATA_KEY = "thrown-pointy-stick";
 
     private static final double DEFAULT_DAMAGE = 10;
 
+    private static final String THROW_VELOCITY_NODE = "throw-velocity";
+    private static final double DEFAULT_THROW_VELOCITY = 2.5;
+
     private static final String FRONTAL_ARC_NODE = "frontal-arc";
     private static final double DEFAULT_FRONTAL_ARC = 90;
 
-    private static final String THROW_VELOCITY_NODE = "throw-velocity";
-    private static final double DEFAULT_THROW_VELOCITY = 2.5;
+    private static final String SLOW_STRENGTH_ON_REAR_HIT_NODE = "slow-strength-on-rear-hit";
+    private static final int DEFAULT_SLOW_STRENGTH_ON_REAR_HIT = 2;
+
+    private static final String SLOW_DURATION_ON_REAR_HIT_NODE = "slow-duration-on-rear-hit";
+    private static final int DEFAULT_SLOW_DURATION_ON_REAR_HIT = 3000;
+
+    private static final String COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE = "cooldown-reduction-percentage-on-rear-hit";
+    private static final double DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT = 0.5;
+
+    private Set<UUID> rearHit = new HashSet<>();
 
     public SkillThrowThePointyStick(Heroes plugin) {
         super(plugin, "ThrowThePointyStick");
@@ -51,8 +67,11 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DAMAGE.node(), DEFAULT_DAMAGE);
-        node.set(FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC);
         node.set(THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY);
+        node.set(FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC);
+        node.set(SLOW_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOW_STRENGTH_ON_REAR_HIT);
+        node.set(SLOW_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOW_DURATION_ON_REAR_HIT);
+        node.set(COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT_NODE, DEFAULT_COOLDOWN_REDUCTION_PERCENTAGE_ON_REAR_HIT);
 
         return node;
     }
@@ -84,7 +103,7 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
         projectile.setMetadata(PROJECTILE_METADATA_KEY, new FixedMetadataValue(plugin, null));
 
         broadcastExecuteText(hero);
-        
+
         return SkillResult.NORMAL;
     }
 
@@ -96,18 +115,14 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
             Player player = (Player) e.getEntity().getShooter();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            endRecast(hero);
-
             if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
 
                 LivingEntity target = (LivingEntity) e.getHitEntity();
                 if (damageCheck(player, target)) {
 
-                    double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, DEFAULT_DAMAGE, false);
-                    if (damage < 0) {
-                        damage = 0;
-                    }
+                    CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
+                    double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, DEFAULT_DAMAGE, false);
                     if (damage > 0) {
                         addSpellTarget(target, hero);
                         damageEntity(target, player, damage);
@@ -133,9 +148,18 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
                     }
 
                     if (yawDifference >= (180 - (frontalArc / 2))) {
-                        player.sendMessage("LOOKING AT YOU");
+                        // Frontal Hit
+                        if (targetCharacter instanceof Hero) {
+                            ((Hero) targetCharacter).interruptDelayedSkill();
+                        }
                     } else {
-                        player.sendMessage("LOOKING AWAY FROM YOU");
+                        // Rear Hit
+                        int slowStrength = SkillConfigManager.getUseSetting(hero, this, SLOW_STRENGTH_ON_REAR_HIT_NODE, DEFAULT_SLOW_STRENGTH_ON_REAR_HIT, false);
+                        int slowDuration = SkillConfigManager.getUseSetting(hero, this, SLOW_DURATION_ON_REAR_HIT_NODE, DEFAULT_SLOW_DURATION_ON_REAR_HIT, false);
+                        if (slowStrength > 0 && slowDuration > 0) {
+                            StandardSlowEffect.addDuration(targetCharacter, this, player, slowDuration, slowStrength);
+                        }
+                        rearHit.add(player.getUniqueId());
                     }
                 }
             }
@@ -143,6 +167,8 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
             if (e.getHitBlock() != null) {
                 e.getEntity().remove();
             }
+
+            endRecast(hero);
         }
     }
 
