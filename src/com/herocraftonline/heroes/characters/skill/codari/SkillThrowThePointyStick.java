@@ -26,17 +26,18 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
     private static final String PROJECTILE_METADATA_KEY = "thrown-pointy-stick";
 
+    private static final String THROW_VELOCITY_NODE = "throw-velocity";
+    private static final double DEFAULT_THROW_VELOCITY = 2.5;
+    private static final double MIN_THROW_VELOCITY = 1;
+
+    private static final String FRONTAL_ARC_NODE = "frontal-arc";
+    private static final double DEFAULT_FRONTAL_ARC = 90;
+
     private static final String FRONTAL_DAMAGE_NODE = "frontal-damage";
     private static final double DEFAULT_FRONTAL_DAMAGE = 10;
 
     private static final String REAR_DAMAGE_NODE = "rear-damage";
     private static final double DEFAULT_REAR_DAMAGE = 10;
-
-    private static final String THROW_VELOCITY_NODE = "throw-velocity";
-    private static final double DEFAULT_THROW_VELOCITY = 2.5;
-
-    private static final String FRONTAL_ARC_NODE = "frontal-arc";
-    private static final double DEFAULT_FRONTAL_ARC = 90;
 
     private static final String REAR_HIT_SLOWNESS_DURATION_NODE = "rear-hit-slowness-duration";
     private static final int DEFAULT_REAR_HIT_SLOWNESS_DURATION = 3000;
@@ -72,10 +73,10 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
 
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(FRONTAL_DAMAGE_NODE, DEFAULT_FRONTAL_DAMAGE);
-        node.set(REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE);
         node.set(THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY);
         node.set(FRONTAL_ARC_NODE, DEFAULT_FRONTAL_ARC);
+        node.set(FRONTAL_DAMAGE_NODE, DEFAULT_FRONTAL_DAMAGE);
+        node.set(REAR_DAMAGE_NODE, DEFAULT_REAR_DAMAGE);
         node.set(REAR_HIT_SLOWNESS_DURATION_NODE, DEFAULT_REAR_HIT_SLOWNESS_DURATION);
         node.set(REAR_HIT_SLOWNESS_STRENGTH_NODE, DEFAULT_REAR_HIT_SLOWNESS_STRENGTH);
         node.set(REAR_HIT_FLAT_COOLDOWN_REDUCTION_NODE, DEFAULT_REAR_HIT_FLAT_COOLDOWN_REDUCTION);
@@ -102,12 +103,11 @@ public class SkillThrowThePointyStick extends ActiveSkill implements Listener {
         projectile.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
 
         double throwVelocity = SkillConfigManager.getUseSetting(hero, this, THROW_VELOCITY_NODE, DEFAULT_THROW_VELOCITY, false);
-        if (throwVelocity < 1) {
-            throwVelocity = 1;
+        if (throwVelocity < MIN_THROW_VELOCITY) {
+            throwVelocity = MIN_THROW_VELOCITY;
         }
 
         projectile.setVelocity(projectile.getVelocity().normalize().multiply(throwVelocity));
-
         projectile.setMetadata(PROJECTILE_METADATA_KEY, new FixedMetadataValue(plugin, null));
 
         broadcastExecuteText(hero);

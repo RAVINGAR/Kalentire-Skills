@@ -2,24 +2,31 @@ package com.herocraftonline.heroes.characters.skill.codari;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.effects.standard.SwiftnessEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.RecastData;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class SkillTheySeeMeRolling extends ActiveSkill {
+public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
+
+    private static final String BACKWARDS_RECAST_PROJECTILE_META_KEY = "roll-recast-backwards-projectile";
 
     private static final String FORWARD_RECAST_NAME = "Forward";
     private static final String BACKWARDS_RECAST_NAME = "Backwards";
@@ -28,6 +35,18 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
 
     private static final String FORWARDS_RECAST_DURATION_NODE = "forwards-recast-duration";
     private static final int DEFAULT_FORWARDS_RECAST_DURATION = 1500;
+
+    private static final String FORWARDS_RECAST_ATTACK_RANGE_NODE = "forwards-recast-attack-range";
+    private static final double DEFAULT_FORWARDS_RECAST_ATTACK_RANGE = 6;
+
+    private static final String FORWARDS_RECAST_ATTACK_DAMAGE_NODE = "forwards-recast-attack-damage";
+    private static final double DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE = 10;
+
+    private static final String FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE = "forwards-recast-attack-bleeding-stack-duration";
+    private static final int DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION = 3000;
+
+    private static final String FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE = "forwards-recast-attack-bleeding-stack-amount";
+    private static final int DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT = 1;
 
     private static final String SIDEWAYS_SWIFTNESS_DURATION_NODE = "sideways-swiftness-duration";
     private static final int DEFAULT_SIDEWAYS_SWIFTNESS_DURATION = 3000;
@@ -44,6 +63,22 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
     private static final String BACKWARDS_RECAST_DURATION_NODE = "backwards-recast-duration";
     private static final int DEFAULT_BACKWARDS_RECAST_DURATION = 1500;
 
+    private static final String BACKWARDS_RECAST_ATTACK_THROW_VELOCITY_NODE = "backwards-recast-attack-throw-velocity";
+    private static final double DEFAULT_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY = 2.5;
+    private static final double MIN_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY = 1;
+
+    private static final String BACKWARDS_RECAST_ATTACK_DAMAGE_NODE = "backwards-recast-attack-damage";
+    private static final double DEFAULT_BACKWARDS_RECAST_ATTACK_DAMAGE = 10;
+
+    private static final String BACKWARDS_RECAST_ATTACK_DAMAGE_KNOCKBACKS_NODE = "backwards-recast-attack-damage-knockbacks";
+    private static final boolean DEFAULT_BACKWARDS_RECAST_ATTACK_DAMAGE_KNOCKBACKS = false;
+
+    private static final String BACKWARDS_RECAST_ATTACK_SLOWNESS_DURATION_NODE = "backwards-recast-attack-slowness-duration";
+    private static final int DEFAULT_BACKWARDS_RECAST_ATTACK_SLOWNESS_DURATION = 5000;
+
+    private static final String BACKWARDS_RECAST_ATTACK_SLOWNESS_STRENGTH_NODE = "backwards-recast-attack-slowness-strength";
+    private static final int DEFAULT_BACKWARDS_RECAST_ATTACK_SLOWNESS_STRENGTH = 2;
+
     private Set<UUID> sidewaysMovement = new HashSet<>();
 
     public SkillTheySeeMeRolling(Heroes plugin) {
@@ -59,6 +94,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
     @Override
     public void init() {
         super.init();
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
@@ -72,6 +108,11 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
         node.set(SIDEWAYS_FLAT_COOLDOWN_REDUCTION_NODE, DEFAULT_SIDEWAYS_FLAT_COOLDOWN_REDUCTION);
         node.set(SIDEWAYS_PERCENT_COOLDOWN_REDUCTION_NODE, DEFAULT_SIDEWAYS_PERCENT_COOLDOWN_REDUCTION);
         node.set(BACKWARDS_RECAST_DURATION_NODE, DEFAULT_BACKWARDS_RECAST_DURATION);
+        node.set(BACKWARDS_RECAST_ATTACK_THROW_VELOCITY_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY);
+        node.set(BACKWARDS_RECAST_ATTACK_DAMAGE_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_DAMAGE);
+        node.set(BACKWARDS_RECAST_ATTACK_DAMAGE_KNOCKBACKS_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_DAMAGE_KNOCKBACKS);
+        node.set(BACKWARDS_RECAST_ATTACK_SLOWNESS_DURATION_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_SLOWNESS_DURATION);
+        node.set(BACKWARDS_RECAST_ATTACK_SLOWNESS_STRENGTH_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_SLOWNESS_STRENGTH);
 
         return node;
     }
@@ -212,5 +253,56 @@ public class SkillTheySeeMeRolling extends ActiveSkill {
 
     private void backwardsRecast(Hero hero) {
 
+        Player player = hero.getPlayer();
+
+        Trident projectile = player.launchProjectile(Trident.class);
+        projectile.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
+
+        double throwVelocity = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_RECAST_ATTACK_THROW_VELOCITY_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY, false);
+        if (throwVelocity < MIN_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY) {
+            throwVelocity = MIN_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY;
+        }
+
+        projectile.setVelocity(projectile.getVelocity().normalize().multiply(throwVelocity));
+        projectile.setMetadata(BACKWARDS_RECAST_PROJECTILE_META_KEY, new FixedMetadataValue(plugin, null));
+
+        endRecast(hero);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onProjectileHit(ProjectileHitEvent e) {
+
+        if (e.getEntity() instanceof Trident && e.getEntity().hasMetadata(BACKWARDS_RECAST_PROJECTILE_META_KEY)) {
+
+            Player player = (Player) e.getEntity().getShooter();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
+            if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
+
+                LivingEntity target = (LivingEntity) e.getHitEntity();
+                if (damageCheck(player, target)) {
+
+                    CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
+
+                    double damage = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_RECAST_ATTACK_DAMAGE_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_DAMAGE, false);
+                    if (damage > 0) {
+                        boolean knockback = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_RECAST_ATTACK_DAMAGE_KNOCKBACKS_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_DAMAGE_KNOCKBACKS);
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, damage, knockback);
+                    }
+
+                    int slownessDuration = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_RECAST_ATTACK_SLOWNESS_DURATION_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_SLOWNESS_DURATION, false);
+                    int slownessStrength = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_RECAST_ATTACK_SLOWNESS_STRENGTH_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_SLOWNESS_STRENGTH, false);
+
+                    if (slownessDuration > 0 && slownessStrength > 0) {
+                        SlownessEffect.addDuration(targetCharacter, this, player, slownessDuration, slownessStrength);
+                    }
+                }
+            }
+
+            if (e.getHitBlock() != null) {
+                e.getEntity().remove();
+            }
+        }
     }
 }
