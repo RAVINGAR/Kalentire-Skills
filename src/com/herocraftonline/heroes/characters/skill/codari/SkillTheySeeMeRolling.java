@@ -45,7 +45,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
     private static final double DEFAULT_FORWARDS_LAUNCH_VELOCITY = 1;
 
     private static final String FORWARDS_LAUNCH_HEIGHT_NODE = "forwards-launch-height";
-    private static final double DEFAULT_FORWARDS_LAUNCH_HEIGHT = 1;
+    private static final double DEFAULT_FORWARDS_LAUNCH_HEIGHT = 0.25;
 
     private static final String FORWARDS_RECAST_DURATION_NODE = "forwards-recast-duration";
     private static final int DEFAULT_FORWARDS_RECAST_DURATION = 1500;
@@ -70,7 +70,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
     private static final double DEFAULT_SIDEWAYS_LAUNCH_VELOCITY = 1;
 
     private static final String SIDEWAYS_LAUNCH_HEIGHT_NODE = "sideways-launch-height";
-    private static final double DEFAULT_SIDEWAYS_LAUNCH_HEIGHT = 1;
+    private static final double DEFAULT_SIDEWAYS_LAUNCH_HEIGHT = 0.25;
 
     private static final String SIDEWAYS_SWIFTNESS_DURATION_NODE = "sideways-swiftness-duration";
     private static final int DEFAULT_SIDEWAYS_SWIFTNESS_DURATION = 3000;
@@ -88,13 +88,13 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
     private static final double DEFAULT_BACKWARDS_LAUNCH_VELOCITY = 1;
 
     private static final String BACKWARDS_LAUNCH_HEIGHT_NODE = "backwards-launch-height";
-    private static final double DEFAULT_BACKWARDS_LAUNCH_HEIGHT = 1;
+    private static final double DEFAULT_BACKWARDS_LAUNCH_HEIGHT = 0.25;
 
     private static final String BACKWARDS_RECAST_DURATION_NODE = "backwards-recast-duration";
     private static final int DEFAULT_BACKWARDS_RECAST_DURATION = 1500;
 
     private static final String BACKWARDS_RECAST_ATTACK_THROW_VELOCITY_NODE = "backwards-recast-attack-throw-velocity";
-    private static final double DEFAULT_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY = 2.5;
+    private static final double DEFAULT_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY = 1.5;
     private static final double MIN_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY = 1;
 
     private static final String BACKWARDS_RECAST_ATTACK_DAMAGE_NODE = "backwards-recast-attack-damage";
@@ -201,6 +201,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
             int recastDuration;
 
             if (yawDifference <= 45) {
+
                 // Forward
                 launchVelocity = SkillConfigManager.getUseSetting(hero, this, FORWARDS_LAUNCH_VELOCITY_NODE, DEFAULT_FORWARDS_LAUNCH_VELOCITY, false);
                 launchHeight = SkillConfigManager.getUseSetting(hero, this, FORWARDS_LAUNCH_HEIGHT_NODE, DEFAULT_FORWARDS_LAUNCH_HEIGHT, false);
@@ -208,6 +209,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
                 recastData = new RecastData(FORWARD_RECAST_NAME);
                 recastDuration = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_DURATION_NODE, DEFAULT_FORWARDS_RECAST_DURATION, false);
             } else if (yawDifference < 135) {
+
                 // Sideways
                 launchVelocity = SkillConfigManager.getUseSetting(hero, this, SIDEWAYS_LAUNCH_VELOCITY_NODE, DEFAULT_SIDEWAYS_LAUNCH_VELOCITY, false);
                 launchHeight = SkillConfigManager.getUseSetting(hero, this, SIDEWAYS_LAUNCH_HEIGHT_NODE, DEFAULT_SIDEWAYS_LAUNCH_HEIGHT, false);
@@ -218,6 +220,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
 
                 sidewaysEffect(hero);
             } else {
+
                 // Backwards
                 launchVelocity = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_LAUNCH_VELOCITY_NODE, DEFAULT_BACKWARDS_LAUNCH_VELOCITY, false);
                 launchHeight = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_LAUNCH_HEIGHT_NODE, DEFAULT_BACKWARDS_LAUNCH_HEIGHT, false);
@@ -248,6 +251,8 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
             }
 
         }, 1);
+
+        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }
@@ -315,32 +320,29 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
 
             LivingEntity target = (LivingEntity) hit.getEntity();
 
-            if (target.getNoDamageTicks() <= 10 && damageCheck(player, target)) {
+            CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
-                CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
+            double damage = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_ATTACK_DAMAGE_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE, false);
+            if (damage > 0) {
+                boolean knockback = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS);
+                addSpellTarget(target, hero);
+                damageEntity(target, player, damage, knockback);
+            }
 
-                double damage = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_ATTACK_DAMAGE_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE, false);
-                if (damage > 0) {
-                    boolean knockback = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS);
-                    addSpellTarget(target, hero);
-                    damageEntity(target, player, damage, knockback);
-                }
+            int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this,
+                    FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION, false);
+            if (bleedingStackAmount < 0) {
+                bleedingStackAmount = 0;
+            }
 
-                int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this,
-                        FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION, false);
-                if (bleedingStackAmount < 0) {
-                    bleedingStackAmount = 0;
-                }
+            int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this,
+                    FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT, false);
+            if (bleedingStackDuration < 0) {
+                bleedingStackDuration = 0;
+            }
 
-                int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this,
-                        FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT, false);
-                if (bleedingStackDuration < 0) {
-                    bleedingStackDuration = 0;
-                }
-
-                if (bleedingStackAmount > 0 && bleedingStackDuration > 0) {
-                    BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
-                }
+            if (bleedingStackAmount > 0 && bleedingStackDuration > 0) {
+                BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
             }
         }
 
