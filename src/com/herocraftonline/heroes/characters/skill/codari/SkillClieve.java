@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
+import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseWeaponImbue;
 import org.bukkit.Material;
@@ -79,10 +80,12 @@ public class SkillClieve extends SkillBaseWeaponImbue {
 
             if (target.getHealth() / target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() <= healthPercentageResult) {
                 // Execute
+                weaponDamageEvent.setCancelled(true);
+                target.setHealth(0);
 
             } else {
                 // Non Execute
-
+                SlownessEffect.addDuration(targetCharacter, this, hero.getPlayer(), 5000, 3);
             }
         }
     }
