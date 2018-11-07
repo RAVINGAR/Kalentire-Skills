@@ -158,8 +158,8 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                         CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
 
                         int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_AMOUNT_NODE, DEFAULT_BLEEDING_STACK_AMOUNT, false);
-                        if (bleedingStackAmount < 1) {
-                            bleedingStackAmount = 1;
+                        if (bleedingStackAmount < 0) {
+                            bleedingStackAmount = 0;
                         }
 
                         int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_DURATION_NODE, DEFAULT_BLEEDING_STACK_DURATION, false);
@@ -167,7 +167,9 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
                             bleedingStackDuration = 0;
                         }
 
-                        BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
+                        if (bleedingStackAmount > 0 && bleedingStackDuration > 0) {
+                            BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
+                        }
                     }
 
                     return attackCount;

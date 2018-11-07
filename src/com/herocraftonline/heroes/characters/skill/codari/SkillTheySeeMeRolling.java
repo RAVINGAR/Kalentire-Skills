@@ -2,14 +2,21 @@ package com.herocraftonline.heroes.characters.skill.codari;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.standard.BleedingEffect;
 import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.effects.standard.SwiftnessEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.RecastData;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.nms.physics.FluidCollision;
+import com.herocraftonline.heroes.nms.physics.NMSPhysics;
+import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
@@ -32,21 +39,38 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
     private static final String BACKWARDS_RECAST_NAME = "Backwards";
 
     private static final int MIN_RECAST_DURATION = 500;
+    private static final double MIN_LAUNCH_VELOCITY = 0.5;
+
+    private static final String FORWARDS_LAUNCH_VELOCITY_NODE = "forwards-launch-velocity";
+    private static final double DEFAULT_FORWARDS_LAUNCH_VELOCITY = 1;
+
+    private static final String FORWARDS_LAUNCH_HEIGHT_NODE = "forwards-launch-height";
+    private static final double DEFAULT_FORWARDS_LAUNCH_HEIGHT = 1;
 
     private static final String FORWARDS_RECAST_DURATION_NODE = "forwards-recast-duration";
     private static final int DEFAULT_FORWARDS_RECAST_DURATION = 1500;
 
     private static final String FORWARDS_RECAST_ATTACK_RANGE_NODE = "forwards-recast-attack-range";
     private static final double DEFAULT_FORWARDS_RECAST_ATTACK_RANGE = 6;
+    private static final double MIN_FORWARDS_RECAST_ATTACK_RANGE = 2;
 
     private static final String FORWARDS_RECAST_ATTACK_DAMAGE_NODE = "forwards-recast-attack-damage";
     private static final double DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE = 10;
+
+    private static final String FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS_NODE = "forwards-recast-attack-damage-knockbacks";
+    private static final boolean DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS = true;
 
     private static final String FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE = "forwards-recast-attack-bleeding-stack-duration";
     private static final int DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION = 3000;
 
     private static final String FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE = "forwards-recast-attack-bleeding-stack-amount";
     private static final int DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT = 1;
+
+    private static final String SIDEWAYS_LAUNCH_VELOCITY_NODE = "sideways-launch-velocity";
+    private static final double DEFAULT_SIDEWAYS_LAUNCH_VELOCITY = 1;
+
+    private static final String SIDEWAYS_LAUNCH_HEIGHT_NODE = "sideways-launch-height";
+    private static final double DEFAULT_SIDEWAYS_LAUNCH_HEIGHT = 1;
 
     private static final String SIDEWAYS_SWIFTNESS_DURATION_NODE = "sideways-swiftness-duration";
     private static final int DEFAULT_SIDEWAYS_SWIFTNESS_DURATION = 3000;
@@ -59,6 +83,12 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
 
     private static final String SIDEWAYS_PERCENT_COOLDOWN_REDUCTION_NODE = "sideways-percent-cooldown-reduction";
     private static final double DEFAULT_SIDEWAYS_PERCENT_COOLDOWN_REDUCTION = 0.25;
+
+    private static final String BACKWARDS_LAUNCH_VELOCITY_NODE = "backwards-launch-velocity";
+    private static final double DEFAULT_BACKWARDS_LAUNCH_VELOCITY = 1;
+
+    private static final String BACKWARDS_LAUNCH_HEIGHT_NODE = "backwards-launch-height";
+    private static final double DEFAULT_BACKWARDS_LAUNCH_HEIGHT = 1;
 
     private static final String BACKWARDS_RECAST_DURATION_NODE = "backwards-recast-duration";
     private static final int DEFAULT_BACKWARDS_RECAST_DURATION = 1500;
@@ -102,11 +132,22 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
 
         ConfigurationSection node = super.getDefaultConfig();
 
+        node.set(FORWARDS_LAUNCH_VELOCITY_NODE, DEFAULT_FORWARDS_LAUNCH_VELOCITY);
+        node.set(FORWARDS_LAUNCH_HEIGHT_NODE, DEFAULT_FORWARDS_LAUNCH_HEIGHT);
         node.set(FORWARDS_RECAST_DURATION_NODE, DEFAULT_FORWARDS_RECAST_DURATION);
+        node.set(FORWARDS_RECAST_ATTACK_RANGE_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_RANGE);
+        node.set(FORWARDS_RECAST_ATTACK_DAMAGE_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE);
+        node.set(FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS);
+        node.set(FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION);
+        node.set(FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT);
+        node.set(SIDEWAYS_LAUNCH_VELOCITY_NODE, DEFAULT_SIDEWAYS_LAUNCH_VELOCITY);
+        node.set(SIDEWAYS_LAUNCH_HEIGHT_NODE, DEFAULT_SIDEWAYS_LAUNCH_HEIGHT);
         node.set(SIDEWAYS_SWIFTNESS_DURATION_NODE, DEFAULT_SIDEWAYS_SWIFTNESS_DURATION);
         node.set(SIDEWAYS_SWIFTNESS_STRENGTH_NODE, DEFAULT_SIDEWAYS_SWIFTNESS_STRENGTH);
         node.set(SIDEWAYS_FLAT_COOLDOWN_REDUCTION_NODE, DEFAULT_SIDEWAYS_FLAT_COOLDOWN_REDUCTION);
         node.set(SIDEWAYS_PERCENT_COOLDOWN_REDUCTION_NODE, DEFAULT_SIDEWAYS_PERCENT_COOLDOWN_REDUCTION);
+        node.set(BACKWARDS_LAUNCH_VELOCITY_NODE, DEFAULT_BACKWARDS_LAUNCH_VELOCITY);
+        node.set(BACKWARDS_LAUNCH_HEIGHT_NODE, DEFAULT_BACKWARDS_LAUNCH_HEIGHT);
         node.set(BACKWARDS_RECAST_DURATION_NODE, DEFAULT_BACKWARDS_RECAST_DURATION);
         node.set(BACKWARDS_RECAST_ATTACK_THROW_VELOCITY_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_THROW_VELOCITY);
         node.set(BACKWARDS_RECAST_ATTACK_DAMAGE_NODE, DEFAULT_BACKWARDS_RECAST_ATTACK_DAMAGE);
@@ -153,29 +194,49 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
 
             double yawDifference = Math.min(360 - Math.abs(yawDirection - yawMovement), Math.abs(yawDirection - yawMovement));
 
+            double launchVelocity;
+            double launchHeight;
+
             RecastData recastData;
             int recastDuration;
 
             if (yawDifference <= 45) {
                 // Forward
+                launchVelocity = SkillConfigManager.getUseSetting(hero, this, FORWARDS_LAUNCH_VELOCITY_NODE, DEFAULT_FORWARDS_LAUNCH_VELOCITY, false);
+                launchHeight = SkillConfigManager.getUseSetting(hero, this, FORWARDS_LAUNCH_HEIGHT_NODE, DEFAULT_FORWARDS_LAUNCH_HEIGHT, false);
+
                 recastData = new RecastData(FORWARD_RECAST_NAME);
                 recastDuration = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_DURATION_NODE, DEFAULT_FORWARDS_RECAST_DURATION, false);
             } else if (yawDifference < 135) {
                 // Sideways
+                launchVelocity = SkillConfigManager.getUseSetting(hero, this, SIDEWAYS_LAUNCH_VELOCITY_NODE, DEFAULT_SIDEWAYS_LAUNCH_VELOCITY, false);
+                launchHeight = SkillConfigManager.getUseSetting(hero, this, SIDEWAYS_LAUNCH_HEIGHT_NODE, DEFAULT_SIDEWAYS_LAUNCH_HEIGHT, false);
+
+                // No recast here
                 recastData = null;
                 recastDuration = 0;
-                // No recast here
+
                 sidewaysEffect(hero);
             } else {
                 // Backwards
+                launchVelocity = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_LAUNCH_VELOCITY_NODE, DEFAULT_BACKWARDS_LAUNCH_VELOCITY, false);
+                launchHeight = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_LAUNCH_HEIGHT_NODE, DEFAULT_BACKWARDS_LAUNCH_HEIGHT, false);
+
                 recastData = new RecastData(BACKWARDS_RECAST_NAME);
                 recastDuration = SkillConfigManager.getUseSetting(hero, this, BACKWARDS_RECAST_DURATION_NODE, DEFAULT_BACKWARDS_RECAST_DURATION, false);
             }
 
-            double yawMovementRadians = Math.toRadians(yawMovement + 90);
-            Vector rollVelocity = new Vector(Math.cos(yawMovementRadians), 0.25, Math.sin(yawMovementRadians));
+            if (launchVelocity < MIN_LAUNCH_VELOCITY) {
+                launchVelocity = MIN_LAUNCH_VELOCITY;
+            }
+            if (launchHeight < 0) {
+                launchHeight = 0;
+            }
 
-            player.setVelocity(rollVelocity);
+            double yawMovementRadians = Math.toRadians(yawMovement + 90);
+            Vector launchVector = new Vector(Math.cos(yawMovementRadians), 0, Math.sin(yawMovementRadians)).multiply(launchVelocity).setY(launchHeight);
+
+            player.setVelocity(launchVector);
 
             if (recastData != null) {
                 if (recastDuration < MIN_RECAST_DURATION) {
@@ -237,6 +298,53 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
 
     private void forwardsRecast(Hero hero) {
 
+        Player player = hero.getPlayer();
+        World world = player.getWorld();
+        Location eyeLocation = player.getEyeLocation();
+
+        double attackRange = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_ATTACK_RANGE_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_RANGE, false);
+        if (attackRange < MIN_FORWARDS_RECAST_ATTACK_RANGE) {
+            attackRange = MIN_FORWARDS_RECAST_ATTACK_RANGE;
+        }
+
+        Vector start = eyeLocation.toVector();
+        Vector end = eyeLocation.getDirection().multiply(attackRange).add(start);
+
+        RayCastHit hit = NMSPhysics.instance().rayCast(world, player, start, end, null, entity -> entity instanceof LivingEntity, FluidCollision.NEVER, true);
+        if (hit != null && hit.isEntity()) {
+
+            LivingEntity target = (LivingEntity) hit.getEntity();
+
+            if (target.getNoDamageTicks() <= 10 && damageCheck(player, target)) {
+
+                CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
+
+                double damage = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_ATTACK_DAMAGE_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE, false);
+                if (damage > 0) {
+                    boolean knockback = SkillConfigManager.getUseSetting(hero, this, FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_DAMAGE_KNOCKSBACKS);
+                    addSpellTarget(target, hero);
+                    damageEntity(target, player, damage, knockback);
+                }
+
+                int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this,
+                        FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION, false);
+                if (bleedingStackAmount < 0) {
+                    bleedingStackAmount = 0;
+                }
+
+                int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this,
+                        FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT, false);
+                if (bleedingStackDuration < 0) {
+                    bleedingStackDuration = 0;
+                }
+
+                if (bleedingStackAmount > 0 && bleedingStackDuration > 0) {
+                    BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
+                }
+            }
+        }
+
+        endRecast(hero);
     }
 
     private void sidewaysEffect(Hero hero) {
@@ -303,6 +411,13 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
             if (e.getHitBlock() != null) {
                 e.getEntity().remove();
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void onWeaponDamage(WeaponDamageEvent e) {
+        if (e.isProjectile() && e.getAttackerEntity() instanceof Trident && e.getAttackerEntity().hasMetadata(BACKWARDS_RECAST_PROJECTILE_META_KEY)) {
+            e.setCancelled(true);
         }
     }
 }
