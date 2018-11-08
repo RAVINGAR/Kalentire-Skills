@@ -329,19 +329,19 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
                 damageEntity(target, player, damage, knockback);
             }
 
-            int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this,
-                    FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION, false);
-            if (bleedingStackAmount < 0) {
-                bleedingStackAmount = 0;
-            }
-
             int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this,
-                    FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT, false);
+                    FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_DURATION, false);
             if (bleedingStackDuration < 0) {
                 bleedingStackDuration = 0;
             }
 
-            if (bleedingStackAmount > 0 && bleedingStackDuration > 0) {
+            int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this,
+                    FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT_NODE, DEFAULT_FORWARDS_RECAST_ATTACK_BLEEDING_STACK_AMOUNT, false);
+            if (bleedingStackAmount < 0) {
+                bleedingStackAmount = 0;
+            }
+
+            if (bleedingStackAmount > 0 && bleedingStackAmount > 0) {
                 BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
             }
         }
