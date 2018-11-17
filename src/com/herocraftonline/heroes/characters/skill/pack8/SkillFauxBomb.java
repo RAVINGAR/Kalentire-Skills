@@ -66,8 +66,11 @@ public class SkillFauxBomb extends ActiveSkill {
         sheepMap.put(sheep.getEntityId(), player);
 
         sheep.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10000, 0));
-        sheep.setMaxHealth(10000);
-        sheep.setHealth(10000);
+        //Replaced sheep health with lower value, since sheep doesn't explode and having high health sheep around can be a issue (crowding)
+//        sheep.setMaxHealth(10000);
+//        sheep.setHealth(10000);
+        sheep.setMaxHealth(100);
+        sheep.setHealth(100);
 
         double velocity = SkillConfigManager.getUseSetting(hero, this, "velocity", 1.0D, false);
         sheep.setVelocity(direction.multiply(velocity).add(new Vector(0.0D, 0.15D, 0.0D)));
@@ -112,12 +115,15 @@ public class SkillFauxBomb extends ActiveSkill {
                     event.setDamage(0.0);
                     event.setCancelled(true);
                 }
+//Sheep exploding was causing server crashes, commented out until a alternative/fix is found.
 //                else {
 //                    explodeSheep(sheep);
 //                }
             }
         }
     }
+
+//Sheep exploding was causing server crashes, commented out until a alternative/fix is found.
 /*
     private void explodeSheep(LivingEntity sheep) {
         int id = sheep.getEntityId();
