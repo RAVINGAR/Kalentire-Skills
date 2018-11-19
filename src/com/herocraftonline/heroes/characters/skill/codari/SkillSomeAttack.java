@@ -2,7 +2,9 @@ package com.herocraftonline.heroes.characters.skill.codari;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -26,14 +28,14 @@ public class SkillSomeAttack extends SkillBaseWeaponImbue {
     private static final String PERCENT_DAMAGE_INCREASE_NODE = "percent-damage-increase";
     private static final double DEFAULT_PERCENT_DAMAGE_INCREASE = 0.1;
 
-    private static final String PULL_FORCE_NODE = "pull-force";
-    private static final double DEFAULT_PULL_FORCE = 2.5;
+    private static final String PRIMARY_ATTACK_KNOCKBACK_FORCE_NODE = "primary-attack-knockback-force";
+    private static final double DEFAULT_PRIMARY_ATTACK_KNOCKBACK_FORCE = 2.5;
 
-    private static final String PUSH_FORCE_NODE = "push-force";
-    private static final double DEFAULT_PUSH_FORCE = 2.5;
+    private static final String SECONDARY_ATTACK_SLOWNESS_DURATION_NODE = "secondary-attack-slowness-duration";
+    private static final int DEFAULT_SECONDARY_ATTACK_SLOWNESS_DURATION = 5000;
 
-    private static final int DEFAULT_STAMINA_COST = 50;
-    private static final int DEFAULT_COOLDOWN = 5000;
+    private static final String SECONDARY_ATTACK_SLOWNESS_STRENGTH_NODE = "secondary-attack-slowness-strength";
+    private static final int DEFAULT_SECONDARY_ATTACK_SLOWNESS_STRENGTH = 1;
 
     public SkillSomeAttack(Heroes plugin) {
         super(plugin, "SomeAttack");
@@ -53,10 +55,7 @@ public class SkillSomeAttack extends SkillBaseWeaponImbue {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(PERCENT_DAMAGE_INCREASE_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE);
-        node.set(PULL_FORCE_NODE, DEFAULT_PULL_FORCE);
-        node.set(PUSH_FORCE_NODE, DEFAULT_PUSH_FORCE);
-        node.set(SkillSetting.STAMINA.node(), DEFAULT_STAMINA_COST);
-        node.set(SkillSetting.COOLDOWN.node(), DEFAULT_COOLDOWN);
+        node.set(PRIMARY_ATTACK_KNOCKBACK_FORCE_NODE, DEFAULT_PRIMARY_ATTACK_KNOCKBACK_FORCE);
 
         return node;
     }
@@ -64,26 +63,28 @@ public class SkillSomeAttack extends SkillBaseWeaponImbue {
     @Override
     public String getDescription(Hero hero) {
 
-        double percentDamageIncrease = SkillConfigManager.getUseSetting(hero, this, PERCENT_DAMAGE_INCREASE_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE, false);
-        if (percentDamageIncrease < 0) {
-            percentDamageIncrease = 0;
-        }
+//        double percentDamageIncrease = SkillConfigManager.getUseSetting(hero, this, PERCENT_DAMAGE_INCREASE_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE, false);
+//        if (percentDamageIncrease < 0) {
+//            percentDamageIncrease = 0;
+//        }
+//
+//        int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, DEFAULT_STAMINA_COST, true);
+//        if (staminaCost < 0) {
+//            staminaCost = 0;
+//        }
+//
+//        int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, DEFAULT_COOLDOWN, true);
+//        if (cooldown < 0) {
+//            cooldown = 0;
+//        }
+//
+//        String percentDamageIncreaseParam = Util.smallDecFormat.format(percentDamageIncrease * 100);
+//        String manaCostParam = Integer.toString(staminaCost);
+//        String cooldownParam = Util.smallDecFormat.format(cooldown / 1000.0);
+//
+//        return Messaging.parameterizeMessage(getDescription(), percentDamageIncreaseParam, manaCostParam, cooldownParam);
 
-        int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, DEFAULT_STAMINA_COST, true);
-        if (staminaCost < 0) {
-            staminaCost = 0;
-        }
-
-        int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, DEFAULT_COOLDOWN, true);
-        if (cooldown < 0) {
-            cooldown = 0;
-        }
-
-        String percentDamageIncreaseParam = Util.smallDecFormat.format(percentDamageIncrease * 100);
-        String manaCostParam = Integer.toString(staminaCost);
-        String cooldownParam = Util.smallDecFormat.format(cooldown / 1000.0);
-
-        return Messaging.parameterizeMessage(getDescription(), percentDamageIncreaseParam, manaCostParam, cooldownParam);
+        return getDescription();
     }
 
     @Override
@@ -108,24 +109,24 @@ public class SkillSomeAttack extends SkillBaseWeaponImbue {
         Vector playerCenter = NMSPhysics.instance().getEntityAABB(player).getCenter();
 
         LivingEntity target = (LivingEntity) e.getEntity();
+        CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
         Vector targetCenter = NMSPhysics.instance().getEntityAABB(target).getCenter();
 
-        Vector targetVelocityAddition;
-
         if (thatExtraAttackSkill != null && thatExtraAttackSkill.getHitRange() != SkillExtraPointyStickAttack.HitRange.NO_HIT) {
-            double pullForce = SkillConfigManager.getUseSetting(hero, this, PULL_FORCE_NODE, DEFAULT_PULL_FORCE, false);
-            if (pullForce < 0) {
-                pullForce = 0;
+            // Secondary attack
+            int secondaryAttackSlownessDuration = SkillConfigManager.getUseSetting(hero, this, SECONDARY_ATTACK_SLOWNESS_DURATION_NODE, DEFAULT_SECONDARY_ATTACK_SLOWNESS_DURATION, false);
+            int secondaryAttackSlownessStrength = SkillConfigManager.getUseSetting(hero, this, SECONDARY_ATTACK_SLOWNESS_STRENGTH_NODE, DEFAULT_SECONDARY_ATTACK_SLOWNESS_STRENGTH, false);
+
+            if (secondaryAttackSlownessDuration > 0 && secondaryAttackSlownessStrength > 0) {
+                SlownessEffect.addDuration(targetCharacter, this, player, secondaryAttackSlownessDuration, secondaryAttackSlownessStrength);
             }
-            targetVelocityAddition = playerCenter.clone().subtract(targetCenter).normalize().multiply(pullForce);
         } else {
-            double pushForce = SkillConfigManager.getUseSetting(hero, this, PUSH_FORCE_NODE, DEFAULT_PUSH_FORCE, false);
-            if (pushForce < 0) {
-                pushForce = 0;
+            // Primary Attack
+            double primaryAttackKnockback = SkillConfigManager.getUseSetting(hero, this, PRIMARY_ATTACK_KNOCKBACK_FORCE_NODE, DEFAULT_PRIMARY_ATTACK_KNOCKBACK_FORCE, false);
+            if (primaryAttackKnockback > 0) {
+                target.setVelocity(target.getVelocity().add(targetCenter.clone().subtract(playerCenter).normalize().multiply(primaryAttackKnockback)));
             }
-            targetVelocityAddition = targetCenter.clone().subtract(playerCenter).normalize().multiply(pushForce);
         }
 
-        target.setVelocity(target.getVelocity().add(targetVelocityAddition));
     }
 }
