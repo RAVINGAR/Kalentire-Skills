@@ -26,6 +26,9 @@ public class SkillThrowThePointyStick extends TargettedSkill implements Listener
     private static final double DEFAULT_PULL_FORCE = 2.5;
     private static final double MIN_PULL_FORCE = 0.25;
 
+    private static final String PULL_ADDED_UPDARDS_FORCE_NODE = "pull-added-updards-force";
+    private static final double DEFAULT_PULL_ADDED_UPWARDS_FORCE_NODE = 0.1;
+
     private static final double DEFAULT_DAMAGE = 10;
 
 //    private static final String THROW_VELOCITY_NODE = "throw-velocity";
@@ -95,8 +98,17 @@ public class SkillThrowThePointyStick extends TargettedSkill implements Listener
         if (pullForce < MIN_PULL_FORCE) {
             pullForce = MIN_PULL_FORCE;
         }
+        double addedUpdardspullForce = SkillConfigManager.getUseSetting(hero, this, PULL_ADDED_UPDARDS_FORCE_NODE, DEFAULT_PULL_ADDED_UPWARDS_FORCE_NODE, false);
+        if (addedUpdardspullForce < 0) {
+            addedUpdardspullForce = 0;
+        }
 
-        target.setVelocity(target.getVelocity().add(player.getLocation().toVector().subtract(target.getLocation().toVector()).normalize().multiply(pullForce)));
+        target.setVelocity(target.getVelocity()
+                .add(player.getLocation().toVector()
+                        .subtract(target.getLocation().toVector())
+                        .normalize()
+                        .multiply(pullForce))
+                        .add(new Vector(0, addedUpdardspullForce, 0)));
 
         broadcastExecuteText(hero);
 

@@ -120,6 +120,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
         {
             RecastData recastData = new RecastData("Roll");
             recastData.setNeverReady();
+            startRecast(hero, recastData);
         }
 
         final Vector origin = player.getLocation().toVector();
@@ -177,6 +178,7 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
             Vector launchVector = new Vector(Math.cos(yawMovementRadians), 0, Math.sin(yawMovementRadians)).multiply(launchVelocity).setY(launchHeight);
 
             player.setVelocity(launchVector);
+            endRecast(hero);
 
         }, 1);
 
