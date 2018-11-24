@@ -16,6 +16,7 @@ import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -31,7 +32,7 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
+public class SkillRoll extends ActiveSkill implements Listener {
 
     private static final double MIN_LAUNCH_VELOCITY = 0.5;
 
@@ -67,8 +68,8 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
 
     private Set<UUID> sidewaysMovement = new HashSet<>();
 
-    public SkillTheySeeMeRolling(Heroes plugin) {
-        super(plugin, "TheySeeMeRolling");
+    public SkillRoll(Heroes plugin) {
+        super(plugin, "Roll");
         setDescription("Stuff");
 
         setUsage("/skill " + getName());
@@ -111,8 +112,9 @@ public class SkillTheySeeMeRolling extends ActiveSkill implements Listener {
     public SkillResult use(Hero hero, String[] strings) {
 
         final Player player = hero.getPlayer();
+        Material blockTypeAtLegs = player.getLocation().getBlock().getType();
 
-        if (!player.isOnGround()) {
+        if (!player.isOnGround() && blockTypeAtLegs != Material.WATER && blockTypeAtLegs != Material.LAVA) {
             player.sendMessage("Not on ground");
             return SkillResult.CANCELLED;
         }

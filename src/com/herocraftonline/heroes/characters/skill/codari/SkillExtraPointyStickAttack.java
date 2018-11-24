@@ -162,7 +162,7 @@ public class SkillExtraPointyStickAttack extends PassiveSkill implements Listene
 
             LivingEntity target = (LivingEntity) hit.getEntity();
 
-            if (target.getNoDamageTicks() <= 10 && damageCheck(player, target)) {
+            if (damageCheck(player, target)) {
 
                 Vector hitPoint = hit.getPoint();
                 double hitDistanceSquared = start.distanceSquared(hitPoint);

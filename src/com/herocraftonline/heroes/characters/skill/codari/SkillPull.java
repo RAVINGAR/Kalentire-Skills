@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class SkillThrowThePointyStick extends TargettedSkill implements Listener {
+public class SkillPull extends TargettedSkill implements Listener {
 
     private static final String PULL_FORCE_NODE = "pull-force";
     private static final double DEFAULT_PULL_FORCE = 2.5;
@@ -58,8 +58,8 @@ public class SkillThrowThePointyStick extends TargettedSkill implements Listener
 
     private Set<UUID> rearHit = new HashSet<>();
 
-    public SkillThrowThePointyStick(Heroes plugin) {
-        super(plugin, "ThrowThePointyStick");
+    public SkillPull(Heroes plugin) {
+        super(plugin, "Pull");
         setDescription("");
 
         setUsage("/skill " + getName());

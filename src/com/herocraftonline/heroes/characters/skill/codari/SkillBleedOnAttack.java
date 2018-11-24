@@ -132,48 +132,52 @@ public class SkillBleedOnAttack extends PassiveSkill implements Listener {
 
         if (!e.isProjectile() && e.getDamager() instanceof Hero && e.getEntity() instanceof LivingEntity) {
 
-            LivingEntity target = (LivingEntity) e.getEntity();
-
             Hero hero = (Hero) e.getDamager();
             final Player player = hero.getPlayer();
+
             ItemStack weapon = player.getInventory().getItemInMainHand();
 
             if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
 
-                playerAttackCounts.compute(hero.getPlayer().getUniqueId(), (playerId, attackCount) -> {
+                LivingEntity target = (LivingEntity) e.getEntity();
 
-                    if (attackCount == null) {
-                        attackCount = 1;
-                    } else {
-                        attackCount++;
-                    }
+                if (damageCheck(player, target)) {
 
-                    int bleedingApplyFrequency = SkillConfigManager.getUseSetting(hero, this, BLEEDING_FREQUENCY_NODE, DEFAULT_BLEEDING_FREQUENCY, true);
-                    if (bleedingApplyFrequency < 1) {
-                        bleedingApplyFrequency = 1;
-                    }
+                    playerAttackCounts.compute(hero.getPlayer().getUniqueId(), (playerId, attackCount) -> {
 
-                    if (attackCount % bleedingApplyFrequency == 0) {
-
-                        CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
-
-                        int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_DURATION_NODE, DEFAULT_BLEEDING_STACK_DURATION, false);
-                        if (bleedingStackDuration < 0) {
-                            bleedingStackDuration = 0;
+                        if (attackCount == null) {
+                            attackCount = 1;
+                        } else {
+                            attackCount++;
                         }
 
-                        int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_AMOUNT_NODE, DEFAULT_BLEEDING_STACK_AMOUNT, false);
-                        if (bleedingStackAmount < 0) {
-                            bleedingStackAmount = 0;
+                        int bleedingApplyFrequency = SkillConfigManager.getUseSetting(hero, this, BLEEDING_FREQUENCY_NODE, DEFAULT_BLEEDING_FREQUENCY, true);
+                        if (bleedingApplyFrequency < 1) {
+                            bleedingApplyFrequency = 1;
                         }
 
-                        if (bleedingStackDuration > 0 && bleedingStackAmount > 0) {
-                            BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
-                        }
-                    }
+                        if (attackCount % bleedingApplyFrequency == 0) {
 
-                    return attackCount;
-                });
+                            CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
+
+                            int bleedingStackDuration = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_DURATION_NODE, DEFAULT_BLEEDING_STACK_DURATION, false);
+                            if (bleedingStackDuration < 0) {
+                                bleedingStackDuration = 0;
+                            }
+
+                            int bleedingStackAmount = SkillConfigManager.getUseSetting(hero, this, BLEEDING_STACK_AMOUNT_NODE, DEFAULT_BLEEDING_STACK_AMOUNT, false);
+                            if (bleedingStackAmount < 0) {
+                                bleedingStackAmount = 0;
+                            }
+
+                            if (bleedingStackDuration > 0 && bleedingStackAmount > 0) {
+                                BleedingEffect.applyStacks(targetCharacter, this, player, bleedingStackDuration, bleedingStackAmount);
+                            }
+                        }
+
+                        return attackCount;
+                    });
+                }
             }
         }
     }

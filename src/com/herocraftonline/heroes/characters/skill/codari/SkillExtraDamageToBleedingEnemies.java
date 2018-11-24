@@ -88,28 +88,33 @@ public class SkillExtraDamageToBleedingEnemies extends PassiveSkill implements L
             if (weapon != null && shovels.contains(weapon.getType()) && hasPassive(hero)) {
 
                 LivingEntity target = (LivingEntity) e.getEntity();
-                CharacterTemplate targetCharacter = Heroes.getInstance().getCharacterManager().getCharacter(target);
 
-                BleedingEffect bleedEffect = BleedingEffect.get(hero);
-                if (bleedEffect != null) {
 
-                    double flatDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
-                            FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
-                    if (flatDamageIncreasePerBleedingStack < 0) {
-                        flatDamageIncreasePerBleedingStack = 0;
+                if (damageCheck(player, target)) {
+
+                    CharacterTemplate targetCharacter = Heroes.getInstance().getCharacterManager().getCharacter(target);
+
+                    BleedingEffect bleedEffect = BleedingEffect.get(targetCharacter);
+                    if (bleedEffect != null) {
+
+                        double flatDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
+                                FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_FLAT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
+                        if (flatDamageIncreasePerBleedingStack < 0) {
+                            flatDamageIncreasePerBleedingStack = 0;
+                        }
+
+                        double percentDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
+                                PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
+                        if (percentDamageIncreasePerBleedingStack < 0) {
+                            percentDamageIncreasePerBleedingStack = 0;
+                        }
+
+                        double flatDamageIncrease = flatDamageIncreasePerBleedingStack * bleedEffect.getStackCount();
+                        double percentDamageIncrease = percentDamageIncreasePerBleedingStack * bleedEffect.getStackCount();
+
+                        double extraDamage = flatDamageIncrease + (e.getDamage() * percentDamageIncrease);
+                        e.setDamage((e.getDamage() + extraDamage));
                     }
-
-                    double percentDamageIncreasePerBleedingStack = SkillConfigManager.getUseSetting(hero, this,
-                            PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK_NODE, DEFAULT_PERCENT_DAMAGE_INCREASE_PER_BLEEDING_STACK, false);
-                    if (percentDamageIncreasePerBleedingStack < 0) {
-                        percentDamageIncreasePerBleedingStack = 0;
-                    }
-
-                    double flatDamageIncrease = flatDamageIncreasePerBleedingStack * bleedEffect.getStackCount();
-                    double percentDamageIncrease = percentDamageIncreasePerBleedingStack * bleedEffect.getStackCount();
-
-                    double extraDamage = flatDamageIncrease + (e.getDamage() * percentDamageIncrease);
-                    e.setDamage((e.getDamage() + extraDamage));
                 }
             }
         }
