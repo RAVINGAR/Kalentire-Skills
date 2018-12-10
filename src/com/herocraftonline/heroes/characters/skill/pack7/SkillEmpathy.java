@@ -1,9 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
 import org.bukkit.Effect;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -93,8 +96,10 @@ public class SkillEmpathy extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.WITCH_MAGIC, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 45, 16);
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.SPELL, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 15, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.WITCH_MAGIC, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 45, 16);
+        target.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.4, 0), 45, 0.3, 0.3, 0.3, 0.5);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.4, 0), Effect.SPELL, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 15, 16);
+        target.getWorld().spawnParticle(Particle.SPELL, target.getLocation().add(0, 0.4, 0), 15, 0.3, 0.3, 0.3, 0);
 
         return SkillResult.NORMAL;
     }

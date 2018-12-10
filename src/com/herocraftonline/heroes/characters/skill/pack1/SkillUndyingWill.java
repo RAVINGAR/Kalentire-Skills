@@ -1,11 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.pack1;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,7 +22,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillUndyingWill extends ActiveSkill {
@@ -75,7 +74,7 @@ public class SkillUndyingWill extends ActiveSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
         hero.addEffect(new UndyingWillEffect(this, player, period, duration));
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WOLF_GROWL.value(), 0.5F, 0.1F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_GROWL, 0.5F, 0.1F);
 
         return SkillResult.NORMAL;
     }
@@ -102,8 +101,9 @@ public class SkillUndyingWill extends ActiveSkill {
                     if (event.getDamage() > currentHealth) {
                         if (currentHealth != 1.0)
                             player.setHealth(1.0);
-                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.5F, 1.0F, 0.5F, 0.0F, 25, 16);
-                        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.5F, 0.8F);
+                        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.5F, 1.0F, 0.5F, 0.0F, 25, 16);
+                        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 25, 0.5, 1, 0.5, 0, new Particle.DustOptions(Color.RED, 1));
+                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 0.8F);
 
                         event.setDamage(0.0);
                     }

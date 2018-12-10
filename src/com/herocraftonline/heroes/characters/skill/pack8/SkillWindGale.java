@@ -3,16 +3,14 @@ package com.herocraftonline.heroes.characters.skill.pack8;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -28,7 +26,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillWindGale extends ActiveSkill {
@@ -134,8 +131,9 @@ public class SkillWindGale extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         for (Location location : locations) {
-                            location.getWorld().playSound(location, CompatSound.ENTITY_GENERIC_BURN.value(), 0.25F, 1.0F);
-                            location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 0.1F, 25, 16);
+                            location.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.25F, 1.0F);
+                            //location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 0.1F, 25, 16);
+                            location.getWorld().spawnParticle(Particle.CLOUD, 25, 0, 0, 0, 0.1);
                         }
 
 
@@ -174,8 +172,6 @@ public class SkillWindGale extends ActiveSkill {
 
                             boolean weakenVelocity = false;
                             switch (mat) {
-                                case STATIONARY_WATER:
-                                case STATIONARY_LAVA:
                                 case WATER:
                                 case LAVA:
                                 case SOUL_SAND:

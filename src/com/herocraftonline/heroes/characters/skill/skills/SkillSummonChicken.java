@@ -4,10 +4,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillSummonChicken extends SkillBaseSummonEntity {
 
@@ -25,7 +25,7 @@ public class SkillSummonChicken extends SkillBaseSummonEntity {
     
     @Override
     protected void applySoundEffects(World world, Player player) {
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CHICKEN_HURT.value(), 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_HURT, 0.8F, 1.0F);
     }
 
 }

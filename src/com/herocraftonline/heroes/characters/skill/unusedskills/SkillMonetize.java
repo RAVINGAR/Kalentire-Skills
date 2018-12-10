@@ -8,8 +8,11 @@ import static org.bukkit.ChatColor.GRAY;
 import static org.bukkit.ChatColor.RESET;
 
 import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -19,7 +22,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillMonetize extends ActiveSkill{
 	private static final String base="base-coin-per-ingot",gain="coin-gain-per-level";
@@ -43,16 +45,16 @@ public class SkillMonetize extends ActiveSkill{
 		int count=0;
 		for(ItemStack stack:inv.getContents()){
 			if(stack==null)continue;
-			if(stack.getTypeId()==266){
+			if(stack.getType()== Material.GOLD_INGOT){
 				count+=stack.getAmount();
 			}
 		}
 		if(count>0){
-			inv.remove(266);
+			inv.remove(Material.GOLD_INGOT);
 			final double amount =calculateCoins(hero)*count;
-			econ.depositPlayer(player.getName(),amount);
+			econ.bankDeposit(player.getName(),amount);
 	        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value() , 0.8F, 1.0F);
+	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP , 0.8F, 1.0F);
 			broadcastExecuteText(hero);
 			player.sendMessage(GRAY+"You have turned "+boldGold(count+" ingot"+((count>1)?"s":""))+" into "+boldGold(econ.format(amount))+"!");
 			return SkillResult.NORMAL;
@@ -74,7 +76,7 @@ public class SkillMonetize extends ActiveSkill{
 	// This may cause issues if the player doesn't have a second class
 	private Double calculateCoins(Hero hero){
 		return getUseSetting(hero, this, base, def_base, false)
-					+getUseSetting(hero,this,gain,def_gain,false)*hero.getHeroLevel(hero.getSecondClass());
+					+getUseSetting(hero,this,gain,def_gain,false)*hero.getHeroLevel(hero.getSecondaryClass());
 	}
 	
 	@Override

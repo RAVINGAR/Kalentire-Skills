@@ -14,11 +14,11 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -81,7 +81,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 			keys.remove(setting.node());
 		}
 		keys.remove("cross-world");
-		keys.remove("icon-url");
+        keys.remove("icon-url");
 
 		if (args[0].equalsIgnoreCase("list")) {
 			for (String n : keys) {
@@ -200,7 +200,8 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         if (isDeparting) {
             broadcastExecuteText(hero);
-            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
+//            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
+            hero.getPlayer().getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getLocation(), 50, 0, 0.1F, 0, 0.5F);
         }
 
         Location portLocation = new Location(world, Double.parseDouble(portArgs.get(2)), Double.parseDouble(portArgs.get(3)), Double.parseDouble(portArgs.get(4)));
@@ -211,8 +212,9 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             memberPlayer.teleport(portLocation);
         }
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.BLOCK_PORTAL_TRAVEL.value(), 0.5F, 1.0F);
-        hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
+//        hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.5F, 50, 12);
+        hero.getPlayer().getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getLocation(), 50, 0, 0.1F, 0, 0.5F);
         return SkillResult.NORMAL;
     }
 
@@ -319,7 +321,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         Player player = event.getPlayer();
         if (pendingPort.remove(player.getName())) {
             broadcastExecuteText(plugin.getCharacterManager().getHero(player));
-            player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
         }
     }
 

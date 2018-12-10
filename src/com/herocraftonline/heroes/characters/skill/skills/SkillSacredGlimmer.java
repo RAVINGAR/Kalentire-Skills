@@ -7,13 +7,15 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
@@ -21,7 +23,7 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
 
 public class SkillSacredGlimmer extends SkillBaseBeam {
 
-	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.SPELL;
+	private static final Particle BEAM_PARTICLE = Particle.SPELL;
 
 	public SkillSacredGlimmer(Heroes plugin) {
 		super(plugin, "SacredGlimmer");
@@ -99,9 +101,9 @@ public class SkillSacredGlimmer extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), volume, 1);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), CompatSound.ENTITY_GENERIC_BURN.value(), volume, 1);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), CompatSound.ENTITY_GENERIC_BURN.value(), volume, 1);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_GENERIC_BURN, volume, 1);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.ENTITY_GENERIC_BURN, volume, 1);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.ENTITY_GENERIC_BURN, volume, 1);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);

@@ -9,11 +9,11 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -74,14 +74,12 @@ public class SkillPiggify extends TargettedSkill {
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
         Material material = target.getLocation().getBlock().getType();
-        EntityType type = (material.equals(Material.WATER) ||
-                material.equals(Material.STATIONARY_WATER) ?
-                EntityType.SQUID : EntityType.PIG);
+        EntityType type = (material.equals(Material.WATER) ? EntityType.SQUID : EntityType.PIG);
 
         Entity creature = target.getWorld().spawnEntity(target.getLocation(), type);
         plugin.getCharacterManager().getCharacter(target).addEffect(new PigEffect(this, player, duration, creature));
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ZOMBIE_PIG_HURT.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_PIGMAN_HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

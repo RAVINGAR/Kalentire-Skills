@@ -1,8 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -14,7 +17,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlind extends TargettedSkill {
@@ -75,8 +77,9 @@ public class SkillBlind extends TargettedSkill {
 
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
 
-        player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERMEN_AMBIENT.value(), 0.8F, 1.0F);
+        //player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+        player.getWorld().spawnParticle(Particle.SPELL, target.getLocation(), 10, 0, 0, 0, 0);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_AMBIENT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

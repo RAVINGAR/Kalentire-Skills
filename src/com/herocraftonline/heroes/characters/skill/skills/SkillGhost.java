@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.nms.scoreboard.TeamScoreboardPacket;
 import com.herocraftonline.heroes.nms.scoreboard.TeamScoreboardPacket.PacketAction;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

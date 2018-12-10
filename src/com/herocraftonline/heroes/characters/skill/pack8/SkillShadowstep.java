@@ -9,15 +9,16 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
@@ -110,7 +111,7 @@ public class SkillShadowstep extends TargettedSkill {
 
             //plugin.getCharacterManager().getCharacter(target).addEffect(new StunEffect(this, player, duration));
             player.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().playSound(playerLoc, CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
+            player.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
         }
@@ -138,7 +139,7 @@ public class SkillShadowstep extends TargettedSkill {
         //			if (player.teleport(teleLoc)) {
         //
         //				// Play Sound
-        //                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
+        //                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT.value(), 0.8F, 1.0F);
         //
         //				// Play Effect
         //				player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);

@@ -2,14 +2,12 @@ package com.herocraftonline.heroes.characters.skill.pack7;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -26,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillHolyAura extends ActiveSkill {
@@ -112,7 +109,7 @@ public class SkillHolyAura extends ActiveSkill {
 
         hero.addEffect(new HolyAuraEffect(this, player, duration, period, healing, undeadDamage));
         
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_NOTE_HARP.value(), 7.0F, 16);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 7.0F, 16);
 
         return SkillResult.NORMAL;
     }
@@ -184,7 +181,8 @@ public class SkillHolyAura extends ActiveSkill {
     			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
     			for (int i = 0; i < particleLocations.size(); i++)
     			{
-    				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+    				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+                    player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
     			}
     		}
 

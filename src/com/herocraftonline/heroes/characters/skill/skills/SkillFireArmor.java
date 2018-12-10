@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -35,7 +36,7 @@ public class SkillFireArmor extends PassiveSkill {
         setDescription("Your armor has a $1% chance to ignite your attackers!");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.BUFFING);
         setEffectTypes(EffectType.FIRE);
-        defaultArmors.add(Material.GOLD_CHESTPLATE.name());
+        defaultArmors.add(Material.GOLDEN_CHESTPLATE.name());
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 

@@ -1,8 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -11,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillInvigorate extends TargettedSkill{
     
@@ -61,7 +62,7 @@ public class SkillInvigorate extends TargettedSkill{
         targetHero.setStamina(targetHero.getStamina() + staminaGain);
 
         broadcastExecuteText(hero, target);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_FLAP.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

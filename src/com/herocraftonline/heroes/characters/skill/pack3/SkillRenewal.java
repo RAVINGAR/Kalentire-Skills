@@ -5,8 +5,9 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
-import com.herocraftonline.heroes.util.CompatSound;
 
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -35,18 +36,19 @@ public class SkillRenewal extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 0.9f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.9f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spigot().playEffect(target.getLocation(), // location
-                org.bukkit.Effect.HAPPY_VILLAGER, // effect
-                0, // id
-                0, // data
-                1, 1, 1, // offset
-                1.0f, // speed
-                25, // particle count
-                1); // radius
+//        world.spigot().playEffect(target.getLocation(), // location
+//                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+//                0, // id
+//                0, // data
+//                1, 1, 1, // offset
+//                1.0f, // speed
+//                25, // particle count
+//                1); // radius
+        world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation(), 25, 1, 1, 1, 1);
     }
 
     @Override

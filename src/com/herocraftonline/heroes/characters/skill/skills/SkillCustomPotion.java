@@ -11,9 +11,12 @@ import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -238,14 +241,16 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
                 hero.heal(event.getDelta());
 
             Player player = hero.getPlayer();
-            player.getWorld().spigot().playEffect(player.getLocation(), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+            //player.getWorld().spigot().playEffect(player.getLocation(), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 25, 0.5, 1, 0.5, 0.1);
         }
 
         @Override
         public void tickMonster(Monster monster) {
             super.tickMonster(monster);
             LivingEntity entity = monster.getEntity();
-            entity.getWorld().spigot().playEffect(entity.getLocation(), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+            //entity.getWorld().spigot().playEffect(entity.getLocation(), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+            entity.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, entity.getLocation(), 25, 0.5, 1, 0.5, 0.1);
         }
     }
 

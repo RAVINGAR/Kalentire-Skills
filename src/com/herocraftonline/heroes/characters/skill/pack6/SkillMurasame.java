@@ -2,9 +2,13 @@ package com.herocraftonline.heroes.characters.skill.pack6;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -17,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillMurasame extends TargettedSkill {
@@ -84,7 +87,7 @@ public class SkillMurasame extends TargettedSkill {
                 NMSHandler.getInterface().getItemInMainHand(player.getInventory()).setDurability((short) (dura + duraCost));
             } else if (maxDura - dura == duraCost) {
                 NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 1.0F);
             } else {
                 player.sendMessage("Your Katana doesn't have enough durability to use Murasame!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
@@ -116,7 +119,8 @@ public class SkillMurasame extends TargettedSkill {
             }
         }
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;
     }

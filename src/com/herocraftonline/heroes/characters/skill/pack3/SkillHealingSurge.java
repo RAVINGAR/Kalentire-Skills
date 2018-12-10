@@ -11,9 +11,12 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Effect;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 public class SkillHealingSurge extends TargettedSkill {
 	
@@ -144,8 +147,10 @@ public class SkillHealingSurge extends TargettedSkill {
             
             // This would be a good place for an effect.
             Player player = hero.getPlayer();
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 35, 16);
-            player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 15, 16);
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 35, 16);
+            player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 35, 0.5, 1, 0.5, 0.2);
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 15, 16);
+            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 15, 0.5, 1, 0.5, 0.2);
         }
     }
 }

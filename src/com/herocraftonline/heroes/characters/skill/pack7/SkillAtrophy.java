@@ -1,11 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.herocraftonline.heroes.Heroes;
@@ -22,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAtrophy extends TargettedSkill {
@@ -91,7 +89,7 @@ public class SkillAtrophy extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new AtrophyEffect(this, player, duration, period, tickDamage));
 
-        target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_ZOMBIE_HURT.value(), 0.8F, 2.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_HURT, 0.8F, 2.0F);
 
         return SkillResult.NORMAL;
     }
@@ -121,7 +119,8 @@ public class SkillAtrophy extends TargettedSkill {
                 	Location location = p.getLocation().add(0, 0.5, 0);
                     if (time < 1.0) 
                     {
-                        p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+                        //p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+                        p.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, 10, 0.5, 0.5, 0.5, 0.1, Bukkit.createBlockData(Material.SLIME_BLOCK));
                     } 
                     else 
                     {
@@ -149,7 +148,8 @@ public class SkillAtrophy extends TargettedSkill {
                 	Location location = p.getLocation().add(0, 0.5, 0);
                     if (time < 1.0) 
                     {
-                        p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+                        //p.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+                        p.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, 10, 0.5, 0.5, 0.5, 0.1, Bukkit.createBlockData(Material.SLIME_BLOCK));
                     } 
                     else 
                     {

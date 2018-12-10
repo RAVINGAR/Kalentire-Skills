@@ -13,17 +13,18 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.List;
 
 //import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
 
@@ -47,18 +48,18 @@ public class SkillAccelerando extends ActiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
         skillSong = new Song(
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.2F, 0),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.5F, 1),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.9F, 2),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.2F, 3),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.5F, 4),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.9F, 5),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.2F, 6),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.5F, 7),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.9F, 8),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.2F, 9),
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.9F, 0.5F, 10),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.9F, 0.9F, 11)
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.2F, 0),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.5F, 1),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 2),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 3),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 4),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 5),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 6),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 7),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 8),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 9),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 10),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.9F, 11)
         );
     }
 
@@ -138,9 +139,11 @@ public class SkillAccelerando extends ActiveSkill {
 
         Location playerLoc = player.getLocation();
 
-        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        List<Location> circle = circle(playerLoc, 72, radius);
+        for (int i = 0; i < circle.size(); i++)
         {
-            player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+            //player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+            player.getWorld().spawnParticle(Particle.NOTE, circle.get(i), 1, 0, 0.2, 0, 1);
         }
 
         //Apply the effect to all party members
@@ -153,12 +156,14 @@ public class SkillAccelerando extends ActiveSkill {
                 continue;
 
             tHero.addEffect(accelEffect);
-            tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
+            //tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
+            tHero.getPlayer().getWorld().spawnParticle(Particle.CLOUD, tHero.getPlayer().getLocation(), 16, 0, 0, 0, 1);
         }
 
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        //FIXME Is it a particle or a sound
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -11,7 +12,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillHolyStrike extends TargettedSkill {
 
@@ -40,7 +40,7 @@ public class SkillHolyStrike extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.value() , 0.4F, 1.0F); 
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR , 0.4F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

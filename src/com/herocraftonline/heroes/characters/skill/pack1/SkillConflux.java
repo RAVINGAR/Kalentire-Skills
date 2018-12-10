@@ -14,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -23,6 +22,7 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -115,7 +115,7 @@ public class SkillConflux extends ActiveSkill {
         float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 2.1, false);
 
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
         //double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
         //double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         //damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
@@ -155,7 +155,8 @@ public class SkillConflux extends ActiveSkill {
             ArrayList<Location> particleLocations = circle(player.getLocation(), 45, r / 2);
             for (int i = 0; i < particleLocations.size(); i++)
             {
-                player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+                //player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+                player.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
             }
         }
 
@@ -188,8 +189,6 @@ public class SkillConflux extends ActiveSkill {
 
             Material belowMat = lEntity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
             switch (belowMat) {
-                case STATIONARY_WATER:
-                case STATIONARY_LAVA:
                 case WATER:
                 case LAVA:
                 case SOUL_SAND:

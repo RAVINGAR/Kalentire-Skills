@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.herocraftonline.heroes.Heroes;
@@ -21,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillInvuln extends ActiveSkill {
@@ -102,7 +101,7 @@ public class SkillInvuln extends ActiveSkill {
 				for (double x = -1.5; x <= 1.6; x+= 0.5) {
 					for (double z = -1.5; z < 1.6; z+= 0.5) {
 						Location loc = getEntity().getLocation().add(x, 4 - (step * 0.5), z);
-						display(ParticleEffect.REDSTONE, loc);
+						display(Particle.REDSTONE, loc);
 					}
 				}
 				step++;
@@ -155,7 +154,7 @@ public class SkillInvuln extends ActiveSkill {
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 		hero.addEffect(new InvulnerabilityEffect(this, player, duration, applyText, expireText));
 
-		player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 1.0F);
 
 		return SkillResult.NORMAL;
 	}

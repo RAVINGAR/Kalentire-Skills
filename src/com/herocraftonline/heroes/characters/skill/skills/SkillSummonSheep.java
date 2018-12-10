@@ -1,18 +1,19 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.DyeColor;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Sheep;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillSummonSheep extends SkillBaseSummonEntity {
@@ -45,6 +46,6 @@ public class SkillSummonSheep extends SkillBaseSummonEntity {
     
     @Override
     protected void applySoundEffects(World world, Player player) {
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_SHEEP_AMBIENT.value() , 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SHEEP_AMBIENT , 0.8F, 1.0F);
     }
 }

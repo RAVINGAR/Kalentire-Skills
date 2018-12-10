@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -26,7 +29,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDespair extends ActiveSkill {
@@ -137,11 +139,12 @@ public class SkillDespair extends ActiveSkill {
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.SPELL, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.SPELL, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                player.getWorld().spawnParticle(Particle.SPELL, 1, 0, 0.1, 0, 0);
 			}
 		}
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GHAST_SCREAM.value(), 1.2F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 1.2F, 2.0F);
 
         return SkillResult.NORMAL;
     }

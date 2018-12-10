@@ -129,7 +129,7 @@ public class SkillBreed extends PassiveSkill {
                 switch (material) {
                     case MELON_SEEDS:
                     case PUMPKIN_SEEDS:
-                    case NETHER_WARTS:
+                    case NETHER_WART:
                         isBreedAttempt = true;
                         break;
                     default:
@@ -137,8 +137,15 @@ public class SkillBreed extends PassiveSkill {
                 }
             }
             else if (targetEntity instanceof Ocelot) {
-                if (material == Material.RAW_FISH)
-                    isBreedAttempt = true;
+                switch (material) {
+                    case COD:
+                    case SALMON:
+                    case TROPICAL_FISH:
+                        isBreedAttempt = true;
+                        break;
+                    default:
+                        return;
+                }
             }
             else if (targetEntity instanceof Wolf) {
                 if (material == Material.BONE) {
@@ -150,7 +157,7 @@ public class SkillBreed extends PassiveSkill {
                 switch (material) {
                     case CARROT:
                     case GOLDEN_CARROT:
-                    case YELLOW_FLOWER:
+                    case DANDELION_YELLOW:
                         isBreedAttempt = true;
                         break;
                     default:

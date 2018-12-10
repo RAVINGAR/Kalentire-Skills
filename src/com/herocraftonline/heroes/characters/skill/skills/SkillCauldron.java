@@ -36,6 +36,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -101,60 +102,61 @@ public class SkillCauldron extends PassiveSkill {
 	}
 
 	public void loadCauldronRecipes() {
-		Server server = plugin.getServer();
-		FileConfiguration config = getCauldronConfig();
-		if (ShapedCauldronRecipes.size() > 0){
-			this.ShapedCauldronRecipes.clear();
-			this.CauldronRecipesLevel.clear();
-		}
-
-		for(int i =0; i<getCauldronConfig().getInt("CauldronRecipes.size"); i++){
-			ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(config.getInt("CauldronRecipes."+i+".results.TypeId")
-					,config.getInt("CauldronRecipes."+i+".results.result-amount"),(short)config.getInt("CauldronRecipes."+i+".results.materialData")));
-			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
-			String top = "ABC";			//3 Spaces->3 slots
-			String mid = "DEF";
-			String bot = "GHI";
-
-			//Determine what is top
-			for(int j=0; j<3; j++){
-				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
-				//If ID is 0, replace with space
-				if(id == 0) {
-					top = top.replace(convertInttoChar(j), ' ') ;
-				}
-			}
-
-			//Determine what is mid
-			for(int j=3; j<6; j++){
-				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
-				if(id == 0) {
-					mid = mid.replace(convertInttoChar(j), ' ') ;
-				}
-			}
-
-			//Determine what is bot
-			for(int j=6; j<9; j++){
-				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
-				if(id == 0) {
-					bot = bot.replace(convertInttoChar(j), ' ') ;
-				}
-			}
-
-			//Set our shaped recipe to have this shape.
-			shapedRecipe.shape(top,mid,bot);
-			for(int j=0; j<9; j++) {
-				//Error handling if configuration requirements not met
-				if(!(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId",0) == 0)) {
-					shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
-				}
-			}
-			server.addRecipe(shapedRecipe);
-			this.ShapedCauldronRecipes.add(shapedRecipe);
-
-			CauldronRecipesLevel.add(config.getInt("CauldronRecipes."+i+".results.Level"));
-
-		}
+		//FIXME Find replacement to recipe api
+//		Server server = plugin.getServer();
+//		FileConfiguration config = getCauldronConfig();
+//		if (ShapedCauldronRecipes.size() > 0){
+//			this.ShapedCauldronRecipes.clear();
+//			this.CauldronRecipesLevel.clear();
+//		}
+//
+//		for(int i =0; i<getCauldronConfig().getInt("CauldronRecipes.size"); i++){
+//			ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(config.getInt("CauldronRecipes."+i+".results.TypeId")
+//					,config.getInt("CauldronRecipes."+i+".results.result-amount"),(short)config.getInt("CauldronRecipes."+i+".results.materialData")));
+//			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
+//			String top = "ABC";			//3 Spaces->3 slots
+//			String mid = "DEF";
+//			String bot = "GHI";
+//
+//			//Determine what is top
+//			for(int j=0; j<3; j++){
+//				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
+//				//If ID is 0, replace with space
+//				if(id == 0) {
+//					top = top.replace(convertInttoChar(j), ' ') ;
+//				}
+//			}
+//
+//			//Determine what is mid
+//			for(int j=3; j<6; j++){
+//				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
+//				if(id == 0) {
+//					mid = mid.replace(convertInttoChar(j), ' ') ;
+//				}
+//			}
+//
+//			//Determine what is bot
+//			for(int j=6; j<9; j++){
+//				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
+//				if(id == 0) {
+//					bot = bot.replace(convertInttoChar(j), ' ') ;
+//				}
+//			}
+//
+//			//Set our shaped recipe to have this shape.
+//			shapedRecipe.shape(top,mid,bot);
+//			for(int j=0; j<9; j++) {
+//				//Error handling if configuration requirements not met
+//				if(!(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId",0) == 0)) {
+//					shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
+//				}
+//			}
+//			server.addRecipe(shapedRecipe);
+//			this.ShapedCauldronRecipes.add(shapedRecipe);
+//
+//			CauldronRecipesLevel.add(config.getInt("CauldronRecipes."+i+".results.Level"));
+//
+//		}
 
 	}
 	public char convertInttoChar(int i) {
@@ -194,7 +196,7 @@ public class SkillCauldron extends PassiveSkill {
 			}
 			Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
 
-			if(event.getClickedBlock().getType() == Material.WORKBENCH){
+			if(event.getClickedBlock().getType() == Material.CRAFTING_TABLE){
 				if(!player.contains(event.getPlayer())){
 					player.add(event.getPlayer());
 					usingCauldronbench.add(player.size()-1, false);
@@ -218,12 +220,14 @@ public class SkillCauldron extends PassiveSkill {
 					//Removed the permission check: it was adding .05-.1 sec delay (believe it or not this is huge ok?)
 					//every time someone crafted something and served an redundant purpose considering we already checked for
 					// Texteo: removed cauldron.isFull() because it checks if the cauldron IS FULL.... of course only FULL recipes will work goes into if statement if error(cauldron.isFull() &&)
-					if( fireblock.getType() == Material.FIRE && plankblock.getType() == Material.LOG){
-						player.add(event.getPlayer());
-						usingCauldronbench.add(player.size()-1, true);
-						bCanMake.add(player.size()-1, false);
-						openCauldron(event.getPlayer());
-					}
+
+					//FIXME Flattening
+//					if( fireblock.getType() == Material.FIRE && plankblock.getType() == Material.LOG){
+//						player.add(event.getPlayer());
+//						usingCauldronbench.add(player.size()-1, true);
+//						bCanMake.add(player.size()-1, false);
+//						openCauldron(event.getPlayer());
+//					}
 				}
 			}
 		}
@@ -291,11 +295,12 @@ public class SkillCauldron extends PassiveSkill {
 
 						ItemStack item = event.getCurrentItem();
 						for (int j=0; j<ShapedCauldronRecipes.size(); j++){
-							if (item.getTypeId() == ShapedCauldronRecipes.get(j).getResult().getTypeId() && event.isShiftClick()){
-								player.get(i).sendMessage(ChatColor.RED+"You can't ShiftClick cauldron recipes at this time!");
-								event.setCancelled(true);
-								break;
-							}
+							//FIXME ID usage
+//							if (item.getTypeId() == ShapedCauldronRecipes.get(j).getResult().getTypeId() && event.isShiftClick()){
+//								player.get(i).sendMessage(ChatColor.RED+"You can't ShiftClick cauldron recipes at this time!");
+//								event.setCancelled(true);
+//								break;
+//							}
 						}
 					}
 				}
@@ -340,8 +345,8 @@ public class SkillCauldron extends PassiveSkill {
 			return false;
 		}
 		ShapedRecipe comparedRecipe = (ShapedRecipe)recipe;
-		//If results don't match, then obviously its not the same 
-		if(comparedRecipe.getResult().getTypeId() != shapedRecipe.getResult().getTypeId()) {
+		//If results don't match, then obviously its not the same
+		if(comparedRecipe.getResult().getType() != shapedRecipe.getResult().getType()) {
 			return false;
 		}
 		/*

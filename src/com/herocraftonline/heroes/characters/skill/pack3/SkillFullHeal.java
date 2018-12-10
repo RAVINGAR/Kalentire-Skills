@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -16,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFullHeal extends TargettedSkill {
@@ -91,17 +93,20 @@ public class SkillFullHeal extends TargettedSkill {
         }
         targetHero.heal(hrhEvent.getDelta());
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.9F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);
         broadcastExecuteText(hero, target);
         
         Player targetPlayer = targetHero.getPlayer();
-        targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.CLOUD, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 25, 16);
+        //targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.CLOUD, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 25, 16);
+        targetPlayer.getWorld().spawnParticle(Particle.CLOUD, targetPlayer.getLocation(), 25, 0.5, 0.5, 0.5, 0.5);
         ArrayList<Location> particleLocations = helix(player.getLocation(), 3.0D, 2.0D, 0.05D);
         for (Location l : particleLocations)
         {
-        	player.getWorld().spigot().playEffect(l, org.bukkit.Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0, 1, 16);
+        	//player.getWorld().spigot().playEffect(l, org.bukkit.Effect.FIREWORKS_SPARK, 0, 0, 0, 0, 0, 0, 1, 16);
+            player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, l, 0, 0, 0, 0);
         }
-        targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.2F, 25, 16);
+        //targetPlayer.getWorld().spigot().playEffect(targetPlayer.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.2F, 25, 16);
+        targetPlayer.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, targetPlayer.getLocation(), 25, 0.5, 0.5, 0.5, 0.2);
 
         return SkillResult.NORMAL;
     }

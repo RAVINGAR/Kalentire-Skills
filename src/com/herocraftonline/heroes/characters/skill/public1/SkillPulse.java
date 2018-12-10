@@ -5,15 +5,13 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.ArrayList;
@@ -111,12 +109,13 @@ public class SkillPulse extends ActiveSkill {
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 45, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+                player.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
 			}
 		}
         
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 1.0F, 1.2F);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_CHICKEN_EGG.value(), 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.2F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.2F);
 
         return SkillResult.NORMAL;
     }

@@ -2,9 +2,13 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
@@ -15,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillDragonDash extends TargettedSkill {
 
@@ -120,8 +123,9 @@ public class SkillDragonDash extends TargettedSkill {
         // Create particle effect at target
         playEffect(hero, target);
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_GROWL.value(), 1.0F, 1.2F);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spawnParticle(Particle.CLOUD, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0F, 1.2F);
         return SkillResult.NORMAL;
     }
 
@@ -131,6 +135,7 @@ public class SkillDragonDash extends TargettedSkill {
         Location loc = target.getLocation();
         loc.setY(loc.getY() + 0.5);
 
-        hero.getPlayer().getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0, 0, 0, particlePower, particleAmount, 64);
+        //hero.getPlayer().getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0, 0, 0, particlePower, particleAmount, 64);
+        hero.getPlayer().getWorld().spawnParticle(Particle.CLOUD, loc, particleAmount, 0, 0, 0, particlePower, true);
     }
 }

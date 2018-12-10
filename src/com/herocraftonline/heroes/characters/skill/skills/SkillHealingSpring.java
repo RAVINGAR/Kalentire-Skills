@@ -8,12 +8,10 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
@@ -123,10 +121,14 @@ public class SkillHealingSpring extends ActiveSkill
 						Location location = p.getLocation().add(0, 0.5, 0);
 						if (effectTicks < maxEffectTicks) 
 						{
-							p.getWorld().spigot().playEffect(location, Effect.SPLASH, 0, 0, 1.6F, 0.3F, 1.6F, 0.0F, 25, 16);
-							p.getWorld().spigot().playEffect(location, Effect.SPLASH, 0, 0, 0.3F, 3.0F, 0.3F, 0.0F, 25, 16);
-							p.getWorld().spigot().playEffect(location.add(0, 3.0F, 0), Effect.SPLASH, 0, 0, 0.7F, 1.0F, 0.7F, 0.0F, 25, 16);
-							p.getWorld().spigot().playEffect(location.add(0, 1.0F, 0), Effect.SPLASH, 0, 0, 1.4F, 1.0F, 1.4F, 0.0F, 25, 16);
+							//p.getWorld().spigot().playEffect(location, Effect.SPLASH, 0, 0, 1.6F, 0.3F, 1.6F, 0.0F, 25, 16);
+							p.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 25, 1.6, 0.3, 1.6, 0);
+							//p.getWorld().spigot().playEffect(location, Effect.SPLASH, 0, 0, 0.3F, 3.0F, 0.3F, 0.0F, 25, 16);
+							p.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 25, 0.3, 3, 0.3, 0);
+							//p.getWorld().spigot().playEffect(location.add(0, 3.0F, 0), Effect.SPLASH, 0, 0, 0.7F, 1.0F, 0.7F, 0.0F, 25, 16);
+							p.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 25, 0.7, 1, 0.7, 0);
+							//p.getWorld().spigot().playEffect(location.add(0, 1.0F, 0), Effect.SPLASH, 0, 0, 1.4F, 1.0F, 1.4F, 0.0F, 25, 16);
+							p.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 25, 1.4, 1, 1.4, 0);
 							effectTicks++;
 						} 
 						else 

@@ -7,8 +7,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
-import com.herocraftonline.heroes.util.CompatSound;
 
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -42,24 +44,25 @@ public class SkillSacredTouch extends SkillBaseHeal {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
                     hero.removeEffect(effect);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 1.6F, 1.3F);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 1.6F, 1.3F);
                 }
             }
         }
     }
 
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.FIREWORKS_SPARK, // effect
-                0, // id
-                0, // data
-                1, 1, 1, // offset
-                1.0f, // speed
-                25, // particle count
-                1); // radius
+//        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+//                org.bukkit.Effect.FIREWORKS_SPARK, // effect
+//                0, // id
+//                0, // data
+//                1, 1, 1, // offset
+//                1.0f, // speed
+//                25, // particle count
+//                1); // radius
+        world.spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 0.5, 0), 25, 1, 1, 1, 1);
     }
 }

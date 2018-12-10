@@ -3,10 +3,13 @@ package com.herocraftonline.heroes.characters.skill.pack6;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
@@ -22,7 +25,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillAshura extends TargettedSkill {
@@ -92,7 +94,7 @@ public class SkillAshura extends TargettedSkill {
                 NMSHandler.getInterface().getItemInMainHand(player.getInventory()).setDurability((short) (dura + duraCost));
             } else if (maxDura - dura == duraCost) {
                 NMSHandler.getInterface().setItemInMainHand(player.getInventory(), null);
-                player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.5F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 1.0F);
             } else {
                 player.sendMessage("Your Katana doesn't have enough durability to use Ashura!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
@@ -117,8 +119,6 @@ public class SkillAshura extends TargettedSkill {
 
         boolean weakenVelocity = false;
         switch (mat) {
-        case STATIONARY_WATER:
-        case STATIONARY_LAVA:
         case WATER:
         case LAVA:
         case SOUL_SAND:
@@ -171,8 +171,10 @@ public class SkillAshura extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 95, 16);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.TILE_BREAK, 115, 3, 0.3F, 0.2F, 0.3F, 0.5F, 45, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 95, 16);
+        player.getWorld().spawnParticle(Particle.CRIT_MAGIC, target.getLocation().add(0, 0.5, 0), 95, 0, 0, 0, 1);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.TILE_BREAK, 115, 3, 0.3F, 0.2F, 0.3F, 0.5F, 45, 16);
+        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 45, 0.3, 0.3, 0.3, 0.5, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
 
         return SkillResult.NORMAL;
     }

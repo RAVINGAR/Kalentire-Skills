@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.*;
@@ -14,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -86,7 +86,7 @@ public class SkillBoneSpear extends ActiveSkill {
         
         // This looks out of place, but it's up here because it turns into ear-explosion-death-sound if it's in the loop.
         // Also I just wanted to use the phrase "ear-explosion-death-sound."
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_SKELETON_HURT.value(), 6.0F, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SKELETON_HURT, 6.0F, 1);
 
         int numBlocks = 0;
         while (iter.hasNext()) {
@@ -102,8 +102,10 @@ public class SkillBoneSpear extends ActiveSkill {
                     	
                         //attempting spigot particles
                     	// Why does it play a bunch of crit particles every block the spear travels?
-                        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-                        player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 4, 16);                        
+                        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                        player.getWorld().spawnParticle(Particle.CRIT, player.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
+                        //player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 4, 16);
+                        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation, 4, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.QUARTZ_BLOCK));
                         
                         // Check our entity list to see if they are on this specific block at the moment the firework plays
                         for (Entity entity : nearbyEntities) {

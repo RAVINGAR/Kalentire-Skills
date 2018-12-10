@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,14 +42,15 @@ public class SkillAbsolution extends SkillBaseHeal {
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.FIREWORKS_SPARK, // effect
-                0, // id
-                0, // data
-                0.5F, 0.5F, 0.5F, // offset
-                1.0f, // speed
-                25, // particle count
-                16); // radius
+//        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+//                org.bukkit.Effect.FIREWORKS_SPARK, // effect
+//                0, // id
+//                0, // data
+//                0.5F, 0.5F, 0.5F, // offset
+//                1.0f, // speed
+//                25, // particle count
+//                16); // radius
+        world.spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 0.5, 0), 25, 0.5, 0.5, 0.5, 1);
     }
 
     @Override
@@ -55,7 +58,8 @@ public class SkillAbsolution extends SkillBaseHeal {
         for (Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.DARK)) {
-                	hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 16, 16);
+                	//hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 16, 16);
+                    hero.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, hero.getPlayer().getLocation().add(0, 0.3, 0), 16, 0.5, 0.5, 0.5, 0);
                     hero.removeEffect(effect);
                 }
             }

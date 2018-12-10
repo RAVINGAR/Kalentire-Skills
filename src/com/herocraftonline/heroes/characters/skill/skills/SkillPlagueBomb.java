@@ -9,17 +9,15 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Effect;
+
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -94,8 +92,9 @@ public class SkillPlagueBomb
     Player player = plagueBombs.get(sheep.getEntityId());
     Hero hero = plugin.getCharacterManager().getHero(player);
     sheep.setColor(DyeColor.BLUE);
-    sheep.getWorld().playEffect(sheep.getLocation(), Effect.EXPLOSION_HUGE, 3);
-    sheep.getWorld().playSound(sheep.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.8F, 1.0F);
+    //sheep.getWorld().playEffect(sheep.getLocation(), Effect.EXPLOSION_HUGE, 3);
+    sheep.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, sheep.getLocation(), 3);
+    sheep.getWorld().playSound(sheep.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.8F, 1.0F);
     sheep.damage(1000.0D);
     plagueBombs.remove(sheep.getEntityId());
     

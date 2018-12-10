@@ -2,10 +2,13 @@ package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -80,13 +83,14 @@ public class SkillForceTotem extends SkillBaseTotem {
             }
             
             // The effect code is up here because the targets are being sent flying up. Can't accurately put the effect where we want it then.
-            @SuppressWarnings("deprecation")
-            int id = entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getTypeId();
-            /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
-             * offset controls how spread out the particles are
-             * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
-             * */
-            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.6, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 150, 16);
+//            @SuppressWarnings("deprecation")
+//            int id = entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getTypeId();
+//            /* This is the new Particle API system for Spigot - the first few int = id, data, offsetX/Y/Z, speed, count, radius)
+//             * offset controls how spread out the particles are
+//             * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
+//             * */
+//            entity.getWorld().spigot().playEffect(entity.getLocation().add(0, 0.6, 0), Effect.TILE_BREAK, id, 0, 0, 0, 0, 1, 150, 16);
+            entity.getWorld().spawnParticle(Particle.BLOCK_CRACK, entity.getLocation().add(0, 0.6, 0), 150, 0, 0, 0, 1, entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
             
             if(damage > 0) {
                 damageEntity(entity, heroP, damage);

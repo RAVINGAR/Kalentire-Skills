@@ -7,11 +7,14 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,8 +24,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
-
-import static com.herocraftonline.heroes.util.EntityUtil.ghost;
 
 public class SkillJolt extends ActiveSkill 
 {
@@ -63,7 +64,7 @@ public class SkillJolt extends ActiveSkill
         fireball.setYield(0.0F);
         
 		final SmallFireball f = fireball;
-		ghost(f);
+		//ghost(f);
 
 		new BukkitRunnable() // velocity check, 8 times
 		{
@@ -85,8 +86,10 @@ public class SkillJolt extends ActiveSkill
 				{
 					f.remove();
                     fireballs.remove(f);
-					f.getWorld().spigot().playEffect(f.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 25, 32);
-					f.getWorld().spigot().playEffect(f.getLocation(), Effect.EXTINGUISH, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 15, 32);
+					//f.getWorld().spigot().playEffect(f.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 25, 32);
+                    f.getWorld().spawnParticle(Particle.SMOKE_LARGE, f.getLocation(), 25, 0.4, 0.4, 0.4, 0, true);
+					//FIXME Effect is a sound, but why is it played like a particle
+					//f.getWorld().spigot().playEffect(f.getLocation(), Effect.EXTINGUISH, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 15, 32);
 					cancel();
 				}
 			}
@@ -97,13 +100,16 @@ public class SkillJolt extends ActiveSkill
 			public void run()
 			{
 				if (f.isDead()) cancel();
-				f.getWorld().spigot().playEffect(f.getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 32);
+				//f.getWorld().spigot().playEffect(f.getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 32);
+                f.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, f.getLocation(), 25, 0.1, 0.1, 0.1, 0, true);
 			}
 		}.runTaskTimer(plugin, 0, 1);
 		
-		player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.EXPLOSION, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 50, 16);
+		//player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.EXPLOSION, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 50, 16);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getLocation().add(0, 0.5, 0), 50, 0.5, 0.2, 0.5, 0.6);
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 2.0F, 0.7F);
-		player.getWorld().spigot().playEffect(player.getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 25, 16);
+		//player.getWorld().spigot().playEffect(player.getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.2F, 0.5F, 0.6F, 25, 16);
+        player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, player.getLocation(), 25, 0.5, 0.2, 0.5, 0.6);
 		
         broadcastExecuteText(hero); 
         return SkillResult.NORMAL;
@@ -142,8 +148,10 @@ public class SkillJolt extends ActiveSkill
                 }
 
     			entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.3F);
-    			entity.getWorld().spigot().playEffect(entity.getEyeLocation(), Effect.EXPLOSION, 0, 0, 0.3F, 0.3F, 0.3F, 0.3F, 50, 16);
-    			entity.getWorld().spigot().playEffect(entity.getEyeLocation(), Effect.EXTINGUISH, 0, 0, 0.0F, 0.0F, 0.0F, 0.3F, 15, 16);
+    			//entity.getWorld().spigot().playEffect(entity.getEyeLocation(), Effect.EXPLOSION, 0, 0, 0.3F, 0.3F, 0.3F, 0.3F, 50, 16);
+                entity.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, entity.getEyeLocation(), 50, 0.3, 0.3, 0.3, 0.3);
+                //FIXME Effect is a sound, but why is it played like a particle
+    			//entity.getWorld().spigot().playEffect(entity.getEyeLocation(), Effect.EXTINGUISH, 0, 0, 0.0F, 0.0F, 0.0F, 0.3F, 15, 16);
     			
                 // Damage the player
                 addSpellTarget(entity, hero);

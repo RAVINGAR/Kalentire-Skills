@@ -12,6 +12,8 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -20,8 +22,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-
-import static com.herocraftonline.heroes.util.EntityUtil.ghost;
 
 public class SkillSoulreaper extends ActiveSkill {
 
@@ -101,7 +101,8 @@ public class SkillSoulreaper extends ActiveSkill {
             public void run() {
                 ArrayList<Location> circle = GeometryUtil.circle(sickle, 16, radius);
                 Location l = circle.get(fxIndex++);
-                    l.getWorld().spigot().playEffect(l, Effect.WITCH_MAGIC, 0, 0, 0.05f, 0.05f, 0.05f, 0.0f, 3, 128);
+                    //l.getWorld().spigot().playEffect(l, Effect.WITCH_MAGIC, 0, 0, 0.05f, 0.05f, 0.05f, 0.0f, 3, 128);
+                l.getWorld().spawnParticle(Particle.SPELL_WITCH, l, 3, 0.05, 0.05, 0.05, 0, true);
                 if (fxIndex >= circle.size()) fxIndex = 0;
                 if (maxRange == false) { // old fashioned boolean check
                     sickle.add(directionVector);
@@ -120,9 +121,10 @@ public class SkillSoulreaper extends ActiveSkill {
 
                     sickle.getWorld().playSound(sickle, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 0.5f, 1.0f); // i have no clue what this sounds like
                     Snowball test = (Snowball) sickle.getWorld().spawnEntity(sickle, EntityType.SNOWBALL);
-                    ghost(test);
-                    test.getWorld().spigot().playEffect(test.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.2f, 0.2f, 0.2f, 0.0f,
-                            25, 128);
+                    //ghost(test);
+//                    test.getWorld().spigot().playEffect(test.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.2f, 0.2f, 0.2f, 0.0f,
+//                            25, 128);
+                    test.getWorld().spawnParticle(Particle.SPELL_WITCH, test.getLocation(), 25, 0.2, 0.2, 0.2, 0, true);
                     for (Entity e : test.getNearbyEntities(radius, radius / 2, radius)) {
                         if (!(e instanceof LivingEntity)) continue;
                         LivingEntity ent = (LivingEntity) e;

@@ -51,6 +51,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -64,6 +65,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SkillAbsorbRunes extends ActiveSkill {
     // Runequeue Hashmap for holding all player RuneQueue tables
@@ -170,13 +172,16 @@ public class SkillAbsorbRunes extends ActiveSkill {
 
         // Play sound
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1.0F);
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.FLYING_GLYPH, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.FLYING_GLYPH, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation(), 30, 0, 1, 0, 50);
         // Save the altered list to the hashmap
         heroRunes.put(hero, runeList);
 
-        for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+        for (int i = 0; i < circle.size(); i++)
 		{
-        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+        	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+            player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, circle.get(i), 1, 0, 0, 0, 0);
 		}
 
         return SkillResult.NORMAL;

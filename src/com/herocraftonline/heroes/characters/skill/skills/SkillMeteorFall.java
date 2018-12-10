@@ -10,12 +10,8 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -118,59 +114,60 @@ public class SkillMeteorFall extends ActiveSkill {
         double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-        Block tBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
-     // Block tBlock = player.getTargetBlock(null, maxDist);
-        if (tBlock == null)
-            return SkillResult.INVALID_TARGET;
-
-        broadcastExecuteText(hero);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), 0.2F, 1.0F);
-
-        // Create a cicle of icebolt launch locations, based on skill radius.
-        List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
-        int numPossibleLaunchLocations = possibleLaunchLocations.size();
-
-        Collections.shuffle(possibleLaunchLocations);
-
-        long time = System.currentTimeMillis();
-        final Random ranGen = new Random((int) ((time / 2.0) * 12));
-
-        // Play the firework effects in a sequence
-        final World world = tBlock.getLocation().getWorld();
-        int k = 0;
-        for (int i = 0; i < numIceBolts; i++) {
-            if (k >= numPossibleLaunchLocations) {
-                Collections.shuffle(possibleLaunchLocations);
-                k = 0;
-            }
-
-            final Location fLoc = possibleLaunchLocations.get(k);
-            k++;
-
-            final int j = i;
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    //temp remove until we can figure out why the task is never-ending.
-                    /*if (j % 8 == 0) {
-                        Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
-                        world.playSound(fLoc, CompatSound.ENTITY_LIGHTNING_THUNDER.value(), 1.1F, 1.0F);
-                    }*/
-
-                    double randomX = ranGen.nextGaussian() * velocityDeviation;
-                    double randomZ = ranGen.nextGaussian() * velocityDeviation;
-
-                    Vector vel = new Vector(randomX, -yVelocity, randomZ);
-
-                    LargeFireball iceBolt = world.spawn(fLoc, LargeFireball.class);
-                    iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
-                    iceBolt.setShooter(player);
-                    iceBolt.setVelocity(vel);
-                    MeteorBalls.put(iceBolt, System.currentTimeMillis());
-                }
-            }, (long) ((delayBetween * i) * 20));
-        }
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
+        //FIXME Data Use
+//        Block tBlock = player.getTargetBlock((HashSet<Byte>)null, maxDist);
+//        if (tBlock == null)
+//            return SkillResult.INVALID_TARGET;
+//
+//        broadcastExecuteText(hero);
+//        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER.value(), 0.2F, 1.0F);
+//
+//        // Create a cicle of icebolt launch locations, based on skill radius.
+//        List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
+//        int numPossibleLaunchLocations = possibleLaunchLocations.size();
+//
+//        Collections.shuffle(possibleLaunchLocations);
+//
+//        long time = System.currentTimeMillis();
+//        final Random ranGen = new Random((int) ((time / 2.0) * 12));
+//
+//        // Play the firework effects in a sequence
+//        final World world = tBlock.getLocation().getWorld();
+//        int k = 0;
+//        for (int i = 0; i < numIceBolts; i++) {
+//            if (k >= numPossibleLaunchLocations) {
+//                Collections.shuffle(possibleLaunchLocations);
+//                k = 0;
+//            }
+//
+//            final Location fLoc = possibleLaunchLocations.get(k);
+//            k++;
+//
+//            final int j = i;
+//            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+//                @Override
+//                public void run() {
+//                    //temp remove until we can figure out why the task is never-ending.
+//                    /*if (j % 8 == 0) {
+//                        Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
+//                        world.playSound(fLoc, Sound.ENTITY_LIGHTNING_THUNDER.value(), 1.1F, 1.0F);
+//                    }*/
+//
+//                    double randomX = ranGen.nextGaussian() * velocityDeviation;
+//                    double randomZ = ranGen.nextGaussian() * velocityDeviation;
+//
+//                    Vector vel = new Vector(randomX, -yVelocity, randomZ);
+//
+//                    LargeFireball iceBolt = world.spawn(fLoc, LargeFireball.class);
+//                    //iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+//                    iceBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, iceBolt.getLocation(), 2, 0.4, 0.4, 0.4, 0, true);
+//                    iceBolt.setShooter(player);
+//                    iceBolt.setVelocity(vel);
+//                    MeteorBalls.put(iceBolt, System.currentTimeMillis());
+//                }
+//            }, (long) ((delayBetween * i) * 20));
+//        }
+//        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 

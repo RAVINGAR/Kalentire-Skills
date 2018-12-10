@@ -2,11 +2,10 @@ package com.herocraftonline.heroes.characters.skill.pack7;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,7 +23,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillHarmshield extends ActiveSkill {
 
@@ -94,14 +92,15 @@ public class SkillHarmshield extends ActiveSkill {
         Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new HarmShieldEffect(this, player, duration));
         
         ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
         for (int i = 0; i < locations.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 1.2F, 0, 0, 1, 16);
+			//player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0, 1.2F, 0, 0, 1, 16);
+            player.getWorld().spawnParticle(Particle.SPELL_WITCH, locations.get(i), 1, 0, 1.2, 0);
 		}
 
         return SkillResult.NORMAL;

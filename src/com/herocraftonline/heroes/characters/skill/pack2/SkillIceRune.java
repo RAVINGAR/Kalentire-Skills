@@ -22,17 +22,15 @@ package com.herocraftonline.heroes.characters.skill.pack2;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,7 +53,6 @@ import com.herocraftonline.heroes.characters.skill.runes.Rune;
 import com.herocraftonline.heroes.characters.skill.runes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runes.RuneApplicationEvent;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIceRune extends ActiveSkill {
@@ -134,11 +131,13 @@ public class SkillIceRune extends ActiveSkill {
 
         // Play Effects
         Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_AMBIENT.value(), 0.5F, 1.0F);
-        
-        for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
+
+        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+        for (int i = 0; i < circle.size(); i++)
 		{
-        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+        	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+            player.getWorld().spawnParticle(Particle.BLOCK_CRACK, circle.get(i).add(0, 1, 0), 1, 0, 0, 0, 0, Bukkit.createBlockData(Material.ICE));
 		}
 
         return SkillResult.NORMAL;
@@ -200,12 +199,13 @@ public class SkillIceRune extends ActiveSkill {
                     // Damage and slow the target
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
-                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.5F, 1.0F, 0.5F, 0.0F, 35, 16);
+                    //targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.5F, 1.0F, 0.5F, 0.0F, 35, 16);
+                    targEnt.getWorld().spawnParticle(Particle.BLOCK_CRACK, targEnt.getLocation(), 35, 0.5, 1, 0.5, 0, Bukkit.createBlockData(Material.ICE));
                     targCT.addEffect(sEffect);
 
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-                    player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
                 }
             }, 2L);
 

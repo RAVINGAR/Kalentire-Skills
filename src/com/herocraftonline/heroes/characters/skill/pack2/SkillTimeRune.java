@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.skills.SkillBaseMarkedTelepor
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillTimeRune extends SkillBaseMarkedTeleport {
@@ -22,7 +23,7 @@ public class SkillTimeRune extends SkillBaseMarkedTeleport {
 		super(plugin, "TimeRune", true, new EffectType[]{
 				EffectType.HEALING,
 				EffectType.BENEFICIAL,
-		}, ParticleEffect.REDSTONE, new Color[]{
+		}, Particle.REDSTONE, new Color[]{
 				//TODO Color change
 				Color.MAROON,
 				Color.WHITE

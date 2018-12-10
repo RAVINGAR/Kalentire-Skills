@@ -1,8 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.herocraftonline.heroes.Heroes;
@@ -16,7 +21,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBlackjack extends TargettedSkill {
@@ -100,7 +104,7 @@ public class SkillBlackjack extends TargettedSkill {
         else
             damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_WOODEN_DOOR_CLOSE.value(), 0.4F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_WOODEN_DOOR_CLOSE, 0.4F, 0.4F);
 
 
         // Stun, but only if they are a player.
@@ -120,7 +124,8 @@ public class SkillBlackjack extends TargettedSkill {
             }
         }
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 150, 16);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1, new Particle.DustOptions(Color.BLACK, 1));
         return SkillResult.NORMAL;
     }
 }

@@ -1,10 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.pack1;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,7 +27,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBloodWell extends ActiveSkill {
@@ -92,8 +93,8 @@ public class SkillBloodWell extends ActiveSkill {
 
         hero.addEffect(effect);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_BURP.value(), 0.9F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_SPLASH.value(), 0.5F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, 0.9F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 0.5F, 2.0F);
 
         return SkillResult.NORMAL;
     }
@@ -158,7 +159,7 @@ public class SkillBloodWell extends ActiveSkill {
                     hero.heal(finalHealing);
 
                     Player player = hero.getPlayer();
-                    player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_DRINK.value(), 0.3F, 0.6F);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 0.3F, 0.6F);
 
                     bdEffect.setTotalHealthHealed(currentTotalHeal + finalHealing);
 

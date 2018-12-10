@@ -10,8 +10,11 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
@@ -94,7 +97,8 @@ public class SkillSoothingRain extends ActiveSkill
 						Location location = p.getLocation();
 						if (time < 1.6) 
 						{
-							p.getWorld().spigot().playEffect(location, Effect.SPLASH, 0, 0, 6.3F, 0.2F, 6.3F, 0.0F, 60, 16);
+							//p.getWorld().spigot().playEffect(location, Effect.SPLASH, 0, 0, 6.3F, 0.2F, 6.3F, 0.0F, 60, 16);
+							p.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 60, 6.3, 0.2, 6.3, 0);
 						} 
 						else 
 						{
@@ -156,7 +160,8 @@ public class SkillSoothingRain extends ActiveSkill
 								if (!heal.isCancelled()) 
 								{
 									partyMember.setMana(manaHealedPerTick + partyMember.getMana());
-									partyMember.getPlayer().getWorld().spigot().playEffect(partyMember.getPlayer().getLocation().add(0, 0.5, 0), Effect.MAGIC_CRIT, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+									//partyMember.getPlayer().getWorld().spigot().playEffect(partyMember.getPlayer().getLocation().add(0, 0.5, 0), Effect.MAGIC_CRIT, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+									partyMember.getPlayer().getWorld().spawnParticle(Particle.CRIT_MAGIC, partyMember.getPlayer().getLocation().add(0, 0.5, 0), 20, 0.5, 0.5, 0.5, 0);
 								}
 							}
 						}
@@ -171,7 +176,8 @@ public class SkillSoothingRain extends ActiveSkill
 					plugin.getServer().getPluginManager().callEvent(heal);
 					if (!heal.isCancelled()) {
 						hero.setMana(manaHealedPerTick + hero.getMana());
-						player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.MAGIC_CRIT, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+						//player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), Effect.MAGIC_CRIT, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+						player.getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getLocation().add(0, 0.5, 0), 20, 0.5, 0.5, 0.5, 0);
 					}
 				}
 			}

@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -66,7 +67,7 @@ public class SkillFishing extends PassiveSkill {
                 if ((hero.getHeroLevel() >= leatherlvl) && SkillConfigManager.getUseSetting(hero, this.skill, "enable-leather", false)) { //if fishing leather is enabled and have the level
 
                     if (getCaught != null) { //If not null
-                        switch (Util.nextInt(6)) {
+                        switch (Util.nextInt(12)) {
                             case 0:
                                 getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
                                 player.sendMessage(ChatColor.GRAY + "You found leather boots!");
@@ -98,24 +99,56 @@ public class SkillFishing extends PassiveSkill {
                                 getCaught.getItemStack().setDurability((short) (Math.random() * 29));
                                 break;
                             case 6:
-                                getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                                player.sendMessage(ChatColor.GRAY + "You found 2 Fishes!");
+                                getCaught.setItemStack(new ItemStack(Material.COD, 2));
+                                player.sendMessage("You found 2 Cod!");
                                 break;
                             case 7:
-                                getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
-                                player.sendMessage(ChatColor.GRAY + "You found 1 Fish!");
+                                getCaught.setItemStack(new ItemStack(Material.COD, 1));
+                                player.sendMessage("You found 1 Cod!");
+                                break;
+                            case 8:
+                                getCaught.setItemStack(new ItemStack(Material.SALMON, 2));
+                                player.sendMessage("You found 2 Salmon!");
+                                break;
+                            case 9:
+                                getCaught.setItemStack(new ItemStack(Material.SALMON, 1));
+                                player.sendMessage("You found 1 Salmon!");
+                                break;
+                            case 10:
+                                getCaught.setItemStack(new ItemStack(Material.TROPICAL_FISH, 1));
+                                player.sendMessage("You found 1 Tropical Fish!");
+                                break;
+                            case 11:
+                                getCaught.setItemStack(new ItemStack(Material.PUFFERFISH, 1));
+                                player.sendMessage("You found 1 Puffer Fish!");
                                 break;
                         }
                     }
                 } else {
-                    switch (Util.nextInt(2)) {
+                    switch(Util.nextInt(6)){
                         case 0:
-                            getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                            player.sendMessage(ChatColor.GRAY + "You found 2 Fishes!");
+                            getCaught.setItemStack(new ItemStack(Material.COD, 2));
+                            player.sendMessage("You found 2 Cod!");
                             break;
                         case 1:
-                            getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
-                            player.sendMessage(ChatColor.GRAY + "You found 1 Fish!");
+                            getCaught.setItemStack(new ItemStack(Material.COD, 1));
+                            player.sendMessage("You found 1 Cod!");
+                            break;
+                        case 2:
+                            getCaught.setItemStack(new ItemStack(Material.SALMON, 2));
+                            player.sendMessage("You found 2 Salmon!");
+                            break;
+                        case 3:
+                            getCaught.setItemStack(new ItemStack(Material.SALMON, 1));
+                            player.sendMessage("You found 1 Salmon!");
+                            break;
+                        case 4:
+                            getCaught.setItemStack(new ItemStack(Material.TROPICAL_FISH, 1));
+                            player.sendMessage("You found 1 Tropical Fish!");
+                            break;
+                        case 5:
+                            getCaught.setItemStack(new ItemStack(Material.PUFFERFISH, 1));
+                            player.sendMessage("You found 1 Puffer Fish!");
                             break;
                     }
                 }

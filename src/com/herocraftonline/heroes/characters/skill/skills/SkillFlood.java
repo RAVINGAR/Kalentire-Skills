@@ -17,6 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -136,8 +137,10 @@ public class SkillFlood extends ActiveSkill
 					public void run() 
 					{
 						targetLocation.getWorld().playSound(targetLocation, Sound.WEATHER_RAIN, 0.6F, 0.7F);
-						targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.SPLASH, 0, 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 150, 32);
-						targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 100, 32);
+						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.SPLASH, 0, 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 150, 32);
+						targetLocation.getWorld().spawnParticle(Particle.WATER_SPLASH, targetLocation.add(0, 1, 0), 150, radius / 2f, radius / 2f, radius / 2f, 0, true);
+						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 100, 32);
+						targetLocation.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation.add(0, 1, 0), 100, radius / 2f, radius / 2f, radius / 2f, 0, Bukkit.createBlockData(Material.WATER), true);
 						for (Entity entity : nearbyEntities) 
 						{
 							if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
@@ -150,15 +153,18 @@ public class SkillFlood extends ActiveSkill
 							
 							target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
 							target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
-							target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.4F, 0.7F, 0.4F, 0.3F, 25, 32);
-							target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.CRIT, 0, 0, 0.4F, 0.7F, 0.4F, 0.7F, 25, 32);
+							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.4F, 0.7F, 0.4F, 0.3F, 25, 32);
+							target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.3, Bukkit.createBlockData(Material.WATER), true);
+							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.CRIT, 0, 0, 0.4F, 0.7F, 0.4F, 0.7F, 25, 32);
+							target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.7, true);
 
 							addSpellTarget(target, hero);
 							damageEntity(target, player, damage, DamageCause.MAGIC);
 							
 							if (target.getFireTicks() > 0)
 							{
-								target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXTINGUISH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 25, 16);
+								//FIXME This effect is a sound but why is it played like a particle.
+								//target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXTINGUISH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 25, 16);
 								target.getWorld().playSound(target.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0F, 1.0F);
 								target.setFireTicks(0);
 							}
@@ -246,7 +252,8 @@ public class SkillFlood extends ActiveSkill
 				public void run()
 				{
 					if (!h.hasEffect("Saturated") || h.getPlayer().isDead()) cancel();
-					h.getPlayer().getWorld().spigot().playEffect(h.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					//h.getPlayer().getWorld().spigot().playEffect(h.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					h.getPlayer().getWorld().spawnParticle(Particle.WATER_SPLASH, h.getPlayer().getLocation(), 25, 0.3, 1, 0.3, 0);
 				}
 			}.runTaskTimer(plugin, 0, 8);
 		}
@@ -260,7 +267,8 @@ public class SkillFlood extends ActiveSkill
 				public void run()
 				{
 					if (!m.hasEffect("Saturated") || m.getEntity().isDead()) cancel();
-					m.getEntity().getWorld().spigot().playEffect(m.getEntity().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					//m.getEntity().getWorld().spigot().playEffect(m.getEntity().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
+					m.getEntity().getWorld().spawnParticle(Particle.WATER_SPLASH, m.getEntity().getLocation(), 25, 0.3, 1, 0.3, 0);
 				}
 			}.runTaskTimer(plugin, 0, 8);
 		}

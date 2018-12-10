@@ -1,13 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.pack4;
 
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillSummonBat extends SkillBaseSummonEntity {
 
@@ -25,6 +26,6 @@ public class SkillSummonBat extends SkillBaseSummonEntity {
     
     @Override
     protected void applySoundEffects(World world, Player player) {
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_BAT_TAKEOFF.value(), 0.8F, 1.0F); 
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.8F, 1.0F);
     }
 }

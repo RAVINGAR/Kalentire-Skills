@@ -1,9 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -17,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillDisgrace extends TargettedSkill {
 
@@ -66,7 +67,7 @@ public class SkillDisgrace extends TargettedSkill {
         BleedSkillEffect bEffect = new BleedSkillEffect(this, duration, period, tickDamage, player);
         plugin.getCharacterManager().getCharacter(target).addEffect(bEffect);
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_PLAYER_HURT.value() , 0.7F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT , 0.7F, 1.0F);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

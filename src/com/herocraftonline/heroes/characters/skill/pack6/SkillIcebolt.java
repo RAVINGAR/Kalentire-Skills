@@ -8,11 +8,9 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -149,8 +147,9 @@ public class SkillIcebolt extends ActiveSkill {
                 addSpellTarget(event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 
-                target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
-                target.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_GLASS_BREAK.value(), 7.0F, 0.7F);
+                //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
+                target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5,  0), 50, 0.2, 0.2, 0.2, 0.1, Bukkit.createBlockData(Material.ICE));
+                target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);
 
                 event.setCancelled(true);
             }

@@ -8,12 +8,11 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillExecute extends TargettedSkill
@@ -60,8 +59,10 @@ public class SkillExecute extends TargettedSkill
 		addSpellTarget(target, hero);
 		damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK, false);
 
-		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.CRIT, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 45, 16);
-		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.2F, 0.2F, 0.2F, 0.3F, 25, 16);
+		//target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.CRIT, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 45, 16);
+		target.getWorld().spawnParticle(Particle.CRIT, target.getEyeLocation(), 45, 0.2, 0.2, 0.2, 0.3);
+		//target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0.2F, 0.2F, 0.2F, 0.3F, 25, 16);
+		target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 25, 0.2, 0.2, 0.2, 0.3, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
 		target.getWorld().playSound(target.getEyeLocation(), Sound.ENTITY_PLAYER_HURT, 1.3F, 1.0F);
 
 		broadcastExecuteText(hero, target);

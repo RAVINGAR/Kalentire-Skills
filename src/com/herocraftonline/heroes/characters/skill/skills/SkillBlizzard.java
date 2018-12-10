@@ -10,14 +10,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -127,7 +122,7 @@ public class SkillBlizzard extends ActiveSkill {
             return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), 0.2F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.2F, 1.0F);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
         List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
@@ -157,7 +152,7 @@ public class SkillBlizzard extends ActiveSkill {
                     //temp remove until we can figure out why the task is never-ending.
                     /*if (j % 8 == 0) {
                         Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
-                        world.playSound(fLoc, CompatSound.ENTITY_LIGHTNING_THUNDER.value(), 1.1F, 1.0F);
+                        world.playSound(fLoc, Sound.ENTITY_LIGHTNING_THUNDER, 1.1F, 1.0F);
                     }*/
 
                     double randomX = ranGen.nextGaussian() * velocityDeviation;
@@ -166,14 +161,15 @@ public class SkillBlizzard extends ActiveSkill {
                     Vector vel = new Vector(randomX, -yVelocity, randomZ);
 
                     Snowball iceBolt = world.spawn(fLoc, Snowball.class);
-                    iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                    //iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                    iceBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, iceBolt.getLocation(), 2, 0.4, 0.4, 0.4, 0);
                     iceBolt.setShooter(player);
                     iceBolt.setVelocity(vel);
                     blizzardIceBolts.put(iceBolt, System.currentTimeMillis());
                 }
             }, (long) ((delayBetween * i) * 20));
         }
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
 

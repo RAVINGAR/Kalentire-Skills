@@ -1,14 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,7 +32,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillBarrier extends ActiveSkill {
@@ -126,13 +124,15 @@ public class SkillBarrier extends ActiveSkill {
 
 		hero.addEffect(new BarrierEffect(this, player, duration, slowAmplifier, disarmDuration));
 
-		for (int i = 0; i < circle(player.getLocation(), 36, 1.5).size(); i++)
+        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+		for (int i = 0; i < circle.size(); i++)
 		{
-			player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+			//player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+            player.getWorld().spawnParticle(Particle.BLOCK_CRACK, circle.get(i), 4, 0.2, 1.5, 0.2, 0);
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
-		player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.7F, 2.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.7F, 2.0F);
 
 		return SkillResult.NORMAL;
 	}
@@ -193,7 +193,7 @@ public class SkillBarrier extends ActiveSkill {
 					addSpellTarget(damagerPlayer, defenderHero);
 					damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 
-					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), CompatSound.ENTITY_ITEM_BREAK.value(), 0.8F, 1.0F);
+					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
 
 					// Disarm checks
 					Material heldItem = NMSHandler.getInterface().getItemInMainHand(damagerPlayer.getInventory()).getType();

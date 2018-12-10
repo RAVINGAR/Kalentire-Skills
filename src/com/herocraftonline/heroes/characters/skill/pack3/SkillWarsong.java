@@ -13,14 +13,12 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -42,10 +40,10 @@ public class SkillWarsong extends ActiveSkill {
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(CompatSound.BLOCK_NOTE_BASEDRUM.value(), 0.8F, 2.0F, 0),
-                new Note(CompatSound.BLOCK_NOTE_PLING.value(), 0.8F, 2.0F, 1),
-                new Note(CompatSound.BLOCK_NOTE_SNARE.value(), 0.8F, 1.0F, 2),
-                new Note(CompatSound.BLOCK_NOTE_BASS.value(), 0.8F, 1.0F, 3)
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.8F, 2.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BLOCK_PLING, 0.8F, 2.0F, 1),
+                new Note(Sound.BLOCK_NOTE_BLOCK_SNARE, 0.8F, 1.0F, 2),
+                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 3)
         );
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
@@ -140,9 +138,11 @@ public class SkillWarsong extends ActiveSkill {
                 pHero.addEffect(mEffect);
             }
         }
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+
+        //FIXME Is it a particle or a sound
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }
@@ -200,7 +200,8 @@ public class SkillWarsong extends ActiveSkill {
                         Location location = p.getLocation();
                         if (time < 0.75)
                         {
-                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0);
                         }
                         else
                         {

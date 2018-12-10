@@ -14,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -60,7 +61,6 @@ public class SkillFlashFreeze
         final Location base = target.getLocation().add(0, 0.1, 0).getBlock().getLocation();
 
         final HashMap<Location, Material> mats = new HashMap<Location, Material>();
-        final HashMap<Location, Byte> data = new HashMap<Location, Byte>();
 
         List<Entity> nearby = target.getNearbyEntities(1.2, 1.2, 1.2);
         for (Entity e : nearby) {
@@ -99,7 +99,6 @@ public class SkillFlashFreeze
                     for (Location l : locations) {
                         Block lB = l.getBlock();
                         mats.put(l, lB.getType());
-                        data.put(l, lB.getData());
                         lB.setType(Material.PACKED_ICE);
                     }
                     revert = true;
@@ -107,13 +106,11 @@ public class SkillFlashFreeze
                     ArrayList<Location> toRemove = new ArrayList<Location>();
                     for (Location l : locations) {
                         Material m = mats.get(l);
-                        Byte b = data.get(l);
                         try {
                             l.getBlock().setType(m);
-                            l.getBlock().setData(b);
-                            l.getWorld().spigot().playEffect(l, Effect.TILE_BREAK, Material.PACKED_ICE.getId(), 0, 0.5F, 0.5F, 0.5F, 0.0F, 5, 16);
+                            //l.getWorld().spigot().playEffect(l, Effect.TILE_BREAK, Material.PACKED_ICE.getId(), 0, 0.5F, 0.5F, 0.5F, 0.0F, 5, 16);
+                            l.getWorld().spawnParticle(Particle.BLOCK_CRACK, l, 5, 0.5, 0.5, 0.5, 0, Bukkit.createBlockData(Material.PACKED_ICE));
                             mats.remove(l);
-                            data.remove(l);
                             toRemove.add(l);
                         } catch (NullPointerException npe) {
                             // plugin.getLogger().info("FlashFreeze threw an NPE, but it's okay, it doesn't affect anything." +
@@ -128,7 +125,8 @@ public class SkillFlashFreeze
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(new FlashFrozenEffect(this, player, duration + 250));
 
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 1.5, 0), Effect.TILE_BREAK, Material.PACKED_ICE.getId(), 0, 1.0F, 1.5F, 1.0F, 0.0F, 150, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1.5, 0), Effect.TILE_BREAK, Material.PACKED_ICE.getId(), 0, 1.0F, 1.5F, 1.0F, 0.0F, 150, 16);
+        target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 1.5, 0), 150, 1, 1.5, 1, 0, Bukkit.createBlockData(Material.PACKED_ICE));
         target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 3.0F, 1.0F);
 
         broadcast(player.getLocation(), ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + this.getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!");

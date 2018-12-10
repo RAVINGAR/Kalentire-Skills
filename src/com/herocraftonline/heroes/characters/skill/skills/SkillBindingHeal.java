@@ -10,10 +10,13 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 public class SkillBindingHeal extends TargettedSkill
 {
@@ -84,9 +87,11 @@ public class SkillBindingHeal extends TargettedSkill
 		tHero.heal(healAmount);
 
 		hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.2F, 0.75F);
-		hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 1.5F, 6.5F, 1.5F, 0.5F, 150, 16);
+		//hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 1.5F, 6.5F, 1.5F, 0.5F, 150, 16);
+		hero.getPlayer().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, hero.getPlayer().getLocation(), 150, 1.5, 6.5, 1.5, 0.5);
 		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.2F, 0.75F);
-		tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 1.5F, 6.5F, 1.5F, 0.5F, 150, 16);
+		//tHero.getPlayer().getWorld().spigot().playEffect(tHero.getPlayer().getLocation(), Effect.FIREWORKS_SPARK, 0, 0, 1.5F, 6.5F, 1.5F, 0.5F, 150, 16);
+		tHero.getPlayer().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, hero.getPlayer().getLocation(), 150, 1.5, 6.5, 1.5, 0.5);
 		broadcastExecuteText(hero, target);
 		return SkillResult.NORMAL;
 	}

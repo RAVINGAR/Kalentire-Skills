@@ -7,12 +7,15 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -20,7 +23,7 @@ import static com.herocraftonline.heroes.characters.skill.SkillType.*;
 
 public class SkillBloodbeam extends SkillBaseBeam {
 
-	private static final ParticleEffect BEAM_PARTICLE = ParticleEffect.REDSTONE;
+	private static final Particle BEAM_PARTICLE = Particle.REDSTONE;
 
 	public SkillBloodbeam(Heroes plugin) {
 		super(plugin, "BloodBeam");
@@ -83,7 +86,7 @@ public class SkillBloodbeam extends SkillBaseBeam {
 			}
 		});
 
-		renderEyeBeam(player, beam, BEAM_PARTICLE, 60, 10, 40, 0.125, 1);
+		renderEyeBeam(player, beam, BEAM_PARTICLE, Color.RED, 60, 10, 40, 0.125, 1);
 
 		new BukkitRunnable() {
 
@@ -95,9 +98,9 @@ public class SkillBloodbeam extends SkillBaseBeam {
 					cancel();
 				}
 				else {
-					player.getWorld().playSound(player.getEyeLocation(), CompatSound.BLOCK_LAVA_POP.value(), volume, 0.5f);
-					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), CompatSound.BLOCK_LAVA_POP.value(), volume, 0.5f);
-					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), CompatSound.BLOCK_LAVA_POP.value(), volume, 0.5f);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.BLOCK_LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
+					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
 				}
 			}
 		}.runTaskTimer(plugin, 0, 1);
