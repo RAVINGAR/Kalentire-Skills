@@ -65,17 +65,17 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
+            <version>1.9.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
+            <version>1.9.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.13.1-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -83,7 +83,7 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
@@ -131,7 +131,7 @@
             <groupId>com.herocraftonline</groupId>
             <artifactId>townships</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-        </dependency>
+        </dependency-->
 
     </dependencies>
 
