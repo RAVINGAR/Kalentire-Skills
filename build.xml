@@ -11,7 +11,7 @@
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
-    <property name="packages" value="reborn" />
+    <property name="packages" value="skills,reborn" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -92,6 +92,5 @@
             <fileset dir="${dir.dist}" includes="*.jar"/>
             <fileset dir="${dir.dist}" includes="${dir.dist.path}/**/*.jar"/>
         </zip>
-        <delete dir="${dir.dist}/${dir.dist.path}"/>
     </target>
 </project>

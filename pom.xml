@@ -74,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>heroes-bukkit-compat-v1_13_R3</artifactId>
+            <artifactId>heroes-bukkit-compat-v1_13_R2-1</artifactId>
             <version>1.9.1-SNAPSHOT</version>
         </dependency>
         <dependency>
