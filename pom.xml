@@ -73,6 +73,11 @@
             <version>1.9.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.herocraftonline.heroes</groupId>
+            <artifactId>heroes-bukkit-compat-v1_13_R3</artifactId>
+            <version>1.9.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
@@ -86,7 +91,7 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
             <type>jar</type>
         </dependency>
         <dependency>
