@@ -140,7 +140,7 @@ public class SkillFlood extends ActiveSkill
 						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.SPLASH, 0, 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 150, 32);
 						targetLocation.getWorld().spawnParticle(Particle.WATER_SPLASH, targetLocation.add(0, 1, 0), 150, radius / 2f, radius / 2f, radius / 2f, 0, true);
 						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 100, 32);
-						targetLocation.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation.add(0, 1, 0), 100, radius / 2f, radius / 2f, radius / 2f, 0, Bukkit.createBlockData(Material.WATER), true);
+						//targetLocation.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation.add(0, 1, 0), 100, radius / 2f, radius / 2f, radius / 2f, 0, Bukkit.createBlockData(Material.WATER), true);
 						for (Entity entity : nearbyEntities) 
 						{
 							if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
@@ -154,7 +154,7 @@ public class SkillFlood extends ActiveSkill
 							target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
 							target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
 							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.4F, 0.7F, 0.4F, 0.3F, 25, 32);
-							target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.3, Bukkit.createBlockData(Material.WATER), true);
+							//target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.3, Bukkit.createBlockData(Material.WATER), true);
 							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.CRIT, 0, 0, 0.4F, 0.7F, 0.4F, 0.7F, 25, 32);
 							target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.7, true);
 

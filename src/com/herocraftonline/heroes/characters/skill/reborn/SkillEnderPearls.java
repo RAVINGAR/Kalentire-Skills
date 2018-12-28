@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.reborn;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

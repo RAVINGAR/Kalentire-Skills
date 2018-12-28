@@ -141,13 +141,13 @@ public class SkillTremor extends ActiveSkill{
 
             // Let's bypass the nocheat issues...
             final Vector velocity = new Vector(xDir, individualVPower, zDir);
+            target.setVelocity(velocity);
             NCPUtils.applyExemptions(target, new NCPFunction() {
-                
+
                 @Override
                 public void execute()
                 {
-                    target.setVelocity(velocity);
-                    
+
                 }
             }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
         }

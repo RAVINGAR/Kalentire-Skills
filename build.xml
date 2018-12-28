@@ -11,7 +11,7 @@
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
     <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
-    <property name="packages" value="skills,reborn" />
+    <property name="packages" value="reborn" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">

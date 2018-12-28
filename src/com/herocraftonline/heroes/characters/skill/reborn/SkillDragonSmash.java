@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack6;
+package com.herocraftonline.heroes.characters.skill.reborn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -57,18 +57,12 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-
         node.set(SkillSetting.DAMAGE.node(), 100);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1);
-
         node.set(SkillSetting.RADIUS.node(), 5);
-
-        node.set("user-launch", 0.5);
-        node.set("user-launch-per-dexterity", 0.1);
-        node.set("user-drop", -0.5);
-        node.set("user-drop-per-dexterity", -0.1);
-
-        node.set("target-launch", 0.5);
+        node.set("upwards-velocity", 0.5);
+        node.set("downwards-velocity", -0.5);
+        node.set("target-horizontal-knockback", 0.5);
+        node.set("target-vertical-knockback", 0.5);
 
         return node;
     }
@@ -77,18 +71,15 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
-        double tempUpVelocity = SkillConfigManager.getUseSetting(hero, this, "user-launch", 0.5, false);
-        double upVelocityIncrease = SkillConfigManager.getUseSetting(hero, this, "user-launch-per-dexterity", 0.1, false);
-        final double upVelocity = tempUpVelocity + (upVelocityIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
-
-        double tempDownVelocity = SkillConfigManager.getUseSetting(hero, this, "user-drop", -0.5, false);
-        double downVelocityIncrease = SkillConfigManager.getUseSetting(hero, this, "user-drop-per-dexterity", -0.1, false);
-        final double downVelocity = tempDownVelocity + (downVelocityIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
+        final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 0.5, false);
+        final double vPowerDown = SkillConfigManager.getUseSetting(hero, this, "downwards-velocity", -0.5, false);
 
         broadcastExecuteText(hero);
 
-        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2, 1);
-        player.setVelocity(new Vector(0, upVelocity, 0));
+        player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
+        player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
+        player.setVelocity(new Vector(0, vPowerUp, 0));
+
         final int taskId = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override
             public void run() {
@@ -100,7 +91,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             @Override
             public void run() {
                 Bukkit.getScheduler().cancelTask(taskId);
-                player.setVelocity(new Vector(0, downVelocity, 0));
+                player.setVelocity(new Vector(0, vPowerDown, 0));
                 player.setFallDistance(-512);
                 activeHeroes.add(hero);
             }
@@ -112,31 +103,52 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         @Override
         public void run() {
             Iterator<Hero> heroes = activeHeroes.iterator();
-            while(heroes.hasNext()) {
+            while (heroes.hasNext()) {
                 Hero hero = heroes.next();
                 if (hero.getPlayer().isOnGround()) {
                     heroes.remove();
-                    playBoomEffect(hero);
+                    smash(hero);
                 }
             }
         }
     }
 
-    private void playBoomEffect(final Hero hero) {
-
+    private void smash(final Hero hero) {
         final Player player = hero.getPlayer();
         final Location loc = player.getLocation();
         final SkillDragonSmash skill = this;
-        final double targetVelocity = SkillConfigManager.getUseSetting(hero, this, "target-launch", 0.5, false);
+        final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
+        final double hPower = SkillConfigManager.getUseSetting(hero, this, "target-horizontal-knockback", 0.5, false);
+        final double vPower = SkillConfigManager.getUseSetting(hero, this, "target-vertical-knockback", 0.5, false);
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
-        final List<Entity> hitEnemies = new ArrayList<>();
+        Location playerLoc = player.getLocation();
+        List<Entity> entities = player.getNearbyEntities(radius, radius, radius);
+        for (Entity entity : entities) {
+            if (!(entity instanceof LivingEntity))
+                continue;
+            LivingEntity target = (LivingEntity) entity;
+            if (!damageCheck(player, target))
+                continue;
 
-        double tempDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
-        final double damage = tempDamage + (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+            plugin.getDamageManager().addSpellTarget(target, hero, skill);
+            double diminishedDamage = ApplyAoEDiminishingReturns(damage, entities.size());
+            damageEntity(target, player, diminishedDamage);
 
-        loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
+            Location targetLoc = target.getLocation();
+
+            double xDir = targetLoc.getX() - playerLoc.getX();
+            double zDir = targetLoc.getZ() - playerLoc.getZ();
+            double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
+
+            xDir = xDir / magnitude * hPower;
+            zDir = zDir / magnitude * hPower;
+
+            final Vector velocity = new Vector(xDir, vPower, zDir);
+            target.setVelocity(velocity);
+        }
+
+        loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_HURT, 1f, 1f);
         new BukkitRunnable() {
             int i = 1;
 
@@ -144,6 +156,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             public void run() {
                 if (i > radius) {
                     cancel();
+                    return;
                 }
                 for (Block b : getBlocksInRadius(loc.clone().add(0, -1, 0), i, true)) {
                     if (b.getLocation().getBlockY() == loc.getBlockY() - 1) {
@@ -182,19 +195,6 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                             fb.setVelocity(new Vector(0, 0.3f, 0));
                             fb.setDropItem(false);
                             fallingBlocks.add(fb);
-                            for (Entity ent : fb.getNearbyEntities(1, 1, 1)) {
-                                if (ent instanceof LivingEntity && ent != player && !hitEnemies.contains(ent) && damageCheck(player, (LivingEntity) ent)) {
-                                    LivingEntity lEnt = (LivingEntity) ent;
-
-                                    plugin.getDamageManager().addSpellTarget(lEnt, hero, skill);
-                                    damageEntity(lEnt, player, damage);
-
-                                    ent.setVelocity(new Vector(0, targetVelocity, 0));
-                                    ent.setFallDistance(-512);
-
-                                    hitEnemies.add(ent);
-                                }
-                            }
                         }
                     }
                 }
@@ -205,30 +205,30 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     @EventHandler
     public void onBlockChangeState(EntityChangeBlockEvent event) {
-        if (fallingBlocks.contains(event.getEntity())) {
+        Entity ent = event.getEntity();
+        if (!(ent instanceof FallingBlock))
+            return;
+
+        FallingBlock fb = (FallingBlock) event.getEntity();
+        if (fallingBlocks.contains(fb)) {
             event.setCancelled(true);
-            fallingBlocks.remove(event.getEntity());
-            FallingBlock fb = (FallingBlock) event.getEntity();
-            //fb.getWorld().spigot().playEffect(fb.getLocation(), Effect.TILE_BREAK, fb.getBlockId(), fb.getBlockData(), 0, 0, 0, 0.4f, 50, 128);
+            fallingBlocks.remove(fb);
             fb.getWorld().spawnParticle(Particle.BLOCK_CRACK, fb.getLocation(), 50, 0, 0, 0, 0.4, fb.getBlockData());
-            fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 1, 1);
-            event.getEntity().remove();
+            fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 0.4f, 0.4f);
+            fb.remove();
         }
     }
 
-    // Safety measure, likely unnecessary
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginDisable(PluginDisableEvent e) {
-
-        if(e.getPlugin() != plugin) {
+        if (e.getPlugin() != plugin) {
             return;
         }
 
         Iterator<FallingBlock> iter = fallingBlocks.iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             FallingBlock block = iter.next();
             block.remove();
-
             iter.remove();
         }
     }
@@ -243,20 +243,30 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         for (int x = bX - radius; x <= bX + radius; x++) {
             for (int y = bY - radius; y <= bY + radius; y++) {
                 for (int z = bZ - radius; z <= bZ + radius; z++) {
-
                     double distance = ((bX - x) * (bX - x) + (bY - y) * (bY - y) + (bZ - z) * (bZ - z));
-
-                    if (distance < radius * radius
-                            && !(hollow && distance < ((radius - 1) * (radius - 1)))) {
+                    if (distance < radius * radius && !(hollow && distance < ((radius - 1) * (radius - 1)))) {
                         Location l = new Location(location.getWorld(), x, y, z);
                         if (l.getBlock().getType() != Material.BARRIER)
                             blocks.add(l.getBlock());
                     }
                 }
-
             }
         }
-
         return blocks;
+    }
+
+    private double ApplyAoEDiminishingReturns(double damage, int numberOfTargets) {
+        return ApplyAoEDiminishingReturns(damage, numberOfTargets, 3, 0.15, 0.75);
+    }
+
+    private double ApplyAoEDiminishingReturns(double damage, int numberOfTargets, int maxTargetsBeforeDiminish, double diminishPercent, double maxDiminishPercent) {
+        if (numberOfTargets > maxTargetsBeforeDiminish) {
+            double totalDiminishPercent = (diminishPercent * numberOfTargets);
+            if (totalDiminishPercent > maxDiminishPercent)
+                totalDiminishPercent = maxDiminishPercent;
+            return totalDiminishPercent / damage * 100;
+        } else {
+            return damage;
+        }
     }
 }
