@@ -80,9 +80,7 @@ public class SkillTakeFlight extends ActiveSkill {
 
             public void run() {
                 if (ticks == flightTicks) {
-                    player.setFallDistance(-500f);
                     hero.addEffect(new EnderFloatEffect(skill, player, 5000));
-                    hero.addEffect(new SafeLandingEffect(skill, player, 5000));
                     cancel();
                     return;
                 }
@@ -96,6 +94,26 @@ public class SkillTakeFlight extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    private class EnderFloatEffect extends ExpirableEffect {
+        public EnderFloatEffect(Skill skill, Player applier, long duration) {
+            super(skill, "EnderFloat", applier, duration);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.AIR);
+            types.add(EffectType.FORM);
+
+            addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, (int) duration / 1000 * 20, -10));
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            hero.addEffect(new JumpBoostEffect(skill, hero.getPlayer(), 2000));
+            final int exhaustionDuration = SkillConfigManager.getUseSetting(hero, skill, "exhaustion-duration", 5000, false);
+            hero.addEffect(new FlightExhaustionEffect(skill, hero.getPlayer(), exhaustionDuration));
+        }
+    }
+
     private class FlightExhaustionEffect extends ExpirableEffect {
         public FlightExhaustionEffect(Skill skill, Player applier, long duration) {
             super(skill, "FlightExhaustion", applier, duration);
@@ -107,35 +125,21 @@ public class SkillTakeFlight extends ActiveSkill {
         }
     }
 
-    private class EnderFloatEffect extends ExpirableEffect {
-        public EnderFloatEffect(Skill skill, Player applier, long duration) {
-            super(skill, "EnderFloat", applier, duration);
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.AIR);
-            types.add(EffectType.FORM);
-
-            addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, (int) duration / 1000 * 20, -1));
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final int exhaustionDuration = SkillConfigManager.getUseSetting(hero, skill, "exhaustion-duration", 5000, false);
-            hero.addEffect(new FlightExhaustionEffect(skill, hero.getPlayer(), exhaustionDuration));
-        }
-    }
-
-    private class SafeLandingEffect extends SafeFallEffect {
-
-        public SafeLandingEffect(Skill skill, Player applier, long duration) {
-            super(skill, applier, duration);
+    private class JumpBoostEffect extends ExpirableEffect {
+        public JumpBoostEffect(Skill skill, Player applier, long duration) {
+            super(skill, "GenericJumpBoost", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.PHYSICAL);
             types.add(EffectType.JUMP_BOOST);
 
-            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000 * 20), 1), false);
+            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000 * 20), 1));
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            applier.setFallDistance(-512f);
         }
     }
 }
