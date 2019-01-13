@@ -297,8 +297,7 @@ public class SkillOvergrowth extends ActiveSkill {
                     break;
 
                 Set<BoundingBox> blocksToIgnore = new HashSet<>();
-                Collection<Entity> nearbyEntities = world.getNearbyEntities(currentBlock.getLocation(), radius, 1, radius);
-                //List<LivingEntity> teleportedEntitites = new ArrayList<LivingEntity>();
+                Collection<Entity> nearbyEntities = getEntitiesWithinSphere(currentBlock.getLocation(), radius);
                 for (Entity entity : nearbyEntities) {
                     if ((entity instanceof LivingEntity)) {
                         Location entLoc = entity.getLocation();
@@ -314,25 +313,9 @@ public class SkillOvergrowth extends ActiveSkill {
                 boolean isUpperLevel = currentBlock.getY() >= (topYValue - (maxDist * 0.15d));
                 List<Block> blocks;
                 if (isUpperLevel)
-                    blocks = getBlocksInCylinder(currentBlock.getLocation(), radius);
+                    blocks = getBlocksInFlatCircle(currentBlock.getLocation(), radius);
                 else
-                    blocks = getBlocksInCylinder(currentBlock.getLocation(), (int) (radius * 0.60));
-
-//                if (isTopLevel && !teleportedEntitites.isEmpty()) {
-//                    for (LivingEntity teleEnt : teleportedEntitites) {
-//                        Location entLoc = teleEnt.getLocation();
-//                        Block entBlock = entLoc.getBlock();
-//                        if (blocks.stream().noneMatch(x-> x == entBlock))
-//                        {
-//                            entLoc.toVector().distanceSquared(x.getLocation().toVector())
-//                            Block closestBlock = blocks.stream().sorted(
-//                                    Comparator.comparing(Block::);
-//                            Location onPillarLoc = new Location(entLoc.getWorld(), entLoc.getX(), topYValue + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
-//                            teleEnt.teleport(onPillarLoc);
-//                            teleportedEntitites.add((LivingEntity) teleEnt);
-//                        }
-//                    }
-//                }
+                    blocks = getBlocksInFlatCircle(currentBlock.getLocation(), (int) (radius * 0.60));
 
                 for (Block block : blocks) {
                     if (!block.isEmpty() || blocksToIgnore.stream().anyMatch(x -> x.contains(block.getX(), block.getY(), block.getZ())))
@@ -341,7 +324,6 @@ public class SkillOvergrowth extends ActiveSkill {
                     changedBlocks.add(block);
                     if (isTopLevel) {
                         block.setType(Material.OAK_LEAVES);
-
                     } else {
                         int chance = random.nextInt(100);
                         if (chance >= 20) {
@@ -355,87 +337,58 @@ public class SkillOvergrowth extends ActiveSkill {
             }
         }
 
-//        public int makeCylinder(Location location, double radiusX, double radiusZ) {
-//            int affected = 0;
-//            radiusX += 0.5;
-//            radiusZ += 0.5;
-////            if (location.getBlockY() < 0) {
-////                location.setY(0);
-////            } else if (location.getBlockY() - 1 > location.getWorld().getMaxHeight()) {
-////                height = world.getMaxY() - location.getBlockY() + 1;
-////            }
-//            final double invRadiusX = 1 / radiusX;
-//            final double invRadiusZ = 1 / radiusZ;
-//            final int ceilRadiusX = (int) Math.ceil(radiusX);
-//            final int ceilRadiusZ = (int) Math.ceil(radiusZ);
-//            double nextXn = 0;
-//            forX: for (int x = 0; x <= ceilRadiusX; ++x) {
-//                final double xn = nextXn;
-//                nextXn = (x + 1) * invRadiusX;
-//                double nextZn = 0;
-//                forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
-//                    final double zn = nextZn;
-//                    nextZn = (z + 1) * invRadiusZ;
-//                    double distanceSq = lengthSq(xn, zn);
-//                    if (distanceSq > 1) {
-//                        if (z == 0) {
-//                            break forX;
-//                        }
-//                        break forZ;
-//                    }
-//                    if (!filled) {
-//                        if (lengthSq(nextXn, zn) <= 1 && lengthSq(xn, nextZn) <= 1) {
-//                            continue;
-//                        }
-//                    }
-//                    for (int y = 0; y < height; ++y) {
-//                        if (setBlock(location.add(x, y, z), block)) {
-//                            ++affected;
-//                        }
-//                        if (setBlock(location.add(-x, y, z), block)) {
-//                            ++affected;
-//                        }
-//                        if (setBlock(location.add(x, y, -z), block)) {
-//                            ++affected;
-//                        }
-//                        if (setBlock(location.add(-x, y, -z), block)) {
-//                            ++affected;
-//                        }
-//                    }
-//                }
-//            }
-//            return affected;
-//        }
+        private List<Entity> getEntitiesWithinSphere(Location centerLocation, int radius) {
+            World world = centerLocation.getWorld();
+            List<Entity> worldEntities =world.getEntities();
+            List<Entity> entitiesWithinSphere = new ArrayList<Entity>();
+            List<Block> blocksInSphereRadius = getBlocksInSphere(centerLocation, radius, false);
 
-        private List<Block> getBlocksInCylinder(Location location, int radius) {
-            List<Block> cylinderBlocks = new ArrayList<Block>();
-            int staticY = location.getBlockY();
-            int cx = location.getBlockX();
-            int cz = location.getBlockZ();
-            World w = location.getWorld();
-            int rSquared = radius * radius;
-            for (int x = cx - radius; x <= cx + radius; x++) {
-                for (int z = cz - radius; z <= cz + radius; z++) {
-                    if ((cx - x) * (cx - x) + (cz - z) * (cz - z) <= rSquared) {
-                        Location cylBlock = new Location(w, x, staticY, z);
-                        Block block = cylBlock.getWorld().getBlockAt(x, staticY, z);
-                        cylinderBlocks.add(block);
+            for (Entity entity : worldEntities) {
+                Block standingBlock = entity.getLocation().getBlock();
+                if (blocksInSphereRadius.contains(standingBlock))
+                    entitiesWithinSphere.add(entity);
+            }
+            return entitiesWithinSphere;
+        }
+
+        private List<Block> getBlocksInSphere(Location centerLocation, int radius, boolean hollow) {
+            List<Block> sphereBlocks = new ArrayList<Block>();
+            World world = centerLocation.getWorld();
+            int centerX = centerLocation.getBlockX();
+            int centerY = centerLocation.getBlockY();
+            int centerZ = centerLocation.getBlockZ();
+
+            for (int x = centerX - radius; x <= centerX + radius; x++) {
+                for (int y = centerY - radius; y <= centerY + radius; y++) {
+                    for (int z = centerZ - radius; z <= centerZ + radius; z++) {
+                        double distance = ((centerX - x) * (centerX - x) + ((centerZ - z) * (centerZ - z)) + ((centerY - y) * (centerY - y)));
+                        if (distance < radius * radius && !(hollow && distance < ((radius - 1) * (radius - 1)))) {
+                            Block block = world.getBlockAt(x, y, z);
+                            sphereBlocks.add(block);
+                        }
                     }
                 }
             }
-            return cylinderBlocks;
+            return sphereBlocks;
         }
 
-        private List<Block> getBlocksInCircle(Location location) {
-            List<Block> blocks = new ArrayList<Block>();
-            int y = location.getBlockY();
-            for (int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
-                for (int z = location.getBlockZ() - radius; z <= location.getBlockZ() + radius; z++) {
-                    Block block = location.getWorld().getBlockAt(x, y, z);
-                    blocks.add(block);
+        private List<Block> getBlocksInFlatCircle(Location location, int radius) {
+            List<Block> flatCircleBlocks = new ArrayList<Block>();
+            World world = location.getWorld();
+            int centerY = location.getBlockY();
+            int centerX = location.getBlockX();
+            int centerZ = location.getBlockZ();
+            int rSquared = radius * radius;
+
+            for (int x = centerX - radius; x <= centerX + radius; x++) {
+                for (int z = centerZ - radius; z <= centerZ + radius; z++) {
+                    if ((centerX - x) * (centerX - x) + (centerZ - z) * (centerZ - z) <= rSquared) {
+                        Block block = world.getBlockAt(x, centerY, z);
+                        flatCircleBlocks.add(block);
+                    }
                 }
             }
-            return blocks;
+            return flatCircleBlocks;
         }
 
         private void revertBlocks() {

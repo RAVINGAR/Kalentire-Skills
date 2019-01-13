@@ -102,7 +102,7 @@ public class SkillTakeFlight extends ActiveSkill {
             types.add(EffectType.AIR);
             types.add(EffectType.FORM);
 
-            addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, (int) duration / 1000 * 20, -10));
+            addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, (int) duration / 1000 * 20, -1));
         }
 
         @Override

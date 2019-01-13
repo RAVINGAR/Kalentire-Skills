@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.EffectType;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -110,15 +111,14 @@ public class SkillTransform extends ActiveSkill {
     }
 
     private void PlayEffects(Player player, int radius) {
-        player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getLocation(), 3, 0, 0, 0, 1);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 2.0f, 0.533f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.5f, 0.533f);
 
         EffectManager em = new EffectManager(plugin);
         Effect e = CreateParticleEffect(radius, em);
         e.setLocation(player.getLocation().clone());
-        e.asynchronous = true;
-        e.iterations = 1;
-        e.type = de.slikey.effectlib.EffectType.INSTANT;
+        e.iterations = 600;
+        e.period = 1;
+        e.type = EffectType.REPEATING;
         e.color = Color.PURPLE;
         e.start();
     }
@@ -129,25 +129,34 @@ public class SkillTransform extends ActiveSkill {
             Particle particle = Particle.REDSTONE;
             Color color = Color.PURPLE;
 
+            List<Location> locations = null;
+
             @Override
             public void onRun() {
-                for (Location location : getLocationsInRadius(getLocation(), 72, radius / 2d))
+                if (locations == null)
+                    locations = getLocationsInRadius(getLocation(), 72, radius, false);
+
+                for (Location location : locations)
                     display(particle, location);
             }
 
-            private ArrayList<Location> getLocationsInRadius(Location centerPoint, int particleAmount, double circleRadius)
-            {
-                World world = centerPoint.getWorld();
+            private ArrayList<Location> getLocationsInRadius(Location centerLocation, int particleAmount, double circleRadius, boolean hollow) {
+                World world = centerLocation.getWorld();
                 double increment = (2 * Math.PI) / particleAmount;
 
                 ArrayList<Location> locations = new ArrayList<Location>();
-                for (int i = 0; i < particleAmount; i++)
-                {
-                    double angle = i * increment;
-                    double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-                    double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-                    locations.add(new Location(world, x, centerPoint.getY(), z));
-                }
+
+                double radius = hollow ? circleRadius : 1d;
+                do {
+                    for (double i = 0; i < particleAmount; i+= 0.5) {
+                        double angle = i * increment;
+                        double x = centerLocation.getX() + (radius * Math.cos(angle));
+                        double z = centerLocation.getZ() + (radius * Math.sin(angle));
+                        locations.add(new Location(world, x, centerLocation.getY(), z));
+                    }
+                    radius+= 0.2;
+                } while (radius <= circleRadius);
+                locations.add(centerLocation);
                 return locations;
             }
         };
@@ -169,20 +178,19 @@ public class SkillTransform extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-
-            PlayerInventory inventory = hero.getPlayer().getInventory();
-            inventory.addItem(dragonHead);
-            inventory.setHelmet(dragonHead);
-            hero.getPlayer().updateInventory();
+//            PlayerInventory inventory = hero.getPlayer().getInventory();
+//            inventory.addItem(dragonHead);
+//            inventory.setHelmet(dragonHead);
+//            hero.getPlayer().updateInventory();
         }
 
         public void removeFromHero(Hero hero) {
             super.applyToHero(hero);
-            PlayerInventory inventory = hero.getPlayer().getInventory();
-            ItemStack emptySlot = new ItemStack(Material.AIR, 0);
-            hero.getPlayer().getInventory().setHelmet(emptySlot);
-            inventory.remove(dragonHead);
-            hero.getPlayer().updateInventory();
+            //PlayerInventory inventory = hero.getPlayer().getInventory();
+            //ItemStack emptySlot = new ItemStack(Material.AIR, 0);
+            //hero.getPlayer().getInventory().setHelmet(emptySlot);
+            //inventory.remove(dragonHead);
+            //hero.getPlayer().updateInventory();
         }
     }
 }
