@@ -10,9 +10,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
@@ -23,7 +23,7 @@ public class SkillCripple extends TargettedSkill
 
     public SkillCripple(Heroes plugin) {
         super(plugin, "Cripple");
-        setDescription("Deals pure damage to the enemy (damage stacks with buffs)");
+        setDescription("Deals pure damage of $2 and $3 every tick to the enemy for $1s (damage stacks with buffs).");
         setUsage("/skill cripple [target]");
         setArgumentRange(0, 1);
         setIdentifiers("skill cripple");
@@ -122,28 +122,33 @@ public class SkillCripple extends TargettedSkill
                 .replace("%target%", "$1").replace("%hero%", "$2");
     }
 
-    public SkillResult use(Hero hero, org.bukkit.entity.LivingEntity le, String[] strings) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] strings) {
         Player player = hero.getPlayer();
-        if ((!le.equals(player)) && ((le instanceof Player))) {
-            Hero tHero = plugin.getCharacterManager().getHero((Player)le);
-            if (((hero.getParty() == null) || (!hero.getParty().getMembers().contains(tHero))) &&
-                    (damageCheck(player, tHero.getPlayer()))) {
-                broadcastExecuteText(hero, le);
-                int damage = (int)(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 5, false) + SkillConfigManager.getUseSetting(hero, this, "damage-increase", 0.0D, false) * hero.getHeroLevel(this));
+        if (!target.equals(player) && target instanceof Player) {
+            Hero tHero = plugin.getCharacterManager().getHero((Player)target);
+            if ( (hero.getParty() == null || !hero.getParty().getMembers().contains(tHero))
+                    && damageCheck(player, (LivingEntity) tHero.getPlayer())) {
+                broadcastExecuteText(hero, target);
+                double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 5.0, false);
+                double damageIncreaseFactor = SkillConfigManager.getUseSetting(hero, this, "damage-increase", 0.0D, false);
+                double damage = baseDamage + damageIncreaseFactor * hero.getHeroLevel(this);
 
                 damage = damage > 0 ? damage : 0;
-                damageEntity(tHero.getPlayer(), player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                damageEntity(tHero.getPlayer(), player, damage, DamageCause.ENTITY_ATTACK);
 
                 int baseDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
                 double durationIncreaseFactor = SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0.0D, false);
                 long duration = baseDuration + (long)(durationIncreaseFactor * hero.getHeroLevel(this));
-
                 duration = duration > 0L ? duration : 0L;
-                long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 1000, false);
-                int tickDamage = (int)(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK.node(), 2, false) + SkillConfigManager.getUseSetting(hero, this, "tick-damage-increase", 0.0D, false) * hero.getHeroLevel(this));
 
+                long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 1000, false);
+
+                double baseDamageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK.node(), 2.0, false);
+                double damageTickIncreaseFactor = SkillConfigManager.getUseSetting(hero, this, "tick-damage-increase", 0.0D, false);
+                double tickDamage = baseDamageTick + damageTickIncreaseFactor * hero.getHeroLevel(this);
                 tickDamage = tickDamage > 0 ? tickDamage : 0;
-                CrippleEffect cEffect = new CrippleEffect(this, period, duration, tickDamage, player);
+
+                CrippleEffect cEffect = new CrippleEffect(this, player, period, duration, tickDamage);
                 tHero.addEffect(cEffect);
                 return SkillResult.NORMAL;
             }
@@ -155,10 +160,10 @@ public class SkillCripple extends TargettedSkill
     public class CrippleEffect extends PeriodicExpirableEffect {
         private Player caster;
         private Location prevLocation;
-        private final int damageTick;
+        private final double damageTick;
 
-        public CrippleEffect(Skill skill, long period, long duration, int damageTick, Player caster) {
-            super("Cripple", period, duration);
+        public CrippleEffect(Skill skill, Player caster, long period, long duration, double damageTick) {
+            super(skill, "Cripple", caster, period, duration);
             this.caster = caster;
             this.damageTick = damageTick;
             types.add(EffectType.BLEED);
@@ -168,10 +173,11 @@ public class SkillCripple extends TargettedSkill
 
         public void tickHero(Hero hero)
         {
-            if ((prevLocation != null) && (Math.abs(hero.getPlayer().getLocation().getX() - prevLocation.getX()) >= 1.0D) && (Math.abs(hero.getPlayer().getLocation().getZ() - prevLocation.getZ()) >= 1.0D))
+            if ((prevLocation != null)
+                    && (Math.abs(hero.getPlayer().getLocation().getX() - prevLocation.getX()) >= 1.0D)
+                    && (Math.abs(hero.getPlayer().getLocation().getZ() - prevLocation.getZ()) >= 1.0D))
             {
-
-                Skill.damageEntity(hero.getPlayer(), caster, damageTick, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                damageEntity(hero.getPlayer(), caster, damageTick, DamageCause.ENTITY_ATTACK, false);
             }
 
             prevLocation = hero.getPlayer().getLocation();
@@ -193,7 +199,7 @@ public class SkillCripple extends TargettedSkill
         public void tickMonster(com.herocraftonline.heroes.characters.Monster monster)
         {
             super.tick(monster);
-            Skill.damageEntity(monster.getEntity(), caster, damageTick, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+            damageEntity(monster.getEntity(), caster, damageTick, DamageCause.ENTITY_ATTACK, false);
         }
     }
 }
