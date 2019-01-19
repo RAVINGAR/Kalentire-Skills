@@ -50,7 +50,6 @@ public class SkillAimedShot extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-
         double gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 4000, false) / 1000;
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 3.1, false);
