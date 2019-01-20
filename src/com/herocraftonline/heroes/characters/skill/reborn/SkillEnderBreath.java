@@ -4,14 +4,16 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.DragonEffect;
+import de.slikey.effectlib.effect.HelixEffect;
+import net.minecraft.server.v1_13_R2.EnderDragonBattle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,30 +46,46 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     
     public SkillEnderBreath(Heroes plugin) {
         super(plugin, "EnderBreath");
-        setDescription("Breathe the flame of an Ender Dragon.");
+        setDescription("Launch a ball of Ender Flame at your opponent. "
+                + "The projectile explodes on hit, dealing $1 damage every $2 seconds for $3 seconds "
+                + "within $4 blocks to the side and $5 blocks up and down (cylinder). "
+                + "Enemies within the area are slowed. $6 $7");
         setUsage("/skill enderbreath");
         setArgumentRange(0, 0);
         setIdentifiers("skill enderbreath");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_DARK,
+                SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     public String getDescription(Hero hero) {
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
 
-//        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-//        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
-        return getDescription();//.replace("$1", distance + "").replace("$2", damage + "");
+        final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
+        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+        long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damageTick))
+                .replace("$2", Util.decFormat.format((double) period / 1000))
+                .replace("$3", Util.decFormat.format((double) duration / 1000))
+                .replace("$4", Util.decFormat.format(radius))
+                .replace("$5", Util.decFormat.format(height))
+                .replace("$6", mana > 0 ? "Mana: " + mana : "")
+                .replace("$7", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 80);
-        node.set(SkillSetting.DAMAGE_TICK.node(), 40);
-        node.set(HEIGHT_NODE, 3);
-        node.set(SkillSetting.RADIUS.node(), 6);
-        node.set(SkillSetting.PERIOD.node(), 500);
-        node.set(SkillSetting.DURATION.node(), 3000);
+        node.set(SkillSetting.RADIUS.node(), 4);
+        node.set(HEIGHT_NODE, 2);
+        node.set(SkillSetting.DURATION.node(), 6000);
+        node.set(SkillSetting.PERIOD.node(), 200);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 50d);
         node.set("velocity-multiplier", 2.0);
         node.set("ticks-lived", 3);
         return node;
@@ -81,7 +99,6 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
         final Snowball projectile = player.launchProjectile(Snowball.class);
         activeProjectiles.put(projectile, System.currentTimeMillis());
-
         projectile.setShooter(player);
 
         int ticksLived = SkillConfigManager.getUseSetting(hero, this, "ticks-lived", 20, false);
@@ -108,14 +125,12 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         Player player = (Player) projectile.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
 
-        int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 3, false);
-        final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80d, false);
-        final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 40d, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        
-        applyAreaGroundEffectEffect(hero, period, duration, projectile.getLocation(), radius, height, new FlameAoEEffect(damage, damageTick, radius, height));
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
+        final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
+        applyAreaGroundEffectEffect(hero, period, duration, projectile.getLocation(), radius, height, new FlameAoEEffect(damageTick, radius, height));
     }
 
     public class SkillEntityListener implements Listener {
@@ -156,14 +171,11 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     }
 
     private class FlameAoEEffect implements GroundEffectActions {
-
-        private final double damage;
         private final double damageTick;
         private final int radius;
         private final int height;
 
-        public FlameAoEEffect(double damage, double damageTick, int radius, int height) {
-            this.damage = damage;
+        public FlameAoEEffect(double damageTick, int radius, int height) {
             this.damageTick = damageTick;
 
             this.radius = radius;
@@ -176,6 +188,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             if (!damageCheck(player, target))
                 return;
 
+            //double diminshedDamage = ApplyAoEDiminishingReturns()
             damageEntity(target, player, damageTick / 2d, DamageCause.FIRE, false);
             damageEntity(target, player, damageTick / 2d, DamageCause.MAGIC, false);
         }
@@ -184,152 +197,127 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
             final Player player = hero.getPlayer();
             EffectManager em = new EffectManager(plugin);
-            DragonEffect e = new DragonEffect(em);
-//            Effect e = new Effect(em) {
-//
-//                int particlesPerRadius = 3;
-//                //Particle particle = Particle.DRAGON_BREATH;
-//                Particle particle = Particle.REDSTONE;
-//
-//                @Override
-//                public void onRun() {
-//                    double inc = 1d / (particlesPerRadius * radius);
-//
-//                    for (double angle = 0; angle <= 2 * Math.PI; angle += inc) {
-//                        Vector v = new Vector(Math.cos(angle), 0, Math.sin(angle)).multiply(radius);
-//                        display(particle, getLocation().add(v));
-//                        getLocation().subtract(v);
-//                    }
-//
-//                    Location originalLocation = getLocation();
-//                    Color originalColor = color;
-//                    color = Color.RED;
-//
-//                    int particles = (int) (2 * radius * particlesPerRadius);
-//                    Vector crossXLine = new Vector(-radius * 2, 0, 0).multiply(1d / particles);
-//                    Vector crossZLine = new Vector(0, 0, -radius * 2).multiply(1d / particles);
-//
-//                    setLocation(new Vector(radius, 0, radius / 10).toLocation(getLocation().getWorld()).add(originalLocation));
-//                    for (int l = 0; l < particles; l++, getLocation().add(crossXLine)) {
-//                        display(particle, getLocation());
-//                    }
-//
-//                    setLocation(new Vector(radius / 10, 0, radius).toLocation(getLocation().getWorld()).add(originalLocation));
-//                    for (int l = 0; l < particles; l++, getLocation().add(crossZLine)) {
-//                        display(particle, getLocation());
-//                    }
-//
-//                    setLocation(new Vector(radius, 0, radius / -10).toLocation(getLocation().getWorld()).add(originalLocation));
-//                    for (int l = 0; l < particles; l++, getLocation().add(crossXLine)) {
-//                        display(particle, getLocation());
-//                    }
-//
-//                    setLocation(new Vector(radius / -10, 0, radius).toLocation(getLocation().getWorld()).add(originalLocation));
-//                    for (int l = 0; l < particles; l++, getLocation().add(crossZLine)) {
-//                        display(particle, getLocation());
-//                    }
-//
-//                    setLocation(originalLocation);
-//                    color = originalColor;
-//                }
-//            };
+            EnderDragonBattle
+            Effect visualEffect = new Effect(em) {
+                Particle particle = Particle.DRAGON_BREATH;
+                @Override
+                public void onRun() {
 
-            e.setLocation(effect.getLocation().clone());
-            e.asynchronous = true;
-            e.iterations = 1;
-            e.type = de.slikey.effectlib.EffectType.INSTANT;
-            e.color = Color.BLACK;
+                    for (double z = -radius; z <= radius; z += 0.33) {
+                        for (double x = -radius; x <= radius; x += 0.33) {
+                            if (x * x + z * z <= radius * radius) {
+                                display(particle, getLocation().clone().add(x, 0, z));
+                            }
+                        }
 
-            e.start();
+                    }
+                }
+            };
+
+
+//            visualEffect.type = EffectType.REPEATING;
+//            visualEffect.period = 10;
+//            visualEffect.iterations = 8;
+
+            Location location = effect.getLocation().clone();
+            visualEffect.asynchronous = true;
+            visualEffect.iterations = 1;
+            visualEffect.type = EffectType.INSTANT;
+            visualEffect.setLocation(location);
+
+            visualEffect.start();
             em.disposeOnTermination();
 
-            player.getWorld().playSound(effect.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.15f, 0.0001f);
+            player.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.15f, 0.0001f);
         }
     }
 
-    private class DragonBreathAoEEffect extends PeriodicExpirableEffect {
-        private final long _duration;
-        private final int _distance;
-        private final double _radiusSquared;
-        private final int _delay;
-        private final double _damage;
+//    private class DragonBreathAoEEffect extends PeriodicExpirableEffect {
+//        private final long _duration;
+//        private final int _distance;
+//        private final double _radiusSquared;
+//        private final int _delay;
+//        private final double _damage;
+//
+//        public DragonBreathAoEEffect(Skill skill, Player applier, long period, long duration, int distance, int radius, int delay, double damage) {
+//            super(skill, "DragonBreathAoE", applier, period, duration);
+//            _duration = duration;
+//            _distance = distance;
+//            _radiusSquared = radius * radius;
+//            _delay = delay;
+//            _damage = damage;
+//
+//            types.add(EffectType.BENEFICIAL);
+//            types.add(EffectType.PHYSICAL);
+//        }
+//
+//        @Override
+//        public void tickMonster(Monster monster) {
+//        }
+//
+//        @Override
+//        public void tickHero(Hero hero) {
+//            ShootBreath(hero);
+//        }
+//
+//        private void ShootBreath(Hero hero) {
+//            final Player player = hero.getPlayer();
+//            Block tempBlock;
+//            BlockIterator iter = null;
+//            try {
+//                iter = new BlockIterator(player, _distance);
+//            } catch (IllegalStateException e) {
+//                return;
+//            }
+//
+//            final List<Entity> nearbyEntities = player.getNearbyEntities(_distance * 2, _distance, _distance * 2);
+//            final List<Entity> hitEnemies = new ArrayList<>();
+//
+//            player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 6.0F, 1);
+//
+//            int numBlocks = 0;
+//            while (iter.hasNext()) {
+//                tempBlock = iter.next();
+//                Material tempBlockType = tempBlock.getType();
+//                if (!Util.transparentBlocks.contains(tempBlockType))
+//                    break;
+//
+//                final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
+//                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+//                    public void run() {
+//
+//                        //player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 25, 0, 0, 0, 1);
+////                        player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 10, 3, 3, 3, 1);
+////                        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation, 4, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.MAGMA_BLOCK));
+//
+//                        for (Entity entity : nearbyEntities) {
+//                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > _radiusSquared)
+//                                continue;
+//                            LivingEntity target = (LivingEntity) entity;
+//                            if (!damageCheck(player, target))
+//                                continue;
+//
+//                            addSpellTarget(target, hero);
+//                            damageEntity(target, player, _damage, DamageCause.FIRE);
+//                            hitEnemies.add(entity);
+//                        }
+//                    }
+//                }, numBlocks * _delay);
+//
+//                numBlocks++;
+//            }
+//        }
+//    }
 
-        public DragonBreathAoEEffect(Skill skill, Player applier, long period, long duration, int distance, double radius, int delay, double damage) {
-            super(skill, "DragonBreathAoE", applier, period, duration);
-            _duration = duration;
-            _distance = distance;
-            _radiusSquared = radius * radius;
-            _delay = delay;
-            _damage = damage;
-
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.PHYSICAL);
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            ShootBreath(hero);
-        }
-
-        private void ShootBreath(Hero hero) {
-            final Player player = hero.getPlayer();
-            Block tempBlock;
-            BlockIterator iter = null;
-            try {
-                iter = new BlockIterator(player, _distance);
-            } catch (IllegalStateException e) {
-                return;
-            }
-
-            final List<Entity> nearbyEntities = player.getNearbyEntities(_distance * 2, _distance, _distance * 2);
-            final List<Entity> hitEnemies = new ArrayList<>();
-
-            player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 6.0F, 1);
-
-            int numBlocks = 0;
-            while (iter.hasNext()) {
-                tempBlock = iter.next();
-                Material tempBlockType = tempBlock.getType();
-                if (!Util.transparentBlocks.contains(tempBlockType))
-                    break;
-
-                final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    public void run() {
-
-                        //player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 25, 0, 0, 0, 1);
-                        player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 10, 3, 3, 3, 1);
-                        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation, 4, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.MAGMA_BLOCK));
-
-                        for (Entity entity : nearbyEntities) {
-                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > _radiusSquared)
-                                continue;
-                            LivingEntity target = (LivingEntity) entity;
-                            if (!damageCheck(player, target))
-                                continue;
-
-                            addSpellTarget(target, hero);
-                            damageEntity(target, player, _damage, DamageCause.FIRE);
-                            hitEnemies.add(entity);
-                        }
-                    }
-                }, numBlocks * _delay);
-
-                numBlocks++;
-            }
-        }
+    private double ApplyAoEDiminishingReturns(double damage, int numberOfTargets)
+    {
+        return ApplyAoEDiminishingReturns(damage, numberOfTargets, 3, 0.15, 0.75);
     }
 
-    private double ApplyAoEDiminishingReturns(double damage, double diminishPercent, double maxDiminishPercent, int maxTargetsBeforeDiminish, int numberOfTargets) {
-        final int hitCountBeforeDiminishing = 3;
-        final double aoeDiminishingReturnsPercent = 0.15;
-
+    private double ApplyAoEDiminishingReturns(double damage, int numberOfTargets, int maxTargetsBeforeDiminish, double diminishPercent, double maxDiminishPercent)
+    {
         if (numberOfTargets > maxTargetsBeforeDiminish) {
-            double totalDiminishPercent = (aoeDiminishingReturnsPercent * numberOfTargets);
+            double totalDiminishPercent = (diminishPercent * numberOfTargets);
             if (totalDiminishPercent > maxDiminishPercent)
                 totalDiminishPercent = maxDiminishPercent;
             return totalDiminishPercent / damage * 100;
