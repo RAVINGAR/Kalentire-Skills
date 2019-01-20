@@ -45,7 +45,7 @@ public class SkillBlockLaunch extends ActiveSkill implements Listener {
 			return SkillResult.INVALID_TARGET_NO_MSG;
 		}
 	}
-
+	//test
 	private boolean blockLaunch(Block block) {
 		if (!block.getType().isTransparent() && block.getRelative(BlockFace.UP).getType().isTransparent()) {
 
