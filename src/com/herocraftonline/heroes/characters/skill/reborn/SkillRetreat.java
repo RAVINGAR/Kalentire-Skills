@@ -11,9 +11,7 @@ import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -24,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -41,13 +40,14 @@ public class SkillRetreat extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill retreat");
         setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.STUNNING);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
 
 
-        return null;
+        return getDescription();
     }
 
     @Override
@@ -68,8 +68,6 @@ public class SkillRetreat extends ActiveSkill {
     }
 
 
-
-
     @Override
     public SkillResult use(Hero hero, String[] args) {
 
@@ -78,7 +76,7 @@ public class SkillRetreat extends ActiveSkill {
             return SkillResult.SKIP_POST_USAGE;
         }
 
-        hero.addEffect(new SkillRetreat.RetreatBuff(this));
+        hero.addEffect(new RetreatBuff(this));
         broadcastExecuteText(hero);
 
         final Player player = hero.getPlayer();
@@ -91,7 +89,6 @@ public class SkillRetreat extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        broadcastExecuteText(hero);
 
         // Calculate backflip values
         float pitch = player.getEyeLocation().getPitch();
@@ -146,8 +143,7 @@ public class SkillRetreat extends ActiveSkill {
         NCPUtils.applyExemptions(player, new NCPFunction() {
 
             @Override
-            public void execute()
-            {
+            public void execute() {
                 // Backflip!
                 player.setVelocity(velocity);
                 player.setFallDistance(-8f);
@@ -155,18 +151,13 @@ public class SkillRetreat extends ActiveSkill {
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
 
 
-
-
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
         return SkillResult.NORMAL;
     }
 
 
-
-
-
-
     private static final Set<Material> requiredMaterials;
+
     static {
         requiredMaterials = new HashSet<>();
         requiredMaterials.add(Material.LEGACY_STATIONARY_WATER);
@@ -181,10 +172,24 @@ public class SkillRetreat extends ActiveSkill {
     //Creation of buff for arrow stun
     public class RetreatBuff extends ImbueEffect {
 
+        private int shot = 1;
+
+
+
         public RetreatBuff(Skill skill) {
             super(skill, "RetreatBuff");
-            types.add(EffectType.STUN);
             types.add(EffectType.BENEFICIAL);
+
+
+            this.shot = shot;
+        }
+
+        public int getShot() {
+            return shot;
+        }
+
+        public void setShot(int shot) {
+            this.shot = shot;
         }
 
         @Override
@@ -192,29 +197,34 @@ public class SkillRetreat extends ActiveSkill {
             super.removeFromHero(hero);
 
         }
+
+
+
     }
 
     public class SkillDamageListener implements Listener {
 
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) { this.skill = skill;}
+        public SkillDamageListener(Skill skill) {
+            this.skill = skill;
+        }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
 
             //When our event is cancelled and no entities are involved return
-            if(event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
+            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if(!(subEvent.getDamager() instanceof Arrow)) {
+            if (!(subEvent.getDamager() instanceof Arrow)) {
                 return;
             }
 
             Arrow arrow = (Arrow) subEvent.getDamager();
-            if(!(arrow.getShooter() instanceof Player)) {
+            if (!(arrow.getShooter() instanceof Player)) {
                 return;
             }
 
@@ -222,13 +232,51 @@ public class SkillRetreat extends ActiveSkill {
             Player player = (Player) arrow.getShooter();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            if(hero.hasEffect("RetreatBuff")) {
-                long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 500, false);
+
+            if (hero.hasEffect("RetreatBuff")) {
+                long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
                 StunEffect retreatStunEffect = new StunEffect(skill, hero.getPlayer(), duration, stunReadyText, stunExpireText);
                 LivingEntity target = (LivingEntity) event.getEntity();
-                plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);
+
+                if (event instanceof EntityDamageByEntityEvent) {
+                    plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);
+
+                }
+                target.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, 10, 1, 1, 1, 1);
             }
+
+
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onEntityShootBow(EntityShootBowEvent event) {
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+
+            if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
+                return;
+            }
+
+
+            if (!hero.hasEffect("RetreatBuff")) {
+                return;
+            }
+
+            RetreatBuff effect = (RetreatBuff) hero.getEffect("RetreatBuff");
+
+            //Logic to remove stun after 1 arrow
+
+            if(effect.shot < 1) {
+                return;
+            }
+
+            effect.setShot(effect.getShot() - 1);
+
+            if(effect.shot < 1) {
+                hero.removeEffect(effect);
+            }
+
 
         }
     }
 }
+
