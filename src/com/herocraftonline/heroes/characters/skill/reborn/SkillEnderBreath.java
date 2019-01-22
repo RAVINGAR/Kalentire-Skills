@@ -3,19 +3,13 @@ package com.herocraftonline.heroes.characters.skill.reborn;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
-import de.slikey.effectlib.effect.DragonEffect;
-import de.slikey.effectlib.effect.HelixEffect;
-import net.minecraft.server.v1_13_R2.EnderDragonBattle;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -25,8 +19,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -130,7 +122,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
         final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
-        applyAreaGroundEffectEffect(hero, period, duration, projectile.getLocation(), radius, height, new FlameAoEEffect(damageTick, radius, height));
+        applyAreaGroundEffectEffect(hero, period, duration, projectile.getLocation(), radius, height, new DragonFlameAoEEffect(damageTick, radius, height));
     }
 
     public class SkillEntityListener implements Listener {
@@ -170,12 +162,12 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         }
     }
 
-    private class FlameAoEEffect implements GroundEffectActions {
+    private class DragonFlameAoEEffect implements GroundEffectActions {
         private final double damageTick;
         private final int radius;
         private final int height;
 
-        public FlameAoEEffect(double damageTick, int radius, int height) {
+        DragonFlameAoEEffect(double damageTick, int radius, int height) {
             this.damageTick = damageTick;
 
             this.radius = radius;
@@ -198,7 +190,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             final Player player = hero.getPlayer();
             EffectManager em = new EffectManager(plugin);
             Effect visualEffect = new Effect(em) {
-                Particle particle = Particle.DRAGON_BREATH;
+                Particle particle = Particle.REDSTONE;
                 @Override
                 public void onRun() {
                     for (double z = -radius; z <= radius; z += 0.33) {

@@ -81,57 +81,41 @@ public class SkillOvergrowth extends ActiveSkill {
         Player player = hero.getPlayer();
         World world = player.getWorld();
 
+        if (hero.hasEffect("Overgrowth")) {
+            hero.removeEffect(hero.getEffect("Overgrowth"));
+            player.sendMessage("You dispel your overgrowth.");
+            return SkillResult.SKIP_POST_USAGE;
+        }
+
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 18, false);
-        int offsetHeight = height - 1;
+        int heightIncludingRootBlock = height - 1;
 
-        Block targetBlock = GetBlockViaRaycast(player, maxDist);
-        if (targetBlock == null) {
-            player.sendMessage("Unable to find a valid block for the bottom of the overgrowth pillar.");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
+        Block targetBlock = getBlockViaRaycast(player, maxDist);
+        if (targetBlock == null)
+            return invalidTargetWithMessage(player);
 
-        Block pillarRootBlock;
-        if (targetBlock.isEmpty()) {
-            targetBlock = GetBlockViaRaycast(targetBlock, new Vector(0, -1, 0), offsetHeight);
-            if (targetBlock == null) {
-                player.sendMessage("Failing to shoot downwards properly.");
-                return SkillResult.INVALID_TARGET_NO_MSG;
-            }
-            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
-            if (pillarRootBlock.getRelative(BlockFace.DOWN).isEmpty())
-                pillarRootBlock = null;
-        } else {
-            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
-        }
+        Block pillarRootBlock = tryGetPillarRootBlock(player, targetBlock, heightIncludingRootBlock);
+        if (pillarRootBlock == null)
+            return invalidTargetWithMessage(player);
 
-        if (pillarRootBlock == null || !Util.transparentBlocks.contains(pillarRootBlock.getType())) {
-            player.sendMessage("Unable to find a valid block for the bottom of the overgrowth pillar.");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
+        OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(player, pillarRootBlock, heightIncludingRootBlock, radius);
+        if (overgrowthConstructionData == null)
+            return invalidTargetWithMessage(player);
 
-        Block platformCenterBlock = SafelyIterateFromBlock(pillarRootBlock, new Vector(0, 1, 0), offsetHeight, 3);
-        if (platformCenterBlock == null || platformCenterBlock.getY() <= pillarRootBlock.getLocation().getY()) {
-            player.sendMessage("Unable to fit an overgrowth at this location.");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-
-        hero.addEffect(new OvergrowthEffect(this, player, duration, pillarRootBlock, platformCenterBlock, radius));
+        hero.addEffect(new OvergrowthEffect(this, player, duration, overgrowthConstructionData));
 
         return SkillResult.NORMAL;
     }
 
-    private String getLocationCoordsString(Location location) {
-        return "(" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")";
+    private SkillResult invalidTargetWithMessage(Player player) {
+        player.sendMessage("Unable to fit an overgrowth at this location.");
+        return SkillResult.INVALID_TARGET_NO_MSG;
     }
 
-    private String getVectorCoordsString(Vector vector) {
-        return "(" + (int) vector.getX() + ", " + (int) vector.getY() + ", " + (int) vector.getZ() + ")";
-    }
-
-    private Block GetBlockViaRaycast(Player player, int maxDist) {
+    private Block getBlockViaRaycast(Player player, int maxDist) {
         World world = player.getWorld();
         Location eyeLocation = player.getEyeLocation();
         Vector normal = eyeLocation.getDirection();
@@ -143,7 +127,7 @@ public class SkillOvergrowth extends ActiveSkill {
         return hit.isEntity() ? hit.getEntity().getLocation().getBlock() : hit.getBlock(world);
     }
 
-    private Block GetBlockViaRaycast(Block castLocation, Vector direction, int maxDist) {
+    private Block getBlockViaRaycast(Block castLocation, Vector direction, int maxDist) {
         World world = castLocation.getWorld();
         Vector start = castLocation.getLocation().toVector();
         Vector end = direction.clone().multiply(maxDist).add(start);
@@ -153,46 +137,96 @@ public class SkillOvergrowth extends ActiveSkill {
         return hit.isEntity() ? hit.getEntity().getLocation().getBlock() : hit.getBlock(world);
     }
 
+    private Block tryGetPillarRootBlock(Player player, Block targetBlock, int height) {
+        Block pillarRootBlock;
+        if (targetBlock.isEmpty()) {
+            targetBlock = getBlockViaRaycast(targetBlock, new Vector(0, -1, 0), height);
+            if (targetBlock == null)
+                return null;
 
-//    private RayCastHit RayCastFromBlock(Player player, Block startBlock, Vector direction, int maxDist) {
-//        World world = startBlock.getWorld();
-//        Vector start = startBlock.getLocation().toVector();
-//        Vector end = direction.clone().multiply(maxDist).add(start);
-//        //player.sendMessage("RayCastFromBlock:");
-//        //player.sendMessage("start: " + getVectorCoordsString(start));
-//        //player.sendMessage("end: " + getVectorCoordsString(start));
-//        return physics.rayCastBlock(startBlock, start, end);
-//    }
+            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
+            if (pillarRootBlock.getRelative(BlockFace.DOWN).isEmpty())
+                pillarRootBlock = null;
+        } else {
+            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
+        }
 
-//    private Block GetBlockViaRaycast(Player player, int maxDist) {
-//
-//        Block validFinalBlock = null;
-//        Block currentBlock;
-//        BlockIterator iter = null;
-//        try {
-//            iter = new BlockIterator(player, maxDist);
-//        } catch (IllegalStateException e) {
-//            player.sendMessage("There was an error getting your overgrowth location!");
-//            return null;
-//        }
-//
-//        while (iter.hasNext()) {
-//            currentBlock = iter.next();
-//            Material currentBlockType = currentBlock.getType();
-//
-//            if (!Util.transparentBlocks.contains(currentBlockType))
-//                break;
-//            if (Util.transparentBlocks.contains(currentBlock.getRelative(BlockFace.UP).getType()))
-//                validFinalBlock = currentBlock;
-//        }
-//        if (validFinalBlock == null) {
-//            player.sendMessage("Could not find a valid location to create an overgrowth.");
-//            return null;
-//        }
-//        return validFinalBlock;
-//    }
+        if (pillarRootBlock == null || !Util.transparentBlocks.contains(pillarRootBlock.getType()))
+            return null;
+        return pillarRootBlock;
+    }
 
-    private Block SafelyIterateFromBlock(Block block, Vector direction, int maxDist, int requiredUpwardFreeSpace) {
+    private OvergrowthConstructionData tryGetOvergrowthConstructionData(Player player, Block startBlock, int height, int radius) {
+        List<Block> conversionBlocks = new ArrayList<Block>();
+        List<LivingEntity> targets = new ArrayList<LivingEntity>();
+
+        int requiredUpwardFreeSpace = 3;    // 2 for player + 1 for the block itself
+        Block validTopBlock = null;
+        Block currentBlock = null;
+        BlockIterator iter = null;
+        try {
+            Vector startCoords = startBlock.getLocation().toVector();
+            Vector straightUp = new Vector(0, 1, 0);
+            iter = new BlockIterator(startBlock.getWorld(), startCoords, straightUp, 0, height);
+        } catch (IllegalStateException e) {
+            return null;
+        }
+        while (iter.hasNext()) {
+            currentBlock = iter.next();
+
+            Material currentBlockType = currentBlock.getType();
+            if (!currentBlock.isEmpty())
+                break;
+
+            double doubleRadius = radius * 2;
+            Set<BoundingBox> boxesToIgnore = new HashSet<BoundingBox>();
+            Collection<Entity> possibleHangingEnts = currentBlock.getWorld().getNearbyEntities(currentBlock.getLocation(), doubleRadius, radius, doubleRadius);
+            for (Entity entity : possibleHangingEnts) {
+                if (entity instanceof Hanging)
+                    boxesToIgnore.add(entity.getBoundingBox());
+            }
+
+            boolean hitMaxValidHeight = false;
+            for (LivingEntity confirmedTarget : targets) {
+                Location theoreticalPlatformLocation = confirmedTarget.getLocation().clone();
+                theoreticalPlatformLocation.setY(currentBlock.getY());
+                if (cannotGoAnyHigher(theoreticalPlatformLocation.getBlock(), 3)) {
+                    hitMaxValidHeight = true;
+                }
+            }
+
+            Collection<LivingEntity> nearbyTargets = getLivingEntitiesWithinFlatCircle(currentBlock.getLocation(), radius);
+            for (LivingEntity target : nearbyTargets) {
+                Location entLoc = target.getLocation();
+                Block entBlock = entLoc.getBlock();
+                if (cannotGoAnyHigher(entBlock, 3)) {
+                    hitMaxValidHeight = true;
+                }
+                targets.add(target);
+            }
+
+            // Never found a valid block
+            if (hitMaxValidHeight && validTopBlock == null)
+                break;
+
+            for (Block block : getBlocksWithinFlatCircle(currentBlock.getLocation(), radius)) {
+                if (!block.isEmpty() || boxesToIgnore.stream().anyMatch(box -> box.contains(block.getX(), block.getY(), block.getZ())))
+                    continue;
+                conversionBlocks.add(block);
+            }
+
+            validTopBlock = currentBlock;
+            if (hitMaxValidHeight)
+                break;
+        }
+
+        if (validTopBlock == null || validTopBlock == startBlock)
+            return null;
+
+        return new OvergrowthConstructionData(startBlock, validTopBlock, radius, conversionBlocks, targets);
+    }
+
+    private static Block safelyIterateFromBlock(Block block, Vector direction, int maxDist, int requiredUpwardFreeSpace) {
         Block validFinalBlock = null;
         BlockIterator iter = null;
         try {
@@ -209,19 +243,7 @@ public class SkillOvergrowth extends ActiveSkill {
                 break;
 
             validFinalBlock = currentBlock;
-            boolean cannotGoAnyHigher = false;
-
-            int i = 0;
-            Block currentAboveBlock = currentBlock;
-            while (i < requiredUpwardFreeSpace) {
-                currentAboveBlock = currentAboveBlock.getRelative(BlockFace.UP);
-                if (!Util.transparentBlocks.contains(currentAboveBlock.getType())) {
-                    cannotGoAnyHigher = true;
-                    break;
-                }
-                i++;
-            }
-            if (cannotGoAnyHigher)
+            if (cannotGoAnyHigher(currentBlock, requiredUpwardFreeSpace))
                 break;
         }
         if (validFinalBlock == null)
@@ -229,20 +251,178 @@ public class SkillOvergrowth extends ActiveSkill {
         return validFinalBlock;
     }
 
-    public class OvergrowthEffect extends ExpirableEffect {
+    private static boolean cannotGoAnyHigher(Block sourceBlock, int requiredUpwardFreeSpace) {
+        boolean cannotGoAnyHigher = false;
+        int i = 0;
+        Block currentAboveBlock = sourceBlock;
+        while (i < requiredUpwardFreeSpace) {
+            currentAboveBlock = currentAboveBlock.getRelative(BlockFace.UP);
+            if (!Util.transparentBlocks.contains(currentAboveBlock.getType())) {
+                cannotGoAnyHigher = true;
+                break;
+            }
+            i++;
+        }
+        return cannotGoAnyHigher;
+    }
 
-        private final Block startBlock;
-        private final Block platformTopBlock;
-        private final int radius;
+    private List<LivingEntity> getLivingEntitiesWithinSphere(Location center, int radius) {
+        World world = center.getWorld();
+        List<LivingEntity> worldEntities = world.getLivingEntities();
+        List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
+        List<Block> blocksInRadius = getBlocksInSphere(center, radius, false);
+
+        for (LivingEntity entity : worldEntities) {
+            Block standingBlock = entity.getLocation().getBlock();
+            if (blocksInRadius.contains(standingBlock))
+                entitiesWithinRadius.add(entity);
+        }
+        return entitiesWithinRadius;
+    }
+
+    private List<Entity> getEntitiesWithinSphere(Location center, int radius) {
+        World world = center.getWorld();
+        List<Entity> worldEntities = world.getEntities();
+        List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
+        List<Block> blocksInRadius = getBlocksInSphere(center, radius, false);
+
+        for (Entity entity : worldEntities) {
+            Block standingBlock = entity.getLocation().getBlock();
+            if (blocksInRadius.contains(standingBlock))
+                entitiesWithinRadius.add(entity);
+        }
+        return entitiesWithinRadius;
+    }
+
+    private List<LivingEntity> getLivingEntitiesWithinFlatCircle(Location center, int radius) {
+        World world = center.getWorld();
+        List<LivingEntity> worldEntities = world.getLivingEntities();
+        List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
+        List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, radius);
+
+        for (LivingEntity entity : worldEntities) {
+            Block standingBlock = entity.getLocation().getBlock();
+            if (blocksInRadius.contains(standingBlock))
+                entitiesWithinRadius.add(entity);
+        }
+        return entitiesWithinRadius;
+    }
+
+    private List<Entity> getEntitiesWithinFlatCircle(Location center, int radius) {
+        World world = center.getWorld();
+        List<Entity> worldEntities = world.getEntities();
+        List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
+        List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, radius);
+
+        for (Entity entity : worldEntities) {
+            Block standingBlock = entity.getLocation().getBlock();
+            if (blocksInRadius.contains(standingBlock))
+                entitiesWithinRadius.add(entity);
+        }
+        return entitiesWithinRadius;
+    }
+
+    private List<Block> getBlocksInSphere(Location center, int radius, boolean hollow) {
+        List<Block> sphereBlocks = new ArrayList<Block>();
+        World world = center.getWorld();
+        int centerX = center.getBlockX();
+        int centerY = center.getBlockY();
+        int centerZ = center.getBlockZ();
+
+        for (int x = centerX - radius; x <= centerX + radius; x++) {
+            for (int y = centerY - radius; y <= centerY + radius; y++) {
+                for (int z = centerZ - radius; z <= centerZ + radius; z++) {
+                    double distance = ((centerX - x) * (centerX - x) + ((centerZ - z) * (centerZ - z)) + ((centerY - y) * (centerY - y)));
+                    if (distance < radius * radius && !(hollow && distance < ((radius - 1) * (radius - 1)))) {
+                        Block block = world.getBlockAt(x, y, z);
+                        sphereBlocks.add(block);
+                    }
+                }
+            }
+        }
+        return sphereBlocks;
+    }
+
+    private List<Block> getBlocksWithinFlatCircle(Location center, int radius) {
+        List<Block> flatCircleBlocks = new ArrayList<Block>();
+        World world = center.getWorld();
+        int centerY = center.getBlockY();
+        int centerX = center.getBlockX();
+        int centerZ = center.getBlockZ();
+        int rSquared = radius * radius;
+
+        for (int x = centerX - radius; x <= centerX + radius; x++) {
+            for (int z = centerZ - radius; z <= centerZ + radius; z++) {
+                if ((centerX - x) * (centerX - x) + (centerZ - z) * (centerZ - z) <= rSquared) {
+                    Block block = world.getBlockAt(x, centerY, z);
+                    flatCircleBlocks.add(block);
+                }
+            }
+        }
+        return flatCircleBlocks;
+    }
+
+    private boolean isBlockWithinFlatCircle(Block block, Location center, int radius) {
+        int centerY = center.getBlockY();
+        if (block.getY() != centerY)
+            return false;
+
+        int centerX = center.getBlockX();
+        int centerZ = center.getBlockZ();
+        int rSquared = radius * radius;
+
+        for (int x = centerX - radius; x <= centerX + radius; x++) {
+            for (int z = centerZ - radius; z <= centerZ + radius; z++) {
+                if ((centerX - x) * (centerX - x) + (centerZ - z) * (centerZ - z) <= rSquared) {
+                    if (block.getX() == x && block.getZ() == z)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private class OvergrowthConstructionData {
+        Block bottomCenterBlock;
+        Block topCenterBlock;
+        int radius;
+        List<Block> blocksToConvert = new ArrayList<Block>();
+        List<LivingEntity> targets = new ArrayList<LivingEntity>();
+
+        OvergrowthConstructionData(Block bottomCenterBlock, Block topCenterBlock, int radius, List<Block> blocksToConvert, List<LivingEntity> targets) {
+            this.bottomCenterBlock = bottomCenterBlock;
+            this.topCenterBlock = topCenterBlock;
+            this.radius = radius;
+            this.blocksToConvert = blocksToConvert;
+            this.targets = targets;
+        }
+
+        int getTopY() {
+            return topCenterBlock.getY();
+        }
+
+        int getBottomY() {
+            return bottomCenterBlock.getY();
+        }
+
+        int getDistance() {
+            return getTopY() - getBottomY();
+        }
+
+        Location getCenterFor(Block block) {
+            return new Location(block.getWorld(), bottomCenterBlock.getX(), block.getY(), bottomCenterBlock.getZ());
+        }
+    }
+
+    public class OvergrowthEffect extends ExpirableEffect {
+        private final OvergrowthConstructionData data;
 
         private Set<Block> changedBlocks = new HashSet<Block>();
         private SkillBlockListener listener = new SkillBlockListener();
 
-        public OvergrowthEffect(Skill skill, Player applier, long duration, Block startBlock, Block platformTopBlock, int radius) {
+        OvergrowthEffect(Skill skill, Player applier, long duration, OvergrowthConstructionData data) {
             super(skill, "Overgrowth", applier, duration);
-            this.startBlock = startBlock;
-            this.platformTopBlock = platformTopBlock;
-            this.radius = radius;
+            this.data = data;
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.EARTH);
@@ -261,15 +441,14 @@ public class SkillOvergrowth extends ActiveSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            Location startLocation = startBlock.getLocation();
-            Location endLocation = platformTopBlock.getLocation();
+            Location endLocation = data.topCenterBlock.getLocation();
 
-            Collection<Entity> nearbyEntities = endLocation.getWorld().getNearbyEntities(endLocation, radius, 3, radius);
+            Collection<Entity> nearbyEntities = endLocation.getWorld().getNearbyEntities(endLocation, data.radius, 3, data.radius);
             for (Entity entity : nearbyEntities) {
                 if (!(entity instanceof LivingEntity))
                     continue;
                 Location entLoc = entity.getLocation();
-                Location inAirLoc = new Location(entLoc.getWorld(), entLoc.getX(), entLoc.getY() + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
+                Location inAirLoc = new Location(entLoc.getWorld(), entLoc.getBlockX(), entLoc.getBlockY() + 1, entLoc.getBlockZ(), entLoc.getYaw(), entLoc.getPitch());
                 entity.teleport(inAirLoc);
                 entity.setFallDistance(-512);
             }
@@ -277,118 +456,31 @@ public class SkillOvergrowth extends ActiveSkill {
         }
 
         private void createPlatformAndBoostEntitiesUp() {
-            BlockIterator iter = null;
-            Location startLocation = startBlock.getLocation();
-            Location endLocation = platformTopBlock.getLocation();
-            int topYValue = platformTopBlock.getY();
-            int maxDist = (int) (endLocation.getY() - startLocation.getY());
-            try {
-                iter = new BlockIterator(startLocation.getWorld(), startLocation.toVector(), new Vector(0, 1, 0), 0, maxDist);
-            } catch (IllegalStateException e) {
-                return;
-            }
+            for (Block block : data.blocksToConvert) {
+                boolean isTopLevel = block.getY() == data.getTopY();
+                boolean isUpperLevel = block.getY() >= (data.getTopY() - (data.getDistance() * 0.15d));
 
-            World world = startLocation.getWorld();
-            Block currentBlock;
-            while (iter.hasNext()) {
-                currentBlock = iter.next();
-                Material currentBlockType = currentBlock.getType();
-                if (!currentBlock.isEmpty())
-                    break;
-
-                Set<BoundingBox> blocksToIgnore = new HashSet<>();
-                Collection<Entity> nearbyEntities = getEntitiesWithinSphere(currentBlock.getLocation(), radius);
-                for (Entity entity : nearbyEntities) {
-                    if ((entity instanceof LivingEntity)) {
-                        Location entLoc = entity.getLocation();
-                        Location onPillarLoc = new Location(entLoc.getWorld(), entLoc.getX(), topYValue + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
-                        entity.teleport(onPillarLoc);
-                        //teleportedEntitites.add((LivingEntity) entity);
-                    } else if (entity instanceof Hanging) {
-                        blocksToIgnore.add(entity.getBoundingBox());
+                if (isTopLevel) {
+                    block.setType(Material.OAK_LEAVES);
+                } else {
+                    int chance = random.nextInt(100);
+                    if (chance >= 20) {
+                        if (isUpperLevel)
+                            block.setType(Material.OAK_LEAVES);
+                        else if (isBlockWithinFlatCircle(block, data.getCenterFor(block), (int) (data.radius * 0.60)))
+                            block.setType(Material.OAK_WOOD);
+                        else
+                            continue;
                     }
                 }
-
-                boolean isTopLevel = currentBlock.getY() == topYValue;
-                boolean isUpperLevel = currentBlock.getY() >= (topYValue - (maxDist * 0.15d));
-                List<Block> blocks;
-                if (isUpperLevel)
-                    blocks = getBlocksInFlatCircle(currentBlock.getLocation(), radius);
-                else
-                    blocks = getBlocksInFlatCircle(currentBlock.getLocation(), (int) (radius * 0.60));
-
-                for (Block block : blocks) {
-                    if (!block.isEmpty() || blocksToIgnore.stream().anyMatch(x -> x.contains(block.getX(), block.getY(), block.getZ())))
-                        continue;
-
-                    changedBlocks.add(block);
-                    if (isTopLevel) {
-                        block.setType(Material.OAK_LEAVES);
-                    } else {
-                        int chance = random.nextInt(100);
-                        if (chance >= 20) {
-                            if (isUpperLevel)
-                                block.setType(Material.OAK_LEAVES);
-                            else
-                                block.setType(Material.OAK_WOOD);
-                        }
-                    }
-                }
+                changedBlocks.add(block);
             }
-        }
 
-        private List<Entity> getEntitiesWithinSphere(Location centerLocation, int radius) {
-            World world = centerLocation.getWorld();
-            List<Entity> worldEntities =world.getEntities();
-            List<Entity> entitiesWithinSphere = new ArrayList<Entity>();
-            List<Block> blocksInSphereRadius = getBlocksInSphere(centerLocation, radius, false);
-
-            for (Entity entity : worldEntities) {
-                Block standingBlock = entity.getLocation().getBlock();
-                if (blocksInSphereRadius.contains(standingBlock))
-                    entitiesWithinSphere.add(entity);
+            for (LivingEntity entity : data.targets) {
+                Location entLoc = entity.getLocation();
+                Location onPillarLoc = new Location(entLoc.getWorld(), entLoc.getX(), data.getTopY() + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
+                entity.teleport(onPillarLoc);
             }
-            return entitiesWithinSphere;
-        }
-
-        private List<Block> getBlocksInSphere(Location centerLocation, int radius, boolean hollow) {
-            List<Block> sphereBlocks = new ArrayList<Block>();
-            World world = centerLocation.getWorld();
-            int centerX = centerLocation.getBlockX();
-            int centerY = centerLocation.getBlockY();
-            int centerZ = centerLocation.getBlockZ();
-
-            for (int x = centerX - radius; x <= centerX + radius; x++) {
-                for (int y = centerY - radius; y <= centerY + radius; y++) {
-                    for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-                        double distance = ((centerX - x) * (centerX - x) + ((centerZ - z) * (centerZ - z)) + ((centerY - y) * (centerY - y)));
-                        if (distance < radius * radius && !(hollow && distance < ((radius - 1) * (radius - 1)))) {
-                            Block block = world.getBlockAt(x, y, z);
-                            sphereBlocks.add(block);
-                        }
-                    }
-                }
-            }
-            return sphereBlocks;
-        }
-
-        private List<Block> getBlocksInFlatCircle(Location location, int radius) {
-            List<Block> flatCircleBlocks = new ArrayList<Block>();
-            World world = location.getWorld();
-            int centerY = location.getBlockY();
-            int centerX = location.getBlockX();
-            int centerZ = location.getBlockZ();
-            int rSquared = radius * radius;
-
-            for (int x = centerX - radius; x <= centerX + radius; x++) {
-                for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-                    if ((centerX - x) * (centerX - x) + (centerZ - z) * (centerZ - z) <= rSquared) {
-                        Block block = world.getBlockAt(x, centerY, z);
-                        flatCircleBlocks.add(block);
-                    }
-                }
-            }
-            return flatCircleBlocks;
         }
 
         private void revertBlocks() {
@@ -413,9 +505,19 @@ public class SkillOvergrowth extends ActiveSkill {
 
             // Possible other events to register if we feel the need...
             //BlockFormEvent
-            //LeavesDecayEvent
             //BlockPhysicsEvent
 
+            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            public void onLeafDecay(LeavesDecayEvent event) {
+                Block block = event.getBlock();
+                if (block == null)
+                    return;
+
+                if (changedBlocks.contains(block))
+                    event.setCancelled(true);
+            }
+
+            // For stopping paved grass / crops being destroyed
             @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
             public void onBlockFade(BlockFadeEvent event) {
                 Block block = event.getBlock();
@@ -480,8 +582,9 @@ public class SkillOvergrowth extends ActiveSkill {
 
             @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
             public void onHangingBreak(HangingBreakEvent event) {
-                Block block = event.getEntity().getLocation().getBlock();
-                if (block != null && changedBlocks.contains(block))
+                BoundingBox box = event.getEntity().getBoundingBox();
+
+                if (changedBlocks.stream().anyMatch((changedBlock)-> box.contains(changedBlock.getLocation().toVector())))
                     event.setCancelled(true);
             }
 

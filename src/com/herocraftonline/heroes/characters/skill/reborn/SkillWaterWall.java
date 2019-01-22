@@ -80,6 +80,11 @@ public class SkillWaterWall extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        if (hero.hasEffect("WaterWall")) {
+            hero.removeEffect(hero.getEffect("WaterWall"));
+            return SkillResult.SKIP_POST_USAGE;
+        }
+
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 4, false);
         int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false);
 
