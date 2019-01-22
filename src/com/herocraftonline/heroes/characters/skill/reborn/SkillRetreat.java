@@ -71,7 +71,6 @@ public class SkillRetreat extends ActiveSkill {
         super.init();
         setUseText("%hero% retreats and his next arrow will stun his target".replace("%hero%", "$1"));
         stunReadyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is stunned!").replace("%target%", "$1");
-        stunExpireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero%'s next arrow will no longer stun!").replace("%hero%", "$1");
     }
 
     @Override
@@ -84,11 +83,7 @@ public class SkillRetreat extends ActiveSkill {
 
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
-
-        if ((SkillConfigManager.getUseSetting(hero, this, "no-air-backflip", true) && requiredMaterials.contains(belowMat)) || player.isInsideVehicle()) {
-            player.sendMessage("You cannot retreat while mid-air or from inside a vehicle!");
-            return SkillResult.FAIL;
-        }
+        
         performBackflip(hero, player, belowMat);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
