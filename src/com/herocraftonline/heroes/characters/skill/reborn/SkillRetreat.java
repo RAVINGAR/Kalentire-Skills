@@ -17,6 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,12 +27,23 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class SkillRetreat extends ActiveSkill {
 
     private String stunReadyText;
     private String stunExpireText;
+
+    private Map<Arrow, Long> stunArrows = new LinkedHashMap<Arrow, Long>(100) {
+        private static final long serialVersionUID = 4329526013158603250L;
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
+            return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
+        }
+    };
 
     public SkillRetreat(Heroes plugin) {
         super(plugin, "Retreat");
@@ -45,8 +57,6 @@ public class SkillRetreat extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
-
         return getDescription();
     }
 
@@ -56,7 +66,6 @@ public class SkillRetreat extends ActiveSkill {
         return node;
     }
 
-
     @Override
     public void init() {
         super.init();
@@ -65,21 +74,13 @@ public class SkillRetreat extends ActiveSkill {
         stunExpireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero%'s next arrow will no longer stun!").replace("%hero%", "$1");
     }
 
-
     @Override
     public SkillResult use(Hero hero, String[] args) {
-
         final Player player = hero.getPlayer();
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
-        hero.addEffect(new RetreatBuff(this, player, duration));
-
         if (hero.hasEffect("RetreatBuff")) {
             hero.removeEffect(hero.getEffect("RetreatBuff"));
             return SkillResult.SKIP_POST_USAGE;
         }
-
-
-        broadcastExecuteText(hero);
 
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
@@ -88,8 +89,30 @@ public class SkillRetreat extends ActiveSkill {
             player.sendMessage("You cannot retreat while mid-air or from inside a vehicle!");
             return SkillResult.FAIL;
         }
+        performBackflip(hero, player, belowMat);
 
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        hero.addEffect(new RetreatBuff(this, player, duration));
 
+        broadcastExecuteText(hero);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
+
+        return SkillResult.NORMAL;
+    }
+
+    private static final Set<Material> requiredMaterials;
+    static {
+        requiredMaterials = new HashSet<>();
+        requiredMaterials.add(Material.LEGACY_STATIONARY_WATER);
+        requiredMaterials.add(Material.LEGACY_STATIONARY_LAVA);
+        requiredMaterials.add(Material.WATER);
+        requiredMaterials.add(Material.LAVA);
+        requiredMaterials.add(Material.AIR);
+        requiredMaterials.add(Material.LEGACY_LEAVES);  //TODO: Add every other leaf type maybe?
+        requiredMaterials.add(Material.SOUL_SAND);
+    }
+
+    private void performBackflip(Hero hero, Player player, Material belowMat) {
         // Calculate backflip values
         float pitch = player.getEyeLocation().getPitch();
         if (pitch > 0) {
@@ -149,44 +172,14 @@ public class SkillRetreat extends ActiveSkill {
                 player.setFallDistance(-8f);
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
-
-
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
-        return SkillResult.NORMAL;
     }
 
-
-    private static final Set<Material> requiredMaterials;
-
-    static {
-        requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.LEGACY_STATIONARY_WATER);
-        requiredMaterials.add(Material.LEGACY_STATIONARY_LAVA);
-        requiredMaterials.add(Material.WATER);
-        requiredMaterials.add(Material.LAVA);
-        requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEGACY_LEAVES);  //TODO: Add every other leaf type maybe?
-        requiredMaterials.add(Material.SOUL_SAND);
-    }
-
-    //Creation of buff for arrow stun
     public class RetreatBuff extends ExpirableEffect {
-
-        private int shot = 2;
-
 
         public RetreatBuff(Skill skill, Player applier, long duration) {
             super(skill, "RetreatBuff", applier, duration);
+
             types.add(EffectType.BENEFICIAL);
-            this.shot = shot;
-        }
-
-        public int getShot() {
-            return shot;
-        }
-
-        public void setShot(int shot) {
-            this.shot = shot;
         }
 
         @Override
@@ -194,8 +187,6 @@ public class SkillRetreat extends ActiveSkill {
             super.removeFromHero(hero);
 
         }
-
-
     }
 
     public class SkillDamageListener implements Listener {
@@ -210,75 +201,40 @@ public class SkillRetreat extends ActiveSkill {
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityShootBow(EntityShootBowEvent event) {
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
-
-
-            if (!hero.hasEffect("RetreatBuff")) {
-                return;
+            if (hero.hasEffect("RetreatBuff")) {
+                stunArrows.put((Arrow) event.getProjectile(), System.currentTimeMillis());
+                hero.removeEffect(hero.getEffect("RetreatBuff"));
             }
-
-            RetreatBuff effect = (RetreatBuff) hero.getEffect("RetreatBuff");
-
-            if (effect.shot < 1) {
-                return;
-            }
-
-            effect.setShot(effect.getShot() - 1);
-
-            if (effect.shot < 1) {
-                hero.removeEffect(effect);
-            }
-
         }
-
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
-
-            //When our event is cancelled and no entities are involved return
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
+            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity))
                 return;
-            }
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (!(subEvent.getDamager() instanceof Arrow)) {
+            if (!(subEvent.getDamager() instanceof Arrow))
                 return;
-            }
 
             Arrow arrow = (Arrow) subEvent.getDamager();
-            if (!(arrow.getShooter() instanceof Player)) {
+            if (!(arrow.getShooter() instanceof Player) || !stunArrows.containsKey(arrow))
                 return;
-            }
 
-            //Identify the arrow shooter as a hero.
+            stunArrows.remove(arrow);
+
             Player player = (Player) arrow.getShooter();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-
-            RetreatBuff effect = (RetreatBuff) hero.getEffect("RetreatBuff");
-
-            if (hero.hasEffect("RetreatBuff") || effect.getShot() == 2) {
-                long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
-                StunEffect retreatStunEffect = new StunEffect(skill, hero.getPlayer(), duration, stunReadyText, stunExpireText);
-                hero.removeEffect(effect);
-                effect.setShot(effect.getShot() - 1);
-
-                LivingEntity target = (LivingEntity) event.getEntity();
-
-                if (event instanceof EntityDamageByEntityEvent) {
-                    plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);
-
-                    return;
-
-                }
-            }
-
+            // Stun the target
+            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
+            StunEffect retreatStunEffect = new StunEffect(skill, player, duration, stunReadyText, stunExpireText);
+            LivingEntity target = (LivingEntity) event.getEntity();
+            plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);
         }
     }
-
 }
 
 
