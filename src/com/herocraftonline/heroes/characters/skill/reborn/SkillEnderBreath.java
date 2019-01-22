@@ -28,13 +28,13 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SkillEnderBreath extends SkillBaseGroundEffect {
 
+    private double randomMin = -0.15;
+    private double randomMax = 0.15;
+    private static final Random random = new Random(System.currentTimeMillis());
     private Map<Snowball, Long> activeProjectiles = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 3329526013158603250L;
 
@@ -43,7 +43,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
-    
+
     public SkillEnderBreath(Heroes plugin) {
         super(plugin, "EnderBreath");
         setDescription("Launch a ball of Ender Flame at your opponent. "
@@ -197,23 +197,21 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
             final Player player = hero.getPlayer();
             EffectManager em = new EffectManager(plugin);
-            EnderDragonBattle
             Effect visualEffect = new Effect(em) {
                 Particle particle = Particle.DRAGON_BREATH;
                 @Override
                 public void onRun() {
-
                     for (double z = -radius; z <= radius; z += 0.33) {
                         for (double x = -radius; x <= radius; x += 0.33) {
                             if (x * x + z * z <= radius * radius) {
-                                display(particle, getLocation().clone().add(x, 0, z));
+                                double randomX = x + getRandomInRange();
+                                double randomZ = z + getRandomInRange();
+                                display(particle, getLocation().clone().add(randomX, 0, randomZ));
                             }
                         }
-
                     }
                 }
             };
-
 
 //            visualEffect.type = EffectType.REPEATING;
 //            visualEffect.period = 10;
@@ -230,6 +228,10 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
             player.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.15f, 0.0001f);
         }
+    }
+
+    private double getRandomInRange() {
+        return randomMin + (randomMax - randomMin) * random.nextDouble();
     }
 
 //    private class DragonBreathAoEEffect extends PeriodicExpirableEffect {
