@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class SkillFeatheredShot extends ActiveSkill {
@@ -106,6 +107,7 @@ public class SkillFeatheredShot extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+            VisualEffect effect = new VisualEffect();
         }
     }
 
@@ -135,15 +137,16 @@ public class SkillFeatheredShot extends ActiveSkill {
             final Player player = (Player) arrow.getShooter();
             final Hero hero = plugin.getCharacterManager().getHero(player);
 
-            int potionDuration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 50, false);
+            int duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 10000, false);
 
             if (!hero.hasEffect("FeatheredArrows"))
                 return;
 
             if (hero.hasEffect("FeatheredArrows")) {
                 final LivingEntity target = (LivingEntity) event.getEntity();
-                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 80 * potionDuration / 1000, 5));
-                target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 80 * potionDuration / 1000, 2));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 80 * duration / 1000, 5));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 80 * duration / 1000, 2));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80 * duration / 1000, 0));
             }
 
         }
