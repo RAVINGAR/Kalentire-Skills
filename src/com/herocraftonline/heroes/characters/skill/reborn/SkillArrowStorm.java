@@ -164,6 +164,7 @@ public class SkillArrowStorm extends ActiveSkill {
                     //stormArrow.getWorld().spigot().playEffect(stormArrow.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
                     //stormArrow.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, stormArrow.getLocation(), 2, 0.4, 0.4, 0.4, 0);
 
+                    cloudEffect(stormArrow.getLocation());
                     stormArrow.setShooter(player);
                     stormArrow.setVelocity(vel);
                     stormArrows.put(stormArrow, System.currentTimeMillis());
@@ -171,7 +172,6 @@ public class SkillArrowStorm extends ActiveSkill {
                 }
             }, (long) ((delayBetween * i) * 20));
         }
-        cloudEffect(stormCenter);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
         return SkillResult.NORMAL;
     }
@@ -216,9 +216,9 @@ public class SkillArrowStorm extends ActiveSkill {
             }
         };
 
-        visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
-        visualEffect.period = 5;
-        visualEffect.iterations = 50;
+        visualEffect.type = de.slikey.effectlib.EffectType.INSTANT;
+//        visualEffect.period = 5;
+//        visualEffect.iterations = 50;
         visualEffect.asynchronous = true;
         visualEffect.setLocation(location);
 
