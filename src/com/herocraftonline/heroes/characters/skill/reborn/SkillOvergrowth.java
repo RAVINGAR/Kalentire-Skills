@@ -180,11 +180,11 @@ public class SkillOvergrowth extends ActiveSkill {
 
             double doubleRadius = radius * 2;
             Set<BoundingBox> boxesToIgnore = new HashSet<BoundingBox>();
-            Collection<Entity> possibleHangingEnts = currentBlock.getWorld().getNearbyEntities(currentBlock.getLocation(), doubleRadius, radius, doubleRadius);
-            for (Entity entity : possibleHangingEnts) {
-                if (entity instanceof Hanging)
-                    boxesToIgnore.add(entity.getBoundingBox());
-            }
+//            Collection<Entity> possibleHangingEnts = currentBlock.getWorld().getNearbyEntities(currentBlock.getLocation(), doubleRadius, radius, doubleRadius);
+//            for (Entity entity : possibleHangingEnts) {
+//                if (entity instanceof Hanging)
+//                    boxesToIgnore.add(entity.getBoundingBox());
+//            }
 
             boolean hitMaxValidHeight = false;
             for (LivingEntity confirmedTarget : targets) {
@@ -270,7 +270,7 @@ public class SkillOvergrowth extends ActiveSkill {
         World world = center.getWorld();
         List<LivingEntity> worldEntities = world.getLivingEntities();
         List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
-        List<Block> blocksInRadius = getBlocksInSphere(center, radius, false);
+        List<Block> blocksInRadius = getBlocksWithinSphere(center, radius, false);
 
         for (LivingEntity entity : worldEntities) {
             Block standingBlock = entity.getLocation().getBlock();
@@ -284,7 +284,7 @@ public class SkillOvergrowth extends ActiveSkill {
         World world = center.getWorld();
         List<Entity> worldEntities = world.getEntities();
         List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
-        List<Block> blocksInRadius = getBlocksInSphere(center, radius, false);
+        List<Block> blocksInRadius = getBlocksWithinSphere(center, radius, false);
 
         for (Entity entity : worldEntities) {
             Block standingBlock = entity.getLocation().getBlock();
@@ -322,7 +322,7 @@ public class SkillOvergrowth extends ActiveSkill {
         return entitiesWithinRadius;
     }
 
-    private List<Block> getBlocksInSphere(Location center, int radius, boolean hollow) {
+    private List<Block> getBlocksWithinSphere(Location center, int radius, boolean hollow) {
         List<Block> sphereBlocks = new ArrayList<Block>();
         World world = center.getWorld();
         int centerX = center.getBlockX();
@@ -582,10 +582,14 @@ public class SkillOvergrowth extends ActiveSkill {
 
             @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
             public void onHangingBreak(HangingBreakEvent event) {
+                Block block = event.getEntity().getLocation().getBlock();
                 BoundingBox box = event.getEntity().getBoundingBox();
 
-                if (changedBlocks.stream().anyMatch((changedBlock)-> box.contains(changedBlock.getLocation().toVector())))
+                if (changedBlocks.contains(block)
+                        || changedBlocks.stream().anyMatch((changedBlock)-> changedBlock.getBoundingBox().contains(box))
+                        || changedBlocks.stream().anyMatch((changedBlock)-> box.contains(changedBlock.getBoundingBox()))) {
                     event.setCancelled(true);
+                }
             }
 
             @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
