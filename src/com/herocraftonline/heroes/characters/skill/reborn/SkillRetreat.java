@@ -11,6 +11,9 @@ import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
+import de.slikey.effectlib.Effect;
+import de.slikey.effectlib.EffectManager;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -83,7 +86,7 @@ public class SkillRetreat extends ActiveSkill {
 
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
-        
+
         performBackflip(hero, player, belowMat);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
@@ -96,6 +99,7 @@ public class SkillRetreat extends ActiveSkill {
     }
 
     private static final Set<Material> requiredMaterials;
+
     static {
         requiredMaterials = new HashSet<>();
         requiredMaterials.add(Material.LEGACY_STATIONARY_WATER);
@@ -205,6 +209,7 @@ public class SkillRetreat extends ActiveSkill {
             }
         }
 
+
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
             if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity))
@@ -228,9 +233,44 @@ public class SkillRetreat extends ActiveSkill {
             StunEffect retreatStunEffect = new StunEffect(skill, player, duration, stunReadyText, stunExpireText);
             LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);
+            particleEffect(target);
         }
+
+        public void particleEffect(LivingEntity target) {
+
+            EffectManager em = new EffectManager(plugin);
+            Effect visualEffect = new Effect(em) {
+                Particle particle = Particle.FIREWORKS_SPARK;
+
+
+                int radius = 2;
+
+                @Override
+                public void onRun() {
+                    for (double z = -radius; z <= radius; z += 0.33) {
+                        for (double x = -radius; x <= radius; x += 0.33) {
+                            if (x * x + z * z <= radius * radius) {
+                                display(particle, getLocation().clone().add(x, 0, z));
+                            }
+                        }
+                    }
+                }
+            };
+
+            visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
+            visualEffect.period = 10;
+            visualEffect.iterations = 8;
+
+            Location location = target.getLocation().clone();
+            visualEffect.asynchronous = true;
+            visualEffect.setLocation(location);
+
+            visualEffect.start();
+            em.disposeOnTermination();
+
+            target.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.15f, 0.0001f);
+        }
+
     }
 }
-
-
 
