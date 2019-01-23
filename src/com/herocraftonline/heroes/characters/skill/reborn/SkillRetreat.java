@@ -199,10 +199,10 @@ public class SkillRetreat extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityShootBow(EntityShootBowEvent event) {
-            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("RetreatBuff")) {
                 stunArrows.put((Arrow) event.getProjectile(), System.currentTimeMillis());
                 hero.removeEffect(hero.getEffect("RetreatBuff"));
