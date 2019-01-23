@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 
 public class SkillArrowStorm extends ActiveSkill {
 
-    private Map<Arrow, Long> blizzardIceBolts = new LinkedHashMap<Arrow, Long>(100) {
+    private Map<Arrow, Long> stormArrows = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 4632858378318784263L;
 
         @Override
@@ -82,8 +82,8 @@ public class SkillArrowStorm extends ActiveSkill {
         node.set("downward-velocity", 0.8);
         node.set("velocity-deviation", 0.5);
         node.set("delay-between-firing", 0.1);
-        node.set("icebolts-launched", 4);
-        node.set("icebolts-launched-per-intellect", 0.5);
+        node.set("storm-arrows-launched", 4);
+        node.set("storm-arrows-launched-per-intellect", 0.5);
         node.set("slow duration", 1000);
         node.set("slow-multiplier", 1);
         node.set(SkillSetting.APPLY_TEXT.node(), "");
@@ -106,9 +106,9 @@ public class SkillArrowStorm extends ActiveSkill {
 
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 
-        int numIceBolts = SkillConfigManager.getUseSetting(hero, this, "icebolts-launched", 12, false);
-        double numIceBoltsIncrease = SkillConfigManager.getUseSetting(hero, this, "icebolts-launched-per-intellect", 0.325, false);
-        numIceBolts += (int) (numIceBoltsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        int numstormArrows = SkillConfigManager.getUseSetting(hero, this, "storm-arrows-launched", 12, false);
+        double numstormArrowsIncrease = SkillConfigManager.getUseSetting(hero, this, "storm-arrows-launched-per-intellect", 0.325, false);
+        numstormArrows += (int) (numstormArrowsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         double delayBetween = SkillConfigManager.getUseSetting(hero, this, "delay-between-firing", 0.2, false);
         final double velocityDeviation = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.2, false);
@@ -128,8 +128,9 @@ public class SkillArrowStorm extends ActiveSkill {
         broadcastExecuteText(hero);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.2F, 1.0F);
 
-        // Create a cicle of icebolt launch locations, based on skill radius.
-        List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
+        // Create a cicle of stormArrow launch locations, based on skill radius.
+        Location stormCenter = tBlock.getLocation().add(new Vector(.5, stormHeight + 0.5d, .5));
+        List<Location> possibleLaunchLocations = Util.getCircleLocationList(stormCenter, radius, 1, true, true, 0);
         int numPossibleLaunchLocations = possibleLaunchLocations.size();
 
         Collections.shuffle(possibleLaunchLocations);
@@ -140,7 +141,7 @@ public class SkillArrowStorm extends ActiveSkill {
         // Play the firework effects in a sequence
         final World world = tBlock.getLocation().getWorld();
         int k = 0;
-        for (int i = 0; i < numIceBolts; i++) {
+        for (int i = 0; i < numstormArrows; i++) {
             if (k >= numPossibleLaunchLocations) {
                 Collections.shuffle(possibleLaunchLocations);
                 k = 0;
@@ -153,27 +154,20 @@ public class SkillArrowStorm extends ActiveSkill {
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    //temp remove until we can figure out why the task is never-ending.
-                    /*if (j % 8 == 0) {
-                        Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
-                        world.playSound(fLoc, Sound.ENTITY_LIGHTNING_THUNDER, 1.1F, 1.0F);
-                    }*/
 
                     double randomX = ranGen.nextGaussian() * velocityDeviation;
                     double randomZ = ranGen.nextGaussian() * velocityDeviation;
 
                     Vector vel = new Vector(randomX, -yVelocity, randomZ);
 
-                    Arrow iceBolt = world.spawn(fLoc, Arrow.class);
-                    //iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
-                    iceBolt.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, iceBolt.getLocation(), 2, 0.4, 0.4, 0.4, 0);
-                    cloudEffect(iceBolt.getLocation());
+                    Arrow stormArrow = world.spawn(fLoc, Arrow.class);
+                    //stormArrow.getWorld().spigot().playEffect(stormArrow.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                    //stormArrow.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, stormArrow.getLocation(), 2, 0.4, 0.4, 0.4, 0);
 
-                    iceBolt.setShooter(player);
-                    iceBolt.setVelocity(vel);
-                    blizzardIceBolts.put(iceBolt, System.currentTimeMillis());
-
-                    //
+                    cloudEffect(stormArrow.getLocation());
+                    stormArrow.setShooter(player);
+                    stormArrow.setVelocity(vel);
+                    stormArrows.put(stormArrow, System.currentTimeMillis());
 
                 }
             }, (long) ((delayBetween * i) * 20));
@@ -188,12 +182,11 @@ public class SkillArrowStorm extends ActiveSkill {
         Effect visualEffect = new Effect(em) {
             public Particle cloudParticle = Particle.CLOUD;
             public Color cloudColor = Color.LIME;
-            public Particle mainParticle = Particle.CLOUD;
+            public Particle mainParticle = Particle.REDSTONE;
             public Color mainParticleColor = Color.LIME;
             public float cloudSize = .7f;
             public float particleRadius = cloudSize - .1f;
             public double yOffset = .8;
-
 
             @Override
             public void onRun() {
@@ -223,19 +216,15 @@ public class SkillArrowStorm extends ActiveSkill {
             }
         };
 
-        visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
-        visualEffect.period = 5;
-        visualEffect.iterations = 50;
+        visualEffect.type = de.slikey.effectlib.EffectType.INSTANT;
+//        visualEffect.period = 5;
+//        visualEffect.iterations = 50;
         visualEffect.asynchronous = true;
         visualEffect.setLocation(location);
 
         visualEffect.start();
         em.disposeOnTermination();
-
-
     }
-
-
 
 
     public class SkillEntityListener implements Listener {
@@ -254,11 +243,11 @@ public class SkillArrowStorm extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball) || !blizzardIceBolts.containsKey(projectile)) {
+            if (!(projectile instanceof Snowball) || !stormArrows.containsKey(projectile)) {
                 return;
             }
             event.setCancelled(true);
-            blizzardIceBolts.remove(projectile);
+            stormArrows.remove(projectile);
 
             ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof LivingEntity))
@@ -298,14 +287,10 @@ public class SkillArrowStorm extends ActiveSkill {
                 addSpellTarget(event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 event.setCancelled(true);
-
-
             }
-
-            }
-
-            }
+        }
     }
+}
 
 
 
