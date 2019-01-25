@@ -99,7 +99,6 @@ public class SkillBoneSpear extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         //Play effect
-                    	
                         //attempting spigot particles
                     	// Why does it play a bunch of crit particles every block the spear travels?
                         //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);

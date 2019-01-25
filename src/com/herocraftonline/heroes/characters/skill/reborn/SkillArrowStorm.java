@@ -179,11 +179,12 @@ public class SkillArrowStorm extends ActiveSkill {
     public void cloudEffect(Location location) {
         //Cloud Effect
         EffectManager em = new EffectManager(plugin);
+        final VisualEffect firework = new VisualEffect();
         Effect visualEffect = new Effect(em) {
             public Particle cloudParticle = Particle.CLOUD;
             public Color cloudColor = Color.LIME;
             public Particle mainParticle = Particle.REDSTONE;
-            public Color mainParticleColor = Color.LIME;
+            public Color mainParticleColor = Color.GREEN;
             public float cloudSize = .7f;
             public float particleRadius = cloudSize - .1f;
             public double yOffset = .8;

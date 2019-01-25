@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import org.bukkit.*;
@@ -20,7 +19,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -241,6 +239,7 @@ public class SkillRetreat extends ActiveSkill {
             EffectManager em = new EffectManager(plugin);
             Effect visualEffect = new Effect(em) {
                 Particle particle = Particle.FIREWORKS_SPARK;
+
 
 
                 int radius = 2;
