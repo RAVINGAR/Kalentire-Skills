@@ -9,7 +9,10 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -26,7 +29,7 @@ public class SkillRapidFire extends ActiveSkill {
 
     public SkillRapidFire(Heroes plugin) {
         super(plugin, "RapidFire");
-        setDescription("Launch a rapid fire of arrows in front of you. The rapidfire will travel up to $1 blocks, and damage all targets hit for $2 damage.");
+        setDescription("Launch a rapid fire of arrows in front of you. The spear will travel up to $1 blocks, pass through enemies, and damage all targets hit for $2 damage.");
         setUsage("/skill rapidfire");
         setArgumentRange(0, 0);
         setIdentifiers("skill rapidfire");
@@ -54,18 +57,27 @@ public class SkillRapidFire extends ActiveSkill {
     public SkillResult use(final Hero hero, String[] args) {
 
         final Player player = hero.getPlayer();
+
+
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
-        int delay = SkillConfigManager.getUseSetting(hero, this, "rapidfire-move-delay", 1, false);
-        final int radiusSquared = radius * radius;
 
         broadcastExecuteText(hero);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+
+
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
+        final int radiusSquared = radius * radius;
+
+        int delay = SkillConfigManager.getUseSetting(hero, this, "rapidfire-move-delay", 1, false);
+
+
+
+
         iterate effect = new iterate(this, player, period, duration, distance, radiusSquared, delay, damage);
         hero.addEffect(effect);
-
 
         return SkillResult.NORMAL;
     }
@@ -90,6 +102,7 @@ public class SkillRapidFire extends ActiveSkill {
         private final double _radiusSquared;
         private final int _delay;
         private final double _damage;
+        private final double _radius;
 
 
         public iterate(Skill skill, Player applier, long period, long duration, int distance, double radius, int delay, double damage) {
@@ -97,12 +110,27 @@ public class SkillRapidFire extends ActiveSkill {
             _duration = duration;
             _distance = distance;
             _radiusSquared = radius * radius;
+            _radius = radius;
             _delay = delay;
             _damage = damage;
             types.add(EffectType.PHYSICAL);
 
         }
 
+
+
+        //Method to check if player is facing X to help radius accuracy.
+        private boolean is_X_Direction(Player player) {
+            Vector u = player.getLocation().getDirection();
+            u = new Vector(u.getX(), 0.0D, u.getZ()).normalize();
+            Vector v = new Vector(0, 0, -1);
+            double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
+            double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
+            double angle = Math.acos(u.dot(v) / (magU * magV));
+            angle = angle * 180.0D / Math.PI;
+            angle = Math.abs(angle - 180.0D);
+            return (angle <= 45.0D) || (angle > 135.0D);
+        }
 
 
         @Override
@@ -130,7 +158,7 @@ public class SkillRapidFire extends ActiveSkill {
                 e.printStackTrace();
             }
 
-            final List<Entity> nearbyEntities = player.getNearbyEntities(_distance * 2, _distance, _distance * 2);
+            final List<Entity> nearbyEntities = player.getNearbyEntities(_radius, _radiusSquared, _radius);
             final List<Entity> hitEnemies = new ArrayList<>();
 
             int numBlocks = 0;
@@ -150,7 +178,6 @@ public class SkillRapidFire extends ActiveSkill {
                     shoot.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
                     shoot.setDamage(0);
                     shoot.setGravity(false);
-                    shoot.setBounce(false);
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                         public void run() {
@@ -162,12 +189,10 @@ public class SkillRapidFire extends ActiveSkill {
                     // Schedule the action in advance
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                         public void run() {
-                            //player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, targetLocation, 4, 0.3, 0.3, 0.3, 0.05);
+                            player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, targetLocation, 4, 0.3, 0.3, 0.3, 0.02);
+                            player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 2, 0.3, 0.3, 0.3, 0.05);
 
-                            //player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 2, 0.3, 0.3, 0.3, 0.05);
-
-                            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 0.6F, 0.6F);
-
+                            
 
                             // Check our entity list to see if they are on this specific block at the moment the firework plays
                             for (Entity entity : nearbyEntities) {
@@ -182,7 +207,8 @@ public class SkillRapidFire extends ActiveSkill {
                                 // Damage target
                                 LivingEntity target = (LivingEntity) entity;
                                 addSpellTarget(target, hero);
-                                damageEntity(target, player, _damage, EntityDamageEvent.DamageCause.MAGIC);
+                                damageEntity(target, player, _damage, EntityDamageEvent.DamageCause.PROJECTILE);
+
 
                                 // Add the target to the hitEntity map to ensure we don't ever hit them again with this specific BoneSpear
                                 hitEnemies.add(entity);
