@@ -5,9 +5,11 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -21,7 +23,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillFrontflip extends ActiveSkill {
 
@@ -81,8 +82,6 @@ public class SkillFrontflip extends ActiveSkill {
 
         boolean weakenVelocity = false;
         switch (belowMat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -133,7 +132,7 @@ public class SkillFrontflip extends ActiveSkill {
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_SKELETON_AMBIENT.value(), 10.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SKELETON_AMBIENT, 10.0F, 1.0F);
 
         if (hero.canUseSkill("Backflip")) {
             long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
@@ -146,12 +145,10 @@ public class SkillFrontflip extends ActiveSkill {
     private static final Set<Material> requiredMaterials;
     static {
         requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.STATIONARY_WATER);
-        requiredMaterials.add(Material.STATIONARY_LAVA);
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEAVES);
+        //requiredMaterials.add(Material.LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
 }

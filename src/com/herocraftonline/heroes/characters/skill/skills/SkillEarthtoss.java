@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -68,61 +69,62 @@ public class SkillEarthtoss extends ActiveSkill {
     }
 
     public SkillResult use(Hero hero, String[] args) {
-        final ArrayList<LivingEntity> damagedEntities = new ArrayList<LivingEntity>();
-        Player player = hero.getPlayer();
-        Location pLoc = player.getLocation();
-        ArrayList<Location> to = circle(pLoc.add(0, 1.0, 0), 24, 4); // "to" locations for vector calculation
-        for (Location l : to) {
-            FallingBlock dirt;
-            if (naturalMaterials.contains(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
-                dirt = (FallingBlock) player.getWorld().spawnFallingBlock(pLoc.add(0, 0.2, 0), player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), (byte) 0);
-            } else {
-                dirt = (FallingBlock) player.getWorld().spawnFallingBlock(pLoc.add(0, 0.2, 0), Material.DIRT.getId(), (byte) 0);
-            }
-
-            // NOT MATH NOOOOOOOOOOO
-            double dX = pLoc.getX() - l.getX();
-            double dY = pLoc.getY() - l.getY();
-            double dZ = pLoc.getZ() - l.getZ();
-            double yaw = Math.atan2(dZ, dX);
-            double pitch = Math.atan2(Math.sqrt(dZ * dZ + dX * dX), dY) + Math.PI;
-            double X = Math.sin(pitch) * Math.cos(yaw);
-            double Y = Math.sin(pitch) * Math.sin(yaw);
-            double Z = Math.cos(pitch);
-
-            Vector velocity = new Vector(X, Z, Y);
-            // Thank you Google for this. I couldn't have gotten the pitch/yaw part on my own.
-
-            dirt.setVelocity(velocity);
-
-            final Player p = player;
-            final Hero h = hero;
-            final FallingBlock b = dirt;
-            b.setDropItem(false);
-            final ArrayList<LivingEntity> damaged = new ArrayList<LivingEntity>();
-            blocks.put(b, player);
-
-            new BukkitRunnable() {
-                public void run() {
-                    if (b.isDead()) cancel();
-                    if (!b.getNearbyEntities(0.5F, 0.5F, 0.5F).isEmpty()) {
-                        for (Entity e : b.getNearbyEntities(0.5F, 0.5F, 0.5F)) {
-                            if (!(e instanceof LivingEntity) || !damageCheck(p, (LivingEntity) e)) {
-                                return;
-                            }
-                            if (!damagedEntities.contains(e)) {
-                                strikeEntity(h, (LivingEntity) e, damaged);
-                                damagedEntities.add((LivingEntity) e);
-                                b.remove();
-                                blocks.remove(b);
-                                cancel();
-                            }
-                        }
-                    }
-                }
-            }.runTaskTimer(this.plugin, 0, 1);
-        }
-        broadcastExecuteText(hero);
+//        final ArrayList<LivingEntity> damagedEntities = new ArrayList<LivingEntity>();
+//        Player player = hero.getPlayer();
+//        Location pLoc = player.getLocation();
+//        ArrayList<Location> to = circle(pLoc.add(0, 1.0, 0), 24, 4); // "to" locations for vector calculation
+//        for (Location l : to) {
+//            FallingBlock dirt;
+//            //FIXME ID usage
+////            if (naturalMaterials.contains(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
+////                dirt = (FallingBlock) player.getWorld().spawnFallingBlock(pLoc.add(0, 0.2, 0), player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), (byte) 0);
+////            } else {
+////                dirt = (FallingBlock) player.getWorld().spawnFallingBlock(pLoc.add(0, 0.2, 0), Material.DIRT.getId(), (byte) 0);
+////            }
+//
+//            // NOT MATH NOOOOOOOOOOO
+//            double dX = pLoc.getX() - l.getX();
+//            double dY = pLoc.getY() - l.getY();
+//            double dZ = pLoc.getZ() - l.getZ();
+//            double yaw = Math.atan2(dZ, dX);
+//            double pitch = Math.atan2(Math.sqrt(dZ * dZ + dX * dX), dY) + Math.PI;
+//            double X = Math.sin(pitch) * Math.cos(yaw);
+//            double Y = Math.sin(pitch) * Math.sin(yaw);
+//            double Z = Math.cos(pitch);
+//
+//            Vector velocity = new Vector(X, Z, Y);
+//            // Thank you Google for this. I couldn't have gotten the pitch/yaw part on my own.
+//
+//            dirt.setVelocity(velocity);
+//
+//            final Player p = player;
+//            final Hero h = hero;
+//            final FallingBlock b = dirt;
+//            b.setDropItem(false);
+//            final ArrayList<LivingEntity> damaged = new ArrayList<LivingEntity>();
+//            blocks.put(b, player);
+//
+//            new BukkitRunnable() {
+//                public void run() {
+//                    if (b.isDead()) cancel();
+//                    if (!b.getNearbyEntities(0.5F, 0.5F, 0.5F).isEmpty()) {
+//                        for (Entity e : b.getNearbyEntities(0.5F, 0.5F, 0.5F)) {
+//                            if (!(e instanceof LivingEntity) || !damageCheck(p, (LivingEntity) e)) {
+//                                return;
+//                            }
+//                            if (!damagedEntities.contains(e)) {
+//                                strikeEntity(h, (LivingEntity) e, damaged);
+//                                damagedEntities.add((LivingEntity) e);
+//                                b.remove();
+//                                blocks.remove(b);
+//                                cancel();
+//                            }
+//                        }
+//                    }
+//                }
+//            }.runTaskTimer(this.plugin, 0, 1);
+//        }
+//        broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 
@@ -139,7 +141,8 @@ public class SkillEarthtoss extends ActiveSkill {
             CharacterTemplate targCT = this.plugin.getCharacterManager().getCharacter(target);
             StunEffect stun = new StunEffect(this, player, 2000);
             targCT.addEffect(stun);
-            target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.DIRT.getId(), 0, 0.4F, 0.4F, 0.4F, 0.5F, 45, 16);
+            //target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.DIRT.getId(), 0, 0.4F, 0.4F, 0.4F, 0.5F, 45, 16);
+            target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 45, 0.4, 0.4, 0.4, 0.5, Bukkit.createBlockData(Material.DIRT));
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
             target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GRAVEL_BREAK, 1.0F, 1.0F);
         }
@@ -161,7 +164,8 @@ public class SkillEarthtoss extends ActiveSkill {
 
                 if (blocks.containsKey(fallingBlock)) {
                     fallingBlock.setDropItem(false);
-                    b.getWorld().spigot().playEffect(b.getLocation(), Effect.TILE_BREAK, fallingBlock.getBlockId(), 0, 0.4F, 0.4F, 0.4F, 0.5F, 45, 16);
+                    //b.getWorld().spigot().playEffect(b.getLocation(), Effect.TILE_BREAK, fallingBlock.getBlockId(), 0, 0.4F, 0.4F, 0.4F, 0.5F, 45, 16);
+                    b.getWorld().spawnParticle(Particle.BLOCK_CRACK, b.getLocation(), 45, 0.4, 0.4, 0.4, 0.5, fallingBlock.getBlockData());
                     b.getWorld().playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0F, 1.0F);
                     fallingBlock.remove();
                     event.setCancelled(true);

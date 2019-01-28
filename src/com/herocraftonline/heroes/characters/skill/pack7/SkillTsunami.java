@@ -13,10 +13,7 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -125,9 +122,9 @@ public class SkillTsunami extends ActiveSkill {
     private class TsunamiEffect extends Effect {
 
         // Effect settings
-        public ParticleEffect explosionParticle = ParticleEffect.EXPLOSION_NORMAL;
-        public ParticleEffect waterDripParticle = ParticleEffect.DRIP_WATER;
-        public ParticleEffect redDustParticle = ParticleEffect.REDSTONE;
+        public Particle explosionParticle = Particle.EXPLOSION_NORMAL;
+        public Particle waterDripParticle = Particle.DRIP_WATER;
+        public Particle redDustParticle = Particle.REDSTONE;
         public Color redDustColor = null;
 
         public Vector addVector = new Vector(0, 0, 0);

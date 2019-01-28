@@ -17,15 +17,13 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.ArrayList;
@@ -46,10 +44,10 @@ public class SkillMelodicBinding extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MOVEMENT_SLOWING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_SONG, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 
         skillSong = new Song(
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 6.0F, 0),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 2.0F, 1),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 8.0F, 2),
-                new Note(CompatSound.BLOCK_NOTE_HARP.value(), 0.8F, 3.0F, 3)
+                new Note(Sound.BLOCK_NOTE_BLOCK_HARP, 0.8F, 6.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BLOCK_HARP, 0.8F, 2.0F, 1),
+                new Note(Sound.BLOCK_NOTE_BLOCK_HARP, 0.8F, 8.0F, 2),
+                new Note(Sound.BLOCK_NOTE_BLOCK_HARP, 0.8F, 3.0F, 3)
         );
     }
 
@@ -118,9 +116,10 @@ public class SkillMelodicBinding extends ActiveSkill {
 
         hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
 
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        //FIXME Is it a particle or a sound
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }
@@ -164,7 +163,8 @@ public class SkillMelodicBinding extends ActiveSkill {
                 ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r);
                 for (int i = 0; i < particleLocations.size(); i++)
                 {
-                    player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                    //player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
+                    player.getWorld().spawnParticle(Particle.NOTE, particleLocations.get(i), 1, 0, 0.1, 0, 0);
                 }
             }
 

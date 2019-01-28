@@ -9,13 +9,13 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -108,7 +108,7 @@ public class SkillDarkBolt extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_DEATH.value(), 0.4F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.4F, 2.0F);
 
         final Snowball darkBolt = player.launchProjectile(Snowball.class);
         darkBolts.put(darkBolt, System.currentTimeMillis());
@@ -215,10 +215,13 @@ public class SkillDarkBolt extends ActiveSkill {
         double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
         
         // Effects
-        darkBolt.getWorld().spigot().playEffect(darkBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0, 15, 16);
-        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++)
+        //darkBolt.getWorld().spigot().playEffect(darkBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 1.0F, 1.0F, 1.0F, 0, 15, 16);
+        darkBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, darkBolt.getLocation(), 15, 1, 1, 1, 0);
+        List<Location> circle = circle(player.getLocation(), 72, radius);
+        for (int i = 0; i < circle.size(); i++)
 		{
-			darkBolt.getWorld().spigot().playEffect(circle(darkBolt.getLocation(), 72, radius).get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.2F, 0.3F, 0.2F, 0, 2, 16);
+			//darkBolt.getWorld().spigot().playEffect(circle(darkBolt.getLocation(), 72, radius).get(i), org.bukkit.Effect.WITCH_MAGIC, 0, 0, 0.2F, 0.3F, 0.2F, 0, 2, 16);
+            darkBolt.getWorld().spawnParticle(Particle.SPELL_WITCH, circle.get(i), 2, 0.2, 0.3, 0.2, 0);
 		}
 
         List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);

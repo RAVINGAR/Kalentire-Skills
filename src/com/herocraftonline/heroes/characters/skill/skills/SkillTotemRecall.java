@@ -13,6 +13,8 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillTotemRecall extends ActiveSkill {
@@ -57,7 +59,8 @@ public class SkillTotemRecall extends ActiveSkill {
          * offset controls how spread out the particles are
          * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
          * */
-        totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 300, 16);
+        //totemLoc.getWorld().spigot().playEffect(totemLoc.add(0, 0.5, 0), Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 300, 16);
+        totemLoc.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, totemLoc.add(0, 0.5, 0), 300, 0, 0, 0, 1);
         
         return SkillResult.NORMAL;
     }

@@ -8,12 +8,13 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -50,22 +51,23 @@ public class SkillEngrave extends ActiveSkill {
         itemList.addAll(Util.armors);
         itemList.addAll(Util.tools);
         itemList.add(Material.NOTE_BLOCK.toString());
-        itemList.add(Material.JUKEBOX.toString());
-        itemList.add(Material.RECORD_3.toString());
-        itemList.add(Material.RECORD_4.toString());
-        itemList.add(Material.RECORD_5.toString());
-        itemList.add(Material.RECORD_6.toString());
-        itemList.add(Material.RECORD_7.toString());
-        itemList.add(Material.RECORD_8.toString());
-        itemList.add(Material.RECORD_9.toString());
-        itemList.add(Material.RECORD_10.toString());
-        itemList.add(Material.RECORD_11.toString());
-        itemList.add(Material.RECORD_12.toString());
-        itemList.add(Material.GREEN_RECORD.toString());
-        itemList.add(Material.GOLD_RECORD.toString());
-        itemList.add(Material.STICK.toString());
-        itemList.add(Material.RAW_FISH.toString());
-        itemList.add(Material.BLAZE_ROD.toString());
+        //FIXME It's in unused so I don't care but should be fixed.
+//        itemList.add(Material.JUKEBOX.toString());
+//        itemList.add(Material.RECORD_3.toString());
+//        itemList.add(Material.RECORD_4.toString());
+//        itemList.add(Material.RECORD_5.toString());
+//        itemList.add(Material.RECORD_6.toString());
+//        itemList.add(Material.RECORD_7.toString());
+//        itemList.add(Material.RECORD_8.toString());
+//        itemList.add(Material.RECORD_9.toString());
+//        itemList.add(Material.RECORD_10.toString());
+//        itemList.add(Material.RECORD_11.toString());
+//        itemList.add(Material.RECORD_12.toString());
+//        itemList.add(Material.GREEN_RECORD.toString());
+//        itemList.add(Material.GOLD_RECORD.toString());
+//        itemList.add(Material.STICK.toString());
+//        itemList.add(Material.RAW_FISH.toString());
+//        itemList.add(Material.BLAZE_ROD.toString());
 
         node.set("possible-items", itemList);
 
@@ -103,7 +105,7 @@ public class SkillEngrave extends ActiveSkill {
             im.setDisplayName(str);
             item.setItemMeta(im);
 
-            player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_ANVIL_LAND.value(), 0.6F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
 
             broadcastExecuteText(hero);
 

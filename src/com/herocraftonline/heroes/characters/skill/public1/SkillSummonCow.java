@@ -20,7 +20,9 @@ public class SkillSummonCow extends SkillBaseSummonEntity {
     
     @Override
     protected EntityType getEntityType(Block targetBlock) {
-        return (targetBlock.getType() == Material.HUGE_MUSHROOM_1) || (targetBlock.getType() == Material.HUGE_MUSHROOM_2)
-                || (targetBlock.getType() == Material.MYCEL) ? EntityType.MUSHROOM_COW : EntityType.COW;
+        //FIXME Find all the mushroom biome stuff?
+        return EntityType.COW;
+//        return (targetBlock.getType() == Material.HUGE_MUSHROOM_1) || (targetBlock.getType() == Material.HUGE_MUSHROOM_2)
+//                || (targetBlock.getType() == Material.MYCELIUM) ? EntityType.MUSHROOM_COW : EntityType.COW;
     }
 }

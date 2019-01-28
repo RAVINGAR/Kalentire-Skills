@@ -1,12 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -45,17 +47,18 @@ public class SkillSacredWord extends SkillBaseHeal {
     }
 
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 1.0f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.HAPPY_VILLAGER, // effect
-                0, // id
-                0, // data
-                1, 1, 1, // offset
-                1.0f, // speed
-                25, // particle count
-                1); // radius
+//        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+//                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+//                0, // id
+//                0, // data
+//                1, 1, 1, // offset
+//                1.0f, // speed
+//                25, // particle count
+//                1); // radius
+        world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(0, 0.5, 0), 25, 1, 1, 1, 1);
     }
 }

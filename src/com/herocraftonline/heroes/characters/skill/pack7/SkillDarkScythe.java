@@ -1,11 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -164,7 +167,8 @@ public class SkillDarkScythe extends ActiveSkill {
                     // Damage the target
                     addSpellTarget(target, hero);
                     damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
-                    hero.getPlayer().getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.PORTAL, 0, 0, 0.0F, 0.0F, 0.0F, 0.5F, 45, 16);
+                    //hero.getPlayer().getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.PORTAL, 0, 0, 0.0F, 0.0F, 0.0F, 0.5F, 45, 16);
+                    hero.getPlayer().getWorld().spawnParticle(Particle.PORTAL, target.getLocation().add(0, 0.5, 0), 45, 0, 0, 0, 0.5);
                 }
             }, 2L);
         }

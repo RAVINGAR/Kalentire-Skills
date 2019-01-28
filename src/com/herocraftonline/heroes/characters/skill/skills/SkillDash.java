@@ -16,6 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -77,7 +78,7 @@ public class SkillDash extends ActiveSkill
 
         final Vector velocity = player.getLocation().getDirection().clone().setY(0.0D).multiply(speedMult + boost);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.0F, 1.0F);
 
         new BukkitRunnable() {
             int ticks = 0;
@@ -88,8 +89,9 @@ public class SkillDash extends ActiveSkill
                 float minX = (float) (velocity.getX() * -1);
                 float minY = (float) (velocity.getY() * -1);
                 float minZ = (float) (velocity.getZ() * -1);
-                MovingParticle.createMovingParticle(player.getLocation().add(0, 1.5, 0), Effect.CLOUD, 0, 0,
-                        0.6F, 1.0F, 0.6F, minX, minY, minZ, 10, 128, true);
+                //FIXME Alter method source
+//                MovingParticle.createMovingParticle(player.getLocation().add(0, 1.5, 0), Effect.CLOUD, 0, 0,
+//                        0.6F, 1.0F, 0.6F, minX, minY, minZ, 10, 128, true);
                 for (Entity e : player.getNearbyEntities(3.0D, 3.0D, 3.0D))
                 {
                     if (!(e instanceof LivingEntity)) continue;

@@ -10,8 +10,10 @@ import static org.bukkit.ChatColor.RESET;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
@@ -20,7 +22,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillExchange extends ActiveSkill{
 	private static final String base="base-coin-per-ingot",loss="coin-loss-per-level";
@@ -69,7 +70,7 @@ public class SkillExchange extends ActiveSkill{
 			player.sendMessage(ChatColor.GRAY+"You bought "+boldGold(amount+" ingots")+" for "+boldGold(cost_string)+"!");
 			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT, amount));
 	        player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);
-	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value() , 0.8F, 1.0F);
+	        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 			broadcastExecuteText(hero);
 			return SkillResult.NORMAL;
 		}else{

@@ -12,12 +12,12 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 //import com.herocraftonline.heroes.characters.skill.unusedskills.SkillShuriken;
-import com.herocraftonline.heroes.util.CompatSound;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -86,8 +86,6 @@ public class SkillBackflip extends ActiveSkill {
 
         boolean weakenVelocity = false;
         switch (belowMat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -149,7 +147,7 @@ public class SkillBackflip extends ActiveSkill {
             }
         }
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_FLAP.value(), 4.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
 
         if (hero.canUseSkill("Frontflip")) {
             long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
@@ -162,12 +160,15 @@ public class SkillBackflip extends ActiveSkill {
     private static final Set<Material> requiredMaterials;
     static {
         requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.STATIONARY_WATER);
-        requiredMaterials.add(Material.STATIONARY_LAVA);
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEAVES);
+        requiredMaterials.add(Material.ACACIA_LEAVES);
+        requiredMaterials.add(Material.BIRCH_LEAVES);
+        requiredMaterials.add(Material.DARK_OAK_LEAVES);
+        requiredMaterials.add(Material.JUNGLE_LEAVES);
+        requiredMaterials.add(Material.OAK_LEAVES);
+        requiredMaterials.add(Material.SPRUCE_LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
 }

@@ -1,8 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillLunarLance extends TargettedSkill {
@@ -99,10 +101,12 @@ public class SkillLunarLance extends TargettedSkill {
                 player.sendMessage(ChatComponents.Bars.mana(tHero.getMana(), tHero.getMaxMana(), false));
         }
 
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0.0F, 0.0F, 0.0F, 0.4F, 35, 16);
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.0F, 0.2F, 0.1F, 25, 16);
-        target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 1.0F, 0.6F);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 1.0F, 0.6F);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0.0F, 0.0F, 0.0F, 0.4F, 35, 16);
+        target.getWorld().spawnParticle(Particle.CRIT_MAGIC, target.getLocation().add(0, 0.5, 0), 35, 0, 0, 0, 0.4);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.LARGE_SMOKE, 0, 0, 0.2F, 0.0F, 0.2F, 0.1F, 25, 16);
+        target.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getLocation().add(0, 0.5, 0), 25, 0.2, 0, 0.2, 0.1);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.6F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 1.0F, 0.6F);
 
         return SkillResult.NORMAL;
     }

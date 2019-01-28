@@ -3,15 +3,13 @@ package com.herocraftonline.heroes.characters.skill.pack2;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
@@ -29,7 +27,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIronFist extends ActiveSkill {
@@ -81,7 +78,7 @@ public class SkillIronFist extends ActiveSkill {
     @Override
     public void onWarmup(Hero hero) {
         Player player = hero.getPlayer();
-        player.getWorld().playSound(player.getLocation(), CompatSound.BLOCK_CHEST_OPEN.value(), 0.7F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.7F, 0.4F);
     }
     
     public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
@@ -190,12 +187,13 @@ public class SkillIronFist extends ActiveSkill {
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+				//player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
 			}
 		}
 
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_GENERIC_EXPLODE.value(), 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
     }

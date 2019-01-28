@@ -10,14 +10,15 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -145,7 +146,7 @@ public class SkillDeconstruct extends ActiveSkill {
         }
         Block block = player.getTargetBlock((HashSet<Material>) null, 3);
         Location expLoc = block.getLocation();
-        if (SkillConfigManager.getUseSetting(hero, this, "require-workbench", true) && block.getType() != Material.WORKBENCH) {
+        if (SkillConfigManager.getUseSetting(hero, this, "require-workbench", true) && block.getType() != Material.CRAFTING_TABLE) {
             player.sendMessage("You must have a workbench targetted to deconstruct an item!");
             return SkillResult.FAIL;
         }
@@ -231,7 +232,7 @@ public class SkillDeconstruct extends ActiveSkill {
         int xp = SkillConfigManager.getUseSetting(hero, this, matName + "." + SkillSetting.EXP, 0, false);
         hero.gainExp(xp, ExperienceType.CRAFTING, expLoc);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.BLOCK_ANVIL_USE.value() , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE , 0.6F, 1.0F);
         broadcast(player.getLocation(), getUseText().replace("%hero%", player.getName()).replace("%item%", matName.toLowerCase().replace("_", " ")));
         return SkillResult.NORMAL;
     }

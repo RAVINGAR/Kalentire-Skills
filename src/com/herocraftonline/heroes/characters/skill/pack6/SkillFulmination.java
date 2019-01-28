@@ -8,11 +8,12 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillFulmination extends TargettedSkill {
@@ -63,7 +64,7 @@ public class SkillFulmination extends TargettedSkill {
         // Lightning like this is too annoying.
         // target.getWorld().strikeLightningEffect(target.getLocation());
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
-        target.getWorld().playSound(target.getLocation(), CompatSound.ENTITY_LIGHTNING_THUNDER.value(), lightningVolume, 1.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.0F);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 

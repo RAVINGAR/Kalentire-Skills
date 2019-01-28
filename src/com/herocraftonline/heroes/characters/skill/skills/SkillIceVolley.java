@@ -3,15 +3,13 @@ package com.herocraftonline.heroes.characters.skill.skills;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,7 +38,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillIceVolley extends ActiveSkill {
@@ -281,7 +278,8 @@ public class SkillIceVolley extends ActiveSkill {
 					if(iceVolleyShots.containsKey(p))
 					{												
 						Location loc = p.getLocation();
-						p.getWorld().spigot().playEffect(loc, org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.1F, 0.0F, 0.0F, 1, 16);
+                        //p.getWorld().spigot().playEffect(loc, org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.1F, 0.0F, 0.0F, 1, 16);
+                        p.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0.1, 0, 0);
 					}
 					else
 					{
@@ -332,9 +330,10 @@ public class SkillIceVolley extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
-            
-            target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0.4F, 0.2F, 0.4F, 0.3F, 50, 16);
-            target.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_GLASS_BREAK.value(), 7.0F, 0.7F);
+
+            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.4F, 0.2F, 0.4F, 0.3F, 50, 16);
+            target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 50, 0.4, 0.2, 0.4, 0.3, Bukkit.createBlockData(Material.ICE));
+            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);
 
             iceVolleyShots.remove(iceArrow);
         }

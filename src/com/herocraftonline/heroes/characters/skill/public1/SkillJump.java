@@ -3,12 +3,11 @@ package com.herocraftonline.heroes.characters.skill.public1;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -21,7 +20,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillJump extends ActiveSkill {
 
@@ -76,8 +74,6 @@ public class SkillJump extends ActiveSkill {
 
         boolean weakenVelocity = false;
         switch (belowMat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -128,10 +124,11 @@ public class SkillJump extends ActiveSkill {
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_ENDERDRAGON_FLAP.value(), 7.0F, 1.0F);     
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 7.0F, 1.0F);
 			
 			
-		player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);
+		//player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 25, 0, 0.1, 0, 0.5);
 			
 	    return SkillResult.NORMAL;
     }
@@ -139,12 +136,15 @@ public class SkillJump extends ActiveSkill {
     private static final Set<Material> requiredMaterials;
     static {
         requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.STATIONARY_WATER);
-        requiredMaterials.add(Material.STATIONARY_LAVA);
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEAVES);
+        requiredMaterials.add(Material.ACACIA_LEAVES);
+        requiredMaterials.add(Material.BIRCH_LEAVES);
+        requiredMaterials.add(Material.DARK_OAK_LEAVES);
+        requiredMaterials.add(Material.JUNGLE_LEAVES);
+        requiredMaterials.add(Material.OAK_LEAVES);
+        requiredMaterials.add(Material.SPRUCE_LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
 }

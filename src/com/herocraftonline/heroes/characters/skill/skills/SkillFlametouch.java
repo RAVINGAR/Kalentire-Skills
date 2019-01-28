@@ -13,6 +13,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -85,8 +86,10 @@ public class SkillFlametouch extends ActiveSkill
 
 		hero.addEffect(new FlametouchEffect(plugin, this, hero.getPlayer(), duration));
 
-		player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.FLAME, 0, 0, 1.2F, 1.6F, 1.2F, 0.5F, 100, 16);
-		player.getWorld().spigot().playEffect(player.getLocation(), Effect.LAVA_POP, 0, 0, 1.2F, 0.2F, 1.2F, 0.5F, 50, 16);
+		//player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.FLAME, 0, 0, 1.2F, 1.6F, 1.2F, 0.5F, 100, 16);
+		player.getWorld().spawnParticle(Particle.FLAME, player.getLocation().add(0, 0.3, 0), 100, 1.2, 1.6, 1.2, 0.5);
+		//player.getWorld().spigot().playEffect(player.getLocation(), Effect.LAVA_POP, 0, 0, 1.2F, 0.2F, 1.2F, 0.5F, 50, 16);
+		player.getWorld().spawnParticle(Particle.LAVA, player.getLocation(), 50, 1.2, 0.2, 1.2, 0.5);
 		player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 2);
 
 		final Player p = player;
@@ -100,7 +103,8 @@ public class SkillFlametouch extends ActiveSkill
 			public void run() 
 			{
 				Location location = p.getLocation().add(0, 0.5, 0);
-				p.getWorld().spigot().playEffect(location, Effect.FLAME, 0, 0, 0.3F, 0.5F, 0.3F, 0.0F, 25, 16);
+				//p.getWorld().spigot().playEffect(location, Effect.FLAME, 0, 0, 0.3F, 0.5F, 0.3F, 0.0F, 25, 16);
+				p.getWorld().spawnParticle(Particle.FLAME, location, 25, 0.3, 0.5, 0.3, 0);
 				ticks++;
 
 				if (isNoise == true)
@@ -171,7 +175,8 @@ public class SkillFlametouch extends ActiveSkill
 					
 					target.setFireTicks(40);
 	
-					target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0.3F, 0.5F, 0.3F, 0.5F, 25, 16);
+					//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0.3F, 0.5F, 0.3F, 0.5F, 25, 16);
+					target.getWorld().spawnParticle(Particle.FLAME, target.getLocation().add(0, 0.5, 0), 25, 0.3, 0.5, 0.3, 0.5);
 					target.getWorld().playEffect(target.getLocation(), Effect.BLAZE_SHOOT, 2);
 				}
 			}, 2L);
@@ -198,7 +203,8 @@ public class SkillFlametouch extends ActiveSkill
 			super.removeFromHero(hero);
 			broadcast(hero.getPlayer().getLocation(), expireText);
 			hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.3F, 0.8F);
-			hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.5, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
+			//hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.5, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
+			hero.getPlayer().getWorld().spawnParticle(Particle.SMOKE_LARGE, hero.getPlayer().getLocation().add(0, 0.5, 0), 45, 0.4, 0.2, 0.4, 0.3);
 		}
 	}
 

@@ -58,7 +58,12 @@ public class SkillWoodcutting extends PassiveSkill {
 
             int extraDrops = 0;
             switch (block.getType()) {
-                case LOG:
+                case OAK_LOG:
+                case ACACIA_LOG:
+                case BIRCH_LOG:
+                case DARK_OAK_LOG:
+                case JUNGLE_LOG:
+                case SPRUCE_LOG:
                     break;
                 default:
                     return;

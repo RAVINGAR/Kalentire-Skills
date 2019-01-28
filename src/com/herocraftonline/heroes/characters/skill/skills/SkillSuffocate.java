@@ -10,12 +10,11 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 
@@ -54,7 +53,8 @@ public class SkillSuffocate extends TargettedSkill
 		SilenceEffect silence = new SilenceEffect(this, player, 2500);
 		targCT.addEffect(silence);
 		
-		target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 45, 16);
+		//target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 45, 16);
+		target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 45, 0.2, 0.2, 0.2, 0.1, Bukkit.createBlockData(Material.DIRT));
 		target.getWorld().playSound(target.getEyeLocation(), Sound.BLOCK_GRASS_BREAK, 0.8F, 0.8F);
 		target.getWorld().playSound(target.getEyeLocation(), Sound.BLOCK_GRAVEL_BREAK, 0.8F, 1.0F);
 		target.getWorld().playSound(target.getEyeLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.4F, 1.0F);

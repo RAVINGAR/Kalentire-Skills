@@ -12,6 +12,8 @@ import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -140,7 +142,8 @@ public class SkillDoomwave extends ActiveSkill {
 
             doomPearls.remove(projectile);
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
-            targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5, 0), Effect.LAVA_POP, 0, 0, 0.2F, 0.2F, 0.2F, 0.4F, 45, 16);
+            //targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5, 0), Effect.LAVA_POP, 0, 0, 0.2F, 0.2F, 0.2F, 0.4F, 45, 16);
+            targetLE.getWorld().spawnParticle(Particle.LAVA, targetLE.getLocation().add(0, 0.5, 0), 35, 0.2, 0.2, 0.2, 0.4);
             ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
             if (!(source instanceof Entity))
                 return;

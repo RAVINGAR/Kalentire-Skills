@@ -10,13 +10,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -84,7 +82,8 @@ public class SkillBloodRage extends ActiveSkill {
 
         hero.addEffect(new BloodRageEffect(plugin, this, hero.getPlayer(), duration));
 
-        player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.COLOURED_DUST, 0, 0, 1.2F, 1.6F, 1.2F, 0.0F, 200, 16);
+        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.COLOURED_DUST, 0, 0, 1.2F, 1.6F, 1.2F, 0.0F, 200, 16);
+        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(0, 0.3, 0), 200, 1.2, 1.6, 1.2, new Particle.DustOptions(Color.RED, 1));
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 1.0F, 0.5F);
 
         new BukkitRunnable() {
@@ -94,7 +93,8 @@ public class SkillBloodRage extends ActiveSkill {
 
             public void run() {
                 Location location = player.getLocation().add(0, 0.5, 0);
-                player.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 0, 0.3F, 0.5F, 0.3F, 0.0F, 50, 16);
+                //player.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 0, 0.3F, 0.5F, 0.3F, 0.0F, 50, 16);
+                player.getWorld().spawnParticle(Particle.REDSTONE, location, 50, 0.3, 0.5, 0.3, 0, new Particle.DustOptions(Color.RED, 1));
                 ticks++;
 
                 if (isNoise == true)
@@ -154,8 +154,9 @@ public class SkillBloodRage extends ActiveSkill {
                     addSpellTarget(target, hero);
                     damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
 
-                    target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CRIT, 0, 0, 0.3F, 0.5F, 0.3F, 0.5F, 25, 16);
-                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 1.0F, 1.0F);
+                    //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CRIT, 0, 0, 0.3F, 0.5F, 0.3F, 0.5F, 25, 16);
+                    target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0.3, 0.5, 0.3, 0.5);
+                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1, 1);
                 }
             }, 2L);
         }
@@ -177,7 +178,8 @@ public class SkillBloodRage extends ActiveSkill {
             super.removeFromHero(hero);
             broadcast(hero.getPlayer().getLocation(), expireText);
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0F, 1.0F);
-            hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.5, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
+            //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.5, 0), Effect.LARGE_SMOKE, 0, 0, 0.4F, 0.2F, 0.4F, 0.3F, 45, 16);
+            hero.getPlayer().getWorld().spawnParticle(Particle.SMOKE_LARGE, hero.getPlayer().getLocation().add(0, 0.5, 0), 45, 0.4, 0.2, 0.4, 0.3);
         }
     }
 

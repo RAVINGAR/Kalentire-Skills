@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
+import com.griefcraft.scripting.MetaData;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -8,21 +9,25 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Vine;
+import org.bukkit.metadata.MetadataValue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -186,7 +191,7 @@ public class SkillRampartVine extends ActiveSkill {
             boolean breakLoop = false;
             Block workingBlock = targetBlock;
             Location location = workingBlock.getLocation();
-            location.getWorld().playSound(location, CompatSound.BLOCK_GRASS_HIT.value(), 0.8F, 1.0F);
+            location.getWorld().playSound(location, Sound.BLOCK_GRASS_HIT, 0.8F, 1.0F);
 
             for (int i = 0; i < maxGrowth; i++) {
                 switch (workingBlock.getType()) {
@@ -209,7 +214,14 @@ public class SkillRampartVine extends ActiveSkill {
                             data |= VINE_EAST;
                         }
 
-                        workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
+                        //FIXME Check if this works
+//                        workingBlock.setTypeIdAndData(Material.VINE.getId(), data, false);
+                        workingBlock.setType(Material.VINE);
+                        if (workingBlock.getState().getData() instanceof Vine) {
+                            Vine vine = (Vine) workingBlock.getState().getData();
+                            vine.putOnFace(targetFace);
+                            workingBlock.getState().setData(vine);
+                        }
 
                         break;
                     case VINE:

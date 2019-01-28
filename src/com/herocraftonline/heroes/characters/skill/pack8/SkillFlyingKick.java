@@ -1,11 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
@@ -20,7 +19,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillFlyingKick extends TargettedSkill {
@@ -69,7 +67,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_PLAYER_HURT.value(), 18.0F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 18.0F, 0.4F);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
         double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0075, false);
@@ -113,8 +111,10 @@ public class SkillFlyingKick extends TargettedSkill {
             }
         }, (long) (delay * 20));
 
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 25, 0, 0.1, 0, 0.5);
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        player.getWorld().spawnParticle(Particle.CRIT, player.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
         return SkillResult.NORMAL;
     }
 }

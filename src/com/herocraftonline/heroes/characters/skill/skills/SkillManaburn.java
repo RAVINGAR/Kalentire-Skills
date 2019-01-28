@@ -6,6 +6,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -14,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillManaburn extends TargettedSkill {
     // This is for Firework Effects
@@ -59,7 +59,7 @@ public class SkillManaburn extends TargettedSkill {
                 e.printStackTrace();
             }*/
             player.getWorld().playEffect(player.getLocation(), Effect.EXTINGUISH, 3);
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_CAT_HISS.value() , 0.8F, 1.0F); 
+            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_CAT_HISS , 0.8F, 1.0F);
             return SkillResult.NORMAL;
         } else {
             player.sendMessage("Target does not have enough mana!");

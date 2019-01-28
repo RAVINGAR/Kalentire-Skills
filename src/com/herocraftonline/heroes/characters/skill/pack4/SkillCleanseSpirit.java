@@ -9,8 +9,10 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -53,18 +55,19 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.5f, 0.7f);
+        world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.7f);
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.HAPPY_VILLAGER, // effect
-                0, // id
-                0, // data
-                0.5F, 0.5F, 0.5F, // offset
-                1.0f, // speed
-                25, // particle count
-                16); // radius
+//        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+//                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+//                0, // id
+//                0, // data
+//                0.5F, 0.5F, 0.5F, // offset
+//                1.0f, // speed
+//                25, // particle count
+//                16); // radius
+        world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(0, 0.5, 0), 25, 0.5, 0.5, 0.5, 1);
     }
 
     @Override
@@ -73,8 +76,9 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
                     hero.removeEffect(effect);
-                    hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.EXTINGUISH, 0, 0, 0, 0.4F, 0, 0.7F, 35, 16);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_GENERIC_BURN.value(), 0.5F, 1.0F);
+                    //FIXME What is the replacement for this
+                    //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.EXTINGUISH, 0, 0, 0, 0.4F, 0, 0.7F, 35, 16);
+                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
                 }
             }
         }

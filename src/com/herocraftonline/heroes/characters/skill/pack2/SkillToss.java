@@ -1,13 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.pack2;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -70,8 +68,6 @@ public class SkillToss extends TargettedSkill {
 
         boolean weakenVelocity = false;
         switch (mat) {
-            case STATIONARY_WATER:
-            case STATIONARY_LAVA:
             case WATER:
             case LAVA:
             case SOUL_SAND:
@@ -123,7 +119,8 @@ public class SkillToss extends TargettedSkill {
         }, (long) (delay * 20));
 
         // Play sound        
-        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 100, 16);
+        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 100, 16);
+        target.getWorld().spawnParticle(Particle.CLOUD, target.getLocation().add(0, 0.5, 0), 100, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;
     }

@@ -1,9 +1,10 @@
 package com.herocraftonline.heroes.characters.skill.pack6;
 
-import org.bukkit.Effect;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -14,7 +15,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillIre extends TargettedSkill {
 
@@ -57,8 +57,9 @@ public class SkillIre extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         
-        target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, org.bukkit.Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 75, 16);
-        target.getWorld().playSound(target.getLocation(), CompatSound.BLOCK_GRAVEL_HIT.value(), 7.0F, 0.6F);
+        //target.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, org.bukkit.Material.DIRT.getId(), 0, 0.2F, 0.2F, 0.2F, 0.1F, 75, 16);
+        target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation(), 75, 0.2, 0.2, 0.2, 0.1, Bukkit.createBlockData(Material.DIRT));
+        target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GRAVEL_HIT, 7.0F, 0.6F);
 
         return SkillResult.NORMAL;
     }

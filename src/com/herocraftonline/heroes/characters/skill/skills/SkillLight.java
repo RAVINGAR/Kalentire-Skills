@@ -5,10 +5,12 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -22,7 +24,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillLight extends ActiveSkill {
 
@@ -35,14 +36,46 @@ public class SkillLight extends ActiveSkill {
         allowedBlocks.add(Material.GRASS);
         allowedBlocks.add(Material.STONE);
         allowedBlocks.add(Material.COBBLESTONE);
-        allowedBlocks.add(Material.WOOD);
-        allowedBlocks.add(Material.LOG);
+        allowedBlocks.add(Material.ACACIA_LOG);
+        allowedBlocks.add(Material.BIRCH_LOG);
+        allowedBlocks.add(Material.DARK_OAK_LOG);
+        allowedBlocks.add(Material.JUNGLE_LOG);
+        allowedBlocks.add(Material.OAK_LOG);
+        allowedBlocks.add(Material.SPRUCE_LOG);
+        allowedBlocks.add(Material.ACACIA_WOOD);
+        allowedBlocks.add(Material.BIRCH_WOOD);
+        allowedBlocks.add(Material.DARK_OAK_WOOD);
+        allowedBlocks.add(Material.JUNGLE_WOOD);
+        allowedBlocks.add(Material.OAK_WOOD);
+        allowedBlocks.add(Material.SPRUCE_WOOD);
+        allowedBlocks.add(Material.ACACIA_PLANKS);
+        allowedBlocks.add(Material.BIRCH_PLANKS);
+        allowedBlocks.add(Material.DARK_OAK_PLANKS);
+        allowedBlocks.add(Material.JUNGLE_PLANKS);
+        allowedBlocks.add(Material.OAK_PLANKS);
+        allowedBlocks.add(Material.SPRUCE_PLANKS);
         allowedBlocks.add(Material.NETHERRACK);
         allowedBlocks.add(Material.SOUL_SAND);
         allowedBlocks.add(Material.SANDSTONE);
         allowedBlocks.add(Material.GLASS);
-        allowedBlocks.add(Material.WOOL);
-        allowedBlocks.add(Material.DOUBLE_STEP);
+        allowedBlocks.add(Material.WHITE_WOOL);
+        allowedBlocks.add(Material.BLACK_WOOL);
+        allowedBlocks.add(Material.BLUE_WOOL);
+        allowedBlocks.add(Material.BROWN_WOOL);
+        allowedBlocks.add(Material.CYAN_WOOL);
+        allowedBlocks.add(Material.GRAY_WOOL);
+        allowedBlocks.add(Material.GREEN_WOOL);
+        allowedBlocks.add(Material.LIGHT_BLUE_WOOL);
+        allowedBlocks.add(Material.LIGHT_GRAY_WOOL);
+        allowedBlocks.add(Material.LIME_WOOL);
+        allowedBlocks.add(Material.MAGENTA_WOOL);
+        allowedBlocks.add(Material.ORANGE_WOOL);
+        allowedBlocks.add(Material.PINK_WOOL);
+        allowedBlocks.add(Material.PURPLE_WOOL);
+        allowedBlocks.add(Material.RED_WOOL);
+        allowedBlocks.add(Material.YELLOW_WOOL);
+        //FIXME I don't want to add all this shit
+        //allowedBlocks.add(Material.DOUBLE_STEP);
         allowedBlocks.add(Material.BRICK);
         allowedBlocks.add(Material.OBSIDIAN);
         allowedBlocks.add(Material.NETHER_BRICK);
@@ -90,7 +123,7 @@ public class SkillLight extends ActiveSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
 
         hero.addEffect(new LightEffect(this, player, period, duration));
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

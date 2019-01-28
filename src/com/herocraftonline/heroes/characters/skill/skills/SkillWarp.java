@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -16,7 +17,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.CompatSound;
 
 public class SkillWarp extends ActiveSkill {
 
@@ -68,11 +68,11 @@ public class SkillWarp extends ActiveSkill {
         try {
             broadcastExecuteText(hero);
 
-            player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_DEATH.value(), 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
 
             player.teleport(destination);
 
-            destination.getWorld().playSound(destination, CompatSound.ENTITY_WITHER_DEATH.value(), 0.5F, 1.0F);
+            destination.getWorld().playSound(destination, Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
 
         }
         catch (Exception e) {

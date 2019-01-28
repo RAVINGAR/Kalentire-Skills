@@ -8,11 +8,11 @@ import com.herocraftonline.heroes.characters.effects.common.AttributeIncreaseEff
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 
 public class SkillSacrifice extends ActiveSkill {
     private String applyText;
@@ -91,7 +91,7 @@ public class SkillSacrifice extends ActiveSkill {
         }
         else {
             broadcastExecuteText(hero);
-            player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_WITHER_SPAWN.value(), 0.5F, 1.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
             double maxHealth = player.getMaxHealth();
             if(maxHealth * 0.01 < player.getHealth()) {
                 player.setHealth(maxHealth * 0.01);

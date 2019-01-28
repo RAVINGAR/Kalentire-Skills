@@ -11,9 +11,12 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -100,7 +103,8 @@ public class SkillGroupHeal extends ActiveSkill
 			}
 		}		
 
-		player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 7.6F, 3.3F, 7.6F, 0.3F, 200, 16);
+		//player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 7.6F, 3.3F, 7.6F, 0.3F, 200, 16);
+		player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, player.getLocation().add(0, 0.3, 0), 200, 7.6, 3.3, 7.6, 0.3);
 
 		final ArrayList<Location> particleLocations = circle(player.getLocation().add(0, 0.5, 0), 24, 8);
 
@@ -116,7 +120,8 @@ public class SkillGroupHeal extends ActiveSkill
 				{
 					int index = rand.nextInt(particleLocations.size());
 					Location l = particleLocations.get(index);
-					l.getWorld().spigot().playEffect(l, Effect.HEART, 0, 0, 1.5F, 1.5F, 1.5F, 0.0F, 35, 16);
+					//l.getWorld().spigot().playEffect(l, Effect.HEART, 0, 0, 1.5F, 1.5F, 1.5F, 0.0F, 35, 16);
+					l.getWorld().spawnParticle(Particle.HEART, l, 35, 1.5, 1.5, 1.5, 0);
 					l.getWorld().playSound(l, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.3F, 1.5F);
 					ticks++;
 				}
@@ -125,7 +130,7 @@ public class SkillGroupHeal extends ActiveSkill
 			}
 		}.runTaskTimer(plugin, 0, 1);
 
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.7F, 1.25F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.7F, 1.25F);
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.6F, 0.8F);
 
 		broadcastExecuteText(hero);

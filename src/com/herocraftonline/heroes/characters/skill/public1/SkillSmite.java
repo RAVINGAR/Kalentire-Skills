@@ -1,8 +1,11 @@
 package com.herocraftonline.heroes.characters.skill.public1;
 
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -81,13 +84,14 @@ public class SkillSmite extends TargettedSkill {
 
         player.getWorld().playEffect(target.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 1);
 
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-                org.bukkit.Effect.VILLAGER_THUNDERCLOUD, // effect
-                0, 0, // id,data: for block effect
-                0.5F, 0.5F, 0.5F, // offset
-                1.0f, // speed
-                50, // particle count
-                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false) + 1); // radius: player observable distance
+//        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+//                org.bukkit.Effect.VILLAGER_THUNDERCLOUD, // effect
+//                0, 0, // id,data: for block effect
+//                0.5F, 0.5F, 0.5F, // offset
+//                1.0f, // speed
+//                50, // particle count
+//                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false) + 1); // radius: player observable distance
+        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation().add(0, 0.5, 0), 50, 0.5, 0.5, 0.5, 1, true);
 
         return SkillResult.NORMAL;
     }

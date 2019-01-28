@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,7 +23,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillExcavate extends ActiveSkill {
@@ -83,7 +83,7 @@ public class SkillExcavate extends ActiveSkill {
         }
 
         hero.addEffect(new ExcavateEffect(this, player, duration, multiplier));
-        player.getWorld().playSound(player.getLocation(), CompatSound.ENTITY_EXPERIENCE_ORB_PICKUP.value(), 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -139,7 +139,8 @@ public class SkillExcavate extends ActiveSkill {
             case SNOW_BLOCK:
             case SNOW:
             case SOUL_SAND:
-            case SOIL:
+            //FIXME What do here
+            //case SOIL:
             case NETHERRACK:
                 return true;
             default:

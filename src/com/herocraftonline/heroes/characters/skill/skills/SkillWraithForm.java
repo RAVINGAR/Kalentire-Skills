@@ -10,9 +10,12 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -90,14 +93,16 @@ public class SkillWraithForm extends ActiveSkill {
             for (Player p : Bukkit.getServer().getOnlinePlayers())
                 p.hidePlayer(player);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 1.0f, 0.5f);
-            player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
-                    0.3f, 1.0f, 0.3f, 0.2f, 55, 128);
+//            player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
+//                    0.3f, 1.0f, 0.3f, 0.2f, 55, 128);
+            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 55, 0.3, 1, 0.3, 0.2, true);
             final Hero h = hero;
             new BukkitRunnable() {
                 public void run() {
                     if (!h.hasEffect(EFFECT_NAME)) cancel();
-                    player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
-                            2.3f, 0.5f, 2.3f, 0.0f, 15, 128);
+//                    player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
+//                            2.3f, 0.5f, 2.3f, 0.0f, 15, 128);
+                    player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 15, 2.3, 0.5, 2.3, 0, true);
                     player.setFoodLevel(0);
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 0, true, false));
                     // player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20, 0, true, false));
@@ -111,8 +116,9 @@ public class SkillWraithForm extends ActiveSkill {
             for (Player p : Bukkit.getServer().getOnlinePlayers())
                 p.showPlayer(player);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0f, 0.5f);
-            player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
-                    0.3f, 1.0f, 0.3f, 0.2f, 55, 128);
+//            player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
+//                    0.3f, 1.0f, 0.3f, 0.2f, 55, 128);
+            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1,0), 55, 0.3, 1, 0.3, 0.2, true);
         }
     }
 

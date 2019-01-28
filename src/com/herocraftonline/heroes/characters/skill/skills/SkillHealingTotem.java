@@ -11,11 +11,10 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.totem.SkillBaseTotem;
 import com.herocraftonline.heroes.characters.skill.skills.totem.Totem;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,7 +32,7 @@ public class SkillHealingTotem extends SkillBaseTotem {
         setIdentifiers("skill healingtotem");
         setDescription("Places a healing totem at target location that heals allied players for $1 HP per second in a $2 radius. Lasts for $3 seconds.");
         setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT);
-        material = Material.MYCEL;
+        material = Material.MYCELIUM;
     }
 
     @Override
@@ -109,10 +108,12 @@ public class SkillHealingTotem extends SkillBaseTotem {
                              * offset controls how spread out the particles are
                              * id and data only work for two particles: ITEM_BREAK and TILE_BREAK
                              * */
-                            memberP.getWorld().spigot().playEffect(location, Effect.HEART, 0, 0, 0, 0, 0, 0.1f, 1, 16);
+                            //memberP.getWorld().spigot().playEffect(location, Effect.HEART, 0, 0, 0, 0, 0, 0.1f, 1, 16);
+                            memberP.getWorld().spawnParticle(Particle.HEART, location, 1, 0, 0, 0, 0.1);
                         } else {
                             memberP.getLocation(location).add(0, 2.3, 0);
-                            memberP.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.REDSTONE_BLOCK.getId(), 0, 0, 0, 0, 1f, 500, 16);
+                            //memberP.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.REDSTONE_BLOCK.getId(), 0, 0, 0, 0, 1f, 500, 16);
+                            memberP.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, 500, 0, 0, 0, 1, Bukkit.createBlockData(Material.REDSTONE_BLOCK));
                             cancel();
                         }
                         time += 0.01;

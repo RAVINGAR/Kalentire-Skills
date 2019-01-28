@@ -7,14 +7,13 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -89,7 +88,8 @@ public class SkillDragonsBreath extends ActiveSkill {
 
         int numBlocks = 0;
         
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
+        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1, 1);
         
         while (iter.hasNext()) {
             tempBlock = iter.next();
@@ -119,7 +119,9 @@ public class SkillDragonsBreath extends ActiveSkill {
                     public void run() {
                         try {
                             for (Location location : locations) {
-                            	player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
+                            	//player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
+                                //FIXME See if this is correct
+                                player.getWorld().spawnParticle(Particle.FLAME, location, 3, 0, 0.3, 0, 0.2);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
