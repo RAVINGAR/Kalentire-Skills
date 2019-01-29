@@ -91,7 +91,14 @@ public class SkillSmite extends TargettedSkill {
 //                1.0f, // speed
 //                50, // particle count
 //                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false) + 1); // radius: player observable distance
-        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation().add(0, 0.5, 0), 50, 0.5, 0.5, 0.5, 1, true);
+        int max_distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
+        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY,
+                target.getLocation().add(0, 0.5, 0), //location
+                50, // particle count
+                0.5, 0.5, 0.5, // offsets x,y,z respectively
+                1, // extra data - normally speed
+                null, // particle specific data (only non-null for specific particles)
+                12 < (max_distance + 1)); // force render to players in an extended range
 
         return SkillResult.NORMAL;
     }
