@@ -92,9 +92,9 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
             {
                 if (!ap.hasEffect(EFFECT_NAME)) cancel();
                 //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.7, 0), Effect.INSTANT_SPELL, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 3, 128);
-                player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation().add(0, 0.7, 0), 3, 0.3, 0.3, 0.3, 0, true);
+                player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation().add(0, 0.7, 0), 3, 0.3, 0.3, 0.3, 0, null, true);
                 //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.7, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.3F, 0.3F, 0.3F, 0.0F, 3, 128);
-                player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, player.getLocation().add(0, 0.7, 0),3, 0.3, 0.3, 0.3, 0, true);
+                player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, player.getLocation().add(0, 0.7, 0),3, 0.3, 0.3, 0.3, 0, null, true);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.01f, rand.nextFloat() + 1.0f);
             }
         }.runTaskTimer(plugin, 0, 1);
@@ -118,8 +118,8 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
 //                2.0F, 0.1F, 2.0F, 0.5F, 75, 128);
 //        ap.getPlayer().getWorld().spigot().playEffect(ap.getPlayer().getLocation().add(0, 0.2, 0), Effect.INSTANT_SPELL, 0, 0,
 //                2.0F, 0.1F, 2.0F, 0.5F, 75, 128);
-        ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5, true);
-        ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5, true);
+        ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5, null,true);
+        ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5, null,true);
         ap.getPlayer().getWorld().playSound(ap.getPlayer().getLocation(), Sound.BLOCK_CHORUS_FLOWER_GROW, 5.0F, 2.0F);
 
         double healing = SkillConfigManager.getUseSetting(ap, this, SkillSetting.HEALING, 10, true) +

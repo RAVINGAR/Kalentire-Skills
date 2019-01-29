@@ -98,7 +98,7 @@ public class SkillSmite extends TargettedSkill {
                 0.5, 0.5, 0.5, // offsets x,y,z respectively
                 1, // extra data - normally speed
                 null, // particle specific data (only non-null for specific particles)
-                12 < (max_distance + 1)); // force render to players in an extended range
+                16 < (max_distance + 1)); // force render to players in an extended range
 
         return SkillResult.NORMAL;
     }

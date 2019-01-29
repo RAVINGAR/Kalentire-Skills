@@ -99,7 +99,7 @@ public class SkillGrapplingShot extends ActiveSkill {
         node.set("ncp-exemption-duration", 3000);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% readies his grappling shot!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% drops his grappling shot.");
-        node.set(SkillSetting.REAGENT.node(), 287);
+        node.set(SkillSetting.REAGENT.node(), "STRING");
         node.set(SkillSetting.REAGENT_COST.node(), 2);
 
         return node;

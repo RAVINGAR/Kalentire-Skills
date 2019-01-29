@@ -1,5 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -51,7 +53,7 @@ public class SkillSmokeBomb extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), 5500);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has reappeared!");
-        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT.node(), "GUNPOWDER");
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
@@ -73,7 +75,7 @@ public class SkillSmokeBomb extends ActiveSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false);
 
-        Util.playClientEffect(player, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
+        Util.playClientEffect(player, Particle.EXPLOSION_HUGE.toString(), new Vector(0, 0, 0), 1F, 10, true);
         hero.addEffect(new SmokeEffect(this, player, duration));
 
         return SkillResult.NORMAL;

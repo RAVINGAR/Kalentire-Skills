@@ -35,7 +35,7 @@ public class SkillAwaken extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DELAY.node(), 7500);
-        node.set(SkillSetting.REAGENT.node(), 38);
+        node.set(SkillSetting.REAGENT.node(), "POPPY");
         node.set(SkillSetting.REAGENT_COST.node(), 0);
 
         return node;
@@ -43,6 +43,10 @@ public class SkillAwaken extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
+            return SkillResult.INVALID_TARGET;
+        }
+
         Player player = hero.getPlayer();
         Player target = plugin.getServer().getPlayer(args[0]);
 
