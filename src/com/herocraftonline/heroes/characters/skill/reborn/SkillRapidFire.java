@@ -142,33 +142,33 @@ public class SkillRapidFire extends ActiveSkill {
                 return;
             }
 
-            boolean isXDirection = is_X_Direction(player.getLocation());
+            Vector playerFacingDirection = player.getLocation().getDirection();
+            boolean isXDirection = is_X_Direction(playerFacingDirection);
 
-            int numBlocks = 0;
+            int iteratedBlockCount = 0;
             while (iter.hasNext()) {
                 currentBlock = iter.next();
 
                 if (!Util.transparentBlocks.contains(currentBlock.getType()))
                     break;
 
-                final List<Location> rowLocations = getArrowLocations(currentBlock, isXDirection);
+                final List<Location> rowLocations = getLocationsForRow(currentBlock, isXDirection);
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
 
-                        spawnArrowVisual(player, player.getLocation().getDirection(), rowLocations);
-
-                        damageEntitiesOnBlocks(hero, player, rowLocations);
+                        displayArrowVisualOnRow(player, playerFacingDirection, rowLocations);
+                        damageEntitiesOnRow(hero, player, rowLocations);
                     }
-                }, numBlocks * _delay);
+                }, iteratedBlockCount * _delay);
 
-                numBlocks++;
+                iteratedBlockCount++;
             }
         }
 
-        private void spawnArrowVisual(Player player, Vector direction, List<Location> locations) {
-            for (Location location : locations) {
-                Arrow proj = player.getWorld().spawnArrow(location, direction.normalize(), (float) 0.5, (float) 1.0);
+        private void displayArrowVisualOnRow(Player player, Vector facingDirection, List<Location> rowLocations) {
+            for (Location rowLocation : rowLocations) {
+                Arrow proj = player.getWorld().spawnArrow(rowLocation, facingDirection.normalize(), (float) 0.5, (float) 1.0);
                 proj.setKnockbackStrength(0);
                 proj.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
                 proj.setDamage(0);
@@ -184,7 +184,7 @@ public class SkillRapidFire extends ActiveSkill {
         }
 
         @NotNull
-        private List<Location> getArrowLocations(Block sourceBlock, boolean isXDirection) {
+        private List<Location> getLocationsForRow(Block sourceBlock, boolean isXDirection) {
             final List<Location> locations = new ArrayList<>();
             if (isXDirection) {
                 for (int xDir = -1; xDir < 1 + 1; xDir++) {
@@ -204,21 +204,21 @@ public class SkillRapidFire extends ActiveSkill {
             return locations;
         }
 
-        private void damageEntitiesOnBlocks(Hero hero, Player player, List<Location> locations) {
+        private void damageEntitiesOnRow(Hero hero, Player player, List<Location> locations) {
             final List<Entity> allPossibleTargets = player.getNearbyEntities(_distance, _distance, _distance);
-            final List<Entity> hitEnemies = new ArrayList<>();
+            final List<Entity> hitEnemies = new ArrayList<Entity>();
             for (Entity entity : allPossibleTargets) {
                 if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity))
                     continue;
 
-                boolean targetIsOnArrowBlock = false;
+                boolean targetIsWithinRange = false;
                 for (Location location : locations) {
-                    if (entity.getLocation().distance(location) <= 2) {
-                        targetIsOnArrowBlock = true;
+                    if (entity.getLocation().distance(location) <= 2) { // 2 blocks is kind of arbitrary... Kind of shitty logic here.
+                        targetIsWithinRange = true;
                         break;
                     }
                 }
-                if (!targetIsOnArrowBlock)
+                if (!targetIsWithinRange)
                     continue;
                 if (!damageCheck(player, (LivingEntity) entity))
                     continue;
@@ -231,13 +231,12 @@ public class SkillRapidFire extends ActiveSkill {
             }
         }
 
-        private boolean is_X_Direction(Location location) {
-            Vector dir = location.getDirection();
-            dir = new Vector(dir.getX(), 0.0D, dir.getZ()).normalize();
+        private boolean is_X_Direction(Vector facingDirection) {
+            facingDirection = new Vector(facingDirection.getX(), 0.0D, facingDirection.getZ()).normalize();
             Vector v = new Vector(0, 0, -1);
-            double magU = Math.sqrt(Math.pow(dir.getX(), 2.0D) + Math.pow(dir.getZ(), 2.0D));
+            double magU = Math.sqrt(Math.pow(facingDirection.getX(), 2.0D) + Math.pow(facingDirection.getZ(), 2.0D));
             double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
-            double angle = Math.acos(dir.dot(v) / (magU * magV));
+            double angle = Math.acos(facingDirection.dot(v) / (magU * magV));
             angle = angle * 180.0D / Math.PI;
             angle = Math.abs(angle - 180.0D);
 
