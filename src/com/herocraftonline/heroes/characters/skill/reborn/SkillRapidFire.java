@@ -11,8 +11,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -21,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,23 +73,15 @@ public class SkillRapidFire extends ActiveSkill {
         //Damage of each RapidFire blast
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
 
-        //Radius of our RapidFire. May or may not be configurable, revisit this.
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
-
-        //Quick math method to square our radius.
-        final int radiusSquared = radius * radius;
-
         //Travel time? Might be useless we'll see.
         int delay = SkillConfigManager.getUseSetting(hero, this, "rapidfire-move-delay", 1, false);
 
-
         //Our method call.
-        RapidFireEffect effect = new RapidFireEffect(this, player, period, duration, distance, radiusSquared, delay, damage);
+        RapidFireEffect effect = new RapidFireEffect(this, player, period, duration, distance, delay, damage);
         hero.addEffect(effect);
 
         return SkillResult.NORMAL;
     }
-
 
     //Method to keep the arrows firing straight for our visual.
     @EventHandler
@@ -108,38 +99,18 @@ public class SkillRapidFire extends ActiveSkill {
 
         private final long _duration;
         private final int _distance;
-        private final double _radiusSquared;
         private final int _delay;
         private final double _damage;
-        private final double _radius;
 
-
-        public RapidFireEffect(Skill skill, Player applier, long period, long duration, int distance, double radius, int delay, double damage) {
+        RapidFireEffect(Skill skill, Player applier, long period, long duration, int distance, int delay, double damage) {
             super(skill, "iterate", applier, period, duration);
             _duration = duration;
             _distance = distance;
-            _radiusSquared = radius * radius;
-            _radius = radius;
             _delay = delay;
             _damage = damage;
+
             types.add(EffectType.PHYSICAL);
-
         }
-
-
-        //Method to check if player is facing X to help radius accuracy.
-        private boolean is_X_Direction(Player player) {
-            Vector u = player.getLocation().getDirection();
-            u = new Vector(u.getX(), 0.0D, u.getZ()).normalize();
-            Vector v = new Vector(0, 0, -1);
-            double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
-            double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
-            double angle = Math.acos(u.dot(v) / (magU * magV));
-            angle = angle * 180.0D / Math.PI;
-            angle = Math.abs(angle - 180.0D);
-            return (angle <= 45.0D) || (angle > 135.0D);
-        }
-
 
         @Override
         public void tickMonster(Monster monster) {
@@ -157,98 +128,123 @@ public class SkillRapidFire extends ActiveSkill {
                 }
             }
 
+            performRapidFire(hero);
+        }
 
+        private void performRapidFire(Hero hero) {
             final Player player = hero.getPlayer();
 
-            Block tempBlock;
-
-
-            //Define a BlockIterator which allows us to scale across blocks and define our damage effect.
-            BlockIterator iter = null;
+            Block currentBlock;
+            BlockIterator iter;
             try {
                 iter = new BlockIterator(player, _distance);
             } catch (IllegalStateException e) {
-                e.printStackTrace();
+                return;
             }
 
-            //Get all of our nearby entities in this defined are and add them to a list. Also create a list for enemies that were already hit.
-            final List<Entity> nearbyEntities = player.getNearbyEntities(_radius, _radiusSquared, _radius);
-            final List<Entity> hitEnemies = new ArrayList<>();
+            boolean isXDirection = is_X_Direction(player.getLocation());
 
-            //Block Counter
             int numBlocks = 0;
-
-            //While our BlockIterator has more blocks to scan, lets keep running this loop.
             while (iter.hasNext()) {
+                currentBlock = iter.next();
 
-                //Our "tempBlock is constantly redefined by our Iterator loop
-                tempBlock = iter.next();
-                //Get the type of each tempBlock
-                Material tempBlockType = tempBlock.getType();
-
-
-                //If the iterator goes over transparent, blocks air ETC. continue and let's damage our target.
-                if (Util.transparentBlocks.contains(tempBlockType)) {
-
-                    final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(0.5, 0, 0.5));
-
-                    Location loc = player.getLocation();
-                    Vector x = loc.getDirection().normalize();
-
-//                    //Arrow Visual
-//                    Arrow shoot = player.getWorld().spawnArrow(targetLocation, x, (float) 0.5, (float) 1.0);
-//                    shoot.setKnockbackStrength(0);
-//                    shoot.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
-//                    shoot.setDamage(0);
-//                    shoot.setGravity(false);
-//
-//                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-//                        public void run() {
-//                            shoot.remove();
-//                        }
-//                    }, 3L); //Edit ticks for arrows based on skill range, otherwise arrow visual will be thrown off****************
-
-
-                    player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, targetLocation, 4, 0.3, 0.3, 0.3, 0.02);
-                    player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 2, 0.3, 0.3, 0.3, 0.05);
-
-                    //targetLocation.getBlock().setType(Material.RED_STAINED_GLASS);
-
-
-                    // Check our entity list to see if they are on this specific block at the moment the firework plays
-                    for (Entity entity : nearbyEntities) {
-                        // Ensure that we have a valid entity
-
-                        if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > _radiusSquared)
-                            continue;
-
-                        // Check to see if the entity can be damaged
-                        if (!damageCheck(player, (LivingEntity) entity))
-                            continue;
-
-                        LivingEntity target = (LivingEntity) entity;
-                        addSpellTarget(target, hero);
-
-                        if (is_X_Direction(player)) {
-                                // Damage target
-                                damageEntity(target, player, _damage, EntityDamageEvent.DamageCause.PROJECTILE);
-
-                                addSpellTarget(target, hero);
-                                damageEntity(target, player, _damage, EntityDamageEvent.DamageCause.PROJECTILE);
-                            }
-
-
-                            // Add the target to the hitEntity map to ensure we don't ever hit them again with this specific BoneSpear
-                            hitEnemies.add(entity);
-
-                        }
-                    }
-                else
+                if (!Util.transparentBlocks.contains(currentBlock.getType()))
                     break;
-                }
+
+                final List<Location> rowLocations = getArrowLocations(currentBlock, isXDirection);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+
+                        spawnArrowVisual(player, player.getLocation().getDirection(), rowLocations);
+
+                        damageEntitiesOnBlocks(hero, player, rowLocations);
+                    }
+                }, numBlocks * _delay);
+
+                numBlocks++;
             }
         }
+
+        private void spawnArrowVisual(Player player, Vector direction, List<Location> locations) {
+            for (Location location : locations) {
+                Arrow proj = player.getWorld().spawnArrow(location, direction.normalize(), (float) 0.5, (float) 1.0);
+                proj.setKnockbackStrength(0);
+                proj.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
+                proj.setDamage(0);
+                proj.setBounce(false);
+                proj.setGravity(false);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        proj.remove();
+                    }
+                }, 3L); //Edit ticks for arrows based on skill range, otherwise arrow visual will be thrown off****************
+            }
+        }
+
+        @NotNull
+        private List<Location> getArrowLocations(Block sourceBlock, boolean isXDirection) {
+            final List<Location> locations = new ArrayList<>();
+            if (isXDirection) {
+                for (int xDir = -1; xDir < 1 + 1; xDir++) {
+                    Block rowBlock = sourceBlock.getRelative(xDir, 0, 0);
+                    if (Util.transparentBlocks.contains(rowBlock.getType())) {
+                        locations.add(rowBlock.getLocation());
+                    }
+                }
+            } else {
+                for (int zDir = -1; zDir < 1 + 1; zDir++) {
+                    Block rowBlock = sourceBlock.getRelative(0, 0, zDir);
+                    if (Util.transparentBlocks.contains(rowBlock.getType())) {
+                        locations.add(rowBlock.getLocation());
+                    }
+                }
+            }
+            return locations;
+        }
+
+        private void damageEntitiesOnBlocks(Hero hero, Player player, List<Location> locations) {
+            final List<Entity> allPossibleTargets = player.getNearbyEntities(_distance, _distance, _distance);
+            final List<Entity> hitEnemies = new ArrayList<>();
+            for (Entity entity : allPossibleTargets) {
+                if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity))
+                    continue;
+
+                boolean targetIsOnArrowBlock = false;
+                for (Location location : locations) {
+                    if (entity.getLocation().distance(location) <= 2) {
+                        targetIsOnArrowBlock = true;
+                        break;
+                    }
+                }
+                if (!targetIsOnArrowBlock)
+                    continue;
+                if (!damageCheck(player, (LivingEntity) entity))
+                    continue;
+
+                LivingEntity target = (LivingEntity) entity;
+                addSpellTarget(target, hero);
+                damageEntity(target, player, _damage, EntityDamageEvent.DamageCause.PROJECTILE);
+
+                hitEnemies.add(entity);
+            }
+        }
+
+        private boolean is_X_Direction(Location location) {
+            Vector dir = location.getDirection();
+            dir = new Vector(dir.getX(), 0.0D, dir.getZ()).normalize();
+            Vector v = new Vector(0, 0, -1);
+            double magU = Math.sqrt(Math.pow(dir.getX(), 2.0D) + Math.pow(dir.getZ(), 2.0D));
+            double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
+            double angle = Math.acos(dir.dot(v) / (magU * magV));
+            angle = angle * 180.0D / Math.PI;
+            angle = Math.abs(angle - 180.0D);
+
+            return (angle <= 45.0D) || (angle > 135.0D);
+        }
     }
+}
 
 
 
