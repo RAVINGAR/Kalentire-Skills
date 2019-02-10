@@ -83,16 +83,16 @@ public class SkillRapidFire extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    //Method to keep the arrows firing straight for our visual.
-    @EventHandler
-    public void onProj(ProjectileLaunchEvent event) {
-        if (event.getEntityType() != EntityType.ARROW)
-            return;
-        if (!(event.getEntity() instanceof Arrow)) return;
-        Arrow a = (Arrow) event.getEntity();
-        Entity shooter = (Entity) event.getEntity().getShooter();
-        a.setVelocity(shooter.getLocation().getDirection().multiply(2.0D));
-    }
+//    //Method to keep the arrows firing straight for our visual.
+//    @EventHandler
+//    public void onProj(ProjectileLaunchEvent event) {
+//        if (event.getEntityType() != EntityType.ARROW)
+//            return;
+//        if (!(event.getEntity() instanceof Arrow)) return;
+//        Arrow a = (Arrow) event.getEntity();
+//        Entity shooter = (Entity) event.getEntity().getShooter();
+//        a.setVelocity(shooter.getLocation().getDirection().multiply(2.0D));
+//    }
 
 
     private class RapidFireEffect extends PeriodicExpirableEffect {
@@ -110,6 +110,7 @@ public class SkillRapidFire extends ActiveSkill {
             _damage = damage;
 
             types.add(EffectType.PHYSICAL);
+            
         }
 
         @Override

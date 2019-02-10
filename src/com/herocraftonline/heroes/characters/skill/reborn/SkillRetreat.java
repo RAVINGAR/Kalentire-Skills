@@ -175,7 +175,6 @@ public class SkillRetreat extends ActiveSkill {
 
         public RetreatBuff(Skill skill, Player applier, long duration) {
             super(skill, "RetreatBuff", applier, duration);
-
             types.add(EffectType.BENEFICIAL);
         }
 
