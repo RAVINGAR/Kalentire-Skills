@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.pack8;
 
-import com.griefcraft.scripting.MetaData;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -19,15 +18,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
-import org.bukkit.material.MaterialData;
 import org.bukkit.material.Vine;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -124,7 +120,7 @@ public class SkillRampartVine extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         BlockFace placementFace = lastBlocks.get(0).getFace(lastBlocks.get(1));
-        OvergrowthEffect oEffect = new OvergrowthEffect(this, player, duration, placementBlock, placementFace, maxGrowthDistance);
+        RampartVineEffect oEffect = new RampartVineEffect(this, player, duration, placementBlock, placementFace, maxGrowthDistance);
         hero.addEffect(oEffect);
 
         return SkillResult.NORMAL;
@@ -150,14 +146,14 @@ public class SkillRampartVine extends ActiveSkill {
         }
     }
 
-    public class OvergrowthEffect extends ExpirableEffect {
+    public class RampartVineEffect extends ExpirableEffect {
         private final Block targetBlock;
         private final BlockFace targetFace;
         private final int maxGrowth;
         private List<Location> locations = new ArrayList<>();
 
-        public OvergrowthEffect(Skill skill, Player applier, long duration, Block targetBlock, BlockFace targetFace, int maxGrowth) {
-            super(skill, "Overgrowth", applier, duration);
+        public RampartVineEffect(Skill skill, Player applier, long duration, Block targetBlock, BlockFace targetFace, int maxGrowth) {
+            super(skill, "RampartedVine", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.EARTH);

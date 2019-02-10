@@ -18,15 +18,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.*;
 
 public class SkillEnderBreath extends SkillBaseGroundEffect {
 
-    private double randomMin = -0.15;
-    private double randomMax = 0.15;
     private static final Random random = new Random(System.currentTimeMillis());
+
     private Map<Snowball, Long> activeProjectiles = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 3329526013158603250L;
 
@@ -39,16 +40,16 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     public SkillEnderBreath(Heroes plugin) {
         super(plugin, "EnderBreath");
         setDescription("Launch a ball of Ender Flame at your opponent. "
-                + "The projectile explodes on hit, dealing $1 damage every $2 seconds for $3 seconds "
-                + "within $4 blocks to the side and $5 blocks up and down (cylinder). "
-                + "Enemies within the area are slowed. $6 $7");
+                + "The projectile explodes on hit, spreading dragon breath $4 blocks to the side and $5 blocks up and down (cylinder). "
+                + "Enemies within the breath are dealt $1 damage every $2 seconds for $3 seconds and"
+                + "if you are transformed, they suffer chaotic ender teleports. $96 $97 $98 $99");
         setUsage("/skill enderbreath");
         setArgumentRange(0, 0);
         setIdentifiers("skill enderbreath");
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_DARK,
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_MAGICAL,
                 SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new ProjectileListener(), plugin);
     }
 
     public String getDescription(Hero hero) {
@@ -56,8 +57,10 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
-
         final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
+
+        int warmup = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 0, false);
+        int stamina = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false);
         int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
         long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
 
@@ -67,8 +70,10 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
                 .replace("$3", Util.decFormat.format((double) duration / 1000))
                 .replace("$4", Util.decFormat.format(radius))
                 .replace("$5", Util.decFormat.format(height))
-                .replace("$6", mana > 0 ? "Mana: " + mana : "")
-                .replace("$7", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+                .replace("$96", warmup > 0 ? "Cast Time: " + warmup : "")
+                .replace("$97", stamina > 0 ? "Stamina: " + stamina : "")
+                .replace("$98", mana > 0 ? "Mana: " + mana : "")
+                .replace("$99", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -102,7 +107,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
                 if (!projectile.isDead()) {
-                    explodeFireballIntoAoEEffect(projectile);
+                    explodeSnowballIntoAoEEffect(projectile);
                     activeProjectiles.remove(projectile);
                 }
             }
@@ -113,7 +118,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         return SkillResult.NORMAL;
     }
 
-    private void explodeFireballIntoAoEEffect(Snowball projectile) {
+    private void explodeSnowballIntoAoEEffect(Snowball projectile) {
         Player player = (Player) projectile.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
 
@@ -122,27 +127,50 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
         final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
-        applyAreaGroundEffectEffect(hero, period, duration, projectile.getLocation(), radius, height, new DragonFlameAoEEffect(damageTick, radius, height));
+
+        Location centerLocation = projectile.getLocation();
+        int teleportRadius = (int)(radius * 0.75);
+        List<Location> locationsInCircle = Util.getCircleLocationList(centerLocation, teleportRadius, 1, false, false, 1);
+
+        DragonFlameAoEEffect groundEffect = new DragonFlameAoEEffect(damageTick, radius, height, locationsInCircle);
+        applyAreaGroundEffectEffect(hero, period, duration, centerLocation, radius, height, groundEffect);
     }
 
-    public class SkillEntityListener implements Listener {
+    public class ProjectileListener implements Listener {
 
-        public SkillEntityListener() {}
+        ProjectileListener() {}
+
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+        public void onEntityExploide(EntityExplodeEvent event) {
+            if (!(event.getEntity() instanceof Snowball))
+                return;
+
+            final Snowball projectile = (Snowball) event.getEntity();
+            if ((!(projectile.getShooter() instanceof Player)))
+                return;
+
+            if (!(activeProjectiles.containsKey(projectile)))
+                return;
+
+            explodeSnowballIntoAoEEffect(projectile);
+            activeProjectiles.remove(projectile);
+            event.setCancelled(true);
+        }
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
             if (!(event.getEntity() instanceof Snowball))
                 return;
 
-            final Snowball fireball = (Snowball) event.getEntity();
-            if ((!(fireball.getShooter() instanceof Player)))
+            final Snowball projectile = (Snowball) event.getEntity();
+            if ((!(projectile.getShooter() instanceof Player)))
                 return;
 
-            if (!(activeProjectiles.containsKey(fireball)))
+            if (!(activeProjectiles.containsKey(projectile)))
                 return;
 
-            explodeFireballIntoAoEEffect(fireball);
-            activeProjectiles.remove(fireball);
+            explodeSnowballIntoAoEEffect(projectile);
+            activeProjectiles.remove(projectile);
         }
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -163,15 +191,22 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     }
 
     private class DragonFlameAoEEffect implements GroundEffectActions {
+        private final float pitchMin = -180;
+        private final float pitchMax = 180;
+        private final float yawMin = -180;
+        private final float yawMax = 180;
+
         private final double damageTick;
         private final int radius;
         private final int height;
+        private final List<Location> locationsInRadius;
 
-        DragonFlameAoEEffect(double damageTick, int radius, int height) {
+        DragonFlameAoEEffect(double damageTick, int radius, int height, List<Location> locationsInRadius) {
             this.damageTick = damageTick;
 
             this.radius = radius;
             this.height = height;
+            this.locationsInRadius = locationsInRadius;
         }
 
         @Override
@@ -180,24 +215,42 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             if (!damageCheck(player, target))
                 return;
 
+
             //double diminshedDamage = ApplyAoEDiminishingReturns()
+            addSpellTarget(target, hero);
             damageEntity(target, player, damageTick / 2d, DamageCause.FIRE, false);
             damageEntity(target, player, damageTick / 2d, DamageCause.MAGIC, false);
+
+            if (hero.hasEffect("Transformed")) {
+                int randomLocIndex = random.nextInt(locationsInRadius.size() - 1);
+
+                Location newLocation = locationsInRadius.get(randomLocIndex).clone();
+                World targetWorld = newLocation.getWorld();
+
+                target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
+                targetWorld.spawnParticle(Particle.REDSTONE, player.getLocation(), 45, 0.6, 1, 0.6, 0.2, new Particle.DustOptions(Color.FUCHSIA, 1));
+                targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
+            }
         }
 
         @Override
         public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
             final Player player = hero.getPlayer();
+
             EffectManager em = new EffectManager(plugin);
             Effect visualEffect = new Effect(em) {
-                Particle particle = Particle.REDSTONE;
+                Particle particle = Particle.DRAGON_BREATH;
+                final double randomMin = -0.15;
+                final double randomMax = 0.15;
+
                 @Override
                 public void onRun() {
                     for (double z = -radius; z <= radius; z += 0.33) {
                         for (double x = -radius; x <= radius; x += 0.33) {
                             if (x * x + z * z <= radius * radius) {
-                                double randomX = x + getRandomInRange();
-                                double randomZ = z + getRandomInRange();
+                                double randomX = x + getRandomInRange(randomMin, randomMax);
+                                double randomZ = z + getRandomInRange(randomMin, randomMax);
                                 display(particle, getLocation().clone().add(randomX, 0, randomZ));
                             }
                         }
@@ -214,6 +267,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             visualEffect.iterations = 1;
             visualEffect.type = EffectType.INSTANT;
             visualEffect.setLocation(location);
+//            visualEffect.color = Color.BLACK;
 
             visualEffect.start();
             em.disposeOnTermination();
@@ -222,86 +276,13 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         }
     }
 
-    private double getRandomInRange() {
-        return randomMin + (randomMax - randomMin) * random.nextDouble();
+    private double getRandomInRange(double minValue, double maxValue) {
+        return minValue + random.nextDouble() * ((maxValue - minValue) + 1);
     }
 
-//    private class DragonBreathAoEEffect extends PeriodicExpirableEffect {
-//        private final long _duration;
-//        private final int _distance;
-//        private final double _radiusSquared;
-//        private final int _delay;
-//        private final double _damage;
-//
-//        public DragonBreathAoEEffect(Skill skill, Player applier, long period, long duration, int distance, int radius, int delay, double damage) {
-//            super(skill, "DragonBreathAoE", applier, period, duration);
-//            _duration = duration;
-//            _distance = distance;
-//            _radiusSquared = radius * radius;
-//            _delay = delay;
-//            _damage = damage;
-//
-//            types.add(EffectType.BENEFICIAL);
-//            types.add(EffectType.PHYSICAL);
-//        }
-//
-//        @Override
-//        public void tickMonster(Monster monster) {
-//        }
-//
-//        @Override
-//        public void tickHero(Hero hero) {
-//            ShootBreath(hero);
-//        }
-//
-//        private void ShootBreath(Hero hero) {
-//            final Player player = hero.getPlayer();
-//            Block tempBlock;
-//            BlockIterator iter = null;
-//            try {
-//                iter = new BlockIterator(player, _distance);
-//            } catch (IllegalStateException e) {
-//                return;
-//            }
-//
-//            final List<Entity> nearbyEntities = player.getNearbyEntities(_distance * 2, _distance, _distance * 2);
-//            final List<Entity> hitEnemies = new ArrayList<>();
-//
-//            player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 6.0F, 1);
-//
-//            int numBlocks = 0;
-//            while (iter.hasNext()) {
-//                tempBlock = iter.next();
-//                Material tempBlockType = tempBlock.getType();
-//                if (!Util.transparentBlocks.contains(tempBlockType))
-//                    break;
-//
-//                final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
-//                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-//                    public void run() {
-//
-//                        //player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 25, 0, 0, 0, 1);
-////                        player.getWorld().spawnParticle(Particle.FLAME, targetLocation, 10, 3, 3, 3, 1);
-////                        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation, 4, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.MAGMA_BLOCK));
-//
-//                        for (Entity entity : nearbyEntities) {
-//                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > _radiusSquared)
-//                                continue;
-//                            LivingEntity target = (LivingEntity) entity;
-//                            if (!damageCheck(player, target))
-//                                continue;
-//
-//                            addSpellTarget(target, hero);
-//                            damageEntity(target, player, _damage, DamageCause.FIRE);
-//                            hitEnemies.add(entity);
-//                        }
-//                    }
-//                }, numBlocks * _delay);
-//
-//                numBlocks++;
-//            }
-//        }
-//    }
+    private float getRandomInRange(float minValue, float maxValue) {
+        return minValue + random.nextFloat() * ((maxValue - minValue) + 1);
+    }
 
     private double ApplyAoEDiminishingReturns(double damage, int numberOfTargets)
     {

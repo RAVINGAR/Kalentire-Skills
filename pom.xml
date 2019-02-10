@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
@@ -56,11 +56,18 @@
 
     <repositories>
         <repository>
+            <id>maven-repo</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
             <id>heroes-repo</id>
             <url>http://nexus.hc.to/content/groups/herocraft/</url>
         </repository>
     </repositories>
-
 
     <dependencies>
         <dependency>
@@ -100,13 +107,6 @@
             <artifactId>worldguard</artifactId>
             <version>6.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.3.1</version>
-            <type>pom</type>
-        </dependency>
-
         <dependency>
             <groupId>mc.alk.tracker</groupId>
             <artifactId>BattleTracker</artifactId>

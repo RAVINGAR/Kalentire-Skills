@@ -25,6 +25,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.BoundingBox;
@@ -91,17 +92,17 @@ public class SkillOvergrowth extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 18, false);
-        int heightIncludingRootBlock = height - 1;
+        int heightWithoutBaseBlock = height - 1;
 
-        Block targetBlock = getBlockViaRaycast(player, maxDist);
-        if (targetBlock == null)
+        Block targettedBlock = getBlockViaRaycast(player, maxDist);
+        if (targettedBlock == null)
             return invalidTargetWithMessage(player);
 
-        Block pillarRootBlock = tryGetPillarRootBlock(player, targetBlock, heightIncludingRootBlock);
-        if (pillarRootBlock == null)
+        Block baseSkillBlock = getBaseSkillBlock(player, targettedBlock, heightWithoutBaseBlock);
+        if (baseSkillBlock == null)
             return invalidTargetWithMessage(player);
 
-        OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(player, pillarRootBlock, heightIncludingRootBlock, radius);
+        OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(player, baseSkillBlock, heightWithoutBaseBlock, radius);
         if (overgrowthConstructionData == null)
             return invalidTargetWithMessage(player);
 
@@ -137,7 +138,7 @@ public class SkillOvergrowth extends ActiveSkill {
         return hit.isEntity() ? hit.getEntity().getLocation().getBlock() : hit.getBlock(world);
     }
 
-    private Block tryGetPillarRootBlock(Player player, Block targetBlock, int height) {
+    private Block getBaseSkillBlock(Player player, Block targetBlock, int height) {
         Block pillarRootBlock;
         if (targetBlock.isEmpty()) {
             targetBlock = getBlockViaRaycast(targetBlock, new Vector(0, -1, 0), height);
@@ -178,14 +179,6 @@ public class SkillOvergrowth extends ActiveSkill {
             if (!currentBlock.isEmpty())
                 break;
 
-            double doubleRadius = radius * 2;
-            Set<BoundingBox> boxesToIgnore = new HashSet<BoundingBox>();
-//            Collection<Entity> possibleHangingEnts = currentBlock.getWorld().getNearbyEntities(currentBlock.getLocation(), doubleRadius, radius, doubleRadius);
-//            for (Entity entity : possibleHangingEnts) {
-//                if (entity instanceof Hanging)
-//                    boxesToIgnore.add(entity.getBoundingBox());
-//            }
-
             boolean hitMaxValidHeight = false;
             for (LivingEntity confirmedTarget : targets) {
                 Location theoreticalPlatformLocation = confirmedTarget.getLocation().clone();
@@ -210,9 +203,8 @@ public class SkillOvergrowth extends ActiveSkill {
                 break;
 
             for (Block block : getBlocksWithinFlatCircle(currentBlock.getLocation(), radius)) {
-                if (!block.isEmpty() || boxesToIgnore.stream().anyMatch(box -> box.contains(block.getX(), block.getY(), block.getZ())))
-                    continue;
-                conversionBlocks.add(block);
+                if (block.isEmpty())
+                    conversionBlocks.add(block);
             }
 
             validTopBlock = currentBlock;
@@ -449,7 +441,7 @@ public class SkillOvergrowth extends ActiveSkill {
                     continue;
                 Location entLoc = entity.getLocation();
                 Location inAirLoc = new Location(entLoc.getWorld(), entLoc.getBlockX(), entLoc.getBlockY() + 1, entLoc.getBlockZ(), entLoc.getYaw(), entLoc.getPitch());
-                entity.teleport(inAirLoc);
+                entity.teleport(inAirLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
                 entity.setFallDistance(-512);
             }
             revertBlocks();
@@ -479,7 +471,7 @@ public class SkillOvergrowth extends ActiveSkill {
             for (LivingEntity entity : data.targets) {
                 Location entLoc = entity.getLocation();
                 Location onPillarLoc = new Location(entLoc.getWorld(), entLoc.getX(), data.getTopY() + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
-                entity.teleport(onPillarLoc);
+                entity.teleport(onPillarLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
             }
         }
 
@@ -496,6 +488,7 @@ public class SkillOvergrowth extends ActiveSkill {
         }
 
         public class SkillBlockListener implements Listener {
+
             @EventHandler(priority = EventPriority.MONITOR)
             public void onPluginDisable(PluginDisableEvent e) {
                 if (e.getPlugin() != plugin)
@@ -544,12 +537,12 @@ public class SkillOvergrowth extends ActiveSkill {
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onBlockPlace(BlockPlaceEvent event) {
-                Block block = event.getBlock();
-                if (changedBlocks.contains(block))
-                    event.setCancelled(true);
-            }
+//            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+//            public void onBlockPlace(BlockPlaceEvent event) {
+//                Block block = event.getBlock();
+//                if (changedBlocks.contains(block))
+//                    event.setCancelled(true);
+//            }
 
             @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
             public void onBlockBreak(BlockBreakEvent event) {

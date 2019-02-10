@@ -28,8 +28,8 @@ import java.util.List;
 
 public class SkillDragonSmash extends ActiveSkill implements Listener {
 
-    List<Hero> activeHeroes = new ArrayList<>();
-    List<FallingBlock> fallingBlocks = new ArrayList<>();
+    private List<Hero> activeHeroes = new ArrayList<Hero>();
+    private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
 
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
@@ -37,7 +37,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         setUsage("/skill dragonsmash");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsmash");
-        setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.VELOCITY_INCREASING, SkillType.SILENCEABLE);
+        setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.VELOCITY_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new DragonSmashUpdateTask(), 0, 1);
@@ -63,7 +63,6 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         node.set("downwards-velocity", -0.5);
         node.set("target-horizontal-knockback", 0.5);
         node.set("target-vertical-knockback", 0.5);
-
         return node;
     }
 
@@ -78,22 +77,15 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
         player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
+
         player.setVelocity(new Vector(0, vPowerUp, 0));
 
-        final int taskId = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
-            @Override
-            public void run() {
-                //player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD);
-                player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 1, 0, 0, 0, 1);
-            }
-        }, 0, 1).getTaskId();
         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
-                Bukkit.getScheduler().cancelTask(taskId);
-                player.setVelocity(new Vector(0, vPowerDown, 0));
-                player.setFallDistance(-512);
                 activeHeroes.add(hero);
+                player.setFallDistance(-512);
+                player.setVelocity(new Vector(0, vPowerDown, 0));
             }
         }, 25);
         return SkillResult.NORMAL;
@@ -213,7 +205,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         if (fallingBlocks.contains(fb)) {
             event.setCancelled(true);
             fallingBlocks.remove(fb);
-            fb.getWorld().spawnParticle(Particle.BLOCK_CRACK, fb.getLocation(), 50, 0, 0, 0, 0.4, fb.getBlockData());
+            //fb.getWorld().spawnParticle(Particle.BLOCK_CRACK, fb.getLocation(), 50, 0, 0, 0, 0.4, fb.getBlockData());
             fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 0.4f, 0.4f);
             fb.remove();
         }
