@@ -120,7 +120,7 @@ public class SkillHeroesCall extends ActiveSkill {
         hero.addEffect(new HeroicCallingEffect(this, player, duration + 1000, actualCallTargets));
 
         //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.5F, 0.8F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 0.8f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 0.5f, 0.5f);
 
         return SkillResult.NORMAL;
     }

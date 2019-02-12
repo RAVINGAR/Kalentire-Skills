@@ -53,17 +53,20 @@ public class SkillRewind extends ActiveSkill implements IPassiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        if (!hero.hasEffect("RewindTracker"))
+        Player player = hero.getPlayer();
+        if (!hero.hasEffect("RewindTracker")) {
             return SkillResult.INVALID_TARGET;
+        }
 
         RewindTrackerEffect effect = (RewindTrackerEffect) hero.getEffect("RewindTracker");
-        if (effect == null)
+        if (effect == null) {
             return SkillResult.INVALID_TARGET;
+        }
 
-        Player player = hero.getPlayer();
         SavedPlayerState rewoundState = effect.stateQueue.peek();
-        if (rewoundState == null)
+        if (rewoundState == null) {
             return SkillResult.INVALID_TARGET;
+        }
 
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false);
         int stamCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false);
@@ -87,7 +90,7 @@ public class SkillRewind extends ActiveSkill implements IPassiveSkill {
 
     private void playTeleportEffect(Location preTeleportLoc) {
         preTeleportLoc.getWorld().playEffect(preTeleportLoc, Effect.ENDER_SIGNAL, 3);
-        preTeleportLoc.getWorld().playSound(preTeleportLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
+        preTeleportLoc.getWorld().playSound(preTeleportLoc, Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 0.7F);
     }
 
     private class RewindTrackerEffect extends PeriodicEffect {
@@ -143,9 +146,8 @@ public class SkillRewind extends ActiveSkill implements IPassiveSkill {
     public void tryApplying(Hero hero) {
         Player player = hero.getPlayer();
         if (hero.canUseSkill(this)) {
-            if (!hero.hasEffect("RewindTracker")) {
-                this.apply(hero);
-            }
+            hero.removeEffect(hero.getEffect("RewindTracker"));
+            this.apply(hero);
         } else {
             this.unapply(hero);
         }
@@ -162,8 +164,6 @@ public class SkillRewind extends ActiveSkill implements IPassiveSkill {
 
     @Override
     public void unapply(Hero hero) {
-        if (!hero.hasEffect("RewindTracker"))
-            return;
         hero.removeEffect(hero.getEffect("RewindTracker"));
     }
 

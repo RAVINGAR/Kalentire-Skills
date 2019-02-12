@@ -42,7 +42,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         setDescription("Launch a ball of Ender Flame at your opponent. "
                 + "The projectile explodes on hit, spreading dragon breath $4 blocks to the side and $5 blocks up and down (cylinder). "
                 + "Enemies within the breath are dealt $1 damage every $2 seconds for $3 seconds and"
-                + "if you are transformed, they suffer chaotic ender teleports. $96 $97 $98 $99");
+                + "if you are transformed, they suffer chaotic ender teleports.");
         setUsage("/skill enderbreath");
         setArgumentRange(0, 0);
         setIdentifiers("skill enderbreath");
@@ -69,11 +69,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
                 .replace("$2", Util.decFormat.format((double) period / 1000))
                 .replace("$3", Util.decFormat.format((double) duration / 1000))
                 .replace("$4", Util.decFormat.format(radius))
-                .replace("$5", Util.decFormat.format(height))
-                .replace("$96", warmup > 0 ? "Cast Time: " + warmup : "")
-                .replace("$97", stamina > 0 ? "Stamina: " + stamina : "")
-                .replace("$98", mana > 0 ? "Mana: " + mana : "")
-                .replace("$99", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+                .replace("$5", Util.decFormat.format(height));
     }
 
     public ConfigurationSection getDefaultConfig() {

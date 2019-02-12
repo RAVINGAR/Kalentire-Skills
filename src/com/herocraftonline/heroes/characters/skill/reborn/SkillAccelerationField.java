@@ -82,8 +82,8 @@ public class SkillAccelerationField extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        hero.removeEffect(hero.getEffect("DeceleratingTime"));
-        hero.removeEffect(hero.getEffect("AcceleratingTime"));
+        hero.removeEffect(hero.getEffect("DecelerationField"));
+        hero.removeEffect(hero.getEffect("AccelerationField"));
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 20, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
@@ -93,6 +93,8 @@ public class SkillAccelerationField extends ActiveSkill {
 
         AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, radius, toFlatSpeedModifier(speedIncrease), projectileVMulti);
         hero.addEffect(emitterEffect);
+
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 2.0F);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
@@ -113,11 +115,11 @@ public class SkillAccelerationField extends ActiveSkill {
 
         AcceleratedFieldEmitterEffect(Skill skill, Player applier, int period, int duration,
                                       int radius, double speedIncrease, double projVMulti) {
-            super(skill, "AcceleratingTime", applier, period, duration, applyText, expireText);
+            super(skill, "AccelerationField", applier, period, duration, applyText, expireText);
             this.effectManager = new EffectManager(plugin);
             this.radius = radius;
-            this.heightRadius = 8; //(int) (radius * 0.25);
-            this.offsetHeight = 4; //(int) ((radius * 0.25) / 2);
+            this.heightRadius = 10; //(int) (radius * 0.25);
+            this.offsetHeight = 5; //(int) ((radius * 0.25) / 2);
             this.speedIncrease = speedIncrease;
             this.projVMulti = projVMulti;
 
@@ -134,7 +136,6 @@ public class SkillAccelerationField extends ActiveSkill {
 
             CylinderEffect effect = new CylinderEffect(effectManager);
             DynamicLocation dynamicLoc = new DynamicLocation(player);
-//            dynamicLoc.addOffset(new Vector(0, offsetHeight, 0));
             effect.setDynamicOrigin(dynamicLoc);
             effect.disappearWithOriginEntity = true;
             effect.height = heightRadius;
@@ -181,15 +182,13 @@ public class SkillAccelerationField extends ActiveSkill {
                     CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter((LivingEntity) ent);
                     if (ctTarget == null)
                         continue;
-                    if (ctTarget.hasEffect("TimeWarded"))
+                    if (ctTarget.hasEffect("TemporallyWarded"))
                         continue;
 
                     ctTarget.removeEffect(ctTarget.getEffect("AcceleratedTime"));
                     ctTarget.addEffect(new AcceleratedTimeEffect(skill, player, tempDuration, speedIncrease, projVMulti));
                 }
             }
-//            hero.removeEffect(hero.getEffect("AcceleratedTime"));
-//            hero.addEffect(new AcceleratedTimeEffect(skill, player, tempDuration, speedIncrease, projVMulti));
         }
     }
 
@@ -216,9 +215,11 @@ public class SkillAccelerationField extends ActiveSkill {
     }
 
     private void accelerateProjectile(Projectile proj, double multi) {
+        if (proj.hasMetadata("AcceleratedTime"))
+            return;
         Vector multipliedVel = proj.getVelocity().multiply(multi);
         proj.setVelocity(multipliedVel);
-        proj.setGlowing(true);
+        //proj.setGlowing(true);
         proj.setMetadata("AcceleratedTime", new FixedMetadataValue(plugin, true));
     }
 
