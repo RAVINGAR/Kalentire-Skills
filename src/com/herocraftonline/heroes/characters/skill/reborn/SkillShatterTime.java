@@ -113,12 +113,11 @@ public class SkillShatterTime extends TargettedSkill {
                 damageEntity(target, player, finalDamage, DamageCause.MAGIC, false);
                 world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
 
-                if (!ctTarget.hasEffect("TemporallyWarded")) {
-                    SkillTemporalWard.TemporalWardEffect effect = new SkillTemporalWard.TemporalWardEffect(skill, player, temporalWardDuration);
-                    effect.types.add(EffectType.SILENCE);
-                    effect.types.add(EffectType.DISARM);
-                    ctTarget.addEffect(effect);
-                }
+//                if (!ctTarget.hasEffect("TemporallyWarded")) {
+//                    SkillTemporalWard.TemporalWardEffect effect = new SkillTemporalWard.TemporalWardEffect(skill, player, temporalWardDuration);
+//                    effect.types.add(EffectType.SILENCE);
+//                    ctTarget.addEffect(effect);
+//                }
             }
         };
 

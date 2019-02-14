@@ -43,8 +43,8 @@ public class SkillTransform extends ActiveSkill {
         setUsage("/skill transform");
         setArgumentRange(0, 0);
         setIdentifiers("skill transform");
+        setToggleableEffectName("Transformed");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.FORM_ALTERING, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT);
-
         Bukkit.getServer().getPluginManager().registerEvents(new HelmetListener(this), plugin);
     }
 
@@ -57,13 +57,8 @@ public class SkillTransform extends ActiveSkill {
         double perSecondMultiplier = 1000d / healthDrainPeriod;
         double healthPerSecond = healthDrainTick * perSecondMultiplier;
 
-        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-        long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
         return getDescription()
-                .replace("$1", Util.decFormat.format(healthPerSecond))
-                .replace("$98", mana > 0 ? "Mana: " + mana : "")
-                .replace("$99", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+                .replace("$1", Util.decFormat.format(healthPerSecond));
     }
 
     @Override
@@ -78,11 +73,6 @@ public class SkillTransform extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-
-        if (hero.hasEffect("Transformed")) {
-            hero.removeEffect(hero.getEffect("Transformed"));
-            return SkillResult.NORMAL;
-        }
 
         double healthDrainTick = SkillConfigManager.getUseSetting(hero, this, "health-drain-tick", 20.0D, false);
         int healthDrainPeriod = SkillConfigManager.getUseSetting(hero, this, "health-drain-period", 500, false);

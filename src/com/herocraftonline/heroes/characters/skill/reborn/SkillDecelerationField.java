@@ -6,14 +6,18 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.PeriodicManaDrainEffect;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedDecreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.CircleEffect;
 import de.slikey.effectlib.effect.CylinderEffect;
+import de.slikey.effectlib.effect.FountainEffect;
 import de.slikey.effectlib.util.DynamicLocation;
 import fr.neatmonster.nocheatplus.checks.moving.Velocity;
 import org.bukkit.*;
@@ -28,6 +32,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -36,7 +42,6 @@ import java.util.HashMap;
 public class SkillDecelerationField extends ActiveSkill {
 
     private static final float DEFAULT_MINECRAFT_MOVEMENT_SPEED = 0.2f;
-
     private String applyText;
     private String expireText;
 
@@ -46,8 +51,8 @@ public class SkillDecelerationField extends ActiveSkill {
         setUsage("/skill decelerationfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill decelerationfield");
+        setToggleableEffectName("DecelerationField");
         setTypes(SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_SLOWING, SkillType.AREA_OF_EFFECT);
-
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
     }
 
@@ -65,8 +70,8 @@ public class SkillDecelerationField extends ActiveSkill {
         config.set(SkillSetting.RADIUS.node(), 16);
         config.set("percent-speed-decrease", 0.35);
         config.set("projectile-velocity-multiplier", 0.5);
-        config.set(SkillSetting.DURATION.node(), 5000);
         config.set("pulse-period", 250);
+        config.set("mana-drain-per-pulse", 6);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is decelerating time!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer decelerating time.");
         config.set(SkillSetting.DELAY.node(), 1500);
@@ -86,16 +91,16 @@ public class SkillDecelerationField extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        // Can't have both up at once
         hero.removeEffect(hero.getEffect("AccelerationField"));
-        hero.removeEffect(hero.getEffect("DecelerationField"));
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         int pulsePeriod = SkillConfigManager.getUseSetting(hero, this, "pulse-period", 250, false);
+        int manaDrainPerPulse = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-pulse", 6, false);
         double percentDecrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-decrease", 0.35, false);
         double projectileVMulti = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier", 0.5, false);
 
-        DeceleratedFieldEmitterEffect emitterEffect = new DeceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, radius, percentDecrease, projectileVMulti);
+        DeceleratedFieldEmitterEffect emitterEffect = new DeceleratedFieldEmitterEffect(this, pulsePeriod, manaDrainPerPulse, radius, percentDecrease, projectileVMulti);
         hero.addEffect(emitterEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 2.0F, 0.533F);
@@ -105,33 +110,27 @@ public class SkillDecelerationField extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private double toFlatSpeedModifier(double percent) {
-        return DEFAULT_MINECRAFT_MOVEMENT_SPEED * percent;
-    }
-
-    public class DeceleratedFieldEmitterEffect extends PeriodicExpirableEffect {
+    public class DeceleratedFieldEmitterEffect extends PeriodicManaDrainEffect {
 
         private final EffectManager effectManager;
         private final int radius;
         private final int heightRadius;
         private final int offsetHeight;
-        private final double percentDecrease;
         private final double flatDecrease;
         private final double projVMulti;
 
-        DeceleratedFieldEmitterEffect(Skill skill, Player applier, int period, int duration,
-                                      int radius, double percentDecrease, double projVMulti) {
-            super(skill, "DecelerationField", applier, period, duration, applyText, expireText);
+        DeceleratedFieldEmitterEffect(Skill skill, int period, int manaDrainPerTick, int radius, double percentDecrease, double projVMulti) {
+            super(skill, "DecelerationField", period, manaDrainPerTick);
+
             this.effectManager = new EffectManager(plugin);
             this.radius = radius;
             this.heightRadius = 10; //(int) (radius * 0.25);
             this.offsetHeight = 5; //(int) ((radius * 0.25) / 2);
-            this.percentDecrease = percentDecrease;
-            this.flatDecrease = toFlatSpeedModifier(percentDecrease);
+            this.flatDecrease = Util.convertPercentageToPlayerMovementSpeedValue(percentDecrease);
             this.projVMulti = projVMulti;
 
             types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.MAGIC);
+            types.add(EffectType.TEMPORAL);
         }
 
         @Override
@@ -139,9 +138,10 @@ public class SkillDecelerationField extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
-            int durationTicks = (int) (getDuration() / 50);
+            int durationTicks = 20 * 60 * 60;    // An hour. We'll terminate it early and I don't imagine other people will ever bother to try and maintain it that long.
 
-            CylinderEffect effect = new CylinderEffect(effectManager);
+            //Helix? Plot? Tornado? Trace? Turn?
+            FountainEffect effect = new FountainEffect(effectManager);
             DynamicLocation dynamicLoc = new DynamicLocation(player);
 //            dynamicLoc.addOffset(new Vector(0, offsetHeight, 0));
             effect.setDynamicOrigin(dynamicLoc);
@@ -151,11 +151,11 @@ public class SkillDecelerationField extends ActiveSkill {
             effect.period = 1;
             effect.iterations = durationTicks;
 
-            effect.particles = 150;
+            effect.particleCount = 150;
             effect.particle = Particle.SPELL_MOB;
             effect.color = Color.YELLOW;
-            effect.solid = false;
-            effect.enableRotation = false;
+//            effect.solid = false;
+//            effect.enableRotation = false;
 
             effect.asynchronous = true;
             effectManager.start(effect);
@@ -203,25 +203,22 @@ public class SkillDecelerationField extends ActiveSkill {
                     }
 
                     ctTarget.removeEffect(ctTarget.getEffect("DeceleratedTime"));
-                    ctTarget.addEffect(new DeceleratedTimeEffect(skill, player, tempDuration, flatDecrease, percentDecrease, projVMulti));
+                    ctTarget.addEffect(new DeceleratedTimeEffect(skill, player, tempDuration, flatDecrease, projVMulti));
                 }
             }
         }
     }
 
     public class DeceleratedTimeEffect extends WalkSpeedDecreaseEffect {
-        final double percentDecrease;
         final double projVMulti;
         boolean slowedInAirAlready;
 
-        DeceleratedTimeEffect(Skill skill, Player applier, int duration, double flatDecrease, double percentDecrease, double projVMulti) {
+        DeceleratedTimeEffect(Skill skill, Player applier, int duration, double flatDecrease, double projVMulti) {
             super(skill, "DeceleratedTime", applier, duration, flatDecrease, null, null);
-            this.percentDecrease = percentDecrease;
             this.projVMulti = projVMulti;
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
-//            addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, (int) (duration / 50), 25));
         }
 
         @Override
@@ -233,6 +230,13 @@ public class SkillDecelerationField extends ActiveSkill {
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
         }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 2));
+        }
     }
 
     private void decelerateProjectile(Projectile proj, double multi) {
@@ -240,53 +244,10 @@ public class SkillDecelerationField extends ActiveSkill {
             return;
         Vector multipliedVel = proj.getVelocity().multiply(multi);
         proj.setVelocity(multipliedVel);
-        //proj.setGlowing(true);
         proj.setMetadata("DeceleratedTime", new FixedMetadataValue(plugin, true));
     }
 
     public class SkillListener implements Listener {
-
-        // Move listeners are super not cool. Do not copy this elsewhere unless you REALLY know what you are doing.
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onPlayerMove(PlayerMoveEvent event) {
-            final Player player = event.getPlayer();
-            if (!player.isSprinting() || player.isFlying() || player.getGameMode() == GameMode.SPECTATOR || player.getGameMode() == GameMode.CREATIVE)
-                return;
-
-            if (player.isOnGround()) {
-                if (player.hasMetadata("DeceleratedJump"))
-                    player.removeMetadata("DeceleratedJump", plugin);
-                return;
-            } else if (event.getFrom().getY() == event.getTo().getY() || player.hasMetadata("DeceleratedJump")) {
-                return;
-            }
-
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect("DeceleratedTime"))
-                return;
-            DeceleratedTimeEffect effect = (DeceleratedTimeEffect) hero.getEffect("DeceleratedTime");
-            if (effect == null)
-                return;
-
-            player.setMetadata("DeceleratedJump", new FixedMetadataValue(plugin, true));
-
-//            float hellIfIKnow = player.getLocation().getYaw() * 0.017453292F;
-//            Vector newVelocity = player.getVelocity().clone();
-//            newVelocity.add(new Vector((Math.sin(hellIfIKnow) * 0.2D), -0.25D, -(Math.cos(hellIfIKnow) * 0.2D)));
-//            player.setVelocity(newVelocity);
-            float mitigatedFallDist = player.getFallDistance() - 0.5F;
-            player.setVelocity(player.getVelocity().multiply(1 - effect.percentDecrease).subtract(new Vector(0, 0.15D, 0)));
-            player.setFallDistance(mitigatedFallDist);
-
-//            player.setVelocity(newVelocity);
-//            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-//                public void run() {
-//                    float mitigatedFallDist = player.getFallDistance() - 0.5F;
-//                    player.setVelocity(player.getVelocity().multiply(1 - effect.percentDecrease));
-//                    player.setFallDistance(mitigatedFallDist);
-//                }
-//            }, 1);
-        }
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onProjLaunch(ProjectileLaunchEvent event) {

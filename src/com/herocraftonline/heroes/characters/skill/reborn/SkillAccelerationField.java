@@ -7,15 +7,16 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
-import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
-import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
+import com.herocraftonline.heroes.characters.effects.common.PeriodicManaDrainEffect;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
+import de.slikey.effectlib.effect.HelixEffect;
+import de.slikey.effectlib.effect.TraceEffect;
+import de.slikey.effectlib.effect.VortexEffect;
 import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,6 +26,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -61,8 +64,8 @@ public class SkillAccelerationField extends ActiveSkill {
         config.set(SkillSetting.RADIUS.node(), 16);
         config.set("percent-speed-increase", 0.35);
         config.set("projectile-velocity-multiplier", 1.35);
-        config.set(SkillSetting.DURATION.node(), 5000);
         config.set("pulse-period", 250);
+        config.set("mana-drain-per-pulse", 6);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is accelerating time!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer accelerating time.");
         config.set(SkillSetting.DELAY.node(), 1500);
@@ -83,15 +86,14 @@ public class SkillAccelerationField extends ActiveSkill {
         Player player = hero.getPlayer();
 
         hero.removeEffect(hero.getEffect("DecelerationField"));
-        hero.removeEffect(hero.getEffect("AccelerationField"));
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 20, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         int pulsePeriod = SkillConfigManager.getUseSetting(hero, this, "pulse-period", 250, false);
-        double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-increase", 0.35, false);
+        int manaDrainPerPulse = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-pulse", 6, false);
+        double percentSpeedIncrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-increase", 0.35, false);
         double projectileVMulti = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier", 1.35, false);
 
-        AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, radius, toFlatSpeedModifier(speedIncrease), projectileVMulti);
+        AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, pulsePeriod, manaDrainPerPulse, radius, percentSpeedIncrease, projectileVMulti);
         hero.addEffect(emitterEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 2.0F);
@@ -100,27 +102,23 @@ public class SkillAccelerationField extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private double toFlatSpeedModifier(double percent) {
-        return DEFAULT_MINECRAFT_MOVEMENT_SPEED * percent;
-    }
-
-    public class AcceleratedFieldEmitterEffect extends PeriodicExpirableEffect {
+    public class AcceleratedFieldEmitterEffect extends PeriodicManaDrainEffect {
 
         private final EffectManager effectManager;
         private final int radius;
         private final int heightRadius;
         private final int offsetHeight;
-        private final double speedIncrease;
+        private final double flatSpeedIncrease;
         private final double projVMulti;
 
-        AcceleratedFieldEmitterEffect(Skill skill, Player applier, int period, int duration,
-                                      int radius, double speedIncrease, double projVMulti) {
-            super(skill, "AccelerationField", applier, period, duration, applyText, expireText);
+        AcceleratedFieldEmitterEffect(Skill skill, int period, int manaDrainPerTick, int radius, double percentIncrease, double projVMulti) {
+            super(skill, "AccelerationField", period, manaDrainPerTick);
+
             this.effectManager = new EffectManager(plugin);
             this.radius = radius;
             this.heightRadius = 10; //(int) (radius * 0.25);
             this.offsetHeight = 5; //(int) ((radius * 0.25) / 2);
-            this.speedIncrease = speedIncrease;
+            this.flatSpeedIncrease = Util.convertPercentageToPlayerMovementSpeedValue(percentIncrease);
             this.projVMulti = projVMulti;
 
             types.add(EffectType.BENEFICIAL);
@@ -132,13 +130,13 @@ public class SkillAccelerationField extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
-            int durationTicks = (int) (getDuration() / 50);
+            int durationTicks = 20 * 60 * 60;    // An hour. We'll terminate it early and I don't imagine other people will ever bother to try and maintain it that long.
 
-            CylinderEffect effect = new CylinderEffect(effectManager);
+            HelixEffect effect = new HelixEffect(effectManager);
             DynamicLocation dynamicLoc = new DynamicLocation(player);
             effect.setDynamicOrigin(dynamicLoc);
             effect.disappearWithOriginEntity = true;
-            effect.height = heightRadius;
+//            effect.height = heightRadius;
             effect.radius = radius;
             effect.period = 1;
             effect.iterations = durationTicks;
@@ -146,8 +144,8 @@ public class SkillAccelerationField extends ActiveSkill {
             effect.particles = 150;
             effect.particle = Particle.SPELL_MOB;
             effect.color = Color.TEAL;
-            effect.solid = false;
-            effect.enableRotation = false;
+//            effect.solid = false;
+//            effect.enableRotation = false;
 
             effect.asynchronous = true;
             effectManager.start(effect);
@@ -186,7 +184,7 @@ public class SkillAccelerationField extends ActiveSkill {
                         continue;
 
                     ctTarget.removeEffect(ctTarget.getEffect("AcceleratedTime"));
-                    ctTarget.addEffect(new AcceleratedTimeEffect(skill, player, tempDuration, speedIncrease, projVMulti));
+                    ctTarget.addEffect(new AcceleratedTimeEffect(skill, player, tempDuration, flatSpeedIncrease, projVMulti));
                 }
             }
         }
@@ -211,6 +209,13 @@ public class SkillAccelerationField extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+        }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+
+            addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (getDuration() / 50), 3));
         }
     }
 

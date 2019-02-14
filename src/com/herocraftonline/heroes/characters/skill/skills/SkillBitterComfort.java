@@ -106,13 +106,13 @@ public class SkillBitterComfort extends PassiveSkill {
     }
 
     @Override
-    protected void apply(Hero hero) {
+    public void apply(Hero hero) {
         addBitterComfortEffect(hero);
         hero.resolveStaminaRegen();
     }
 
     @Override
-    protected void unapply(Hero hero) {
+    public void unapply(Hero hero) {
         //Remove effect
         super.unapply(hero);
         hero.resolveStaminaRegen();

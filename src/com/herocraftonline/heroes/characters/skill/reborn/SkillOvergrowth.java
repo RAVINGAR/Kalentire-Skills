@@ -46,6 +46,7 @@ public class SkillOvergrowth extends ActiveSkill {
         setUsage("/skill overgrowth");
         setArgumentRange(0, 0);
         setIdentifiers("skill overgrowth");
+        setToggleableEffectName("Overgrowth");
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING);
     }
 
@@ -81,12 +82,6 @@ public class SkillOvergrowth extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         World world = player.getWorld();
-
-        if (hero.hasEffect("Overgrowth")) {
-            hero.removeEffect(hero.getEffect("Overgrowth"));
-            player.sendMessage("You dispel your overgrowth.");
-            return SkillResult.SKIP_POST_USAGE;
-        }
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);

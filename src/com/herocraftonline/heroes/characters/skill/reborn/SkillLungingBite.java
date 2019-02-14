@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -22,6 +23,9 @@ import java.util.ArrayList;
 
 public class SkillLungingBite extends ActiveSkill
 {
+    String applyText;
+    String expireText;
+
     public SkillLungingBite(Heroes plugin)
     {
         super(plugin, "LungingBite");
@@ -47,6 +51,16 @@ public class SkillLungingBite extends ActiveSkill
         return getDescription().replace("$1", damage + "").replace("$2", damage / 2d + "").replace("$3", actualDuration + "");
     }
 
+    @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL
+                + "%hero% has clenched %target% in their jaws!")
+                .replace("%hero%", "$2")
+                .replace("%target%", "$1");
+    }
+
     public ConfigurationSection getDefaultConfig()
     {
         ConfigurationSection config = super.getDefaultConfig();
@@ -58,6 +72,7 @@ public class SkillLungingBite extends ActiveSkill
         config.set("transform-jaws-period", 200);
         config.set("transform-jaws-duration", 2500);
         config.set("transform-jaws-pull-power-reduction", 6.0);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has clenched %target% in their jaws!");
         return config;
     }
 
@@ -141,9 +156,7 @@ public class SkillLungingBite extends ActiveSkill
         private final double pullPowerReduction;
 
         StuckInJawsEffect(Skill skill, Player applier, long period, long duration, double pullPowerReduction) {
-            super(skill, "StuckInJaws", applier, period, duration,
-                    "$2 has clenched you in their jaws!",
-                    "You are free from the jaws of $2.");
+            super(skill, "StuckInJaws", applier, period, duration, applyText, null);
 
             this.pullPowerReduction = pullPowerReduction;
 

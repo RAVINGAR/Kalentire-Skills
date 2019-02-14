@@ -110,14 +110,14 @@ public class SkillTypicalHuman extends PassiveSkill {
 //    }
 
     @Override
-    protected void apply(Hero hero) {
+    public void apply(Hero hero) {
         //super.apply(hero);
         addTypicalHumanEffect(hero);
         hero.resolveMaxHealth();
     }
 
     @Override
-    protected void unapply(Hero hero) {
+    public void unapply(Hero hero) {
         // Remove effect
         super.unapply(hero);
         hero.resolveMaxHealth();

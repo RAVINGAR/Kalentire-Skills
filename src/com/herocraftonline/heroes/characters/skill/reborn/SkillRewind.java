@@ -22,7 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-public class SkillRewind extends ActiveSkill implements IPassiveSkill {
+public class SkillRewind extends ActiveSkill implements Passive {
 
     public SkillRewind(Heroes plugin) {
         super(plugin, "Rewind");
