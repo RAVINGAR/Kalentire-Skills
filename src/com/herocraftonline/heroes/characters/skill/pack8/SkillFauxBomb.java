@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -69,8 +70,9 @@ public class SkillFauxBomb extends ActiveSkill {
         //Replaced sheep health with lower value, since sheep doesn't explode and having high health sheep around can be a issue (crowding)
 //        sheep.setMaxHealth(10000);
 //        sheep.setHealth(10000);
-        sheep.setMaxHealth(100);
-        sheep.setHealth(100);
+        sheep.setMaxHealth(1000);
+        sheep.setHealth(1000);
+        sheep.setCustomName(ChatColor.DARK_RED + "PlagueBomb");
 
         double velocity = SkillConfigManager.getUseSetting(hero, this, "velocity", 1.0D, false);
         sheep.setVelocity(direction.multiply(velocity).add(new Vector(0.0D, 0.15D, 0.0D)));
@@ -79,6 +81,7 @@ public class SkillFauxBomb extends ActiveSkill {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
+                sheep.damage(sheep.getHealth()); // as sheep exploding doesn't work, kill sheep instead
                 //explodeSheep(sheep);
             }
         }, fuse / 1000 * 20);
