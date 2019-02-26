@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project>
-<project name="Heroes-Skills" default="build" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="Heroes-Skills" default="build-reborn" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     <property environment="env"/>
     <property name="build.compiler" value="extJavac" />
 
@@ -9,9 +9,8 @@
     <property name="dir.bin.path" value="com/herocraftonline/heroes/characters/skill" />
     <property name="dir.dist.path" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
-    <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
-    <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
-    <property name="packages" value="reborn" />
+    <property name="reborn-skills" value="arcanist,pyromancer,druid,enderbeast,pyromancer,professions" />
+    <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -29,7 +28,7 @@
         </classpath>
     </taskdef>
 
-    <target name="build">
+    <target name="build-reborn">
         <!--Create Maven Dependencies Storage Folder-->
         <mkdir dir="${dir.maven.dependencies}" />
 
@@ -46,7 +45,37 @@
         <mkdir dir="${dir.dist}" />
         <mkdir dir="${dir.bin}" />
 
-    	<for list="${packages}" param="package">
+        <for list="${reborn-skills}" param="package">
+            <sequential>
+                <mkdir dir="${dir.dist}/${dir.dist.path}" />
+                <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}" />
+                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/reborn/@{package}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
+                <antcall target="jar-skills">
+                    <param name="package" value="reborn/@{package}"/>
+                </antcall>
+                <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
+            </sequential>
+        </for>
+    </target>
+
+    <target name="build-packs">
+        <!--Create Maven Dependencies Storage Folder-->
+        <mkdir dir="${dir.maven.dependencies}" />
+
+        <!--Populate Maven Dependencies -->
+        <artifact:pom id="skillPom" file="pom.xml" />
+        <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" />
+        <copy todir="${dir.maven.dependencies}">
+            <fileset refid="mavenDependencies" />
+            <mapper classpathref="maven-ant-tasks.classpath"
+                    classname="org.apache.maven.artifact.ant.VersionMapper"
+                    from="${dependency.versions}" to="flatten" />
+        </copy>
+        <!--Make directories required for the build-->
+        <mkdir dir="${dir.dist}" />
+        <mkdir dir="${dir.bin}" />
+
+    	<for list="${skill-packs}" param="package">
     		<sequential>
             	<mkdir dir="${dir.dist}/${dir.dist.path}" />
                 <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}" />

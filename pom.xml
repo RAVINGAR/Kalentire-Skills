@@ -73,17 +73,17 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.1-SNAPSHOT</version>
+            <version>1.9.1-Reborn-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.1-SNAPSHOT</version>
+            <version>1.9.1-Reborn-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-v1_13_R2</artifactId>
-            <version>1.9.1-SNAPSHOT</version>
+            <version>1.9.1-Reborn-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
