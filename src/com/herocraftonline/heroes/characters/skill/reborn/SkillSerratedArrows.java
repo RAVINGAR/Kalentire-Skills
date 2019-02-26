@@ -46,19 +46,7 @@ public class SkillSerratedArrows extends PassiveSkill {
 
 
 
-    public class SerratedBuff extends ExpirableEffect {
 
-        public SerratedBuff(Skill skill, String name, Player applier, long duration) {
-            super(skill, "SerratedBuff", applier, duration);
-            types.add(EffectType.BENEFICIAL);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-        }
-    }
 
     public class SkillDamageListener implements Listener {
 
@@ -79,18 +67,26 @@ public class SkillSerratedArrows extends PassiveSkill {
         public void onEntityDamage(EntityDamageByEntityEvent event) {
 
 
-            final EntityDamageByEntityEvent subEvent = event;
+            if(!(event.getDamager() instanceof Arrow)) {
+                return;
+            }
 
-            Arrow arrow = (Arrow) subEvent.getDamager();
+            Arrow arrow = (Arrow) event.getDamager();
+            if (!(arrow.getShooter() instanceof Player)) {
+                return;
+            }
+
+
+
             final Player player = (Player) arrow.getShooter();
             final Hero hero = plugin.getCharacterManager().getHero(player);
             double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE, 90, false);
 
-            if(!hero.hasEffect("SerratedBuff")) {
+            if(!hero.hasEffect("SerratedArrows")) {
                 return;
             }
 
-            if(hero.hasEffect("SerratedBuff")) {
+            if(hero.hasEffect("SerratedArrows")) {
                 hitCount++;
                 player.sendMessage("hit");
             }
@@ -98,7 +94,9 @@ public class SkillSerratedArrows extends PassiveSkill {
             if(hitCount == 3) {
                 final LivingEntity target = (LivingEntity) event.getEntity();
                 addSpellTarget(target, hero);
-                damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, true);
+                target.sendMessage("fuckyou");
+                player.sendMessage("hi cutie");
                         try {
             fplayer.playFirework(player.getWorld(), player.getLocation().add(0,2.0,0),
             		FireworkEffect.builder().flicker(false).trail(false)
@@ -111,7 +109,7 @@ public class SkillSerratedArrows extends PassiveSkill {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+            hitCount = 0;
             }
 
         }
