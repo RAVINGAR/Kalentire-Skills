@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn;
+package com.herocraftonline.heroes.characters.skill.reborn.professions;
 
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -67,12 +67,14 @@ public class SkillTridentPassive extends PassiveSkill {
             player.sendMessage("InteractEvent!");
         }
 
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerLaunchProjectileEvent(ProjectileLaunchEvent event) {
             Player player = (Player) event.getEntity().getShooter();
             player.sendMessage("LaunchProjectile!");
 
         }
 
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityThrowTrident(EntityThrownTrident event) {
             Player player = (Player) event.getBukkitEntity();
             player.sendMessage("EntityThrowTrident!");
