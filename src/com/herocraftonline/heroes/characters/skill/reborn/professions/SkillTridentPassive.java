@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import net.minecraft.server.v1_13_R2.EntityThrownTrident;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -27,7 +28,9 @@ public class SkillTridentPassive extends PassiveSkill {
         setDescription("You are able wield Tridents!");
         setArgumentRange(0, 0);
         setEffectTypes(EffectType.BENEFICIAL);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillTridentPassive.SkillListener(this), plugin);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.TELEPORTING);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
     @Override
@@ -85,6 +88,7 @@ public class SkillTridentPassive extends PassiveSkill {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerRiptide(PlayerRiptideEvent event) {
             Player player = event.getPlayer();
+
             player.sendMessage("PlayerRiptide");
         }
 
