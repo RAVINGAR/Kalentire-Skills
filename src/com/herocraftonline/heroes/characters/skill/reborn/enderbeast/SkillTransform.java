@@ -36,6 +36,10 @@ import com.herocraftonline.heroes.characters.Hero;
 
 public class SkillTransform extends ActiveSkill {
 
+    private String toggleableEffectName = "EnderBeastTransformed";
+    private String applyText;
+    private String expireText;
+
     public SkillTransform(Heroes plugin) {
         super(plugin, "Transform");
         setDescription("Take on your true form, granting new powers to all of your other abilities. "
@@ -43,8 +47,9 @@ public class SkillTransform extends ActiveSkill {
         setUsage("/skill transform");
         setArgumentRange(0, 0);
         setIdentifiers("skill transform");
-        setToggleableEffectName("EnderBeastTransformed");
+        setToggleableEffectName(toggleableEffectName);
         setTypes(SkillType.ABILITY_PROPERTY_ENDER, SkillType.FORM_ALTERING);
+
         Bukkit.getServer().getPluginManager().registerEvents(new HelmetListener(this), plugin);
     }
 
@@ -65,9 +70,20 @@ public class SkillTransform extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DELAY.node(), 250);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has transformed!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% returns to their human form.");
         config.set("health-drain-tick", 20.0D);
         config.set("health-drain-period", 500);
         return config;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has transformed!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% returns to their human form.").replace("%hero%", "$1");
+        setUseText(null);
     }
 
     @Override
@@ -87,6 +103,8 @@ public class SkillTransform extends ActiveSkill {
 
         //playEffects(player, radius);
         hero.addEffect(new TransformedEffect(this, player, healthDrainTick, healthDrainPeriod));
+        Location location = player.getLocation();
+        location.getWorld().playSound(location, Sound.ENTITY_ZOMBIE_AMBIENT, 1F, 0.6f);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
@@ -189,9 +207,8 @@ public class SkillTransform extends ActiveSkill {
         private final double healthDrainTick;
 
         TransformedEffect(Skill skill, Player applier, double healthDrainTick, long period) {
-            super(skill, "EnderBeastTransformed", period);
+            super(skill, toggleableEffectName, applier, period, applyText, expireText);
             this.healthDrainTick = healthDrainTick;
-            this.applier = applier;
 
             setTypes(SkillType.FORM_ALTERING);
             setTypes(SkillType.ABILITY_PROPERTY_MAGICAL);
@@ -257,7 +274,7 @@ public class SkillTransform extends ActiveSkill {
                 return;
 
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (hero.hasEffect("EnderBeastTransformed"))
+            if (hero.hasEffect(toggleableEffectName))
                 event.setCancelled(true);
         }
     }

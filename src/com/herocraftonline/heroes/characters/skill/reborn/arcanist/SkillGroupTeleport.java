@@ -32,35 +32,32 @@ public class SkillGroupTeleport extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        if (hero.getParty() != null && hero.getParty().getMembers().size() != 1) {
-            
-            broadcastExecuteText(hero);
-            
-            for (Hero partyHero : hero.getParty().getMembers()) {
-                Player partyPlayer = partyHero.getPlayer();
-                if (partyHero.equals(hero) || !partyPlayer.getWorld().equals(player.getWorld())) {
-                    continue;
-                }
-                if (partyHero.isInCombat()) {
-                    player.sendMessage(ChatComponents.GENERIC_SKILL + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
-                    partyPlayer.sendMessage(ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but you are in combat!");
-                    continue;
-                }
-                
-                Util.playClientEffect(partyPlayer, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-                Util.playClientEffect(partyPlayer, "largeexplode", new Vector(0, 0, 0), 1F, 10, true);
-                partyPlayer.getWorld().playSound(partyPlayer.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
-
-                partyPlayer.teleport(player);
-            }
-            
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
-
-            return SkillResult.NORMAL;
+        if (hero.getParty() == null || hero.getParty().getMembers().size() == 1) {
+            player.sendMessage("You must actually have party members to teleport them to you!");
+            return SkillResult.FAIL;
         }
-        
-        player.sendMessage("You must actually have party members to teleport them to you!");
-        
-        return SkillResult.FAIL;
+
+
+        for (Hero partyHero : hero.getParty().getMembers()) {
+            Player partyPlayer = partyHero.getPlayer();
+            if (partyHero.equals(hero) || !partyPlayer.getWorld().equals(player.getWorld())) {
+                continue;
+            }
+            if (partyHero.isInCombat()) {
+                player.sendMessage(ChatComponents.GENERIC_SKILL + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
+                partyPlayer.sendMessage(ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but were are in combat!");
+                continue;
+            }
+
+            Util.playClientEffect(partyPlayer, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+            Util.playClientEffect(partyPlayer, "largeexplode", new Vector(0, 0, 0), 1F, 10, true);
+            partyPlayer.getWorld().playSound(partyPlayer.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
+
+            partyPlayer.teleport(player);
+        }
+
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
+        broadcastExecuteText(hero);
+        return SkillResult.NORMAL;
     }
 }

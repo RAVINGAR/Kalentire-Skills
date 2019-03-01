@@ -11,9 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSphere;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -21,15 +19,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class SkillArcaneStorm extends SkillBaseSphere {
+public class SkillPulsatingField extends SkillBaseSphere {
 
-	public SkillArcaneStorm(Heroes plugin) {
-		super(plugin, "ArcaneStorm");
-		setDescription("Call upon the forces of the arcane to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds. $5 $6");
-		setUsage("/skill arcanestorm");
-		setIdentifiers("skill arcanestorm");
+	public SkillPulsatingField(Heroes plugin) {
+		super(plugin, "PulsatingField");
+		setDescription("Call upon the forces of the arcane to damage enemies within $1 blocks for $2 every $3 seconds for $4 seconds.");
+		setUsage("/skill pulsatingfield");
+		setIdentifiers("skill pulsatingfield");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
+		setTypes(SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
 	}
 
 	@Override
@@ -41,29 +39,22 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
 				.replace("$1", Util.decFormat.format(radius))
 				.replace("$2", Util.decFormat.format(damageTick))
 				.replace("$3", Util.decFormat.format((double) period / 1000))
-				.replace("$4", Util.decFormat.format((double) duration / 1000))
-				.replace("$5", mana > 0 ? "Mana: " + mana : "")
-				.replace("$6", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$4", Util.decFormat.format((double) duration / 1000));
 	}
 
 	@Override
 	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
-
-		node.set(SkillSetting.RADIUS.node(), 5d);
-		node.set(SkillSetting.DURATION.node(), 6000);
-		node.set(SkillSetting.PERIOD.node(), 1000);
-		node.set(SkillSetting.DAMAGE_TICK.node(), 100d);
-		node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 1d);
-
-		return node;
+		ConfigurationSection config = super.getDefaultConfig();
+		config.set(SkillSetting.RADIUS.node(), 5d);
+		config.set(SkillSetting.DURATION.node(), 5000);
+		config.set(SkillSetting.PERIOD.node(), 1000);
+		config.set(SkillSetting.DAMAGE_TICK.node(), 100d);
+		config.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 1d);
+		return config;
 	}
 
 	@Override
@@ -78,15 +69,18 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 			long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
 			final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
-					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
+					+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1d, false)
+					* hero.getAttributeValue(AttributeType.INTELLECT);
 
 			applyAreaSphereEffect(hero, period, duration, radius, new SphereActions() {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, Particle.SPELL_MOB, Color.AQUA);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5f, 0.000001f);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 0.000001f);
+					Player player = hero.getPlayer();
+					Location location = player.getLocation();
+					World world = location.getWorld();
+					renderSphere(player.getEyeLocation(), radius, Particle.ENCHANTMENT_TABLE);
+					world.playSound(location, Sound.ENTITY_GENERIC_BURN, 0.5f, 0.533f);
 				}
 
 				@Override

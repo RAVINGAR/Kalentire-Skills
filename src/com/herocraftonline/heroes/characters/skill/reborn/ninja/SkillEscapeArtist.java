@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -47,7 +47,11 @@ public class SkillEscapeArtist extends ActiveSkill {
 
         boolean removed = false;
         for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING) || effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT)) {
+            if (effect.isType(EffectType.DISPELLABLE) &&
+                    (effect.isType(EffectType.SLOW) ||
+                    effect.isType(EffectType.VELOCITY_DECREASING) ||
+                    effect.isType(EffectType.WALK_SPEED_DECREASING) ||
+                    effect.isType(EffectType.ROOT))) {
                 removed = true;
                 hero.removeEffect(effect); 
             }

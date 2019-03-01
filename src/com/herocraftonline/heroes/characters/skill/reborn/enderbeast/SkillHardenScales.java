@@ -38,7 +38,7 @@ public class SkillHardenScales extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
-        double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent", 0.3, false);
+        double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent", 0.35, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageReduction = Util.decFormat.format(damageReduction * 100);
@@ -50,7 +50,7 @@ public class SkillHardenScales extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("damage-reduction-percent", 0.5);
-        config.set("movespeed-reduction-percent", 0.5);
+        config.set("movespeed-reduction-percent", 0.35);
         config.set(SkillSetting.DURATION.node(), 4000);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has hardened their scales!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s skin returns to normal.");
@@ -71,10 +71,10 @@ public class SkillHardenScales extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent", 0.5, false);
-        double moveSpeedReduction = SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.5, false);
+        double movementPercentDecrease = SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.5, false);
 
-        hero.addEffect(new HardenScalesEffect(this, player, duration, moveSpeedReduction, damageReduction));
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.8F, 1.0F);
+        hero.addEffect(new HardenScalesEffect(this, player, duration, Util.convertPercentageToPlayerMovementSpeedValue(movementPercentDecrease), damageReduction));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.8F, 1.0F);  //TODO: Better sound
 
         broadcastExecuteText(hero);
 
