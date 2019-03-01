@@ -18,13 +18,13 @@
 //public class SkillSiphonMana extends TargettedSkill {
 //
 //    public SkillSiphonMana(Heroes plugin) {
-//        super(plugin, "SiphonMana");
-//        setDescription("Siphon arcane power from your target, stealing $1 mana per second from them and returning it to you at a $2% rate.");
-//        setUsage("/skill siphonmana");
-//        setArgumentRange(0, 0);
-//        setIdentifiers("skill siphonmana");
-//        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
-//    }
+////        super(plugin, "SiphonMana");
+////        setDescription("Siphon arcane power from your target, stealing $1 mana per second from them and returning it to you at a $2% rate.");
+////        setUsage("/skill siphonmana");
+////        setArgumentRange(0, 0);
+////        setIdentifiers("skill siphonmana");
+////        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+////    }
 //
 //    @Override
 //    public String getDescription(Hero hero) {

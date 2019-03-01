@@ -39,7 +39,6 @@ import java.util.HashMap;
 
 public class SkillDecelerationField extends ActiveSkill {
 
-    private static final float DEFAULT_MINECRAFT_MOVEMENT_SPEED = 0.2f;
     private String applyText;
     private String expireText;
 

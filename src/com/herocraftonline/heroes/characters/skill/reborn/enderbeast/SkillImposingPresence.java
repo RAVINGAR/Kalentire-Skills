@@ -26,20 +26,20 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkillHeroesCall extends ActiveSkill {
+public class SkillImposingPresence extends ActiveSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillHeroesCall(Heroes plugin) {
-        super(plugin, "HeroesCall");
+    public SkillImposingPresence(Heroes plugin) {
+        super(plugin, "ImposingPresence");
         setDescription("You loose a dreadful howl, imposing your beastly presence in a $1 block radius. "
-                + "All those who hear the call will have their inner hero awoken. "
-                + "The Ender Beast MUST be slain. The calling lasts for $2 seconds. "
+                + "All those who hear the call will have their inner dragon slayer awoken. "
+                + "The beast MUST be slain. The effect lasts for $2 seconds. "
                 + "Not very effective if you are in your human form.");
         setArgumentRange(0, 0);
-        setUsage("/skill heroescall");
-        setIdentifiers("skill heroescall");
+        setUsage("/skill imposingpresence");
+        setIdentifiers("skill imposingpresence");
         setTypes(SkillType.DEBUFFING, SkillType.AREA_OF_EFFECT, SkillType.AGGRESSIVE);
     }
 

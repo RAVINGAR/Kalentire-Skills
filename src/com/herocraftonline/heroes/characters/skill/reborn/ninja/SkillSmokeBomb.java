@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -25,15 +25,13 @@ public class SkillSmokeBomb extends ActiveSkill {
     public SkillSmokeBomb(Heroes plugin) {
         super(plugin, "SmokeBomb");
         setDescription("Vanish in a smokebomb! You will not be visible to other players for the next $1 seconds. Taking damage or using abilities will cause you to reappear.");
-        setUsage("/skill smoke");
+        setUsage("/skill smokebomb");
         setArgumentRange(0, 0);
-        setIdentifiers("skill smokebomb");
+        setIdentifiers("skill smoke", "skill smokebomb");
         setNotes("Note: Interacting with anything removes the effect.");
         setNotes("Note: Taking damage removes the effect.");
-        setNotes("Note: Using skills removes the effect.");
+        setNotes("Note: Using un-stealthy skills while invisible will remove the effect.");
         setTypes(SkillType.ABILITY_PROPERTY_ILLUSION, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.STEALTHY);
-
-        //Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,12 +48,12 @@ public class SkillSneak extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        final ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 600000); // 10 minutes in milliseconds
-        node.set("damage-cancels", true);
-        node.set("attacking-cancels", true);
-        node.set("refresh-interval", 5000); // in milliseconds
-        return node;
+        final ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DURATION.node(), 600000);
+        config.set("damage-cancels", true);
+        config.set("attacking-cancels", true);
+        config.set("refresh-interval", 5000);
+        return config;
     }
 
     @Override
@@ -68,8 +68,7 @@ public class SkillSneak extends ActiveSkill {
         if (hero.hasEffect("Sneak")) {
             hero.removeEffect(hero.getEffect("Sneak"));
             return SkillResult.REMOVED_EFFECT;
-        }
-        else {
+        } else {
             final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
             final int period = SkillConfigManager.getUseSetting(hero, this, "refresh-interval", 5000, true);
 
@@ -128,27 +127,23 @@ public class SkillSneak extends ActiveSkill {
             // Try to force a right click event to work when the player is sneaking.
             if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK) || !(event.hasItem()))
                 return;
-
-            // If the clicked block is null, we don't need to check if the block is interactable.
             if (event.getClickedBlock() == null)
                 return;
 
             ItemStack activatedItem = event.getItem();
 
             // Check to see if the player is right clicking a block with a sword.
-            if (Util.swords.contains(activatedItem.getType().name())) {
+            if (!Util.swords.contains(activatedItem.getType().name()))
+                return;
 
-                // He is. Check to see if the block is interactable.
-                if (Util.interactableBlocks.contains(event.getClickedBlock().getType())) {
+            if (!Util.interactableBlocks.contains(event.getClickedBlock().getType()))
+                return;
 
-                    // The block is interactable. Check to see if he's actual sneaking.
-                    Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-                    if (hero.hasEffect("Sneak")) {
-                        // We need to cancel the "blocking" portion of the sword
-                        // So that he interacts with the block as normal.
-                        event.setUseItemInHand(Event.Result.DENY);
-                    }
-                }
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+            if (hero.hasEffect("Sneak")) {
+                // We need to cancel the "blocking" portion of the sword
+                // So that he interacts with the block as normal.
+                event.setUseItemInHand(Event.Result.DENY);
             }
         }
 
@@ -163,8 +158,7 @@ public class SkillSneak extends ActiveSkill {
                     // Messaging.send(hero.getPlayer(), "Player is leaving sneak. Setting vanilla to false.");	// DEBUG
                     sEffect.setVanillaSneaking(false);
                     event.setCancelled(true);
-                }
-                else {
+                } else {
                     // Messaging.send(hero.getPlayer(), "Player is entering sneak. Setting vanilla to true.");	// DEBUG
                     sEffect.setVanillaSneaking(true);
                 }

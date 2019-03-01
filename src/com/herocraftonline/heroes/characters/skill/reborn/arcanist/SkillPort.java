@@ -34,168 +34,152 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
     private Set<String> pendingPort = new HashSet<>();
     private Map<String, Info<String>> onJoinSkillSettings = new Hashtable<>();
 
-	public SkillPort(Heroes plugin) {
-		super(plugin, "Port");
-		setDescription("You teleport yourself and party members within $1 blocks to the set location!");
-		setUsage("/skill port <location>");
-		setArgumentRange(1, 1);
-		setIdentifiers("skill port");
+    public SkillPort(Heroes plugin) {
+        super(plugin, "Port");
+        setDescription("You teleport yourself and party members within $1 blocks to the set location!");
+        setUsage("/skill port <location>");
+        setArgumentRange(1, 1);
+        setIdentifiers("skill port");
         setTypes(SkillType.TELEPORTING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
         plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, Heroes.BUNGEE_CORD_CHANNEL, this);
-	}
+    }
 
-	@Override
-	public String getDescription(Hero hero) {
-		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
+    @Override
+    public String getDescription(Hero hero) {
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 
-		return getDescription().replace("$1", radius + "");
-	}
+        return getDescription().replace("$1", radius + "");
+    }
 
-	@Override
-	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 10);
+        config.set(SkillSetting.NO_COMBAT_USE.node(), true);
+        config.set(SkillSetting.DELAY.node(), 10000);
+        return config;
+    }
 
-        node.set(SkillSetting.RADIUS.node(), 10);
-        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
-        node.set(SkillSetting.DELAY.node(), 10000);
+    @Override
+    public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
 
-		return node;
-	}
-
-	@Override
-	public SkillResult use(Hero hero, String[] args) {
-		Player player = hero.getPlayer();
-
-		List<String> keys = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, null));
+        List<String> keys = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, null));
 
 
         if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
-            player.sendMessage("You must specify a location when using this skill! (use /skill port list)");
+            player.sendMessage("You must specify a location when using this skill!");
+            for (String n : keys) {
+                String retrievedNode = SkillConfigManager.getUseSetting(hero, this, n, (String) null);
+                if (retrievedNode != null) {
+                    player.sendMessage(n + " - " + retrievedNode);
+                }
+            }
+            return SkillResult.SKIP_POST_USAGE;
+        }
+
+        // Strip non-world keys
+        for (SkillSetting setting : SkillSetting.values()) {
+            keys.remove(setting.node());
+        }
+        keys.remove("cross-world");
+        keys.remove("icon-url");
+
+        String portInfo = SkillConfigManager.getUseSetting(hero, this, args[0].toLowerCase(), (String) null);
+        if (portInfo == null) {
+            player.sendMessage("No port location named " + args[0]);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-		// Strip non-world keys
-		for (SkillSetting setting : SkillSetting.values()) {
-			keys.remove(setting.node());
-		}
-		keys.remove("cross-world");
-        keys.remove("icon-url");
+        List<String> portArgs = getPortArgs(portInfo);
 
-		if (args[0].equalsIgnoreCase("list")) {
-			for (String n : keys) {
-				String retrievedNode = SkillConfigManager.getUseSetting(hero, this, n, (String) null);
-				if (retrievedNode != null) {
-					player.sendMessage(n + " - " + retrievedNode);
-				}
-			}
-			return SkillResult.SKIP_POST_USAGE;
-		}
+        int levelRequirement = Integer.parseInt(portArgs.get(5));
+        if (hero.getHeroLevel(this) < levelRequirement) {
+            return new SkillResult(ResultType.LOW_LEVEL, true, levelRequirement);
+        }
 
-		String portInfo = SkillConfigManager.getUseSetting(hero, this, args[0].toLowerCase(), (String) null);
-		if (portInfo != null) {
-		    List<String> portArgs = getPortArgs(portInfo);
+        boolean crossWorldEnabled = SkillConfigManager.getUseSetting(hero, this, "cross-world", false);
 
-			int levelRequirement = Integer.parseInt(portArgs.get(5));
-            if (hero.getHeroLevel(this) < levelRequirement) {
-                return new SkillResult(ResultType.LOW_LEVEL, true, levelRequirement);
-            }
-
-            boolean crossWorldEnabled = SkillConfigManager.getUseSetting(hero, this, "cross-world", false);
-
-            // handle bungee port
-            String server = portArgs.get(0);
-            if (StringUtils.isNotEmpty(server) && !server.equals(plugin.getServerName())) {
-                if (plugin.getServerNames().contains(server)) {
-                    if (crossWorldEnabled) {
-                        ByteArrayDataOutput portRequest = ByteStreams.newDataOutput();
-                        portRequest.writeUTF("Forward");
-                        portRequest.writeUTF(server);
-                        portRequest.writeUTF("PortRequest");
-
-                        ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
-                        DataOutputStream msgout = new DataOutputStream(msgbytes);
-                        try {
-                            msgout.writeUTF(portInfo);
-                            Collection<String> playerNames = getPortMemberNames(hero, new Location(hero.getPlayer().getWorld(), Double.parseDouble(portArgs.get(2)),
-                                    Double.parseDouble(portArgs.get(3)), Double.parseDouble(portArgs.get(4))));
-                            msgout.writeUTF(Joiner.on(",").join(playerNames));
-                        }
-                        catch (IOException e) {
-                            player.sendMessage("Port location is improperly set!");
-                            return SkillResult.SKIP_POST_USAGE;
-                        }
-
-                        portRequest.writeShort(msgbytes.toByteArray().length);
-                        portRequest.write(msgbytes.toByteArray());
-
-                        pendingPort.add(player.getName());
-                        player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, portRequest.toByteArray());
-
-                        // Run this delayed task to check if the port failed
-                        final String playerName = player.getName();
-                        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
-                            @Override
-                            public void run()
-                            {
-                                if (pendingPort.remove(playerName)) {
-                                    Player player = Bukkit.getPlayer(playerName);
-                                    if (player != null) {
-                                        player.sendMessage("Teleport fizzled.");
-                                    }
-                                }
-                            }
-                        }, 40);
-
-                        return SkillResult.NORMAL;
-                    }
-                    else {
-                        player.sendMessage("You can't port to a location in another world!");
-                        return SkillResult.INVALID_TARGET_NO_MSG;
-                    }
-                }
-                else {
-                    player.sendMessage("That teleport location no longer exists!");
-                    return SkillResult.INVALID_TARGET_NO_MSG;
-                }
-			}
-
+    // handle bungee port
+        String server = portArgs.get(0);
+        if (!StringUtils.isNotEmpty(server) || server.equals(plugin.getServerName())) {
             return doPort(hero, portInfo, true);
-		}
-		else {
-			player.sendMessage("No port location named " + args[0]);
-			return SkillResult.INVALID_TARGET_NO_MSG;
-		}
-	}
+        }
+        if (!plugin.getServerNames().contains(server)) {
+            player.sendMessage("That teleport location no longer exists!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
-	@Override
-	public boolean isWarmupRequired(String[] args)
-	{
-	    return args == null || args.length < 1 || !"list".equalsIgnoreCase(args[0]);
-	}
+        if (!crossWorldEnabled) {
+            player.sendMessage("You can't port to a location in another world!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
-	@Override
-	public boolean isCoolDownRequired(String[] args)
-	{
+        ByteArrayDataOutput portRequest = ByteStreams.newDataOutput();
+        portRequest.writeUTF("Forward");
+        portRequest.writeUTF(server);
+        portRequest.writeUTF("PortRequest");
+
+        ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
+        DataOutputStream msgout = new DataOutputStream(msgbytes);
+        try {
+            msgout.writeUTF(portInfo);
+            Collection<String> playerNames = getPortMemberNames(hero, new Location(hero.getPlayer().getWorld(), Double.parseDouble(portArgs.get(2)),
+                    Double.parseDouble(portArgs.get(3)), Double.parseDouble(portArgs.get(4))));
+            msgout.writeUTF(Joiner.on(",").join(playerNames));
+        } catch (IOException e) {
+            player.sendMessage("Port location is improperly set!");
+            return SkillResult.SKIP_POST_USAGE;
+        }
+
+        portRequest.writeShort(msgbytes.toByteArray().length);
+        portRequest.write(msgbytes.toByteArray());
+
+        pendingPort.add(player.getName());
+        player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, portRequest.toByteArray());
+
+        // Run this delayed task to check if the port failed
+        final String playerName = player.getName();
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                if (pendingPort.remove(playerName)) {
+                    Player player = Bukkit.getPlayer(playerName);
+                    if (player != null) {
+                        player.sendMessage("Teleport fizzled.");
+                    }
+                }
+            }
+        }, 40);
+
+        return SkillResult.NORMAL;
+    }
+
+    @Override
+    public boolean isWarmupRequired(String[] args) {
         return args == null || args.length < 1 || !"list".equalsIgnoreCase(args[0]);
-	}
+    }
 
-    private SkillResult doPort(Hero hero, String portInfo, boolean isDeparting)
-    {
+    @Override
+    public boolean isCoolDownRequired(String[] args) {
+        return args == null || args.length < 1 || !"list".equalsIgnoreCase(args[0]);
+    }
+
+    private SkillResult doPort(Hero hero, String portInfo, boolean isDeparting) {
         Player player = hero.getPlayer();
         List<String> portArgs = getPortArgs(portInfo);
         boolean crossWorldEnabled = SkillConfigManager.getUseSetting(hero, this, "cross-world", false);
-        
+
         World world = plugin.getServer().getWorld(portArgs.get(1));
         if (world == null) {
-        	player.sendMessage("That teleport location no longer exists!");
-        	return SkillResult.INVALID_TARGET_NO_MSG;
-        }
-        else if (!world.equals(player.getWorld()) && !crossWorldEnabled) {
-        	player.sendMessage("You can't port to a location in another world!");
-        	return SkillResult.INVALID_TARGET_NO_MSG;
+            player.sendMessage("That teleport location no longer exists!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        } else if (!world.equals(player.getWorld()) && !crossWorldEnabled) {
+            player.sendMessage("You can't port to a location in another world!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         if (isDeparting) {
@@ -218,8 +202,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         return SkillResult.NORMAL;
     }
 
-    private List<String> getPortArgs(String portInfo)
-    {
+    private List<String> getPortArgs(String portInfo) {
         List<String> portArgs = Lists.newArrayList(portInfo.split(":"));
         if (portArgs.size() < 6) {
             portArgs.add(0, plugin.getServerName());
@@ -227,8 +210,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         return portArgs;
     }
 
-    private Collection<String> getPortMemberNames(Hero hero, Location portLocation)
-    {
+    private Collection<String> getPortMemberNames(Hero hero, Location portLocation) {
         List<String> memberNames = new ArrayList<String>();
         for (Hero member : getPortMembers(hero, portLocation)) {
             memberNames.add(member.getPlayer().getName());
@@ -236,8 +218,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         return memberNames;
     }
 
-    private Collection<Hero> getPortMembers(Hero hero, Location portLocation)
-    {
+    private Collection<Hero> getPortMembers(Hero hero, Location portLocation) {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
         int radiusSquared = radius * radius;
         Location playerLocation = hero.getPlayer().getLocation();
@@ -255,8 +236,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
                     }
                 }
             }
-        }
-        else {
+        } else {
             // Player doesn't have a party, just add him.
             members.add(hero);
         }
@@ -265,40 +245,40 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message)
-    {
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!Heroes.BUNGEE_CORD_CHANNEL.equals(channel)) {
             return;
         }
-    
+
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
 
-        if ("PortRequest".equals(subChannel)) {
-            short len = in.readShort();
-            byte[] msgbytes = new byte[len];
-            in.readFully(msgbytes);
-            DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
-        
-            try {
-                String portInfo = msgin.readUTF();
-                String playerNames = msgin.readUTF();
-                for (String playerName : Splitter.on(",").split(playerNames)) {
-                    // cache the location for onPlayerJoin
-                    onJoinSkillSettings.put(playerName, new Info<String>(portInfo));
-    
-                    // send the player to this server
-                    ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
-                    connectOther.writeUTF("ConnectOther");
-                    connectOther.writeUTF(playerName);
-                    connectOther.writeUTF(plugin.getServerName());
-    
-                    player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, connectOther.toByteArray());
-                }
+        if (!"PortRequest".equals(subChannel)) {
+            return;
+        }
+
+        short len = in.readShort();
+        byte[] msgbytes = new byte[len];
+        in.readFully(msgbytes);
+        DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
+
+        try {
+            String portInfo = msgin.readUTF();
+            String playerNames = msgin.readUTF();
+            for (String playerName : Splitter.on(",").split(playerNames)) {
+                // cache the location for onPlayerJoin
+                onJoinSkillSettings.put(playerName, new Info<String>(portInfo));
+
+                // send the player to this server
+                ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
+                connectOther.writeUTF("ConnectOther");
+                connectOther.writeUTF(playerName);
+                connectOther.writeUTF(plugin.getServerName());
+
+                player.sendPluginMessage(plugin, Heroes.BUNGEE_CORD_CHANNEL, connectOther.toByteArray());
             }
-            catch (IOException e) {
-                Heroes.log(Level.SEVERE, "SkillPort: Could not parse PortRequest message from remote server");
-            }
+        } catch (IOException e) {
+            Heroes.log(Level.SEVERE, "SkillPort: Could not parse PortRequest message from remote server");
         }
     }
 
@@ -325,31 +305,26 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         }
     }
 
-    class Info<T>
-    {
+    class Info<T> {
         private final static long TIMEOUT = 10 * 1000; // 10s
-    
+
         private final long timeStamp;
         private final T info;
-    
-        public Info(final T info)
-        {
+
+        public Info(final T info) {
             timeStamp = System.currentTimeMillis();
             this.info = info;
         }
-    
-        public T getInfo()
-        {
+
+        public T getInfo() {
             return info;
         }
 
-        public boolean isExpired()
-        {
+        public boolean isExpired() {
             return System.currentTimeMillis() - timeStamp > TIMEOUT;
         }
 
-        public boolean isNotExpired()
-        {
+        public boolean isNotExpired() {
             return !isExpired();
         }
     }

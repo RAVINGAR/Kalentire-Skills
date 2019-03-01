@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -64,7 +64,9 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     public SkillGrapplingHook(Heroes plugin) {
         super(plugin, "GrapplingHook");
-        setDescription("Apply a grappling hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however.");
+        setDescription("Apply a grappling hook to $1 of your arrows. "
+                + "Once attached, your next $2 fired within the $3 seconds will grapple you to the targeted location! "
+                + "Hitting an enemy with the grappling hook will instead pull that person to you.");
         setUsage("/skill grapplinghook");
         setArgumentRange(0, 0);
         setIdentifiers("skill grapplinghook");
@@ -77,9 +79,9 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         String numShotsString = "";
         if (numShots > 1)
-            numShotsString = "next " + numShots + " shots";
+            numShotsString = numShots + " shots";
         else
-            numShotsString = "next shot";
+            numShotsString = "shot";
 
         //double velocityMultiplier = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5D, false));
         //velocityMultiplier = Util.formatDouble((1.0 - velocityMultiplier) * 100.0);
