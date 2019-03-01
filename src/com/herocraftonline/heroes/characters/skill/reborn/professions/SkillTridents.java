@@ -5,12 +5,12 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import net.minecraft.server.v1_13_R2.EntityThrownTrident;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import com.herocraftonline.heroes.Heroes;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Trident;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,14 +20,14 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRiptideEvent;
 
-public class SkillTridentPassive extends PassiveSkill {
+public class SkillTridents extends PassiveSkill {
 
-    public SkillTridentPassive(Heroes plugin) {
-        super(plugin, "TridentPassive");
+    public SkillTridents(Heroes plugin) {
+        super(plugin, "Tridents");
         setDescription("You are able wield Tridents!");
         setArgumentRange(0, 0);
         setEffectTypes(EffectType.BENEFICIAL);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillTridentPassive.SkillListener(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
     @Override
@@ -54,30 +54,19 @@ public class SkillTridentPassive extends PassiveSkill {
         // called when player right clicks trident, doesn't get called when they actually release the trident
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.TRIDENT || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                return;
-            }
-            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (!hero.canUseSkill(skill)) {
-                event.setCancelled(true);
-                event.setUseInteractedBlock(Event.Result.DENY);
-            }
-
-            Player player = event.getPlayer();
-            player.sendMessage("InteractEvent!");
+//            Player player = event.getPlayer();
+//            player.sendMessage("InteractEvent!");
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerLaunchProjectileEvent(ProjectileLaunchEvent event) {
+            if (!(event.getEntity() instanceof Trident))
+                return;
+
+            Trident projectile = (Trident) event.getEntity();
             Player player = (Player) event.getEntity().getShooter();
-            player.sendMessage("LaunchProjectile!");
+            player.sendMessage("Launched a Trident!");
 
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityThrowTrident(EntityThrownTrident event) {
-            Player player = (Player) event.getBukkitEntity();
-            player.sendMessage("EntityThrowTrident!");
         }
 
         // called when player launches trident with riptide enchantment
