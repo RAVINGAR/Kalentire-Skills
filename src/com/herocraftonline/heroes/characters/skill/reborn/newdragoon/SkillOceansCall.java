@@ -18,17 +18,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SkillOceansCall extends ActiveSkill {
 
-    String applyText;
-
-    List<Block> circleBlocks = new ArrayList<>();
-    List<Material> oldBlocks = new ArrayList<>();
+    private Set<Location> globallyManagedLocations = new HashSet<Location>();
 
     public SkillOceansCall(Heroes plugin) {
         super(plugin, "OceansCall");
@@ -36,6 +35,8 @@ public class SkillOceansCall extends ActiveSkill {
         setIdentifiers("skill oceanscall");
         setArgumentRange(0, 0);
         setDescription("Spawn an ocean...");
+
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 
     public String getDescription(Hero hero) {
@@ -49,15 +50,6 @@ public class SkillOceansCall extends ActiveSkill {
         cs.set(SkillSetting.DURATION.node(), 60000);
 
         return cs;
-    }
-
-    @Override
-    public void init() {
-        super.init();
-
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL
-                + "%hero% used OceansCall!")
-                .replace("%hero%", "$2");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -74,52 +66,20 @@ public class SkillOceansCall extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public void CreateSphere(int radius, Player player) {
-        List<Location> blockLocations = Util.getCircleLocationList(player.getLocation(), radius, radius, false, true, 0);
-        World world = player.getWorld();
-
-        for(Location loc: blockLocations) {
-            Block block = world.getBlockAt(loc);
-            oldBlocks.add(block.getType());
-
-            block.setType(Material.WATER);
-            circleBlocks.add(block);
-        }
-        blockLocations.clear();
-    }
-
-    public void RemoveSphere(Player player) {
-        World world = player.getWorld();
-
-        int i = 0;
-        for(Block b : circleBlocks) {
-            Block block = world.getBlockAt(b.getLocation());
-            block.setType(oldBlocks.get(i));
-            i++;
-        }
-
-        this.circleBlocks.clear();
-        this.oldBlocks.clear();
-    }
-
     public class OceanExpireEffect extends ExpirableEffect {
 
+        private Set<Block> changedBlocks = new HashSet<Block>();
         private final int radius;
-        private final Player applier;
-        private SkillBlockListener listener = new SkillBlockListener();
 
         OceanExpireEffect(Skill skill, Player applier, long duration, int radius) {
             super(skill, "OceanExpireEffect", applier, duration);
 
             this.radius = radius;
-            this.applier = applier;
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-
-            Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
 
             applier.sendMessage("Creating sphere!");
 
@@ -134,17 +94,66 @@ public class SkillOceansCall extends ActiveSkill {
             RemoveSphere(applier);
         }
 
-        public class SkillBlockListener implements Listener {
+        public void CreateSphere(int radius, Player player) {
+            List<Location> blockLocations = Util.getCircleLocationList(player.getLocation(), radius, radius, false, true, 0);
+            World world = player.getWorld();
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onBlockFromTo(BlockFromToEvent event) {
-                Block fromBlock = event.getBlock();
-                Block toBlock = event.getToBlock();
-                if (circleBlocks.contains(toBlock) || circleBlocks.contains(fromBlock))
-                    event.setCancelled(true);
+            for (Location loc : blockLocations) {
+                Block block = world.getBlockAt(loc);
+
+                if (block.isEmpty()) {
+                    block.setType(Material.WATER);
+                    changedBlocks.add(block);
+                }
+                globallyManagedLocations.add(block.getLocation());
+            }
+            blockLocations.clear();
+        }
+
+        public void RemoveSphere(Player player) {
+            World world = player.getWorld();
+
+            for (Block block : changedBlocks) {
+                if (block.getType() == Material.WATER) {
+                    block.setType(Material.AIR);
+                }
+                globallyManagedLocations.remove(block.getLocation());
+            }
+            changedBlocks.clear();
+        }
+    }
+
+    public class SkillBlockListener implements Listener {
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockPlace(BlockPlaceEvent event) {
+            Block block = event.getBlock();
+            if (block != null && globallyManagedLocations.contains(block.getLocation())) {
+                event.setCancelled(true);
             }
         }
 
-    }
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockBreak(BlockBreakEvent event) {
+            Block block = event.getBlock();
+            if (block != null && globallyManagedLocations.contains(block.getLocation())) {
+                event.setCancelled(true);
+            }
+        }
 
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+            Block block = event.getBlock();
+            if (globallyManagedLocations.contains(block.getLocation()))
+                event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockFromTo(BlockFromToEvent event) {
+            Block fromBlock = event.getBlock();
+            Block toBlock = event.getToBlock();
+            if (globallyManagedLocations.contains(toBlock.getLocation()) || globallyManagedLocations.contains(fromBlock.getLocation()))
+                event.setCancelled(true);
+        }
+    }
 }
