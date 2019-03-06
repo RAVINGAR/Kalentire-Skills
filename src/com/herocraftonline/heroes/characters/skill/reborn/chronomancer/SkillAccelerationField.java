@@ -39,7 +39,7 @@ public class SkillAccelerationField extends ActiveSkill {
 
     public SkillAccelerationField(Heroes plugin) {
         super(plugin, "AccelerationField");
-        setDescription("You tap into the web of time around you in a $1 radius, accelerating anyone and anything possible for $2 seconds.");
+        setDescription("You tap into the web of time around you in a $1 radius, accelerating anyone and anything possible for $2 second(s).");
         setUsage("/skill accelerationfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerationfield");

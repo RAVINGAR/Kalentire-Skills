@@ -44,8 +44,8 @@ public class SkillGroupTeleport extends ActiveSkill {
                 continue;
             }
             if (partyHero.isInCombat()) {
-                player.sendMessage(ChatComponents.GENERIC_SKILL + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
-                partyPlayer.sendMessage(ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but were are in combat!");
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "Cannot teleport " + partyPlayer.getName() + " - they are in combat!");
+                partyPlayer.sendMessage("    " + ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but were are in combat!");
                 continue;
             }
 

@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import com.herocraftonline.heroes.Heroes;
@@ -24,10 +23,10 @@ public class SkillSmokeBomb extends ActiveSkill {
 
     public SkillSmokeBomb(Heroes plugin) {
         super(plugin, "SmokeBomb");
-        setDescription("Vanish in a smokebomb! You will not be visible to other players for the next $1 seconds. Taking damage or using abilities will cause you to reappear.");
+        setDescription("Vanish in a smokebomb! You will not be visible to other players for the next $1 second(s). Taking damage or using abilities will cause you to reappear.");
         setUsage("/skill smokebomb");
         setArgumentRange(0, 0);
-        setIdentifiers("skill smoke", "skill smokebomb");
+        setIdentifiers("skill smokebomb", "skill smoke");
         setNotes("Note: Interacting with anything removes the effect.");
         setNotes("Note: Taking damage removes the effect.");
         setNotes("Note: Using un-stealthy skills while invisible will remove the effect.");
@@ -44,15 +43,13 @@ public class SkillSmokeBomb extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.DURATION.node(), 5500);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has reappeared!");
-        node.set(SkillSetting.REAGENT.node(), 289);
-        node.set(SkillSetting.REAGENT_COST.node(), 1);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DURATION.node(), 5500);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has reappeared!");
+        config.set(SkillSetting.REAGENT.node(), 289);
+        config.set(SkillSetting.REAGENT_COST.node(), 1);
+        return config;
     }
 
     @Override

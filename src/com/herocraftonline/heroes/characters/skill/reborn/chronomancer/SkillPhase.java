@@ -23,7 +23,7 @@ public class SkillPhase extends ActiveSkill {
 
     public SkillPhase(Heroes plugin) {
         super(plugin, "Phase");
-        setDescription("You phase into a different reality, causing you to flicker in and out of this world for $1 seconds. "
+        setDescription("You phase into a different reality, causing you to flicker in and out of this world for $1 second(s). "
                 + "Beings in different realities cannot interact with each other.");
         setUsage("/skill phase");
         setArgumentRange(0, 0);

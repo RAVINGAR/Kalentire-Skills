@@ -35,7 +35,7 @@ public class SkillTemporalWard extends TargettedSkill {
 
     public SkillTemporalWard(Heroes plugin) {
         super(plugin, "TemporalWard");
-        setDescription("Project your target from the burdens of time for $1 seconds.");
+        setDescription("Project your target from the burdens of time for $1 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill temporalward");
         setIdentifiers("skill temporalward");

@@ -29,7 +29,7 @@ public class SkillArcaneSpear extends SkillBaseBeam {
 
 	@Override
 	public String getDescription(Hero hero) {
-		double damage = SkillConfigManager.getUseSetting(hero, SkillArcaneSpear.this, SkillSetting.DAMAGE, 150d, false);
+		double damage = SkillConfigManager.getUseSetting(hero, SkillArcaneSpear.this, SkillSetting.DAMAGE, 50d, false);
 		return getDescription().replace("$1", damage + "");
 	}
 
@@ -38,7 +38,7 @@ public class SkillArcaneSpear extends SkillBaseBeam {
 		ConfigurationSection config = super.getDefaultConfig();
 		config.set(BEAM_MAX_LENGTH_NODE, 8);
 		config.set(BEAM_RADIUS_NODE, 1d);
-		config.set(SkillSetting.DAMAGE.node(), 75.0);
+		config.set(SkillSetting.DAMAGE.node(), 50.0);
 		return config;
 	}
 
@@ -56,8 +56,8 @@ public class SkillArcaneSpear extends SkillBaseBeam {
 			@Override
 			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
 				if (damageCheck(hero.getPlayer(), target)) {
-					double damage = SkillConfigManager.getUseSetting(hero, SkillArcaneSpear.this, SkillSetting.DAMAGE, 75.0, false);
-					damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, false);
+					double damage = SkillConfigManager.getUseSetting(hero, SkillArcaneSpear.this, SkillSetting.DAMAGE, 50.0, false);
+					damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, true);
 				}
 			}
 		});

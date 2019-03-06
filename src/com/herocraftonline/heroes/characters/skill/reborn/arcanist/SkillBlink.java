@@ -40,7 +40,7 @@ public class SkillBlink extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 9);
         node.set(SkillSetting.REAGENT.node(), 331);
         node.set(SkillSetting.REAGENT_COST.node(), 3);
 
@@ -56,7 +56,7 @@ public class SkillBlink extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
+        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 9, false);
 
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         switch (mat) {

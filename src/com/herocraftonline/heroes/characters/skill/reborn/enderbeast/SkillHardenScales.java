@@ -25,7 +25,7 @@ public class SkillHardenScales extends ActiveSkill {
 
     public SkillHardenScales(Heroes plugin) {
         super(plugin, "HardenScales");
-        setDescription("Harden your scales, increasing your weight and defense for the next $1 seconds. "
+        setDescription("Harden your scales, increasing your weight and defense for the next $1 second(s). "
                 + "While active, you reduce incoming physical damage by $2%.");
         setArgumentRange(0, 0);
         setUsage("/skill hardenscales");
@@ -113,8 +113,7 @@ public class SkillHardenScales extends ActiveSkill {
         HardenScalesEffect(Skill skill, Player applier, long duration, double speedReduction, double damageReduction) {
             super(skill, "HardenedScales", applier, duration, speedReduction, applyText, expireText);
 
-            types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.MAGIC);
+            types.add(EffectType.PHYSICAL);
             types.add(EffectType.BENEFICIAL);
 
             this.damageReduction = damageReduction;

@@ -33,12 +33,10 @@ public class SkillEscapeArtist extends ActiveSkill {
     
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("speed-multiplier", 0);
-        node.set(SkillSetting.DURATION.node(), 0);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("speed-multiplier", 0);
+        config.set(SkillSetting.DURATION.node(), 0);
+        return config;
     }
 
     @Override
@@ -47,8 +45,8 @@ public class SkillEscapeArtist extends ActiveSkill {
 
         boolean removed = false;
         for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.DISPELLABLE) &&
-                    (effect.isType(EffectType.SLOW) ||
+            if (effect.isType(EffectType.DISPELLABLE) && (
+                    effect.isType(EffectType.SLOW) ||
                     effect.isType(EffectType.VELOCITY_DECREASING) ||
                     effect.isType(EffectType.WALK_SPEED_DECREASING) ||
                     effect.isType(EffectType.ROOT))) {

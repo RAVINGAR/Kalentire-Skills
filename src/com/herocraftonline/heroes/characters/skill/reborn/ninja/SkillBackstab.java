@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
@@ -45,7 +46,7 @@ public class SkillBackstab extends ActiveSkill {
 
         double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", -1.0, false);
         double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.85, false);
-        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.85, false);
+        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.0, false);
         backstabDamageModifier += hero.getAttributeValue(AttributeType.DEXTERITY) * backstabDamageModifierIncrease;
 
         String backstabString = "deal";
@@ -54,7 +55,7 @@ public class SkillBackstab extends ActiveSkill {
 
         double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", -1.0, false);
         double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 0.85, false);
-        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.85, false);
+        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.0, false);
         ambushDamageModifier += hero.getAttributeValue(AttributeType.DEXTERITY) * ambushDamageModifierIncrease;
 
         String ambushString = "deal";
@@ -73,13 +74,13 @@ public class SkillBackstab extends ActiveSkill {
         node.set(SkillSetting.USE_TEXT.node(), "");
         node.set("backstab-text", "");
         node.set("weapons", Util.swords);
-        node.set("backstab-chance", (double) -1);
+        node.set("backstab-chance", -1.0);
         node.set("backstab-bonus", 0.05);
         node.set("backstab-bonus-increase-per-dexterity", 0.04125);
-        node.set("ambush-chance", (double) -1);
+        node.set("ambush-chance", -1.0);
         node.set("ambush-bonus", 0.10);
         node.set("ambush-bonus-increase-per-dexterity", 0.06375);
-        node.set("allow-vanilla-sneaking", false);
+        node.set("allow-vanilla-sneaking", true);
 
         return node;
     }
@@ -97,24 +98,24 @@ public class SkillBackstab extends ActiveSkill {
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
         double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.85, false);
-        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.85, false);
+        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.0, false);
         backstabDamageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * backstabDamageModifierIncrease);
 
         double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 0.85, false);
-        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.85, false);
+        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.0, false);
         ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * ambushDamageModifierIncrease);
 
         double backstabDamage = 0;
         double ambushDamage = 0;
         for (String weaponName : weapons) {
             Material weapon = Material.getMaterial(weaponName);
-            if (weapon == null){
+            if (weapon == null) {
                 Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " is not a valid weapon material name.");
                 continue;
             }
 
             int baseDamage = 0;
-            if (plugin.getDamageManager().getHighestItemDamage(hero, weapon) == null){
+            if (plugin.getDamageManager().getHighestItemDamage(hero, weapon) == null) {
                 Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " has no damage set.");
             } else {
                 baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
@@ -146,64 +147,56 @@ public class SkillBackstab extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
+            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;
-            }
 
             Hero hero = (Hero) event.getDamager();
+            if (!hero.canUseSkill(skill))
+                return;
+
             Player player = hero.getPlayer();
+            ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
-            if (hero.canUseSkill(skill)) {
-                ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()); // 1.9: Main hand does left click attacks, so main hand only
+            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name()))
+                return;
 
-                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
-                    return;
-                }
+            Entity target = event.getEntity();
+            double direction = target.getLocation().getDirection().dot(player.getLocation().getDirection());
+            //player.sendMessage("Backstab Math Testing - Direction: " + direction);    Less than 0, facing front. Use for HerosCall?
+            if (direction <= 0.0D)
+                return;
 
-                if (event.getEntity().getLocation().getDirection().dot(player.getLocation().getDirection()) <= 0.0D) {
-                    return;
-                }
+            double chance = -1;
+            double damageModifier = -1;
 
-                double chance = -1;
-                double damageModifier = -1;
+            // Sneak for ambush, nosneak for backstab.
+            boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
+            if (hero.hasEffectType(EffectType.SNEAK) || hero.hasEffectType(EffectType.INVIS) || hero.hasEffectType(EffectType.INVISIBILITY) || (allowVanillaSneaking && player.isSneaking())) {
+                chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1.0, false);
 
-                // Sneak for ambush, nosneak for backstab.
-                boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
-                if (hero.hasEffect("Sneak") || (allowVanillaSneaking && player.isSneaking())) {
-                    chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1.0, false);
+                damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 0.85, false);
+                double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus-increase-per-dexterity", 0.0, false);
+                damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
+            } else {
+                chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", -1.0, false);
 
-                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 0.85, false);
-                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus-increase-per-dexterity", 0.85, false);
-                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
-                }
-                else {
-                    chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", -1.0, false);
+                damageModifier = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.85, false);
+                double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus-increase-per-dexterity", 0.0, false);
+                damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
+            }
 
-                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.85, false);
-                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus-increase-per-dexterity", 0.85, false);
-                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
-                }
+            boolean backStab = false;
+            if (chance < 0) {        // If below 1, backstab every time.
+                backStab = true;
+            } else if (Util.nextRand() < chance) {
+                backStab = true;
+            }
 
-                boolean backstabbed = true;
-                if (chance < 0)		// If below 1, backstab every time.
-                    event.setDamage((event.getDamage() * damageModifier));
-                else {
-                    if (Util.nextRand() < chance)
-                        event.setDamage((event.getDamage() * damageModifier));
-                    else
-                        backstabbed = false;
-                }
-
-                if (backstabbed) {
-                    Entity target = event.getEntity();
-                    //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
-                    target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
-                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 0.6F);
-                    if (target instanceof Monster)
-                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
-                    else if (target instanceof Player)
-                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", target.getName()));
-                }
+            if (backStab) {
+                event.setDamage(event.getDamage() * damageModifier);
+                target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
+                target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 0.6F);
+                broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
             }
         }
     }

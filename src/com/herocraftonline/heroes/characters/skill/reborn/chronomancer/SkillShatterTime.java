@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -15,6 +16,7 @@ import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
@@ -59,7 +61,7 @@ public class SkillShatterTime extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
 
         if (ctTarget.hasEffect("TemporallyWarded")) {
-            player.sendMessage(ChatColor.WHITE + "Unable to shift " + target.getName() + "'s time. They are currently warded against time altering effects!");
+            player.sendMessage(ChatColor.WHITE + "Unable to shift " + CustomNameManager.getName(ctTarget) + "'s time. They are currently warded against time altering effects!");
             return SkillResult.INVALID_TARGET;
         }
 

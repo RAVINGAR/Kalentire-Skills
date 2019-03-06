@@ -42,7 +42,7 @@ public class SkillSummonEnderCrystal extends ActiveSkill {
     public SkillSummonEnderCrystal(Heroes plugin) {
         super(plugin, "SummonEnderCrystal");
         setDescription("Summon an EnderCrystal to help sustain your existence while transformed. "
-                + "The crystal will remain for $1 seconds. "
+                + "The crystal will remain for $1 second(s). "
                 + "Has no notable effects while in your human form.");
         setUsage("/skill summonendercrystal");
         setArgumentRange(0, 0);

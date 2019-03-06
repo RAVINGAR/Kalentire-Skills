@@ -142,10 +142,10 @@ public class SkillGrapplingHook extends ActiveSkill {
             }
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (hero.hasEffect("GrapplingHookBuffEffect")) {
+            if (hero.hasEffect("GrapplingHookBuff")) {
 
                 // Lower the number of shots left on the buff
-                GrapplingHookBuffEffect ghbEffect = (GrapplingHookBuffEffect) hero.getEffect("GrapplingHookBuffEffect");
+                GrapplingHookBuffEffect ghbEffect = (GrapplingHookBuffEffect) hero.getEffect("GrapplingHookBuff");
 
                 if (ghbEffect.getShotsLeft() < 1)
                     return;
@@ -293,11 +293,11 @@ public class SkillGrapplingHook extends ActiveSkill {
         player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
-            
+
             @Override
             public void execute()
             {
-                player.setVelocity(vec);                
+                player.setVelocity(vec);
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
     }
@@ -334,7 +334,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
-            
+
             @Override
             public void execute()
             {
@@ -350,7 +350,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         private boolean showExpireText = true;
 
         public GrapplingHookBuffEffect(Skill skill, Player applier, long duration, int numShots) {
-            super(skill, "GrapplingHookBuffEffect", applier, duration);
+            super(skill, "GrapplingHookBuff", applier, duration);
             this.shotsLeft = numShots;
 
             types.add(EffectType.IMBUE);

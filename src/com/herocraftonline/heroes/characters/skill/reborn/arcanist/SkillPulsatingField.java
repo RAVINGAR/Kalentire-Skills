@@ -23,7 +23,7 @@ public class SkillPulsatingField extends SkillBaseSphere {
 
 	public SkillPulsatingField(Heroes plugin) {
 		super(plugin, "PulsatingField");
-		setDescription("Call upon the forces of the arcane to damage enemies within $1 blocks for $2 every $3 seconds for $4 seconds.");
+		setDescription("Call upon the forces of the arcane to damage enemies within $1 blocks for $2 every $3 seconds for $4 second(s).");
 		setUsage("/skill pulsatingfield");
 		setIdentifiers("skill pulsatingfield");
 		setArgumentRange(0, 0);
@@ -80,7 +80,7 @@ public class SkillPulsatingField extends SkillBaseSphere {
 					Location location = player.getLocation();
 					World world = location.getWorld();
 					renderSphere(player.getEyeLocation(), radius, Particle.ENCHANTMENT_TABLE);
-					world.playSound(location, Sound.ENTITY_GENERIC_BURN, 0.5f, 0.533f);
+					world.playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.533f);
 				}
 
 				@Override

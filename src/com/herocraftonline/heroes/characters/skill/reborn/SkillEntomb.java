@@ -51,7 +51,7 @@ public class SkillEntomb extends TargettedSkill {
 
     public SkillEntomb(Heroes plugin) {
         super(plugin, "Entomb");
-        setDescription("Attempt to Entomb a player for $1 seconds.");
+        setDescription("Attempt to Entomb a player for $1 second(s).");
         setUsage("/skill entomb");
         setArgumentRange(0, 0);
         setIdentifiers("skill entomb");

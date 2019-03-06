@@ -44,7 +44,7 @@ public class SkillDecelerationField extends ActiveSkill {
 
     public SkillDecelerationField(Heroes plugin) {
         super(plugin, "DecelerationField");
-        setDescription("You tap into the web of time around you in a $1 radius, decelerating anyone and anything possible for $2 seconds.");
+        setDescription("You tap into the web of time around you in a $1 radius, decelerating anyone and anything possible for $2 second(s).");
         setUsage("/skill decelerationfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill decelerationfield");

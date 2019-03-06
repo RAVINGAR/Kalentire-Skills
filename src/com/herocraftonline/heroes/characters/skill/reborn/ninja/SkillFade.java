@@ -12,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,7 +53,7 @@ public class SkillFade extends ActiveSkill {
         node.set("fail-text", ChatComponents.GENERIC_SKILL + "It's too bright to fade");
         node.set("detection-range", 0);
         node.set("max-light-level", 8);
-        node.set("max-move-distance", 1.0);
+        node.set("max-move-distance", 1.5);
 
         return node;
     }
@@ -107,7 +106,7 @@ public class SkillFade extends ActiveSkill {
                     continue;
                 }
                 Location newLoc = hero.getPlayer().getLocation();
-                if (newLoc.getWorld() != oldLoc.getWorld() || newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1.0, false)) {
+                if (newLoc.getWorld() != oldLoc.getWorld() || newLoc.distance(oldLoc) > SkillConfigManager.getUseSetting(hero, skill, "max-move-distance", 1.5, false)) {
                     hero.removeEffect(hero.getEffect("Invisible"));
                     heroes.remove();
                     continue;
