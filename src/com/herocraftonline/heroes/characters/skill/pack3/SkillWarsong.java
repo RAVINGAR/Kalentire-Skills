@@ -33,7 +33,7 @@ public class SkillWarsong extends ActiveSkill {
 
     public SkillWarsong(Heroes plugin) {
         super(plugin, "Warsong");
-        setDescription("Increase the melee and bow damage of party members within $1 blocks by $2% for $3 seconds.");
+        setDescription("Increase the melee and bow damage of party members within $1 blocks by $2% for $3 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill warsong");
         setIdentifiers("skill warsong");

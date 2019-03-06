@@ -33,7 +33,7 @@ public class SkillBladegrasp extends ActiveSkill {
 
     public SkillBladegrasp(Heroes plugin) {
         super(plugin, "Bladegrasp");
-        setDescription("You have a $1% chance to block incoming damage for $2 seconds.");
+        setDescription("You have a $1% chance to block incoming damage for $2 second(s).");
         setUsage("/skill bladegrasp");
         setArgumentRange(0, 0);
         setIdentifiers("skill bladegrasp", "skill bgrasp");

@@ -102,7 +102,7 @@ public class SkillArrowstorm extends ActiveSkill {
             this.shootingPlayers.remove(hero);
             final long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
             hero.setCooldown("Arrowstorm", System.currentTimeMillis() + cooldown);
-            hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + hero.getPlayer().getName() + ChatColor.GRAY + " stopped shooting arrows prematurely.");
+            hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + hero.getPlayer().getName() + ChatColor.GRAY + " stopped shooting arrows prematurely.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         final Player player = hero.getPlayer();

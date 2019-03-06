@@ -29,7 +29,7 @@ public class SkillUndyingWill extends ActiveSkill {
 
     public SkillUndyingWill(Heroes plugin) {
         super(plugin, "UndyingWill");
-        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 seconds.");
+        setDescription("You are overcome with an undying will to survive. You cannot be killed for the next $1 second(s).");
         setUsage("/skill undyingwill");
         setArgumentRange(0, 0);
         setIdentifiers("skill undyingwill");

@@ -29,7 +29,7 @@ public class SkillSuperheat extends ActiveSkill {
 
     public SkillSuperheat(Heroes plugin) {
         super(plugin, "Superheat");
-        this.setDescription("Your pickaxe smelts ores as you mine them for $1 seconds.");
+        this.setDescription("Your pickaxe smelts ores as you mine them for $1 second(s).");
         this.setUsage("/skill superheat");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill superheat");

@@ -57,7 +57,7 @@ public class SkillVoidRune extends ActiveSkill {
     public SkillVoidRune(Heroes plugin) {
         // Heroes stuff
         super(plugin, "VoidRune");
-        setDescription("Imbue your blade with the Rune of Void. Upon Rune application, this Rune will damage the target for $1 damage and then silence them for $2 seconds.");
+        setDescription("Imbue your blade with the Rune of Void. Upon Rune application, this Rune will damage the target for $1 damage and then silence them for $2 second(s).");
         setUsage("/skill voidrune");
         setIdentifiers("skill voidrune");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING, SkillType.SILENCING, SkillType.DAMAGING, SkillType.SILENCEABLE);

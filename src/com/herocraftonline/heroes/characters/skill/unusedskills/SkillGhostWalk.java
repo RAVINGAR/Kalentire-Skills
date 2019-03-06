@@ -19,7 +19,7 @@ public class SkillGhostWalk extends ActiveSkill {
 
     public SkillGhostWalk(Heroes plugin) {
         super(plugin, "Ghost Walk");
-        setDescription("You walk as a ghost at night for $1 seconds.");
+        setDescription("You walk as a ghost at night for $1 second(s).");
         setUsage("/skill Ghost Walk");
         setArgumentRange(0, 0);
         setIdentifiers("skill Ghost Walk");

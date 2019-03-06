@@ -33,7 +33,7 @@ public class SkillCombustion extends ActiveSkill {
 
     public SkillCombustion(Heroes plugin) {
         super(plugin, "Combustion");
-        setDescription("You unleash a wave of destruction, hurling 18 fireballs in a ring around you. Targets hit will be dealt $1 damage and stunned for 1.5 seconds.");
+        setDescription("You unleash a wave of destruction, hurling 18 fireballs in a ring around you. Targets hit will be dealt $1 damage and stunned for 1.5 second(s).");
         setUsage("/skill combustion");
         setArgumentRange(0, 0);
         setIdentifiers("skill combustion");

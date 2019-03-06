@@ -37,7 +37,7 @@ public class SkillEarthtoss extends ActiveSkill {
 
     public SkillEarthtoss(Heroes plugin) {
         super(plugin, "Earthtoss");
-        setDescription("You grab the earth under you and toss it in all directions. Enemies hit will be dealt $1 damage and stunned for $2 seconds.");
+        setDescription("You grab the earth under you and toss it in all directions. Enemies hit will be dealt $1 damage and stunned for $2 second(s).");
         setUsage("/skill earthtoss");
         setArgumentRange(0, 0);
         setIdentifiers("skill earthtoss");

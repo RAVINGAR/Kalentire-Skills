@@ -23,7 +23,7 @@ public class SkillBloodUnion extends PassiveSkill {
 
     public SkillBloodUnion(Heroes plugin) {
         super(plugin, "BloodUnion");
-        setDescription("Passive: Your damaging abilities form a Blood Union with your opponents. Blood Union allows you to use certain abilities, and also increases the effectiveness of others. Maximum Blood Union is $1. BloodUnion resets upon switching from monsters to players, and will expire completely if not increased after $2 seconds.");
+        setDescription("Passive: Your damaging abilities form a Blood Union with your opponents. Blood Union allows you to use certain abilities, and also increases the effectiveness of others. Maximum Blood Union is $1. BloodUnion resets upon switching from monsters to players, and will expire completely if not increased after $2 second(s).");
 
         //ScoreboardManager manager = Bukkit.getScoreboardManager();
         //manager.getNewScoreboard();

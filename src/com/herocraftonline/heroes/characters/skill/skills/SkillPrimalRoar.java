@@ -27,7 +27,7 @@ public class SkillPrimalRoar extends ActiveSkill
 	public SkillPrimalRoar(Heroes plugin)
 	{
 		super(plugin, "PrimalRoar");
-		setDescription("Unleash a Primal Roar that deals $1 damage to all enemies within $2 blocks directly in front of you. The explosive force of the roar also stuns targets for $3 seconds.");
+		setDescription("Unleash a Primal Roar that deals $1 damage to all enemies within $2 blocks directly in front of you. The explosive force of the roar also stuns targets for $3 second(s).");
 		setUsage("/skill primalroar");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill primalroar", "skill roar");

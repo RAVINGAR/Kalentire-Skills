@@ -26,7 +26,7 @@ public class SkillShieldingStrike extends ActiveSkill {
     public SkillShieldingStrike(Heroes plugin) {
         super(plugin, "ShieldingStrike");
         setDescription("Slam your shield into the ground in front of you, dealing $1 damage to enemies in a cone up to $2 meters ahead of you. "
-                + "Applies an absorption shield with $3 health to all allies within $4 meters. The shield lasts $5 seconds.");
+                + "Applies an absorption shield with $3 health to all allies within $4 meters. The shield lasts $5 second(s).");
         setUsage("/sklll shieldingstrike");
         setIdentifiers("skill shieldingstrike");
         setArgumentRange(0, 0);

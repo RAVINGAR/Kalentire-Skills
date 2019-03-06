@@ -49,7 +49,7 @@ public class SkillLancersReach extends ActiveSkill {
 
     public SkillLancersReach(Heroes plugin) {
         super(plugin, "LancersReach");
-        setDescription("Utilize the full capabilities of your lance, allowing you to attack enemies up to $1 blocks away for $2 seconds.");
+        setDescription("Utilize the full capabilities of your lance, allowing you to attack enemies up to $1 blocks away for $2 second(s).");
         setUsage("/skill lancersreach");
         setArgumentRange(0, 0);
         setIdentifiers("skill lancersreach");

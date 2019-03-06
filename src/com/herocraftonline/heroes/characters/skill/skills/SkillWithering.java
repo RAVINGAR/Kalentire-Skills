@@ -29,7 +29,7 @@ public class SkillWithering extends TargettedSkill {
 
     public SkillWithering(Heroes plugin) {
         super(plugin, "Withering");
-        setDescription("Wither the soul of your target, causing confusion and nausea. Withered targets also take $1 damage over $2 seconds.");
+        setDescription("Wither the soul of your target, causing confusion and nausea. Withered targets also take $1 damage over $2 second(s).");
         setUsage("/skill withering");
         setArgumentRange(0, 0);
         setIdentifiers("skill withering");

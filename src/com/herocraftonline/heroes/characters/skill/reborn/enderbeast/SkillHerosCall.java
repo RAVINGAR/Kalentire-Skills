@@ -26,20 +26,22 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkillImposingPresence extends ActiveSkill {
+public class SkillHerosCall extends ActiveSkill {
 
+    private String buffEffectName = "HeroicCalling";
+    private String debuffEffectName = "HeroicPurpose";
     private String applyText;
     private String expireText;
 
-    public SkillImposingPresence(Heroes plugin) {
-        super(plugin, "ImposingPresence");
+    public SkillHerosCall(Heroes plugin) {
+        super(plugin, "HerosCall");
         setDescription("You loose a dreadful howl, imposing your beastly presence in a $1 block radius. "
                 + "All those who hear the call will have their inner dragon slayer awoken. "
-                + "The beast MUST be slain. The effect lasts for $2 seconds. "
+                + "The beast MUST be slain. The effect lasts for $2 second(s). "
                 + "Not very effective if you are in your human form.");
         setArgumentRange(0, 0);
-        setUsage("/skill imposingpresence");
-        setIdentifiers("skill imposingpresence");
+        setUsage("/skill heroscall");
+        setIdentifiers("skill heroscall");
         setTypes(SkillType.DEBUFFING, SkillType.AREA_OF_EFFECT, SkillType.AGGRESSIVE);
     }
 
@@ -95,7 +97,6 @@ public class SkillImposingPresence extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-
         List<CharacterTemplate> actualCallTargets = new ArrayList<CharacterTemplate>();
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
@@ -109,8 +110,8 @@ public class SkillImposingPresence extends ActiveSkill {
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             target.getWorld().spawnParticle(Particle.SQUID_INK, target.getLocation().add(0, 1, 0), 5, 1.0F, 0.5F, 1.0F, 0);
-            if (targetCT.hasEffect("HeroicPurpose"))
-                targetCT.removeEffect(hero.getEffect("HeroicPurpose"));
+            if (targetCT.hasEffect(debuffEffectName))
+                targetCT.removeEffect(hero.getEffect(debuffEffectName));
 
             HeroicPurposeEffect callEffect = new HeroicPurposeEffect(this, player, period, duration, maxEffectiveDistance, pullPowerReduction);
             targetCT.addEffect(callEffect);
@@ -130,7 +131,7 @@ public class SkillImposingPresence extends ActiveSkill {
         private final List<CharacterTemplate> callTargets;
 
         public HeroicCallingEffect(Skill skill, Player applier, long duration, List<CharacterTemplate> callTargets) {
-            super(skill, "HeroicCalling", applier, duration);
+            super(skill, buffEffectName, applier, duration);
             this.callTargets = callTargets;
         }
 
@@ -139,8 +140,8 @@ public class SkillImposingPresence extends ActiveSkill {
             for (CharacterTemplate target : callTargets) {
                 if (target == null) // Does this happen if one of the players logs out? I have no idea tbh.
                     continue;
-                if (target.hasEffect("HeroicPurpose"))
-                    target.removeEffect(target.getEffect("HeroicPurpose"));
+                if (target.hasEffect(debuffEffectName))
+                    target.removeEffect(target.getEffect(debuffEffectName));
             }
         }
     }
@@ -150,7 +151,7 @@ public class SkillImposingPresence extends ActiveSkill {
         private final double pullPowerReduction;
 
         HeroicPurposeEffect(Skill skill, Player applier, long period, long duration, int maxEffectiveDistance, double pullPowerReduction) {
-            super(skill, "HeroicPurpose", applier, period, duration, applyText, expireText);
+            super(skill, debuffEffectName, applier, period, duration, applyText, expireText);
             this.maxEffectiveDistance = maxEffectiveDistance;
 
             this.pullPowerReduction = pullPowerReduction;
@@ -166,7 +167,7 @@ public class SkillImposingPresence extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player victim = hero.getPlayer();
             Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect("HeroicCalling") || victim.getLocation().distance(applier.getLocation()) > maxEffectiveDistance)
+            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distance(applier.getLocation()) > maxEffectiveDistance)
                 hero.removeEffect(this);
 
             Location targetLocation = applier.getLocation();
@@ -178,7 +179,7 @@ public class SkillImposingPresence extends ActiveSkill {
         public void tickMonster(Monster monster) {
             LivingEntity victim = monster.getEntity();
             Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect("HeroicCalling") || victim.getLocation().distance(applier.getLocation()) > maxEffectiveDistance)
+            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distance(applier.getLocation()) > maxEffectiveDistance)
                 monster.removeEffect(this);
 
             Location targetLocation = applier.getLocation();

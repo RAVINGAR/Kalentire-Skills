@@ -36,7 +36,7 @@ public class SkillFlood extends ActiveSkill
 	public SkillFlood(Heroes plugin)
 	{
 		super(plugin, "Flood");
-		setDescription("You let loose a flood up to $1 blocks in front of you, striking all enemies in its path for $2 damage and washing them away. Targets hit are soaked for 5 seconds.");
+		setDescription("You let loose a flood up to $1 blocks in front of you, striking all enemies in its path for $2 damage and washing them away. Targets hit are soaked for 5 second(s).");
 		setUsage("/skill flood");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill flood");

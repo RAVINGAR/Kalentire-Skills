@@ -29,7 +29,7 @@ public class SkillDecay extends TargettedSkill {
 
     public SkillDecay(Heroes plugin) {
         super(plugin, "Decay");
-        setDescription("You disease your target dealing $1 disease damage over $2 seconds.");
+        setDescription("You disease your target dealing $1 disease damage over $2 second(s).");
         setUsage("/skill decay");
         setArgumentRange(0, 0);
         setIdentifiers("skill decay");

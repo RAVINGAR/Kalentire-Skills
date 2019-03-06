@@ -30,7 +30,7 @@ public class SkillCyclone extends ActiveSkill
 	public SkillCyclone(Heroes plugin) 
 	{
 		super(plugin, "Cyclone");
-		setDescription("You summon a powerful cyclone that deals $1 damage to all enemies within $2 blocks and slows them for $3 seconds.");
+		setDescription("You summon a powerful cyclone that deals $1 damage to all enemies within $2 blocks and slows them for $3 second(s).");
 		setUsage("/skill cyclone");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill cyclone");

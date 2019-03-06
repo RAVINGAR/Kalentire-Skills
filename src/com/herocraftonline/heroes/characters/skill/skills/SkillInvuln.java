@@ -30,7 +30,7 @@ public class SkillInvuln extends ActiveSkill {
 
 	public SkillInvuln(Heroes plugin) {
 		super(plugin, "Invuln");
-		setDescription("You become immune to all attacks, and may not attack for $1 seconds.");
+		setDescription("You become immune to all attacks, and may not attack for $1 second(s).");
 		setUsage("/skill invuln");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill invuln");

@@ -24,7 +24,7 @@ public class SkillWindwalk extends ActiveSkill {
 
     public SkillWindwalk(Heroes plugin) {
         super(plugin, "Windwalk");
-        setDescription("You run with the wind for $1 seconds.");
+        setDescription("You run with the wind for $1 second(s).");
         setUsage("/skill windwalk");
         setArgumentRange(0, 0);
         setIdentifiers("skill windwalk");

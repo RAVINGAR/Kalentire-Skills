@@ -59,7 +59,7 @@ public class SkillIceRune extends ActiveSkill {
     public SkillIceRune(Heroes plugin) {
         // Heroes stuff
         super(plugin, "IceRune");
-        setDescription("Imbue your blade with the Rune of Ice. Upon Rune application, this Rune will deal $1 magic damage and slow the target for $2 seconds.");
+        setDescription("Imbue your blade with the Rune of Ice. Upon Rune application, this Rune will deal $1 magic damage and slow the target for $2 second(s).");
         setUsage("/skill icerune");
         setIdentifiers("skill icerune");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.DEBUFFING, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING, SkillType.SILENCEABLE);

@@ -42,7 +42,7 @@ public class SkillShuriken extends PassiveSkill {
 
     public SkillShuriken(Heroes plugin) {
         super(plugin, "Shuriken");
-        setDescription("Right click with a flint in hand to throw $1 $2 damage and can be thrown every $3 seconds.");
+        setDescription("Right click with a flint in hand to throw $1 $2 damage and can be thrown every $3 second(s).");
         setArgumentRange(0, 0);
         setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.UNBINDABLE);
 
@@ -127,7 +127,7 @@ public class SkillShuriken extends PassiveSkill {
 
                 int staminaCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 100, false);
                 if (hero.getStamina() < staminaCost) {
-                    player.sendMessage(ChatComponents.GENERIC_SKILL + "You are too fatigued!");
+                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are too fatigued!");
                     return;
                 }
 

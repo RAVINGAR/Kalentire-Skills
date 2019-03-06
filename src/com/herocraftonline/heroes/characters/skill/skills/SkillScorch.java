@@ -25,7 +25,7 @@ public class SkillScorch extends TargettedSkill
 	public SkillScorch(Heroes plugin)
 	{
 		super(plugin, "Scorch");
-		setDescription("You deal $1 damage to your target and sear them with intense heat, slowing them for $2 seconds.");
+		setDescription("You deal $1 damage to your target and sear them with intense heat, slowing them for $2 second(s).");
 		setUsage("/skill scorch");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill scorch");

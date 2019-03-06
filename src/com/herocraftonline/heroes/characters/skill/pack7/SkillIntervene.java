@@ -36,7 +36,7 @@ public class SkillIntervene extends TargettedSkill {
 
     public SkillIntervene(Heroes plugin) {
         super(plugin, "Intervene");
-        setDescription("Mark your target for Intervention for the next $1 seconds. While active, if you are within $2 blocks of your target when they are attacked, you will intervene the attack, taking $3% of the damage for them.");
+        setDescription("Mark your target for Intervention for the next $1 second(s). While active, if you are within $2 blocks of your target when they are attacked, you will intervene the attack, taking $3% of the damage for them.");
         setUsage("/skill intervene <Target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill intervene");

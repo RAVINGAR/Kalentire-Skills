@@ -39,7 +39,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
 
     public SkillAssassinsBlade(Heroes plugin) {
         super(plugin, "AssassinsBlade");
-        this.setDescription("You poison your blade which will deal an extra $1 damage every $2 seconds.");
+        this.setDescription("You poison your blade which will deal an extra $1 damage every $2 second(s).");
         this.setUsage("/skill ablade");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill ablade", "skill assassinsblade");

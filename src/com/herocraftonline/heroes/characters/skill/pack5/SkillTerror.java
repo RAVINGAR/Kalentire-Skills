@@ -31,7 +31,7 @@ public class SkillTerror extends TargettedSkill {
 
     public SkillTerror(Heroes plugin) {
         super(plugin, "Terror");
-        setDescription("You terrify your target, impairing their movement and disabling them for $1 seconds.");
+        setDescription("You terrify your target, impairing their movement and disabling them for $1 second(s).");
         setUsage("/skill terror");
         setArgumentRange(0, 0);
         setIdentifiers("skill terror");

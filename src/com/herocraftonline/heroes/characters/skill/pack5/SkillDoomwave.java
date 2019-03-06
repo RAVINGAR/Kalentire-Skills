@@ -163,7 +163,7 @@ public class SkillDoomwave extends ActiveSkill {
                 }
 
                 // Ignite the player
-                targetLE.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 50, false));
+                targetLE.setFireTicks(targetLE.getFireTicks() + SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 50, false));
                 plugin.getCharacterManager().getCharacter(targetLE).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the player

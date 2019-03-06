@@ -19,7 +19,7 @@ public class SkillSilence extends TargettedSkill {
 
     public SkillSilence(Heroes plugin) {
         super(plugin, "Silence");
-        setDescription("Silences your target, making them unable to use skills for $1 seconds.");
+        setDescription("Silences your target, making them unable to use skills for $1 second(s).");
         setUsage("/skill silence");
         setArgumentRange(0, 0);
         setIdentifiers("skill silence");

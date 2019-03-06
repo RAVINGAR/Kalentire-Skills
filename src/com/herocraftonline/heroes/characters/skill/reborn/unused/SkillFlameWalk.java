@@ -1,8 +1,10 @@
-package com.herocraftonline.heroes.characters.skill.reborn.badpyromancer;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -98,6 +100,9 @@ public class SkillFlameWalk extends ActiveSkill {
             if (isValidTeleportBlock(currentBlock) && (isValidTeleportBlock(aboveBlock) || Util.transparentBlocks.contains(aboveBlock.getType())))
                 validFlameBlock = currentBlock;
         }
+        if (validFlameBlock == null) {
+
+        }
         return validFlameBlock;
     }
 
@@ -146,6 +151,10 @@ public class SkillFlameWalk extends ActiveSkill {
         if (teleportLocation.getBlock().getType() == Material.FIRE) {
             teleportLocation.getBlock().setType(Material.AIR);
         }
+
+        ExpirableEffect temporaryResistEffect = new ExpirableEffect(this, "FlameWalkTempFireResist", player, 1000);
+        temporaryResistEffect.types.add(EffectType.RESIST_FIRE);
+        hero.addEffect(temporaryResistEffect);
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;

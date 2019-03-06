@@ -27,7 +27,7 @@ public class SkillThickenWinds extends ActiveSkill
 	public SkillThickenWinds(Heroes plugin) 
 	{
 		super(plugin, "ThickenWinds");
-		setDescription("You thicken the winds, creating an updraft that allows your party (within 12 blocks) to float safely to the ground for $1 seconds.");
+		setDescription("You thicken the winds, creating an updraft that allows your party (within 12 blocks) to float safely to the ground for $1 second(s).");
 		setUsage("/skill thickenwinds");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill thickenwinds");

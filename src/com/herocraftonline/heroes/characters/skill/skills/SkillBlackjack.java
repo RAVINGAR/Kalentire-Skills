@@ -27,7 +27,7 @@ public class SkillBlackjack extends TargettedSkill {
 
     public SkillBlackjack(Heroes plugin) {
         super(plugin, "Blackjack");
-        setDescription("Strike your target with a Blackjack, dealing $1 damage and stunning the target for $2 seconds. If you are invisible or sneaking, you will instead deal $3 damage.");
+        setDescription("Strike your target with a Blackjack, dealing $1 damage and stunning the target for $2 second(s). If you are invisible or sneaking, you will instead deal $3 damage.");
         setUsage("/skill blackjack");
         setArgumentRange(0, 0);
         setIdentifiers("skill blackjack");

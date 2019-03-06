@@ -38,7 +38,7 @@ public class SkillQuiveringPalm extends TargettedSkill {
 
     public SkillQuiveringPalm(Heroes plugin) {
         super(plugin, "QuiveringPalm");
-        setDescription("Strike your target with a Quivering Palm dealing $1 damage and weakening the target, causing them to take $2% increased melee damage for $3 seconds. The strike also disorients the target, causing nausea.");
+        setDescription("Strike your target with a Quivering Palm dealing $1 damage and weakening the target, causing them to take $2% increased melee damage for $3 second(s). The strike also disorients the target, causing nausea.");
         setUsage("/skill quiveringpalm");
         setArgumentRange(0, 0);
         setIdentifiers("skill quiveringpalm");

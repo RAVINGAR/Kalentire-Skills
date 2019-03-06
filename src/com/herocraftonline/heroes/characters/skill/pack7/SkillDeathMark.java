@@ -27,7 +27,7 @@ public class SkillDeathMark extends ActiveSkill {
 
     public SkillDeathMark(Heroes plugin) {
         super(plugin, "DeathMark");
-        setDescription("Mark a target for death for $1 seconds. While marked, your compass will point directly to their location, and they will take $2% extra damage from your attacks.");
+        setDescription("Mark a target for death for $1 second(s). While marked, your compass will point directly to their location, and they will take $2% extra damage from your attacks.");
         setUsage("/skill deathmark <player>");
         setArgumentRange(1, 1);
         setIdentifiers("skill deathmark");

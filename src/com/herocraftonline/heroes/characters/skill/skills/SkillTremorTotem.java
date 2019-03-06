@@ -30,7 +30,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
 
 	public SkillTremorTotem(Heroes plugin) {
         super(plugin, "TremorTotem");
-        setDescription("Places a Tremor totem at the target location that deals $1 physical damage and knocks back targets in a $2 radius. Lasts for $3 seconds.");
+        setDescription("Places a Tremor totem at the target location that deals $1 physical damage and knocks back targets in a $2 radius. Lasts for $3 second(s).");
         setUsage("/skill tremortotem");
         setArgumentRange(0, 0);
         setIdentifiers("skill tremortotem");

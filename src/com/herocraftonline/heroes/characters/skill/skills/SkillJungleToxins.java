@@ -29,7 +29,7 @@ public class SkillJungleToxins extends ActiveSkill
 	public SkillJungleToxins(Heroes plugin)
 	{
 		super(plugin, "JungleToxins");
-		setDescription("You poison your weapons for $1 seconds. Any target hit is poisoned for the remaining duration of the effect, and will take $2 damage every 2 seconds.");
+		setDescription("You poison your weapons for $1 second(s). Any target hit is poisoned for the remaining duration of the effect, and will take $2 damage every 2 second(s).");
 		setArgumentRange(0, 0);
 		setUsage("/skill jungletoxins");
 		setIdentifiers("skill jungletoxins");

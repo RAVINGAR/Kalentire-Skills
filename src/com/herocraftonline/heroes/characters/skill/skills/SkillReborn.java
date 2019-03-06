@@ -28,7 +28,7 @@ public class SkillReborn extends ActiveSkill {
 
     public SkillReborn(Heroes plugin) {
         super(plugin, "Reborn");
-        setDescription("If you are about to die instead you regain $1% hp, can only trigger once every $2 seconds.");
+        setDescription("If you are about to die instead you regain $1% hp, can only trigger once every $2 second(s).");
         setTypes(SkillType.ABILITY_PROPERTY_LIGHT);
         Bukkit.getServer().getPluginManager().registerEvents(new RebornListener(this), plugin);
     }

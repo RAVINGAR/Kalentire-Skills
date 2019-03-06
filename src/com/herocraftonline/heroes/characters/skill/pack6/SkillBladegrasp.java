@@ -31,7 +31,7 @@ public class SkillBladegrasp extends ActiveSkill {
 
     public SkillBladegrasp(Heroes plugin) {
         super(plugin, "Bladegrasp");
-        setDescription("You parry the next physical attack within $1 seconds.");
+        setDescription("You parry the next physical attack within $1 second(s).");
         setUsage("/skill bladegrasp");
         setArgumentRange(0, 0);
         setIdentifiers("skill bladegrasp", "skill bgrasp");

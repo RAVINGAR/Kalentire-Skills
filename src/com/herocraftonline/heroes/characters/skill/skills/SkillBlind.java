@@ -25,7 +25,7 @@ public class SkillBlind extends TargettedSkill {
 
     public SkillBlind(Heroes plugin) {
         super(plugin, "Blind");
-        setDescription("You blind the target for $1 seconds.");
+        setDescription("You blind the target for $1 second(s).");
         setUsage("/skill blind");
         setArgumentRange(0, 0);
         setIdentifiers("skill blind");

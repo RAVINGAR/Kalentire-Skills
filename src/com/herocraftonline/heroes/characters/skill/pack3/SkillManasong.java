@@ -38,7 +38,7 @@ public class SkillManasong extends ActiveSkill {
 
     public SkillManasong(Heroes plugin) {
         super(plugin, "Manasong");
-        setDescription("Play a song of mana for $1 seconds. While active, you restore $2 mana for party members within $3 blocks every $4 seconds.");
+        setDescription("Play a song of mana for $1 second(s). While active, you restore $2 mana for party members within $3 blocks every $4 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill manasong");
         setIdentifiers("skill manasong");

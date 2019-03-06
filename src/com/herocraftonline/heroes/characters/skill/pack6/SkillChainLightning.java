@@ -31,7 +31,7 @@ public class SkillChainLightning extends TargettedSkill {
         setDescription("Strikes lightning at target location, dealing $1 damage. "
                 + "Every $2 seconds, the spell will attempt to bounce to another player within $3 blocks, "
                 + "dealing $4% damage on bounce. "
-                + "Every successive hit will decrease the caster's cooldown of this skill by $5 seconds.");
+                + "Every successive hit will decrease the caster's cooldown of this skill by $5 second(s).");
         setIdentifiers("skill chainlightning");
         this.setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHTNING, SkillType.AGGRESSIVE, SkillType.SILENCEABLE);
     }

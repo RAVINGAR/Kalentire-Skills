@@ -54,7 +54,7 @@ public class SkillEnderPearls extends PassiveSkill {
         String combatCooldownString = "";
         if (hasCombatCooldown) {
             String formattedCooldown = Util.decFormat.format(cdDuration / 1000.0);
-            combatCooldownString = "If you are in combat when throwing an ender pearl, you will not be able to throw another for " + formattedCooldown + " seconds.";
+            combatCooldownString = "If you are in combat when throwing an ender pearl, you will not be able to throw another for " + formattedCooldown + " second(s).";
         }
 
         return getDescription().replace("$1", combatCooldownString);
@@ -106,7 +106,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
                 if (hero.hasEffect("EnderPearlUsageCooldownEffect")) {
                     long remainingTime = ((ExpirableEffect) hero.getEffect("EnderPearlUsageCooldownEffect")).getRemainingTime();
-                    player.sendMessage(ChatComponents.GENERIC_SKILL + "You must wait " + ChatColor.WHITE + Util.decFormatCDs.format(remainingTime / 1000.0) + ChatColor.GRAY + "s before you can throw another Ender Pearl.");
+                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must wait " + ChatColor.WHITE + Util.decFormatCDs.format(remainingTime / 1000.0) + ChatColor.GRAY + "s before you can throw another Ender Pearl.");
                     event.setUseItemInHand(Result.DENY);
                     return;
                 }
@@ -173,7 +173,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
                 Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
                 if (hero.hasEffectType(EffectType.ROOT)) {
-                    event.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + "You cannot teleport while rooted!");
+                    event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot teleport while rooted!");
                     return;
                 }
 
@@ -219,7 +219,7 @@ public class SkillEnderPearls extends PassiveSkill {
                 }
 
                 if (!validLocation) {
-                    event.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + "A mysterious force prevents you from teleporting to your ender pearl location.");
+                    event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "A mysterious force prevents you from teleporting to your ender pearl location.");
                     return;
                 }
 

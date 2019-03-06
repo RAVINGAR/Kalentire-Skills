@@ -35,7 +35,7 @@ public class SkillShock extends ActiveSkill
 	public SkillShock(Heroes plugin) 
 	{
 		super(plugin, "Shock");
-		setDescription("Shocks all targets within $1 blocks, dealing $2 damage. Has a $3% chance to stun them for $4 seconds.");
+		setDescription("Shocks all targets within $1 blocks, dealing $2 damage. Has a $3% chance to stun them for $4 second(s).");
 		setUsage("/skill shock");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill shock");

@@ -17,7 +17,7 @@ public class SkillRoot extends TargettedSkill {
 
     public SkillRoot(Heroes plugin) {
         super(plugin, "Root");
-        this.setDescription("You root your target in place for $1 seconds.");
+        this.setDescription("You root your target in place for $1 second(s).");
         this.setUsage("/skill root");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill root");

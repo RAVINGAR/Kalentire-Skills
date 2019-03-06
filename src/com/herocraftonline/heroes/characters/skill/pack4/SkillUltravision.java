@@ -22,7 +22,7 @@ public class SkillUltravision extends ActiveSkill {
 
     public SkillUltravision(Heroes plugin) {
         super(plugin, "Ultravision");
-        setDescription("You gain enhanced vision at night for $1 seconds.");
+        setDescription("You gain enhanced vision at night for $1 second(s).");
         setUsage("/skill ultravision");
         setArgumentRange(0, 0);
         setIdentifiers("skill ultravision");

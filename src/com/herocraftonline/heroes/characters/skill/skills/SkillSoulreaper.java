@@ -88,7 +88,7 @@ public class SkillSoulreaper extends ActiveSkill {
         final Location sickle = player.getEyeLocation().clone();
 
         final Vector directionVector = sickle.getDirection().normalize().divide(new Vector(20, 20, 20));
-        player.sendMessage(ChatComponents.GENERIC_SKILL + directionVector.getX() + " / " + directionVector.getY() + " / " + directionVector.getZ());
+        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + directionVector.getX() + " / " + directionVector.getY() + " / " + directionVector.getZ());
 
         new BukkitRunnable() {
             double distTraveled = 0.0D;
@@ -112,7 +112,7 @@ public class SkillSoulreaper extends ActiveSkill {
                                     .isSolid()) maxRange = true;
                 } else {
                     ticks++;
-                    player.sendMessage(ChatComponents.GENERIC_SKILL + ticks);
+                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ticks);
                     if (ticks >= tickDuration) cancel();
                 }
 

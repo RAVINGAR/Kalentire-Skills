@@ -32,7 +32,7 @@ public class SkillMassPiggify extends ActiveSkill {
 
     public SkillMassPiggify(Heroes plugin) {
         super(plugin, "MassPiggify");
-        setDescription("You force targets within $1 blocks to ride a pig for $2 seconds.");
+        setDescription("You force targets within $1 blocks to ride a pig for $2 second(s).");
         setUsage("/skill masspiggify");
         setArgumentRange(0, 0);
         setIdentifiers("skill masspiggify");

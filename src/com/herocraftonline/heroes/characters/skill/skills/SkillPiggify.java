@@ -34,7 +34,7 @@ public class SkillPiggify extends TargettedSkill {
 
     public SkillPiggify(Heroes plugin) {
         super(plugin, "Piggify");
-        setDescription("You force your target to ride a pig for $1 seconds.");
+        setDescription("You force your target to ride a pig for $1 second(s).");
         setUsage("/skill piggify");
         setArgumentRange(0, 0);
         setIdentifiers("skill piggify");

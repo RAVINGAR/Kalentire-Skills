@@ -36,7 +36,7 @@ public class SkillProvoke extends TargettedSkill {
 
     public SkillProvoke(Heroes plugin) {
         super(plugin, "Provoke");
-        setDescription("Provoke your target for $1 seconds. Provoked targets gain $2% increased damage against you, but also take an additional $3% damage from all incoming physical attacks.");
+        setDescription("Provoke your target for $1 second(s). Provoked targets gain $2% increased damage against you, but also take an additional $3% damage from all incoming physical attacks.");
         setUsage("/skill provoke");
         setArgumentRange(0, 0);
         setIdentifiers("skill provoke");

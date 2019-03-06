@@ -25,7 +25,7 @@ public class SkillCrumble extends TargettedSkill
 	public SkillCrumble(Heroes plugin) 
 	{
 		super(plugin, "Crumble");
-		setDescription("You encumber your enemy with sharp stones for six seconds. For every two blocks they move, they are stunned for 0.5 seconds.");
+		setDescription("You encumber your enemy with sharp stones for six second(s). For every two blocks they move, they are stunned for 0.5 second(s).");
 		setUsage("/skill crumble");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill crumble");
@@ -50,7 +50,7 @@ public class SkillCrumble extends TargettedSkill
 	public String getDescription(Hero arg0) 
 	{
 		// What?
-		return "You encumber your enemy with sharp stones for six seconds. For every two blocks they move, they are stunned for 0.5 seconds.";
+		return "You encumber your enemy with sharp stones for six second(s). For every two blocks they move, they are stunned for 0.5 second(s).";
 	}
 
 	public void init() 

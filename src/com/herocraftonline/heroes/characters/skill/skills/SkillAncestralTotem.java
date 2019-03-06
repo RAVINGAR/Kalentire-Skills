@@ -36,7 +36,7 @@ public class SkillAncestralTotem extends SkillBaseTotem implements Listener {
         setArgumentRange(0,0);
         setUsage("/skill ancestraltotem");
         setIdentifiers("skill ancestraltotem");
-        setDescription("Places an ancestral totem at target location that educates the intelligence of party members in a $1 radius, increasing it by $2. Lasts for $3 seconds.");
+        setDescription("Places an ancestral totem at target location that educates the intelligence of party members in a $1 radius, increasing it by $2. Lasts for $3 second(s).");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT);
         material = Material.BOOKSHELF;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);

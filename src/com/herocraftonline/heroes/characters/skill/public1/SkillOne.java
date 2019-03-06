@@ -17,7 +17,7 @@ public class SkillOne extends ActiveSkill {
 
     public SkillOne(Heroes plugin) {
         super(plugin, "One");
-        this.setDescription("You gain a burst of speed for $1 seconds.");
+        this.setDescription("You gain a burst of speed for $1 second(s).");
         this.setUsage("/skill one");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill one");

@@ -24,7 +24,7 @@ public class SkillSuckerPunch extends TargettedSkill {
 
     public SkillSuckerPunch(Heroes plugin) {
         super(plugin, "SuckerPunch");
-        setDescription("You sucker punch your target, dealing $1 physical damage and stunning them for $2 seconds. Damage and Stun duration increases with Strength.");
+        setDescription("You sucker punch your target, dealing $1 physical damage and stunning them for $2 second(s). Damage and Stun duration increases with Strength.");
         setUsage("/skill suckerpunch");
         setArgumentRange(0, 0);
         setIdentifiers("skill suckerpunch");

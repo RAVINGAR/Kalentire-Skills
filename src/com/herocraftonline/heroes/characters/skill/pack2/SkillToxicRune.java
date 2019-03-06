@@ -61,7 +61,7 @@ public class SkillToxicRune extends ActiveSkill {
     public SkillToxicRune(Heroes plugin) {
         // Heroes stuff
         super(plugin, "ToxicRune");
-        setDescription("Imbue your blade with the Rune of Toxicity. Upon Rune application, this Rune will poison the target causing $1 damage over $2 seconds.");
+        setDescription("Imbue your blade with the Rune of Toxicity. Upon Rune application, this Rune will poison the target causing $1 damage over $2 second(s).");
         setUsage("/skill toxicrune");
         setIdentifiers("skill toxicrune");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DEBUFFING, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.SILENCEABLE);

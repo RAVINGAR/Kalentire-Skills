@@ -35,7 +35,7 @@ public class SkillDevouringDarkness extends ActiveSkill {
 
     public SkillDevouringDarkness(Heroes plugin) {
         super(plugin, "DevouringDarkness");
-        setDescription("You resonate darkness, slowing enemies within $1 blocks for $2 seconds. Your devouring darkness pulses every $3 seconds for the next $4 seconds.");
+        setDescription("You resonate darkness, slowing enemies within $1 blocks for $2 second(s). Your devouring darkness pulses every $3 seconds for the next $4 second(s).");
         setUsage("/skill devouringdarkness");
         setArgumentRange(0, 0);
         setIdentifiers("skill devouringdarkness");

@@ -30,7 +30,7 @@ public class SkillImpale extends TargettedSkill {
 
     public SkillImpale(Heroes plugin) {
         super(plugin, "Impale");
-        setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 seconds.");
+        setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 second(s).");
         setUsage("/skill impale");
         setArgumentRange(0, 0);
         setIdentifiers("skill impale");

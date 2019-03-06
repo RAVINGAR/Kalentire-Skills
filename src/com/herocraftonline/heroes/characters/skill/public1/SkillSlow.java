@@ -21,7 +21,7 @@ public class SkillSlow extends TargettedSkill {
 
     public SkillSlow(Heroes plugin) {
         super(plugin, "Slow");
-        this.setDescription("You slow the target's movement & attack speed for $1 seconds.");
+        this.setDescription("You slow the target's movement & attack speed for $1 second(s).");
         this.setUsage("/skill slow");
         this.setArgumentRange(0, 1);
         this.setIdentifiers("skill slow");

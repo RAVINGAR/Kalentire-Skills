@@ -27,7 +27,7 @@ public class SkillGreatChasm extends SkillBaseBlockWave {
 		super(plugin, "GreatChasm");
 		setDescription("A chasm of chaos erupts and throws blocks around hitting all targets in a $1 degree arc in front of you, with a radius of $2, height of $3, and depth of $4, " +
 				"Expanding at a rate of $5 block(s) per second. Targets can be hit hit a maximum of $6 time(s) each hit dealing $7 damage, knocking them up " +
-				"and slowing them for $8 seconds.");
+				"and slowing them for $8 second(s).");
 		setUsage("/skill " + getName().toLowerCase());
 		setIdentifiers("skill " + getName().toLowerCase());
 		setArgumentRange(0, 0);

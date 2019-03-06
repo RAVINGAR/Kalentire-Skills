@@ -30,7 +30,7 @@ public class SkillManaShield extends ActiveSkill {
 
     public SkillManaShield(Heroes plugin) {
         super(plugin, "ManaShield");
-        setDescription("Uses your mana as a shield for $1 seconds.");
+        setDescription("Uses your mana as a shield for $1 second(s).");
         setUsage("/skill manashield");
         setArgumentRange(0, 0);
         setIdentifiers("skill manashield", "skill mshield");

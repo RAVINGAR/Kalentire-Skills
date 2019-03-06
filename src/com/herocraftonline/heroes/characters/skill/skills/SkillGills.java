@@ -22,7 +22,7 @@ public class SkillGills extends ActiveSkill {
 
     public SkillGills(Heroes plugin) {
         super(plugin, "Gills");
-        setDescription("You are able to breath water for $1 seconds.");
+        setDescription("You are able to breath water for $1 second(s).");
         setUsage("/skill gills");
         setArgumentRange(0, 0);
         setIdentifiers("skill gills");

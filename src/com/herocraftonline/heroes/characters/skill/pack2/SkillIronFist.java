@@ -33,7 +33,7 @@ public class SkillIronFist extends ActiveSkill {
 
     public SkillIronFist(Heroes plugin) {
         super(plugin, "IronFist");
-        setDescription("Strike the ground with an iron fist, striking all targets within $1 blocks, dealing $2 damage and knocking them away from you. Targets hit will also be slowed for $3 seconds.");
+        setDescription("Strike the ground with an iron fist, striking all targets within $1 blocks, dealing $2 damage and knocking them away from you. Targets hit will also be slowed for $3 second(s).");
         setUsage("/skill ironfist");
         setArgumentRange(0, 0);
         setIdentifiers("skill ironfist");

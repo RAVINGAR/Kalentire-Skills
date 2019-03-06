@@ -29,7 +29,7 @@ public class SkillFlicker extends ActiveSkill {
 
     public SkillFlicker(Heroes plugin) {
         super(plugin, "Flicker");
-        setDescription("You appear to flicker in and out of sight for $1 seconds.");
+        setDescription("You appear to flicker in and out of sight for $1 second(s).");
         setUsage("/skill flicker");
         setArgumentRange(0, 0);
         setIdentifiers("skill flicker");

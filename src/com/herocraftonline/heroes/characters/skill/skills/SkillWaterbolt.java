@@ -32,7 +32,7 @@ public class SkillWaterbolt extends ActiveSkill
 	public SkillWaterbolt(Heroes plugin)
 	{
 		super(plugin, "Waterbolt");
-		setDescription("You summon a ball of water and launch it, dealing $1 damage to your target and soaking them for 3 seconds. You regain half of this skill's mana cost on a successful hit.");
+		setDescription("You summon a ball of water and launch it, dealing $1 damage to your target and soaking them for 3 second(s). You regain half of this skill's mana cost on a successful hit.");
 		setUsage("/skill waterbolt");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill waterbolt");

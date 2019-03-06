@@ -33,7 +33,7 @@ public class SkillChaoticIntellect extends ActiveSkill {
 
     public SkillChaoticIntellect(Heroes plugin) {
         super(plugin, "ChaoticIntellect");
-        setDescription("Imbue yourself with Chaotic Intellect, granting you $1 Intellect, but draining your Constitution by $2 for $3 seconds.");
+        setDescription("Imbue yourself with Chaotic Intellect, granting you $1 Intellect, but draining your Constitution by $2 for $3 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill chaoticintellect");
         setIdentifiers("skill chaoticintellect");

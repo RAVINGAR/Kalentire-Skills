@@ -109,7 +109,7 @@ public class SkillFireArrow extends ActiveSkill {
             //Get the duration of the fire damage
             final int fireTicks = SkillConfigManager.getUseSetting(hero, this.skill, "fire-ticks", 100, false);
             //Light the target on fire
-            entity.setFireTicks(fireTicks);
+            entity.setFireTicks(entity.getFireTicks() + fireTicks);
             //Add our combust effect so we can track fire-tick damage
             SkillFireArrow.this.plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(this.skill, player));
         }

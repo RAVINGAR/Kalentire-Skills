@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -30,7 +30,7 @@ public class SkillMagmaOrb extends ActiveSkill {
 
     public SkillMagmaOrb(Heroes plugin) {
         super(plugin, "MagmaOrb");
-        setDescription("Conjure up a projectile of pure fire. The orb seeks out nearby entities and lasts for $1 seconds. "
+        setDescription("Conjure up a projectile of pure fire. The orb seeks out nearby entities and lasts for $1 second(s). "
                 + "Targets hit by the magmaOrb are launched upwards and dealt $2 damage");
         setUsage("/skill magmaorb");
         setArgumentRange(0, 0);
@@ -150,12 +150,13 @@ public class SkillMagmaOrb extends ActiveSkill {
             for (Entity ent : nearbyEnts) {
                 if (!(ent instanceof LivingEntity))
                     continue;
+
                 LivingEntity target = (LivingEntity) ent;
                 if (!damageCheck(player, target))
                     continue;
 
                 addSpellTarget(target, hero);
-                damageEntity(target, player, this.damage, EntityDamageEvent.DamageCause.FIRE);
+                damageEntity(target, player, this.damage, EntityDamageEvent.DamageCause.MAGIC);
             }
         }
     }
@@ -189,7 +190,7 @@ public class SkillMagmaOrb extends ActiveSkill {
             this.primaryYOffset = 0.0D;
             this.primaryParticleCount = 25;
 
-            this.secondaryParticle = Particle.DRIP_LAVA;
+            this.secondaryParticle = Particle.SPELL_MOB;
             this.secondaryColor = FIRE_ORANGE;
             this.secondaryRadius = secondaryRadiusMultiplier(radius);
             this.secondaryRadiusDecrease = secondaryRadiusMultiplier(decreasePerTick) / this.period;

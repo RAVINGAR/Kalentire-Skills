@@ -42,7 +42,7 @@ public class SkillBlizzard extends ActiveSkill {
 
     public SkillBlizzard(Heroes plugin) {
         super(plugin, "Blizzard");
-        setDescription("Summon a powerful Blizzard at your target location. The blizzard rains down several ice bolts at the target location, each dealing $1 damage and slowing any targets hit for $2 seconds.");
+        setDescription("Summon a powerful Blizzard at your target location. The blizzard rains down several ice bolts at the target location, each dealing $1 damage and slowing any targets hit for $2 second(s).");
         setUsage("/skill blizzard");
         setArgumentRange(0, 0);
         setIdentifiers("skill blizzard");

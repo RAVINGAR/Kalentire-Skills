@@ -29,7 +29,7 @@ public class SkillExcavate extends ActiveSkill {
 
     public SkillExcavate(Heroes plugin) {
         super(plugin, "Excavate");
-        this.setDescription("You gain a increased digging speed, and instant breaking of dirt for $1 seconds.");
+        this.setDescription("You gain a increased digging speed, and instant breaking of dirt for $1 second(s).");
         this.setUsage("/skill excavate");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill excavate");

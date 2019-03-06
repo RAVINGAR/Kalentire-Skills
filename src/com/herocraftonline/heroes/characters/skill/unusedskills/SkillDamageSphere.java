@@ -25,7 +25,7 @@ public class SkillDamageSphere extends SkillBaseSphere {
 	public SkillDamageSphere(Heroes plugin) {
 		super(plugin, "DamageSphere");
 		setDescription("Creates a sphere of flame around the caster that lasts $2 seconds, "
-				+ "damaging enemies within a $1 block radius for %4 every $3 seconds.");
+				+ "damaging enemies within a $1 block radius for %4 every $3 second(s).");
 		setUsage("/skill damagesphere");
 		setIdentifiers("skill damagesphere");
 		setArgumentRange(0, 0);

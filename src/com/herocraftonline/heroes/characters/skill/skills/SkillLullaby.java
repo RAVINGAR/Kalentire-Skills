@@ -37,7 +37,7 @@ public class SkillLullaby extends ActiveSkill
 	public SkillLullaby(Heroes plugin) 
 	{
 		super(plugin, "Lullaby");
-		setDescription("Sing a lullaby that puts all enemies within $1 blocks to sleep for $2 seconds. During this time, they cannot move, and are blinded and nauseated. The effect is removed on damage.");
+		setDescription("Sing a lullaby that puts all enemies within $1 blocks to sleep for $2 second(s). During this time, they cannot move, and are blinded and nauseated. The effect is removed on damage.");
 		setUsage("/skill lullaby");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill lullaby");

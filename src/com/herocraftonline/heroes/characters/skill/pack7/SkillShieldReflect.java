@@ -43,7 +43,7 @@ public class SkillShieldReflect extends ActiveSkill {
 
     public SkillShieldReflect(Heroes plugin) {
         super(plugin, "ShieldReflect");
-        setDescription("Reflect incoming damage back at your attackers for $1 seconds. Reflected damage is returned at a $2% rate.");
+        setDescription("Reflect incoming damage back at your attackers for $1 second(s). Reflected damage is returned at a $2% rate.");
         setUsage("/skill shieldreflect");
         setArgumentRange(0, 0);
         setIdentifiers("skill shieldreflect");

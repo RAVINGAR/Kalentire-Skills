@@ -29,7 +29,7 @@ public class SkillAtrophy extends TargettedSkill {
 
     public SkillAtrophy(Heroes plugin) {
         super(plugin, "Atrophy");
-        setDescription("You begin to decay your targets muscles dealing $1 disease damage over $2 seconds.");
+        setDescription("You begin to decay your targets muscles dealing $1 disease damage over $2 second(s).");
         setUsage("/skill atrophy");
         setArgumentRange(0, 0);
         setIdentifiers("skill atrophy");

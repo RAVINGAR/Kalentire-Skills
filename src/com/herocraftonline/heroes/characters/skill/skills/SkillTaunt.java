@@ -33,7 +33,7 @@ public class SkillTaunt extends ActiveSkill {
 
     public SkillTaunt(Heroes plugin) {
         super(plugin, "Taunt");
-        setDescription("Taunt your enemies into attacking you within a $1 block radius. Taunted enemies deal $2% less damage to all targets other than you for $3 seconds.");
+        setDescription("Taunt your enemies into attacking you within a $1 block radius. Taunted enemies deal $2% less damage to all targets other than you for $3 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill taunt");
         setIdentifiers("skill taunt");

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.professions;
+package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
 import java.util.logging.Level;
 

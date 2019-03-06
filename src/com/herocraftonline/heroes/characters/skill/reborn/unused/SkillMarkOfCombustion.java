@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.badpyromancer;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -12,8 +12,6 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.BigBangEffect;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -141,7 +139,7 @@ public class SkillMarkOfCombustion extends ActiveSkill {
             Player targetPlayer = targetHero.getPlayer();
             if (damageCheck(applier, (LivingEntity) targetPlayer)) {
                 addSpellTarget(targetPlayer, targetHero);
-                damageEntity(targetPlayer, applier, this.damagePerStack * this.getStackCount(), EntityDamageEvent.DamageCause.FIRE);
+                damageEntity(targetPlayer, applier, this.damagePerStack * this.getStackCount(), EntityDamageEvent.DamageCause.MAGIC);
             }
         }
     }
@@ -315,7 +313,7 @@ public class SkillMarkOfCombustion extends ActiveSkill {
             LivingEntity target = (LivingEntity) entity;
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, this.projectileDamage, EntityDamageEvent.DamageCause.FIRE);
+            damageEntity(target, player, this.projectileDamage, EntityDamageEvent.DamageCause.MAGIC);
 
             String heroSpecificEffectName = player.getName() + "-CombustionStacks";    // Using applier name so that multiple pyros can stack this at once.
             CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);

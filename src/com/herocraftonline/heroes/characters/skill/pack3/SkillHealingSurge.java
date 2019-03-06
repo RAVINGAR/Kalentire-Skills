@@ -25,7 +25,7 @@ public class SkillHealingSurge extends TargettedSkill {
 
     public SkillHealingSurge(Heroes plugin) {
         super(plugin, "HealingSurge");
-        setDescription("You restore $1 health and $2% of mana/stamina to the target over $3 seconds. You are only healed for $4 health and $5% of mana/stamina from this effect.");
+        setDescription("You restore $1 health and $2% of mana/stamina to the target over $3 second(s). You are only healed for $4 health and $5% of mana/stamina from this effect.");
         setUsage("/skill healingsurge <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill healingsurge");

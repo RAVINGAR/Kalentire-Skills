@@ -32,7 +32,7 @@ public class SkillConfuse extends TargettedSkill {
 
     public SkillConfuse(Heroes plugin) {
         super(plugin, "Confuse");
-        this.setDescription("You confuse the target for $1 seconds.");
+        this.setDescription("You confuse the target for $1 second(s).");
         this.setUsage("/skill confuse <target>");
         this.setArgumentRange(0, 1);
         this.setIdentifiers("skill confuse");
