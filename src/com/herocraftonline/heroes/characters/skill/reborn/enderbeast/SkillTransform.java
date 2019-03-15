@@ -2,7 +2,9 @@ package com.herocraftonline.heroes.characters.skill.reborn.enderbeast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedIncreaseEffect;
 import com.herocraftonline.heroes.characters.equipment.*;
@@ -10,9 +12,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
-import de.slikey.effectlib.Effect;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.EffectType;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -48,7 +47,7 @@ public class SkillTransform extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill transform");
         setToggleableEffectName(toggleableEffectName);
-        setTypes(SkillType.ABILITY_PROPERTY_ENDER, SkillType.FORM_ALTERING);
+        setTypes(SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING, SkillType.SILENCEABLE, SkillType.BUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new HelmetListener(this), plugin);
     }
@@ -98,108 +97,12 @@ public class SkillTransform extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        //jumpUpwards(hero, player);
-        //performKnockback(hero, player, radius, damage);
-
-        //playEffects(player, radius);
         hero.addEffect(new TransformedEffect(this, player, healthDrainTick, healthDrainPeriod));
         Location location = player.getLocation();
         location.getWorld().playSound(location, Sound.ENTITY_ZOMBIE_AMBIENT, 1F, 0.6f);
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
-    }
-
-    private void jumpUpwards(Hero hero, Player player) {
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 0.5, false);
-        Location location = player.getLocation();
-        player.setVelocity(player.getVelocity().add(new Vector(0, vPower, 0)));
-        player.playSound(location, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
-        player.playSound(location, Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
-        player.getWorld().spawnParticle(Particle.CLOUD, location, 1, 0, 0, 0, 1);
-    }
-
-    private void performKnockback(Hero hero, Player player, int radius, double damage) {
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-knockback-power", 1.4, false);
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-knockback-power", 0.5, false);
-
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-        for (Entity entity : entities) {
-            if (!(entity instanceof LivingEntity))
-                continue;
-
-            final LivingEntity target = (LivingEntity) entity;
-            if (!damageCheck(player, target))
-                continue;
-
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage / 2, DamageCause.MAGIC, false);
-            damageEntity(target, player, damage / 2, DamageCause.FIRE, false);
-
-            Location playerLoc = player.getLocation();
-            Location targetLoc = target.getLocation();
-
-            double xDir = targetLoc.getX() - playerLoc.getX();
-            double zDir = targetLoc.getZ() - playerLoc.getZ();
-            double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-
-            xDir = xDir / magnitude * hPower;
-            zDir = zDir / magnitude * hPower;
-
-            final Vector velocity = new Vector(xDir, vPower, zDir);
-            target.setVelocity(velocity);
-        }
-    }
-
-    private void playEffects(Player player, int radius) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.5f, 0.533f);
-
-        EffectManager em = new EffectManager(plugin);
-        Effect e = createParticleEffect(radius, em);
-        e.setLocation(player.getLocation().clone());
-        e.period = 10;
-        e.iterations = 5;
-        e.type = EffectType.REPEATING;
-        e.color = Color.PURPLE;
-        e.start();
-    }
-
-    private Effect createParticleEffect(int radius, EffectManager em) {
-        return new Effect(em) {
-            Particle particle = Particle.REDSTONE;
-            Color color = Color.PURPLE;
-
-            List<Location> locations = null;
-
-            @Override
-            public void onRun() {
-                if (locations == null)
-                    locations = getParticleLocations(getLocation(), 72, radius, false);
-
-                for (Location location : locations)
-                    display(particle, location);
-            }
-
-            private ArrayList<Location> getParticleLocations(Location centerLocation, int particleAmount, int circleRadius, boolean hollow) {
-                World world = centerLocation.getWorld();
-                double increment = (2 * Math.PI) / particleAmount;
-
-                ArrayList<Location> locations = new ArrayList<Location>();
-
-                double currentRadius = hollow ? circleRadius : 1d;
-                do {
-                    for (double i = 0; i < particleAmount; i += 0.5) {
-                        double angle = i * increment;
-                        double x = centerLocation.getX() + (currentRadius * Math.cos(angle));
-                        double z = centerLocation.getZ() + (currentRadius * Math.sin(angle));
-                        locations.add(new Location(world, x, centerLocation.getY(), z));
-                    }
-                    currentRadius += 0.2;
-                } while (currentRadius <= circleRadius);
-                locations.add(centerLocation);
-                return locations;
-            }
-        };
     }
 
     public class TransformedEffect extends PeriodicEffect {
@@ -210,9 +113,9 @@ public class SkillTransform extends ActiveSkill {
             super(skill, toggleableEffectName, applier, period, applyText, expireText);
             this.healthDrainTick = healthDrainTick;
 
-            setTypes(SkillType.FORM_ALTERING);
-            setTypes(SkillType.ABILITY_PROPERTY_MAGICAL);
-            setTypes(SkillType.BUFFING);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.ENDER);
+            types.add(EffectType.FORM);
         }
 
         @Override
@@ -229,30 +132,45 @@ public class SkillTransform extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
 
-            PlayerInventory inventory = hero.getPlayer().getInventory();
-            Util.moveItem(hero, -1, inventory.getHelmet());
+            Player player = hero.getPlayer();
+            PlayerInventory inventory = player.getInventory();
 
-            ItemStack dragonHead = new ItemStack(Material.DRAGON_HEAD);
-            ItemMeta itemmeta = dragonHead.getItemMeta();
-            itemmeta.setDisplayName("True Form");
+            ItemStack transformedHead = new ItemStack(Material.DRAGON_HEAD);
+            ItemMeta itemmeta = transformedHead.getItemMeta();
+            itemmeta.setDisplayName("Transformed");
             itemmeta.setUnbreakable(true);
-//            ArrayList<String> lore = new ArrayList<String>();
-//            lore.add("LORE");
-//            itemmeta.setLore(lore);
-            dragonHead.setItemMeta(itemmeta);
-            inventory.setHelmet(dragonHead);
-            hero.getPlayer().updateInventory();
+            transformedHead.setItemMeta(itemmeta);
+
+            EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.APPLYING_SKILL_EFFECT, EquipmentType.HELMET, inventory.getHelmet(), transformedHead);
+            Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
+            if (replaceEvent.isCancelled()) {
+                Heroes.log(Level.WARNING, "SkillTransform: Somebody tried to cancel a EquipmentChangedEvent, and we are ignoring the cancellation.");
+            }
+
+            Util.moveItem(hero, -1, inventory.getHelmet());
+            inventory.setHelmet(transformedHead);
+            Util.syncInventory(player, plugin);
         }
 
+        @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
 
             Player player = hero.getPlayer();
             PlayerInventory inventory = player.getInventory();
-            ItemStack dragonHead = inventory.getHelmet();
-            inventory.remove(dragonHead);
-            inventory.setHelmet(new ItemStack(Material.AIR, 0));
-            player.updateInventory();
+
+            ItemStack transformedHead = inventory.getHelmet();
+            ItemStack emptyHelmet = new ItemStack(Material.AIR, 0);
+
+            EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.EXPIRING_SKILL_EFFECT, EquipmentType.HELMET, transformedHead, emptyHelmet);
+            Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
+            if (replaceEvent.isCancelled()) {
+                Heroes.log(Level.WARNING, "SkillTransform: Somebody tried to cancel a EquipmentChangedEvent, and we are ignoring the cancellation.");
+            }
+
+            inventory.remove(transformedHead);
+            inventory.setHelmet(emptyHelmet);
+            Util.syncInventory(player, plugin);
         }
     }
 
@@ -270,8 +188,11 @@ public class SkillTransform extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEquipmentChanged(EquipmentChangedEvent event) {
-            if (event.getType() != EquipmentType.HELMET || event.getOldArmorPiece() == null || event.getOldArmorPiece().getType() != Material.DRAGON_HEAD)
+            if (event.getType() != EquipmentType.HELMET || event.getOldArmorPiece() == null
+                    || event.getOldArmorPiece().getType() != Material.DRAGON_HEAD
+                    || event.getMethod() == EquipMethod.EXPIRING_SKILL_EFFECT) {
                 return;
+            }
 
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect(toggleableEffectName))

@@ -171,7 +171,7 @@ public class SkillFlametouch extends ActiveSkill
 					damage += SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.1, false)
 							* hero.getAttributeValue(AttributeType.INTELLECT);
 					addSpellTarget(target, hero);
-					damageEntity(target, hero.getPlayer(), damage, DamageCause.FIRE, false);
+					damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
 					
 					target.setFireTicks(40);
 	

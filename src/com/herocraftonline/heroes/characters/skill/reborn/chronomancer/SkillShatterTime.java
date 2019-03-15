@@ -25,7 +25,7 @@ public class SkillShatterTime extends TargettedSkill {
     public SkillShatterTime(Heroes plugin) {
         super(plugin, "ShatterTime");
         setDescription("Attempt to shatter time around your target, dealing $1 damage and an additional "
-                + "$2 damage for each time based effect affecting them.");//If used on an ally, it will at shattertime of lightning down on the target dealing $1 damage.");
+                + "$2 damage for each time based effect affecting them.");
         setUsage("/skill shattertime");
         setArgumentRange(0, 0);
         setIdentifiers("skill shattertime");
@@ -71,7 +71,7 @@ public class SkillShatterTime extends TargettedSkill {
 
         double damage = baseDamage;
         for (Effect effect : ctTarget.getEffects()) {
-            if (!effect.getName().contains("Time"))
+            if (!effect.isType(EffectType.TEMPORAL))
                 continue;
 
             if (effect instanceof Stacking) {

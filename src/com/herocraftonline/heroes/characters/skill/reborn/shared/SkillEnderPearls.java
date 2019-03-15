@@ -41,7 +41,7 @@ public class SkillEnderPearls extends PassiveSkill {
         super(plugin, "EnderPearls");
         setDescription("You can throw ender pearls! $1");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.TELEPORTING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.TELEPORTING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }

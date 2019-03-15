@@ -53,6 +53,7 @@ public class SkillHardenScales extends ActiveSkill {
         config.set("movespeed-reduction-percent", 0.35);
         config.set(SkillSetting.DURATION.node(), 4000);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has hardened their scales!");
+        config.set(SkillSetting.USE_TEXT.node(), "");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s skin returns to normal.");
         return config;
     }

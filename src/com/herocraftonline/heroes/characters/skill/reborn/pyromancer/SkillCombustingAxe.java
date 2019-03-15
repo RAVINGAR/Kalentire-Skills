@@ -1,0 +1,110 @@
+package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.common.interfaces.Burning;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
+
+public class SkillCombustingAxe extends PassiveSkill {
+
+    private String combustText;
+
+    public SkillCombustingAxe(Heroes plugin) {
+        super(plugin, "CombustingAxe");
+        setDescription("Whenever you hit an enemy that is on fire, your axe consumes the fire power and combusts on the target, dealing the damage immediately at a $1% rate.");
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+    }
+
+    public String getDescription(Hero hero) {
+        double damageEffectiveness = SkillConfigManager.getUseSetting(hero, this, "damage-effectiveness", 1.0, false);
+        return getDescription().replace("$1", Util.decFormat.format(damageEffectiveness * 100));
+    }
+
+    public void init() {
+        super.init();
+
+        combustText = SkillConfigManager.getRaw(this, "combust-text", ChatComponents.GENERIC_SKILL + "%hero%'s axe combusted %target%!")
+                .replace("%hero%", "$1")
+                .replace("%target%", "$2");
+    }
+
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("damage-effectiveness", 1.0);
+        config.set("combust-text", ChatComponents.GENERIC_SKILL + "%hero%'s axe combusted %target%!");
+        return config;
+    }
+
+    public class SkillHeroListener implements Listener {
+        private Skill skill;
+
+        public SkillHeroListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.getEntity().getFireTicks() <= 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
+                return;
+
+            Hero hero = (Hero) event.getDamager();
+            if (!hero.canUseSkill(skill))
+                return;
+
+            Player player = hero.getPlayer();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            if (mainHand == null || !Util.axes.contains(mainHand.getType().name())) {
+                return;
+            }
+
+            LivingEntity targetLE = (LivingEntity) event.getEntity();
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetLE);
+
+            double damage = 0;
+            double damageEffectiveness = SkillConfigManager.getUseSetting(hero, skill, "damage-effectiveness", 1.0, false);
+            boolean foundBurningEffect = false;
+            for (final Effect effect : targetCT.getEffects()) {
+                if (!(effect instanceof Burning))
+                    continue;
+
+                Burning burningEffect = (Burning) effect;
+                damage = burningEffect.getRemainingDamage() * damageEffectiveness;
+                targetCT.removeEffect(effect);
+                foundBurningEffect = true;
+                break;
+            }
+
+            if (!foundBurningEffect) {
+                damage = plugin.getDamageManager().calculateFireTickDamage(targetLE, damageEffectiveness);
+                targetLE.setFireTicks(0);
+            }
+
+            if (damage <= 0) {
+                player.sendMessage("COMBUSTING AXE: 0 Fucking Damage.");
+                return;
+            }
+
+            addSpellTarget(targetLE, hero);
+            damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+
+            broadcast(targetLE.getLocation(), "    " + combustText, player.getName(), CustomNameManager.getName(targetCT));
+        }
+    }
+}

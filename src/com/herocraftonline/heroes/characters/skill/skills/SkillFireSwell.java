@@ -159,7 +159,7 @@ public class SkillFireSwell extends ActiveSkill {
                 }
 
                 // Check if entity is immune to further firewave hits
-                if (plugin.getCharacterManager().getCharacter(targetLE).hasEffect("DoomWaveAntiMultiEffect")) {
+                if (plugin.getCharacterManager().getCharacter(targetLE).hasEffect("FireSwellAntiMultiEffect")) {
                     event.setCancelled(true);
                     return;
                 }
@@ -179,7 +179,7 @@ public class SkillFireSwell extends ActiveSkill {
                 event.setCancelled(true);
 
                 //Adds an Effect to Prevent Multihit
-                plugin.getCharacterManager().getCharacter(targetLE).addEffect(new ExpirableEffect(skill, "DoomWaveAntiMultiEffect", (Player) dmger, 500));
+                plugin.getCharacterManager().getCharacter(targetLE).addEffect(new ExpirableEffect(skill, "FireSwellAntiMultiEffect", (Player) dmger, 500));
             }
         }
     }

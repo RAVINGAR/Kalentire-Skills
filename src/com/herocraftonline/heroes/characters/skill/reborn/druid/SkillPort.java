@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
+package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

@@ -189,7 +189,6 @@ public class SkillMarkOfCombustion extends ActiveSkill {
 
             setNoGravity();
             setDrag(0);
-            setMass(1);
             setEntityDetectRadius(radius);
             setRemainingLife(this.initialDurationTicks);
 
