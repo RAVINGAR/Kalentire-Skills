@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.professions;
+package com.herocraftonline.heroes.characters.skill.reborn.myrmidon;
 
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
