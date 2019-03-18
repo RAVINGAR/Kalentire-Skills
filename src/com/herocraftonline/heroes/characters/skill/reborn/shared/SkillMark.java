@@ -10,6 +10,12 @@ import java.util.logging.Level;
 //import com.palmergames.bukkit.util.BukkitTools;
 import com.herocraftonline.townships.users.TownshipsUser;
 import com.herocraftonline.townships.users.UserManager;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -153,7 +159,11 @@ public class SkillMark extends ActiveSkill {
 
             // Validate WorldGuard
             if (worldguard) {
-                if (!wgp.canBuild(player, loc)) {
+                LocalPlayer wgPlayer = wgp.wrapPlayer(player);
+                RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+                com.sk89q.worldedit.util.Location wgTeleportLoc = BukkitAdapter.adapt(loc);
+                RegionQuery query = container.createQuery();
+                if (!query.testState(wgTeleportLoc, wgPlayer, Flags.BUILD)) {
                     player.sendMessage("You cannot Mark in a Region you have no access to!");
                     return SkillResult.FAIL;
                 }
