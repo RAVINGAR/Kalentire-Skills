@@ -45,7 +45,7 @@ public class SkillAetherMissiles extends ActiveSkill {
         config.set("projectile-velocity", 20.0);
         config.set("projectile-per-hit-multiplier", 1.25);
         config.set("projectile-max-duration", 1500);
-        config.set("projectile-projectileRadius", 0.5);
+        config.set("projectile-radius", 0.5);
         config.set("projectile-launch-delay-ticks", 3);
         config.set("num-projectiles", 4);
 
@@ -83,16 +83,17 @@ public class SkillAetherMissiles extends ActiveSkill {
             this.effectManager = new EffectManager(plugin);
 
             this.numProjectiles = SkillConfigManager.getUseSetting(hero, skill, "num-projectiles", 4, false);
-            this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-projectileRadius", 0.5, false);
+            this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 0.5, false);
 
             for (int i = 0; i < numProjectiles; i++) {
                 SphereEffect missileVisual = new SphereEffect(effectManager);
+                missileVisual.iterations = (int) (getDuration() / 50);
                 missileVisual.radius = this.projectileRadius;
                 missileVisual.particle = Particle.SPELL_WITCH;
                 missileVisual.radiusIncrease = 0;
 
                 missileVisual.setLocation(applier.getEyeLocation().add(new Vector(0, 0.5, 0)));
-
+                effectManager.start(missileVisual);
             }
         }
 

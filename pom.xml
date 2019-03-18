@@ -117,6 +117,11 @@
             <version>2.5.5.1</version>
         </dependency>
         <dependency>
+            <groupId>pgDev.bukkit.DisguiseCraft</groupId>
+            <artifactId>DisguiseCraft</artifactId>
+            <version>4.9</version>
+        </dependency>
+        <dependency>
             <groupId>LibsDisguises</groupId>
             <artifactId>LibsDisguises</artifactId>
             <version>9.8.0</version>
