@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.shared;
+package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -195,7 +195,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             endIndexLocation = locationString.indexOf(",", currentIndexLocation);                   // Get the end point for grabbing y location data
             String yString = locationString.substring(currentIndexLocation, endIndexLocation);
 
-            // Get the z coord data 
+            // Get the z coord data
             currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
             endIndexLocation = locationString.length();                                             // Get the end point for grabbing z location data
             String zString = locationString.substring(currentIndexLocation, endIndexLocation);
