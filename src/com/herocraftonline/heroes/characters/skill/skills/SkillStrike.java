@@ -29,7 +29,7 @@ public class SkillStrike extends TargettedSkill {
 
     public SkillStrike(Heroes plugin) {
         super(plugin, "Strike");
-        setDescription("You violently strike the target for $1 physical damage, and causing them to bleed out for $2 physical damage over $3 seconds!");
+        setDescription("You violently strike the target for $1 physical damage, and causing them to bleed out for $2 physical damage over $3 second(s)!");
         setUsage("/skill strike");
         setArgumentRange(0, 0);
         setIdentifiers("skill strike");

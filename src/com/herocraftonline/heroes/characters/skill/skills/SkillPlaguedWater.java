@@ -28,7 +28,7 @@ public class SkillPlaguedWater extends ActiveSkill
 	public SkillPlaguedWater(Heroes plugin) 
 	{
 		super(plugin, "PlaguedWater");
-		setDescription("For $1 seconds, you release a wave of foul moisture. Enemies within $2 blocks of you will take $3 damage every $4 second(s).");
+		setDescription("For $1 second(s), you release a wave of foul moisture. Enemies within $2 blocks of you will take $3 damage every $4 second(s).");
 		setUsage("/skill plaguedwater");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill plaguedwater");

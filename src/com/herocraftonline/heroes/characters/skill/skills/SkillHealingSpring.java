@@ -20,7 +20,7 @@ public class SkillHealingSpring extends ActiveSkill
 	public SkillHealingSpring(Heroes plugin) 
 	{
 		super(plugin, "HealingSpring");
-		setDescription("A Healing Spring wells up beneath you, restoring $1 health to your party (within $4 blocks) every $2 seconds for $3 second(s).");
+		setDescription("A Healing Spring wells up beneath you, restoring $1 health to your party (within $4 blocks) every $2 second(s) for $3 second(s).");
 		setUsage("/skill healingspring");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill healingspring", "skill spring");

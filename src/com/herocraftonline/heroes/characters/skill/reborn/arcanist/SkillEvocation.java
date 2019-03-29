@@ -28,7 +28,7 @@ public class SkillEvocation extends ActiveSkill {
 
     public SkillEvocation(Heroes plugin) {
         super(plugin, "Evocation");
-        setDescription("Increases your mana regeneration by $1% for up to $2 seconds.");
+        setDescription("Increases your mana regeneration by $1% for up to $2 second(s).");
         setUsage("/skill evocation");
         setArgumentRange(0, 0);
         setIdentifiers("skill evocation");

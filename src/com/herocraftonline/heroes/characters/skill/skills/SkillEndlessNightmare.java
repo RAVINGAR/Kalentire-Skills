@@ -35,7 +35,7 @@ public class SkillEndlessNightmare extends SkillBaseSpike {
 
 	public SkillEndlessNightmare(Heroes plugin) {
 		super(plugin, "EndlessNightmare");
-		setDescription("Impales the target with a spike of chaos casting them into a nightmarish state for $1 seconds, dealing $2 damage. $3 $4");
+		setDescription("Impales the target with a spike of chaos casting them into a nightmarish state for $1 second(s), dealing $2 damage. $3 $4");
 		setUsage("/skill endlessnightmare");
 		setIdentifiers("skill endlessnightmare");
 		setArgumentRange(0, 0);

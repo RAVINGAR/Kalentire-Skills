@@ -40,7 +40,7 @@ public class SkillAimedShot extends TargettedSkill {
 
     public SkillAimedShot(Heroes plugin) {
         super(plugin, "AimedShot");
-        setDescription("Hone your aim in on a target. Once completed, your next next shot fired within $1 seconds will land "
+        setDescription("Hone your aim in on a target. Once completed, your next next shot fired within $1 second(s) will land "
                 + ChatColor.BOLD + ChatColor.ITALIC+ "without question" + ChatColor.RESET
                 + ChatColor.GOLD + ". That shot is armor piercing and will deal up to $2 damage to the target.");
         setUsage("/skill aimedshot");

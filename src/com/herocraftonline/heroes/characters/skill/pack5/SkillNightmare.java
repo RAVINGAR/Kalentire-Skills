@@ -30,7 +30,7 @@ public class SkillNightmare extends SkillBaseSpike {
 
 	public SkillNightmare(Heroes plugin) {
 		super(plugin, "Nightmare");
-		setDescription("Impales the target with a spike of darkness casting them into a nightmarish state, dealing $1 damage per $2 seconds for $3 second(s). $3 $4");
+		setDescription("Impales the target with a spike of darkness casting them into a nightmarish state, dealing $1 damage per $2 second(s) for $3 second(s). $3 $4");
 		setUsage("/skill nightmare");
 		setIdentifiers("skill nightmare");
 		setArgumentRange(0, 0);

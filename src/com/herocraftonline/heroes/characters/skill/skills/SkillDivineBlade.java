@@ -37,8 +37,8 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
     public SkillDivineBlade(Heroes plugin)
     {
         super(plugin, "DivineBlade");
-        setDescription("For $1 seconds, melee strikes restore $2 health to yourself and allies within $3 meters of yourself. Can only trigger every $4 second(s). If Radiance is active, "
-                + "blinds targets for $5 seconds on hit.");
+        setDescription("For $1 second(s), melee strikes restore $2 health to yourself and allies within $3 meters of yourself. Can only trigger every $4 second(s). If Radiance is active, "
+                + "blinds targets for $5 second(s) on hit.");
         setUsage("/skill divineblade");
         setIdentifiers("skill divineblade", "skill dblade");
         setArgumentRange(0, 0);

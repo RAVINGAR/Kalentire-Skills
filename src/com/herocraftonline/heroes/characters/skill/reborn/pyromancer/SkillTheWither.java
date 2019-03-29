@@ -44,8 +44,8 @@ public class SkillTheWither extends ActiveSkill {
 
     public SkillTheWither(Heroes plugin) {
         super(plugin, "TheWither");
-        setDescription("Channel the power of the Wither himself. Altering your appearance and granting you fire immunity for $1 seconds."
-                + "While in your wither form, your melee attacks inflict a stacking wither effect that lasts $2 seconds and you are only able to use physical, dark, or wither based abilities.");
+        setDescription("Channel the power of the Wither himself. Altering your appearance and granting you fire immunity for $1 second(s)."
+                + "While in your wither form, your melee attacks inflict a stacking wither effect that lasts $2 second(s) and you are only able to use physical, dark, or wither based abilities.");
         setUsage("/skill thewither");
         setArgumentRange(0, 0);
         setIdentifiers("skill thewither", "skill witherform");

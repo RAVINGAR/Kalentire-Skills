@@ -29,7 +29,7 @@ public class SkillChainLightning extends TargettedSkill {
     public SkillChainLightning(Heroes plugin) {
         super(plugin, "ChainLightning");
         setDescription("Strikes lightning at target location, dealing $1 damage. "
-                + "Every $2 seconds, the spell will attempt to bounce to another player within $3 blocks, "
+                + "Every $2 second(s), the spell will attempt to bounce to another player within $3 blocks, "
                 + "dealing $4% damage on bounce. "
                 + "Every successive hit will decrease the caster's cooldown of this skill by $5 second(s).");
         setIdentifiers("skill chainlightning");

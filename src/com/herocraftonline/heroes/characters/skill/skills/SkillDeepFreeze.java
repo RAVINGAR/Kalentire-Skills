@@ -38,7 +38,7 @@ public class SkillDeepFreeze extends TargettedSkill {
 
     public SkillDeepFreeze(Heroes plugin) {
         super(plugin, "DeepFreeze");
-        setDescription("You freeze your target for $1 seconds and $2 ice damage. Burning the target will shatter the effect for $3 extra damage.");
+        setDescription("You freeze your target for $1 second(s) and $2 ice damage. Burning the target will shatter the effect for $3 extra damage.");
         setUsage("/skill deepfreeze <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill deepfreeze", "skill dfreeze");

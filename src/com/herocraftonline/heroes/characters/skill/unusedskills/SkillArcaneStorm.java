@@ -29,7 +29,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 		setArgumentRange(0,0);
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
 		setDescription("On use, user is rooted into place for 5 second(s). " +
-				"After the 5 seconds, the user unleashes a hail of devastating magical artillery in the surrounding area");
+				"After the 5 second(s), the user unleashes a hail of devastating magical artillery in the surrounding area");
 	}
 
 	@Override

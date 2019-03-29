@@ -25,7 +25,7 @@ public class SkillCallOfChaos extends SkillBaseSphere {
 
 	public SkillCallOfChaos(Heroes plugin) {
 		super(plugin, "CallOfChaos");
-		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 second(s). $5 $6");
+		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 second(s) for $4 second(s). $5 $6");
 		setUsage("/skill callofchaos");
 		setIdentifiers("skill callofchaos");
 		setArgumentRange(0, 0);

@@ -31,7 +31,7 @@ public class SkillReflect extends ActiveSkill {
 
     public SkillReflect(Heroes plugin) {
         super(plugin, "Reflect");
-        setDescription("You reflect $1% of all damage back to your attacker for $2 seconds.");
+        setDescription("You reflect $1% of all damage back to your attacker for $2 second(s).");
         setUsage("/skill reflect");
         setArgumentRange(0, 0);
         setIdentifiers("skill reflect");

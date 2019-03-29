@@ -39,7 +39,7 @@ public class SkillHide extends PassiveSkill implements Listener{
 
     public SkillHide(Heroes plugin){
         super(plugin, "Hide");
-        setDescription("You are always hiding except when you take damage. It will take $1 seconds to re-sneak");
+        setDescription("You are always hiding except when you take damage. It will take $1 second(s) to re-sneak");
         setTypes(SkillType.STEALTHY);
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);

@@ -31,7 +31,7 @@ public class SkillFeatheredShot extends ActiveSkill {
 
     public SkillFeatheredShot(Heroes plugin) {
         super(plugin, "FeatheredShot");
-        setDescription("The next $1 seconds, your arrows will apply jump boost and slow fall to slow down your target... ");
+        setDescription("The next $1 second(s), your arrows will apply jump boost and slow fall to slow down your target... ");
         setUsage("/skill featheredshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill featheredshot");

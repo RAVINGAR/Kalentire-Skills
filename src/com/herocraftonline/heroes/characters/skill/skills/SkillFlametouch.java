@@ -31,7 +31,7 @@ public class SkillFlametouch extends ActiveSkill
 	public SkillFlametouch(Heroes plugin)
 	{
 		super(plugin, "Flametouch");
-		setDescription("Imbues your strikes with fire for $1 seconds, causing you to deal $2 more damage and igniting your target for 2 second(s).");
+		setDescription("Imbues your strikes with fire for $1 second(s), causing you to deal $2 more damage and igniting your target for 2 second(s).");
 		setUsage("/skill flametouch");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill flametouch");

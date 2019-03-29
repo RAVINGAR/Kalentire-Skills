@@ -38,7 +38,7 @@ public class SkillCurse extends TargettedSkill {
 
     public SkillCurse(Heroes plugin) {
         super(plugin, "Curse");
-        setDescription("You curse the target for $1 seconds, giving their attacks a $2% miss chance.");
+        setDescription("You curse the target for $1 second(s), giving their attacks a $2% miss chance.");
         setUsage("/skill curse");
         setArgumentRange(0, 0);
         setIdentifiers("skill curse");

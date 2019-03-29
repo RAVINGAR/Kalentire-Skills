@@ -26,7 +26,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
     public SkillRewind(Heroes plugin) {
         super(plugin, "Rewind");
-        setDescription("You rewind in $1 seconds in time, returning your stats and location to what they were back then.");
+        setDescription("You rewind in $1 second(s) in time, returning your stats and location to what they were back then.");
         setUsage("/skill rewind");
         setArgumentRange(0, 0);
         setIdentifiers("skill rewind");

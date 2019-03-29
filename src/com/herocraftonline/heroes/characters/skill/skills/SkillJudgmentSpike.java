@@ -27,7 +27,7 @@ public class SkillJudgmentSpike extends SkillBaseSpike {
 
 	public SkillJudgmentSpike(Heroes plugin) {
 		super(plugin, "JudgmentSpike");
-		setDescription("Impales the target with a spike of order silencing them for $1 seconds, dealing $2 damage. $3 $4");
+		setDescription("Impales the target with a spike of order silencing them for $1 second(s), dealing $2 damage. $3 $4");
 		setUsage("/skill judgmentspike");
 		setIdentifiers("skill judgmentspike");
 		setArgumentRange(0, 0);

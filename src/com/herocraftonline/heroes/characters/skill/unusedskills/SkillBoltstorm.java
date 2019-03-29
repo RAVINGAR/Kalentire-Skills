@@ -30,7 +30,7 @@ public class SkillBoltstorm extends ActiveSkill {
 
     public SkillBoltstorm(Heroes plugin) {
         super(plugin, "Boltstorm");
-        setDescription("You call bolts of lightning down upon nearby enemies for $1 seconds, each bolt will deal $2 damage.");
+        setDescription("You call bolts of lightning down upon nearby enemies for $1 second(s), each bolt will deal $2 damage.");
         setUsage("/skill boltstorm");
         setArgumentRange(0, 0);
         setIdentifiers("skill boltstorm");

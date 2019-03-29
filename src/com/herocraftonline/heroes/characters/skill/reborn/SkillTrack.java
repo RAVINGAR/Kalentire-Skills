@@ -22,7 +22,7 @@ public class SkillTrack extends ActiveSkill {
 
     public SkillTrack(Heroes plugin) {
         super(plugin, "Track");
-        setDescription("Track your target, and learn of their location in the world, specific up to $1 blocks. Your compass will point to the target for $2 seconds after tracking them.");
+        setDescription("Track your target, and learn of their location in the world, specific up to $1 blocks. Your compass will point to the target for $2 second(s) after tracking them.");
         setUsage("/skill track <player>");
         setArgumentRange(1, 1);
         setIdentifiers("skill track");

@@ -33,7 +33,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         super(plugin, "EnderBreath");
         setDescription("Launch a ball of Ender Flame at your opponent. "
                 + "The projectile explodes on hit, spreading dragon breath $4 blocks to the side and $5 blocks up and down (cylinder). "
-                + "Enemies within the breath are dealt $1 damage every $2 seconds for $3 seconds and"
+                + "Enemies within the breath are dealt $1 damage every $2 second(s) for $3 second(s) and"
                 + "if you are transformed, they suffer chaotic ender teleports.");
         setUsage("/skill enderbreath");
         setArgumentRange(0, 0);

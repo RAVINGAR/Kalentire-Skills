@@ -23,7 +23,7 @@ public class SkillSoothingRain extends ActiveSkill
 	public SkillSoothingRain(Heroes plugin) 
 	{
 		super(plugin, "SoothingRain");
-		setDescription("Calls up a soothing rain to refresh your party (within 12 blocks), granting them $1 mana every 2 seconds for 16 second(s).");
+		setDescription("Calls up a soothing rain to refresh your party (within 12 blocks), granting them $1 mana every 2 second(s) for 16 second(s).");
 		setUsage("/skill soothingrain");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill soothingrain", "skill rain");
