@@ -66,35 +66,7 @@ public class SkillDualWield extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST)
-        public void onLeftClick(PlayerInteractEvent event) {
-            if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
-                return;
-
-            Player player = event.getPlayer();
-            PlayerInventory playerInv = player.getInventory();
-            ItemStack offHand = NMSHandler.getInterface().getItemInOffHand(playerInv);
-            if (offHand == null || !Util.weapons.contains(offHand.getType().name()))
-                return;
-
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.canUseSkill(skill))
-                return;
-
-            int delayTicks = SkillConfigManager.getUseSetting(hero, skill, "attack-delay-ticks", 5, false);
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    nmsHandler.sendPlayerAnimationPacket(player, 3);
-                }
-            }.runTaskLater(plugin, delayTicks);
-
-//            event.setUseItemInHand(Event.Result.DENY);
-//            event.setCancelled(true);
-//            player.removeMetadata(metaDataName, plugin);
-        }
-
-//        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+//        @EventHandler(priority = EventPriority.LOWEST)
 //        public void onLeftClick(PlayerInteractEvent event) {
 //            if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
 //                return;
@@ -109,24 +81,21 @@ public class SkillDualWield extends PassiveSkill {
 //            if (!hero.canUseSkill(skill))
 //                return;
 //
-//            if (!player.hasMetadata(metaDataName)) {
-//                player.setMetadata(metaDataName, new FixedMetadataValue(plugin, true));
-//                new BukkitRunnable() {
+//            int delayTicks = SkillConfigManager.getUseSetting(hero, skill, "attack-delay-ticks", 5, false);
+//            new BukkitRunnable() {
+//                @Override
+//                public void run() {
+//                    nmsHandler.sendPlayerAnimationPacket(player, 3);
+//                }
+//            }.runTaskLaterAsynchronously(plugin, delayTicks);
 //
-//                    @Override
-//                    public void run() {
-//                        nmsHandler.sendPlayerAnimationPacket(player, 0);
-//                        nmsHandler.sendPlayerAnimationPacket(player, 3);
-//                    }
-//                }.runTaskLater(plugin, 1);
-//                event.setUseItemInHand(Event.Result.DENY);
-//                event.setCancelled(true);
-//            }
-//            player.removeMetadata(metaDataName, plugin);
+////            event.setUseItemInHand(Event.Result.DENY);
+////            event.setCancelled(true);
+////            player.removeMetadata(metaDataName, plugin);
 //        }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onLeftClick(WeaponDamageEvent event) {
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
             if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
@@ -158,10 +127,10 @@ public class SkillDualWield extends PassiveSkill {
                     addSpellTarget(targetLE, hero);
                     damageEntity(targetLE, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
 
-//                    nmsHandler.sendOffhandSwingAnimationPacket(player);
+                    nmsHandler.sendPlayerAnimationPacket(player, 3);
                     targetLE.getWorld().playSound(targetLE.getLocation(), Sound.ENTITY_GENERIC_HURT, 0.8F, 1.0F);
                 }
-            }.runTaskLater(plugin, delayTicks);
+            }.runTaskLaterAsynchronously(plugin, delayTicks);
         }
     }
 }

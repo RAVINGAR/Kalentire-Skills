@@ -220,7 +220,7 @@ public class SkillDarkBolt extends ActiveSkill {
     public class WitheringEffect extends HealthRegainReductionEffect {
 
         public WitheringEffect(Skill skill, Player applier, long duration, int witherLevel, double healingReductionPercent) {
-            super(skill, "DarkBoltWithering", applier, duration, healingReductionPercent, applyText, expireText);
+            super(skill, applier.getName() + "-DarkBoltWithering", applier, duration, healingReductionPercent, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.WITHER);

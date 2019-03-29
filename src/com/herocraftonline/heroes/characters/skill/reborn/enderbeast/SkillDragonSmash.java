@@ -61,8 +61,9 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         node.set(SkillSetting.RADIUS.node(), 5);
         node.set("upwards-velocity", 0.5);
         node.set("downwards-velocity", -0.5);
-        node.set("target-horizontal-knockback", 0.5);
-        node.set("target-vertical-knockback", 0.5);
+        node.set("delay-ticks-before-drop", 10);
+        node.set("target-horizontal-knockback", 1.0);
+        node.set("target-vertical-knockback", 1.0);
         return node;
     }
 
@@ -72,16 +73,18 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 0.5, false);
         final double vPowerDown = SkillConfigManager.getUseSetting(hero, this, "downwards-velocity", -0.5, false);
+        final int delayTicksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "delay-ticks-before-drop", 10, false);
 
         broadcastExecuteText(hero);
 
         player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
         player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
 
-        player.setVelocity(new Vector(0, vPowerUp, 0));
+        Vector currentVelocity = player.getVelocity();
+        player.setVelocity(new Vector(currentVelocity.getX(), currentVelocity.getY() + vPowerUp, currentVelocity.getZ()));
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.runTaskLater(plugin, new Runnable() {
+        scheduler.runTaskLaterAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 player.setFallDistance(-512);
@@ -90,7 +93,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                 DragonSmashUpdateTask updateTask = new DragonSmashUpdateTask(scheduler, hero);
                 updateTask.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, updateTask, 1L, 1L));
             }
-        }, 25);
+        }, delayTicksBeforeDrop);
         return SkillResult.NORMAL;
     }
 

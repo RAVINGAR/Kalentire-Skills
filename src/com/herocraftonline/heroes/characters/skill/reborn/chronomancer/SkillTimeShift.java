@@ -41,7 +41,10 @@ public class SkillTimeShift extends TargettedSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        return getDescription().replace("$1", radius + "").replace("$2", formattedDuration);
+
+        return getDescription()
+                .replace("$1", radius + "")
+                .replace("$2", formattedDuration);
     }
 
     @Override

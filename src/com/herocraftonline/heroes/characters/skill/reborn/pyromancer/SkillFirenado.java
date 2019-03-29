@@ -87,7 +87,7 @@ public class SkillFirenado extends ActiveSkill {
             ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
             ItemStack offHand = NMSHandler.getInterface().getItemInOffHand(playerInv);
             if ((mainHand == null || mainHand.getType() != Material.BLAZE_ROD) && (offHand == null || offHand.getType() != Material.BLAZE_ROD)) {
-                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + " You are unable to cast this spell without wielding a Blaze Rod as a catalyst!");
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are unable to cast this spell without wielding a Blaze Rod as a catalyst!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }

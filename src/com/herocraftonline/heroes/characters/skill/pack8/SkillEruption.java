@@ -178,7 +178,7 @@ public class SkillEruption extends ActiveSkill {
                 final Collection<Entity> nearbyEntities = loc.getWorld().getNearbyEntities(loc1, 1, 1, 1);
 
                 // Move back to main thread to do damage
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
                     @Override
                     public void run() {
                         for (Entity ent : nearbyEntities) {

@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -37,7 +39,14 @@ public class SkillPlagueBomb extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        return getDescription();
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250.0, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", Util.decFormat.format(radius));
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -53,8 +62,10 @@ public class SkillPlagueBomb extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        double sheepVelocity = SkillConfigManager.getUseSetting(hero, this, "sheep-velocity", 1.0, false);
-        double sheepDuration = SkillConfigManager.getUseSetting(hero, this, "sheep-duration", 10000, false);
+        broadcastExecuteText(hero);
+
+        double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "sheep-velocity", 1.0, false);
+        long maxDuration = SkillConfigManager.getUseSetting(hero, this, "sheep-duration", 10000, false);
 
         final Sheep sheep = (Sheep) player.getWorld().spawn(player.getEyeLocation(), Sheep.class);
         final Monster sheepMonster = plugin.getCharacterManager().getMonster(sheep);
@@ -63,8 +74,9 @@ public class SkillPlagueBomb extends ActiveSkill {
         plagueBombs.put(sheep.getEntityId(), player);
         sheep.setMaxHealth(1000.0D);
         sheep.setHealth(1000.0D);
-        sheep.setCustomName(ChatColor.DARK_RED + "PlagueBomb");
-        sheep.setVelocity(player.getLocation().getDirection().normalize().multiply(sheepVelocity));
+        sheep.setCustomName(ChatColor.DARK_RED + "Plague Bomb");
+        sheep.setCustomNameVisible(true);
+        sheep.setVelocity(player.getLocation().getDirection().normalize().multiply(launchVelocity));
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
@@ -72,7 +84,7 @@ public class SkillPlagueBomb extends ActiveSkill {
                     sheepBomb(sheep);
                 }
             }
-        }, (long) sheepDuration / 1000L * 20L);
+        }, (long) maxDuration / 1000L * 20L);
 
         return SkillResult.NORMAL;
     }
@@ -86,7 +98,7 @@ public class SkillPlagueBomb extends ActiveSkill {
         sheep.damage(1000.0D);
         plagueBombs.remove(sheep.getEntityId());
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
@@ -104,17 +116,18 @@ public class SkillPlagueBomb extends ActiveSkill {
     private class PlagueBombListener implements Listener {
         private Skill skill;
 
-        public PlagueBombListener(Skill skill) {
+        PlagueBombListener(Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onShear(PlayerShearEntityEvent event) {
-            if ((event.getEntity() instanceof Sheep)) {
-                Sheep sheep = (Sheep) event.getEntity();
-                if (plagueBombs.containsKey(sheep.getEntityId())) {
-                    event.setCancelled(true);
-                }
+            if (!(event.getEntity() instanceof Sheep))
+                return;
+
+            Sheep sheep = (Sheep) event.getEntity();
+            if (plagueBombs.containsKey(sheep.getEntityId())) {
+                event.setCancelled(true);
             }
         }
 
@@ -125,6 +138,8 @@ public class SkillPlagueBomb extends ActiveSkill {
 
             Sheep sheep = (Sheep) event.getEntity();
             if (plagueBombs.containsKey(sheep.getEntityId())) {
+                event.setDroppedExp(0);
+                event.getDrops().clear();
                 sheepBomb(sheep);
             }
         }

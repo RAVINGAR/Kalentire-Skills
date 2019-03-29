@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.chronomancer;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -39,7 +39,7 @@ public class SkillTemporalWard extends TargettedSkill {
         setArgumentRange(0, 0);
         setUsage("/skill temporalward");
         setIdentifiers("skill temporalward");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MULTI_GRESSIVE, SkillType.SILENCEABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class SkillTemporalWard extends TargettedSkill {
         private void applyVisuals(LivingEntity target) {
             final World world = target.getWorld();
             final Location loc = target.getLocation();
-            final int delayTicks = (int) this.getDuration() / 50;
+            final int durationTicks = (int) this.getDuration() / 50;
             final int displayPeriod = 3;
 
             EffectManager em = new EffectManager(plugin);
@@ -153,7 +153,7 @@ public class SkillTemporalWard extends TargettedSkill {
 
             visualEffect.radius = 2;
             visualEffect.period = displayPeriod;
-            visualEffect.iterations = delayTicks / displayPeriod;
+            visualEffect.iterations = durationTicks / displayPeriod;
 
             visualEffect.color = Color.fromBGR(255, 192, 203);
             visualEffect.particle = Particle.REDSTONE;

@@ -6,9 +6,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
-import com.herocraftonline.heroes.characters.skill.tools.Missile;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -18,19 +16,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class SkillEnderBreath extends SkillBaseGroundEffect {
 
@@ -151,37 +143,65 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             addSpellTarget(target, hero);
             damageEntity(target, player, damageTick, DamageCause.MAGIC, false);
 
-            if (hero.hasEffect("EnderBeastTransformed")) {
-                int randomLocIndex = random.nextInt(locationsInRadius.size() - 1);
+            if (!hero.hasEffect("EnderBeastTransformed"))
+                return;
 
-                Location desiredLocation = locationsInRadius.get(randomLocIndex).clone();
-                World targetWorld = desiredLocation.getWorld();
+            teleportPlayer(player, target);
+        }
 
-//                Vector distance = target.getLocation().toVector().subtract(newLocation.toVector());
+        private void teleportPlayer(Player player, LivingEntity target) {
+            int randomLocIndex = random.nextInt(locationsInRadius.size() - 1);
+
+            Location desiredLocation = locationsInRadius.get(randomLocIndex).clone();
+            World targetWorld = desiredLocation.getWorld();
+
+            int distance = (int) target.getLocation().distance(desiredLocation);
 //                Vector direction = distance.normalize();
+//                RayCastHit hit = nmsHandler.getNMSPhysics().rayCast(
+//                        targetWorld,
+//                        target,
+//                        target.getEyeLocation().toVector(),
+//                        desiredLocation.toVector(),
+//                        x -> x.getType().isSolid(),
+//                        x -> false);
+//
+//                if (hit != null) {
+//                    Heroes.log(Level.INFO, "Raycast Hit: " + hit.getPoint().toString());
+//                } else {
+//                    Heroes.log(Level.INFO, "Raycast Hit: null.");
+//                }
+//
+//                if (hit == null || hit.getBlock(targetWorld) == null)
+//                    return;
+//                Location newLocation = hit.getBlock(targetWorld).getLocation();
+            Block validFinalBlock = null;
+            Block currentBlock;
 
-                RayCastHit hit = nmsHandler.getNMSPhysics().rayCast(
-                        targetWorld,
-                        target,
-                        target.getEyeLocation().toVector(),
-                        desiredLocation.toVector(),
-                        x -> x.getType().isSolid(),
-                        x -> false);
-
-                if (hit != null) {
-                    Heroes.log(Level.INFO, "Raycast Hit: " + hit.getPoint().toString());
-                } else {
-                    Heroes.log(Level.INFO, "Raycast Hit: null.");
-                }
-
-                if (hit == null || hit.getBlock(targetWorld) == null)
-                    return;
-
-                Location newLocation = hit.getBlock(targetWorld).getLocation();
-                target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-                targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
-                targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.6F, 1.0F);
+            BlockIterator iter = null;
+            try {
+                iter = new BlockIterator(player, distance);
+            } catch (IllegalStateException e) {
+                return;
             }
+
+            while (iter.hasNext()) {
+                currentBlock = iter.next();
+                Material currentBlockType = currentBlock.getType();
+
+                if (!Util.transparentBlocks.contains(currentBlockType))
+                    break;
+
+                if (Util.transparentBlocks.contains(currentBlock.getRelative(BlockFace.UP).getType()))
+                    validFinalBlock = currentBlock;
+            }
+
+            if (validFinalBlock == null)
+                return;
+
+            Location newLocation = validFinalBlock.getLocation().clone().add(new Vector(.5, 0, .5));
+            target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
+            targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.6F, 1.0F);
         }
 
         @Override

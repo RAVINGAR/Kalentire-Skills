@@ -25,10 +25,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 public class SkillAetherOrb extends ActiveSkill {
 
 	private static Color blueViolet = Color.fromRGB(138,43,226);
@@ -66,8 +62,8 @@ public class SkillAetherOrb extends ActiveSkill {
 		ConfigurationSection node = super.getDefaultConfig();
 		node.set(SkillSetting.RADIUS.node(), 6);
 		node.set("height", 4);
-		node.set(SkillSetting.DURATION.node(), 6000);
 		node.set(SkillSetting.PERIOD.node(), 500);
+		node.set(SkillSetting.DURATION.node(), 6000);
 		node.set(SkillSetting.DAMAGE_TICK.node(), 50d);
 		node.set("max-targets-per-pulse", 4);
 		node.set("projectile-velocity", 20.0);
@@ -78,11 +74,10 @@ public class SkillAetherOrb extends ActiveSkill {
 	public SkillResult use(final Hero hero, String[] args) {
 		final Player player = hero.getPlayer();
 
+		broadcastExecuteText(hero);
 		double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20.0, false);
 		AetherOrbMissile missile = new AetherOrbMissile(plugin, this, hero, 0.2, projVelocity);
 		missile.fireMissile();
-
-		broadcastExecuteText(hero);
 
 		return SkillResult.NORMAL;
 	}
@@ -93,14 +88,14 @@ public class SkillAetherOrb extends ActiveSkill {
 			super(plugin, skill, hero, projectileSize, Particle.SPELL_WITCH, projVelocity);
 		}
 
+        @Override
+        protected boolean onCollideWithEntity(Entity entity) {
+            return false;
+        }
+
 		@Override
 		protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
 			explodeIntoGroundEffect(block.getRelative(hitFace).getLocation());
-		}
-
-		@Override
-		protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-			explodeIntoGroundEffect(entity.getLocation());
 		}
 
 		private void explodeIntoGroundEffect(Location location) {
@@ -113,15 +108,13 @@ public class SkillAetherOrb extends ActiveSkill {
 	}
 
 	private class AetherOrbEffect extends PeriodicExpirableEffect {
-        private final Location orbLocation;
-		private final int height;
-
         private EffectManager effectManager;
-
+        private final Location orbLocation;
+		private double orbVisualRadius;
+		private final int height;
 		private double damageTick;
         private int maxTargetsPerPulse;
         private int radius;
-		private double visualOrbRadius;
 
         AetherOrbEffect(Skill skill, Player player, Hero hero, long period, long duration, Location location) {
 		    super(skill, "ActiveAetherOrb", player, period, duration, null, null);
@@ -138,20 +131,18 @@ public class SkillAetherOrb extends ActiveSkill {
             this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 6, false);
             this.damageTick = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 50d, false);
             this.maxTargetsPerPulse = SkillConfigManager.getUseSetting(hero, skill, "max-targets-per-pulse", 4, false);
-            this.visualOrbRadius = SkillConfigManager.getUseSetting(hero, skill, "visual-orb-radius", 1.0, false);
+            this.orbVisualRadius = SkillConfigManager.getUseSetting(hero, skill, "visual-orb-radius", 1.0, false);
 
-            SphereEffect visualEffect = new SphereEffect(effectManager);
-            visualEffect.particle = Particle.SPELL_WITCH;
-            visualEffect.color = blueViolet;	// Don't think this works for this particle type but no biggy
-            visualEffect.radius = visualOrbRadius;
+            SphereEffect orbVisual = new SphereEffect(effectManager);
+            orbVisual.setLocation(orbLocation);
+            orbVisual.particle = Particle.SPELL_WITCH;
+            orbVisual.radius = orbVisualRadius;
+            orbVisual.type = EffectType.REPEATING;
+            orbVisual.period = 1;
+            orbVisual.iterations = (int) (getDuration() / 50);
+            orbVisual.asynchronous = true;
 
-            visualEffect.type = EffectType.INSTANT;
-            visualEffect.period = 1;
-            visualEffect.iterations = (int) (getDuration() / 50);
-            visualEffect.asynchronous = true;
-            visualEffect.setLocation(orbLocation);
-
-            visualEffect.start();
+            effectManager.start(orbVisual);
             orbLocation.getWorld().playSound(orbLocation, Sound.ENTITY_ILLUSIONER_CAST_SPELL, 0.15f, 0.0001f);
         }
 
@@ -161,21 +152,16 @@ public class SkillAetherOrb extends ActiveSkill {
         @Override
 		public void tickHero(Hero hero) {
             int currentHitCount = 0;
-            for (Entity entity : getEntitiesInChunks(orbLocation, radius)) {
+            for (Entity entity : orbLocation.getWorld().getNearbyEntities(orbLocation, radius, height, radius)) {
                 if (currentHitCount >= maxTargetsPerPulse)
                     break;
-
                 if (!(entity instanceof LivingEntity))
                     continue;
-
-                Location targetLocation = entity.getLocation();
-                double targetY = targetLocation.getY();
-                if (!(targetLocation.distanceSquared(targetLocation) <= radius * radius) || !(targetY <= targetLocation.getY() + height) || !(targetY >= targetLocation.getY() - height))
-                    continue;
-
                 LivingEntity target = (LivingEntity) entity;
                 if (!damageCheck(applier, target))
-                    return;
+                    continue;
+
+                currentHitCount++;
 
                 addSpellTarget(target, hero);
                 damageEntity(target, applier, damageTick, EntityDamageEvent.DamageCause.MAGIC, false);
@@ -183,28 +169,20 @@ public class SkillAetherOrb extends ActiveSkill {
                 LineEffect lineVisual = new LineEffect(effectManager);
                 lineVisual.particle = Particle.REDSTONE;
                 lineVisual.color = blueViolet;
-
                 lineVisual.setLocation(orbLocation);
                 lineVisual.setTargetEntity(target);
 
-                currentHitCount++;
-
-                lineVisual.start();
+                effectManager.start(lineVisual);
                 orbLocation.getWorld().playSound(orbLocation, Sound.BLOCK_GLASS_BREAK, 0.3f, 2.0F);
             }
 		}
 
-        private Set<Entity> getEntitiesInChunks(Location location, int radius) {
-            Set<Entity> entities = new HashSet<Entity>();
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
 
-            int chunkRadius = (int) (radius + 16) / 16;
-            Chunk origin = location.getChunk();
-            for (int x = -chunkRadius; x <= chunkRadius; x++) {
-                for (int z = -chunkRadius; z <= chunkRadius; z++) {
-                    Collections.addAll(entities, origin.getWorld().getChunkAt(origin.getX() + x, origin.getZ() + z).getEntities());
-                }
-            }
-            return entities;
+            if (this.effectManager != null)
+                this.effectManager.dispose();
         }
-	}
+    }
 }

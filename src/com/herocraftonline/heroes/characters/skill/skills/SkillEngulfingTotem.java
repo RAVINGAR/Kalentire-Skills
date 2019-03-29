@@ -116,7 +116,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "    " + "$1 is engulfed by a totem's power!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "   " + "$1 is engulfed by a totem's power!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is no longer engulfed by a totem's power.");
         node.set("dexterity-reduce-amount", 3);
         node.set("slowness-amplitude", 2);

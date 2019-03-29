@@ -151,7 +151,7 @@ public class SkillArrowStorm extends ActiveSkill {
             k++;
 
             final int j = i;
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
 

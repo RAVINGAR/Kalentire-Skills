@@ -58,7 +58,7 @@ public class SkillTransform extends ActiveSkill {
         int healthDrainTick = SkillConfigManager.getUseSetting(hero, this, "health-drain-tick", 20, false);
         int healthDrainPeriod = SkillConfigManager.getUseSetting(hero, this, "health-drain-period", 500, false);
 
-        double perSecondMultiplier = 1000d / healthDrainPeriod;
+        double perSecondMultiplier = 1000.0 / healthDrainPeriod;
         double healthPerSecond = healthDrainTick * perSecondMultiplier;
 
         return getDescription()

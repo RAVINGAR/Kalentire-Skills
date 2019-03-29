@@ -192,7 +192,7 @@
 //                    sendPacket(player, new PacketPlayOutEntityEquipment(as.getId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(new ItemStack(Material.PACKED_ICE))));
 //                }
 //                display(cloudParticle, loc.clone().add(randomDouble(-1.5, 1.5), randomDouble(0, .5) - 0.75, randomDouble(-1.5, 1.5)), 0.4f, 2);
-//                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+//                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 //                    @Override
 //                    public void run() {
 //                        for (Player player : casterPlayer.getWorld().getPlayers())
@@ -206,7 +206,7 @@
 //                    final Collection<Entity> nearbyEntities = as.getBukkitEntity().getNearbyEntities(0.5, 0.5, 0.5);
 //
 //                    // Move back to main thread to do damage
-//                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+//                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 //                        @Override
 //                        public void run() {
 //                            for (Entity ent : nearbyEntities) {

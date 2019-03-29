@@ -51,16 +51,14 @@ public class SkillOvergrowth extends ActiveSkill {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("height", 18);
-        node.set(SkillSetting.RADIUS.node(), 3);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
-        node.set(SkillSetting.DURATION.node(), 7500);
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("height", 18);
+        config.set(SkillSetting.RADIUS.node(), 3);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        config.set(SkillSetting.DURATION.node(), 7500);
 //        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% conjures a wall of Water!");
 //        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s wall has crumbled");
-
-        return node;
+        return config;
     }
 
     public String getDescription(Hero hero) {
@@ -68,7 +66,8 @@ public class SkillOvergrowth extends ActiveSkill {
         //int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false) * 2;
 //        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
 
-        return getDescription();//.replace("$1", maxDist + "");//.replace("$2", width + "").replace("$3", height + "");
+        return getDescription();
+        //.replace("$1", maxDist + "");//.replace("$2", width + "").replace("$3", height + "");
     }
 
     @Override

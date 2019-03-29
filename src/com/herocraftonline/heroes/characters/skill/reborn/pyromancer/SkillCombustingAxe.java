@@ -11,6 +11,8 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -70,9 +72,8 @@ public class SkillCombustingAxe extends PassiveSkill {
 
             Player player = hero.getPlayer();
             ItemStack mainHand = player.getInventory().getItemInMainHand();
-            if (mainHand == null || !Util.axes.contains(mainHand.getType().name())) {
+            if (mainHand == null || !Util.axes.contains(mainHand.getType().name()))
                 return;
-            }
 
             LivingEntity targetLE = (LivingEntity) event.getEntity();
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetLE);
@@ -88,7 +89,6 @@ public class SkillCombustingAxe extends PassiveSkill {
                 damage = burningEffect.getRemainingDamage() * damageEffectiveness;
                 targetCT.removeEffect(effect);
                 foundBurningEffect = true;
-                break;
             }
 
             if (!foundBurningEffect) {
@@ -96,13 +96,22 @@ public class SkillCombustingAxe extends PassiveSkill {
                 targetLE.setFireTicks(0);
             }
 
-            if (damage <= 0) {
-                player.sendMessage("COMBUSTING AXE: 0 Fucking Damage.");
+            if (damage <= 0)
                 return;
-            }
 
             addSpellTarget(targetLE, hero);
             damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+
+            FireworkEffect firework = FireworkEffect.builder()
+                    .flicker(false)
+                    .trail(true)
+                    .withColor(Color.RED)
+                    .withColor(Color.RED)
+                    .withColor(Color.ORANGE)
+                    .withFade(Color.BLACK)
+                    .with(FireworkEffect.Type.BURST)
+                    .build();
+            VisualEffect.playInstantFirework(firework, targetLE.getLocation());
 
             broadcast(targetLE.getLocation(), "    " + combustText, player.getName(), CustomNameManager.getName(targetCT));
         }

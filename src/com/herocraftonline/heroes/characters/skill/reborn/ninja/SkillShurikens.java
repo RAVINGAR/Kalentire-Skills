@@ -137,7 +137,7 @@ public class SkillShurikens extends PassiveSkill {
                 return;
 
             // Delete the projectile so it cannot be picked up by any players.
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
                     shurikens.remove(projectile);
@@ -221,7 +221,7 @@ public class SkillShurikens extends PassiveSkill {
         int i = 1;
         for (double a = 0; a <= degreesRad; a += diff) {
             final double finalA = a;
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
                     // Convert yaw to radians

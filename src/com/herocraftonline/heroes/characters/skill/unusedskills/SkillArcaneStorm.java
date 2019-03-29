@@ -46,7 +46,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			    final VisualEffect fplayer = new VisualEffect();
 			    for(int i = 0; i < fireworkLocations.size(); i++) {
 			    	final Location fLoc = fireworkLocations.get(i);
-			    	Bukkit.getScheduler().runTaskLater(this.plugin, new Runnable() {
+			    	Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, new Runnable() {
 						@Override
 						public void run() {
 							try {

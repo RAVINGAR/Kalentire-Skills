@@ -216,7 +216,7 @@ public class SkillPiggify extends TargettedSkill {
             if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER)
                     || player.hasPotionEffect(PotionEffectType.HARM)) {
                 // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
                     @Override
                     public void run() {
                         PigEffect.super.removeFromHero(hero);

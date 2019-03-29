@@ -43,7 +43,6 @@ public class SkillAccelerationField extends ActiveSkill {
         setUsage("/skill accelerationfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerationfield");
-        setToggleableEffectName("AccelerationField");
         setTypes(SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);

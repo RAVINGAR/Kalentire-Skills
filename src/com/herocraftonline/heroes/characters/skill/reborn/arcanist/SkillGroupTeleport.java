@@ -37,6 +37,7 @@ public class SkillGroupTeleport extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
+        broadcastExecuteText(hero);
 
         for (Hero partyHero : hero.getParty().getMembers()) {
             Player partyPlayer = partyHero.getPlayer();
@@ -57,7 +58,6 @@ public class SkillGroupTeleport extends ActiveSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
-        broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 }

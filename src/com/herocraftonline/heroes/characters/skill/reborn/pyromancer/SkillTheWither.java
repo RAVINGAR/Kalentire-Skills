@@ -15,8 +15,13 @@ import com.herocraftonline.heroes.characters.equipment.EquipmentType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import me.libraryaddict.disguise.DisguiseAPI;
+import me.libraryaddict.disguise.disguisetypes.Disguise;
+import me.libraryaddict.disguise.disguisetypes.DisguiseType;
+import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,6 +37,7 @@ import java.util.logging.Level;
 
 public class SkillTheWither extends ActiveSkill {
 
+    private boolean disguiseApiLoaded;
     private String effectName = "WitherForm";
     private String applyText;
     private String expireText;
@@ -44,6 +50,10 @@ public class SkillTheWither extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill thewither", "skill witherform");
         setTypes(SkillType.ABILITY_PROPERTY_WITHER, SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING, SkillType.SILENCEABLE, SkillType.BUFFING);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
+            disguiseApiLoaded = true;
+        }
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEffectListener(this), plugin);
     }
@@ -109,8 +119,62 @@ public class SkillTheWither extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
-            PlayerInventory inventory = player.getInventory();
             addFireTicks(player);
+
+            if (disguiseApiLoaded) {
+                disguiseAsWitherSkelly(player);
+            } else {
+                addWitherSkull(hero, player);
+            }
+        }
+
+        @Override
+        public void tickMonster(Monster monster) { }
+
+        @Override
+        public void tickHero(Hero hero) {
+            addFireTicks(hero.getEntity());
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+            if (disguiseApiLoaded) {
+                removeDisguise(player);
+            } else {
+                removeWitherSkull(player);
+            }
+        }
+
+        private void disguiseAsWitherSkelly(Player player) {
+            if (DisguiseAPI.isDisguised(player)) {
+                removeDisguise(player);
+            }
+
+            MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.WITHER_SKELETON), true);
+            disguise.setKeepDisguiseOnPlayerDeath(false);
+            disguise.setEntity(player);
+            disguise.setShowName(true);
+            disguise.setModifyBoundingBox(false);
+            disguise.setReplaceSounds(true);
+            disguise.setHearSelfDisguise(true);
+            disguise.setHideHeldItemFromSelf(true);
+            disguise.setHideArmorFromSelf(true);
+            disguise.startDisguise();
+        }
+
+        private void removeDisguise(Player player) {
+            if (DisguiseAPI.isDisguised(player)) {
+                Disguise disguise = DisguiseAPI.getDisguise(player);
+                disguise.stopDisguise();
+                disguise.removeDisguise();
+            }
+        }
+
+        private void addWitherSkull(Hero hero, Player player) {
+            PlayerInventory inventory = player.getInventory();
 
             ItemStack transformedHead = new ItemStack(Material.WITHER_SKELETON_SKULL);
             ItemMeta itemmeta = transformedHead.getItemMeta();
@@ -130,21 +194,7 @@ public class SkillTheWither extends ActiveSkill {
             Util.syncInventory(player, plugin);
         }
 
-        @Override
-        public void tickMonster(Monster monster) {
-            addFireTicks(monster.getEntity());
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            addFireTicks(hero.getEntity());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
+        private void removeWitherSkull(Player player) {
             PlayerInventory inventory = player.getInventory();
 
             ItemStack transformedHead = inventory.getHelmet();
@@ -172,7 +222,7 @@ public class SkillTheWither extends ActiveSkill {
         private double healhReductionPerStack;
 
         public WitherStackEffect(Skill skill, Player applier, int witherAmplifier, double healhReductionPerStack, int maxStacks) {
-            super(skill, "WitherAttacked", applier, maxStacks);
+            super(skill, applier.getName() + "-WitherAttacked", applier, maxStacks);
             this.witherAmplifier = witherAmplifier;
             this.healhReductionPerStack = healhReductionPerStack;
 
@@ -188,19 +238,6 @@ public class SkillTheWither extends ActiveSkill {
         public void setDelta(Double value) {
             this.healhReductionPerStack = value / effectStack.count();
         }
-
-//        @Override
-//        protected void stackCountChangedOnHero(Hero hero) {
-//            if (effectStack.hasNone())
-//                return;
-//        }
-//
-//        @Override
-//        protected void stackCountChangedOnMonster(Monster monster) {
-//            if (effectStack.hasNone())
-//                return;
-//
-//        }
     }
 
     public class SkillEffectListener implements Listener {
@@ -219,14 +256,15 @@ public class SkillTheWither extends ActiveSkill {
             if (!hero.hasEffect(effectName))
                 return;
 
+            Player player = hero.getPlayer();
             int duration = SkillConfigManager.getUseSetting(hero, skill, "on-hit-wither-duration", 2000, false);
             double healingReduction = SkillConfigManager.getUseSetting(hero, skill, "on-hit-healing-reduction-per-stack", 0.075, false);
             int witherAmplifier = SkillConfigManager.getUseSetting(hero, skill, "on-hit-wither-amplifier", 3, false);
             int maxStacks = SkillConfigManager.getUseSetting(hero, skill, "on-hit-max-stacks", 6, false);
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity)event.getEntity());
-            targetCT.addEffectStack("WitherAttacked", skill, hero.getPlayer(), duration,
-                    () -> new WitherStackEffect(skill, hero.getPlayer(), witherAmplifier, healingReduction, maxStacks));
+            targetCT.addEffectStack(player.getName() + "-WitherAttacked", skill, player, duration,
+                    () -> new WitherStackEffect(skill, player, witherAmplifier, healingReduction, maxStacks));
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

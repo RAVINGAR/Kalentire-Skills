@@ -68,6 +68,8 @@ public class SkillChainLightning extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        broadcastExecuteText(hero, target);
+
         int strikePeriod = SkillConfigManager.getUseSetting(hero, this, "strike-period", 250, false);
         ChainLightningEffect effect = new ChainLightningEffect(this, player, strikePeriod, target);
 
@@ -76,8 +78,6 @@ public class SkillChainLightning extends TargettedSkill {
             hero.removeEffect(hero.getEffect(effect.getName()));
 
         hero.addEffect(effect);
-
-        broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;
     }
