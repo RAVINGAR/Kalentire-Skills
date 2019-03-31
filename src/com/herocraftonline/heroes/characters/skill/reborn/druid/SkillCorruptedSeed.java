@@ -13,13 +13,15 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import de.slikey.effectlib.effect.SphereEffect;
+import de.slikey.effectlib.util.DynamicLocation;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -28,7 +30,8 @@ public class SkillCorruptedSeed extends TargettedSkill {
     private String toggleableEffectName = "SeedExplode";
     private String applyText;
     private String expireText;
-
+    private static Color VOID_PURPLE = Color.fromRGB(75, 0 , 130);
+    private static Color FEL_GREEN = Color.fromRGB(19, 255 , 41);
     public SkillCorruptedSeed(Heroes plugin) {
         super(plugin, "CorruptedSeed");
         setDescription("Plant a corrupted seed in yourself or an ally, recasting this ability will explode the seed silencing nearby enemies. While the user is holding a seed they will take periodic damage");
@@ -41,7 +44,8 @@ public class SkillCorruptedSeed extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has planted a corrupted seed!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has planted a corrupted seed on %target%!").replace("%hero%", "$2").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%`s corrupted seed has exploded!").replace("%target%", "$1");
         setUseText(null);
     }
 
@@ -73,7 +77,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
         double perSecondMultiplier = 1000d / healthDrainPeriod;
         double healthPerSecond = healthDrainTick * perSecondMultiplier;
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
-        long silenceDuration = SkillConfigManager.getUseSetting(hero, this, "silence-duation", 3000, false);
+        long silenceDuration = SkillConfigManager.getUseSetting(hero, this, "silence-duration", 3000, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(healthPerSecond));
@@ -83,8 +87,8 @@ public class SkillCorruptedSeed extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has planted a corrupted seed!");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "The corrupted seed has exploded silencing nearby enemies!");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has planted a corrupted seed on %target%!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%`s corrupted seed has exploded!");
         config.set("health-drain-tick", 20.0D);
         config.set("health-drain-period", 500);
         config.set(SkillSetting.DURATION.node(), 5000);
@@ -98,6 +102,8 @@ public class SkillCorruptedSeed extends TargettedSkill {
         private final double healthDrainTick;
         private double radius;
         private long silenceDuration;
+        private EffectManager effectManager;
+        private SphereEffect visualEffect;
 
         public CorruptedSeedEffect(Skill skill, Player applier, double healthDrainTick, long period, long duration) {
             super(skill, toggleableEffectName, applier, period, duration, applyText, expireText);
@@ -111,10 +117,10 @@ public class SkillCorruptedSeed extends TargettedSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
             this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 3, false);
             this.silenceDuration = SkillConfigManager.getUseSetting(hero, skill, "silence-duration", 3000, false);
+            applyBaseSeedVisuals(hero.getPlayer());
+            applyFlameSeedVisuals(hero.getPlayer());
         }
 
         @Override
@@ -126,8 +132,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
             double newHealth = player.getHealth() - healthDrainTick;
-            player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, player.getLocation(), 25, 0.5, 1, 0.5, 0.1);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 10.0F, 16);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1, 1);
             if (newHealth < 1)
                 hero.removeEffect(this);
 
@@ -140,7 +145,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
 
-            particleEffect(player);
+            particleExplodeEffect(player, 1750, VOID_PURPLE);
 
             List<Entity> targets = hero.getPlayer().getNearbyEntities(radius, radius, radius);
             for (Entity entity : targets) {
@@ -151,39 +156,93 @@ public class SkillCorruptedSeed extends TargettedSkill {
                 CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                 targetCT.addEffect(new SilenceEffect(skill, applier, silenceDuration));
             }
+            if (this.effectManager != null) {
+                this.effectManager.dispose();
         }
 
-        private void particleEffect(LivingEntity target) {
+        }
+
+        @NotNull
+        private void particleExplodeEffect(LivingEntity target, int explosionDuration, Color color) {
             EffectManager em = new EffectManager(plugin);
-            Effect visualEffect = new Effect(em) {
-                Particle particle = Particle.DRAGON_BREATH;
+            SphereEffect visualEffect = new SphereEffect(em);
 
-                @Override
-                public void onRun() {
-                    for (double z = -radius; z <= radius; z += 0.33) {
-                        for (double x = -radius; x <= radius; x += 0.33) {
-                            if (x * x + z * z <= radius * radius) {
-                                display(particle, getLocation().clone().add(x, 0, z));
-                            }
-                        }
-                    }
-                }
-            };
+            DynamicLocation dynamicLoc = new DynamicLocation(target);
+            visualEffect.setDynamicOrigin(dynamicLoc);
+            visualEffect.disappearWithOriginEntity = true;
 
-            int silenceDurationTicks = (int)silenceDuration / 50;
-            visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
-            visualEffect.period = 10;
-            visualEffect.iterations = silenceDurationTicks / visualEffect.period;
+            final int delayTicks = explosionDuration / 50;
+            final int displayPeriod = 3;
+            visualEffect.radius = 0.5;
+            visualEffect.radiusIncrease = +1.0;
+            visualEffect.period = displayPeriod;
+            visualEffect.iterations = delayTicks / displayPeriod;
+            visualEffect.color = color;
 
-            Location location = target.getLocation().clone();
-            visualEffect.asynchronous = true;
-            visualEffect.setLocation(location);
 
-            visualEffect.start();
+            visualEffect.particle = Particle.REDSTONE;
+            visualEffect.particleCount = 5;
+            em.start(visualEffect);
             em.disposeOnTermination();
 
-            target.getWorld().playSound(location, Sound.ENTITY_BLAZE_DEATH, 0.15f, 0.0001f);
         }
+
+
+        private void applyBaseSeedVisuals(LivingEntity target) {
+            final World world = target.getWorld();
+            final Location loc = target.getLocation();
+            final int durationTicks = (int) this.getDuration() / 50;
+            final int displayPeriod = 2;
+
+            this.effectManager = new EffectManager(plugin);
+            this.visualEffect = new SphereEffect(effectManager);
+
+            DynamicLocation dynamicLoc = new DynamicLocation(target);
+            visualEffect.setDynamicOrigin(dynamicLoc);
+            visualEffect.disappearWithOriginEntity = true;
+
+            visualEffect.radius = 0.3F;
+            visualEffect.color = VOID_PURPLE;
+            visualEffect.particle = Particle.REDSTONE;
+            visualEffect.particles = 25;
+            dynamicLoc.addOffset(new Vector(0, 0.8, 0));
+
+            visualEffect.period = displayPeriod;
+            visualEffect.iterations = durationTicks / displayPeriod;
+
+            effectManager.start(visualEffect);
+            effectManager.disposeOnTermination();
+        }
+
+        private void applyFlameSeedVisuals(LivingEntity target) {
+            final World world = target.getWorld();
+            final Location loc = target.getLocation();
+            final int durationTicks = (int) this.getDuration() / 50;
+            final int displayPeriod = 2;
+
+            this.effectManager = new EffectManager(plugin);
+            this.visualEffect = new SphereEffect(effectManager);
+
+            DynamicLocation dynamicLoc = new DynamicLocation(target);
+            visualEffect.setDynamicOrigin(dynamicLoc);
+            visualEffect.disappearWithOriginEntity = true;
+
+            visualEffect.radius = 0.4F;
+            visualEffect.color = FEL_GREEN;
+            visualEffect.particle = Particle.REDSTONE;
+            visualEffect.particles = 35;
+            dynamicLoc.addOffset(new Vector(0, 0.8, 0));
+
+            visualEffect.period = displayPeriod;
+            visualEffect.iterations = durationTicks / displayPeriod;
+
+            effectManager.start(visualEffect);
+            effectManager.disposeOnTermination();
+        }
+
+
+
+
     }
 }
 
