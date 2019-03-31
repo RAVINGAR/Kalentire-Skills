@@ -131,7 +131,7 @@ public class SkillPotion extends PassiveSkill {
         }
 
         // PlayerItemConsume listener for accurate knowledge of when a potion is drank, rather than just when it's clicked.
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
             if (event.getItem().getType() != Material.POTION)
                 return;
@@ -256,7 +256,7 @@ public class SkillPotion extends PassiveSkill {
 
         // CloudApply listener to apply the effects from a Lingering potion, since the entities it hit aren't known until it does.
         // Since the multiplier of duration/effect for lingering is customizable, we manually apply vanilla effects always.
-        @EventHandler(priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.MONITOR)
         public void AreaEffectCloudApplyEvent(AreaEffectCloudApplyEvent event) {
             AreaEffectCloud cloud = event.getEntity();
 
@@ -310,7 +310,7 @@ public class SkillPotion extends PassiveSkill {
         }
 
         // PotionSplash listener to apply the effects from a Splash potion, since the entities it hit aren't known until it does.
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPotionSplash(PotionSplashEvent event) {
             ThrownPotion potion = event.getPotion();
 

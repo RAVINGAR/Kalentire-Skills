@@ -61,7 +61,7 @@ public class SkillCombustingAxe extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (event.getEntity().getFireTicks() <= 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;

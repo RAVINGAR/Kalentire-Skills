@@ -66,7 +66,7 @@ public class SkillDualWield extends PassiveSkill {
             this.skill = skill;
         }
 
-//        @EventHandler(priority = EventPriority.LOWEST)
+//        @EventHandler(priority = EventPriority.MONITOR)
 //        public void onLeftClick(PlayerInteractEvent event) {
 //            if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
 //                return;
@@ -94,7 +94,7 @@ public class SkillDualWield extends PassiveSkill {
 ////            player.removeMetadata(metaDataName, plugin);
 //        }
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;

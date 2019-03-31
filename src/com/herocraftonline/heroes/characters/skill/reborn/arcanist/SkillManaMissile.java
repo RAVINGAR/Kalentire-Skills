@@ -66,7 +66,7 @@ public class SkillManaMissile extends PassiveSkill {
 			this.skill = skill;
 		}
 
-		@EventHandler(priority = EventPriority.LOWEST)
+		@EventHandler(priority = EventPriority.MONITOR)
 		public void onLeftClick(PlayerInteractEvent event) {
 			if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
 				return;
@@ -90,9 +90,12 @@ public class SkillManaMissile extends PassiveSkill {
 				return false;
 
 			if (hero.hasEffect(cooldownEffectName)) {
-				String timeRemaining = Util.decFormatCDs.format(((CooldownEffect) hero.getEffect(cooldownEffectName)).getRemainingTime() / 1000.0);
-				ActiveSkill.sendResultMessage(hero, skill, new SkillResult(SkillResult.ResultType.ON_COOLDOWN, true, skill.getName(), timeRemaining));
-				return false;
+				double remainingTime = ((CooldownEffect) hero.getEffect(cooldownEffectName)).getRemainingTime() / 1000.0;
+				if (remainingTime > 0.0) {	// Sometimes we are below zero with this thing. Kinda weird.
+					String formattedRemainingTime = Util.decFormatCDs.format(remainingTime);
+					ActiveSkill.sendResultMessage(hero, skill, new SkillResult(SkillResult.ResultType.ON_COOLDOWN, true, skill.getName(), formattedRemainingTime));
+					return false;
+				}
 			}
 
 			Player player = hero.getPlayer();
@@ -215,13 +218,13 @@ public class SkillManaMissile extends PassiveSkill {
 					Vector v = new Vector(Math.cos(i + step / rotationSpeed), Math.sin(i + step / rotationSpeed), 0.0D);
 					v = rotate(v, loc).multiply(sizeMultiplier);
 
-//					Particle.DustOptions data = new Particle.DustOptions(color, 1.0F);
-//					loc.getWorld().spawnParticle(particle, loc, 0, v.getX(), v.getY(), v.getZ(), 0.08D, data, false);
+					Particle.DustOptions data = new Particle.DustOptions(color, 1.0F);
+					loc.getWorld().spawnParticle(particle, loc, 0, v.getX(), v.getY(), v.getZ(), 0.08D, data, false);
 
-					this.particleOffsetX = (float) v.getX();
-					this.particleOffsetY = (float) v.getY();
-					this.particleOffsetZ = (float) v.getZ();
-					display(particle, loc, color, 0.8F, 0);		// For some reason effect lib looks like shit.
+//					this.particleOffsetX = (float) v.getX();
+//					this.particleOffsetY = (float) v.getY();
+//					this.particleOffsetZ = (float) v.getZ();
+//					display(particle, loc, color, 0.8F, 0);		// For some reason effect lib looks like shit with the exact same parameters. Makes no sense to me.
 				}
 			}
 		}

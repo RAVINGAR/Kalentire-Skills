@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -122,6 +123,9 @@ public class SkillEvocation extends ActiveSkill {
 
         public EvocationEffect(Skill skill, Player applier, long regainPeriod) {
             super(skill, "Evocating", applier, regainPeriod, null, expireText);
+
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MAGIC);
         }
 
         @Override

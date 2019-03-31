@@ -57,10 +57,13 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 100);
+        node.set(SkillSetting.DAMAGE.node(), 80.0);
+        node.set("damage-per-block-height", 10.0);
+        node.set("maximum-total-damage-increase-for-blocks", 80);
         node.set(SkillSetting.RADIUS.node(), 5);
-        node.set("upwards-velocity", 0.5);
-        node.set("downwards-velocity", -0.5);
+        node.set("upwards-velocity", 1.0);
+        node.set("downwards-velocity", 1.0);
+        node.set("transform-jump-velocity-difference", 1.0);
         node.set("delay-ticks-before-drop", 10);
         node.set("target-horizontal-knockback", 1.0);
         node.set("target-vertical-knockback", 1.0);
@@ -71,8 +74,12 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
-        final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 0.5, false);
-        final double vPowerDown = SkillConfigManager.getUseSetting(hero, this, "downwards-velocity", -0.5, false);
+        double vTransformPower = SkillConfigManager.getUseSetting(hero, this, "transform-jump-velocity-difference", 1.0, false);
+        if (!hero.hasEffect("EnderBeastTransformed"))
+            vTransformPower = 0.0;  // Negate it if we aren't transformed.
+
+        final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 1.0, false) + vTransformPower;
+        final double vPowerDown = SkillConfigManager.getUseSetting(hero, this, "downwards-velocity", 1.0, false) + vTransformPower;
         final int delayTicksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "delay-ticks-before-drop", 10, false);
 
         broadcastExecuteText(hero);
@@ -88,7 +95,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             @Override
             public void run() {
                 player.setFallDistance(-512);
-                player.setVelocity(new Vector(0, vPowerDown, 0));
+                player.setVelocity(new Vector(0, -vPowerDown, 0));
 
                 DragonSmashUpdateTask updateTask = new DragonSmashUpdateTask(scheduler, hero);
                 updateTask.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, updateTask, 1L, 1L));
@@ -129,12 +136,12 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     private void smash(final Hero hero, double topYValue) {
         final Player player = hero.getPlayer();
-        final Location loc = player.getLocation().getBlock().getLocation();
+        final Location loc = player.getLocation().getBlock().getLocation().clone(); // We want the block loc, not the actual player loc.
         final SkillDragonSmash skill = this;
 
-        final double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-        final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damager-per-block-height", 10, false);
-        final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "max-damage-gain-per-block-height", 10, false);
+        final double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
+        final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damage-per-block-height", 10.0, false);
+        final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "maximum-total-damage-increase-for-block", 80.0, false);
         final double hPower = SkillConfigManager.getUseSetting(hero, this, "target-horizontal-knockback", 0.5, false);
         final double vPower = SkillConfigManager.getUseSetting(hero, this, "target-vertical-knockback", 0.5, false);
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
@@ -183,13 +190,10 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                     return;
                 }
 
-                for (Location l : Util.getCircleLocationList(loc, radius, radius, false, false, -1)) {
+                for (Location l : Util.getCircleLocationList(loc, radius, radius, false, false, -2)) {
                     Block block = l.getBlock();
-                    if (block == null)
-                        continue;
-
                     Block aboveBlock = block.getRelative(BlockFace.UP);
-                    if (!block.getType().isSolid() || (aboveBlock != null && aboveBlock.getType().isSolid()))
+                    if (!block.getType().isSolid() || !aboveBlock.isEmpty())
                         continue;
 
                     FallingBlock fb = loc.getWorld().spawnFallingBlock(block.getLocation().clone().add(0, 1.25f, 0), block.getType(), block.getData());

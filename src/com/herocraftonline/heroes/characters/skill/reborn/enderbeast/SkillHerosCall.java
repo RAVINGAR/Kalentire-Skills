@@ -42,7 +42,7 @@ public class SkillHerosCall extends ActiveSkill {
         setArgumentRange(0, 0);
         setUsage("/skill heroscall");
         setIdentifiers("skill heroscall");
-        setTypes(SkillType.DEBUFFING, SkillType.AREA_OF_EFFECT, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DEBUFFING, SkillType.AREA_OF_EFFECT, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 
     @Override
@@ -115,6 +115,9 @@ public class SkillHerosCall extends ActiveSkill {
 
             HeroicPurposeEffect callEffect = new HeroicPurposeEffect(this, player, period, duration, maxEffectiveDistance, pullPowerReduction);
             targetCT.addEffect(callEffect);
+            if (targetCT instanceof Hero) {
+                ((Hero) targetCT).interruptDelayedSkill();
+            }
             actualCallTargets.add(targetCT);
         }
 
@@ -158,6 +161,7 @@ public class SkillHerosCall extends ActiveSkill {
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.PHYSICAL);
+            types.add(EffectType.DISPELLABLE);
             types.add(EffectType.TAUNT);
 
             addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000 * 20), 1));

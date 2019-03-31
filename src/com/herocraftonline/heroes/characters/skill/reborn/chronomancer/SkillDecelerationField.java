@@ -37,8 +37,10 @@ import org.bukkit.util.Vector;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class SkillDecelerationField extends ActiveSkill {
+public class SkillDecelerationField extends TargettedLocationSkill {
 
+    private final static String immunityEffectName = "TemporallyWarded";
+    private final static String actualEffectName = "DeceleratedTime";
     private String applyText;
     private String expireText;
 
@@ -55,20 +57,22 @@ public class SkillDecelerationField extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 20, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 20.0, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        String formattedRadius = Util.decFormat.format(radius);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        return getDescription().replace("$1", radius + "").replace("$2", formattedDuration);
+        return getDescription().replace("$1", formattedRadius).replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.RADIUS.node(), 16);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 20);
+        config.set(SkillSetting.RADIUS.node(), 16.0);
+        config.set(SkillSetting.DURATION.node(), 10000);
         config.set("percent-speed-decrease", 0.35);
         config.set("projectile-velocity-multiplier", 0.5);
         config.set("pulse-period", 250);
-        config.set("mana-drain-per-pulse", 6);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is decelerating time!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer decelerating time.");
         config.set(SkillSetting.DELAY.node(), 1500);
@@ -85,44 +89,43 @@ public class SkillDecelerationField extends ActiveSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, Location location, String[] args) {
         Player player = hero.getPlayer();
 
-        // Can't have both up at once
-        hero.removeEffect(hero.getEffect("AccelerationField"));
+        broadcastExecuteText(hero);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16, false);
-        int pulsePeriod = SkillConfigManager.getUseSetting(hero, this, "pulse-period", 250, false);
-        int manaDrainPerPulse = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-pulse", 6, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16.0, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long pulsePeriod = SkillConfigManager.getUseSetting(hero, this, "pulse-period", 250, false);
         double percentDecrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-decrease", 0.35, false);
         double projectileVMulti = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier", 0.5, false);
 
-        DeceleratedFieldEmitterEffect emitterEffect = new DeceleratedFieldEmitterEffect(this, player, pulsePeriod, manaDrainPerPulse, radius, percentDecrease, projectileVMulti);
+        DeceleratedFieldEmitterEffect emitterEffect = new DeceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, location, radius, percentDecrease, projectileVMulti);
         hero.addEffect(emitterEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 2.0F, 0.533F);
-//        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 0.3F, 0.5F);
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }
 
-    public class DeceleratedFieldEmitterEffect extends PeriodicManaDrainEffect {
+    public class DeceleratedFieldEmitterEffect extends PeriodicExpirableEffect {
 
         private final EffectManager effectManager;
-        private final int radius;
-        private final int heightRadius;
-        private final int offsetHeight;
+        private final Location location;
+        private final double radius;
+        private final double heightRadius;
+        private final double offsetHeight;
         private final double flatDecrease;
         private final double projVMulti;
 
-        DeceleratedFieldEmitterEffect(Skill skill, Player applier, int period, int manaDrainPerTick, int radius, double percentDecrease, double projVMulti) {
-            super(skill, "DecelerationField", applier, period, manaDrainPerTick, applyText, expireText);
+        DeceleratedFieldEmitterEffect(Skill skill, Player applier, long period, long duration, Location location, double radius, double percentDecrease, double projVMulti) {
+            super(skill, "DecelerationField", applier, period, duration, applyText, expireText);
+            this.location = location;
 
             this.effectManager = new EffectManager(plugin);
             this.radius = radius;
-            this.heightRadius = 10; //(int) (radius * 0.25);
-            this.offsetHeight = 5; //(int) ((radius * 0.25) / 2);
+            this.heightRadius = radius;
+            this.offsetHeight = radius / 2.0;
             this.flatDecrease = Util.convertPercentageToPlayerMovementSpeedValue(percentDecrease);
             this.projVMulti = projVMulti;
 
@@ -137,13 +140,10 @@ public class SkillDecelerationField extends ActiveSkill {
             Player player = hero.getPlayer();
             int durationTicks = 20 * 60 * 60;    // An hour. We'll terminate it early and I don't imagine other people will ever bother to try and maintain it that long.
 
-            //Helix? Plot? Tornado? Trace? Turn?
             CylinderEffect effect = new CylinderEffect(effectManager);
-            DynamicLocation dynamicLoc = new DynamicLocation(player);
-            effect.setDynamicOrigin(dynamicLoc);
-            effect.disappearWithOriginEntity = true;
-            effect.height = heightRadius * 2;
-            effect.radius = radius;
+            effect.setLocation(location);
+            effect.height = (float) heightRadius;
+            effect.radius = (float) radius;
             effect.period = 1;
             effect.iterations = durationTicks;
 
@@ -174,10 +174,8 @@ public class SkillDecelerationField extends ActiveSkill {
         private void decelerateField(Hero hero) {
             Player player = hero.getPlayer();
 
-            Location currentLoc = player.getLocation();
-            int tempDuration = (int) (getPeriod() + 250);
-
-            Collection<Entity> nearbyEnts = currentLoc.getWorld().getNearbyEntities(currentLoc, radius, heightRadius, radius);
+            int tempDuration = (int) (getPeriod() + 250);   // Added 250 cuz this thing is buggy as hell without it BOI
+            Collection<Entity> nearbyEnts = location.getWorld().getNearbyEntities(location, radius, heightRadius, radius);
             for (Entity ent : nearbyEnts) {
                 if (ent instanceof Projectile) {
                     decelerateProjectile((Projectile) ent, projVMulti);
@@ -186,18 +184,19 @@ public class SkillDecelerationField extends ActiveSkill {
                     CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(lEnt);
                     if (ctTarget == null)
                         continue;
-                    if (ctTarget.hasEffect("TemporallyWarded"))
+                    if (ctTarget.hasEffect(immunityEffectName))
                         continue;
-
-                    if (ctTarget instanceof Hero) {
-                        if (!damageCheck(player, lEnt) && ctTarget != hero && (hero.getParty() == null || hero.getParty().isPartyMember((Hero) ctTarget)))
+                    if (hero.isAlliedTo(lEnt)) {
+                        // Only skip our allies if they are invulnerable.
+                        if (ctTarget.hasEffectType(EffectType.INVULNERABILITY))
                             continue;
                     } else {
-                        if (!damageCheck(player, lEnt) && ctTarget != hero)
+                        // If they AREN'T our ally, we just need to make sure that they can actually be damaged.
+                        if (!damageCheck(player, lEnt))
                             continue;
                     }
 
-                    ctTarget.removeEffect(ctTarget.getEffect("DeceleratedTime"));
+                    ctTarget.removeEffect(ctTarget.getEffect(actualEffectName));
                     ctTarget.addEffect(new DeceleratedTimeEffect(skill, player, tempDuration, flatDecrease, projVMulti));
                 }
             }
@@ -209,11 +208,11 @@ public class SkillDecelerationField extends ActiveSkill {
         boolean slowedInAirAlready;
 
         DeceleratedTimeEffect(Skill skill, Player applier, int duration, double flatDecrease, double projVMulti) {
-            super(skill, "DeceleratedTime", applier, duration, flatDecrease, null, null);
+            super(skill, actualEffectName, applier, duration, flatDecrease, null, null);
             this.projVMulti = projVMulti;
 
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.MAGIC);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.TEMPORAL);
         }
 
         @Override
@@ -228,18 +227,17 @@ public class SkillDecelerationField extends ActiveSkill {
 
         @Override
         public void applyToMonster(Monster monster) {
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 3));
             super.applyToMonster(monster);
-
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 2));
         }
     }
 
     private void decelerateProjectile(Projectile proj, double multi) {
-        if (proj.hasMetadata("DeceleratedTime"))
+        if (proj.hasMetadata(actualEffectName))
             return;
         Vector multipliedVel = proj.getVelocity().multiply(multi);
         proj.setVelocity(multipliedVel);
-        proj.setMetadata("DeceleratedTime", new FixedMetadataValue(plugin, true));
+        proj.setMetadata(actualEffectName, new FixedMetadataValue(plugin, true));
     }
 
     public class SkillListener implements Listener {
@@ -250,15 +248,15 @@ public class SkillDecelerationField extends ActiveSkill {
                 return;
             if (!(event.getEntity().getShooter() instanceof LivingEntity))
                 return;
-            if (event.getEntity().hasMetadata("DeceleratedTime"))
+            if (event.getEntity().hasMetadata(actualEffectName))
                 return;
 
             LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
             CharacterTemplate ctShooter = plugin.getCharacterManager().getCharacter(shooter);
-            if (ctShooter == null || !ctShooter.hasEffect("DeceleratedTime"))
+            if (ctShooter == null || !ctShooter.hasEffect(actualEffectName))
                 return;
 
-            DeceleratedTimeEffect effect = (DeceleratedTimeEffect) ctShooter.getEffect("DeceleratedTime");
+            DeceleratedTimeEffect effect = (DeceleratedTimeEffect) ctShooter.getEffect(actualEffectName);
             if (effect == null)
                 return;
 

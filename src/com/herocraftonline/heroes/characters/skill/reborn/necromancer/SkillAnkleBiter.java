@@ -93,9 +93,9 @@ public class SkillAnkleBiter extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() == 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
+            if (event.getDamage() <= 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
             CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
@@ -132,7 +132,7 @@ public class SkillAnkleBiter extends ActiveSkill {
             double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 200.0, false);
             double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 25.0, false);
 
-            Wolf minion = (Wolf) monster.getEntity();
+            LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
             minion.setHealth(maxHp);
             minion.setCustomName(ChatColor.DARK_GREEN + applier.getName() + "'s Minion");
@@ -159,8 +159,7 @@ public class SkillAnkleBiter extends ActiveSkill {
 
         @Override
         public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            Wolf minion = (Wolf) monster.getEntity();
+            LivingEntity minion = monster.getEntity();
 
             if (disguiseApiLoaded) {
                 if (DisguiseAPI.isDisguised(minion)) {
@@ -170,7 +169,8 @@ public class SkillAnkleBiter extends ActiveSkill {
                 }
             }
 
-            minion.remove();
+            // Execute this last since it will cleanup the minion
+            super.removeFromMonster(monster);
         }
     }
 }

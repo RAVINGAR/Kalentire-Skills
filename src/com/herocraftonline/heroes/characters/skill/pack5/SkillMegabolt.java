@@ -71,7 +71,7 @@ public class SkillMegabolt extends TargettedSkill {
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);
-        
+
         broadcastExecuteText(hero, target);
 
         // Damage the first target      

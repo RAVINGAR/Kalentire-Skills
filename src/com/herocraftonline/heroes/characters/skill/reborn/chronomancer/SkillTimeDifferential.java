@@ -23,8 +23,8 @@ public class SkillTimeDifferential extends TargettedSkill {
 
     public SkillTimeDifferential(Heroes plugin) {
         super(plugin, "TimeDifferential");
-        setDescription("Attempt to shatter time around your target, dealing $1 damage and an additional "
-                + "$2 damage for each time based effect affecting them.");
+        setDescription("Blah blah NOTTIFY A DEV THIS IS A TEMP DESCRIPTION - Attempt to shatter time around your target, dealing $3 damage and an additional "
+                + "$4 damage for each time based effect affecting them.");
         setUsage("/skill timedifferential");
         setArgumentRange(0, 0);
         setIdentifiers("skill timedifferential");
@@ -48,10 +48,11 @@ public class SkillTimeDifferential extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
-        config.set("healing-per-temporal-effect", 10.0);
+        config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set("damage-per-temporal-effect", 10.0);
+        config.set(SkillSetting.HEALING.node(), 40.0);
+        config.set("healing-per-temporal-effect", 10.0);
         config.set("healing-delay", 1000);
         config.set("damage-delay", 1000);
         return config;
@@ -63,8 +64,8 @@ public class SkillTimeDifferential extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
-        if (hero.getParty() != null && ctTarget instanceof Hero && hero.getParty().isPartyMember((Hero) ctTarget)) {
-            healTarget(hero, (Hero) ctTarget);
+        if (hero.isAlliedTo(target)) {
+            healTarget(hero, ctTarget);
         } else {
             damageTarget(hero, ctTarget, target);
         }
@@ -72,13 +73,13 @@ public class SkillTimeDifferential extends TargettedSkill {
         return SkillResult.NORMAL;
     }
     
-    private void healTarget(Hero hero, Hero targetHero) {
+    private void healTarget(Hero hero, CharacterTemplate targetCT) {
         final Player player = hero.getPlayer();
         double baseHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
         final double healingPerStack = SkillConfigManager.getUseSetting(hero, this, "healing-per-temporal-effect", 10.0, false);
 
         double healing = baseHealing;
-        for (Effect effect : targetHero.getEffects()) {
+        for (Effect effect : targetCT.getEffects()) {
             if (!effect.isType(EffectType.TEMPORAL))
                 continue;
 
@@ -88,14 +89,14 @@ public class SkillTimeDifferential extends TargettedSkill {
             } else {
                 healing += healingPerStack;
             }
-            targetHero.removeEffect(effect);
+            targetCT.removeEffect(effect);
         }
 
         final Skill skill = this;
-        final LivingEntity target = targetHero.getEntity();
+        final LivingEntity target = targetCT.getEntity();
         final World world = target.getWorld();
         final Location loc = target.getLocation();
-        final double finalHealing = healing;
+        final double finalHealing = getScaledHealing(hero, healing);
         final int delaySeconds = SkillConfigManager.getUseSetting(hero, this, "healing-delay", 1000, false);
 
         EffectManager em = new EffectManager(plugin);
@@ -105,15 +106,29 @@ public class SkillTimeDifferential extends TargettedSkill {
         visualEffect.callback = new Runnable() {
             @Override
             public void run() {
+                if (target.getHealth() < 0  || target.isDead())
+                    return;
+
+                if (targetCT instanceof Hero) {
+                    if (!tryHealHero()) {
+                        return;
+                    }
+                } else {
+                    targetCT.heal(finalHealing);
+                }
+                world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0F);
+            }
+
+            private boolean tryHealHero() {
+                Hero targetHero = (Hero) targetCT;
                 HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, finalHealing, skill, hero);
                 plugin.getServer().getPluginManager().callEvent(hrhEvent);
                 if (hrhEvent.isCancelled()) {
                     player.sendMessage("Your target had their healing prevented!");
-                    return;
+                    return false;
                 }
-
                 targetHero.heal(hrhEvent.getDelta());
-                world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0F);
+                return true;
             }
         };
 
@@ -173,6 +188,9 @@ public class SkillTimeDifferential extends TargettedSkill {
         visualEffect.callback = new Runnable() {
             @Override
             public void run() {
+                if (target.getHealth() < 0  || target.isDead())
+                    return;
+
                 plugin.getDamageManager().addSpellTarget(target, hero, skill);
                 damageEntity(target, player, finalDamage, DamageCause.MAGIC, false);
                 world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);

@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.CharacterDamageEvent;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
@@ -144,8 +145,8 @@ public class SkillManaShield extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-        public void onSkillDamage(EntityDamageEvent event) {
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onCharacterDamage(EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player)) {
                 return;
             }

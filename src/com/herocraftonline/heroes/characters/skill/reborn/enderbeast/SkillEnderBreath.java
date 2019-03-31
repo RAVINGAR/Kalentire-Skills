@@ -179,7 +179,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
             BlockIterator iter = null;
             try {
-                iter = new BlockIterator(player, distance);
+                iter = new BlockIterator(target, distance);
             } catch (IllegalStateException e) {
                 return;
             }

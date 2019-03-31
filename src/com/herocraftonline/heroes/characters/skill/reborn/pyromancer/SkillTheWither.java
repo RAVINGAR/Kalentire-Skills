@@ -247,7 +247,7 @@ public class SkillTheWither extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamageEvent(WeaponDamageEvent event) {
             if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;

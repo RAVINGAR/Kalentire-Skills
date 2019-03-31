@@ -137,7 +137,6 @@ public class SkillFirebolt extends ActiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-
         private final Skill skill;
 
         public SkillEntityListener(Skill skill) {

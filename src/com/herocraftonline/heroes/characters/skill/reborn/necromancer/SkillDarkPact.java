@@ -111,8 +111,6 @@
 //
 //        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25, false);
 //        healing = getScaledHealing(hero, healing);
-//        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
-//        healing += hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease;
 //
 //        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
 //        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);

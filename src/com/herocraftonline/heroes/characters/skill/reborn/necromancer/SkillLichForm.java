@@ -106,8 +106,8 @@ public class SkillLichForm extends ActiveSkill {
             super(skill, toggleableEffectName, applier, period, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DARK);
-            types.add(EffectType.MAGIC);
             types.add(EffectType.FORM);
             types.add(EffectType.WATER_BREATHING);
 

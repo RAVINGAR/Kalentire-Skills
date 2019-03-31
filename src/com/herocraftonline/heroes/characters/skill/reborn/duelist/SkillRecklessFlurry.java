@@ -148,6 +148,9 @@ public class SkillRecklessFlurry extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
+            if (!(event.getEntity() instanceof LivingEntity))
+                return;
+
             CharacterTemplate attackerCT = event.getDamager();
             LivingEntity defenderLE = (LivingEntity) event.getEntity();
 

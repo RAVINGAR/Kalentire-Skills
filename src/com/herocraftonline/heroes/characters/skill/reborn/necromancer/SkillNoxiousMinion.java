@@ -98,7 +98,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
             if (event.getDamage() == 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
                 return;
@@ -131,8 +131,8 @@ public class SkillNoxiousMinion extends ActiveSkill {
         NoxiousMinionEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
 
-            types.add(EffectType.DISEASE);
-            types.add(EffectType.WATER_BREATHING);
+            types.add(EffectType.POISON);
+            //types.add(EffectType.WATER_BREATHING);
 
             int speedAmplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-speed-amplifier", 2, false);
 
@@ -147,10 +147,11 @@ public class SkillNoxiousMinion extends ActiveSkill {
             double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 500.0, false);
             double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 50.0, false);
 
-            Wolf minion = (Wolf) monster.getEntity();
+            LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
             minion.setHealth(maxHp);
-            minion.setCustomName("");
+            minion.setCustomName(ChatColor.DARK_GREEN + applier.getName() + "'s Minion");
+            minion.setCustomNameVisible(true);
             monster.setDamage(hitDmg);
 
             if (disguiseApiLoaded) {
@@ -165,8 +166,8 @@ public class SkillNoxiousMinion extends ActiveSkill {
                 disguise.setShowName(true);
                 disguise.setModifyBoundingBox(false);
                 disguise.setReplaceSounds(true);
-                LivingWatcher watcher = disguise.getWatcher();
-                watcher.setCustomName(ChatColor.DARK_GREEN + applier.getName() + "'s Minion");
+//                LivingWatcher watcher = disguise.getWatcher();
+//                watcher.setCustomName(ChatColor.DARK_GREEN + applier.getName() + "'s Minion");
 //                watcher.setArmor(applier.getInventory().getArmorContents().clone());
                 disguise.startDisguise();
             }
@@ -174,8 +175,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
 
         @Override
         public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            Wolf minion = (Wolf) monster.getEntity();
+            LivingEntity minion = monster.getEntity();
 
             if (disguiseApiLoaded) {
                 if (DisguiseAPI.isDisguised(minion)) {
@@ -185,7 +185,8 @@ public class SkillNoxiousMinion extends ActiveSkill {
                 }
             }
 
-            minion.remove();
+            // Execute this last since it will cleanup the minion
+            super.removeFromMonster(monster);
         }
     }
 }

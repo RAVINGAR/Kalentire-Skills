@@ -135,7 +135,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
                         // Run this delayed task to check if the port failed
                         final String playerName = player.getName();
-                        Bukkit.getScheduler()runTaskLaterAsynchronously(plugin, new Runnable() {
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
                             @Override
                             public void run()

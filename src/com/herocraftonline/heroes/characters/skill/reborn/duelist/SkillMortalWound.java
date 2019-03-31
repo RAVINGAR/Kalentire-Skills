@@ -127,7 +127,7 @@ public class SkillMortalWound extends TargettedSkill {
 
     public class SkillEntityListener implements Listener {
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityRegainHealth(EntityRegainHealthEvent event) {
             if (!(event.getEntity() instanceof Player)) {
                 return;

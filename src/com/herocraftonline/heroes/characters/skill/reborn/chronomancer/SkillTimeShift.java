@@ -4,25 +4,29 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectStack;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.Stacking;
-import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
-import com.herocraftonline.heroes.characters.effects.common.WalkSpeedDecreaseEffect;
-import com.herocraftonline.heroes.characters.effects.common.WalkSpeedIncreaseEffect;
+import com.herocraftonline.heroes.characters.effects.common.WalkSpeedPercentDecreaseEffect;
+import com.herocraftonline.heroes.characters.effects.common.WalkSpeedPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class SkillTimeShift extends TargettedSkill {
 
     private static final float DEFAULT_MINECRAFT_MOVEMENT_SPEED = 0.2f;
 
-//    private String applyText;
-//    private String expireText;
+    private String upShiftApplyText;
+    private String upShiftExpireText;
+    private String downShiftApplyText;
+    private String downShiftExpireText;
 
     private String accelEffectName = "AcceleratedShiftedTime";
     private String decelEffectName = "DeceleratedShiftedTime";
@@ -73,13 +77,9 @@ public class SkillTimeShift extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 10, false);
 
-        if (ctTarget instanceof Hero) {
-            Hero targetHero = (Hero) ctTarget;
-            if (hero.getParty() != null && hero.getParty().isPartyMember(targetHero)) {
-                return acceleratedShift(player, hero, target, targetHero, duration, maxStacks);
-            }
+        if (hero.isAlliedTo(target)) {
+            return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
         }
-
         return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
     }
 
@@ -90,7 +90,7 @@ public class SkillTimeShift extends TargettedSkill {
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
         boolean addedNewStack = ctTarget.addEffectStack(
                 decelEffectName, this, player, duration,
-                () -> new DeceleratedShiftedTime(this, player, duration, toFlatSpeedModifier(speedDecrease), maxStacks)
+                () -> new DeceleratedShiftedTime(this, player, duration, speedDecrease, maxStacks)
         );
 
         if (!addedNewStack) {
@@ -107,14 +107,14 @@ public class SkillTimeShift extends TargettedSkill {
     }
 
     //TODO: Make this method work like the decelerateShift method does, but test decel first.
-    private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, Hero targetHero, int duration, int maxStacks) {
+    private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
         AcceleratedShiftedTime effect;
-        if (!targetHero.hasEffect(accelEffectName)) {
+        if (!targetCT.hasEffect(accelEffectName)) {
             double percentIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
-            effect = new AcceleratedShiftedTime(this, player, duration, toFlatSpeedModifier(percentIncrease), maxStacks);
-            targetHero.addEffect(effect);
+            effect = new AcceleratedShiftedTime(this, player, duration, percentIncrease, maxStacks);
+            targetCT.addEffect(effect);
         } else {
-            effect = (AcceleratedShiftedTime) targetHero.getEffect(accelEffectName);
+            effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
             if (effect.effectStack.hasMax()) {
                 player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
@@ -131,24 +131,26 @@ public class SkillTimeShift extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    private double toFlatSpeedModifier(double percent) {
-        return DEFAULT_MINECRAFT_MOVEMENT_SPEED * percent;
-    }
-
-    private class DeceleratedShiftedTime extends WalkSpeedDecreaseEffect implements Stacking {
-
+    private class DeceleratedShiftedTime extends WalkSpeedPercentDecreaseEffect implements Stacking {
         private final EffectStack effectStack;
         private final double decreasePerStack;
         private boolean stackCountChanged = false;
 
         DeceleratedShiftedTime(Skill skill, Player applier, int duration, double decreasePerStack, int maxStacks) {
-            super(skill, decelEffectName, applier, duration, decreasePerStack, "DEBUG: Shifting down", "DEBUG: Back to normal");
+            super(skill, decelEffectName, applier, duration, decreasePerStack, downShiftApplyText, downShiftExpireText);
             this.decreasePerStack = decreasePerStack;
 
             types.add(EffectType.HARMFUL);
-            types.add(EffectType.MAGIC);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.TEMPORAL);
 
             effectStack = new EffectStack(maxStacks);
+        }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), getStackCount()));
+            super.applyToMonster(monster);
         }
 
         @Override
@@ -237,18 +239,19 @@ public class SkillTimeShift extends TargettedSkill {
         }
     }
 
-    private class AcceleratedShiftedTime extends WalkSpeedIncreaseEffect implements Stacking {
+    private class AcceleratedShiftedTime extends WalkSpeedPercentIncreaseEffect implements Stacking {
 
         private final EffectStack effectStack;
         private final double increasePerStack;
         private boolean stackCountChanged = false;
 
         AcceleratedShiftedTime(Skill skill, Player applier, int duration, double increasePerStack, int maxStacks) {
-            super(skill, accelEffectName, applier, duration, increasePerStack, "DEBUG: Shifting Up", "DEBUG: Back to normal");
+            super(skill, accelEffectName, applier, duration, increasePerStack, upShiftApplyText, upShiftExpireText);
             this.increasePerStack = increasePerStack;
 
             types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.MAGIC);
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.TEMPORAL);
 
             effectStack = new EffectStack(maxStacks);
         }
