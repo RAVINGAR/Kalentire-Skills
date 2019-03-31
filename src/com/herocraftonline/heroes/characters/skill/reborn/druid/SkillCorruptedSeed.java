@@ -29,7 +29,6 @@ public class SkillCorruptedSeed extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-
     public SkillCorruptedSeed(Heroes plugin) {
         super(plugin, "CorruptedSeed");
         setDescription("Plant a corrupted seed in yourself or an ally, recasting this ability will explode the seed silencing nearby enemies. While the user is holding a seed they will take periodic damage");
@@ -94,44 +93,6 @@ public class SkillCorruptedSeed extends TargettedSkill {
         return config;
     }
 
-
-    public void particleEffect(LivingEntity target) {
-
-        EffectManager em = new EffectManager(plugin);
-        Effect visualEffect = new Effect(em) {
-            Particle particle = Particle.DRAGON_BREATH;
-
-            int radius = 2;
-
-            @Override
-            public void onRun() {
-                for (double z = -radius; z <= radius; z += 0.33) {
-                    for (double x = -radius; x <= radius; x += 0.33) {
-                        if (x * x + z * z <= radius * radius) {
-                            display(particle, getLocation().clone().add(x, 0, z));
-                        }
-                    }
-                }
-            }
-        };
-
-        visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
-        visualEffect.period = 10;
-        visualEffect.iterations = 8;
-
-        Location location = target.getLocation().clone();
-        visualEffect.asynchronous = true;
-        visualEffect.setLocation(location);
-
-        visualEffect.start();
-        em.disposeOnTermination();
-
-        target.getWorld().playSound(location, Sound.ENTITY_BLAZE_DEATH, 0.15f, 0.0001f);
-    }
-
-
-
-
     private class CorruptedSeedEffect extends PeriodicExpirableEffect {
 
         private final double healthDrainTick;
@@ -140,11 +101,11 @@ public class SkillCorruptedSeed extends TargettedSkill {
 
         public CorruptedSeedEffect(Skill skill, Player applier, double healthDrainTick, long period, long duration) {
             super(skill, toggleableEffectName, applier, period, duration, applyText, expireText);
+
             this.healthDrainTick = healthDrainTick;
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DARK);
             types.add(EffectType.HARMFUL);
-
         }
 
         @Override
@@ -154,9 +115,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
             broadcast(player.getLocation(), "    " + applyText, player.getName());
             this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 3, false);
             this.silenceDuration = SkillConfigManager.getUseSetting(hero, skill, "silence-duration", 3000, false);
-
         }
-
 
         @Override
         public void tickMonster(Monster monster) {
@@ -181,21 +140,50 @@ public class SkillCorruptedSeed extends TargettedSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
 
+            particleEffect(player);
+
             List<Entity> targets = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-            for(Entity entity : targets) {
+            for (Entity entity : targets) {
                 if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
                     continue;
 
                 LivingEntity target = (LivingEntity) entity;
                 CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                 targetCT.addEffect(new SilenceEffect(skill, applier, silenceDuration));
-                particleEffect(targetCT.getEntity());
             }
-
-
         }
 
-    }
+        private void particleEffect(LivingEntity target) {
+            EffectManager em = new EffectManager(plugin);
+            Effect visualEffect = new Effect(em) {
+                Particle particle = Particle.DRAGON_BREATH;
 
+                @Override
+                public void onRun() {
+                    for (double z = -radius; z <= radius; z += 0.33) {
+                        for (double x = -radius; x <= radius; x += 0.33) {
+                            if (x * x + z * z <= radius * radius) {
+                                display(particle, getLocation().clone().add(x, 0, z));
+                            }
+                        }
+                    }
+                }
+            };
+
+            int silenceDurationTicks = (int)silenceDuration / 50;
+            visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
+            visualEffect.period = 10;
+            visualEffect.iterations = silenceDurationTicks / visualEffect.period;
+
+            Location location = target.getLocation().clone();
+            visualEffect.asynchronous = true;
+            visualEffect.setLocation(location);
+
+            visualEffect.start();
+            em.disposeOnTermination();
+
+            target.getWorld().playSound(location, Sound.ENTITY_BLAZE_DEATH, 0.15f, 0.0001f);
+        }
+    }
 }
 
