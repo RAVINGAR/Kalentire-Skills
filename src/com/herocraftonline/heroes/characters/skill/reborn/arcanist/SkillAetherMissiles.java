@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.Missile;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Pair;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
@@ -18,11 +19,17 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class SkillAetherMissiles extends ActiveSkill {
 
@@ -91,18 +98,22 @@ public class SkillAetherMissiles extends ActiveSkill {
             this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 0.15, false);
             int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-duration", 2000, false) / 50;
 
+            List<Location> missileLocations = GeometryUtil.circle(applier.getLocation().clone().add(new Vector(0, 0.8, 0)), numProjectiles, 1.5);
+            if (missileLocations.size() < numProjectiles) {
+                Heroes.log(Level.INFO, "AETHER MISSILES IS BROKEN DUE TO A CHANGE IN HEROES, YO");
+                return;
+            }
             for (int i = 0; i < numProjectiles; i++) {
                 EffectManager effectManager = new EffectManager(plugin);
                 SphereEffect missileVisual = new SphereEffect(effectManager);
                 DynamicLocation dynamicLoc = new DynamicLocation(applier);
-//                missileVisual.setLocation(applier.getEyeLocation());
-//                missileVisual.particleOffsetY = 0.8f;
-                missileVisual.offset = new Vector(0, 0.8, 0);
+                Location missileLocation = missileLocations.get(i);
+                dynamicLoc.addOffset(missileLocation.toVector().subtract(applier.getLocation().toVector()));
                 missileVisual.setDynamicOrigin(dynamicLoc);
-                //missileVisual.disappearWithOriginEntity = true;
                 missileVisual.iterations = (int) (getDuration() / 50) + projDurationTicks;
                 missileVisual.radius = this.projectileRadius;
                 missileVisual.particle = Particle.SPELL_WITCH;
+                missileVisual.particles = 25;
                 missileVisual.radiusIncrease = 0;
                 effectManager.start(missileVisual);
 
@@ -121,8 +132,13 @@ public class SkillAetherMissiles extends ActiveSkill {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         Pair<EffectManager, SphereEffect> pair = missileVisuals.get(finalI);
-                        AetherMissile missile = new AetherMissile(hero, skill, projectileRadius, pair.getLeft(), pair.getRight());
+                        SphereEffect missileVisual = pair.getRight();
+
+                        Location eyeLocation = hero.getPlayer().getEyeLocation();
+                        missileVisual.setLocation(eyeLocation.clone().add(eyeLocation.getDirection()));
+                        AetherMissile missile = new AetherMissile(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
                         missile.fireMissile();
+                        eyeLocation.getWorld().playSound(eyeLocation, Sound.ENTITY_VEX_HURT, 2F, 0.5F);
                     }
                 }, projectileLaunchDelay * i);
             }
@@ -131,6 +147,27 @@ public class SkillAetherMissiles extends ActiveSkill {
 
     interface MissileDeathCallback {
         void onMissileDeath(Missile missile);
+    }
+
+    public class SkillHeroListener implements Listener {
+        private Skill skill;
+
+        public SkillHeroListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onLeftClick(PlayerInteractEvent event) {
+            if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
+                return;
+
+            Player player = event.getPlayer();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (!hero.hasEffect(toggleableEffectName))
+                return;
+
+            hero.removeEffect(hero.getEffect(toggleableEffectName));
+        }
     }
 
     class AetherMissile extends Missile {

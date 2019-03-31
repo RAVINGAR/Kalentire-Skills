@@ -162,6 +162,7 @@ public class SkillChainLightning extends TargettedSkill {
         @NotNull
         private LineEffect getBaseLightningEffect(double randomX, double randomZ) {
             LineEffect lightning = new LineEffect(effectManager);
+            lightning.offset = new Vector(0, -0.5, 0);
             lightning.particle = Particle.REDSTONE;
             lightning.isZigZag = true;
             lightning.zigZags = 7;

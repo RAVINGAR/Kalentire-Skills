@@ -486,7 +486,7 @@ public class SkillOvergrowth extends ActiveSkill {
 
         public class SkillBlockListener implements Listener {
 
-            @EventHandler(priority = EventPriority.MONITOR)
+            @EventHandler(priority = EventPriority.LOWEST)
             public void onPluginDisable(PluginDisableEvent e) {
                 if (e.getPlugin() != plugin)
                     return;
@@ -497,7 +497,7 @@ public class SkillOvergrowth extends ActiveSkill {
             //BlockFormEvent
             //BlockPhysicsEvent
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onLeafDecay(LeavesDecayEvent event) {
                 Block block = event.getBlock();
                 if (block == null)
@@ -508,7 +508,7 @@ public class SkillOvergrowth extends ActiveSkill {
             }
 
             // For stopping paved grass / crops being destroyed
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockFade(BlockFadeEvent event) {
                 Block block = event.getBlock();
                 if (block == null)
@@ -519,14 +519,14 @@ public class SkillOvergrowth extends ActiveSkill {
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockBurn(BlockBurnEvent event) {
                 Block block = event.getBlock();
                 if (changedBlocks.contains(block))
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockSpread(BlockSpreadEvent event) {
                 Block block = event.getBlock();
                 Block sourceBlock = event.getSource();
@@ -534,21 +534,21 @@ public class SkillOvergrowth extends ActiveSkill {
                     event.setCancelled(true);
             }
 
-//            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+//            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 //            public void onBlockPlace(BlockPlaceEvent event) {
 //                Block block = event.getBlock();
 //                if (changedBlocks.contains(block))
 //                    event.setCancelled(true);
 //            }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockBreak(BlockBreakEvent event) {
                 Block block = event.getBlock();
                 if (changedBlocks.contains(block))
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockFromTo(BlockFromToEvent event) {
                 Block fromBlock = event.getBlock();
                 Block toBlock = event.getToBlock();
@@ -556,21 +556,21 @@ public class SkillOvergrowth extends ActiveSkill {
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockDamage(BlockDamageEvent event) {
                 Block block = event.getBlock();
                 if (changedBlocks.contains(block))
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onEntityChangeBlock(EntityChangeBlockEvent event) {
                 Block block = event.getBlock();
                 if (changedBlocks.contains(block))
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onHangingBreak(HangingBreakEvent event) {
                 Block block = event.getEntity().getLocation().getBlock();
                 BoundingBox box = event.getEntity().getBoundingBox();
@@ -582,13 +582,13 @@ public class SkillOvergrowth extends ActiveSkill {
                 }
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockPistonExtend(BlockPistonExtendEvent event) {
                 if (event.getBlocks().stream().anyMatch(changedBlocks::contains))
                     event.setCancelled(true);
             }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+            @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onBlockPistonRetract(BlockPistonRetractEvent event) {
                 if (event.getBlocks().stream().anyMatch(changedBlocks::contains))
                     event.setCancelled(true);

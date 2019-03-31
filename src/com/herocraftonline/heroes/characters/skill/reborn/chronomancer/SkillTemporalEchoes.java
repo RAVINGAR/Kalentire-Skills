@@ -28,6 +28,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class SkillTemporalEchoes extends ActiveSkill {
 
     private final String minionEffectName = "TemporalEchoe";
@@ -59,6 +61,8 @@ public class SkillTemporalEchoes extends ActiveSkill {
         config.set("minion-speed-amplifier", 1);
         config.set("minion-duration", 6000);
         config.set("launch-velocity", 1.2);
+        config.set("min-launch-spread", -0.4);
+        config.set("max-launch-spread", 0.4);
         return config;
     }
 
@@ -68,7 +72,10 @@ public class SkillTemporalEchoes extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 6000, false);
         double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 1.2, false);
         int numEchoes = SkillConfigManager.getUseSetting(hero, this, "echoes-summoned", 4, false);
-        Vector launchVector = player.getLocation().getDirection().normalize().multiply(launchVelocity);
+
+        final double randomMin = SkillConfigManager.getUseSetting(hero, this, "min-launch-spread", -0.4, false);
+        final double randomMax = SkillConfigManager.getUseSetting(hero, this, "max-launch-spread", 0.4, false);
+
         for (int i = 0; i < numEchoes; i++) {
             // Wolfs have the most reliable default AI for following and helping the player. We'll disguise it as something else later.
             Wolf minion = (Wolf) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.WOLF);
@@ -77,6 +84,10 @@ public class SkillTemporalEchoes extends ActiveSkill {
             final Monster monster = plugin.getCharacterManager().getMonster(minion);
             monster.setExperience(0);
             monster.addEffect(new TemporalEchoesMinionEffect(this, hero, duration));
+
+            Vector launchVector = player.getLocation().getDirection().normalize()
+                    .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
+                    .multiply(launchVelocity);
 
             minion.setVelocity(launchVector);
             minion.setFallDistance(-7F);

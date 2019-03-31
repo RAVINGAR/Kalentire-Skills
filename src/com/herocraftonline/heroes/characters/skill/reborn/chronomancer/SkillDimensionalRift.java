@@ -7,24 +7,31 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillDimensionalRift extends TargettedSkill {
     public SkillDimensionalRift(Heroes plugin) {
         super(plugin, "DimensionalRift");
         setDescription("Open a rift in space between you and your target, distorting both time and space. " +
-                "You and your target will switch places and all spellcasting will be interrupted. " +
-                "As a result of the time disruption, all enemies within $1 block of either location will take $2 damage, " +
-                "your target will lose $3 beneficial effect, and you will lose $4 harmful effect.");
+                "You and your target will switch places, and all enemies within $1 block of both locations will take $2 damage, " +
+                "you will lose $3 harmful effect(s), and if your target was an ally, they will also lose $3 harmful effect(s). " +
+                "If you targetted an enemy however, they will lose $4 beneficial effect(s) instead.");
         setUsage("/skill dimensionalrift");
         setArgumentRange(0, 0);
         setIdentifiers("skill dimensionalrift");
-        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.SILENCEABLE, SkillType.TELEPORTING, SkillType.INTERRUPTING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.SILENCEABLE, SkillType.TELEPORTING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
     }
 
     @Override
@@ -36,6 +43,8 @@ public class SkillDimensionalRift extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        config.set(SkillSetting.RADIUS.node(), 4.0);
+        config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set("max-debuff-removals", 1);
         config.set("max-buff-removals", 1);
         return config;
@@ -48,10 +57,13 @@ public class SkillDimensionalRift extends TargettedSkill {
 
         if (targetCT.hasEffectType(EffectType.STUN) || targetCT.hasEffectType(EffectType.ROOT))
             return SkillResult.INVALID_TARGET;
-        else if (hero.hasEffectType(EffectType.STUN) || hero.hasEffectType(EffectType.ROOT))
+        if (hero.hasEffectType(EffectType.STUN) || hero.hasEffectType(EffectType.ROOT))
             return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero, target);
+
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
 
         Location pLocation = player.getLocation();
         pLocation.setYaw(target.getLocation().getYaw());
@@ -62,18 +74,41 @@ public class SkillDimensionalRift extends TargettedSkill {
         tLocation.setPitch(player.getLocation().getPitch());
 
         dispelTarget(hero, hero);
+        damageInCircle(hero, player, player, radius, damage);
         playFirework(player.getLocation());
 
-        if (hero.isAlliedTo(target))
+        if (hero.isAlliedTo(target)) {
             dispelTarget(hero, targetCT);
-        else
+        } else {
             purgeTarget(hero, targetCT);
+        }
+        damageInCircle(hero, player, target, radius, damage);
         playFirework(target.getLocation());
 
         player.teleport(tLocation);
         target.teleport(pLocation);
 
         return SkillResult.NORMAL;
+    }
+
+    private void damageInCircle(Hero hero, Player player, LivingEntity circleTarget, double radius, double damage) {
+        for (Entity entity : circleTarget.getNearbyEntities(radius, radius, radius)) {
+            if (!(entity instanceof LivingEntity)) {
+                continue;
+            }
+            LivingEntity aoeTarget = (LivingEntity) entity;
+            if (!damageCheck(player, aoeTarget))
+                continue;
+
+            addSpellTarget(aoeTarget, hero);
+            damageEntity(aoeTarget, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+        }
+
+        for (double r = 1.0; r < radius * 2; r++) {
+            List<Location> particleLocations = GeometryUtil.circle(circleTarget.getLocation(), 45, r / 2);
+            for (Location particleLocation : particleLocations)
+                circleTarget.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocation, 1, 0, 0.1, 0, 0.1);
+        }
     }
 
     private void playFirework(Location location) {

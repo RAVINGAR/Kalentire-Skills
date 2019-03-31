@@ -177,9 +177,12 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             Block validFinalBlock = null;
             Block currentBlock;
 
+            Vector dir = desiredLocation.clone().subtract(target.getEyeLocation()).toVector();
+            Location iterLoc = target.getLocation().clone().setDirection(dir);
+
             BlockIterator iter = null;
             try {
-                iter = new BlockIterator(target, distance);
+                iter = new BlockIterator(iterLoc, distance);
             } catch (IllegalStateException e) {
                 return;
             }

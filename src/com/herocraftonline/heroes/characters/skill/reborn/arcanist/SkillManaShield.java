@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.DynamicLocation;
@@ -21,6 +22,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.util.logging.Level;
 
 public class SkillManaShield extends ActiveSkill {
 
@@ -45,9 +48,15 @@ public class SkillManaShield extends ActiveSkill {
     }
 
     @Override
-    public String getDescription() {
-        //TODO: Fill out variables
-        return super.getDescription();
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double mitigationPercent = SkillConfigManager.getUseSetting(hero, this, "damage-mitigation-percent", 0.35, false);
+        double absorbCostRatio = SkillConfigManager.getUseSetting(hero, this, "absorb-cost-percent", 1.5, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration / 1000))
+                .replace("$2", Util.decFormat.format(mitigationPercent * 100))
+                .replace("$3", Util.decFormat.format(absorbCostRatio * 100));
     }
 
     @Override
@@ -184,11 +193,5 @@ public class SkillManaShield extends ActiveSkill {
             }
             return damage;
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

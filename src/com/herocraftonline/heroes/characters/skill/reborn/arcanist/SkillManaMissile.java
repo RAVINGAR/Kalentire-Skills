@@ -80,6 +80,7 @@ public class SkillManaMissile extends PassiveSkill {
 			double projVelocity = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
 			ManaProjectile missile = new ManaProjectile(plugin, skill, hero, projSize, projVelocity);
 			missile.fireMissile();
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_VEX_HURT, 2F, 1F);
 
 			int cooldown = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN, 2000, false);
 			hero.addEffect(new CooldownEffect(skill, player, cooldown));
@@ -183,9 +184,9 @@ public class SkillManaMissile extends PassiveSkill {
 		protected void onTick() {
 			Location loc = getLocation();
 			this.visualEffect.setLocation(loc);
-			if (this.getTicksLived() % 2 == 0) {
-				loc.getWorld().playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.5F);
-			}
+//			if (this.getTicksLived() % 2 == 0) {
+//				loc.getWorld().playSound(loc, Sound.ENTITY_VEX_HURT, 2F, 1F);
+//			}
 		}
 	}
 
@@ -195,7 +196,7 @@ public class SkillManaMissile extends PassiveSkill {
 		private double step;
 		public Particle particle = Particle.REDSTONE;
 		public Color color = BasicMissile.DEFAULT_COLOR;
-		private final double sizeMultiplier = 0.25;
+		private final double sizeMultiplier = 0.5;
 		private double rotationSpeed = 4.0D;
 
 		ManaMissileVisualEffect(EffectManager effectManager) {
@@ -218,8 +219,11 @@ public class SkillManaMissile extends PassiveSkill {
 					Vector v = new Vector(Math.cos(i + step / rotationSpeed), Math.sin(i + step / rotationSpeed), 0.0D);
 					v = rotate(v, loc).multiply(sizeMultiplier);
 
-					Particle.DustOptions data = new Particle.DustOptions(color, 1.0F);
-					loc.getWorld().spawnParticle(particle, loc, 0, v.getX(), v.getY(), v.getZ(), 0.08D, data, false);
+					display(particle, loc.add(v), color, 0.8F, 0);		// For some reason effect lib looks like shit with the exact same parameters. Makes no sense to me.
+
+					// Doesn't work super great with redstone. You want FireworkSpark instead if you're gonna use this.
+//					Particle.DustOptions data = new Particle.DustOptions(color, 1.0F);
+//					loc.getWorld().spawnParticle(particle, loc, 0, v.getX(), v.getY(), v.getZ(), 0.08D, data, false);
 
 //					this.particleOffsetX = (float) v.getX();
 //					this.particleOffsetY = (float) v.getY();
