@@ -38,13 +38,11 @@ public class SkillBlink extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 9);
-        node.set(SkillSetting.REAGENT.node(), 331);
-        node.set(SkillSetting.REAGENT_COST.node(), 3);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 9);
+        config.set(SkillSetting.REAGENT.node(), 331);
+        config.set(SkillSetting.REAGENT_COST.node(), 3);
+        return config;
     }
 
     @Override

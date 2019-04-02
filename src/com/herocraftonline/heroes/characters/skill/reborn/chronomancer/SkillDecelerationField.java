@@ -46,22 +46,27 @@ public class SkillDecelerationField extends TargettedLocationSkill {
 
     public SkillDecelerationField(Heroes plugin) {
         super(plugin, "DecelerationField");
-        setDescription("You tap into the web of time around you in a $1 radius, decelerating anyone and anything possible for $2 second(s).");
+        setDescription("You tap into the web of time, accelerating it around a target location up to $1 blocks away. " +
+                "All of those within a $2 block radius, enemy or ally, will be decelerated. The field lasts $3 second(s).");
         setUsage("/skill decelerationfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill decelerationfield");
-        setToggleableEffectName("DecelerationField");
         setTypes(SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_SLOWING, SkillType.AREA_OF_EFFECT);
+
+        setToggleableEffectName("DecelerationField");
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 20.0, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        String formattedRadius = Util.decFormat.format(radius);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        return getDescription().replace("$1", formattedRadius).replace("$2", formattedDuration);
+        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20.0, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16.0, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+
+        return getDescription()
+                .replace("$2", Util.decFormat.format(maxDistance))
+                .replace("$2", Util.decFormat.format(radius))
+                .replace("$3", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override

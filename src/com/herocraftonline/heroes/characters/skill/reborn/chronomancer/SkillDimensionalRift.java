@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.GeometryUtil;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -36,7 +37,16 @@ public class SkillDimensionalRift extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        int debuffRemovals = SkillConfigManager.getUseSetting(hero, this, "max-debuff-removals", 1, false);
+        int buffRemovals = SkillConfigManager.getUseSetting(hero, this, "max-buff-removals", 1, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(radius))
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", debuffRemovals + "")
+                .replace("$3", buffRemovals + "");
     }
 
     @Override
@@ -65,34 +75,37 @@ public class SkillDimensionalRift extends TargettedSkill {
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
 
-        Location pLocation = player.getLocation();
-        pLocation.setYaw(target.getLocation().getYaw());
-        pLocation.setPitch(target.getLocation().getPitch());
+        Location originalTargetLoc = target.getLocation();
+        Location originalPlayerLoc = player.getLocation();
 
-        Location tLocation = target.getLocation();
-        tLocation.setYaw(player.getLocation().getYaw());
-        tLocation.setPitch(player.getLocation().getPitch());
+        Location flippedPlayerLoc = player.getLocation();
+        flippedPlayerLoc.setYaw(originalTargetLoc.getYaw());
+        flippedPlayerLoc.setPitch(originalTargetLoc.getPitch());
+
+        Location flippedTargetLoc = target.getLocation();
+        flippedTargetLoc.setYaw(originalPlayerLoc.getYaw());
+        flippedTargetLoc.setPitch(originalPlayerLoc.getPitch());
 
         dispelTarget(hero, hero);
-        damageInCircle(hero, player, player, radius, damage);
-        playFirework(player.getLocation());
+        damageInCircle(hero, player, originalPlayerLoc, radius, damage);
+        playFirework(originalPlayerLoc);
 
         if (hero.isAlliedTo(target)) {
             dispelTarget(hero, targetCT);
         } else {
             purgeTarget(hero, targetCT);
         }
-        damageInCircle(hero, player, target, radius, damage);
-        playFirework(target.getLocation());
+        damageInCircle(hero, player, originalTargetLoc, radius, damage);
+        playFirework(originalTargetLoc);
 
-        player.teleport(tLocation);
-        target.teleport(pLocation);
+        player.teleport(flippedTargetLoc);
+        target.teleport(flippedPlayerLoc);
 
         return SkillResult.NORMAL;
     }
 
-    private void damageInCircle(Hero hero, Player player, LivingEntity circleTarget, double radius, double damage) {
-        for (Entity entity : circleTarget.getNearbyEntities(radius, radius, radius)) {
+    private void damageInCircle(Hero hero, Player player, Location damageLocation, double radius, double damage) {
+        for (Entity entity : damageLocation.getWorld().getNearbyEntities(damageLocation, radius, radius, radius)) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
@@ -101,13 +114,13 @@ public class SkillDimensionalRift extends TargettedSkill {
                 continue;
 
             addSpellTarget(aoeTarget, hero);
-            damageEntity(aoeTarget, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+            damageEntity(aoeTarget, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
         }
 
         for (double r = 1.0; r < radius * 2; r++) {
-            List<Location> particleLocations = GeometryUtil.circle(circleTarget.getLocation(), 45, r / 2);
+            List<Location> particleLocations = GeometryUtil.circle(damageLocation, 45, r / 2);
             for (Location particleLocation : particleLocations)
-                circleTarget.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocation, 1, 0, 0.1, 0, 0.1);
+                damageLocation.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocation, 1, 0, 0.1, 0, 0.1);
         }
     }
 

@@ -29,7 +29,8 @@ public class SkillEvocation extends ActiveSkill {
 
     public SkillEvocation(Heroes plugin) {
         super(plugin, "Evocation");
-        setDescription("Increases your mana regeneration by $1% for up to $2 second(s).");
+        setDescription("Channeling: Increases your mana regeneration by $1% for up to $2 second(s). " +
+                "You are slowed while casting this ability and can be interrupted by others.");
         setUsage("/skill evocation");
         setArgumentRange(0, 0);
         setIdentifiers("skill evocation");
@@ -40,12 +41,10 @@ public class SkillEvocation extends ActiveSkill {
     public String getDescription(Hero hero) {
         double regenMultiplier = SkillConfigManager.getUseSetting(hero, this, "regen-multiplier", 4.0, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 4000, false);
-        String formattedRegenPercent = Util.decFormat.format(regenMultiplier * 100);
-        String formattedDuration = Util.decFormat.format(duration / 1000);
 
         return getDescription()
-                .replace("$1", formattedRegenPercent)
-                .replace("$2", formattedDuration);
+                .replace("$1", Util.decFormat.format(regenMultiplier * 100))
+                .replace("$2", Util.decFormat.format(duration / 1000));
     }
 
     @Override

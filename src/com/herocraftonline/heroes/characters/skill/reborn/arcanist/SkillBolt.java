@@ -30,7 +30,7 @@ public class SkillBolt extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 150, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 3.8, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         return getDescription().replace("$1", damage + "");
@@ -38,17 +38,15 @@ public class SkillBolt extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.DAMAGE.node(), 180);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.0);
-        node.set(SkillSetting.REAGENT.node(), 289);
-        node.set(SkillSetting.REAGENT_COST.node(), 1);
-        node.set("lightning-volume", 0.0F);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DAMAGE.node(), 180);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.0);
+        config.set(SkillSetting.REAGENT.node(), 289);
+        config.set(SkillSetting.REAGENT_COST.node(), 1);
+        config.set("lightning-volume", 0.5F);
+        return config;
     }
 
     @Override
@@ -60,7 +58,7 @@ public class SkillBolt extends TargettedSkill {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.0F, false);
+        float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.5F, false);
 
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.0F);

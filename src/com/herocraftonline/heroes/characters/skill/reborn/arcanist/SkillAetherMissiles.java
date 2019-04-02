@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterManager;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
@@ -11,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.Missile;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Pair;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.DynamicLocation;
@@ -39,19 +41,38 @@ public class SkillAetherMissiles extends ActiveSkill {
 
     public SkillAetherMissiles(Heroes plugin) {
         super(plugin, "AetherMissiles");
-        setDescription("TBD");
+        setDescription("Summons up to $1 missiles around the caster, that will float and remain inactive around the caster for up to $2 seconds." +
+                "If this ability is cast again within that time, it will unleash each stored missile in a stream." +
+                "Each missile does $3 damage, increased by $4 for each number of missile you previously landed on the same target." +
+                "Total maximum damage for hitting every projectile is $5!");
         setUsage("/skill aethermissiles");
         setArgumentRange(0, 0);
         setIdentifiers("skill aethermissiles");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         setToggleableEffectName(toggleableEffectName);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
-        return getDescription().replace("%1", damage + "");
+        int numProjectiles = SkillConfigManager.getUseSetting(hero, this, "num-projectiles", 4, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, "projectile-damage", 25.0, false);
+        double damageIncreasePerHit = SkillConfigManager.getUseSetting(hero, this, "projectile-damage-increase-per-hit", 10.0, false);
+
+        // I am a retard who does not know how to make an actual formula for this. If you can math it out, feel free...
+        double totalMaxPossibleDamage = 0.0;
+        for(int i = 0; i < numProjectiles; i++) {
+            totalMaxPossibleDamage+= damage + (damageIncreasePerHit * i);
+        }
+
+        return getDescription()
+                .replace("$1", numProjectiles + "")
+                .replace("$2", Util.decFormat.format(duration / 1000))
+                .replace("$3", Util.decFormat.format(damage))
+                .replace("$4", Util.decFormat.format(damageIncreasePerHit))
+                .replace("$5", Util.decFormat.format(totalMaxPossibleDamage));
     }
 
     @Override
@@ -79,12 +100,41 @@ public class SkillAetherMissiles extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    class AetherMissilesEffect extends ExpirableEffect {
+    private class SkillHeroListener implements Listener {
+        private Skill skill;
+
+        SkillHeroListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onLeftClick(PlayerInteractEvent event) {
+            if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
+                return;
+
+            Player player = event.getPlayer();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (!hero.hasEffect(toggleableEffectName))
+                return;
+
+            hero.removeEffect(hero.getEffect(toggleableEffectName));
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.isProjectile() || !(event.getDamager() instanceof Hero) || !(event.getDamager().hasEffect(toggleableEffectName)))
+                return;
+
+            event.getDamager().removeEffect(event.getDamager().getEffect(toggleableEffectName));
+        }
+    }
+
+    private class AetherMissilesEffect extends ExpirableEffect {
         private int numProjectiles;
         private double projectileRadius;
         private List<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
 
-        public AetherMissilesEffect(Skill skill, Player applier, long duration) {
+        AetherMissilesEffect(Skill skill, Player applier, long duration) {
             super(skill, toggleableEffectName, applier, duration);
 
             this.types.add(EffectType.MAGIC);
@@ -131,6 +181,10 @@ public class SkillAetherMissiles extends ActiveSkill {
                 int finalI = i;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
+                        final Player player = hero.getPlayer();
+                        if (player.isDead() || player.getHealth() <= 0) {
+
+                        }
                         Pair<EffectManager, SphereEffect> pair = missileVisuals.get(finalI);
                         SphereEffect missileVisual = pair.getRight();
 
@@ -149,28 +203,7 @@ public class SkillAetherMissiles extends ActiveSkill {
         void onMissileDeath(Missile missile);
     }
 
-    public class SkillHeroListener implements Listener {
-        private Skill skill;
-
-        public SkillHeroListener(Skill skill) {
-            this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onLeftClick(PlayerInteractEvent event) {
-            if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
-                return;
-
-            Player player = event.getPlayer();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect(toggleableEffectName))
-                return;
-
-            hero.removeEffect(hero.getEffect(toggleableEffectName));
-        }
-    }
-
-    class AetherMissile extends Missile {
+    private class AetherMissile extends Missile {
 
         private final EffectManager effectManager;
         private final SphereEffect visualEffect;
@@ -254,10 +287,9 @@ public class SkillAetherMissiles extends ActiveSkill {
     }
 
     private class MultiMissileHitEffect extends ExpirableEffect {
-
         private int hitCount = 1;
 
-        public MultiMissileHitEffect(Skill skill, String name, Player applier, long duration) {
+        MultiMissileHitEffect(Skill skill, String name, Player applier, long duration) {
             super(skill, name, applier, duration);
         }
 

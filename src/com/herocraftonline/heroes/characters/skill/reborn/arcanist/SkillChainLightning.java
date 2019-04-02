@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.*;
@@ -29,8 +30,9 @@ public class SkillChainLightning extends TargettedSkill {
 
     public SkillChainLightning(Heroes plugin) {
         super(plugin, "ChainLightning");
-        setDescription("Conjure a bolt of lightning that strikes from you to your target, dealing $1 damage. "
-                + "The bolt will strike in a chain to up to $2 times and has a maximum range of $3 blocks.");
+        setDescription("Conjure a bolt of lightning that strikes from you to your target, dealing $1 damage. " +
+                "The bolt will strike in a chain to up to $2 times and has a maximum range of $3 blocks. " +
+                "The same target cannot be hit multiple times.");
         setUsage("/skill chainlightning");
         setArgumentRange(0, 0);
         setIdentifiers("skill chainlightning");
@@ -47,7 +49,10 @@ public class SkillChainLightning extends TargettedSkill {
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 5, false);
         int maxChainDistance = SkillConfigManager.getUseSetting(hero, this, "max-chain-distance", 5, false);
 
-        return getDescription().replace("$1", damage + "").replace("$2", maxTargets + "").replace("$2", maxChainDistance + "");
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", maxTargets + "")
+                .replace("$2", maxChainDistance + "");
     }
 
     @Override

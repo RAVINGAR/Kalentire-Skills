@@ -32,9 +32,9 @@ public class SkillAetherOrb extends ActiveSkill {
 
 	public SkillAetherOrb(Heroes plugin) {
 		super(plugin, "AetherOrb");
-		setDescription("Call upon the forces of the aether and launch it in front of you. "
+		setDescription("Call upon the forces of the aether and launch it forward in front of you. "
                 + "Upon landing, an orb of Aether is formed at the location, dealing $1 damage every $2 second(s) for up to $3 second(s). "
-                + "The orb can only hit up to $5 targets within $4 blocks every time it pulses.");
+                + "The orb can only hit up to $4 targets within $5 blocks every time it pulses.");
 		setUsage("/skill aetherorb");
 		setIdentifiers("skill aetherorb");
 		setArgumentRange(0, 0);
@@ -54,8 +54,8 @@ public class SkillAetherOrb extends ActiveSkill {
 				.replace("$1", Util.decFormat.format(damageTick))
 				.replace("$2", Util.decFormat.format((double) period / 1000))
 				.replace("$3", Util.decFormat.format((double) duration / 1000))
-				.replace("$4", Util.decFormat.format(radius))
-                .replace("$5", maxTargets + "");
+                .replace("$4", maxTargets + "")
+                .replace("$5", Util.decFormat.format(radius));
 	}
 
 	public ConfigurationSection getDefaultConfig() {

@@ -40,7 +40,8 @@ public class SkillAccelerationField extends TargettedLocationSkill {
 
     public SkillAccelerationField(Heroes plugin) {
         super(plugin, "AccelerationField");
-        setDescription("You tap into the web of time around you in a $1 radius, accelerating anyone and anything possible for $2 second(s).");
+        setDescription("You tap into the web of time, accelerating it around a target location up to $1 blocks away. " +
+                "All of those within a $2 block radius, enemy or ally, will be accelerated. The field lasts $3 second(s).");
         setUsage("/skill accelerationfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerationfield");
@@ -51,17 +52,20 @@ public class SkillAccelerationField extends TargettedLocationSkill {
 
     @Override
     public String getDescription(Hero hero) {
+        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20.0, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16.0, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        String formattedRadius = Util.decFormat.format(radius);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        return getDescription().replace("$1", formattedRadius).replace("$2", formattedDuration);
+
+        return getDescription()
+                .replace("$2", Util.decFormat.format(maxDistance))
+                .replace("$2", Util.decFormat.format(radius))
+                .replace("$3", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 20);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 20.0);
         config.set(SkillSetting.RADIUS.node(), 16.0);
         config.set(SkillSetting.DURATION.node(), 10000);
         config.set("percent-speed-increase", 0.35);

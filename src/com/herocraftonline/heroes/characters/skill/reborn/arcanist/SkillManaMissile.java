@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillUseEvent;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -35,7 +36,8 @@ public class SkillManaMissile extends PassiveSkill {
 
 	public SkillManaMissile(Heroes plugin) {
 		super(plugin, "ManaMissile");
-		setDescription("Conjure a bolt of mana that deals $1 damage.");
+		setDescription("Passive: When you attack when your wand, you also conjure a missile of pure mana that fires towards your enemies. " +
+				"The missile deals $1 damage on hit.");
 		setUsage("/skill manamissile");
 		setIdentifiers("skill manamissile");
 		setArgumentRange(0, 0);
@@ -46,7 +48,9 @@ public class SkillManaMissile extends PassiveSkill {
 
 	public String getDescription(Hero hero) {
 		final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-		return getDescription().replace("$1", Util.decFormat.format(damage));
+
+		return getDescription()
+				.replace("$1", Util.decFormat.format(damage));
 	}
 
 	public ConfigurationSection getDefaultConfig() {
@@ -76,6 +80,22 @@ public class SkillManaMissile extends PassiveSkill {
 			if (!validateCanCast(hero))
 				return;
 
+			fireProjectile(player, hero);
+		}
+
+		@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+		public void onWeaponDamage(WeaponDamageEvent event) {
+			if (event.isProjectile() || !(event.getDamager() instanceof Hero))
+				return;
+
+			Hero hero = ((Hero) event.getDamager());
+			if (!validateCanCast(hero))
+				return;
+
+			fireProjectile(hero.getPlayer(), hero);
+		}
+
+		private void fireProjectile(Player player, Hero hero) {
 			double projSize = SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 0.25, false);
 			double projVelocity = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
 			ManaProjectile missile = new ManaProjectile(plugin, skill, hero, projSize, projVelocity);

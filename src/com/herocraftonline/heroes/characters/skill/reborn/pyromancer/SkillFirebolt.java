@@ -31,11 +31,11 @@ import java.util.logging.Level;
 
 public class SkillFirebolt extends ActiveSkill {
 
-    private Map<SmallFireball, Long> fireballs = new LinkedHashMap<SmallFireball, Long>(100) {
+    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<SmallFireball, Long> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<Snowball, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -84,19 +84,16 @@ public class SkillFirebolt extends ActiveSkill {
 
         double projVel = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 1.5, false);
 
-        SmallFireball projectile = player.launchProjectile(SmallFireball.class);
+        Snowball projectile = player.launchProjectile(Snowball.class);
         projectile.setVelocity(player.getLocation().getDirection().normalize().multiply(projVel).subtract(new Vector(0, 0.025, 0)));
-        projectile.setGravity(true);
-        projectile.setIsIncendiary(false);
-        projectile.setYield(0.0F);
         projectile.setFireTicks(100);
 
         fireballs.put(projectile, System.currentTimeMillis());
         projectile.setShooter(player);
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        VelocityDropRunnable runnable = new VelocityDropRunnable(scheduler, projectile);
-        runnable.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, runnable, 0L, 1L));
+//        VelocityDropRunnable runnable = new VelocityDropRunnable(scheduler, projectile);
+//        runnable.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, runnable, 0L, 1L));
 
         broadcastExecuteText(hero);
 
@@ -106,6 +103,7 @@ public class SkillFirebolt extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    // Not used atm.
     private class VelocityDropRunnable implements Runnable {
         private final BukkitScheduler scheduler;
         private final Projectile projectile;
@@ -145,10 +143,10 @@ public class SkillFirebolt extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
-            if (!(event.getEntity() instanceof SmallFireball))
+            if (!(event.getEntity() instanceof Snowball))
                 return;
 
-            final SmallFireball projectile = (SmallFireball) event.getEntity();
+            final Snowball projectile = (Snowball) event.getEntity();
             if ((!(projectile.getShooter() instanceof Player)) || !fireballs.containsKey(projectile))
                 return;
 
@@ -167,7 +165,7 @@ public class SkillFirebolt extends ActiveSkill {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
             Entity projectile = event.getDamager();
-            if (!(projectile instanceof SmallFireball) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof Snowball) || !fireballs.containsKey(projectile)) {
                 return;
             }
 
