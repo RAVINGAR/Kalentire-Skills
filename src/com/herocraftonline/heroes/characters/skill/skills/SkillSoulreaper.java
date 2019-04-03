@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SkillSoulreaper extends ActiveSkill {
 
@@ -99,7 +100,7 @@ public class SkillSoulreaper extends ActiveSkill {
             int nextDamageTicks = 0;
 
             public void run() {
-                ArrayList<Location> circle = GeometryUtil.circle(sickle, 16, radius);
+                List<Location> circle = GeometryUtil.circle(sickle, 16, radius);
                 Location l = circle.get(fxIndex++);
                     //l.getWorld().spigot().playEffect(l, Effect.WITCH_MAGIC, 0, 0, 0.05f, 0.05f, 0.05f, 0.0f, 3, 128);
                 l.getWorld().spawnParticle(Particle.SPELL_WITCH, l, 3, 0.05, 0.05, 0.05, 0, true);

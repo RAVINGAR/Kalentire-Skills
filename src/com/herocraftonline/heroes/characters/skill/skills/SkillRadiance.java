@@ -15,6 +15,7 @@ import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class SkillRadiance extends ActiveSkill
@@ -75,7 +76,7 @@ public class SkillRadiance extends ActiveSkill
             Random rand = new Random();
             public void run() {
                 if (!hero.hasEffect("Radiance")) cancel();
-                ArrayList<Location> circle = GeometryUtil.circle(player.getLocation().clone().add(0, 1, 0), 56, radius);
+                List<Location> circle = GeometryUtil.circle(player.getLocation().clone().add(0, 1, 0), 56, radius);
 //                player.getWorld().spigot().playEffect(player.getLocation().clone().add(0, 0.3, 0), Effect.INSTANT_SPELL, 0, 0,
 //                        3.0F, 0.1F, 3.0F, 0.0F, 15, 128);
                 player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation().add(0, 0.3, 0), 15, 3, 0.1, 3, 0, true);

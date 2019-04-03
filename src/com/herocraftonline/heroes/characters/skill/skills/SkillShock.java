@@ -98,7 +98,7 @@ public class SkillShock extends ActiveSkill
 			{
 				if (rad < radius)
 				{
-					ArrayList<Location> aCircle = circle(player.getLocation().add(0, 0.5, 0), 36, rad);
+					List<Location> aCircle = circle(player.getLocation().add(0, 0.5, 0), 36, rad);
 					for (Location l : aCircle)
 					{
 						//l.getWorld().spigot().playEffect(l, Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.1F, 0.1F, 0.1F, 0.0F, 1, 16);

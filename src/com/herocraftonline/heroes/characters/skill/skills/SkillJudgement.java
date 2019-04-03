@@ -90,7 +90,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
                     cancel();
                 }
 
-                ArrayList<Location> circle = GeometryUtil.circle(p.getLocation().add(0, 0.4, 0), 32, radius);
+                List<Location> circle = GeometryUtil.circle(p.getLocation().add(0, 0.4, 0), 32, radius);
                 for (int i = 0; i < 4; i++) {
                     Location l = circle.get(index);
                     //l.getWorld().spigot().playEffect(l, Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.4F, 0.0F, 0.0F, 12, 128);

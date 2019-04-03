@@ -14,6 +14,7 @@ import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.herocraftonline.heroes.util.GeometryUtil.circle;
 
@@ -78,7 +79,7 @@ public class SkillCrumble extends TargettedSkill
 			
 			public void run()
 			{
-				ArrayList<Location> surrounding = circle(t.getLocation(), 24, 1); // This is down here to make sure it updates
+				List<Location> surrounding = circle(t.getLocation(), 24, 1); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//t.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 0.2F, 0.2F, 1.0F, 10, 16);
